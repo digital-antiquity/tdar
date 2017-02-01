@@ -28,6 +28,9 @@ import org.tdar.utils.TestConfiguration;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
+    private static final String SHARE = "/collection/";
+    private static final String LISTCOLLECTION = "/listcollection/";
+
     //safeguard to avoid confusion when passing boolean arguments
     private enum CollectionVisibility {
         VISIBLE,
@@ -246,7 +249,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     //fixme:  probably better to just accept a transient collection object
     private String setupListForTest(String title_, List<String> titles, CollectionVisibility visibility) {
         gotoPage("/dashboard");
-        gotoPage("/collection/add");
+        gotoPage(LISTCOLLECTION + "add");
 
         applyEditPageHacks();
         TestConfiguration config = TestConfiguration.getInstance();
@@ -283,7 +286,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage("/dashboard");
         find(By.linkText("UPLOAD")).click();
         waitForPageload();
-        gotoPage("/share/add");
+        gotoPage(SHARE + "/add");
         waitForPageload();
         applyEditPageHacks();
         TestConfiguration config = TestConfiguration.getInstance();
@@ -320,10 +323,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logger.debug(getCurrentUrl());
         String id = StringUtils.substringAfterLast(url, "/");
         if (type == CollectionType.LIST) {
-            gotoPage("/collection/"+ id +"/edit");
+            gotoPage(LISTCOLLECTION+ id +"/edit");
         }
         if (type == CollectionType.SHARED) {
-            gotoPage("/share/"+ id +"/edit");
+            gotoPage(SHARE+ id +"/edit");
         }
         logger.debug(getCurrentUrl());
         // find(By.linkText(" edit")).click();

@@ -27,7 +27,6 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
-import org.tdar.struts.action.share.ShareController;
 
 public class CollectionControllerITCase extends AbstractResourceControllerITCase {
 
@@ -40,13 +39,13 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
     @Autowired
     AuthorizedUserDao authorizedUserDao;
 
-    CollectionController controller;
+    ListCollectionController controller;
 
     static int indexCount = 0;
 
     @Before
     public void setup() {
-        controller = generateNewInitializedController(CollectionController.class);
+        controller = generateNewInitializedController(ListCollectionController.class);
         if (indexCount < 1) {
             reindex();
         }
@@ -75,12 +74,12 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ListCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null, 
-                CollectionController.class, ListCollection.class);
+                ListCollectionController.class, ListCollection.class);
         final Long id = collection.getId();
         String slug = collection.getSlug();
         collection = null;
 
-        controller = generateNewInitializedController(CollectionController.class, getAdminUser());
+        controller = generateNewInitializedController(ListCollectionController.class, getAdminUser());
         controller.setId(id);
         controller.prepare();
         controller.edit();
@@ -109,7 +108,7 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         ListCollection collection = 
-                generateResourceCollection(name, description, true, users, getUser(), resources, null, CollectionController.class, ListCollection.class);
+                generateResourceCollection(name, description, true, users, getUser(), resources, null, ListCollectionController.class, ListCollection.class);
         Long collectionid = collection.getId();
         logger.info("{}", collection.getUnmanagedResources());
         assertFalse(collectionid.equals(-1L));

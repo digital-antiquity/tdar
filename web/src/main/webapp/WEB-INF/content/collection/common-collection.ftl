@@ -80,7 +80,9 @@
     <#if editable>
     <#local path="collection"/>
     <#if resourceCollection.type == 'SHARED'>
-        <#local path="share"/>
+        <#local path="collection"/>
+    <#else>
+        <#local path="listcollection"/>    
     </#if>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink

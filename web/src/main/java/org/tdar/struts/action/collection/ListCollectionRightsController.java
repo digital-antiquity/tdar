@@ -10,8 +10,8 @@ import org.tdar.struts.action.AbstractCollectionRightsController;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/collection")
-public class CollectionRightsController extends AbstractCollectionRightsController<ListCollection> {
+@Namespace("/listcollection")
+public class ListCollectionRightsController extends AbstractCollectionRightsController<ListCollection> {
 
 
     private static final long serialVersionUID = 4318434880012567197L;

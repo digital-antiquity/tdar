@@ -56,7 +56,6 @@ import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts.action.browse.BrowseCollectionController;
 import org.tdar.struts.action.collection.CollectionDeleteAction;
 import org.tdar.struts.action.collection.CollectionViewAction;
-import org.tdar.struts.action.share.ShareController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.project.ProjectController;
@@ -80,13 +79,13 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
-    ShareController controller;
+    ShareCollectionController controller;
 
     static int indexCount = 0;
 
     @Before
     public void setup() {
-        controller = generateNewInitializedController(ShareController.class);
+        controller = generateNewInitializedController(ShareCollectionController.class);
         if (indexCount < 1) {
             reindex();
         }
@@ -119,7 +118,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         String slug = collection.getSlug();
         collection = null;
 
-        controller = generateNewInitializedController(ShareController.class, getAdminUser());
+        controller = generateNewInitializedController(ShareCollectionController.class, getAdminUser());
         controller.setId(id);
         controller.prepare();
         controller.edit();
@@ -474,15 +473,15 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         collection1.getAuthorizedUsers().addAll(users);
         genericService.saveOrUpdate(collection1);
         ListCollection collection2 = generateResourceCollection("SHARED", "", false, new ArrayList<>(users), getUser(),
-                new ArrayList<Resource>(), null, CollectionController.class, ListCollection.class);
+                new ArrayList<Resource>(), null, ListCollectionController.class, ListCollection.class);
         InformationResource testFile = generateDocumentWithUser();
         ListCollection parentCollection = generateResourceCollection("PARENT", "", true, new ArrayList<>(users), getUser(),
-                Arrays.asList(testFile), null, CollectionController.class, ListCollection.class);
+                Arrays.asList(testFile), null, ListCollectionController.class, ListCollection.class);
         Long id = parentCollection.getId();
         ListCollection childCollection = generateResourceCollection("CHILD", "", true, new ArrayList<AuthorizedUser>(), getUser(),
-                new ArrayList<Resource>(), id, CollectionController.class, ListCollection.class);
+                new ArrayList<Resource>(), id, ListCollectionController.class, ListCollection.class);
         ListCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", false, new ArrayList<AuthorizedUser>(), getUser(),
-                new ArrayList<Resource>(), id, CollectionController.class, ListCollection.class);
+                new ArrayList<Resource>(), id, ListCollectionController.class, ListCollection.class);
         // genericService.saveOrUpdate(parentCollection);
         Long parentCollectionId = parentCollection.getId();
         parentCollection = null;
@@ -570,9 +569,9 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testHiddenParentVisibleChild() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         ListCollection collection1 = generateResourceCollection("test 1 private", "", false, new ArrayList<AuthorizedUser>(), getUser(),
-                new ArrayList<Resource>(), null, CollectionController.class, ListCollection.class);
+                new ArrayList<Resource>(), null, ListCollectionController.class, ListCollection.class);
         ListCollection collection2 = generateResourceCollection("test 2 public", "", true, new ArrayList<AuthorizedUser>(), getUser(),
-                new ArrayList<Resource>(), collection1.getId(), CollectionController.class, ListCollection.class);
+                new ArrayList<Resource>(), collection1.getId(), ListCollectionController.class, ListCollection.class);
         evictCache();
         searchIndexService.index(collection1, collection2);
 
@@ -623,7 +622,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         evictCache();
 
-        controller = generateNewInitializedController(ShareController.class, getBasicUser());
+        controller = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
         controller.prepare();
         controller.add();
         logger.info("{}", controller.getCandidateParentResourceCollections());
@@ -695,7 +694,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         genericService.save(draftDocument);
         evictCache();
         ListCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", true, null, getAdminUser(),
-                Arrays.asList(draftDocument, activeDocument), null, CollectionController.class, ListCollection.class);
+                Arrays.asList(draftDocument, activeDocument), null, ListCollectionController.class, ListCollection.class);
 
         logger.info("DOCUMENT: {} ", draftDocument.getSubmitter());
 
@@ -854,7 +853,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback(true)
     public void testControllerWithActiveResourceThatBecomesDeleted() throws Exception {
-        controller = generateNewInitializedController(ShareController.class, getUser());
+        controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.prepare();
         SharedCollection rc = controller.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
@@ -956,7 +955,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(vc.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page
-        controller = generateNewInitializedController(ShareController.class);
+        controller = generateNewInitializedController(ShareCollectionController.class);
         controller.setId(rcid);
         controller.prepare();
         controller.edit();
@@ -969,7 +968,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback(true)
     public void testDraftResourceVisibleByAuthuser() throws Exception {
-        ShareController shareController = generateNewInitializedController(ShareController.class, getUser());
+        ShareCollectionController shareController = generateNewInitializedController(ShareCollectionController.class, getUser());
         shareController.prepare();
         SharedCollection rc = shareController.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
@@ -1024,7 +1023,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         Long ruid = registeredUser.getId();
         // now make the user an authorizedUser
-        controller = generateNewInitializedController(ShareController.class);
+        controller = generateNewInitializedController(ShareCollectionController.class);
         controller.setId(rcid);
         controller.prepare();
         AuthorizedUser authUser = new AuthorizedUser(registeredUser, GeneralPermissions.MODIFY_RECORD);

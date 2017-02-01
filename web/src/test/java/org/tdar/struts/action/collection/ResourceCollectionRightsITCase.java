@@ -32,7 +32,6 @@ import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
-import org.tdar.struts.action.share.ShareController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 
@@ -49,13 +48,13 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
     @Autowired
     AuthorizedUserDao authorizedUserDao;
 
-    ShareController controller;
+    ShareCollectionController controller;
 
     static int indexCount = 0;
 
     @Before
     public void setup() {
-        controller = generateNewInitializedController(ShareController.class);
+        controller = generateNewInitializedController(ShareCollectionController.class);
         if (indexCount < 1) {
             reindex();
         }
@@ -136,7 +135,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         List<AuthorizedUser> transientUsers = new ArrayList<>(Arrays.asList(new AuthorizedUser(transientSelf, GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(transientAdmin, GeneralPermissions.MODIFY_RECORD),
                 new AuthorizedUser(transientTest, GeneralPermissions.MODIFY_RECORD)));
-        ShareController cc = generateNewInitializedController(ShareController.class, getBasicUser());
+        ShareCollectionController cc = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
         cc.setId(collectionid);
         cc.prepare();
         cc.setAuthorizedUsers(transientUsers);
@@ -159,7 +158,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         authorizedUserDao.clearUserPermissionsCache();
 
         // create child collection with parent
-        ShareController cc = generateNewInitializedController(ShareController.class, getBasicUser());
+        ShareCollectionController cc = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
         cc.setParentId(collection.getId());
         cc.prepare();
         assertEquals(TdarActionSupport.SUCCESS, cc.add());
@@ -172,7 +171,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
 
         // save again
         Long id = cc.getResourceCollection().getId();
-        cc = generateNewInitializedController(ShareController.class, getBasicUser());
+        cc = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
         cc.setId(id);
         cc.prepare();
         cc.setServletRequest(getServletPostRequest());
@@ -255,7 +254,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         assertTrue(authenticationAndAuthorizationService.canAddToCollection(find, testPerson));
         authorizedUserDao.clearUserPermissionsCache();
         find = null;
-        controller = generateNewInitializedController(ShareController.class, testPerson);
+        controller = generateNewInitializedController(ShareCollectionController.class, testPerson);
         controller.setId(childId);
         controller.setParentId(parentId);
         controller.prepare();
@@ -338,7 +337,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         // try and assign access to aa document that user should not have rights
         // to add, assert that this document cannot be added
 
-        ShareController cc = generateNewInitializedController(ShareController.class, getBasicUser());
+        ShareCollectionController cc = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
         cc.prepare();
         cc.getResourceCollection().setName("test");
         cc.getResourceCollection().setDescription("test");
@@ -387,7 +386,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         // try and assign access to aa document that user should not have rights
         // to add, assert that this document cannot be added
 
-        ShareController controller = generateNewController(ShareController.class);
+        ShareCollectionController controller = generateNewController(ShareCollectionController.class);
         init(controller, getBasicUser());
         controller.add();
         SharedCollection resourceCollection = controller.getResourceCollection();
@@ -399,7 +398,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
         assertFalse(result.equals(Action.SUCCESS));
-        controller = generateNewInitializedController(ShareController.class);
+        controller = generateNewInitializedController(ShareCollectionController.class);
         controller.setId(resourceCollection.getId());
         assertEquals(0, resourceCollection.getResources().size());
         resourceCollection = null;
@@ -455,7 +454,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         // try and assign access to aa document that user should not have rights
         // to add, assert that this document cannot be added
 
-        ShareController cc = generateNewInitializedController(ShareController.class, getBasicUser());
+        ShareCollectionController cc = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
         cc.setId(id);
         // cc.prepare();
         // controller.getResources().add(document);
@@ -500,7 +499,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         // try and assign access to aa document that user should not have rights
         // to add, assert that this document cannot be added
 
-        ShareController cc = generateNewInitializedController(ShareController.class, getBasicUser());
+        ShareCollectionController cc = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
         cc.setId(id);
         // cc.prepare();
         cc.setParentId(parentId);
@@ -515,7 +514,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
     public void testResourceCollectionRightsRevoking() throws TdarActionException {
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
         final Long userId = registeredUser.getId();
-        controller = generateNewInitializedController(ShareController.class, getUser());
+        controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.prepare();
         // project = null;
         // Long pid = project.getId();
@@ -529,7 +528,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         genericService.synchronize();
         final Long rcid = controller.getPersistable().getId();
         // confirm resource is viewable by author of collection
-        controller = generateNewInitializedController(ShareController.class, getUser());
+        controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.setId(rcid);
         controller.prepare();
         controller.edit();
@@ -548,7 +547,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
 
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         TdarUser tdarUser = genericService.find(TdarUser.class, userId);
-        controller = generateNewInitializedController(ShareController.class, tdarUser);
+        controller = generateNewInitializedController(ShareCollectionController.class, tdarUser);
         controller.setId(rcid);
         boolean seenException = false;
         ignoreActionErrors(true);
@@ -571,7 +570,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
     @Test
     public void testResourceCollectionRightsRevokingHier() throws TdarActionException {
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
-        controller = generateNewInitializedController(ShareController.class, getUser());
+        controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.prepare();
         ResourceCollection rc = controller.getPersistable();
         // project = null;
@@ -585,7 +584,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         assertEquals(Action.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
 
-        controller = generateNewInitializedController(ShareController.class, getUser());
+        controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.setParentId(rcid);
 
         controller.prepare();
@@ -601,7 +600,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         Long rcid2 = controller.getPersistable().getId();
 
         // confirm resource is viewable by author of collection
-        controller = generateNewInitializedController(ShareController.class, registeredUser);
+        controller = generateNewInitializedController(ShareCollectionController.class, registeredUser);
         controller.setId(rcid2);
         controller.prepare();
         controller.edit();
@@ -612,7 +611,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         result = controller.save();
 
         // make sure it draft resource can't be seen by registered user (but not an authuser)
-        controller = generateNewInitializedController(ShareController.class, registeredUser);
+        controller = generateNewInitializedController(ShareCollectionController.class, registeredUser);
         controller.setId(rcid2);
         boolean seen = false;
         ignoreActionErrors(true);
@@ -630,7 +629,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
     @Test
     public void testResourceCollectionRightsRevokingHierOwnerFails() throws TdarActionException {
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
-        controller = generateNewInitializedController(ShareController.class, registeredUser);
+        controller = generateNewInitializedController(ShareCollectionController.class, registeredUser);
         controller.prepare();
         ResourceCollection rc = controller.getPersistable();
         // project = null;
@@ -644,7 +643,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         assertEquals(Action.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
 
-        controller = generateNewInitializedController(ShareController.class, getUser());
+        controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.setParentId(rcid);
         controller.prepare();
         // project = null;
@@ -662,7 +661,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
          * This test is expected to fail in-that hierarchical collection "owners" have no rights implicitly.
          * Change this test when we figure out what "should" change in package-info
          */
-        controller = generateNewInitializedController(ShareController.class, registeredUser);
+        controller = generateNewInitializedController(ShareCollectionController.class, registeredUser);
         controller.setId(rcid2);
         boolean seen = false;
         ignoreActionErrors(true);

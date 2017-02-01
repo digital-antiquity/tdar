@@ -25,7 +25,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String url = url_;
         url = url.substring(0, url.lastIndexOf("/"));
         String id = org.apache.commons.lang3.StringUtils.substringAfterLast(url, "/");
-        gotoPage("/collection/"+ id +"/edit");
+        gotoPage("/listcollection/"+ id +"/edit");
     }
 
     @Test
@@ -155,7 +155,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         loginAdmin();
         Long parentId = 1575L;
 
-        gotoPage("/collection/add");
+        gotoPage("/listcollection/add");
         String name = "testCreateChildCollection";
         String desc = "lame child colllection";
 
@@ -174,7 +174,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testAssignNonUserToCollection() {
         // try to create a collection and assign it to a person that is not a registered user.
-        gotoPage("/collection/add");
+        gotoPage("/listcollection/add");
 
         // first lets start populating the person fields with a person that does not yet exist. tDAR should not create the person record on the fly, and
         // should not assign to the collection.
@@ -211,7 +211,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testAssignNonUserToCollection2() {
-        gotoPage("/collection/add");
+        gotoPage("/listcollection/add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
@@ -255,7 +255,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitFormWithoutErrorCheck();
 
         assertTrue(getPageText().contains("User does not exist"));
-        assertTrue(getCurrentUrlPath().contains("/collection/save"));
+        assertTrue(getCurrentUrlPath().contains("/listcollection/save"));
 
         assertTextPresent("my fancy collection");
     }
@@ -265,7 +265,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testCollectionRightsRevoke() {
         //create test collection with basic user having adminGroup rights
-        gotoPage("/collection/add");
+        gotoPage("/listcollection/add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
@@ -273,7 +273,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         String url = getCurrentUrlPath();
         Long id = extractTdarIdFromCurrentURL();
-        gotoPage("/collection/" + id + "/rights");
+        gotoPage("/listcollection/" + id + "/rights");
         setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
         setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_GROUP.toString());
         submitForm();
