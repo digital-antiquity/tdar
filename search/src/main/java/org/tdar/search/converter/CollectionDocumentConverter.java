@@ -16,6 +16,9 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
 
     public static SolrInputDocument convert(VisibleCollection collection) {
 
+    /*
+     * See solr/configsets/default/conf/collections-schema.xml
+     */
         SolrInputDocument doc = convertPersistable(collection);
         VisibleCollection props = collection;
         doc.setField(QueryFieldNames.NAME, props.getName());

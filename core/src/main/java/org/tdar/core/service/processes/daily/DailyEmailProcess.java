@@ -1,12 +1,12 @@
 package org.tdar.core.service.processes.daily;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +37,8 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
     private static final long serialVersionUID = -1945086550963254634L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    public static final int NEW_USER_MAX_RESULTS = 100;
 
     @Autowired
     private transient EmailService emailService;
@@ -69,20 +71,24 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
     }
 
     private void sendNewUsersEmail() {
-        List<TdarUser> people = new ArrayList<>();
-        Date yesterday = DateTime.now().minusDays(1).toDate();
-        for (TdarUser user : entityService.findAllRegisteredUsers(100)) {
-            if (user != null && user.getDateUpdated() != null && yesterday.before(user.getDateUpdated())) {
-                people.add(user);
-            }
-        }
+        // get user accounts updated since yesterday @ midnight
+        LocalDateTime yesterday = LocalDate.now().minusDays(1).atStartOfDay();
+
+
+        List<TdarUser> people = entityService.findAllRegisteredUsers(NEW_USER_MAX_RESULTS).stream()
+                // remove empty user objects
+                .filter(Objects::nonNull)
+                // remove users registered prior to yesterday
+                .filter(user -> yesterday.isBefore(LocalDateTime.ofInstant(user.getDateUpdated().toInstant(), ZoneId.systemDefault())))
+                // collect them into a list
+                .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(people)) {
             Email email = new Email();
             email.setDate(new Date());
             email.setFrom(config.getDefaultFromEmail());
             email.setTo(config.getContactEmail());
-            email.setSubject(String.format("There are %s new users in %s", people.size(), config.getSiteAcronym()));
+            email.setSubject(String.format("%s New User Report: %s new users", config.getSiteAcronym().toUpperCase(), people.size()));
             email.setUserGenerated(false);
             Map<String, Object> dataModel = initDataModel();
             dataModel.put("users", people);

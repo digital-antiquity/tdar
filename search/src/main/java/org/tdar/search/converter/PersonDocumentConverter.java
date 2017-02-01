@@ -8,6 +8,10 @@ import org.tdar.utils.PersistableUtils;
 
 public class PersonDocumentConverter extends AbstractSolrDocumentConverter{
 
+    /*
+     * See solr/configsets/default/conf/people-schema.xml
+     */
+
     public static SolrInputDocument convert(Person person) {
         SolrInputDocument doc = convertPersistable(person);
         doc.setField(QueryFieldNames.FIRST_NAME, person.getFirstName());

@@ -15,6 +15,9 @@ import org.tdar.search.query.QueryFieldNames;
 
 public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
 
+    /*
+     * See solr/configsets/default/conf/keywords-schema.xml
+     */
 
     public static SolrInputDocument convert(Keyword kwd) {
         

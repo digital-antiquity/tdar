@@ -7,6 +7,10 @@ import org.tdar.search.query.QueryFieldNames;
 
 public class AnnotationKeyDocumentConverter extends AbstractSolrDocumentConverter {
 
+    /*
+     * See solr/configsets/default/conf/annotationKeys-schema.xml
+     */
+
     public static SolrInputDocument convert(ResourceAnnotationKey key) {
         
         SolrInputDocument doc = convertPersistable(key);

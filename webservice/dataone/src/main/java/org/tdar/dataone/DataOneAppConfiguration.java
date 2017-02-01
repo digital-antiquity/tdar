@@ -15,7 +15,7 @@ import org.tdar.dataone.service.DataOneService;
 
 @Configuration
 @EnableAsync
-@EnableScheduling
+//@EnableScheduling
 public class DataOneAppConfiguration extends SimpleAppConfiguration {
 
     private static final long serialVersionUID = 1462888504584855775L;

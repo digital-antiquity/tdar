@@ -1,13 +1,5 @@
 package org.tdar.core.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -31,6 +23,7 @@ import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -50,6 +43,11 @@ import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.*;
 
 /**
  * $Id$
@@ -121,12 +119,16 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         user.setFirstName("first");
         user.setLastName("last");
         user.setDateUpdated(new Date());
+        user.setAffiliation(UserAffiliation.GENERAL_PUBLIC);
+        user.setContributorReason("I really like contributing things.  What is that a crime or something?");
         genericService.saveOrUpdate(user);
 
+        // fixme: I'm not sure why this works like it works (w/ seemingly duplicated calls), but it's required for checkMailAndGetLatest() to work
         scheduledProcessService.queue(DailyEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         assertTrue(dailyEmailProcess.isCompleted());
         scheduledProcessService.queue(SendEmailProcess.class);
+
         scheduledProcessService.runNextScheduledProcessesInQueue();
 //        assertTrue(dailyEmailProcess.isCompleted());
         scheduledProcessService.queue(SendEmailProcess.class);
@@ -135,6 +137,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         scheduledProcessService.runNextScheduledProcessesInQueue();
         logger.debug("//");
         scheduledProcessService.runNextScheduledProcessesInQueue();
+
+        SimpleMailMessage message = checkMailAndGetLatest("The following users registered with");
+        assertThat(message, is( not( nullValue())));
 //        assertTrue(dailyEmailProcess.isCompleted());
     }
         
