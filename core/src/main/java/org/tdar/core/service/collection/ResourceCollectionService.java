@@ -1065,7 +1065,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param rc
      * @return
      */
-    public ListCollection convertToWhitelabelCollection(ListCollection rc) {
+    public CustomizableCollection convertToWhitelabelCollection(CustomizableCollection rc) {
         if (rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
             return rc;
         }
@@ -1079,7 +1079,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param wlc
      * @return
      */
-    public ListCollection convertToResourceCollection(ListCollection wlc) {
+    public CustomizableCollection convertToResourceCollection(CustomizableCollection wlc) {
         return getDao().convertToResourceCollection(wlc);
     }
 

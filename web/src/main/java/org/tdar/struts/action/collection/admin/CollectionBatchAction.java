@@ -15,7 +15,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -73,8 +75,13 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     @Override
     public void prepare() throws Exception {
         super.prepare();
+        
+        if (!(getCollection() instanceof SharedCollection)) {
+            addActionError("makeWhiteLableAction.invalid_collection_type");
+        }
+
         // COMMENTED OUT UNTIL WE FIGURE OUT What sort of collection should support this
-        setResources(new ArrayList<>(getCollection().getResources()));
+        setResources(new ArrayList<>(((SharedCollection) getCollection()).getResources()));
         Collections.sort(resources , new Comparator<Resource>() {
             @Override
             public int compare(Resource o1, Resource o2) {

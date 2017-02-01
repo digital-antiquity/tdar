@@ -78,12 +78,7 @@
 
 <#macro header>
     <#if editable>
-    <#local path="collection"/>
-    <#if resourceCollection.type == 'SHARED'>
-        <#local path="collection"/>
-    <#else>
-        <#local path="listcollection"/>    
-    </#if>
+    <#local path="${resourceCollection.type.urlNamespace}"/>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
             namespace="${path}"

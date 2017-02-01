@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -30,7 +30,7 @@ public class MakeCollectionWhiteLabelAction extends AbstractCollectionAdminActio
     
     @Override
     public void validate() {
-        if (!(getCollection() instanceof ListCollection)) {
+        if (!(getCollection() instanceof CustomizableCollection)) {
             addActionError("makeWhiteLableAction.invalid_collection_type");
         }
         super.validate();
@@ -43,7 +43,7 @@ public class MakeCollectionWhiteLabelAction extends AbstractCollectionAdminActio
             @Result(name = SUCCESS, type = REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
-        ListCollection lc = (ListCollection)getCollection();
+        CustomizableCollection lc = (CustomizableCollection)getCollection();
         if (lc.getProperties() != null && lc.getProperties().isWhitelabel()) {
             return SUCCESS;
         }
