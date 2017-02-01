@@ -104,13 +104,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         logger.info("saving authorized users...");
 
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
-        // if the incoming set is empty and the current has nothing ... NO-OP
-        if (CollectionUtils.isEmpty(authorizedUsers_)
-                && (resource.getInternalResourceCollection() == null || resource.getInternalResourceCollection().getAuthorizedUsers().size() == 0)) {
-            logger.debug("Skipping creation of internalResourceCollection -- no incomming, no current");
-            return;
-        } else {
-            Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
+        // Filter out the completely empty AuthorizedUsers that might have been setup by Struts...
+        if (!CollectionUtils.isEmpty(authorizedUsers_)) {
+            Iterator<AuthorizedUser> iterator = authorizedUsers_.iterator();
             while (iterator.hasNext()) {
                 AuthorizedUser user = iterator.next();
                 if (user == null) {
@@ -122,12 +118,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
                 TdarUser tdarUser = user.getUser();
                 if (PersistableUtils.isNullOrTransient(tdarUser) || tdarUser.hasNoPersistableValues()) {
+                    logger.debug("{}, {} ", user, tdarUser);
                     continue;
                 }
                 authorizedUsers.add(user);
             }
+
         }
-        
+        // if the incoming set is empty and the current has nothing ... NO-OP
         if (CollectionUtils.isEmpty(authorizedUsers)
                 && (resource.getInternalResourceCollection() == null || resource.getInternalResourceCollection().getAuthorizedUsers().size() == 0)) {
             logger.debug("Skipping creation of internalResourceCollection -- no incomming, no current");
