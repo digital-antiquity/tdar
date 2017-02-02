@@ -30,7 +30,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testAddingInformationResourceToProject() {
         TestConfiguration config = TestConfiguration.getInstance();
 
-        gotoPage("/collection/add");
+        gotoPage("/listcollection/add");
         setInput("resourceCollection.name", TEST_SECURITY_COLLECTION);
         setInput("resourceCollection.description", "test for map secuity");
         setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
@@ -41,7 +41,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
         String collectionUrl = getCurrentUrlPath();
-        gotoPage("/share/add");
+        gotoPage("/collection/add");
         setInput("resourceCollection.name", TEST_SECURITY_SHARE);
         setInput("resourceCollection.description", "test for map secuity");
         setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
