@@ -187,7 +187,7 @@ public class ItemService {
         }
         if (CollectionUtils.isNotEmpty(files) && StringUtils.isNotBlank(msg.toString())) {
             msg.insert(0, "the following files were uploaded to tDAR:\n");
-            sendEmail("balk@tdar.org", new String[]{"adam.brin@asu.edu","laelliso@asu.edu"}, "Uploaded files to tDAR", msg.toString());
+            sendEmail("balk@tdar.org", new String[]{"adam.brin@asu.edu","Rachel.Fernandez.1@asu.edu"}, "Uploaded files to tDAR", msg.toString());
         }
 
     }
