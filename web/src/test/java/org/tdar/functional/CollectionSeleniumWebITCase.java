@@ -30,6 +30,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     private static final String SHARE = "/collection/";
     private static final String LISTCOLLECTION = "/listcollection/";
+    TestConfiguration config = TestConfiguration.getInstance();
 
     //safeguard to avoid confusion when passing boolean arguments
     private enum CollectionVisibility {
@@ -115,7 +116,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @SuppressWarnings("unused")
     @Test
     public void testCollectionRemoveElement() {
-        TestConfiguration config = TestConfiguration.getInstance();
         String url = setupListForTest(TITLE + " (remove edit)",titles, CollectionVisibility.VISIBLE);
         gotoEdit(url, CollectionType.LIST);
         applyEditPageHacks();
@@ -152,7 +152,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     @Test
     public void testCollectionRetain() {
-        TestConfiguration config = TestConfiguration.getInstance();
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, CollectionVisibility.HIDDEN);
         gotoEdit(url, CollectionType.SHARED);
         submitForm();
@@ -252,7 +251,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage(LISTCOLLECTION + "add");
 
         applyEditPageHacks();
-        TestConfiguration config = TestConfiguration.getInstance();
 
         Assert.assertTrue(find(By.tagName("h1")).getText().contains("New Collection"));
         setFieldByName("resourceCollection.name", title_);
@@ -286,12 +284,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage("/dashboard");
         find(By.linkText("UPLOAD")).click();
         waitForPageload();
-        gotoPage(SHARE + "/add");
+        gotoPage(SHARE + "add");
         waitForPageload();
         applyEditPageHacks();
-        TestConfiguration config = TestConfiguration.getInstance();
-
-        Assert.assertTrue(find(By.tagName("h1")).getText().contains("New Collection"));
+        String text = find(By.tagName("h1")).getText();
+        logger.debug(text);
+        Assert.assertTrue(text.contains("New Collection"));
         setFieldByName("resourceCollection.name", title_);
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
