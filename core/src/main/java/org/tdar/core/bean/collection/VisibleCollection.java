@@ -92,6 +92,16 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
         return StringUtils.isNotBlank(getName());
     }
 
+    
+
+    @Override
+    public boolean isValid() {
+        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName());
+        if (isValidForController()) {
+            return ((getOwner() != null) && (getOwner().getId() != null) && (getOwner().getId() > -1));
+        }
+        return false;
+    }    
     public String getTitleSort() {
         if (getTitle() == null) {
             return "";

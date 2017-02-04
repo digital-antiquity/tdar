@@ -40,10 +40,10 @@ public class ResourceCollectionSaveHelper<C extends ResourceCollection> {
             }
             
             //NOTE: this may be aggressive for what we need, but it prevents useless collections from being created
-            if (in.isTransient() && CollectionUtils.isEmpty(in.getAuthorizedUsers()) && in instanceof VisibleCollection && StringUtils.isBlank(((VisibleCollection)in).getName())) {
-                logger.debug("skipping transient/empty/null collection: {}", in);
-                continue;
-            }
+            // if (in.isTransient() && CollectionUtils.isEmpty(in.getAuthorizedUsers()) && in instanceof VisibleCollection && StringUtils.isBlank(((VisibleCollection)in).getName())) {
+            //     logger.debug("skipping transient/empty/null collection: {}", in);
+            //     continue;
+            // }
 
             if (!idMap.containsKey(in.getId())) {
                 getToAdd().add(in);

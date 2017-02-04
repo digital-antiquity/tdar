@@ -37,7 +37,6 @@ public abstract class CustomizableCollection<C extends HierarchicalCollection<C>
     @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
-
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "whitelabel", column = @Column(table = "whitelabel_collection")),
@@ -60,7 +59,6 @@ public abstract class CustomizableCollection<C extends HierarchicalCollection<C>
         this.properties = properties;
     }
 
-
     /**
      * @param sortBy
      *            the sortBy to set
@@ -76,6 +74,7 @@ public abstract class CustomizableCollection<C extends HierarchicalCollection<C>
     public SortOption getSortBy() {
         return sortBy;
     }
+
     public DisplayOrientation getOrientation() {
         return orientation;
     }
@@ -90,6 +89,17 @@ public abstract class CustomizableCollection<C extends HierarchicalCollection<C>
 
     public void setSecondarySortBy(SortOption secondarySortBy) {
         this.secondarySortBy = secondarySortBy;
+    }
+
+    @Override
+    public boolean isValid() {
+        if (super.isValid() == false) {
+            return false;
+        }
+        if ((getType() == CollectionType.SHARED) && (sortBy == null)) {
+            return false;
+        }
+        return true;
     }
 
 }

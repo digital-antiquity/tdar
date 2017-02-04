@@ -125,7 +125,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
 
     @Transient
-    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     private transient boolean changesNeedToBeLogged = false;
 
     private static final long serialVersionUID = -5308517783896369040L;
