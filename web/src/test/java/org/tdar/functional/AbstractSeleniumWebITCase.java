@@ -43,7 +43,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.openqa.selenium.Alert;
@@ -336,7 +338,7 @@ public abstract class AbstractSeleniumWebITCase {
         FIREFOX, CHROME, SAFARI, IE;
     }
 
-    @Before
+    @BeforeClass
     public void before() throws IOException {
         /*
          * We define a specific binary so when running "headless" we can specify a PORT
@@ -452,7 +454,6 @@ public abstract class AbstractSeleniumWebITCase {
         if (!TestConfiguration.isWindows()) {
             listProcesses.addAll(ProcessList.listProcesses("chromedriver"));
         }
-
     }
 
     private Capabilities configureCapabilities(DesiredCapabilities caps) {
@@ -467,10 +468,27 @@ public abstract class AbstractSeleniumWebITCase {
     private static boolean reindexed = false;
     Set<Long> listProcesses = new HashSet<>();
 
+    
+    @After
+    public void after() {
+        try {
+            logout();
+            driver.get("about://");;
+        } catch (UnhandledAlertException uae) {
+            logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
+            logout();
+            driver.switchTo().alert().accept();
+            driver.get("about://");;
+        } catch (Exception ex) {
+            logger.error("Could not close selenium driver: {}", ex);
+        }
+//        driver = null;
+    }
+    
     /*
      * Shutdown Selenium
      */
-    @After
+    @AfterClass
     public final void shutdownSelenium() {
         if (!TestConfiguration.isWindows()) {
             listProcesses.addAll(ProcessList.listProcesses("chromedriver"));
