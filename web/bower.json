@@ -13,7 +13,7 @@
     "jquery": "~1.11.3",
     "jquery-file-upload": "8.6.1",
     "jquery.treeview": "~1.4.1",
-    "leaflet": "1.0.1",
+    "leaflet": "1.0.3",
     "leaflet-choropleth": "~1.0.3",
     "leaflet-cluster": "https://github.com/Leaflet/Leaflet.markercluster.git#v1.0.0",
     "leaflet-control-geocoder": "~1.5.3",
