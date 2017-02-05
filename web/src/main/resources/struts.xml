@@ -2,7 +2,11 @@
 <!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
         "http://struts.apache.org/dtds/struts-2.0.dtd">
 <struts>
-    <include file="struts-local-settings.xml" />
+  <constant name="struts.devMode" value="${ENV.STRUTS_DEV_MODE:false}"/>
+    <!-- set it to 50 MB to start with, using the ISI standard for megabyte,
+          i.e., 1,000,000 bytes -->
+    <constant name="struts.multipart.maxSize" value="${ENV.STRUTS_MULTIPART_MAX:8589934592}"/>
+
     <!-- performance enhancements -->
     <!-- freemarker cache -->
     <constant name="struts.freemarker.mru.max.strong.size" value="250" />
