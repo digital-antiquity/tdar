@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -67,14 +66,11 @@ import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
-import org.openqa.selenium.support.events.WebDriverEventListener;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -93,11 +89,9 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.filestore.Filestore;
 import org.tdar.functional.util.TdarExpectedConditions;
-import org.tdar.functional.util.WebDriverEventAdapter;
 import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.ProcessList;
 import org.tdar.utils.TestConfiguration;
-import org.tdar.web.AbstractWebTestCase;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -130,10 +124,10 @@ public abstract class AbstractSeleniumWebITCase {
     // if true, ignore all javascript errors during page navigation events
     private boolean ignoreJavascriptErrors = false;
     // ignore javascript errors that match that match Patterns in this list
-    private List<Pattern> jserrorIgnorePatterns = new ArrayList<>();
+    private static List<Pattern> jserrorIgnorePatterns = new ArrayList<>();
     private boolean ignoreModals = false;
-    private WebDriver driver;
-    private Browser currentBrowser;
+    private static WebDriver driver;
+    private static Browser currentBrowser;
 
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
@@ -188,138 +182,7 @@ public abstract class AbstractSeleniumWebITCase {
         crowdRestDao.deleteUser(user);
     }
 
-    /**
-     * The {@link WebDriverEventListener#afterClickOn} element argument is invalid if the clicked-on element caused the browser to navigate to new page, so we
-     * we can't inspect it. So we use this field to signal whether afterClickOn() should call afterPageChange()
-     */
-    private WebDriverEventListener eventListener = new WebDriverEventAdapter() {
-        @Override
-        public void afterNavigateTo(String url, WebDriver driver) {
-            afterPageChange();
-        }
-
-        @Override
-        public void beforeNavigateBack(WebDriver driver) {
-            beforePageChange();
-        }
-
-        @Override
-        public void afterNavigateBack(WebDriver driver) {
-            afterPageChange();
-        }
-
-        @Override
-        public void beforeNavigateForward(WebDriver driver) {
-            beforePageChange();
-        }
-
-        @Override
-        public void afterNavigateForward(WebDriver driver) {
-            afterPageChange();
-        }
-
-        @Override
-        public void onError(Throwable throwable, WebDriver driver) {
-            getBrowserConsoleLogEntries(driver);
-            if (!throwable.getMessage().contains("n is null")) {
-                logger.error("hey there was an error", throwable, throwable);
-            }
-            takeScreenshot("ERROR " + throwable.getClass().getSimpleName());
-        }
-
-        private void getBrowserConsoleLogEntries(WebDriver driver) {
-            LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
-            for (LogEntry entry : logEntries) {
-                if (entry.getLevel() == Level.SEVERE) {
-                    logger.error("Browser: " + new Date(entry.getTimestamp()) + " " + entry.getLevel() + " " + entry.getMessage());
-                }
-                // do something useful with the data
-            }
-        }
-
-        @Override
-        public void beforeClickOn(WebElement element, WebDriver driver) {
-            if (elementCausesNavigation(element)) {
-                beforePageChange();
-            } else {
-                // if the click didn't cause navigation,  we assume that the click serves the purpose of modifying the current page somehow, the next
-                // find might be volatile if not preceded by an implicit wait.
-                isVolatileFind = true;
-            }
-        }
-
-        @Override
-        public void afterClickOn(WebElement element, WebDriver driver) {
-        }
-
-        private boolean elementCausesNavigation(WebElement element) {
-            String tag = element.getTagName();
-            return (tag.equals("a"))
-                    || (tag.equals("input") && "submit".equals(element.getAttribute("type")))
-                    || (tag.equals("button") && "submit".equals(element.getAttribute("type")));
-        }
-
-        @Override
-        public void beforeNavigateTo(String url, WebDriver driver) {
-            beforePageChange();
-        }
-
-        @Override
-        public void afterNavigateRefresh(WebDriver arg0) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void beforeNavigateRefresh(WebDriver arg0) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void afterChangeValueOf(WebElement arg0, WebDriver arg1, CharSequence[] arg2) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        @Override
-        public void beforeChangeValueOf(WebElement arg0, WebDriver arg1, CharSequence[] arg2) {
-            // TODO Auto-generated method stub
-            
-        }
-    };
-
-    /**
-     * This event fires after the webdriver executes a command that will cause navigation (e.g. link click, back button, gotoPage())
-     * but before the navigation occurs.
-     */
-    protected void beforePageChange() {
-        takeScreenshot();
-        reportJavascriptErrors();
-        cachedPageText = null;
-    }
-
-    /**
-     * This event fires after the browser navigates to a location following a command from webdriver (e.g. link click, back button, gotoPage())
-     */
-    protected void afterPageChange() {
-        if (ignoreModals) {
-            dismissModal();
-        }
-        applyEditPageHacks();
-        takeScreenshot();
-        if (!isIgnorePageErrorChecks()) {
-            String text = getText();
-            String lcText = text.toLowerCase();
-            for (String err : AbstractWebTestCase.errorPatterns) {
-                if (text.contains(err) || lcText.contains(err)) {
-                    fail("page has '" + err + "'");
-                }
-            }
-            setIgnorePageErrorChecks(false);
-        }
-    }
-
+    
     /**
      * On tdar edit pages, the floating page navigation bar may obscure an underlying form element. In practice, a user will know to scroll until
      * the element is visible. However, selenium will deem the element unclickable and throw an exception if we try to modify it. This hack
@@ -338,18 +201,28 @@ public abstract class AbstractSeleniumWebITCase {
         FIREFOX, CHROME, SAFARI, IE;
     }
 
+    
+    @Before
+    public void beforeTest() {
+        String fmt = " ***   RUNNING TEST: {}.{}() ***";
+        logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
+        getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
+        getJavascriptIgnorePatterns().add(TestConstants.REGEX_GOOGLE_ANALYTICS);
+        EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(driver);
+        eventFiringWebDriver.register(new TdarEventListener(this));
+
+        this.driver = eventFiringWebDriver;
+        force1024x768();
+
+    }
+    
     @BeforeClass
-    public void before() throws IOException {
+    public static void before() throws IOException {
         /*
          * We define a specific binary so when running "headless" we can specify a PORT
          */
-        String fmt = " ***   RUNNING TEST: {}.{}() ***";
-
-        logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         // typekit & google-analytics errors may occur on pretty much any page and are (relatively) harmless, so we ignore them by default
-        getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
-        getJavascriptIgnorePatterns().add(TestConstants.REGEX_GOOGLE_ANALYTICS);
-        WebDriver driver = null;
+//        WebDriver driver = null;
         Browser browser = Browser.CHROME;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
@@ -445,18 +318,14 @@ public abstract class AbstractSeleniumWebITCase {
             default:
                 break;
         }
-        EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(driver);
-        eventFiringWebDriver.register(eventListener);
 
-        this.driver = eventFiringWebDriver;
         listProcesses.clear();
-        force1024x768();
         if (!TestConfiguration.isWindows()) {
             listProcesses.addAll(ProcessList.listProcesses("chromedriver"));
         }
     }
 
-    private Capabilities configureCapabilities(DesiredCapabilities caps) {
+    private static Capabilities configureCapabilities(DesiredCapabilities caps) {
         caps.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
         caps.setCapability("initialBrowserUrl", "about:blank");
         return caps;
@@ -466,7 +335,7 @@ public abstract class AbstractSeleniumWebITCase {
     public TestName testName = new TestName();
 
     private static boolean reindexed = false;
-    Set<Long> listProcesses = new HashSet<>();
+    static Set<Long> listProcesses = new HashSet<>();
 
     
     @After
@@ -489,7 +358,7 @@ public abstract class AbstractSeleniumWebITCase {
      * Shutdown Selenium
      */
     @AfterClass
-    public final void shutdownSelenium() {
+    public static final void shutdownSelenium() {
         if (!TestConfiguration.isWindows()) {
             listProcesses.addAll(ProcessList.listProcesses("chromedriver"));
         }
@@ -526,9 +395,8 @@ public abstract class AbstractSeleniumWebITCase {
         logger.info("*******");
     }
 
-    private File getBrowserProfilePath(){
-        String name = String.format("%s-%s", getClass().getSimpleName().replaceAll("\\W+", ""), testName.getMethodName().replaceAll("\\W+", ""));
-        return Paths.get(PATH_OUTPUT_ROOT,"browser-profiles", name).toFile();
+    private static File getBrowserProfilePath(){
+        return Paths.get(PATH_OUTPUT_ROOT,"browser-profiles").toFile();
     }
 
     /**
@@ -539,8 +407,16 @@ public abstract class AbstractSeleniumWebITCase {
      *
      * @return
      */
-    private File setupBrowserProfilePath() {
+    private static File setupBrowserProfilePath() {
         File dir = getBrowserProfilePath();
+        if (dir.exists()) {
+            try {
+                FileUtils.forceDelete(dir);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         dir.mkdirs();
         try {
             FileUtils.cleanDirectory(dir);
@@ -553,7 +429,7 @@ public abstract class AbstractSeleniumWebITCase {
     /**
      * Remove profile artifacts that take up space and provide little probitive value.
      */
-    private void performBrowserCleanup() {
+    private static void performBrowserCleanup() {
         //
         Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache" );
         FileUtils.deleteQuietly(Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache" ).toFile());
@@ -835,7 +711,7 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
         // after an implicit wait we assume (perhaps incorrectly) that find() calls are now "non-volatile"
-        isVolatileFind = false;
+        setVolatileFind(false);
 
         return value;
     }
@@ -859,7 +735,7 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public WebElementSelection find(By by) {
-        if(isVolatileFind) {
+        if(isVolatileFind()) {
             logger.warn("Volatile find: consider replacing with waitFor() (locator:{}  test:{})", by, testName.getMethodName());
 
         }
@@ -945,12 +821,12 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public String getText() {
-        if (cachedPageText == null) {
+        if (getCachedPageText() == null) {
             logger.trace("getting body.innerText for url:{}", getDriver().getCurrentUrl());
             WebElement body = waitFor("body").first();
-            cachedPageText = body.getText();
+            setCachedPageText(body.getText());
         }
-        return cachedPageText;
+        return getCachedPageText();
     }
 
     @SuppressWarnings("unchecked")
@@ -1471,11 +1347,11 @@ public abstract class AbstractSeleniumWebITCase {
      * 
      * @param patterns
      */
-    public final void setJavascriptIgnorePatterns(List<Pattern> patterns) {
+    public static final void setJavascriptIgnorePatterns(List<Pattern> patterns) {
         jserrorIgnorePatterns = patterns;
     }
 
-    public final List<Pattern> getJavascriptIgnorePatterns() {
+    public static final List<Pattern> getJavascriptIgnorePatterns() {
         return jserrorIgnorePatterns;
     }
 
@@ -1509,7 +1385,7 @@ public abstract class AbstractSeleniumWebITCase {
      * If you invoke navigation via javascript, it may be necessary to manually clear it.
      */
     public void clearPageCache() {
-        cachedPageText = null;
+        setCachedPageText(null);
     }
 
     public boolean isIgnorePageErrorChecks() {
@@ -1538,7 +1414,7 @@ public abstract class AbstractSeleniumWebITCase {
         int idxNext = (idx + 1) % handles.size();
         String nextHandle = handles.get(idxNext);
         driver.switchTo().window(nextHandle);
-        cachedPageText = null;
+        setCachedPageText(null);
         return previousHandle;
     }
 
@@ -1546,7 +1422,7 @@ public abstract class AbstractSeleniumWebITCase {
         List<String> handles = new ArrayList<>();
         handles.addAll(driver.getWindowHandles());
         Collections.sort(handles);
-        cachedPageText = null;
+        setCachedPageText(null);
         for (String handle : handles) {
             driver.switchTo().window(handle);
             logger.debug("handle: {} ({})",handle, driver.getCurrentUrl());
@@ -1836,6 +1712,22 @@ public abstract class AbstractSeleniumWebITCase {
             sb.append(valchars[i]);
         }
         return sb.toString();
+    }
+
+    public boolean isVolatileFind() {
+        return isVolatileFind;
+    }
+
+    public void setVolatileFind(boolean isVolatileFind) {
+        this.isVolatileFind = isVolatileFind;
+    }
+
+    public String getCachedPageText() {
+        return cachedPageText;
+    }
+
+    public void setCachedPageText(String cachedPageText) {
+        this.cachedPageText = cachedPageText;
     }
 
 }
