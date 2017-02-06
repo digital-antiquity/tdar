@@ -166,4 +166,14 @@ public class AuthenticationAndAuthorizationITCase extends AbstractIntegrationCon
         dao.updateUserInformation(user);
     }
 
+    @Test
+    public void testCrowdRestUserUpdate2() {
+        CrowdRestDao dao  = new CrowdRestDao(getCrowdProperties());
+        TdarUser user = getUser();
+        String originalEmail = user.getEmail();
+        user.setEmail("testcrowduserupdate@example.com");  //original email for test user should be test@tdar.org
+        logger.debug("original email address was:{}", originalEmail);
+        dao.updateUserInformation2(user);
+    }
+
 }

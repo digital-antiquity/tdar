@@ -451,7 +451,11 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         }
      */
 
-
+    /**
+     * Update user information (not including password ) via the Atlassian REST JSON API.
+     * @param user
+     * @return
+     */
     public boolean updateUserInformation(TdarUser user) {
         //fixme: get url from crowd.props and urlencode username
         String url = "https://auth.tdar.org/crowd/rest/usermanagement/latest/user?username=" + user.getUsername();
@@ -505,6 +509,23 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         CloseableHttpClient httpClient =
                 HttpClientBuilder.create().setDefaultCredentialsProvider(credentialsProvider).build();
         return httpClient;
+    }
+
+    /**
+     * Update user information (not including password) via the Atlassian CrowdClient Java API.
+     * @param user
+     * @return
+     */
+    public boolean updateUserInformation2(TdarUser user) {
+        UserEntity crowdUser = new UserEntity(user.getUsername(), user.getFirstName(), user.getLastName(), user.getProperName(), user.getEmail(), null, user.isActive());
+        try {
+            securityServerClient.updateUser(crowdUser);
+        } catch (InvalidUserException | UserNotFoundException | OperationFailedException | InvalidAuthenticationException | ApplicationPermissionException e) {
+            logger.debug("failed to update user: {}", e);
+            return false;
+        }
+        return true;
+
     }
 
 }
