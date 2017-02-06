@@ -47,7 +47,7 @@
     </div>
 
     <div class="">
-            <@entityEdit.basicInformation>
+            <@entityEdit.basicInformation emailEditable=(actionName != 'myprofile')>
                 <#if person.username?has_content>
                     <div class="control-group">
                         <label class="control-label">Username</label>
