@@ -439,14 +439,15 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             - Authorization: Basic  <username+password hash>
             - Accept: application/json
 
-        data payload (in JSON. All fields quasi-required, see notes):
+        data payload (in JSON. All fields quasi-required, see comments):
 
         {
-            "name": "same_as_username",
-            "email: "jdoe123@example.org",
-            "first-name": "Jonathan",
-            "last-name": "Doe",
-            "display-name": "Jon Doe"
+            "name": "same_as_username",     // required
+            "email: "jdoe123@example.org",  // default:  (emptystring)
+            "first-name": "Jonathan",       // default: username
+            "last-name": "Doe",             // default: firstname, otherwise username
+            "display-name": "Jon Doe"       // default: firstname, otherwise lastname, otherwise username
+            "active": true                  // default: false
         }
      */
 
@@ -485,12 +486,13 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
 
 
     public String getUserJson(TdarUser user) throws IOException {
-        Map<String,String> payload = new HashMap<>();
+        Map<String,Object> payload = new HashMap<>();
         payload.put("first-name", user.getFirstName());
         payload.put("last-name", user.getLastName());
         payload.put("display-name", user.getProperName());
         payload.put("name", user.getUsername());
         payload.put("email", user.getEmail());
+        payload.put("active", user.isActive());
 
         String json = new ObjectMapper().writeValueAsString(payload);
         return json;
