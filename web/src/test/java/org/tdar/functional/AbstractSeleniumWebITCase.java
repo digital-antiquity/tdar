@@ -29,6 +29,8 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
@@ -214,6 +216,18 @@ public abstract class AbstractSeleniumWebITCase {
         this.driver = eventFiringWebDriver;
         force1024x768();
 
+        Runnable someTask = new Runnable() {
+            
+            @Override
+            public void run() {
+                logger.error("KILLING SELENIUM -- been 10 MINUTES");
+                AbstractSeleniumWebITCase.shutdownSelenium();                
+            }
+        };
+        long timeDelay = 10; // You can specify 3 what
+        int x = 1; // However many threads you want
+        ScheduledExecutorService someScheduler = Executors.newScheduledThreadPool(x); 
+        someScheduler.schedule(someTask , timeDelay, TimeUnit.MINUTES);
     }
     
     @BeforeClass
