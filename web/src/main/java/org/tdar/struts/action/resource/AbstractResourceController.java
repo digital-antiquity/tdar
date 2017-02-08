@@ -17,6 +17,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.AbstractSequenced;
@@ -137,6 +138,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<SharedCollection> shares = new ArrayList<>();
     private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
+    private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
+    private List<ListCollection> retainedListCollections = new ArrayList<>();
 
     private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
 
@@ -173,8 +176,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> creditProxies;
 
     private List<ResourceAnnotation> resourceAnnotations;
-
-    private List<SharedCollection> viewableResourceCollections;
 
     private void initializeResourceCreatorProxyLists(boolean isViewPage) {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
@@ -279,9 +280,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (PersistableUtils.isNullOrTransient(getId())) {
             revisionType = RevisionLogType.CREATE;
         }
+    
         return super.save();
     }
 
+    
+    
     @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
@@ -518,6 +522,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
             resourceCollectionService.saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource(), getAuthenticatedUser());
+            getLogger().debug("collections: {}", getResource().getUnmanagedResourceCollections());
+            getLogger().debug("shares: {}", getResource().getSharedCollections());
         } else {
             getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }
@@ -537,6 +543,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getResourceAnnotations(),
                 getResource().getResourceAnnotations(), ResourceAnnotation.class);
 
+        loadEffectiveResourceCollectionsForSave();
+        getLogger().debug("retained collections:{}", retainedSharedCollections);
+        getLogger().debug("retained list collections:{}", retainedListCollections);
+        shares.addAll(retainedSharedCollections);
+        resourceCollections.addAll(retainedListCollections);
+        
         if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
             resourceCollectionService.saveResourceCollections(getResource(), shares, getResource().getSharedCollections(),
@@ -614,13 +626,47 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
-        loadEffectiveResourceCollections();
+        loadEffectiveResourceCollectionsForEdit();
     }
 
-    private void loadEffectiveResourceCollections() {
-        getShares().addAll(getResource().getSharedResourceCollections());
+    private void loadEffectiveResourceCollectionsForEdit() {
         getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
-        getResourceCollections().addAll(getResource().getUnmanagedResourceCollections());
+
+        getLogger().debug("loadEffective...");
+        for (SharedCollection rc : getResource().getSharedResourceCollections()) {
+            if (authorizationService.canEditCollection(getAuthenticatedUser(),rc)) {
+                getShares().add(rc);
+            } else {
+                retainedSharedCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
+            if (authorizationService.canEditCollection(getAuthenticatedUser(),rc)) {
+                getResourceCollections().add(rc);
+            } else {
+                retainedListCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
+    }
+
+    
+    private void loadEffectiveResourceCollectionsForSave() {
+        getLogger().debug("loadEffective...");
+        for (SharedCollection rc : getResource().getSharedCollections()) {
+            if (!authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
+                retainedSharedCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
+            if (!authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
+                retainedListCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
         getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
     }
 
@@ -983,28 +1029,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.effectiveShares = effectiveResourceCollections;
     }
 
-    // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
-    // shared+invisible+canEdit
-    public List<SharedCollection> getViewableResourceCollections() {
-        if (viewableResourceCollections != null) {
-            return viewableResourceCollections;
-        }
-
-        // if nobody logged in, just get the shared+visible collections
-        Set<SharedCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
-
-        // if authenticated, also add the collections that the user can modify
-        if (isAuthenticated()) {
-            for (SharedCollection resourceCollection : getResource().getSharedResourceCollections()) {
-                if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
-                    collections.add(resourceCollection);
-                }
-            }
-        }
-
-        viewableResourceCollections = new ArrayList<>(collections);
-        return viewableResourceCollections;
-    }
 
     public Long getAccountId() {
         return accountId;

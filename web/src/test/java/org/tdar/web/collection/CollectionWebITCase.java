@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
@@ -32,6 +33,44 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(LISTCOLLECTION + id +"/edit");
     }
 
+
+    private static final String RETAIN_COLLECTION = "My Test Retain Collection";
+    private static final TestConfiguration TEST = TestConfiguration.getInstance();
+
+
+    @Test
+    public void testCreateEditDocumentBlankCollection() {
+        gotoPage("/image/add");
+        setInput("image.title", "test title");
+        setInput("status", Status.DRAFT.name());
+        setInput("image.date", "2000");
+        setInput("image.description", "test description of a document with edit rights by user");
+        setInput("authorizedUsers[0].user.id", TEST.getUserId());
+        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        setInput("authorizedUsersFullNames[0]", "test user");
+        setInput("resourceCollections[0].name", RETAIN_COLLECTION);
+        submitForm();
+        assertTextPresentInPage(RETAIN_COLLECTION);
+        String pageUrl = getCurrentUrlPath();
+        clickLinkWithText(RETAIN_COLLECTION);
+        clickLinkWithText("edit");
+        setInput("resourceCollection.hidden", "true");
+        submitForm();
+        assertTextPresentInPage("true");
+        logout();
+        login(TEST.getUsername(), TEST.getPassword());
+        gotoPage(pageUrl);
+        assertTextNotPresent(RETAIN_COLLECTION);
+        clickLinkWithText("edit");
+        assertTextNotPresent(RETAIN_COLLECTION);
+        submitForm();
+        assertTextNotPresent(RETAIN_COLLECTION);
+        logout();
+        loginAdmin();
+        gotoPage(pageUrl);
+        assertTextPresentInPage(RETAIN_COLLECTION);
+    }
+    
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testCreateThenEditCollection() {
