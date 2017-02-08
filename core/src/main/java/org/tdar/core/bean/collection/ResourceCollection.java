@@ -312,7 +312,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     }
 
     public String getUrlNamespace() {
-        return "collection";
+        return getType().getUrlNamespace();
     }
 
     @Transient
