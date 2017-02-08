@@ -31,20 +31,20 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testCreateEditDocumentBlankCollection() {
         gotoPage("/image/add");
-        setInput("title", "test title");
-        setInput("status", Status.DRAFT.name());
-        setInput("date", "2000");
-        setInput("description", "test description of a document with edit rights by user");
+        setInput("image.title", "test title");
+        setInput("status", Status.ACTIVE.name());
+        setInput("image.date", "2000");
+        setInput("image.description", "test description of a document with edit rights by user");
         setInput("authorizedUsers[0].user.id", TEST.getUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        setInput("authorizedUsersFullNames[0]", "Test User");
+        setInput("authorizedUsersFullNames[0]", "test user");
         setInput("resourceCollections[0].name", RETAIN_COLLECTION);
         submitForm();
         assertTextPresentInPage(RETAIN_COLLECTION);
         String pageUrl = getCurrentUrlPath();
         clickLinkWithText(RETAIN_COLLECTION);
         clickLinkWithText("edit");
-        setInput("resourceCollection.hidden", "false");
+        setInput("resourceCollection.hidden", "true");
         submitForm();
         assertTextPresentInPage("true");
         logout();
