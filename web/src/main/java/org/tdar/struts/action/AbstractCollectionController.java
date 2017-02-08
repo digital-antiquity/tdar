@@ -125,21 +125,20 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         return resultName;
     }
 
-
+    /**
+     * Return true if this method determines that the ID field refers to a valid Collection instance and the collection type does not match the namespace
+     * of the current request. Returns false if namespace matches the collection type or if this method cannot determine one way or another.
+     * @return
+     */
     public boolean isNamespaceMismatched() {
         ResourceCollection rc = getRequestedCollection();
         // if the collection doesn't exist,  we'll leave it for the rest of the prepare() workflow to deal with accordingly.
         if(rc == null) {
             return false;
         }
-
         String collectionNamespace = "/" + rc.getType().getUrlNamespace();
-
-        boolean mismatched = !StringUtils.equals(getNamespace(), collectionNamespace);
-        if(mismatched) {
-            getLogger().warn("namespace mismatch:: requested namespace:{}  collection namespace:{}  id:{}", getNamespace(), collectionNamespace, getId());
-        }
-        return mismatched;
+        boolean isMismatched = !StringUtils.equals(getNamespace(), collectionNamespace);
+        return isMismatched;
     }
 
 
@@ -148,6 +147,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     @Override
     public void prepare() throws TdarActionException {
         if(isNamespaceMismatched()) {
+                getLogger().warn("namespace mismatch:: requested namespace:{}  collection namespace:{}  id:{}", getNamespace(), '/' + getRequestedCollection().getType().getUrlNamespace(), getId());
             // we must  action error so that workflow interceptor knows to skip validate,execute and set tentative result to  INPUT
             addActionError(getText("collectionController.type_mismatch"));
             return;
@@ -270,7 +270,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
             @Result(name = INPUT, location = ADD, type = TDAR_REDIRECT),
-            @Result(name = "mismatch-listcollection", type="redirect", location="/listcolllection/${id}/edit"),
+            @Result(name = "mismatch-listcollection", type="redirect", location="/listcollection/${id}/edit"),
             @Result(name = "mismatch-collection", type="redirect", location="/collection/${id}/edit")
 
     })

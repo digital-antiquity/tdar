@@ -311,7 +311,8 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.resourceIds = resourceIds;
     }
 
-    public String getUrlNamespace() {
+    // Since the collection subtype determines the url namespace, it may be safer to prevent overrides on this method.
+    public final String getUrlNamespace() {
         return getType().getUrlNamespace();
     }
 

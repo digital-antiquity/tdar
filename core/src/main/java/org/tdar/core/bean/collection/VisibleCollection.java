@@ -114,11 +114,6 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
         return getName();
     }
 
-    @Override
-    public String getUrlNamespace() {
-        return "collection";
-    }
-    
     public String getFormattedDescription() {
         return formattedDescription;
     }
