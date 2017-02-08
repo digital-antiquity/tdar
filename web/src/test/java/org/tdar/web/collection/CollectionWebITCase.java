@@ -32,7 +32,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testCreateEditDocumentBlankCollection() {
         gotoPage("/image/add");
         setInput("image.title", "test title");
-        setInput("status", Status.ACTIVE.name());
+        setInput("status", Status.DRAFT.name());
         setInput("image.date", "2000");
         setInput("image.description", "test description of a document with edit rights by user");
         setInput("authorizedUsers[0].user.id", TEST.getUserId());
