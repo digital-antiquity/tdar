@@ -57,6 +57,7 @@ import org.tdar.oai.dao.OaiPmhDao;
 import org.tdar.oai.dao.OaiSearchResult;
 import org.tdar.oai.exception.OAIException;
 import org.tdar.transform.DcTransformer;
+import org.tdar.transform.ExtendedDcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
 import org.w3c.dom.Document;
@@ -160,7 +161,7 @@ public class OaiPmhService {
 		OaiSearchResult persons = null;
 		OaiSearchResult institutions = null;
 		int maxResults = 0;
-		if (enableEntities && !Objects.equals(metadataFormat, OAIMetadataFormat.MODS)) {
+		if (enableEntities && !Objects.equals(metadataFormat, OAIMetadataFormat.MODS) && !Objects.equals(metadataFormat, OAIMetadataFormat.EXTENDED_DC)) {
 			// list people
 			persons = populateResult(OAIRecordType.PERSON, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response, null);
 
@@ -325,15 +326,24 @@ public class OaiPmhService {
 						meta = DcTransformer.transformAny((Resource) resource);
 					}
 					break;
-				case MODS:
-					// mods not supported by creators
-					if (resource instanceof Creator) {
-						throw new OAIException(MessageHelper.getInstance().getText("oaiController.cannot_disseminate"),
-								OAIPMHerrorcodeType.CANNOT_DISSEMINATE_FORMAT);
-					}
+                case MODS:
+                    // mods not supported by creators
+                    if (resource instanceof Creator) {
+                        throw new OAIException(MessageHelper.getInstance().getText("oaiController.cannot_disseminate"),
+                                OAIPMHerrorcodeType.CANNOT_DISSEMINATE_FORMAT);
+                    }
 
-					meta = ModsTransformer.transformAny((Resource) resource).getRootElement();
-					break;
+                    meta = ModsTransformer.transformAny((Resource) resource).getRootElement();
+                    break;
+                case EXTENDED_DC:
+                    // mods not supported by creators
+                    if (resource instanceof Creator) {
+                        throw new OAIException(MessageHelper.getInstance().getText("oaiController.cannot_disseminate"),
+                                OAIPMHerrorcodeType.CANNOT_DISSEMINATE_FORMAT);
+                    }
+
+                    meta = ExtendedDcTransformer.transformAny((Resource) resource).getRootElement();
+                    break;
 				case TDAR:
 					try {
 						// FIXME: this is less than ideal, but we seem to have
