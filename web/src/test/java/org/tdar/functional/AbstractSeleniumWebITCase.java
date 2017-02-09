@@ -237,8 +237,8 @@ public abstract class AbstractSeleniumWebITCase {
         force1024x768();
 
         someTask = new KillSeleniumAfter();
-        long timeDelay = 30; // You can specify 3 what
-        someScheduler.schedule(someTask , timeDelay, TimeUnit.SECONDS);
+        long timeDelay = 10; // You can specify 3 what
+        someScheduler.schedule(someTask , timeDelay, TimeUnit.MINUTES);
     }
     
     @BeforeClass
