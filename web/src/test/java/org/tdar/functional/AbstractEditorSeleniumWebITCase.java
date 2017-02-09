@@ -6,6 +6,7 @@ public class AbstractEditorSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     @Before
     public void beforeTest() {
+        super.beforeTest();
         super.reindexOnce();
         loginEditor();
     }
