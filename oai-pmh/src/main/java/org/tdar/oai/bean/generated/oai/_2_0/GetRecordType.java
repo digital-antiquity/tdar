@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
+import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
 
 /**
@@ -43,7 +44,7 @@ import edu.asu.lib.mods.ModsDocument;
     "record"
 })
 @XmlRootElement
-@XmlSeeAlso(value={DublinCoreDocument.class,ModsDocument.class})
+@XmlSeeAlso(value={DublinCoreDocument.class,ModsDocument.class, QualifiedDublinCoreDocument.class})
 public class GetRecordType {
 
     @XmlElement(required = true)
