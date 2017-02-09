@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
@@ -34,8 +33,7 @@ import org.tdar.utils.PersistableUtils;
 
 import com.google.common.base.Objects;
 
-public abstract class AbstractCollectionController<C extends HierarchicalCollection<C>> extends AbstractPersistableController<C> implements DataTableResourceDisplay,
-        ValidationWorkflowAware {
+public abstract class AbstractCollectionController<C extends HierarchicalCollection<C>> extends AbstractPersistableController<C> implements DataTableResourceDisplay {
 
     /**
      * Threshold that defines a "big" collection (based on imperieal evidence by highly-trained tDAR staff). This number
@@ -77,8 +75,6 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     private Long parentId;
     private C parentCollection;
 
-    private ResourceCollection requestedCollection = null;
-
 
     @Override
     public boolean authorize() {
@@ -97,61 +93,8 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
 
     public abstract <C> C getResourceCollection();
 
-
-    public ResourceCollection getRequestedCollection() {
-        if(requestedCollection == null) {
-            requestedCollection =  resourceCollectionService.find(getId());
-        }
-        return requestedCollection;
-    }
-
-    /**
-     * Potentially override the result name for subset of situations where struts would otherwise return an 'INPUT' result.  For collection actions,
-     * The this method determines whether the requested collection ID does not match the requested namespace (for example:  if the request specifies
-     * a "list" collection but specifies a "shared-collection" namespace).
-     *
-     * If this method detects a namespace mismatch,  the method returns a string with a prefix of "mismatch" and ending in the correct namespace, e.g.
-     * "mismatch-listcollection"  or "mismatch-sharedcollection".
-     * @return
-     */
-    public final String getInputResultName() {
-        String resultName = "input";
-
-        if(isNamespaceMismatched()) {
-            resultName =  "mismatch-" + getRequestedCollection().getUrlNamespace();
-            getLogger().debug("input result name:{}", resultName);
-        }
-
-        return resultName;
-    }
-
-    /**
-     * Return true if this method determines that the ID field refers to a valid Collection instance and the collection type does not match the namespace
-     * of the current request. Returns false if namespace matches the collection type or if this method cannot determine one way or another.
-     * @return
-     */
-    public boolean isNamespaceMismatched() {
-        ResourceCollection rc = getRequestedCollection();
-        // if the collection doesn't exist,  we'll leave it for the rest of the prepare() workflow to deal with accordingly.
-        if(rc == null) {
-            return false;
-        }
-        String collectionNamespace = "/" + rc.getType().getUrlNamespace();
-        boolean isMismatched = !StringUtils.equals(getNamespace(), collectionNamespace);
-        return isMismatched;
-    }
-
-
-
-
     @Override
     public void prepare() throws TdarActionException {
-        if(isNamespaceMismatched()) {
-                getLogger().warn("namespace mismatch:: requested namespace:{}  collection namespace:{}  id:{}", getNamespace(), '/' + getRequestedCollection().getType().getUrlNamespace(), getId());
-            // we must  action error so that workflow interceptor knows to skip validate,execute and set tentative result to  INPUT
-            addActionError(getText("collectionController.type_mismatch"));
-            return;
-        }
         super.prepare();
 
         // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
@@ -269,10 +212,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     @SkipValidation
     @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = INPUT, location = ADD, type = TDAR_REDIRECT),
-            @Result(name = "mismatch-listcollection", type="redirect", location="/listcollection/${id}/edit"),
-            @Result(name = "mismatch-collection", type="redirect", location="/collection/${id}/edit")
-
+            @Result(name = INPUT, location = ADD, type = TDAR_REDIRECT)
     })
     public String edit() throws TdarActionException {
         String result = super.edit();

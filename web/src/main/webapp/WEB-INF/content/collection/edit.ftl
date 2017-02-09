@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
-    <#import "common-collection.ftl" as commonCollection>
+    <#import "../collection/common-collection.ftl" as commonCollection>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
@@ -52,7 +52,7 @@
                 <@s.hidden name="id"  value="${resourceCollection.id?c}" />
             </#if>
             <@edit.hiddenStartTime />
-            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge trim"  title="A title is required for all collections." maxlength="500" />
+            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="500" />
 
             <div id="parentIdContainer" class="control-group">
                 <label class="control-label">Parent Collection</label>
@@ -67,26 +67,9 @@
                 </div>
             </div>
 
+
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
-            cssClass='resizable input-xxlarge trim' title="Please enter the description " />
-
-
-            <#if administrator>
-                <@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
-                cssClass='resizable input-xxlarge' title="Please enter the description " />
-            </#if>
-
-        <#if editor>
-            <div class="control-group">
-                <label class="control-label">Associate an Image/Logo with this Collection</label>
-                <div class="controls">
-                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField"
-                    labelposition='left' size='40' dynamicAttributes={
-                        "data-rule-extension":"jpg,tiff,jpeg,png"
-                    }/>
-                </div>
-            </div>
-        </#if>
+            cssClass='resizable input-xxlarge' title="Please enter the description " />
 
         </div>
 
@@ -143,8 +126,8 @@
                     of results.">
             <h2>Share Resources with other users</h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
-            <#assign showLimitToCollection = (actionName=='edit') && (resourceCollection.unmanagedResources?size > 0)>
-            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection>
+            <#assign showLimitToCollection = (actionName=='edit') && (resourceCollection.resources?size > 0)>
+            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
             </@edit.resourceDataTable>
 
             <div id="divNoticeContainer" style="display:none">
@@ -156,7 +139,7 @@
 
         </div>
 
-                <div id="divAddRemove">
+        <div id="divAddRemove">
             <h2>Modifications</h2>
 
             <div id="divToAdd">
@@ -181,7 +164,7 @@
             $(function () {
                 TDAR.datatable.setupDashboardDataTable({
                     isAdministrator: ${(editor!false)?string},
-                    limitContext: false,
+                    limitContext: ${(editor!false)?string},
                     isSelectable: true,
                     showDescription: false,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
@@ -195,7 +178,7 @@
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP",collectionType:"LIST"});
+                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE",collectionType:"SHARED"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
         });
