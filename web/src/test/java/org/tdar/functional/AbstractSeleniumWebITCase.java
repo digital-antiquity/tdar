@@ -373,7 +373,7 @@ public abstract class AbstractSeleniumWebITCase {
             logout();
             driver.switchTo().alert().accept();
             driver.get("about://");;
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Could not close selenium driver: {}", ex);
         }
         if (someTask != null) {
@@ -390,17 +390,19 @@ public abstract class AbstractSeleniumWebITCase {
         if (!TestConfiguration.isWindows()) {
             listProcesses.addAll(ProcessList.listProcesses("chromedriver"));
         }
-        try {
-            driver.quit();
-        } catch (UnhandledAlertException uae) {
-            logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
-            driver.switchTo().alert().accept();
-            driver.close();
-            driver.quit();
-        } catch (Exception ex) {
-            logger.error("Could not close selenium driver: {}", ex);
+        if (driver != null) {
+            try {
+                driver.quit();
+            } catch (UnhandledAlertException uae) {
+                logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
+                driver.switchTo().alert().accept();
+                driver.close();
+                driver.quit();
+            } catch (Exception ex) {
+                logger.error("Could not close selenium driver: {}", ex);
+            }
+            driver = null;
         }
-        driver = null;
         getJavascriptIgnorePatterns().clear();
         performBrowserCleanup();
         if (!TestConfiguration.isWindows()) {
@@ -767,10 +769,15 @@ public abstract class AbstractSeleniumWebITCase {
             logger.warn("Volatile find: consider replacing with waitFor() (locator:{}  test:{})", by, testName.getMethodName());
 
         }
-        getStopWatch("find").resume();
+        StopWatch stopWatch = getStopWatch("find");
+        if (stopWatch.isSuspended()) {
+            stopWatch.resume();
+        }
         WebElementSelection selection = new WebElementSelection(by, driver);
         logger.trace("criteria:{}\t  size:{}", by, selection.size());
-        getStopWatch("find").suspend();
+        if (stopWatch.isStarted()) {
+        stopWatch.suspend();
+        }
         return selection;
     }
 

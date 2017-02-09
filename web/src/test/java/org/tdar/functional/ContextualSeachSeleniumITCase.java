@@ -26,6 +26,7 @@ public class ContextualSeachSeleniumITCase extends AbstractEditorSeleniumWebITCa
 
     @Before
     public void setupContextSearch() {
+        super.beforeTest();
         force1024x768();
     }
 

@@ -5,6 +5,11 @@ import org.junit.Before;
 public class AbstractBasicSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     @Before
+    public void runBefore() {
+        super.beforeTest();
+        login();
+    }
+    
     @Override
     public void login() {
         setScreenshotsAllowed(false);

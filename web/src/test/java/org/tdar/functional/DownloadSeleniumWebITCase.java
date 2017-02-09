@@ -27,6 +27,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     @Before
     public void createDocument() {
+        super.beforeTest();
         loginAdmin();
         gotoPage("/document/add");
         setFieldByName("document.title", "My Sample Document");

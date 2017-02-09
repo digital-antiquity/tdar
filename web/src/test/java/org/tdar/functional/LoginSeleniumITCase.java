@@ -21,6 +21,7 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
 
     @Before
     public void setup() {
+        super.beforeTest();
         login();
     }
 

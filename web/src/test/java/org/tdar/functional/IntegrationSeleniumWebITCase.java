@@ -33,6 +33,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
     @Before
     public void setupIntegration() {
+        super.beforeTest();
         login();
         find(By.partialLinkText("Integrate")).click();
         waitForPageload();

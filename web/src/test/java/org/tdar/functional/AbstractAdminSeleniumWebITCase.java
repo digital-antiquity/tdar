@@ -7,6 +7,7 @@ public class AbstractAdminSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     @Before
     public void beforeTest() {
+        super.beforeTest();
         super.reindexOnce();
         loginAdmin();
     }
