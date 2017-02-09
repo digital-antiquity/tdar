@@ -13,6 +13,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Document;
@@ -65,6 +66,7 @@ public class ResourceTransformerITCase extends AbstractIntegrationTestCase {
     public void transformMods() throws JAXBException {
         Document d = new Document();
         d.getInvestigationTypes().add(new InvestigationType("bacd"));
+        d.getOtherKeywords().add(new OtherKeyword("otehr key"));
         d.getSiteNameKeywords().add(new SiteNameKeyword("siteName"));
         d.setTitle("test");
         d.markUpdated(getAdminUser());

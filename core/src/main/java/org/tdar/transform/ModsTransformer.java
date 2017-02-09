@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.common.util.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -22,6 +23,7 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -45,6 +47,8 @@ import org.tdar.core.bean.resource.Video;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.XmlEscapeHelper;
+
+import com.hp.hpl.jena.sparql.function.library.max;
 
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.mods.ModsElementContainer;
@@ -88,58 +92,52 @@ public abstract class ModsTransformer<R extends Resource> implements
         // add geographic subjects
         Set<GeographicKeyword> geoTerms = source.getActiveGeographicKeywords();
         for (GeographicKeyword geoTerm : geoTerms) {
-            Subject sub = mods.createSubject();
-            sub.addGeographic(getX().stripNonValidXMLCharacters(geoTerm.getLabel()));
+            createTopic(mods, geoTerm);
         }
 
         // add temporal subjects
         Set<TemporalKeyword> locTemporalTerms = source.getActiveTemporalKeywords();
         for (TemporalKeyword temporalTerm : locTemporalTerms) {
             Subject sub = mods.createSubject();
+//            sub.getElementType().setHref(UrlService.absoluteSecureUrl(temporalTerm));
             sub.addTemporal(getX().stripNonValidXMLCharacters(temporalTerm.getLabel()));
         }
 
         // add culture subjects
         Set<CultureKeyword> cultureTerms = source.getActiveCultureKeywords();
         for (CultureKeyword cultureTerm : cultureTerms) {
-            Subject sub = mods.createSubject();
-            sub.addTopic(getX().stripNonValidXMLCharacters(cultureTerm.getLabel()));
+            createTopic(mods, cultureTerm);
         }
 
         // add site name subjects
         Set<SiteNameKeyword> siteNameTerms = source.getActiveSiteNameKeywords();
         for (SiteNameKeyword siteNameTerm : siteNameTerms) {
-            Subject sub = mods.createSubject();
-            sub.addTopic(getX().stripNonValidXMLCharacters(siteNameTerm.getLabel()));
+            createTopic(mods, siteNameTerm);
         }
 
         // add site name subjects
         Set<SiteTypeKeyword> siteTypeTerms = source.getActiveSiteTypeKeywords();
         for (SiteTypeKeyword siteTypeTerm : siteTypeTerms) {
-            Subject sub = mods.createSubject();
-            sub.addTopic(getX().stripNonValidXMLCharacters(siteTypeTerm.getLabel()));
+            createTopic(mods, siteTypeTerm);
         }
 
         // add site name subjects
         Set<MaterialKeyword> materialKeywords = source.getActiveMaterialKeywords();
         for (MaterialKeyword materialKeyword : materialKeywords) {
-            Subject sub = mods.createSubject();
-            sub.addTopic(getX().stripNonValidXMLCharacters(materialKeyword.getLabel()));
+            createTopic(mods, materialKeyword);
         }
 
         // add other subjects
         Set<OtherKeyword> otherTerms = source.getActiveOtherKeywords();
         for (OtherKeyword otherTerm : otherTerms) {
-            Subject sub = mods.createSubject();
-            sub.addTopic(getX().stripNonValidXMLCharacters(otherTerm.getLabel()));
+            createTopic(mods, otherTerm);
         }
 
         // add other subjects
         Set<InvestigationType> investigationTypes = source.getActiveInvestigationTypes();
         for (InvestigationType otherTerm : investigationTypes) {
-            Subject sub = mods.createSubject();
-            sub.addTopic(getX().stripNonValidXMLCharacters(otherTerm.getLabel()));
-        }
+            createTopic(mods, otherTerm);
+            }
 
         for (LatitudeLongitudeBox longLat : source.getActiveLatitudeLongitudeBoxes()) {
             Subject sub = mods.createSubject();
@@ -174,6 +172,12 @@ public abstract class ModsTransformer<R extends Resource> implements
         return mods;
     }
 
+    private void createTopic(ModsDocument mods, Keyword otherTerm) {
+        Subject sub = mods.createSubject();
+//        sub.getElementType().setHref(UrlService.absoluteUrl(otherTerm));
+        sub.addTopic(getX().stripNonValidXMLCharacters(otherTerm.getLabel()));
+    }
+
     protected void addResourceCreator(ModsElementContainer mods, ResourceCreator resourceCreator) {
         Name name = mods.createName();
         if (resourceCreator.getRole() != null) {
@@ -182,6 +186,8 @@ public abstract class ModsTransformer<R extends Resource> implements
 
         Creator creator = resourceCreator.getCreator();
         // name.setAttribute("identifier", creator.getId());
+//        name.getElementType().setAuthority(UrlService.absoluteUrl(creator));
+        name.addDisplayForm(creator.getProperName());
 
         if (creator.getCreatorType() == CreatorType.PERSON) {
             name.setNameType(NameTypeAttribute.PERSONAL);
