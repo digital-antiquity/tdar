@@ -135,6 +135,7 @@ public abstract class AbstractSeleniumWebITCase {
     private int screenidx = 0;
 
     protected static Logger logger = LoggerFactory.getLogger(AbstractSeleniumWebITCase.class);
+    private static WebDriver rawDriver;
 
     private boolean ignorePageErrorChecks;
 
@@ -142,6 +143,7 @@ public abstract class AbstractSeleniumWebITCase {
     private boolean isVolatileFind = false;
 
     private Map<String, StopWatch> stopWatches = new HashMap<>();
+    ScheduledExecutorService someScheduler = Executors.newScheduledThreadPool(100); 
 
     // predicate that returns true if document.readystate == "complete" (use with FluentWait)
     private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {
@@ -154,6 +156,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     // predicate that returns true if document.readystate != "complete" (use with FluentWait)
     private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
+    private KillSeleniumAfter someTask;
 
     public AbstractSeleniumWebITCase() {
     }
@@ -199,6 +202,23 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
+    private final class KillSeleniumAfter implements Runnable {
+        private boolean enabled = true;
+        @Override
+        public void run() {
+            if (enabled == false) {
+                return;
+            }
+            fail("killed due to timeout");
+            logger.error("KILLING SELENIUM -- been 10 MINUTES");
+            AbstractSeleniumWebITCase.shutdownSelenium();                
+        }
+
+        public void disable() {
+            enabled = false;
+        }
+    }
+
     protected enum Browser {
         FIREFOX, CHROME, SAFARI, IE;
     }
@@ -210,24 +230,15 @@ public abstract class AbstractSeleniumWebITCase {
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_GOOGLE_ANALYTICS);
-        EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(driver);
+        EventFiringWebDriver eventFiringWebDriver = new EventFiringWebDriver(rawDriver);
         eventFiringWebDriver.register(new TdarEventListener(this));
 
         this.driver = eventFiringWebDriver;
         force1024x768();
 
-        Runnable someTask = new Runnable() {
-            
-            @Override
-            public void run() {
-                logger.error("KILLING SELENIUM -- been 10 MINUTES");
-                AbstractSeleniumWebITCase.shutdownSelenium();                
-            }
-        };
-        long timeDelay = 10; // You can specify 3 what
-        int x = 1; // However many threads you want
-        ScheduledExecutorService someScheduler = Executors.newScheduledThreadPool(x); 
-        someScheduler.schedule(someTask , timeDelay, TimeUnit.MINUTES);
+        someTask = new KillSeleniumAfter();
+        long timeDelay = 30; // You can specify 3 what
+        someScheduler.schedule(someTask , timeDelay, TimeUnit.SECONDS);
     }
     
     @BeforeClass
@@ -282,7 +293,7 @@ public abstract class AbstractSeleniumWebITCase {
                 caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
                 // profile.setPreference("browser.download.dir","c:\\downloads");
-                driver = new FirefoxDriver(fb, profile, caps);
+                rawDriver = new FirefoxDriver(fb, profile, caps);
 
                 break;
             case CHROME:
@@ -316,15 +327,15 @@ public abstract class AbstractSeleniumWebITCase {
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
                         "noerrdialogs");
-                driver = new ChromeDriver(service, copts);
+                rawDriver = new ChromeDriver(service, copts);
 
                 service.start();
                 break;
             case IE:
                 System.setProperty("webdriver.ie.driver", CONFIG.getIEDriverPath());
                 DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
-                driver = new InternetExplorerDriver(configureCapabilities(ieCapabilities));
-                driver.manage().timeouts().implicitlyWait(90, TimeUnit.SECONDS);
+                rawDriver = new InternetExplorerDriver(configureCapabilities(ieCapabilities));
+                rawDriver.manage().timeouts().implicitlyWait(90, TimeUnit.SECONDS);
                 if (TdarConfiguration.getInstance().isHttpsEnabled()) {
                     fail("please disable https before testing this");
                 }
@@ -364,6 +375,9 @@ public abstract class AbstractSeleniumWebITCase {
             driver.get("about://");;
         } catch (Exception ex) {
             logger.error("Could not close selenium driver: {}", ex);
+        }
+        if (someTask != null) {
+            someTask.disable();
         }
 //        driver = null;
     }
