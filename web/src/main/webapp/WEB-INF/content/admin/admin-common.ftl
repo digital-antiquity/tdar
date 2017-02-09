@@ -34,7 +34,7 @@
                 <li><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></li>
                 <li><a href="<@s.url value="/admin/notifications/index"/>">Notifications</a></li>
             </#if>
-            <#if billingManager || administrator>
+            <#if editor >
                 <li><a href="<@s.url value="/admin/email"/>">Email</a></li>
             </#if>
         </ul>
