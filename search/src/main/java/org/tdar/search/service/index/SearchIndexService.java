@@ -343,9 +343,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
             // processBatch(docs);
         }
 
-        if (indexable != null && CollectionUtils.size(indexable) > 1) {
-            logger.debug("Done indexing");
-        }
+        logger.debug("Done indexing: {} items ", CollectionUtils.size(indexable));
         return exceptions;
     }
 
@@ -528,7 +526,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         if (o.getEventType() == EventType.DELETE) {
             purge(core, id);
         } else {
-			logger.trace("indexing {}, {}, {}", core, id, doc);
+            logger.trace("indexing {}, {}, {}", core, id, doc);
             index(core, id, doc);
         }
         commit(core);

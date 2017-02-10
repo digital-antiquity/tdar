@@ -796,7 +796,9 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public <T> T waitFor(ExpectedCondition<T> expectedCondition, Duration timeout, Duration pollingEvery) {
         T value = null;
-        getStopWatch("wait").resume();
+        if(getStopWatch("wait").isSuspended()) {
+            getStopWatch("wait").resume();
+        }
         WebDriverWait wait = new WebDriverWait(driver, timeout.getSeconds());
 
         // change polling interval from default of 500ms to 125ms. This may be a bad idea.
@@ -813,7 +815,12 @@ public abstract class AbstractSeleniumWebITCase {
             logger.error("Wait timeout.  Screenshot saved as timeout-exception-" + tex.hashCode());
             throw tex;
         } finally {
-            getStopWatch("wait").suspend();
+
+            //if we recursively call waitFor(),  we might already be in stopped/running state. so just ignore errors.
+            try {
+                getStopWatch("wait").suspend();
+
+            } catch(Exception ignored){};
         }
 
         // after an implicit wait we assume (perhaps incorrectly) that find() calls are now "non-volatile"

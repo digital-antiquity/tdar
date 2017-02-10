@@ -1,10 +1,14 @@
 package org.tdar.functional;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -176,14 +180,33 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         loginAdmin();
         gotoPage("/project/" + _139 + "/edit");
+        assertThat(getText(), containsString(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
         setFieldByName("status", Status.ACTIVE.name());
         submitForm();
         gotoPage(url);
-        Assert.assertTrue(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
+
+        // fixme: this probably happens elsewhere.  Make this method friendlier and more generic, then promote to superclass
+        // Since reindexing happens concurrently, we might reach the view page before indexing complete, so
+        //  keep reloading the page until we see the desired text (or we time out)
+        waitFor(
+                // Keep refreshing the page and looking for desired text...
+                (webDriver) -> {
+                    webDriver.navigate().refresh();
+                    clearPageCache();
+                    return getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT);
+                },
+
+                // ...with a timeout of 10 seconds
+                Duration.of(12, SECONDS),
+
+                // ...checking every half-second.
+                Duration.of(3, SECONDS));
+
+        assertThat(getText(), containsString(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
         logout();
         gotoPage(url);
         // share are hidden, so should not see it
-        Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
+        assertThat(getText(), not( containsString(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT)));
     }
 
     @Test
