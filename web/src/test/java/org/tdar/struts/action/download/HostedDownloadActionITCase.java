@@ -162,7 +162,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
         genericService.saveOrUpdate(doc);
         DownloadAuthorization downloadAuthorization = new DownloadAuthorization();
         downloadAuthorization.setApiKey("test");
-        downloadAuthorization.setResourceCollection(collection);
+        downloadAuthorization.setSharedCollection(collection);
         downloadAuthorization.getRefererHostnames().add("test.tdar.org");
         downloadAuthorization.getRefererHostnames().add("whatever.tdar.org");
         genericService.saveOrUpdate(downloadAuthorization);

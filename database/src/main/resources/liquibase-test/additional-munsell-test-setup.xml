@@ -58,6 +58,7 @@
 			<column name="name" value="download authorization"/>
 			<column name="orientation" value="LIST"/>
 			<column name="collection_type" value="SHARED"/>
+            <column name="sort_order">TITLE</column>
 			<column name="hidden" valueBoolean="false"/>
 			<column name="owner_id" valueNumeric="8344"/>
 			<column name="updater_id" valueNumeric="8344"/>
