@@ -51,6 +51,8 @@ Common macros used in multiple contexts
 
         ga('create', '${googleAnalyticsId}', 'auto');
         ga('set', 'transport', 'beacon');
+        ga('set', 'dimension1', '<#if administrator>administrator<#elseif editor>editor<#elseif authenticatedUser??>user<#else>anonymous</#if>');
+
         ga('send', 'pageview');
 
     </script>
