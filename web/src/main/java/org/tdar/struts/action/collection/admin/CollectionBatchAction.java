@@ -50,7 +50,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     private Long projectId;
     private Project project;
     private Long collectionId;
-    private ResourceCollection collectionToAdd;
+    private SharedCollection collectionToAdd;
 
     private List<Long> ids = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
@@ -102,7 +102,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
             account = billingAccountService.find(accountId);
         }
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-            collectionToAdd = genericService.find(ResourceCollection.class, collectionId);
+            collectionToAdd = genericService.find(SharedCollection.class, collectionId);
         }
     }
 
@@ -249,7 +249,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
         return collectionToAdd;
     }
 
-    public void setCollectionToAdd(ResourceCollection collectionToAdd) {
+    public void setCollectionToAdd(SharedCollection collectionToAdd) {
         this.collectionToAdd = collectionToAdd;
     }
 
