@@ -1499,7 +1499,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             />
             <#local evaled>${strutsPrefix}.generalPermission</#local>
             
-			<!-- ${(person.id!-1)?c}::${(person.properName)!''}::${evaled?eval!""} -->
+			<!-- ${(person.id!-1)?c}::${(person.properName)!''}::${evaled!''?eval!""} -->
             <#if includeRights>
                 <@s.select theme="tdar" cssClass="creator-rights-select span3" name="${strutsPrefix}.generalPermission" emptyOption='false'
                 listValue='label' list='%{availablePermissions}' disabled=isDisabled />
