@@ -73,7 +73,7 @@ public class ResourceTransformerITCase extends AbstractIntegrationTestCase {
         d.getSiteTypeKeywords().add(new SiteTypeKeyword("SiteType"));
         d.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.AUTHOR));
         d.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.CONTRIBUTOR));
-        d.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.EDITOR));
+//        d.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.EDITOR));
         ModsDocument transformAny = ModsTransformer.transformAny(d);
         StringWriter writer = new StringWriter();
         JaxbDocumentWriter.write(transformAny, writer, true);
