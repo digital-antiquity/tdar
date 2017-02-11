@@ -48,7 +48,6 @@ public class ResourceTransformerITCase extends AbstractIntegrationTestCase {
         d.getSiteTypeKeywords().add(new SiteTypeKeyword("SiteType"));
         d.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.AUTHOR));
         d.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.CONTRIBUTOR));
-        d.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.CONTRIBUTOR));
         QualifiedDublinCoreDocument transformAny = ExtendedDcTransformer.transformAny(d);
         StringWriter writer = new StringWriter();
         JaxbDocumentWriter.write(transformAny, writer, true);
