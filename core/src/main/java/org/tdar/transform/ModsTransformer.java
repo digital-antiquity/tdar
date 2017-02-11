@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.common.util.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -47,8 +46,6 @@ import org.tdar.core.bean.resource.Video;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.XmlEscapeHelper;
-
-import com.hp.hpl.jena.sparql.function.library.max;
 
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.mods.ModsElementContainer;
@@ -99,7 +96,8 @@ public abstract class ModsTransformer<R extends Resource> implements
         Set<TemporalKeyword> locTemporalTerms = source.getActiveTemporalKeywords();
         for (TemporalKeyword temporalTerm : locTemporalTerms) {
             Subject sub = mods.createSubject();
-//            sub.getElementType().setHref(UrlService.absoluteSecureUrl(temporalTerm));
+            // sub.getElementType().setHref(UrlService.absoluteSecureUrl(temporalTerm));
+            sub.setAttribute("href", UrlService.absoluteSecureUrl(temporalTerm));
             sub.addTemporal(getX().stripNonValidXMLCharacters(temporalTerm.getLabel()));
         }
 
@@ -137,7 +135,7 @@ public abstract class ModsTransformer<R extends Resource> implements
         Set<InvestigationType> investigationTypes = source.getActiveInvestigationTypes();
         for (InvestigationType otherTerm : investigationTypes) {
             createTopic(mods, otherTerm);
-            }
+        }
 
         for (LatitudeLongitudeBox longLat : source.getActiveLatitudeLongitudeBoxes()) {
             Subject sub = mods.createSubject();
@@ -174,7 +172,8 @@ public abstract class ModsTransformer<R extends Resource> implements
 
     private void createTopic(ModsDocument mods, Keyword otherTerm) {
         Subject sub = mods.createSubject();
-//        sub.getElementType().setHref(UrlService.absoluteUrl(otherTerm));
+        // sub.getElementType().setHref(UrlService.absoluteUrl(otherTerm));
+        sub.setAttribute("href", UrlService.absoluteSecureUrl(otherTerm));
         sub.addTopic(getX().stripNonValidXMLCharacters(otherTerm.getLabel()));
     }
 
@@ -185,9 +184,8 @@ public abstract class ModsTransformer<R extends Resource> implements
         }
 
         Creator creator = resourceCreator.getCreator();
-        // name.setAttribute("identifier", creator.getId());
-//        name.getElementType().setAuthority(UrlService.absoluteUrl(creator));
         name.addDisplayForm(creator.getProperName());
+        name.setAttribute("href", UrlService.absoluteSecureUrl(creator));
 
         if (creator.getCreatorType() == CreatorType.PERSON) {
             name.setNameType(NameTypeAttribute.PERSONAL);
@@ -411,12 +409,6 @@ public abstract class ModsTransformer<R extends Resource> implements
             String ePage = (endPage != null) ? endPage.toString() : null;
             if ((numPages != null) || (sPage != null) || (ePage != null)) {
                 elem.getPart().addExtent(getX().stripNonValidXMLCharacters(sPage), getX().stripNonValidXMLCharacters(ePage), null, "pages", numPages);
-            }
-        }
-
-        private void addDocumentCreators(ModsElementContainer elem, List<ResourceCreator> resourceCreators) {
-            for (ResourceCreator resourceCreator : resourceCreators) {
-                addResourceCreator(elem, resourceCreator);
             }
         }
 
