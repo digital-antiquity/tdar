@@ -36,4 +36,8 @@ public interface AuthenticationProvider extends Configurable {
 
     AuthenticationResult checkToken(String token, HttpServletRequest request);
 
+    boolean updateBasicUserInformation(TdarUser user);
+
+    boolean renameUser(TdarUser user, String newUserName);
+
 }

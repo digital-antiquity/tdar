@@ -1,32 +1,17 @@
 package org.tdar.core.dao.external.auth;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.codehaus.jettison.json.JSONObject;
+import org.apache.jena.sparql.function.library.leviathan.sec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.TdarGroup;
@@ -101,7 +86,8 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(crowdProperties);
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
             securityServerClient = factory.newInstance(clientProperties);
-            setPasswordResetURL(crowdProperties.getProperty("crowd.passwordreseturl","http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action"));
+            setPasswordResetURL(
+                    crowdProperties.getProperty("crowd.passwordreseturl", "http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action"));
             httpAuthenticator = new CrowdHttpAuthenticatorImpl(securityServerClient, clientProperties,
                     CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
             logger.debug("maxHttpConnections: {} timeout: {}", clientProperties.getHttpMaxConnections(), clientProperties.getHttpTimeout());
@@ -210,14 +196,14 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public void requestPasswordReset(TdarUser person) {
         try {
             securityServerClient.requestPasswordReset(person.getUsername());
         } catch (UserNotFoundException | OperationFailedException | InvalidAuthenticationException | ApplicationPermissionException
                 | InvalidEmailAddressException e) {
-            logger.error("exception requesting password reset",e);
+            logger.error("exception requesting password reset", e);
         }
     }
 
@@ -234,7 +220,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         try {
 
             user = securityServerClient.getUser(login);
-            
+
             // if this succeeds, then this principal already exists.
             // FIXME: if they already exist in the system, we should let them know
             // that they already have an account in the system and that they can
@@ -431,93 +417,16 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         return true;
     }
 
-    /*
-        action:  /rest/usermanagement/1/user
-        querystring parms:   username
-
-        http headers:
-            - Authorization: Basic  <username+password hash>
-            - Accept: application/json
-
-        data payload (in JSON. All fields quasi-required, see comments):
-
-        {
-            "name": "same_as_username",     // required
-            "email: "jdoe123@example.org",  // default:  (emptystring)
-            "first-name": "Jonathan",       // default: username
-            "last-name": "Doe",             // default: firstname, otherwise username
-            "display-name": "Jon Doe"       // default: firstname, otherwise lastname, otherwise username
-            "active": true                  // default: false
-        }
-     */
-
-    /**
-     * Update user information (not including password ) via the Atlassian REST JSON API.
-     * @param user
-     * @return
-     */
-    public boolean updateUserInformation(TdarUser user) {
-        //fixme: get url from crowd.props and urlencode username
-        String url = "https://auth.tdar.org/crowd/rest/usermanagement/latest/user?username=" + user.getUsername();
-        HttpPut request = new HttpPut(url);
-        List<NameValuePair> nameValuePairs = new ArrayList<>();
-        boolean success = false;
-        try {
-
-            // add necessary headers
-            request.addHeader("Accept", "application/json");
-
-            // add json payload
-            StringEntity entity = new StringEntity(getUserJson(user));
-            entity.setContentType("application/json");
-            request.setEntity(entity);
-
-            try (CloseableHttpClient httpClient = getHttpClient(this.crowdProperties)) {
-                CloseableHttpResponse response = httpClient.execute(request);
-                StringWriter writer = new StringWriter();
-//                IOUtils.copy(response.getEntity().getContent(), writer, StandardCharsets.UTF_8);
-//                String content = writer.toString();
-                success = response.getStatusLine().getStatusCode() == 204;
-                logger.debug("crowd response is: {}", response.toString());
-            }
-
-        } catch (IOException ex) {
-            logger.error("could not update user information");
-        }
-        return success;
-    }
-
-
-
-    public String getUserJson(TdarUser user) throws IOException {
-        Map<String,Object> payload = new HashMap<>();
-        payload.put("first-name", user.getFirstName());
-        payload.put("last-name", user.getLastName());
-        payload.put("display-name", user.getProperName());
-        payload.put("name", user.getUsername());
-        payload.put("email", user.getEmail());
-        payload.put("active", user.isActive());
-
-        String json = new ObjectMapper().writeValueAsString(payload);
-        return json;
-    }
-
-    private CloseableHttpClient getHttpClient(Properties crowdProperties) {
-        CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY,
-                new UsernamePasswordCredentials(crowdProperties.getProperty("application.name"), crowdProperties.getProperty("application.password")));
-        CloseableHttpClient httpClient =
-                HttpClientBuilder.create().setDefaultCredentialsProvider(credentialsProvider).build();
-        return httpClient;
-    }
-
     /**
      * Update user information (not including password) via the Atlassian CrowdClient Java API.
+     * 
      * @param user
      * @return
      */
-    public boolean updateUserInformation2(TdarUser user) {
-        UserEntity crowdUser = new UserEntity(user.getUsername(), user.getFirstName(), user.getLastName(), user.getProperName(), user.getEmail(), null, user.isActive());
+    @Override
+    public boolean updateBasicUserInformation(TdarUser user) {
+        UserEntity crowdUser = new UserEntity(user.getUsername(), user.getFirstName(), user.getLastName(), user.getProperName(), user.getEmail(), null,
+                user.isActive());
         try {
             securityServerClient.updateUser(crowdUser);
         } catch (InvalidUserException | UserNotFoundException | OperationFailedException | InvalidAuthenticationException | ApplicationPermissionException e) {
@@ -525,6 +434,33 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             return false;
         }
         return true;
+
+    }
+
+    @Override
+    public boolean renameUser(TdarUser user, String newUserName) {
+        try {
+            securityServerClient.renameUser(user.getUsername(), newUserName);
+        } catch (UserNotFoundException | InvalidUserException | OperationFailedException | ApplicationPermissionException | InvalidAuthenticationException e) {
+            logger.error("could not rename user: {}", e, e);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Used for testing to get User Information
+     * 
+     * @param user
+     * @return
+     * @throws UserNotFoundException
+     * @throws OperationFailedException
+     * @throws ApplicationPermissionException
+     * @throws InvalidAuthenticationException
+     */
+    protected User getUser(TdarUser user)
+            throws UserNotFoundException, OperationFailedException, ApplicationPermissionException, InvalidAuthenticationException {
+        return securityServerClient.getUser(user.getUsername());
 
     }
 
