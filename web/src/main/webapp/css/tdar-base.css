@@ -733,7 +733,7 @@ h2 {
 }
 
 #alt aside ul.collection-treeview a {
-    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 #alt aside ul.collection-treeview li {
