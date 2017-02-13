@@ -32,18 +32,18 @@
                 <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
     <i class="icon-document-red"></i>
             </#if>
-        <#else>
-            <div class="beige white-border-bottom">
-                <div class="iconbox">
-                    <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
-                </div>
-            </div>
+		<#else>
+		    <div class="beige white-border-bottom">
+		        <div class="iconbox">
+		            <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+		        </div>
+		    </div>
         </#if>
         <#if collections?has_content && !collections.empty > 
             <h3>Child <#if resourceCollection.type == 'LIST'>Collections<#else>Shares</#if></h3>
             <@common.listCollections collections=collections showOnlyVisible=true />
         </#if>
-        <@list.displayWidget />
+		<@list.displayWidget />
 
         <#if true >
             <hr/>
@@ -78,8 +78,8 @@
 
 <#macro header>
     <#if editable>
-    <#local path="${resourceCollection.urlNamespace}"/>
-        <@nav.collectionToolbar path "view">
+    <#local path="${resourceCollection.type.urlNamespace}"/>
+        <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
             namespace="${path}"
             action="add?parentId=${id?c}"
