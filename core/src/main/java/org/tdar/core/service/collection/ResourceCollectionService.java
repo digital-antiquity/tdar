@@ -513,6 +513,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 resource.getUnmanagedResourceCollections().add((ListCollection) collectionToAdd);
             }
         } else {
+            logger.debug("collection is not valid: {}", collection);
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
                 String collectionName = "null collection";
                 if (collectionToAdd != null && StringUtils.isNotBlank(name)) {

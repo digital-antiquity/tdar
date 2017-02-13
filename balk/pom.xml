@@ -228,13 +228,6 @@
                             <targetPath>/</targetPath>
                             <filtering>false</filtering>
                         </resource>
-                        <resource>
-                            <directory>src/main/resources/production/</directory>
-                            <targetPath>/WEB-INF/classes</targetPath>
-                            <includes>
-                                <include>struts-local-settings.xml</include>
-                            </includes>
-                        </resource>
                     </webResources>
                 </configuration>
             </plugin>

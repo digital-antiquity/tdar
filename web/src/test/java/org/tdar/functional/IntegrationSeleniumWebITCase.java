@@ -6,6 +6,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.tdar.functional.util.ByLabelText;
 import org.tdar.functional.util.WebElementSelection;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -32,7 +33,8 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     By sheep = id("cbont_62580");
 
     @Before
-    public void setupIntegration() {
+    public void setupIntegration() throws IOException {
+        super.beforeTest();
         login();
         find(By.partialLinkText("Integrate")).click();
         waitForPageload();

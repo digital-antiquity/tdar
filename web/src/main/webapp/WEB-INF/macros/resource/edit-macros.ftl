@@ -1497,7 +1497,13 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             dynamicAttributes={"data-msg-notValidIfIdEmpty":"Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."}
 
             />
-			<!-- ${(person.id!-1)?c}::${(person.properName)!''}::<@s.text name="${strutsPrefix}.generalPermission"/>  -->
+            <#if test>
+	            <#local evaled>${strutsPrefix}.generalPermission</#local>
+	            <#attempt>
+				<!-- ${(person.id!-1)?c}::${(person.properName)!''}::${evaled!?eval} -->
+				<#recover>
+				</#attempt>
+            </#if>
             <#if includeRights>
                 <@s.select theme="tdar" cssClass="creator-rights-select span3" name="${strutsPrefix}.generalPermission" emptyOption='false'
                 listValue='label' list='%{availablePermissions}' disabled=isDisabled />

@@ -14,8 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.tdar.core.bean.AbstractPersistable;
 
 /**
@@ -43,7 +41,7 @@ public class DownloadAuthorization extends AbstractPersistable {
 
     @ManyToOne
     @JoinColumn(name = "resource_collection_id")
-    private ResourceCollection resourceCollection;
+    private SharedCollection sharedCollection;
 
     private static String generateSimpleKey() {
         return "d" + UUID.randomUUID().toString().substring(UUID_BEGIN_INDEX);
@@ -58,7 +56,7 @@ public class DownloadAuthorization extends AbstractPersistable {
      * 
      * @param resourceCollection
      */
-    public DownloadAuthorization(ResourceCollection resourceCollection) {
+    public DownloadAuthorization(SharedCollection resourceCollection) {
         this(resourceCollection, generateSimpleKey());
     }
 
@@ -68,8 +66,8 @@ public class DownloadAuthorization extends AbstractPersistable {
      * @param resourceCollection
      * @param apiKey
      */
-    public DownloadAuthorization(ResourceCollection resourceCollection, String apiKey) {
-        this.resourceCollection = resourceCollection;
+    public DownloadAuthorization(SharedCollection resourceCollection, String apiKey) {
+        this.sharedCollection = resourceCollection;
         this.apiKey = apiKey;
     }
 
@@ -81,12 +79,12 @@ public class DownloadAuthorization extends AbstractPersistable {
         this.apiKey = apiKey;
     }
 
-    public ResourceCollection getResourceCollection() {
-        return resourceCollection;
+    public SharedCollection getSharedCollection() {
+        return sharedCollection;
     }
 
-    public void setResourceCollection(ResourceCollection resourceCollection) {
-        this.resourceCollection = resourceCollection;
+    public void setSharedCollection(SharedCollection resourceCollection) {
+        this.sharedCollection = resourceCollection;
     }
 
     public Set<String> getRefererHostnames() {

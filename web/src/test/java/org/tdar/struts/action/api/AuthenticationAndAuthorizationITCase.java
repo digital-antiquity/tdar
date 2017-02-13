@@ -124,56 +124,5 @@ public class AuthenticationAndAuthorizationITCase extends AbstractIntegrationCon
         assertTrue("person should not have an id", PersistableUtils.isTransient(person));
     }
 
-    private Properties getCrowdProperties() {
-        Properties crowdProperties = new Properties();
-//        crowdProperties.put("application.name", "tdar.test");
-//        crowdProperties.put("application.password", "tdar.test");
-//        crowdProperties.put("application.login.url", "http://localhost/crowd");
-//        crowdProperties.put("crowd.server.url", "http://localhost/crowd");
-        try {
-            crowdProperties.load(new FileReader(new File("src/test/resources/crowd.properties")));
-        } catch (IOException e) {
-            logger.error("couldn't load properties", e);
-        }
-
-        return crowdProperties;
-    }
-
-    @Test
-    public void testUserJsonConversion() throws IOException {
-        CrowdRestDao dao  = new CrowdRestDao(getCrowdProperties());
-
-        TdarUser user = new TdarUser();
-        user.setUsername("foobar");
-        user.setFirstName("jon");
-        user.setLastName("dow");
-        user.setEmail("jdoe123@example.com");
-
-        String json = dao.getUserJson(user);
-        assertThat( json, is( not( nullValue())));
-        assertThat( json, containsString("first-name"));
-        assertThat( json, containsString(user.getEmail()));
-    }
-
-    @Test
-    @Ignore("This test *will* make updates to the tdar.test crowd database.  You should only run it manually until we create an undo-able version of this test")
-    public void testCrowdRestUserUpdate() {
-        CrowdRestDao dao  = new CrowdRestDao(getCrowdProperties());
-        TdarUser user = getUser();
-        String originalEmail = user.getEmail();
-        user.setEmail("testcrowduserupdate@example.com");  //original email for test user should be test@tdar.org
-        logger.debug("original email address was:{}", originalEmail);
-        dao.updateUserInformation(user);
-    }
-
-    @Test
-    public void testCrowdRestUserUpdate2() {
-        CrowdRestDao dao  = new CrowdRestDao(getCrowdProperties());
-        TdarUser user = getUser();
-        String originalEmail = user.getEmail();
-        user.setEmail("testcrowduserupdate@example.com");  //original email for test user should be test@tdar.org
-        logger.debug("original email address was:{}", originalEmail);
-        dao.updateUserInformation2(user);
-    }
 
 }

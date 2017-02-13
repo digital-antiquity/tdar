@@ -523,7 +523,7 @@
                         + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
-                query = "select da from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.status= 'ACTIVE' and (rc.id in (:collectionids) or parentId in (:collectionids)))"),
+                query = "select da from DownloadAuthorization da inner join da.refererHostnames rh join da.sharedCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.status= 'ACTIVE' and (rc.id in (:collectionids) or parentId in (:collectionids)))"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
@@ -580,7 +580,7 @@
                 query = "select distinct ic from InternalCollection ic right join ic.authorizedUsers as user right join ic.resources as res where (ic.owner.id=:owner or res.submitter.id=:owner) and res.status in ('ACTIVE','DRAFT') "),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_DOWNLOAD_AUTHORIZATION,
-                query = "from DownloadAuthorization da where da.resourceCollection.id=:collectionId"),
+                query = "from DownloadAuthorization da where da.sharedCollection.id=:collectionId"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_RESOURCES_SHARED_WITH,
                 query = "select distinct r from Resource r inner join r.internalCollections ic inner join ic.authorizedUsers au where au.user=:user and (:admin is true or r.id in ("

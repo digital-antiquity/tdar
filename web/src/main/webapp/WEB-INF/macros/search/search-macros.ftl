@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false submitLabel="Search">
 
-        <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge"/>
+        <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge" maxlength="512" />
         <#if showAdvancedLink><span class="help-inline"><a style="display:inline" href="<@s.url value="/search/advanced"/>">advanced search</a></span></#if>
         <@s.submit value="${submitLabel}" cssClass="btn btn-primary" />
         <#nested>

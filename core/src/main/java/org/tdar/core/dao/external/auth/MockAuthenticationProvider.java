@@ -21,6 +21,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 
 //import org.tdar.utils.TestConfiguration;
@@ -262,5 +263,15 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     public void setLocalValues(Map<String, MockAuthenticationInfo> localValues) {
         this.localValues = localValues;
+    }
+
+    @Override
+    public boolean updateBasicUserInformation(TdarUser user) {
+        throw new TdarRecoverableRuntimeException("error.not_implemented");
+    }
+
+    @Override
+    public boolean renameUser(TdarUser user, String newUserName) {
+        throw new TdarRecoverableRuntimeException("error.not_implemented");
     }
 }
