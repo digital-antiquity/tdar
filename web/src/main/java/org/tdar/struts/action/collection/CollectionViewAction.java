@@ -10,7 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -63,13 +68,13 @@ import org.tdar.web.service.HomepageService;
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@Namespaces({@Namespace("/collection"), @Namespace("/listcollection")})
+@Namespace("/collection")
 @Results(value = {
-        @Result(name = TdarActionSupport.SUCCESS, location = "../collection/view.ftl"),
-        @Result(name = CollectionViewAction.SUCCESS_WHITELABEL, location = "../collection/view-whitelabel.ftl"),
-        @Result(name = CollectionViewAction.SUCCESS_SHARE, location = "../collection/view-share.ftl"),
+        @Result(name = TdarActionSupport.SUCCESS, location = "view.ftl"),
+        @Result(name = CollectionViewAction.SUCCESS_WHITELABEL, location = "view-whitelabel.ftl"),
+        @Result(name = CollectionViewAction.SUCCESS_SHARE, location = "view-share.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.TDAR_REDIRECT,
-                location = "../collection/${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
+                location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
 public class CollectionViewAction<C extends HierarchicalCollection> extends AbstractPersistableViewableAction<C>
