@@ -226,18 +226,25 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             getMessages().add(String.format("Database had the following linked tables that were NOT imported: %s", linked));
         }
 
+        setRelationships(extractRelationships(dataTableNameMap, linked));
+        getDatabase().getQueries().forEach(q -> {
+            logger.debug("{} {} {} ", q.getName(), q.getType(), q.getParameters());
+            logger.debug("\t\t--> {} ", q.toSQLString());
+        });
+    }
 
+    private Set<DataTableRelationship> extractRelationships(Map<String, DataTable> dataTableNameMap, Set<String> linked) throws IOException {
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (String tableName1 : getDatabase().getTableNames()) {
             for (String tableName2 : getDatabase().getTableNames()) {
                 if (tableName1.equals(tableName2)) {
                     continue;
                 }
-                
+
                 if (linked.contains(tableName1) || linked.contains(tableName2)) {
                     continue;
                 }
-                
+
                 for (Relationship relationship : getDatabase().getRelationships(getDatabase().getTable(tableName1), getDatabase().getTable(tableName2))) {
                     if (!tableName1.equals(relationship.getFromTable().getName())) {
                         continue;
@@ -283,9 +290,9 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     logger.info("{}", relationshipToPersist);
                     relationships.add(relationshipToPersist);
                 }
-                setRelationships(relationships);
             }
         }
+        return relationships;
     }
 
     /**
