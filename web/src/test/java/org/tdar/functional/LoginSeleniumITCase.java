@@ -3,6 +3,8 @@ package org.tdar.functional;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -20,7 +22,7 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
         super.beforeTest();
         login();
     }

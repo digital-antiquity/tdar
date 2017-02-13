@@ -1,7 +1,5 @@
 package org.tdar.functional;
 
-
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -121,6 +119,7 @@ public abstract class AbstractSeleniumWebITCase {
     protected Dimension testSize = new Dimension(1024, 768);
     protected Dimension originalSize;
 
+    private static boolean quitBrowserBetweenTests = true;
     private boolean screenshotsAllowed = true;
     private Long previousScreenshotSize;
     // if true, ignore all javascript errors during page navigation events
@@ -143,7 +142,7 @@ public abstract class AbstractSeleniumWebITCase {
     private boolean isVolatileFind = false;
 
     private Map<String, StopWatch> stopWatches = new HashMap<>();
-    ScheduledExecutorService someScheduler = Executors.newScheduledThreadPool(100); 
+    ScheduledExecutorService someScheduler = Executors.newScheduledThreadPool(100);
 
     // predicate that returns true if document.readystate == "complete" (use with FluentWait)
     private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {
@@ -163,15 +162,16 @@ public abstract class AbstractSeleniumWebITCase {
 
     /**
      *
-     * Get a stopwatch of a given name.  If watch doesn't exist,  method implicitly creates one in "suspended" state. We use to track
+     * Get a stopwatch of a given name. If watch doesn't exist, method implicitly creates one in "suspended" state. We use to track
      * aggregate time spent performing operations such implicit waits and find() operations.
+     * 
      * @param name
      * @return
      */
     public StopWatch getStopWatch(String name) {
         StopWatch stopWatch = stopWatches.get(name);
 
-        if(stopWatch == null) {
+        if (stopWatch == null) {
             stopWatch = new StopWatch();
             stopWatch.start();
             stopWatch.suspend();
@@ -187,7 +187,6 @@ public abstract class AbstractSeleniumWebITCase {
         crowdRestDao.deleteUser(user);
     }
 
-    
     /**
      * On tdar edit pages, the floating page navigation bar may obscure an underlying form element. In practice, a user will know to scroll until
      * the element is visible. However, selenium will deem the element unclickable and throw an exception if we try to modify it. This hack
@@ -204,6 +203,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     private final class KillSeleniumAfter implements Runnable {
         private boolean enabled = true;
+
         @Override
         public void run() {
             if (enabled == false) {
@@ -211,7 +211,7 @@ public abstract class AbstractSeleniumWebITCase {
             }
             fail("killed due to timeout");
             logger.error("KILLING SELENIUM -- been 10 MINUTES");
-            AbstractSeleniumWebITCase.shutdownSelenium();                
+            AbstractSeleniumWebITCase.shutdownSelenium();
         }
 
         public void disable() {
@@ -223,9 +223,11 @@ public abstract class AbstractSeleniumWebITCase {
         FIREFOX, CHROME, SAFARI, IE;
     }
 
-    
     @Before
-    public void beforeTest() {
+    public void beforeTest() throws IOException {
+        if (quitBrowserBetweenTests) {
+            initBrowser();
+        }
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
@@ -238,16 +240,22 @@ public abstract class AbstractSeleniumWebITCase {
 
         someTask = new KillSeleniumAfter();
         long timeDelay = 10; // You can specify 3 what
-        someScheduler.schedule(someTask , timeDelay, TimeUnit.MINUTES);
+        someScheduler.schedule(someTask, timeDelay, TimeUnit.MINUTES);
     }
-    
+
     @BeforeClass
     public static void before() throws IOException {
+        if (!quitBrowserBetweenTests) {
+            initBrowser();
+        }
+    }
+
+    private static void initBrowser() throws IOException {
         /*
          * We define a specific binary so when running "headless" we can specify a PORT
          */
         // typekit & google-analytics errors may occur on pretty much any page and are (relatively) harmless, so we ignore them by default
-//        WebDriver driver = null;
+        // WebDriver driver = null;
         Browser browser = Browser.CHROME;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
@@ -362,31 +370,41 @@ public abstract class AbstractSeleniumWebITCase {
     private static boolean reindexed = false;
     static Set<Long> listProcesses = new HashSet<>();
 
-    
     @After
     public void after() {
         try {
             logout();
-            driver.get("about://");;
+            driver.get("about://");
+            ;
         } catch (UnhandledAlertException uae) {
             logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
             logout();
             driver.switchTo().alert().accept();
-            driver.get("about://");;
+            driver.get("about://");
+            ;
         } catch (Throwable ex) {
             logger.error("Could not close selenium driver: {}", ex);
         }
         if (someTask != null) {
             someTask.disable();
         }
-//        driver = null;
+
+        if (quitBrowserBetweenTests) {
+            quitBrowser();
+        }
     }
-    
+
     /*
      * Shutdown Selenium
      */
     @AfterClass
     public static final void shutdownSelenium() {
+        if (!quitBrowserBetweenTests) {
+            quitBrowser();
+        }
+    }
+
+    private static void quitBrowser() {
         if (!TestConfiguration.isWindows()) {
             listProcesses.addAll(ProcessList.listProcesses("chromedriver"));
         }
@@ -410,29 +428,27 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
-
-
     @After
-    public final void report(){
+    public final void report() {
         String fmt = " *** COMPLETED TEST: {}.{}() ***";
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
 
         // go through the each stopwatch and report the elapsed time for each
-        stopWatches.forEach( (name, stopWatch) -> {
+        stopWatches.forEach((name, stopWatch) -> {
             Duration d = Duration.of(stopWatch.getNanoTime(), ChronoUnit.NANOS);
             logger.info("\t stopwatch name:{}\t  total time:{}s {}ms", name, d.getSeconds(), d.minusSeconds(d.getSeconds()).toMillis());
         });
         logger.info("*******");
     }
 
-    private static File getBrowserProfilePath(){
-        return Paths.get(PATH_OUTPUT_ROOT,"browser-profiles").toFile();
+    private static File getBrowserProfilePath() {
+        return Paths.get(PATH_OUTPUT_ROOT, "browser-profiles").toFile();
     }
 
     /**
      * This function creates a directory named after the currently-running JUnit test.
      *
-     * Browsers typically need a 'profile' directory in local storage to save  cookies, browser history, and preference.  This stateful information
+     * Browsers typically need a 'profile' directory in local storage to save cookies, browser history, and preference. This stateful information
      * can potentially introduce inconsistent test results.
      *
      * @return
@@ -461,10 +477,9 @@ public abstract class AbstractSeleniumWebITCase {
      */
     private static void performBrowserCleanup() {
         //
-        Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache" );
-        FileUtils.deleteQuietly(Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache" ).toFile());
+        Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache");
+        FileUtils.deleteQuietly(Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache").toFile());
     }
-
 
     protected void takeScreenshot() {
         takeScreenshot(null);
@@ -482,13 +497,13 @@ public abstract class AbstractSeleniumWebITCase {
         screenshotsAllowed = false;
         try {
             Screenshot takeScreenshot = new AShot()
-            .shootingStrategy(ShootingStrategies.scaling(0.5f))
-            .takeScreenshot(driver);
+                    .shootingStrategy(ShootingStrategies.scaling(0.5f))
+                    .takeScreenshot(driver);
             String scrFilename = "target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName();
             File dir = new File(scrFilename);
             dir.mkdirs();
             String finalFilename = screenshotFilename(filename, "png");
-            
+
             File scrFile = File.createTempFile(finalFilename, ".png");
             ImageIO.write(takeScreenshot.getImage(), "png", scrFile);
 
@@ -623,12 +638,13 @@ public abstract class AbstractSeleniumWebITCase {
      * Wait for specified css selector to match at least one element within specified timeout.
      *
      * @param cssSelector
-     * @param timeout amount of time to wait for specified condition before timing out. Selenium timeouts are measured
-     *                in seconds,  therefore this function truncates values to seconds.
+     * @param timeout
+     *            amount of time to wait for specified condition before timing out. Selenium timeouts are measured
+     *            in seconds, therefore this function truncates values to seconds.
      * @return elements matched by specified selector
      */
     public WebElementSelection waitFor(String cssSelector, Duration timeout) {
-        if(WAITFOR_TIMEOUT_MAX.minus(timeout).isNegative()) {
+        if (WAITFOR_TIMEOUT_MAX.minus(timeout).isNegative()) {
             fail(String.format("Requested timeout of %s exceeds maximum timeout of", timeout, WAITFOR_TIMEOUT_MAX));
         }
         // FIXME: rewrite in terms of waitFor(ExpectedCondition, int)
@@ -650,7 +666,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @Deprecated
     public void waitFor(int timeInSeconds) {
-       getStopWatch("wait").resume();
+        getStopWatch("wait").resume();
         try {
             Thread.sleep(timeInSeconds * TestConstants.MILLIS_PER_SECOND);
         } catch (InterruptedException ignored) {
@@ -707,7 +723,7 @@ public abstract class AbstractSeleniumWebITCase {
      *            ExpectedCondition predicate (e.g. {@link ExpectedConditions#alertIsPresent},
      *            {@link ExpectedConditions#presenceOfAllElementsLocatedBy(org.openqa.selenium.By)}
      * @param timeout
-     *            amount of time that this method suppresses ElementNotFoundException.  Always truncated to second
+     *            amount of time that this method suppresses ElementNotFoundException. Always truncated to second
      *            accuracy.
      * @param <T>
      *            object returned by the ExpectedCondition
@@ -765,7 +781,7 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public WebElementSelection find(By by) {
-        if(isVolatileFind()) {
+        if (isVolatileFind()) {
             logger.warn("Volatile find: consider replacing with waitFor() (locator:{}  test:{})", by, testName.getMethodName());
 
         }
@@ -776,7 +792,7 @@ public abstract class AbstractSeleniumWebITCase {
         WebElementSelection selection = new WebElementSelection(by, driver);
         logger.trace("criteria:{}\t  size:{}", by, selection.size());
         if (stopWatch.isStarted()) {
-        stopWatch.suspend();
+            stopWatch.suspend();
         }
         return selection;
     }
@@ -1266,7 +1282,8 @@ public abstract class AbstractSeleniumWebITCase {
         // yes, you really have to do this. the api has no "expand all" method.
         WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
         while (!visibleElements.isEmpty() && (giveupCount++ < 100)) {
-            waitFor(TdarExpectedConditions.stabilityOfElement(".expandable-hitarea"), Duration.of(10, ChronoUnit.SECONDS), Duration.of(125, ChronoUnit.MILLIS)).click();
+            waitFor(TdarExpectedConditions.stabilityOfElement(".expandable-hitarea"), Duration.of(10, ChronoUnit.SECONDS), Duration.of(125, ChronoUnit.MILLIS))
+                    .click();
             // visibleElements.click();
             visibleElements = find(".expandable-hitarea").visibleElements();
         }
@@ -1442,7 +1459,7 @@ public abstract class AbstractSeleniumWebITCase {
         handles.addAll(driver.getWindowHandles());
         Collections.sort(handles);
         for (String handle : handles) {
-            logger.debug("handle: {}",handle);
+            logger.debug("handle: {}", handle);
         }
         String previousHandle = driver.getWindowHandle();
         int idx = handles.indexOf(previousHandle);
@@ -1460,7 +1477,7 @@ public abstract class AbstractSeleniumWebITCase {
         setCachedPageText(null);
         for (String handle : handles) {
             driver.switchTo().window(handle);
-            logger.debug("handle: {} ({})",handle, driver.getCurrentUrl());
+            logger.debug("handle: {} ({})", handle, driver.getCurrentUrl());
             if (driver.getCurrentUrl().contains(url)) {
                 return handle;
             }

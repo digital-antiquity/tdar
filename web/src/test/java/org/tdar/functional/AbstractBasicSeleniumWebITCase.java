@@ -1,11 +1,13 @@
 package org.tdar.functional;
 
+import java.io.IOException;
+
 import org.junit.Before;
 
 public class AbstractBasicSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     @Before
-    public void runBefore() {
+    public void runBefore() throws IOException {
         super.beforeTest();
         login();
     }

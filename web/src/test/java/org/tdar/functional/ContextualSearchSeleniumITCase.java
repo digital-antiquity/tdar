@@ -8,6 +8,8 @@ import static org.junit.Assert.assertThat;
 import static org.tdar.functional.util.WebMatchers.emptySelection;
 import static org.tdar.functional.util.WebMatchers.visible;
 
+import java.io.IOException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +19,7 @@ import org.tdar.functional.util.WebElementSelection;
 /**
  * Created by jimdevos on 3/12/14.
  */
-public class ContextualSeachSeleniumITCase extends AbstractEditorSeleniumWebITCase {
+public class ContextualSearchSeleniumITCase extends AbstractEditorSeleniumWebITCase {
 
     public static final String PROJECT_ID = "3805";
     public static final String COLLECTION_ID = "1575";
@@ -25,7 +27,7 @@ public class ContextualSeachSeleniumITCase extends AbstractEditorSeleniumWebITCa
     public static final String PROJECT_QUERY = "Archaeology";
 
     @Before
-    public void setupContextSearch() {
+    public void setupContextSearch() throws IOException {
         super.beforeTest();
         force1024x768();
     }
