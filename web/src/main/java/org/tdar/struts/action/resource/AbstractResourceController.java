@@ -542,6 +542,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             resourceCollections.addAll(retainedResourceCollections);
             resourceCollectionService.saveSharedResourceCollections(getResource(), resourceCollections, getResource().getResourceCollections(),
                     getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS);
+            
+            if (!authorizationService.canEdit(getAuthenticatedUser(), getResource())) {
+//                addActionError("abstractResourceController.cannot_remove_collection");
+                getLogger().error("user is trying to remove themselves from the collection that granted them rights");
+                addActionMessage("abstractResourceController.collection_rights_remove");
+            }
         } else {
             getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }
