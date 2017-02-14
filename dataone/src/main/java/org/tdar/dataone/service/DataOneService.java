@@ -367,6 +367,9 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         metadata.setSeriesId(DataOneUtils.createIdentifier(DataOneUtils.createSeriesId(resource.getId(), parser.getType())));
 
         if (dataOneObject != null) {
+            if (!StringUtils.equals(object.getChecksum(), dataOneObject.getChecksum())) {
+                logger.error("checksum varied between D1 object and tDAR object: {} {} {} {}", object.getTdarResource(), object.getChecksum(), dataOneObject.getChecksum(), dataOneObject.getIdentifier());
+            }
             updateObsoletesObsoletedBy(metadata, dataOneObject.getObsoletedBy(), dataOneObject.getObsoletes());
         }
         
