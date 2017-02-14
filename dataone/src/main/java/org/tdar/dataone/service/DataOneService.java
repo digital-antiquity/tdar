@@ -307,10 +307,15 @@ public class DataOneService implements DataOneConstants, D1Formatter {
             genericService.markReadOnly(object.getTdarResource());
         }
         if (dataOneObject != null && object != null && !StringUtils.equals(object.getChecksum(), dataOneObject.getChecksum())) {
-            InformationResource tdarResource = object.getTdarResource();
+            Long tdarId = object.getTdarResource().getId();
+            genericService.evictFromCache(object.getTdarResource());
+            genericService.detachFromSession(object.getTdarResource());
+            object.setTdarResource(null);
+            InformationResource tdarResource = genericService.find(InformationResource.class, tdarId);
+//            genericService.refresh(tdarResource);
             tdarResource.setDateUpdated(new Date());
             genericService.saveOrUpdate(tdarResource);
-                logger.error("checksum varied between D1 object and tDAR object: {} {} {} {}", object.getTdarResource(), object.getChecksum(),
+                logger.error("checksum varied between D1 object and tDAR object: {} {} {} {}", tdarResource, object.getChecksum(),
                     dataOneObject.getChecksum(), dataOneObject.getIdentifier()); 
             dataOneDao.unifyEntry(this, tdarResource.getExternalId(), tdarResource.getId(), new DateTime(tdarResource.getDateUpdated()));
             genericService.refresh(dataOneObject);
