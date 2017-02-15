@@ -276,4 +276,12 @@ public class DataOneDao {
         return uniqueResult;
     }
 
+    public void updateModifedDate(Long tdarId, Date dateUpdated) {
+        Query query = genericDao.createQuery("update Resource set dateUpdated=:dateUpdated where id=:id");
+        query.setParameter("id", tdarId);
+        query.setParameter("dateUpdated", dateUpdated);
+        query.executeUpdate();
+        
+    }
+
 }

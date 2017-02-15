@@ -303,21 +303,45 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         ObjectResponseContainer object = getObjectFromTdar(id, false);
         logger.trace("{}", object);
         DataOneObject dataOneObject = dataOneDao.findByIdentifier(id);
+        boolean redo = false;
         if (object != null && object.getTdarResource() != null) {
             genericService.markReadOnly(object.getTdarResource());
         }
-        if (dataOneObject != null && object != null && !StringUtils.equals(object.getChecksum(), dataOneObject.getChecksum())) {
-            Long tdarId = object.getTdarResource().getId();
-            genericService.evictFromCache(object.getTdarResource());
-            genericService.detachFromSession(object.getTdarResource());
-            object.setTdarResource(null);
-            InformationResource tdarResource = genericService.find(InformationResource.class, tdarId);
-//            genericService.refresh(tdarResource);
-            tdarResource.setDateUpdated(new Date());
-            genericService.saveOrUpdate(tdarResource);
-                logger.error("checksum varied between D1 object and tDAR object: {} {} {} {}", tdarResource, object.getChecksum(),
+        
+        // if the dataone object and the tdar object differ in checksum... redo
+        if (dataOneObject != null && object != null && 
+                !StringUtils.equals(object.getChecksum(), dataOneObject.getChecksum()) && 
+                dataOneObject.getObsoletedBy() == null) {
+            logger.debug("checksums differ? {} {} {}", object.getChecksum(), dataOneObject.getChecksum(), dataOneObject.getObsoletedBy() );
+            redo = true;
+        }
+        
+        // if the date in the object Id is different such that we can't get the exact record, then we need to obsolete it 
+        if (object == null && dataOneObject.getObsoletedBy() == null) {
+            redo = true;
+            object = getObjectFromTdar(id, true);
+            logger.debug("object was null for exact date");
+            logger.debug("checksums differ? {} {} {}", object.getChecksum(), dataOneObject.getChecksum(), dataOneObject.getObsoletedBy() );
+        }
+       
+        logger.debug("{} {}", object, dataOneObject); 
+        if (object == null ) {
+            logger.error("object still null...");
+            return;
+        }
+        String externalId = object.getTdarResource().getExternalId();
+        Long tdarId = object.getTdarResource().getId();
+        String checksum = object.getChecksum();
+        object= null;
+
+        // if we have both, the checksums differ, and we're not archived/obsoleted
+        if (redo) {
+            genericService.clearCurrentSession();
+            Date dateUpdated = new Date();
+            dataOneDao.updateModifedDate(tdarId, dateUpdated);
+                logger.error("checksum varied between D1 object and tDAR object: {} {} {} {}", tdarId, checksum,
                     dataOneObject.getChecksum(), dataOneObject.getIdentifier()); 
-            dataOneDao.unifyEntry(this, tdarResource.getExternalId(), tdarResource.getId(), new DateTime(tdarResource.getDateUpdated()));
+            dataOneDao.unifyEntry(this, externalId, tdarId, DataOneUtils.toUtc(dateUpdated));
             genericService.refresh(dataOneObject);
         }
     }
