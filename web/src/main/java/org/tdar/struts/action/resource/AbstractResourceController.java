@@ -626,7 +626,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private void loadEffectiveResourceCollectionsForEdit() {
         getLogger().debug("loadEffective...");
         for (ResourceCollection rc : getResource().getSharedResourceCollections()) {
-            if (authorizationService.canEditCollection(getAuthenticatedUser(),rc)) {
+            if (authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
                 getResourceCollections().add(rc);
             } else {
                 retainedResourceCollections.add(rc);
