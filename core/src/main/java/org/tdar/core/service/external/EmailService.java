@@ -314,7 +314,7 @@ public class EmailService {
         Map<String, Object> map = new HashMap<>();
         map.put("requestor", requestor);
         map.put("resource", resource);
-        map.put("expires", expires)
+        map.put("expires", expires);
         map.put("authorizedUser", authenticatedUser);
         setupBasicComponents(map);
         if (StringUtils.isNotBlank(comment)) {
