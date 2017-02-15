@@ -115,7 +115,7 @@ Common macros used in multiple contexts
                                 </#if>
                             </td>
                             <td>
-                            <a href="<@s.url value="user.user.detailUrl"/>">${user.user.properName}</a> <!-- ${user.user.properName}:${user.generalPermission} -->
+                            <a href="<@s.url value="${user.user.detailUrl}"/>">${user.user.properName}</a> <!-- ${user.user.properName}:${user.generalPermission} -->
                             </td>
                             <#list availablePermissions as permission>
                                 <td>
