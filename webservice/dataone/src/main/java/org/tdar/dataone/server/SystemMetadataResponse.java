@@ -59,6 +59,7 @@ public class SystemMetadataResponse extends AbstractDataOneResponse {
     public Response meta(@PathParam("id") String id) {
         setupResponseContext(response, request);
         try {
+            service.checkForChecksumConflict(id);
             SystemMetadata metadataRequest = service.metadataRequest(id);
             if (metadataRequest == null) {
                 return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();

@@ -21,6 +21,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
+import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
 
 /**
@@ -64,7 +65,7 @@ import edu.asu.lib.mods.ModsDocument;
     "listIdentifiers",
     "listRecords"
 })
-@XmlSeeAlso(value={ModsDocument.class, DublinCoreDocument.class})
+@XmlSeeAlso(value={ModsDocument.class, DublinCoreDocument.class, QualifiedDublinCoreDocument.class})
 public class OAIPMHtype {
 
     @XmlElement(required = true)

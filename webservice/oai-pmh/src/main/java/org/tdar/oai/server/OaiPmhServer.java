@@ -114,8 +114,13 @@ public class OaiPmhServer {
             error.setCode(oaie.getCode());
             error.setValue(oaie.getMessage());
             response.getError().add(error);
+        } catch (Throwable e) {
+            logger.error("{}",e,e);
         }
-        return Response.ok(factory.createOAIPMH(response)).build();
+        Response build = Response.ok(factory.createOAIPMH(response)).build();
+        logger.debug("{} - {}", response, service);
+        logger.debug(">>>  {}?{}", servletRequest.getRequestURI(),servletRequest.getQueryString());
+        return build;
     }
 
     /**
@@ -153,7 +158,7 @@ public class OaiPmhServer {
         }
         request.setValue(servletRequest.getRequestURI());
         request.setVerb(VerbType.fromValue(verb_));
-        logger.debug(">>> {}?{}", servletRequest.getRequestURI(),servletRequest.getQueryString());
+        logger.debug("<<< {}?{}", servletRequest.getRequestURI(),servletRequest.getQueryString());
         return request;
     }
 

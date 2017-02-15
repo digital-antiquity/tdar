@@ -36,6 +36,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String RETAIN_COLLECTION = "My Test Retain Collection";
     private static final TestConfiguration TEST = TestConfiguration.getInstance();
+    private static final String RETAIN_COLLECTION_2 = "My test dataset revoke collection";
 
 
     @Test
@@ -44,7 +45,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("image.title", "test title");
         setInput("status", Status.DRAFT.name());
         setInput("image.date", "2000");
-        setInput("image.description", "test description of a document with edit rights by user");
+        setInput("image.description", "test description of a image with edit rights by user");
         setInput("authorizedUsers[0].user.id", TEST.getUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         setInput("authorizedUsersFullNames[0]", "test user");
@@ -65,10 +66,50 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextNotPresent(RETAIN_COLLECTION);
         submitForm();
         assertTextNotPresent(RETAIN_COLLECTION);
+        assertTextNotPresent("the resource you requested is");
         logout();
         loginAdmin();
         gotoPage(pageUrl);
         assertTextPresentInPage(RETAIN_COLLECTION);
+    }
+    
+
+
+    @Test
+    public void testCreateEditDocumentRetainShared() {
+        gotoPage("/dataset/add");
+        setInput("dataset.title", "test title");
+        setInput("status", Status.DRAFT.name());
+        setInput("dataset.date", "2000");
+        setInput("dataset.description", "test description of a dataset with edit rights by user");
+//        setInput("authorizedUsers[0].user.id", TEST.getUserId());
+//        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+//        setInput("authorizedUsersFullNames[0]", "test user");
+        setInput("resourceCollections[0].name", RETAIN_COLLECTION_2);
+        submitForm();
+        assertTextPresentInPage(RETAIN_COLLECTION_2);
+        String pageUrl = getCurrentUrlPath();
+        clickLinkWithText(RETAIN_COLLECTION_2);
+        clickLinkWithText("edit");
+        setInput("resourceCollection.hidden", "true");
+        setInput(String.format(FMT_AUTHUSERS_ID, 0), TEST.getUserId()); // leave the id blank
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.MODIFY_RECORD.name());
+        submitForm();
+        assertTextPresentInPage("true");
+        logout();
+        login(TEST.getUsername(), TEST.getPassword());
+        gotoPage(pageUrl);
+        assertTextPresentInCode("test user:MODIFY_RECORD");
+        assertTextPresent(RETAIN_COLLECTION_2);
+        clickLinkWithText("edit");
+        assertTextPresent(RETAIN_COLLECTION_2);
+        submitForm();
+        assertTextPresent(RETAIN_COLLECTION_2);
+        assertTextNotPresent("the resource you requested is");
+        logout();
+        loginAdmin();
+        gotoPage(pageUrl);
+        assertTextPresentInPage(RETAIN_COLLECTION_2);
     }
     
     @Test

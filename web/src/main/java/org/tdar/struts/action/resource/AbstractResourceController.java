@@ -553,6 +553,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 GeneralPermissions.MODIFY_RECORD)) {
             resourceCollectionService.saveResourceCollections(getResource(), shares, getResource().getSharedCollections(),
                     getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+
+            if (!authorizationService.canEdit(getAuthenticatedUser(), getResource())) {
+//                addActionError("abstractResourceController.cannot_remove_collection");
+                getLogger().error("user is trying to remove themselves from the collection that granted them rights");
+                addActionMessage("abstractResourceController.collection_rights_remove");
+            }
         } else {
             getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }
@@ -634,7 +640,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedResourceCollections()) {
-            if (authorizationService.canEditCollection(getAuthenticatedUser(),rc)) {
+            if (authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
                 getShares().add(rc);
             } else {
                 retainedSharedCollections.add(rc);
@@ -642,7 +648,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             }
         }
         for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
-            if (authorizationService.canEditCollection(getAuthenticatedUser(),rc)) {
+            if (authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
                 getResourceCollections().add(rc);
             } else {
                 retainedListCollections.add(rc);

@@ -492,6 +492,7 @@
                       <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#pivot" aria-controls="pivot" role="tab" data-toggle="tab">Summary</a></li>
                         <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
+                        <li role="presentation"><a href="#json" aria-controls="preview" role="tab" data-toggle="tab">Raw (request)</a></li>
                       </ul>
                     
                       <!-- Tab panes -->
@@ -501,6 +502,9 @@
                         </div>
                         <div role="tabpanel" class="tab-pane" id="preview">
                             <table tdar-datatable aa-data="download.previewData.rows" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="json">
+                            {{ ctrl.getIntegration() }}
                         </div>
                       </div>
                     

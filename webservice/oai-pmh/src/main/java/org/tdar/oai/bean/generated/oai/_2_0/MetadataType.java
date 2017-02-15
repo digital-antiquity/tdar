@@ -15,10 +15,13 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.tools.ant.IntrospectionHelper.Creator;
+import org.dataone.ns.metadata.schema.onedcx.v1.SimpleDcType;
+import org.purl.dc.terms.ElementOrRefinementContainer;
 import org.tdar.core.bean.resource.Resource;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
+import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 import gov.loc.mods.v3.ModsType;
 
 
@@ -49,7 +52,7 @@ import gov.loc.mods.v3.ModsType;
 @XmlType(name = "metadataType", propOrder = {
     "any"
 })
-@XmlSeeAlso(value={Resource.class, Creator.class, DublinCoreDocument.class, ModsDocument.class, ModsType.class})
+@XmlSeeAlso(value={Resource.class, Creator.class, DublinCoreDocument.class, ModsDocument.class, ModsType.class, QualifiedDublinCoreDocument.class, ElementOrRefinementContainer.class})
 public class MetadataType {
 
     @XmlAnyElement(lax = true)

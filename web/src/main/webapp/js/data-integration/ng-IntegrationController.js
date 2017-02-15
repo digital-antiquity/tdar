@@ -370,6 +370,10 @@
             $scope.download = false;
             $scope.download = null;
         }
+        
+        self.getIntegration = function() {
+            return JSON.stringify(dataService.dumpObject(integration));
+        }
 
         /**
          * Send the integration to the server for processing.  If successful,  show notification.

@@ -52,6 +52,8 @@ Common macros used in multiple contexts
 
         ga('create', '${googleAnalyticsId}', 'auto');
         ga('set', 'transport', 'beacon');
+        ga('set', 'dimension1', '<#if administrator>administrator<#elseif editor>editor<#elseif authenticatedUser??>user<#else>anonymous</#if>');
+
         ga('send', 'pageview');
 
     </script>
@@ -114,7 +116,7 @@ Common macros used in multiple contexts
                                 </#if>
                             </td>
                             <td>
-                            ${user.user.properName} <!-- ${user.user.properName}:${user.generalPermission} -->
+                            <a href="<@s.url value="${user.user.detailUrl}"/>">${user.user.properName}</a> <!-- ${user.user.properName}:${user.generalPermission} -->
                             </td>
                             <#list availablePermissions as permission>
                                 <td>

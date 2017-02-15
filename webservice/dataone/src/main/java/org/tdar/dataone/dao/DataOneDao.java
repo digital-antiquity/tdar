@@ -115,10 +115,7 @@ public class DataOneDao {
                 String externalId = (String) obj[1];
                 long tdarId = ((Long) obj[0]);
                 DateTime dateUpdated = DataOneUtils.toUtc((Date) obj[2]);
-                ListObjectEntry d1 = new ListObjectEntry(externalId, EntryType.D1.name(), tdarId, dateUpdated.toDate(), null, null, null, null);
-                ListObjectEntry tdar = new ListObjectEntry(externalId, EntryType.TDAR.name(), tdarId, dateUpdated.toDate(), null, null, null, null);
-                processEntry(tdar, formatter);
-                processEntry(d1, formatter);
+                unifyEntry(formatter, externalId, tdarId, dateUpdated);
             
             } catch (Exception e) {
                 logger.error("{}", e, e);
@@ -127,6 +124,13 @@ public class DataOneDao {
         logger.debug("total added to queue: {}", count);
         return entries;
 
+    }
+
+    public void unifyEntry(D1Formatter formatter, String externalId, long tdarId, DateTime dateUpdated) {
+        ListObjectEntry d1 = new ListObjectEntry(externalId, EntryType.D1.name(), tdarId, dateUpdated.toDate(), null, null, null, null);
+        ListObjectEntry tdar = new ListObjectEntry(externalId, EntryType.TDAR.name(), tdarId, dateUpdated.toDate(), null, null, null, null);
+        processEntry(tdar, formatter);
+        processEntry(d1, formatter);
     }
 
     private void processEntry(ListObjectEntry entry, D1Formatter formatter) {
@@ -270,6 +274,14 @@ public class DataOneDao {
         namedQuery.setParameter("identifier", id);
         DataOneObject uniqueResult = (DataOneObject) namedQuery.uniqueResult();
         return uniqueResult;
+    }
+
+    public void updateModifedDate(Long tdarId, Date dateUpdated) {
+        Query query = genericDao.createQuery("update Resource set dateUpdated=:dateUpdated where id=:id");
+        query.setParameter("id", tdarId);
+        query.setParameter("dateUpdated", dateUpdated);
+        query.executeUpdate();
+        
     }
 
 }
