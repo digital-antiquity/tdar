@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -32,9 +33,29 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         logger.info(getPageText());
         assertThat(getPageText(), containsString("has been granted"));
         logger.info("we are now on page: {}", getWebClient().getCurrentWindow().getEnclosedPage().getUrl());
+        logout();
     }
 
+
+    
     @Test
+    public void testShareAccessExpiresSuccess() {
+        gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
+        setInput("permission", GeneralPermissions.MODIFY_METADATA.name());
+        String untilString = DateTime.now().plusDays(1).toString("yyyy-MM-dd");
+        setInput("expiresString", untilString);
+        submitForm("submit");
+        logger.info(getCurrentUrlPath());
+        logger.info(getPageText());
+        String hasBeenGrantedString = "granted until " + untilString;
+        assertThat(getPageText(), containsString(hasBeenGrantedString));
+        logger.info("we are now on page: {}", getWebClient().getCurrentWindow().getEnclosedPage().getUrl());
+        loginAdmin();
+        gotoPage("/admin/email");
+        assertThat(getPageText(), containsString(hasBeenGrantedString));
+    }
+
+@Test
     public void testShareAccessDenied() {
         gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
         setInput("permission", GeneralPermissions.MODIFY_METADATA.name());

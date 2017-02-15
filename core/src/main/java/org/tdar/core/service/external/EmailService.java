@@ -26,6 +26,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -305,7 +306,7 @@ public class EmailService {
 
     @Transactional(readOnly=false)
     public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
-            EmailMessageType type, GeneralPermissions permission) {
+            EmailMessageType type, GeneralPermissions permission, Date expires) {
         Email email = new Email();
         email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + ": " + resource.getTitle());
         email.setTo(requestor.getEmail());
@@ -313,6 +314,7 @@ public class EmailService {
         Map<String, Object> map = new HashMap<>();
         map.put("requestor", requestor);
         map.put("resource", resource);
+        map.put("expires", expires)
         map.put("authorizedUser", authenticatedUser);
         setupBasicComponents(map);
         if (StringUtils.isNotBlank(comment)) {
@@ -332,6 +334,14 @@ public class EmailService {
                 }
             }
             resourceCollectionDao.addToInternalCollection(resource, requestor, permission);
+            if (expires != null) {
+                TimedAccessRestriction tar = new TimedAccessRestriction(expires);
+                tar.setCollection(resource.getInternalResourceCollection());
+                tar.setUser(requestor);
+                tar.setCreatedBy(authenticatedUser);
+                genericDao.saveOrUpdate(tar);
+            }
+
         }
         queueWithFreemarkerTemplate(template, map, email);
         email.setUserGenerated(false);

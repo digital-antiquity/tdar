@@ -27,6 +27,16 @@
             <@s.select theme="tdar" name="permission" id="permission" emptyOption='false' listValue='label' list='%{availablePermissions}' />
         </div>
       </div>
+    <br/>
+      <div class="control-group">
+        <label class="control-label" for="dp3">Grant Access Until</label>
+    <div class="controls">
+        <div class="input-append">
+          <input class="span2 datepicker" size="16" type="text" name="expiresString" value="" id="dp3" data-date-format="yyyy-mm-dd" >
+          <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+    </div>
+    </div>
 
         <br/>
         <@s.textarea name="comment" id="messageBody" rows="4" label="Message" cssClass="span5" cols="80" />

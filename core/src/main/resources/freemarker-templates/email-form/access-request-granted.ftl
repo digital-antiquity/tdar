@@ -4,3 +4,6 @@ Dear ${requestor.properName},
 <#if message?has_content>
 ${message}
 </#if>
+<#if expires?has_content>
+Access has been granted until ${expires?date}
+</#if>
