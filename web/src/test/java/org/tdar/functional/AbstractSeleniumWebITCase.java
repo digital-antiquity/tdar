@@ -119,7 +119,7 @@ public abstract class AbstractSeleniumWebITCase {
     protected Dimension testSize = new Dimension(1024, 768);
     protected Dimension originalSize;
 
-    private static boolean quitBrowserBetweenTests = true;
+    private static boolean quitBrowserBetweenTests = false;
     private boolean screenshotsAllowed = true;
     private Long previousScreenshotSize;
     // if true, ignore all javascript errors during page navigation events
