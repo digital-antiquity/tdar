@@ -440,18 +440,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         ResourceCollectionSaveHelper<C> helper = new ResourceCollectionSaveHelper<C>(incoming, current, cls);
         logger.info("collections to remove: {}", helper.getToDelete());
         for (C collection : helper.getToDelete()) {
-            current.remove(collection);
-            if (collection instanceof RightsBasedResourceCollection) {
-                ((RightsBasedResourceCollection) collection).getResources().remove(resource);
-                if (collection instanceof SharedCollection) {
-                    resource.getSharedCollections().remove(collection);
-                } else {
-                    resource.getInternalCollections().remove(collection);
-                }
-            } else {
-                ((ListCollection) collection).getUnmanagedResources().remove(resource);
-                resource.getUnmanagedResourceCollections().remove((ListCollection) collection);
-            }
+            removeResourceCollectionFromResource(resource, current, authenticatedUser, collection);
         }
 
         for (C collection : helper.getToAdd()) {
@@ -460,6 +449,29 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         logger.debug("after save: {} ({})", current, current.size());
 
+    }
+
+    private <C extends ResourceCollection> void removeResourceCollectionFromResource(Resource resource, Set<C> current, TdarUser authenticatedUser, C collection) {
+        if (!authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {
+            String name = "Collection";
+            if (collection instanceof VisibleCollection) {
+                name = ((VisibleCollection) collection).getName();
+            }
+            throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_remmove_error", Arrays.asList(name));
+            
+        }
+        current.remove(collection);
+        if (collection instanceof RightsBasedResourceCollection) {
+            ((RightsBasedResourceCollection) collection).getResources().remove(resource);
+            if (collection instanceof SharedCollection) {
+                resource.getSharedCollections().remove(collection);
+            } else {
+                resource.getInternalCollections().remove(collection);
+            }
+        } else {
+            ((ListCollection) collection).getUnmanagedResources().remove(resource);
+            resource.getUnmanagedResourceCollections().remove((ListCollection) collection);
+        }
     }
 
     /**
