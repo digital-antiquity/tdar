@@ -82,7 +82,7 @@ public class ResourceTransformerITCase extends AbstractIntegrationTestCase {
         assertTrue("see investigation type", StringUtils.contains(str, "bacd"));
         assertTrue("see site name", StringUtils.contains(str, "siteName"));
         assertTrue("see site type", StringUtils.contains(str, "SiteType"));
-        assertEquals("see only one contrib", 1, StringUtils.countMatches(str, "<namePart type=\"given\">admin</namePart>"));
-        assertEquals("see only one contrib", 2, StringUtils.countMatches(str, "<namePart type=\"family\">user</namePart>"));
+        assertEquals("see only one contrib", 1, StringUtils.countMatches(str, "namePart type=\"given\">admin</"));
+        assertEquals("see only one contrib", 2, StringUtils.countMatches(str, "namePart type=\"family\">user</"));
     }
 }
