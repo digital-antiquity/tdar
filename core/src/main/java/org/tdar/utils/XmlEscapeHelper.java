@@ -88,7 +88,7 @@ public class XmlEscapeHelper {
                 report.append(String.format("%04x", (int) c));
             });
 
-            logger.error("tDAR id: {} has utf-8 encoding issues [{}]", id, report);
+            logger.debug("tDAR id: {} has utf-8 encoding issues [{}]", id, report);
         }
     }
 }
