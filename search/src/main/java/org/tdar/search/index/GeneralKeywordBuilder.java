@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
@@ -115,6 +116,8 @@ public class GeneralKeywordBuilder implements Serializable {
         if (CollectionUtils.isNotEmpty(ir.getActiveInformationResourceFiles())) {
             for (InformationResourceFile file : ir.getActiveInformationResourceFiles()) {
                 sb.append(file.getFilename());
+                sb.append(" ");
+                sb.append(FilenameUtils.getBaseName(file.getFilename()));
                 sb.append(" ");
                 sb.append(file.getDescription());
                 sb.append(" ");
