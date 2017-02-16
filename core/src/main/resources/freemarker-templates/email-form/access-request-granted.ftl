@@ -5,5 +5,5 @@ Dear ${requestor.properName},
 ${message}
 </#if>
 <#if expires?has_content>
-Access has been granted until ${expires?date}
+Access has been granted until ${expires?string("yyyy-MM-dd")}
 </#if>

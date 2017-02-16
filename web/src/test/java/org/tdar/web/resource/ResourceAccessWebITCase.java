@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.tdar.TestConstants;
@@ -48,8 +49,12 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         logger.info(getCurrentUrlPath());
         logger.info(getPageText());
         String hasBeenGrantedString = "granted until " + untilString;
-        assertThat(getPageText(), containsString(hasBeenGrantedString));
+        String text = getPageText();
+        text = text.replaceAll("[\r\n]", " ");
+        text = text.replaceAll("\\s+", " ");
+        assertThat(text.toLowerCase(), containsString(hasBeenGrantedString));
         logger.info("we are now on page: {}", getWebClient().getCurrentWindow().getEnclosedPage().getUrl());
+        logout();
         loginAdmin();
         gotoPage("/admin/email");
         assertThat(getPageText(), containsString(hasBeenGrantedString));

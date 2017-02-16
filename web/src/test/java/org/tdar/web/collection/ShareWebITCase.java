@@ -19,6 +19,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
@@ -30,6 +31,91 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/share/"+ id +"/edit");
     }
 
+    
+
+    private static final String RETAIN_COLLECTION = "My Test Retain Collection";
+    private static final TestConfiguration TEST = TestConfiguration.getInstance();
+    private static final String RETAIN_COLLECTION_2 = "My test dataset revoke collection";
+
+
+    @Test
+    public void testCreateEditDocumentBlankCollection() {
+        gotoPage("/image/add");
+        setInput("image.title", "test title");
+        setInput("status", Status.DRAFT.name());
+        setInput("image.date", "2000");
+        setInput("image.description", "test description of a image with edit rights by user");
+        setInput("authorizedUsers[0].user.id", TEST.getUserId());
+        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        setInput("authorizedUsersFullNames[0]", "test user");
+        setInput("shares[0].name", RETAIN_COLLECTION);
+        submitForm();
+        assertTextPresentInPage(RETAIN_COLLECTION);
+        String pageUrl = getCurrentUrlPath();
+        clickLinkWithText(RETAIN_COLLECTION);
+        clickLinkWithText("edit");
+        setInput("resourceCollection.hidden", "true");
+        submitForm();
+        assertTextPresentInPage("true");
+        logout();
+        login(TEST.getUsername(), TEST.getPassword());
+        gotoPage(pageUrl);
+        //difference between stable and default, where we list the shares at the bottom in the rights section
+        String beforeAccessPermissions = StringUtils.substringBefore(getPageText(), "Access Permissions");
+        assertFalse(beforeAccessPermissions.contains(RETAIN_COLLECTION));
+        clickLinkWithText("edit");
+        assertTextNotPresent(RETAIN_COLLECTION);
+        submitForm();
+        beforeAccessPermissions = StringUtils.substringBefore(getPageText(), "Access Permissions");
+        assertFalse(beforeAccessPermissions.contains(RETAIN_COLLECTION));
+        assertTextNotPresent("the resource you requested is");
+        logout();
+        loginAdmin();
+        gotoPage(pageUrl);
+        assertTextPresentInPage(RETAIN_COLLECTION);
+    }
+    
+
+
+    @Test
+    public void testCreateEditDocumentRetainShared() {
+        gotoPage("/dataset/add");
+        setInput("dataset.title", "test title");
+        setInput("status", Status.DRAFT.name());
+        setInput("dataset.date", "2000");
+        setInput("dataset.description", "test description of a dataset with edit rights by user");
+//        setInput("authorizedUsers[0].user.id", TEST.getUserId());
+//        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+//        setInput("authorizedUsersFullNames[0]", "test user");
+        setInput("shares[0].name", RETAIN_COLLECTION_2);
+        submitForm();
+        assertTextPresentInPage(RETAIN_COLLECTION_2);
+        String pageUrl = getCurrentUrlPath();
+        clickLinkWithText(RETAIN_COLLECTION_2);
+        clickLinkWithText("edit");
+        setInput("resourceCollection.hidden", "true");
+        submitForm();
+        clickLinkWithText("Rights");
+        setInput(String.format(FMT_AUTHUSERS_ID, 0), TEST.getUserId()); // leave the id blank
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.MODIFY_RECORD.name());
+        submitForm();
+        assertTextPresentInPage("true");
+        logout();
+        login(TEST.getUsername(), TEST.getPassword());
+        gotoPage(pageUrl);
+        assertTextPresentInCode("test user:MODIFY_RECORD");
+        assertTextPresent(RETAIN_COLLECTION_2);
+        clickLinkWithText("edit");
+        assertTextPresent(RETAIN_COLLECTION_2);
+        submitForm();
+        assertTextPresent(RETAIN_COLLECTION_2);
+        assertTextNotPresent("the resource you requested is");
+        logout();
+        loginAdmin();
+        gotoPage(pageUrl);
+        assertTextPresentInPage(RETAIN_COLLECTION_2);
+    }
+    
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testCreateThenEditCollection() {

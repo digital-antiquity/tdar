@@ -74,44 +74,6 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
     
 
-
-    @Test
-    public void testCreateEditDocumentRetainShared() {
-        gotoPage("/dataset/add");
-        setInput("dataset.title", "test title");
-        setInput("status", Status.DRAFT.name());
-        setInput("dataset.date", "2000");
-        setInput("dataset.description", "test description of a dataset with edit rights by user");
-//        setInput("authorizedUsers[0].user.id", TEST.getUserId());
-//        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-//        setInput("authorizedUsersFullNames[0]", "test user");
-        setInput("resourceCollections[0].name", RETAIN_COLLECTION_2);
-        submitForm();
-        assertTextPresentInPage(RETAIN_COLLECTION_2);
-        String pageUrl = getCurrentUrlPath();
-        clickLinkWithText(RETAIN_COLLECTION_2);
-        clickLinkWithText("edit");
-        setInput("resourceCollection.hidden", "true");
-        setInput(String.format(FMT_AUTHUSERS_ID, 0), TEST.getUserId()); // leave the id blank
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.MODIFY_RECORD.name());
-        submitForm();
-        assertTextPresentInPage("true");
-        logout();
-        login(TEST.getUsername(), TEST.getPassword());
-        gotoPage(pageUrl);
-        assertTextPresentInCode("test user:MODIFY_RECORD");
-        assertTextPresent(RETAIN_COLLECTION_2);
-        clickLinkWithText("edit");
-        assertTextPresent(RETAIN_COLLECTION_2);
-        submitForm();
-        assertTextPresent(RETAIN_COLLECTION_2);
-        assertTextNotPresent("the resource you requested is");
-        logout();
-        loginAdmin();
-        gotoPage(pageUrl);
-        assertTextPresentInPage(RETAIN_COLLECTION_2);
-    }
-    
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testCreateThenEditCollection() {
