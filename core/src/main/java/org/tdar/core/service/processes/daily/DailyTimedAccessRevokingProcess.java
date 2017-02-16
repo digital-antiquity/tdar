@@ -19,11 +19,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.event.EventType;
@@ -110,14 +112,17 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
                 if (Objects.equals(au.getUser(), user)) {
                     String name = "";
                     if (collection instanceof HasName) {
-                        name = ((HasName) collection).getName();
+                        name = String.format("%s (%s)", ((HasName) collection).getName(), collection.getId());
+                    } else {
+                        InternalCollection ic = (InternalCollection)collection;
+                        Resource next = ic.getResources().iterator().next();
+                        name = String.format("%s (%s)", next.getName(), next.getId());
                     }
                     ownerNotes.putIfAbsent(persistable.getCreatedBy(), new ArrayList<>());
                     userNotes.putIfAbsent(persistable.getUser(), new ArrayList<>());
-                    String note = String.format("%s - %s", name, user.getName());
-                    ownerNotes.get(persistable.getCreatedBy()).add(note);
-                    userNotes.get(persistable.getUser()).add(note);
-                    String msg = String.format("disabling authorized user  (%s) for %s", au, collection);
+                    ownerNotes.get(persistable.getCreatedBy()).add(String.format("- %s ; removed access for %s", name, user.getName()));
+                    userNotes.get(persistable.getUser()).add(String.format("- removed access to %s", name));
+                    String msg = String.format("disabling authorized user (%s) for %s", au, collection);
                     logger.debug(msg);
                     sb.append(msg);
                     sb.append("\n");
@@ -147,9 +152,10 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
             email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User from Collection");
             Map<String, Object> map = new HashMap<>();
             map.put("user", owner);
-            List<String> notes = ownerNotes.get(owner);
+            List<String> notes = ownerNotes.getOrDefault(owner, new ArrayList<>());
             map.put("notes", notes);
-            emailService.queueWithFreemarkerTemplate("expire/expire-owner.ftl", map, email);
+            emailService.queueWithFreemarkerTemplate("expire/expire_owner.ftl", map, email);
+            logger.debug("user notes: {}", notes);
             adminNotes.addAll(notes);
         }
 
@@ -160,8 +166,9 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
             email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired Access To Collection");
             Map<String, Object> map = new HashMap<>();
             map.put("user", owner);
-            map.put("notes", ownerNotes.get(owner));
-            emailService.queueWithFreemarkerTemplate("expire/expire-user.ftl", map, email);
+            map.put("notes", ownerNotes.getOrDefault(owner, new ArrayList<>()));
+            logger.debug("owner notes: {}", ownerNotes);
+            emailService.queueWithFreemarkerTemplate("expire/expire_user.ftl", map, email);
         }
 
         if (CollectionUtils.isNotEmpty(adminNotes)) {
@@ -171,7 +178,8 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
             email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User Access To Collection");
             Map<String, Object> map = new HashMap<>();
             map.put("notes", adminNotes);
-            emailService.queueWithFreemarkerTemplate("expire/expire-admin.ftl", map, email);
+            logger.debug("admin notes: {}", adminNotes);
+            emailService.queueWithFreemarkerTemplate("expire/expire_admin.ftl", map, email);
         }
     }
 

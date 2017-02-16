@@ -22,6 +22,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
@@ -52,6 +53,8 @@ import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 
 /**
  * $Id$
@@ -59,19 +62,13 @@ import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
  * @author Adam Brin
  * @version $Revision$
  */
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     // private ScheduledProcessService scheduledProcessService;
     private static final int MOCK_NUMBER_OF_IDS = 2000;
 
-    @Autowired
-    private SendEmailProcess sendEmailProcess;
-    @Autowired
-    private DailyEmailProcess dailyEmailProcess;
-
-    @Autowired
-    private SalesforceSyncProcess salesforce;
 
     private class MockScheduledProcess extends AbstractScheduledBatchProcess<Dataset> {
 
@@ -105,12 +102,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     }
 
     @Autowired
-    OverdrawnAccountUpdate oau;
-
-    @Autowired
-    WeeklyFilestoreLoggingProcess fsp;
-
-    @Autowired
     ScheduledProcessService scheduledProcessService;
 
 
@@ -130,7 +121,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         // fixme: I'm not sure why this works like it works (w/ seemingly duplicated calls), but it's required for checkMailAndGetLatest() to work
         scheduledProcessService.queue(DailyEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-        assertTrue(dailyEmailProcess.isCompleted());
+//        assertTrue(dailyEmailProcess.isCompleted());
         scheduledProcessService.queue(SendEmailProcess.class);
 
         scheduledProcessService.runNextScheduledProcessesInQueue();
@@ -154,7 +145,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testVerifyProcess() throws InstantiationException, IllegalAccessException {
         Document document = generateDocumentWithFileAndUseDefaultUser();
-        fsp.execute();
+        scheduledProcessService.queue(WeeklyFilestoreLoggingProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+
         setupQueue(SendEmailProcess.class, sep);
         scheduledProcessService.queue(SendEmailProcess.class);
         int count = 0;
@@ -218,14 +211,18 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD})
     public void testAccountEmail() {
         BillingAccount account = setupAccountForPerson(getBasicUser());
         account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
         account.markUpdated(getAdminUser());
         account.setLastModified(DateTime.now().minusDays(1).toDate());
         genericService.saveOrUpdate(account);
-        oau.execute();
-        sendEmailProcess.execute();
+
+        scheduledProcessService.queue(OverdrawnAccountUpdate.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        scheduledProcessService.queue(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
         ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
         SimpleMailMessage received = messages.get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
@@ -270,22 +267,22 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     }
 
-    @Autowired
     OccurranceStatisticsUpdateProcess ocur;
 
     @Test
     @Rollback(true)
     public void testOccurranceStats() throws InstantiationException, IllegalAccessException {
-        ocur.execute();
+        scheduledProcessService.queue(OccurranceStatisticsUpdateProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+
     }
     
     @Test
     @Ignore("useful for testing")
     public void testSalesforce() {
-        if (salesforce.isEnabled()) {
             createAndSaveNewPerson("test-user@tdar.org", "-tdar2");
-            salesforce.execute();
-        }
+            scheduledProcessService.queue(SalesforceSyncProcess.class);
+            scheduledProcessService.runNextScheduledProcessesInQueue();
     }
     
     @Test
@@ -333,7 +330,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override
             public Image doInTransaction(TransactionStatus status) {
-                dtarp.execute();
+                scheduledProcessService.queue(DailyTimedAccessRevokingProcess.class);
+                scheduledProcessService.runNextScheduledProcessesInQueue();
+//                dtarp.execute();
+//                dtarp.cleanup();
                 SharedCollection rc = genericService.find(SharedCollection.class, cid);
                 logger.debug("{}",rc);
                 logger.debug("au: {}",rc.getAuthorizedUsers());
@@ -342,9 +342,4 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
             }
         });
     }
-
-    @Autowired
-    DailyTimedAccessRevokingProcess dtarp;
-    
-
 }
