@@ -43,7 +43,6 @@ import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.query.ResourceSearchService;
-import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;

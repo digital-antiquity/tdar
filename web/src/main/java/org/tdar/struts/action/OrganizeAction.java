@@ -1,8 +1,16 @@
 package org.tdar.struts.action;
 
-import com.opensymphony.xwork2.Preparable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -18,8 +26,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
-import java.io.IOException;
-import java.util.*;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * $Id$

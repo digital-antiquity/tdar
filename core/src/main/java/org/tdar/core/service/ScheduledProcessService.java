@@ -40,7 +40,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.AbstractPersistableScheduledProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
-import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.manager.ProcessManager;
 
 import com.google.common.collect.Sets;

@@ -51,16 +51,14 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts.action.browse.BrowseCollectionController;
-import org.tdar.struts.action.collection.CollectionDeleteAction;
-import org.tdar.struts.action.collection.CollectionViewAction;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.ResourceDeleteAction;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;

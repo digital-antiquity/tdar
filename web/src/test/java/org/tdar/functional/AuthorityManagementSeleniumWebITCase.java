@@ -1,6 +1,6 @@
 package org.tdar.functional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 import org.junit.Test;

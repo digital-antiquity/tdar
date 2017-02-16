@@ -1,27 +1,22 @@
 package org.tdar.search.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServerException;
-import org.joda.time.DateTime;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
-import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
 import org.tdar.search.service.processes.upgradeTasks.PartialReindexProjectTitleProcess;
 import org.tdar.search.service.processes.weekly.WeeklyResourcesAdded;
 

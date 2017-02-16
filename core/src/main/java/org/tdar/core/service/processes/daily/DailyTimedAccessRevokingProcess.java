@@ -29,7 +29,6 @@ import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
-import org.tdar.utils.PersistableUtils;
 
 
 /**

@@ -1,6 +1,7 @@
 package org.tdar.core.service.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -8,7 +9,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.Test;

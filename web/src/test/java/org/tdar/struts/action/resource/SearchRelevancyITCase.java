@@ -28,8 +28,8 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.search.AdvancedSearchController;
+import org.tdar.struts_base.action.TdarActionException;
 
 public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
 

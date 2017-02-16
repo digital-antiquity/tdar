@@ -35,7 +35,6 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.web.service.HomepageDetails;
 import org.tdar.web.service.HomepageService;

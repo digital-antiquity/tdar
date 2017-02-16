@@ -20,7 +20,6 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.HomepageDetails;

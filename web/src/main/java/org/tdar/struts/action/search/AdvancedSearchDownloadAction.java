@@ -29,10 +29,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.excel.ExcelWorkbookWriter;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionException;
 
 @Namespace("/search")
 @Component

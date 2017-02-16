@@ -45,7 +45,7 @@
         </#if>
 		<@list.displayWidget />
 
-        <#if true >
+        <#if false >
             <hr/>
             <ul class="inline">
             <li class="media"><i class="icon-envelope pull-left"></i>

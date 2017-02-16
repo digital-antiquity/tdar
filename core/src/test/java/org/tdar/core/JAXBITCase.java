@@ -19,15 +19,12 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.crypto.generators.MGF1BytesGenerator;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
-import org.hibernate.ScrollableResults;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Ignore;

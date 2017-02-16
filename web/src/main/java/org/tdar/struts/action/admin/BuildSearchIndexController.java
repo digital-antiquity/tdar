@@ -30,7 +30,6 @@ import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnl
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
-import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 

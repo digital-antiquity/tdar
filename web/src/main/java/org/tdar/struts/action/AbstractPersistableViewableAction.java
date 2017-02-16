@@ -31,7 +31,6 @@ import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.facet.Facet;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;

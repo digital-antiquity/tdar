@@ -17,12 +17,12 @@ import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
-import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.struts_base.interceptor.annotation.PostOnly;
-import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.struts.action.AbstractCartController;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;

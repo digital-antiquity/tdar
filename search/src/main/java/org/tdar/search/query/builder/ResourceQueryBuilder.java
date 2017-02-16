@@ -3,7 +3,6 @@ package org.tdar.search.query.builder;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.part.QueryPartGroup;

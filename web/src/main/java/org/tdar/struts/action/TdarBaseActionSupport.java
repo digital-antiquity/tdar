@@ -23,10 +23,10 @@ import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.web.WebFileSystemResourceService;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.TdarServletConfiguration;
+import org.tdar.web.WebFileSystemResourceService;
 
 import ro.isdc.wro.model.resource.ResourceType;
 

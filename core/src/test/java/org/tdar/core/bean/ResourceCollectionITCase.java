@@ -1,28 +1,42 @@
 package org.tdar.core.bean;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_METADATA;
+import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_RECORD;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.*;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.*;
+import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.utils.PersistableUtils;
-
-import java.util.*;
-
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_METADATA;
-import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_RECORD;
 
 public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
