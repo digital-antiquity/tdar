@@ -462,7 +462,7 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS,
                 query = "from UserNotification "
-                        + "WHERE messageType = 'SYSTEM_BROADCAST' OR tdarUser.id = :userId "
+                        + "WHERE (messageType = 'SYSTEM_BROADCAST' OR tdarUser.id = :userId) and (expirationDate is null or expirationDate > now()) "
                         + "ORDER BY dateCreated DESC"
         ),
         @org.hibernate.annotations.NamedQuery(
