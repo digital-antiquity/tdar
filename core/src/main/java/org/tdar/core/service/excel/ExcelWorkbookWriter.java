@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
@@ -67,6 +68,9 @@ public class ExcelWorkbookWriter {
     public static final SpreadsheetVersion DEFAULT_EXCEL_VERSION = SpreadsheetVersion.EXCEL97;
     public static final int MAX_ROWS_PER_WORKBOOK = DEFAULT_EXCEL_VERSION.getMaxRows() * MAX_SHEETS_PER_WORKBOOK;
     private SpreadsheetVersion version = DEFAULT_EXCEL_VERSION;
+
+    String[] schemes = {"http","https"}; // DEFAULT schemes = "http", "https", "ftp"
+    UrlValidator urlValidator = new UrlValidator(schemes);
 
     /**
      * Add validation to a given column
@@ -334,19 +338,6 @@ public class ExcelWorkbookWriter {
         return formatter.formatCellValue(columnNamesRow.getCell(columnIndex), evaluator);
     }
     
-    private boolean isValidURL(String urlString)
-    {
-        try
-        {
-            URL url = new URL(urlString);
-            url.toURI();
-            return true;
-        } catch (Exception exception)
-        {
-            return false;
-        }
-    }
-
     /**
      * Create a cell and be smart about it. If there's a link, make it a link, if numeric, set the type
      * to say, numeric.
@@ -361,7 +352,7 @@ public class ExcelWorkbookWriter {
         Cell cell = row.createCell(position);
 
         if (!StringUtils.isEmpty(value)) {
-            if (value.startsWith("http") && isValidURL(value) ) {
+            if (value.startsWith("http") && urlValidator.isValid(value) ) {
                 Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(org.apache.poi.common.usermodel.Hyperlink.LINK_URL);
                 hyperlink.setAddress(value);
                 hyperlink.setLabel(value);
