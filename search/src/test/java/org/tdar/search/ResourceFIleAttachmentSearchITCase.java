@@ -43,6 +43,12 @@ public class ResourceFIleAttachmentSearchITCase extends AbstractResourceSearchIT
         ids = PersistableUtils.extractIds(result.getResults());
         assertTrue(ids.contains(id));
 
+        params = new SearchParameters();
+        result = doSearch("test-file",null, params,null);
+        logger.info("results:{}", result.getResults());
+        ids = PersistableUtils.extractIds(result.getResults());
+        assertTrue(ids.contains(id));
+
     }
 
     @Test

@@ -976,7 +976,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     public MemoryUsageSetting getPDFMemoryWriteSetting(File file) {
         if (TdarConfiguration.getInstance().shouldUseLowMemoryPDFMerger()) {
-            return MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 3L);
+            return MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L);
         } else {
             return MemoryUsageSetting.setupMainMemoryOnly();
         }

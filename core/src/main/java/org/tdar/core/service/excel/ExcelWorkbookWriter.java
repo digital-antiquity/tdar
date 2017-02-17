@@ -1,5 +1,6 @@
 package org.tdar.core.service.excel;
 
+import java.net.URL;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.CellFormat.Style;
 import org.tdar.utils.DataUtil;
+
 
 /**
  * This is a service specific to trying to centralize all of the specific issues with writing
@@ -331,6 +333,19 @@ public class ExcelWorkbookWriter {
     public String getCellValue(DataFormatter formatter, FormulaEvaluator evaluator, Row columnNamesRow, int columnIndex) {
         return formatter.formatCellValue(columnNamesRow.getCell(columnIndex), evaluator);
     }
+    
+    private boolean isValidURL(String urlString)
+    {
+        try
+        {
+            URL url = new URL(urlString);
+            url.toURI();
+            return true;
+        } catch (Exception exception)
+        {
+            return false;
+        }
+    }
 
     /**
      * Create a cell and be smart about it. If there's a link, make it a link, if numeric, set the type
@@ -346,7 +361,7 @@ public class ExcelWorkbookWriter {
         Cell cell = row.createCell(position);
 
         if (!StringUtils.isEmpty(value)) {
-            if (value.startsWith("http")) {
+            if (value.startsWith("http") && isValidURL(value) ) {
                 Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(org.apache.poi.common.usermodel.Hyperlink.LINK_URL);
                 hyperlink.setAddress(value);
                 hyperlink.setLabel(value);

@@ -326,7 +326,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
        
         logger.debug("{} {}", object, dataOneObject); 
         if (object == null ) {
-            logger.error("object still null...");
+            logger.debug("object still null... returning");
             return;
         }
         String externalId = object.getTdarResource().getExternalId();
