@@ -137,13 +137,14 @@ public class PdfService {
             return false;
         }
         
-//        long freemem = Runtime.getRuntime().freeMemory();
-//        boolean enoughRam = freemem >  irfv.getFileLength();
-//        if(!enoughRam) {
-//            logger.error("Not enough RAM for coverpage (free:{} needed:{}) ", freemem, irfv.getFileLength());
-//        }
-        return true;
-//        return enoughRam;
+        long freemem = Runtime.getRuntime().freeMemory();
+        boolean enoughRam = freemem >  irfv.getFileLength() / 2;
+        if(!enoughRam) {
+            logger.error("Not enough RAM for coverpage (free:{} needed:{}) ", freemem, irfv.getFileLength());
+            return false;
+        }
+
+        return enoughRam;
     }
 
     /**
