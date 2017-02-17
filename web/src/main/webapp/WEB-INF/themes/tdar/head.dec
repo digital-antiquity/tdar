@@ -1,0 +1,56 @@
+<meta name="google-site-verification" content="rd6Iv58lPY7jDqfNvOLe9-WXRpAEpwLZCCndxR64nSg"/>
+<meta name="msvalidate.01" content="121771274977CEA348D5B098DE1F823F"/>
+<meta name="msvalidate.01" content="128653025DF7FC6B55A50F268FE1DEA0" />
+<Meta name = "baidu-site-verification" content = "QBf6pGiSwd" />
+
+<link rel='shortcut icon' href='<@s.url value="/images/tdar-favicon.ico"/>'/>
+<link rel="apple-touch-icon" href="/images/touch-icon-iphone.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/images/touch-icon-ipad.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
+
+<#if (persistable.description)?has_content>
+<meta name="description" content="${persistable.description?html}"/>
+<#else>
+<meta name="description"
+      content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
+</#if>
+<meta name="keywords" content="tdar, database, archaeology, digital repository, Digital Antiquity, preservation, access"/>
+<#if !(test!false)>
+<script type="text/javascript">
+    (function(d) {
+        var config = {
+                    kitId: 'czp6njc',
+                    scriptTimeout: 3000
+                },
+                h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(
+                        /\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement(
+                        "script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";
+                        tk.src='//use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;
+                        f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+    })(document);
+</script>
+</#if>
+<style>
+    @media screen {
+        /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
+        h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
+            font-family: "soleil", sans-serif !important;
+        }
+
+        #home .news li, .cols p, .tableFormat td, header form input.searchbox, header .welcome-drop a, .hero input.searchbox, #slider p, #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
+            font-family: "ff-tisa-web-pro", serif !important;
+        }
+
+    }
+
+    /* for typekit to prevent flash of unstyled content */
+    .wf-loading {
+        font-family: "helvetica";
+        visibility: hidden;
+    }
+
+    .wf-active {
+        visibility: visible;
+    }
+</style>
