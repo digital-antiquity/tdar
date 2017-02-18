@@ -113,6 +113,7 @@ public class DataOneWebITCase extends AbstractWebTest {
             if (id.equals("doi:10.6067:XCV8SN0B29_meta") || id.equals("doi:10.6067:XCV8SN0B29_format=d1rem")) {
                 continue;
             }
+            logger.debug("requesting: {}", id);
             HttpResponse hresponse = headRecord("/v2/object/" + id);
             logger.debug("headers: {}", hresponse.getAllHeaders());
             Header firstHeader = hresponse.getFirstHeader("DataONE-Checksum");
@@ -195,6 +196,7 @@ public class DataOneWebITCase extends AbstractWebTest {
     }
 
     private HttpResponse headRecord(String path) throws IOException, ClientProtocolException {
+        logger.debug("requesting path: {}",path);
         HttpHead getMethod = new HttpHead(TestConfiguration.getInstance().getBaseSecureUrl() + path);
         CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
         HttpResponse httpResponse = httpClient.execute(getMethod);
