@@ -92,12 +92,12 @@ public class ObjectResponse extends AbstractDataOneResponse {
         try {
             ObjectResponseContainer container = service.getObject(id, request, null);
             if (container != null) {
-                logger.debug("returning OK");
                 response.setHeader(DATA_ONE_OBJECT_FORMAT, container.getObjectFormat());
                 response.setHeader(DATA_ONE_CHECKSUM, "MD5," + container.getChecksum());
                 response.setHeader(LAST_MODIFIED, toIso822(container.getLastModified()));
                 response.setHeader(HttpHeaders.CONTENT_LENGTH, Integer.toString(container.getSize()));
                 response.setHeader(DATA_ONE_SERIAL_VERSION, container.getSerialVersionId().toString());
+                logger.debug("returning OK");
                 return Response.ok().build();
             }
 

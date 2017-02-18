@@ -138,7 +138,6 @@ public class DataOneWebITCase extends AbstractWebTest {
 
     private HttpResponse getRecord(String path, StringWriter response) throws ClientProtocolException, IOException {
         HttpGet getMethod = new HttpGet(TestConfiguration.getInstance().getBaseSecureUrl() + path);
-        CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
         HttpResponse httpResponse = httpClient.execute(getMethod);
         int statusCode = httpResponse.getStatusLine().getStatusCode();
 
@@ -194,11 +193,11 @@ public class DataOneWebITCase extends AbstractWebTest {
         String path = "/v2/object/" + TEST_DOI;
         headRecord(path);
     }
+    CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
 
     private HttpResponse headRecord(String path) throws IOException, ClientProtocolException {
         logger.debug("requesting path: {}",path);
         HttpHead getMethod = new HttpHead(TestConfiguration.getInstance().getBaseSecureUrl() + path);
-        CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
         HttpResponse httpResponse = httpClient.execute(getMethod);
         int statusCode = httpResponse.getStatusLine().getStatusCode();
 
