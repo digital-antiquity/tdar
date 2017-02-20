@@ -308,6 +308,10 @@ public class DataOneService implements DataOneConstants, D1Formatter {
             genericService.markReadOnly(object.getTdarResource());
         }
         
+        if (dataOneObject == null) {
+            return;
+        }
+        
         // if the dataone object and the tdar object differ in checksum... redo
         if (dataOneObject != null && object != null && 
                 !StringUtils.equals(object.getChecksum(), dataOneObject.getChecksum()) && 
