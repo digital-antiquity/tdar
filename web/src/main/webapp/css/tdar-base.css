@@ -1416,3 +1416,7 @@ ul .header-auto {
 .break-word {
     overflow-wrap: break-word;
 }
+
+#divIntegrationHeader {
+    padding-top: 2em
+}
