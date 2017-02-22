@@ -13,7 +13,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
-import org.tdar.core.bean.resource.datatable.HasStatic;
+import org.tdar.core.bean.resource.HasStatic;
 
 /**
  * Represents a Project. Projects allow for inheritance of metadata from the project to resources within the project and thus simplifying metadata entry.
