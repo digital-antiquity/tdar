@@ -99,7 +99,9 @@ public interface QueryFieldNames {
     String FIRST_NAME_AUTO = "firstName_autocomplete";
     String NAME_AUTOCOMPLETE = "name_autocomplete";
     String NAME_SORT = "name_sort";
-    String OBJECT_TYPE = "type";
+    String GENERAL_TYPE = "type";
+    String OBJECT_TYPE = "objectType";
+    String OBJECT_TYPE_SORT = "objectTypeSort";
     String REGISTERED = "registered";
     String CONTIRBUTOR = "contributor";
     String INSTITUTION_NAME = "institution.name";

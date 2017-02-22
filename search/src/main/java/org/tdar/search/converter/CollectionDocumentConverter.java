@@ -9,6 +9,7 @@ import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 
@@ -48,7 +49,9 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         }
         doc.setField(QueryFieldNames.STATUS, Status.ACTIVE);
         
-        doc.setField(QueryFieldNames.OBJECT_TYPE, LookupSource.COLLECTION.name());
+        doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.COLLECTION.name());
+        doc.setField(QueryFieldNames.OBJECT_TYPE, ObjectType.from(collection.getType()).name());
+        doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, ObjectType.from(collection.getType()).getSortName());
         return doc;
     }
     

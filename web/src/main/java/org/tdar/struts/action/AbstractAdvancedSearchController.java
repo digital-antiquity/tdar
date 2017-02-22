@@ -37,6 +37,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.UrlService;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.exception.SearchPaginationException;
@@ -62,6 +63,9 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     private DisplayOrientation orientation;
+    
+    private List<ObjectType> objectTypes = new ArrayList<>();
+    
     // error message of last resort. User entered something we did not
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
@@ -131,6 +135,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             groups.add(new SearchParameters());
             getFirstGroup().getResourceIds().add(getId());
             getResourceTypes().clear();
+            getObjectTypes().clear();
             return true;
         }
 
@@ -680,6 +685,18 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     public void setAsqo(AdvancedSearchQueryObject asqo) {
         this.asqo = asqo;
+    }
+
+    public List<ObjectType> getObjectTypes() {
+        return objectTypes;
+    }
+
+    public void setObjectTypes(List<ObjectType> objectTypes) {
+        this.objectTypes = objectTypes;
+    }
+    
+    public List<ObjectType> getAllObjectTypes() {
+        return Arrays.asList(ObjectType.values());
     }
 
 }
