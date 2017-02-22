@@ -15,7 +15,7 @@
     <#macro narrowAndSort>
     <h2>Narrow Your Search</h2>
 
-        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='allResourceTypes'  listValue='label' label="Resource Type"/>
+        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='objectTypes' list='allObjectTypes'  listValue='label' label="Object Type"/>
 
         <#if authenticated>
         <@s.checkboxlist theme="bootstrap" numColumns=3 spanClass="span2" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
