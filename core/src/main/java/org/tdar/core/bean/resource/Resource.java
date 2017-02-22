@@ -872,9 +872,9 @@ public class Resource implements Persistable,
         return resourceType;
     }
 
-    public String getResourceTypeSort() {
-        return resourceType.getSortName();
-    }
+//    public String getResourceTypeSort() {
+//        return resourceType.getSortName();
+//    }
 
     @Deprecated()
     @JsonView(JsonLookupFilter.class)

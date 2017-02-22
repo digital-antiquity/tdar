@@ -235,9 +235,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     private static void addRequiredField(Resource resource, SolrInputDocument doc) {
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
-        doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
-        doc.setField(QueryFieldNames.OBJECT_TYPE, ObjectType.from(resource.getResourceType()).name());
-        doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, ObjectType.from(resource.getResourceType()).getSortName());
+        ObjectType objectType = ObjectType.from(resource.getResourceType());
+        doc.setField(QueryFieldNames.OBJECT_TYPE, objectType.name());
+        doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, objectType.getSortName());
         doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.RESOURCE.name());
     }
 

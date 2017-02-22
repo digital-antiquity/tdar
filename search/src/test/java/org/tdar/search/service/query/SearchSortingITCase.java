@@ -29,6 +29,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.QuietIndexReciever;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
@@ -183,7 +184,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
             @SuppressWarnings("rawtypes")
             @Override
             public Comparable getComparableFor(Resource t) {
-                return t.getResourceTypeSort();
+                return ObjectType.from(t.getResourceType()).getSortName();
             }
         };
         assertSortOrder(SortOption.RESOURCE_TYPE, resourceTypeComparator);

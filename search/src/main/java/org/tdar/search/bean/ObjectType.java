@@ -8,7 +8,18 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.resource.Archive;
+import org.tdar.core.bean.resource.Audio;
+import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Geospatial;
+import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.bean.resource.Video;
 import org.tdar.utils.MessageHelper;
 
 public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
@@ -43,6 +54,36 @@ public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
     }
 
     public String getSortName() {
+        switch (this) {
+            case ARCHIVE:
+                return "100" + this.name();
+            case AUDIO:
+                return "095" + this.name();
+            case CODING_SHEET:
+                return "095" + this.name();
+            case DATASET:
+                return "003" + this.name();
+            case DOCUMENT:
+                return "001" + this.name();
+            case GEOSPATIAL:
+                return "006" + this.name();
+            case IMAGE:
+                return "002" + this.name();
+            case LIST_COLLECTION:
+                return "050" + this.name();
+            case ONTOLOGY:
+                return "009" + this.name();
+            case PROJECT:
+                return "005" + this.name();
+            case SENSORY_DATA:
+                return "007" + this.name();
+            case SHARED_COLLECTION:
+                return "010" + this.name();
+            case VIDEO:
+                return "099" + this.name();
+            default:
+                break;
+        }
         return null;
     }
 

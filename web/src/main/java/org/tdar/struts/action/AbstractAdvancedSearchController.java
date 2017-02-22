@@ -697,7 +697,12 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     }
     
     public List<ObjectType> getAllObjectTypes() {
-        return Arrays.asList(ObjectType.values());
+        List<ObjectType> types = new ArrayList<>(Arrays.asList(ObjectType.values()));
+        types.remove(ObjectType.ARCHIVE);
+        types.remove(ObjectType.AUDIO);
+        types.remove(ObjectType.VIDEO);
+        types.remove(ObjectType.LIST_COLLECTION);
+        return types;
     }
 
     public List<ObjectType> getObjectTypes() {
