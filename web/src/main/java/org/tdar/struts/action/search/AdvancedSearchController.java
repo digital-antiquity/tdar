@@ -115,7 +115,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         //FIXME jtd: This is a workaround for a (possible) bug in Struts that inserts null into lists if a request querystring has parameter name w/o a value.
         // Normally we would expect struts to set such properties to be empty lists, so we make sure this is the case by stripping null entries.
         // Note that sometimes null entries are important placeholders, so don't do this *everywhere*, just in lists where nulls are never expected.
-        stripNulls(getIntegratableOptions(), getDocumentTypeFacets(), getResourceTypeFacets(), getResourceTypes());
+        stripNulls(getIntegratableOptions(), getDocumentTypeFacets(), getResourceTypeFacets(), getObjectTypeFacets(), getObjectTypes(), getResourceTypes());
 
         setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
 
@@ -306,6 +306,10 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
     }
 
+    public List<Facet> getObjectTypeFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.OBJECT_TYPE);
+    }
+
     public List<Facet> getTypeFacets() {
         return getFacetWrapper().getFacetResults().get(QueryFieldNames.GENERAL_TYPE);
     }
@@ -372,9 +376,9 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
             return;
         }
 
-        if (CollectionUtils.isNotEmpty(getResourceTypeFacets())) {
+        if (CollectionUtils.isNotEmpty(getObjectTypeFacets())) {
             boolean allImages = true;
-            for (Facet val : getResourceTypeFacets()) {
+            for (Facet val : getObjectTypeFacets()) {
                 if (val.getCount() > 0 && !ResourceType.isImageName(val.getRaw())) {
                     allImages = false;
                 }

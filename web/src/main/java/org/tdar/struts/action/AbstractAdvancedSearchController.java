@@ -31,6 +31,7 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -63,8 +64,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     private DisplayOrientation orientation;
-    
-    private List<ObjectType> objectTypes = new ArrayList<>();
     
     // error message of last resort. User entered something we did not
     // anticipate, and we ultimately translated it into query that lucene can't
@@ -128,6 +127,12 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         // example: an id search combined with a uncontrolledCultureKeyword
         // search on the same querystring)
 
+        // reset legacy resourceType for modern objectType
+        for (ResourceType rt : getResourceTypes()) {
+            getObjectTypes().add(ObjectType.from(rt));
+        }
+        getResourceTypes().clear();
+        
         // legacy search by id?
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             getLogger().trace("legacy api:  tdar id");
@@ -687,16 +692,15 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         this.asqo = asqo;
     }
 
-    public List<ObjectType> getObjectTypes() {
-        return objectTypes;
-    }
-
     public void setObjectTypes(List<ObjectType> objectTypes) {
-        this.objectTypes = objectTypes;
+        getReservedSearchParameters().setObjectTypes(objectTypes);
     }
     
     public List<ObjectType> getAllObjectTypes() {
         return Arrays.asList(ObjectType.values());
     }
 
+    public List<ObjectType> getObjectTypes() {
+        return getReservedSearchParameters().getObjectTypes();
+    }
 }

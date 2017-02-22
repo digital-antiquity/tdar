@@ -216,6 +216,7 @@
                                     <@s.url action=action includeParams="get" >
                                             <@s.param name="${facetParam}">${facet.raw}</@s.param>
                                             <@s.param name="startRecord" value="0"/>
+                                            <@s.param name="resourceTypes" value=""/>
                                         <#nested>
                                     </@s.url
                                 ></#local>
@@ -279,7 +280,7 @@
                                     <@s.param suppressEmptyParameters=true />
                                     <@s.param name="${facetParam}"value="" />
                                     <@s.param name="startRecord" value="0"/>
-
+									<@s.param name="resourceTypes" value=""/>
                                     <#-- fixme: (TDAR-5574) commenting out the block below fixes at least some of the issues seen in TDAR-5574 - is there a scenario I'm overlooking?  -->
                                     <#--
                                     <#if facetParam != "documentType">
