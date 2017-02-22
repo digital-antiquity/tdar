@@ -216,7 +216,13 @@
                                     <@s.url action=action includeParams="get" >
                                             <@s.param name="${facetParam}">${facet.raw}</@s.param>
                                             <@s.param name="startRecord" value="0"/>
-                                            <@s.param name="resourceTypes" value=""/>
+                                            <#-- hack to get object type into the parameters list when passing from resourceType -->
+                                            <#if actionName == 'results'>
+                                                <#if (objectTypes?size > 0)>
+                                                    <@s.param name="objectTypes" value="objectTypes"/>
+                                                </#if>
+                                                <@s.param name="resourceTypes" value="" suppressEmptyParameters=true />
+                                            </#if>
                                         <#nested>
                                     </@s.url
                                 ></#local>
@@ -278,9 +284,12 @@
                         <span class="media-body">
                             <a rel="noindex" href="<@s.url includeParams="all">
                                     <@s.param suppressEmptyParameters=true />
-                                    <@s.param name="${facetParam}"value="" />
+                                    <@s.param name="${facetParam}"value="" suppressEmptyParameters=true  />
                                     <@s.param name="startRecord" value="0"/>
-									<@s.param name="resourceTypes" value=""/>
+                                    <#--  for unified search, remove resourceTypes  -->
+                                    <#if actionName == 'results'>
+    									<@s.param name="resourceTypes" value="" suppressEmptyParameters=true />
+									</#if>
                                     <#-- fixme: (TDAR-5574) commenting out the block below fixes at least some of the issues seen in TDAR-5574 - is there a scenario I'm overlooking?  -->
                                     <#--
                                     <#if facetParam != "documentType">
