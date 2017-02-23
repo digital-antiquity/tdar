@@ -20,6 +20,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Assert;
 import org.junit.Test;
@@ -198,6 +199,9 @@ public class DataOneWebITCase extends AbstractWebTest {
     private HttpResponse headRecord(String path) throws IOException, ClientProtocolException {
         logger.debug("requesting path: {}",path);
         HttpHead getMethod = new HttpHead(TestConfiguration.getInstance().getBaseSecureUrl() + path);
+        httpClient.getConnectionManager().closeExpiredConnections();
+//        httpClient.removeRequestInterceptorByClass(RequestAcceptEncoding.class);
+
         HttpResponse httpResponse = httpClient.execute(getMethod);
         int statusCode = httpResponse.getStatusLine().getStatusCode();
 
