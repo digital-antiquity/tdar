@@ -379,7 +379,9 @@ public class SearchParameters {
                 getOperator(), getProjects()));
 
         for (ResourceType rt : getResourceTypes()) {
-            getObjectTypes().add(ObjectType.from(rt));
+            if (rt != null) {
+                getObjectTypes().add(ObjectType.from(rt));
+            }
         }
 
         appendFieldQueryPart(queryPartGroup, QueryFieldNames.OBJECT_TYPE, support.getText("searchParameter.object_type"), getObjectTypes(), Operator.OR,
