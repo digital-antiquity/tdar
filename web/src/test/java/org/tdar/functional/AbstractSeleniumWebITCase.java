@@ -372,6 +372,8 @@ public abstract class AbstractSeleniumWebITCase {
 
     @After
     public void after() {
+        //disable navigation warning
+        executeJavascript("$(window).off('beforeunload');");
         try {
             logout();
             driver.get("about://");
