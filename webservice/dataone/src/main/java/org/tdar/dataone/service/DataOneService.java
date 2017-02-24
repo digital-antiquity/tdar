@@ -343,7 +343,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
             genericService.clearCurrentSession();
             Date dateUpdated = new Date();
             dataOneDao.updateModifedDate(tdarId, dateUpdated);
-                logger.error("checksum varied between D1 object and tDAR object: {} {} {} {}", tdarId, checksum,
+                logger.warn("checksum varied between D1 object and tDAR object: {} {} {} {}", tdarId, checksum,
                     dataOneObject.getChecksum(), dataOneObject.getIdentifier()); 
             dataOneDao.unifyEntry(this, externalId, tdarId, DataOneUtils.toUtc(dateUpdated));
             genericService.refresh(dataOneObject);
