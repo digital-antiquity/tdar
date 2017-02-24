@@ -68,6 +68,7 @@ public class AuthorizedUser extends AbstractPersistable {
     @JoinColumn(nullable = false, name = "user_id")
     private TdarUser user;
 
+    @Transient
     private transient Date dateExpires;
 
     

@@ -1048,11 +1048,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().getWhiteLabelCollectionForResource(resource);
     }
 
-    @Transactional(readOnly = true)
-    public List<Long> findCollectionIdsWithTimeLimitedAccess() {
-        return getDao().findCollectionIdsWithTimeLimitedAccess();
-    }
-
     /**
      * Return list of shared resources that match a specified name and are editable for a specified user. This
      * method does not evaluate inherited permissions.
