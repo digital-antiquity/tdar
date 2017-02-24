@@ -106,7 +106,7 @@ TDAR.validate = (function($, ctx) {
      * if there's a data attribute to associate with valdiateMethod, then see if it's a function. if it's not a function, then call validate() plain.
      */
     var _init = function() {
-        $("form").find(".tdarvalidate").each(function() {
+        $("form.tdarvalidate").each(function() {
             _initForm($(this));
         });
     };
