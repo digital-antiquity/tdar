@@ -85,14 +85,8 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
     private String statusData;
     private String resourceTypeData;
 
-    @Override
-    public void validate() {
-        if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
-            addActionError(getText("dashboardController.user_must_login"));
-        }
-        super.validate();
-    }
 
+    //TODO: get rid of this execute method. We are going to break out separate actions for sharing a colection and sharing a resource, which will extend from this class and implement their own execute() method.
     @Override
     @Action(value = "manage", results = { @Result(name = SUCCESS, location = "dashboard/manage.ftl") })
     public String execute() throws SolrServerException, IOException {
@@ -100,33 +94,14 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
         return SUCCESS;
     }
 
-    private void setupResourceCollectionTreesForDashboard() {
-        getLogger().trace("parent/ owner collections");
-        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
-                SharedCollection.class)) {
-            getAllResourceCollections().add((SharedCollection) rc);
-        }
-        getLogger().trace("accessible collections");
-        for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-            if (rc instanceof SharedCollection) {
-                getSharedResourceCollections().add((SharedCollection) rc);
-            }
-        }
-        List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
-        collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
-        getLogger().trace("reconcile tree1");
-        resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
-        getLogger().trace("reconcile tree2");
-        resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
+    @Override
+    public void validate() {
 
-        getLogger().trace("removing duplicates");
-        getSharedResourceCollections().removeAll(getAllResourceCollections());
-        getLogger().trace("sorting");
-        Collections.sort(allResourceCollections);
-        Collections.sort(sharedResourceCollections);
-        getLogger().trace("done sort");
+        //fixme: this seems unecessary for actions in the "secured" package - doesn't the interceptor authenticate the current user?
+        if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
+            addActionError(getText("dashboardController.user_must_login"));
+        }
+        super.validate();
     }
 
     public List<Project> getAllSubmittedProjects() {
@@ -159,28 +134,12 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
 
     private Set<Resource> editableProjects = new HashSet<>();
 
-    private void prepareProjectStuff() {
-        boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-        editableProjects = new TreeSet<Resource>(
-                projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
-
-        fullUserProjects = new ArrayList<Resource>(
-                projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
-        Collections.sort(fullUserProjects);
-        allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
-        Collections.sort(allSubmittedProjects);
-        fullUserProjects.removeAll(getAllSubmittedProjects());
-        filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
-        filteredFullUserProjects.removeAll(getAllSubmittedProjects());
-    }
-
     public Set<Resource> getEditableProjects() {
         return editableProjects;
     }
 
     public void prepare() {
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
-        setupResourceCollectionTreesForDashboard();
 //        prepareProjectStuff();
         internalCollections = resourceCollectionService.findAllInternalCollections(getAuthenticatedUser());
     }

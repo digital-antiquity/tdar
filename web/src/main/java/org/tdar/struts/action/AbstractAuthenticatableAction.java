@@ -39,42 +39,6 @@ public abstract class AbstractAuthenticatableAction extends TdarBaseActionSuppor
         }
     }
 
-    public <P extends Persistable> boolean authorize(PersistableLoadingAction<Persistable> action) throws TdarActionException {
-
-        String name = action.getPersistableClass().getSimpleName();
-        Object[] msg = { action.getAuthenticatedUser(), name, action.getPersistableClass().getSimpleName() };
-        if (!(action.getAuthenticatedUser() == null && "view".equalsIgnoreCase(name))) {
-            // don't log anonymous users
-            getLogger().info("user {} is TRYING to {} a {}", msg);
-        }
-
-        // first check the session
-        Persistable persistable = action.getPersistable();
-
-        if (PersistableUtils.isNullOrTransient(persistable) || PersistableUtils.isNullOrTransient(action.getId())) {
-            // deal with the case that we have a new or not found resource
-            getLogger().debug("Dealing with transient persistable {}", persistable);
-            return true;
-        }
-        if (persistable == null) {
-            // persistable is null, so the lookup failed (aka not found)
-            abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
-        } else if (PersistableUtils.isNullOrTransient(persistable.getId())) {
-            // id not specified or not a number, so this is an invalid request
-            abort(StatusCode.BAD_REQUEST,
-                    getText("abstractPersistableController.cannot_recognize_request", persistable.getClass().getSimpleName()));
-        }
-
-        // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
-        if (authorizationService.can(action.getAdminRights(), action.getAuthenticatedUser())) {
-            return true;
-        }
-        String errorMessage = getText("abstractPersistableController.no_permissions");
-        addActionError(errorMessage);
-        abort(StatusCode.FORBIDDEN, UNAUTHORIZED, errorMessage);
-        return false;
-    }
-
     protected void abort(StatusCode statusCode, String errorMessage) throws TdarActionException {
         throw new TdarActionException(statusCode, errorMessage);
     }

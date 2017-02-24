@@ -52,7 +52,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("")
 @Component
 @Scope("prototype")
-public class ManageRightsAction extends AbstractAuthenticatableAction implements DataTableResourceDisplay, Preparable {
+public class RightsAction extends AbstractAuthenticatableAction implements DataTableResourceDisplay, Preparable {
 
     private static final long serialVersionUID = 5576550365349636811L;
     private List<Resource> filteredFullUserProjects;
