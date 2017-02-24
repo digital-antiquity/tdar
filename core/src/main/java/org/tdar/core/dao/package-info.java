@@ -600,7 +600,13 @@
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH_USERS,
                 query = "select distinct au.user from SharedCollection s inner join s.authorizedUsers au where  (s.id in ("
                         + "select s_.id from SharedCollection s_  left join s_.parentIds parentId where s_.owner=:owner or s_.id in (:collectionIds) or parentId in (:collectionIds) "
-                        + "))")
+                        + "))"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.QUERY_TIMED_ACCESS_RESTIRCTIONS,
+                query = "from TImedAccessRestriction tar where tar.collection.id in :cids")
+
+
+        
 })
 package org.tdar.core.dao;
 

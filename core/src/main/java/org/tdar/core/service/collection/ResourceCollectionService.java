@@ -1302,4 +1302,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
         return getDao().findUsersSharedWith(authenticatedUser);
     }
+
+    @Transactional(readOnly = true)
+    public List<TimedAccessRestriction> findTimedAccessRestrictions(List<RightsBasedResourceCollection> list) {
+        return getDao().findTimedAccessRestrictions(list);
+    }
+
 }
