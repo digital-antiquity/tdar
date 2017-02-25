@@ -94,7 +94,7 @@ Common macros used in multiple contexts
                 <#list availablePermissions as permission>
                     <th>${permission.label}</th>
                 </#list>
-                <th>Until</th>
+                <th>Expires</th>
             </tr>
                 <#if owner?has_content>
                 <tr>
@@ -129,7 +129,7 @@ Common macros used in multiple contexts
                                     </#if>
                                 </td>
                             </#list>
-                            <td>${user.dateExpires}</td>
+                            <td>${(user.dateExpires?string("MM/dd/yyyy"))!''}</td>
                         </tr>
                         </#list>
                     <#else>
