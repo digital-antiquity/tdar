@@ -32,7 +32,9 @@ import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -489,5 +491,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         query2.setParameter("collectionIds", ids);
         users.addAll(query2.getResultList());
         return users;
+    }
+
+    public List<TimedAccessRestriction> findTimedAccessRestrictions(List<RightsBasedResourceCollection> list) {
+        Query<TimedAccessRestriction> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_TIMED_ACCESS_RESTIRCTIONS, TimedAccessRestriction.class);
+        query.setParameter("cids", PersistableUtils.extractIds(list));
+        return query.list();
     }
 }

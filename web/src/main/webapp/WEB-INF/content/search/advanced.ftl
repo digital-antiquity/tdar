@@ -82,7 +82,7 @@
     <textarea id="autosave"></textarea>
 </form>
 
-<div id="template" style="display:none;visibility:hidden">
+<div id="template" style="display:none;visibility:hidden" >
     <#list allSearchFieldTypes as fieldType>
         <@fieldTemplate fieldType=fieldType fieldIndex="{termid}" groupid="{groupid}" />
     </#list>
@@ -100,7 +100,7 @@
                 <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="number" />
             </div>
             <#elseif fieldType.simple>
-            <div class="term retain  ${fieldType}">
+            <div class="term retain  ${fieldType} simple">
                 <@s.textfield theme="tdar" type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="input-xxlarge" />
             </div>
             <#elseif fieldType="COVERAGE_DATE_RADIOCARBON" || fieldType="COVERAGE_DATE_CALENDAR" >
@@ -311,7 +311,7 @@
     <#macro blankRow groupid=0 fieldType_index=0 idAttr="grouptablerow_${groupid}_">
     <div id="${idAttr}" class="control-group termrow repeat-row">
         <@searchTypeSelect />
-        <div class="controls controls-row">
+        <div class="controls controls-row simple">
             <div class="span8 term-container">
                             <span class="term retain  ALL_FIELDS">
                                 <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="input-xxlarge"/>

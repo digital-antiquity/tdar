@@ -94,6 +94,7 @@ Common macros used in multiple contexts
                 <#list availablePermissions as permission>
                     <th>${permission.label}</th>
                 </#list>
+                <th>Expires</th>
             </tr>
                 <#if owner?has_content>
                 <tr>
@@ -102,6 +103,7 @@ Common macros used in multiple contexts
                     <td><i class="icon-ok"></i></td>
                     <td><i class="icon-ok"></i></td>
                     <td><i class="icon-ok"></i></td>
+                    <td></td>
                 </tr>
                 </#if>
                 <#list collections as collection_ >
@@ -127,6 +129,7 @@ Common macros used in multiple contexts
                                     </#if>
                                 </td>
                             </#list>
+                            <td>${(user.dateExpires?string("MM/dd/yyyy"))!''}</td>
                         </tr>
                         </#list>
                     <#else>
@@ -135,7 +138,7 @@ Common macros used in multiple contexts
                             <td>
                                 <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
                             </td>
-                            <td colspan=4>n/a</td>
+                            <td colspan=5>n/a</td>
                         </tr>                    
                         </#if>
                     </#if>

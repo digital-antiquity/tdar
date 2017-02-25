@@ -40,6 +40,8 @@
 
     <field name="resourceType" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
     <field name="resourceTypeSort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="objectType" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
+    <field name="objectTypeSort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="documentType" type="string" indexed="true"  required="false" multiValued="false" />
     <field name="subType" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
     <field name="degree" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>

@@ -41,6 +41,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
@@ -114,15 +115,15 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         //FIXME jtd: This is a workaround for a (possible) bug in Struts that inserts null into lists if a request querystring has parameter name w/o a value.
         // Normally we would expect struts to set such properties to be empty lists, so we make sure this is the case by stripping null entries.
         // Note that sometimes null entries are important placeholders, so don't do this *everywhere*, just in lists where nulls are never expected.
-        stripNulls(getIntegratableOptions(), getDocumentTypeFacets(), getResourceTypeFacets(), getResourceTypes());
+        stripNulls(getIntegratableOptions(), getDocumentTypeFacets(), getResourceTypeFacets(), getObjectTypeFacets(), getObjectTypes(), getResourceTypes());
 
         setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
 
         getAsqo().setMultiCore(true);
         try {
-            getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+            getFacetWrapper().facetBy(QueryFieldNames.OBJECT_TYPE, ObjectType.class);
             getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionType.class);
-            getFacetWrapper().facetBy(QueryFieldNames.OBJECT_TYPE, LookupSource.class);
+            getFacetWrapper().facetBy(QueryFieldNames.GENERAL_TYPE, LookupSource.class);
             getFacetWrapper().facetBy(QueryFieldNames.INTEGRATABLE, IntegratableOptions.class);
             getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_ACCESS_TYPE, ResourceAccessType.class);
             getFacetWrapper().facetBy(QueryFieldNames.DOCUMENT_TYPE, DocumentType.class);
@@ -305,8 +306,12 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
     }
 
-    public List<Facet> getTypeFacets() {
+    public List<Facet> getObjectTypeFacets() {
         return getFacetWrapper().getFacetResults().get(QueryFieldNames.OBJECT_TYPE);
+    }
+
+    public List<Facet> getTypeFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.GENERAL_TYPE);
     }
 
     public List<Facet> getCollectionTypeFacets() {
@@ -371,9 +376,9 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
             return;
         }
 
-        if (CollectionUtils.isNotEmpty(getResourceTypeFacets())) {
+        if (CollectionUtils.isNotEmpty(getObjectTypeFacets())) {
             boolean allImages = true;
-            for (Facet val : getResourceTypeFacets()) {
+            for (Facet val : getObjectTypeFacets()) {
                 if (val.getCount() > 0 && !ResourceType.isImageName(val.getRaw())) {
                     allImages = false;
                 }
@@ -417,7 +422,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     }
 
     public List<DisplayOrientation> getAvailableOrientations() {
-        List<String> keys = getObjectTypes();
+        List<String> keys = getGeneralTypes();
 
         if (keys.size() == 1) {
             return DisplayOrientation.getOrientationsFor(keys.get(0));
@@ -430,7 +435,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         return new ArrayList<>();
     }
 
-    private List<String> getObjectTypes() {
+    private List<String> getGeneralTypes() {
         List<String> keys = new ArrayList<>();
         getTypeFacets().forEach(facet -> keys.add(facet.getRaw()));
         return keys;
@@ -438,7 +443,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
 
     @Override
     public List<SortOption> getSortOptions() {
-        List<String> keys = getObjectTypes();
+        List<String> keys = getGeneralTypes();
         List<SortOption> sortOptions = super.getSortOptions();
         if (keys.size() == 1 && keys.contains(LookupSource.COLLECTION.name())) {
             sortOptions.remove(SortOption.PROJECT);

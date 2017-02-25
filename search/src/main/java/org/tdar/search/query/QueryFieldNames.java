@@ -76,7 +76,6 @@ public interface QueryFieldNames {
     String CATEGORY_LABEL = "categoryVariable.label";
     String COLLECTION_HIDDEN = "hidden";
     String TOP_LEVEL = "topLevel";
-    String RESOURCE_TYPE_SORT = "resourceTypeSort";
     String RESOURCE_OWNER = "resourceOwner";
     String DATE_CREATED_DECADE = "decadeCreated";
     String CREATOR_ROLE_IDENTIFIER = "crid";
@@ -99,7 +98,10 @@ public interface QueryFieldNames {
     String FIRST_NAME_AUTO = "firstName_autocomplete";
     String NAME_AUTOCOMPLETE = "name_autocomplete";
     String NAME_SORT = "name_sort";
-    String OBJECT_TYPE = "type";
+    String GENERAL_TYPE = "type";
+    String OBJECT_TYPE = "objectType";
+    String OBJECT_TYPE_SORT = "objectTypeSort";
+    String RESOURCE_TYPE_SORT = OBJECT_TYPE_SORT;
     String REGISTERED = "registered";
     String CONTIRBUTOR = "contributor";
     String INSTITUTION_NAME = "institution.name";

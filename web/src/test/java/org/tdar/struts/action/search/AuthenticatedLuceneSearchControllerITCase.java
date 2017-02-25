@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.index.SearchIndexService;
 
@@ -29,7 +30,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
 
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
-    protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
+    protected static List<ObjectType> allResourceTypes = ObjectType.resourceValues();
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -50,7 +51,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         logger.info("{}", getUser());
         Long imgId = setupImage();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setResourceTypes(getInheritingTypes());
+        setObjectTypes(getInheritingTypes());
         List<String> approvedCultureKeywordIds = new ArrayList<String>();
         approvedCultureKeywordIds.add("9");
         setStatuses(Status.DRAFT);
@@ -67,7 +68,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setResourceTypes(allResourceTypes);
+        setObjectTypes(allResourceTypes);
         setStatuses(Status.DELETED);
         doSearch("precambrian");
         assertTrue(resultsContainId(datasetId));
@@ -78,7 +79,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     public void testDeletedMaterialsAreNotVisible() {
         Long datasetId = setupDataset();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setResourceTypes(allResourceTypes);
+        setObjectTypes(allResourceTypes);
         setStatuses(Status.DELETED);
         setIgnoreActionErrors(true);
         doSearch("precambrian", true);
@@ -94,7 +95,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.index(genericService.find(Dataset.class, datasetId));
-        setResourceTypes(allResourceTypes);
+        setObjectTypes(allResourceTypes);
         setStatuses(Status.DELETED);
         doSearch("precambrian", true);
         assertTrue(controller.getActionErrors().size() > 0);
@@ -105,7 +106,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     public void testDraftMaterialsAreIndexed() {
         Long imgId = setupImage();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setResourceTypes(allResourceTypes);
+        setObjectTypes(allResourceTypes);
         setStatuses(Status.DRAFT);
         doSearch("description");
         assertTrue(resultsContainId(imgId));
@@ -117,7 +118,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         Long imgId = setupImage();
         logger.info("Created new image: " + imgId);
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setResourceTypes(allResourceTypes);
+        setObjectTypes(allResourceTypes);
         setStatusAll();
         doSearch("PaleoIndian");
         assertTrue(resultsContainId(imgId));
@@ -151,4 +152,6 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         Indexable resource = controller.getResults().iterator().next();
         assertEquals(expectedId, resource.getId());
     }
+
+
 }

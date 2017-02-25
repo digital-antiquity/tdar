@@ -20,6 +20,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
@@ -289,7 +290,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         genericService.synchronize();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         ReservedSearchParameters params = new ReservedSearchParameters();
-        params.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
+        params.setObjectTypes(Arrays.asList(ObjectType.CODING_SHEET));
         SearchResult<Resource> result = performSearch("Taxonomic Level", null, null, null, null, null, params, 10);
         logger.info("{}", result.getResults());
         logger.info("{}", sheetIds);

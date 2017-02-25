@@ -15,7 +15,7 @@ public class AnnotationKeyDocumentConverter extends AbstractSolrDocumentConverte
         
         SolrInputDocument doc = convertPersistable(key);
         doc.setField(QueryFieldNames.NAME, key.getKey());
-        doc.setField(QueryFieldNames.OBJECT_TYPE, key.getAnnotationDataType());
+        doc.setField(QueryFieldNames.GENERAL_TYPE, key.getAnnotationDataType());
         return doc;
     }
 }

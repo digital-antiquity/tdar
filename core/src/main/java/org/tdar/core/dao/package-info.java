@@ -564,9 +564,6 @@
                 name = TdarNamedQueries.QUERY_SIMILAR_PEOPLE,
                 query = "select p from Person p where lower(lastName) like lower(:lastName) and (lower(firstName) like lower(:firstName) or lower(firstName) like lower(:initial) or lower(firstName) like lower(:initial2) ) and status='ACTIVE' and p.id not in (select id from TdarUser)"),
         @org.hibernate.annotations.NamedQuery(
-                name=org.tdar.core.dao.TdarNamedQueries.COLLECTION_TIME_LIMITED_IDS,
-                query = "select rc.id from ResourceCollection rc inner join rc.authorizedUsers as au where au.dateExpires != null and au.dateExpires < now()"),
-        @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.MAPPED_RESOURCES,
                 query = "from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col where :projectId = -1 or project.id=:projectId"),
         @org.hibernate.annotations.NamedQuery(
@@ -600,7 +597,13 @@
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH_USERS,
                 query = "select distinct au.user from SharedCollection s inner join s.authorizedUsers au where  (s.id in ("
                         + "select s_.id from SharedCollection s_  left join s_.parentIds parentId where s_.owner=:owner or s_.id in (:collectionIds) or parentId in (:collectionIds) "
-                        + "))")
+                        + "))"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.QUERY_TIMED_ACCESS_RESTIRCTIONS,
+                query = "from TimedAccessRestriction tar where tar.collection.id in :cids")
+
+
+        
 })
 package org.tdar.core.dao;
 

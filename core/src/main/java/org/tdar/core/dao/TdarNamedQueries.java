@@ -172,6 +172,7 @@ public interface TdarNamedQueries {
     String FIND_COLLECTIONS_SHARED_WITH = "query.collections_shared_with";
     String FIND_RESOURCES_SHARED_WITH_USERS = "query.resources_shared_with_users";
     String FIND_COLLECTIONS_SHARED_WITH_USERS = "query.collections_shared_with_users";
+    String QUERY_TIMED_ACCESS_RESTIRCTIONS = "query.timed_access-restrictions";
     // raw SQL/HQL queries
 
     /**

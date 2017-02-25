@@ -92,9 +92,9 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         return StringUtils.uncapitalize(sb.toString());
     }
 
-    public String getSortName() {
-        return this.order + this.name();
-    }
+//    public String getSortName() {
+//        return this.order + this.name();
+//    }
 
     public boolean isDataset() {
         return this == DATASET;

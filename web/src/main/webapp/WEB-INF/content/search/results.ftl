@@ -72,6 +72,7 @@
 <#--        <@search.facetBy facetlist=typeFacets currentValues=types label="Object Type(s)" facetParam="types" /> -->
         <@search.facetBy facetlist=collectionTypeFacets currentValues=collectionTypes label="Collection Type(s)" facetParam="collectionTypes" />
         <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
+        <@search.facetBy facetlist=objectTypeFacets currentValues=objectTypes label="Object Type(s)" facetParam="objectTypes" />
         <@search.facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
         <@search.facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
         <@search.facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />

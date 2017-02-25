@@ -88,6 +88,13 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());
         String currentUrlPath = getCurrentUrlPath();
+        try {
+            // trying to handle reindexing issue
+            Thread.sleep(500);
+        } catch (InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         gotoPage(currentUrlPath);
         for (Resource resource : someResources) {
             if ((resource.getStatus() == Status.ACTIVE) || (resource.getStatus() == Status.DRAFT)) {
@@ -199,6 +206,31 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         testCreateThenEditCollection();
         // previous test logged us out
         loginAdmin();
+        Long parentId = 2578L;
+
+        gotoPage(LISTCOLLECTION + "add");
+        String name = "testCreateChildCollection";
+        String desc = "lame child colllection";
+
+        setInput("resourceCollection.name", name);
+        setInput("resourceCollection.description", desc);
+        setInput("parentId", "" + parentId);
+        submitForm();
+        // assert we're on the save
+        assertTextPresentInPage(name);
+        assertTextPresentInPage(desc);
+
+        // now look for the collection on the dashboard (implicitly test encoding errors also)
+        gotoPage("/organize");
+        assertTextPresentInPage(name);
+    }
+    // assign a parent collection, then go back to dashboard
+    @Test
+    public void testCreateChildCollectionBadHierarchy() {
+        // get a shared collection id - we don't have one in init-db so just rerun the previous test
+        testCreateThenEditCollection();
+        // previous test logged us out
+        loginAdmin();
         Long parentId = 1575L;
 
         gotoPage(LISTCOLLECTION + "add");
@@ -209,12 +241,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("resourceCollection.description", desc);
         setInput("parentId", "" + parentId);
         submitForm();
-        assertTextPresentInPage(name);
-        assertTextPresentInPage(desc);
-
-        // now look for the collection on the dashboard (implicitly test encoding errors also)
-        gotoPage("/organize");
-        assertTextPresentInPage(name);
+        // assert we're on the save
+        assertCurrentUrlContains("add");
     }
 
     @Test

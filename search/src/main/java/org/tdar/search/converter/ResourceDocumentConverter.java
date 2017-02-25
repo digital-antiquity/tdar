@@ -37,6 +37,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.GeneralKeywordBuilder;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
@@ -234,8 +235,10 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     private static void addRequiredField(Resource resource, SolrInputDocument doc) {
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
-        doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
-        doc.setField(QueryFieldNames.OBJECT_TYPE, LookupSource.RESOURCE.name());
+        ObjectType objectType = ObjectType.from(resource.getResourceType());
+        doc.setField(QueryFieldNames.OBJECT_TYPE, objectType.name());
+        doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, objectType.getSortName());
+        doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.RESOURCE.name());
     }
 
     private static HashSet<String> extractSiteCodeTokens(Resource resource) {
