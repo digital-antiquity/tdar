@@ -6,6 +6,8 @@
  */
 package org.tdar.core.dao.resource;
 
+import static org.hamcrest.CoreMatchers.nullValue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -494,6 +496,9 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public List<TimedAccessRestriction> findTimedAccessRestrictions(List<RightsBasedResourceCollection> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
         Query<TimedAccessRestriction> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_TIMED_ACCESS_RESTIRCTIONS, TimedAccessRestriction.class);
         query.setParameter("cids", PersistableUtils.extractIds(list));
         return query.list();
