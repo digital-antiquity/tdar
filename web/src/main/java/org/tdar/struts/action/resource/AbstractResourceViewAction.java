@@ -394,7 +394,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
             Set<ListCollection> all = new HashSet<>();
             all.addAll(getResource().getUnmanagedResourceCollections());
             for (ListCollection resourceCollection : all) {
-                if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
+                if (authorizationService.canViewCollection(getAuthenticatedUser(),resourceCollection)) {
                     collections.add(resourceCollection);
                 }
             }

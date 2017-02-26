@@ -292,7 +292,7 @@ public class DownloadService {
         Iterator<InformationResourceFileVersion> iter = versionsToDownload.iterator();
         while (iter.hasNext()) {
             InformationResourceFileVersion version = iter.next();
-            if (!authorizationService.canDownload(version, authenticatedUser) && authorization == null) {
+            if (!authorizationService.canDownload(authenticatedUser, version) && authorization == null) {
                 logger.warn("thumbail request: resource is confidential/embargoed: {}", version);
                 dto.setResult(DownloadResult.FORBIDDEN);
                 return dto;

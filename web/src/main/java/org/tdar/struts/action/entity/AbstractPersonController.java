@@ -80,7 +80,7 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
 
     @Override
     public boolean authorize() {
-        return authorizationService.canEditCreator(getPersistable(), getAuthenticatedUser());
+        return authorizationService.canEditCreator(getAuthenticatedUser(), getPersistable());
     }
 
     public String getInstitutionName() {

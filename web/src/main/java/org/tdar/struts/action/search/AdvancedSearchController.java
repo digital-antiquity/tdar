@@ -73,7 +73,6 @@ import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 @HttpsOnly
 public class AdvancedSearchController extends AbstractAdvancedSearchController implements FacetedResultHandler<Resource> {
 
-    private static final String SIMPLE_FTL = "simple.ftl";
     private static final long serialVersionUID = -7767557393006858614L;
     private static final String SEARCH_RSS = "/api/search/rss";
     private FacetWrapper facetWrapper = new FacetWrapper();
@@ -347,7 +346,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     }
 
     public List<LookupSource> getAvailableTypes() {
-        return Arrays.asList(LookupSource.COLLECTION, LookupSource.RESOURCE);
+        return Arrays.asList(LookupSource.COLLECTION, LookupSource.INTEGRATION, LookupSource.RESOURCE);
     }
 
     @Override

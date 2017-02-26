@@ -58,7 +58,7 @@ public class ListCollectionApiAction extends AbstractJsonApiAction implements Pr
                 addActionError("issue with collection");
             }
 
-            if (!authorizationService.canViewCollection(collection, getAuthenticatedUser())) {
+            if (!authorizationService.canViewCollection(getAuthenticatedUser(),collection)) {
                 addActionError("unauthorized");
             }
         }

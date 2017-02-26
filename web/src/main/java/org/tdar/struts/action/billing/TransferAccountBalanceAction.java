@@ -38,10 +38,10 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
             addActionError(getText("transferAccountBalanceAction.toAccountNotSpecified"));
         }
 
-        if (!authorizationService.canAdministerAccount(getAccount(), getAuthenticatedUser())) {
+        if (!authorizationService.canAdministerAccount(getAuthenticatedUser(),getAccount())) {
             addActionError(getText("transferAccountBalanceAction.no_rights", Arrays.asList(getAccount())));
         }
-        if (!authorizationService.canAdministerAccount(toAccount, getAuthenticatedUser())) {
+        if (!authorizationService.canAdministerAccount(getAuthenticatedUser(),toAccount)) {
             addActionError(getText("transferAccountBalanceAction.no_rights", Arrays.asList(getAccount())));
 
         }

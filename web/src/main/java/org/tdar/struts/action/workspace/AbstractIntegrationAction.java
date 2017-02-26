@@ -113,7 +113,7 @@ public abstract class AbstractIntegrationAction extends AbstractAuthenticatableA
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(),workflow);
     }
 
     @Override

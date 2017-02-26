@@ -149,7 +149,7 @@ public class IntegrationPersistanceAction extends AbstractJsonApiAction implemen
 
     @Override
     public boolean authorize() {
-        return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(), workflow);
     }
 
     @Override

@@ -510,7 +510,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         String name = getName(collectionToAdd);
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
-                    && !authorizationService.canAddToCollection(collectionToAdd, authenticatedUser)) {
+                    && !authorizationService.canAddToCollection(authenticatedUser, collectionToAdd)) {
                 throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(name));
             }
@@ -859,7 +859,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<Resource> ineligibleToRemove = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
 
         if (CollectionUtils.isNotEmpty(resourcesToAdd)) {
-            if (!authorizationService.canAddToCollection((ResourceCollection) persistable, authenticatedUser)) {
+            if (!authorizationService.canAddToCollection(authenticatedUser, (ResourceCollection) persistable)) {
                 throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(getName((ResourceCollection) persistable)));
             }
