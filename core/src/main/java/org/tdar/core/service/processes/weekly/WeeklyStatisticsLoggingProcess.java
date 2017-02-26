@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
@@ -108,7 +109,7 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
         
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS_WHITE_LABEL, whitelabelCount, ""));
         stats.add(generateStatistics(StatisticType.NUM_EMAILS, statisticService.countWeeklyEmails(), ""));
-
+        stats.add(generateStatistics(StatisticType.NUM_INTEGRATIONS, genericService.count(DataIntegrationWorkflow.class), ""));
         stats.add(generateStatistics(StatisticType.NUM_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, true), ""));
         stats.add(generateStatistics(StatisticType.NUM_UNCONTROLLED_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, false), ""));
         Thread.yield();

@@ -23,7 +23,7 @@ import org.tdar.core.bean.resource.Video;
 import org.tdar.utils.MessageHelper;
 
 public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
-    DOCUMENT, DATASET, PROJECT, LIST_COLLECTION, SHARED_COLLECTION, CODING_SHEET, IMAGE, GEOSPATIAL, SENSORY_DATA, ONTOLOGY, VIDEO, AUDIO, ARCHIVE;
+    DOCUMENT, DATASET, PROJECT, LIST_COLLECTION, SHARED_COLLECTION, CODING_SHEET, IMAGE, GEOSPATIAL, SENSORY_DATA, ONTOLOGY, VIDEO, AUDIO, ARCHIVE, INTEGRATION;
 
     public static ObjectType from(ResourceType resourceType) {
         switch (resourceType) {
@@ -79,6 +79,8 @@ public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
                 return "007" + this.name();
             case SHARED_COLLECTION:
                 return "010" + this.name();
+            case INTEGRATION:
+                return "040" + this.name();
             case VIDEO:
                 return "099" + this.name();
             default:
@@ -120,6 +122,7 @@ public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
         List<ObjectType> lst = new ArrayList<>(Arrays.asList(ObjectType.values()));
         lst.remove(SHARED_COLLECTION);
         lst.remove(LIST_COLLECTION);
+        lst.remove(INTEGRATION);
         return lst;
     }
 }

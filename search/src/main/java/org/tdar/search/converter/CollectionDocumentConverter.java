@@ -51,7 +51,7 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         if (collection instanceof ListCollection) {
             doc.setField(QueryFieldNames.COLLECTION_TYPE, CollectionType.LIST.name());
         }
-        doc.setField(QueryFieldNames.STATUS, Status.ACTIVE);
+        doc.setField(QueryFieldNames.STATUS, collection.getStatus().name());
         
         doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.COLLECTION.name());
         doc.setField(QueryFieldNames.OBJECT_TYPE, ObjectType.from(collection.getType()).name());

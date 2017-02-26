@@ -215,7 +215,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             getAsqo().setReservedParams(getReservedSearchParameters());
             resourceSearchService.buildAdvancedSearch(getAsqo(), getAuthenticatedUser(), this, this);
             updateDisplayOrientationBasedOnSearchResults();
-            setCollectionSearchBoxVisible(getAsqo().isCollectionSearchBoxVisible());
         } catch (SearchPaginationException spe) {
             getLogger().debug("pagination issue: {}", spe.getMessage() );
             throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,
@@ -640,9 +639,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         return collectionSearchBoxVisible;
     }
 
-    public void setCollectionSearchBoxVisible(boolean collectionSearchBoxVisible) {
-        this.collectionSearchBoxVisible = collectionSearchBoxVisible;
-    }
 
     public String performResourceSearch() throws TdarActionException, SolrServerException, IOException {
         setLookupSource(LookupSource.RESOURCE);

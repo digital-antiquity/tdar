@@ -241,6 +241,8 @@ Common macros used in multiple contexts
         <#local type>svg-icons_icon-${persistable.resourceType?lower_case}</#local>
     <#elseif persistable.type?has_content><#t>
         <#local type>svg-icons_collection</#local>
+    <#else><#t>
+        <#local type>svg-icons_integration</#local>
     </#if>
     <svg class="svgicon white svg-cartouche"><use xlink:href="/images/svg/symbol-defs.svg#${type}"></use></svg>
     <#--        <#if (persistable.status)?? && !persistable.active>
