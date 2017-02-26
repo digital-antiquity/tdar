@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 
@@ -72,13 +73,10 @@ public class ResourceTestCase {
     @Test
     public void testTitleRegex() {
         String title = "The is a test";
-        Document d = new Document();
-        d.setTitle(title);
-        assertEquals("is a test", d.getTitleSort());
+        assertEquals("is a test", Sortable.getTitleSort(title));
 
         title = "This is a test";
-        d.setTitle(title);
-        assertEquals(title.toLowerCase(), d.getTitleSort());
+        assertEquals(title.toLowerCase(), Sortable.getTitleSort(title));
     }
 
     @Test

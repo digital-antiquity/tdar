@@ -48,11 +48,6 @@ public class Project extends Resource implements Sortable, HasStatic {
         }
 
         @Override
-        public String getTitleSort() {
-            return "";
-        }
-
-        @Override
         public boolean isActive() {
             return false;
         }
@@ -94,7 +89,7 @@ public class Project extends Resource implements Sortable, HasStatic {
 
     @Transient
     public String getProjectTitle() {
-        return getTitleSort();
+        return getTitle();
     }
 
     @Transient

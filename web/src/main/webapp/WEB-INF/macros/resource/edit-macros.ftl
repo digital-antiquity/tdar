@@ -1071,7 +1071,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <option value="" selected='selected'>All Editable Projects</option>
                         <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
                             <optgroup label="Projects">
-                                <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
+                                <#list allSubmittedProjects?sort_by("title") as submittedProject>
                                     <option value="${submittedProject.id?c}"
                                             title="${submittedProject.title!""?html}"><@common.truncate submittedProject.title 70 /> </option>
                                 </#list>
@@ -1080,7 +1080,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
                         <#if fullUserProjects??>
                             <optgroup label="Projects you have been given access to">
-                                <#list fullUserProjects?sort_by("titleSort") as editableProject>
+                                <#list fullUserProjects?sort_by("title") as editableProject>
                                     <option value="${editableProject.id?c}"
                                         title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
                                 </#list>
