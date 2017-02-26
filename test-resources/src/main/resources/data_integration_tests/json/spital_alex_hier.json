@@ -1,0 +1,55 @@
+{
+    "columns": [
+        {
+            "dataTableColumns": [
+                {
+                    "id": $col_element,
+                    "name": "belement"
+                },
+                {
+                    "id": $bone_common_name,
+                    "name": "bone_common_name"
+                }
+            ],
+            "name": "Fauna Element Ontology",
+            "nodeSelection": [
+                {
+                    "id": $tarsal,
+                    "iri": "Tarsal"
+                },
+                {
+                    "id": $astragalus,
+                    "iri": "Astragalus"
+                },
+                {
+                    "id": $ulna,
+                    "iri": "Ulna"
+                }
+            ],
+            "ontology": {
+                "id": $element,
+                "title": "Fauna Element Ontology"
+            },
+            "type": "INTEGRATION"
+            }
+    ],
+    "dataTables": [
+        {
+            "displayName": "qryBone",
+            "id": $qrybone
+        },
+        {
+            "displayName": "Main table",
+            "id": $main
+        }
+    ],
+    "datasets": [],
+    "description": "",
+    "ontologies": [
+        {
+            "id": $element,
+            "title": "Fauna Element Ontology"
+        }
+    ],
+    "title": "test element integration"
+}

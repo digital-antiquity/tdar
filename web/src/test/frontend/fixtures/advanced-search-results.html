@@ -1,0 +1,38 @@
+<div class="row">
+    <div class="span3">
+        <h2 class="totalRecords">
+            1-25 (999,999,999 Results)
+        </h2>
+    </div>
+    <div class="span6 form-inline">
+        <div class="pull-right">
+            <div class="control-group"></div>
+            <label>Records Per Page
+                <select name="recordsPerPage" class="input-small" id="recordsPerPage">
+                    <option value="10">10</option>
+                    <option selected="selected" value="25">25</option>
+                    <option value="50">50</option>
+
+
+                </select>
+           </label>
+            <label>Sort By
+                <select name="sortField" class="input-large" id="sortField">
+                    <option selected="selected" value="RELEVANCE">Relevance</option>
+                    <option value="ID">ID</option>
+                    <option value="ID_REVERSE">ID (Most Recent)</option>
+                    <option value="TITLE">Title</option>
+                    <option value="TITLE_REVERSE">Title (Z-A)</option>
+                    <option value="PROJECT">Project</option>
+                    <option value="DATE">Date</option>
+                    <option value="DATE_REVERSE">Date (Most Recent)</option>
+                    <option value="DATE_UPDATED">Date Updated</option>
+                    <option value="DATE_UPDATED_REVERSE">Date Updated (Most Recent)</option>
+                </select>
+            </label>
+        </div>
+    </div>
+</div>
+<div class="tdarresults">
+    <!-- nothing here right now, we're really just testing the event handlers in _initializeResultsPage()-->
+</div>
