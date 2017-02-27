@@ -31,43 +31,29 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
     @Override
     public String generateQueryString() {
         List<Status> localStatuses = new ArrayList<Status>(getFieldValues());
-        QueryPartGroup allSubgroup = new QueryPartGroup(Operator.OR);
         QueryPartGroup draftSubgroup = new QueryPartGroup(Operator.AND);
-        // handle status part
-        if (PersistableUtils.isNotNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
-            draftSubgroup.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.DRAFT));
+        QueryPartGroup fieldsSubgroup = new QueryPartGroup(Operator.OR);
+        if (PersistableUtils.isNotNullOrTransient(getPerson()) ) {
+            fieldsSubgroup.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.DRAFT));
+            fieldsSubgroup.append(new FieldQueryPart<Boolean>(QueryFieldNames.HIDDEN, Boolean.TRUE));
             QueryPartGroup permissionsSubgroup = new QueryPartGroup(Operator.OR);
-            draftSubgroup.setOperator(Operator.AND);
             if (!ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), getTdarGroup())) {
                 permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, person.getId()));
                 permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, person.getId()));
                 draftSubgroup.append(permissionsSubgroup);
             }
-            allSubgroup.append(draftSubgroup);
-            
+            draftSubgroup.append(fieldsSubgroup);
         }
+        
+        // we remove DRAFT because it was handled above
         localStatuses.remove(Status.DRAFT);
-
-        QueryPartGroup hiddenSubgroup = new QueryPartGroup(Operator.AND);
-        // handle Collections & Integrations (hidden)
-        if (PersistableUtils.isNotNullOrTransient(getPerson()) ) {
-            QueryPartGroup hiddenPart = new QueryPartGroup(Operator.AND);
-            QueryPartGroup permissionsSubgroup = new QueryPartGroup(Operator.OR);
-            hiddenSubgroup.setOperator(Operator.AND);
-            if (!ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), getTdarGroup())) {
-                permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, person.getId()));
-                permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, person.getId()));
-                hiddenSubgroup.append(permissionsSubgroup);
-            }
-            hiddenPart.append(new FieldQueryPart<Boolean>(QueryFieldNames.HIDDEN, Boolean.TRUE));
-            hiddenPart.append(permissionsSubgroup);
-            allSubgroup.append(hiddenPart);
-        }
-        // Status is allowable statuses OR...
+        // we remove ACTIVE because it's handled in EffectivelyPublic
+        localStatuses.remove(Status.ACTIVE);
 
         QueryPartGroup statusSubgroup = new QueryPartGroup(Operator.OR, 
+                new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, localStatuses),
                 new FieldQueryPart<Boolean>(QueryFieldNames.EFFECTIVELY_PUBLIC, Boolean.TRUE), 
-                allSubgroup);
+                draftSubgroup);
 
         return statusSubgroup.generateQueryString();
     }
