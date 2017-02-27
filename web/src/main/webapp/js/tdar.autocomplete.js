@@ -520,7 +520,7 @@ TDAR.autocomplete = (function () {
         options.showCreatePhrase = "Create a new keyword";
         options.minLength = 2;
 
-        var useCustomRender = false;
+        var useCustomRender = true;
         if (useCustomRender) {
             options.customRender = function (ul, item) {
                 var star ="";
