@@ -74,7 +74,7 @@ public interface QueryFieldNames {
     String RESOURCE_PROVIDER_ID = "RESOURCE_PROVIDER";
     String CATEGORY_ID = "categoryVariable.id";
     String CATEGORY_LABEL = "categoryVariable.label";
-    String COLLECTION_HIDDEN = "hidden";
+    String HIDDEN = "hidden";
     String TOP_LEVEL = "topLevel";
     String RESOURCE_OWNER = "resourceOwner";
     String DATE_CREATED_DECADE = "decadeCreated";

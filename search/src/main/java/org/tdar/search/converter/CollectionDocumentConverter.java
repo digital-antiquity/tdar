@@ -25,7 +25,7 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         VisibleCollection props = collection;
         doc.setField(QueryFieldNames.NAME, props.getName());
         doc.setField(QueryFieldNames.NAME_SORT, Sortable.getTitleSort(props.getTitle()));
-        doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
+        doc.setField(QueryFieldNames.HIDDEN, collection.isHidden());
         doc.setField(QueryFieldNames.DESCRIPTION, props.getDescription());
         StringBuilder sb = new StringBuilder();
         sb.append(props.getTitle()).append(" ").append(props.getDescription()).append(" ");

@@ -59,7 +59,7 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
                 permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, person.getId()));
                 hiddenSubgroup.append(permissionsSubgroup);
             }
-            hiddenPart.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.TRUE));
+            hiddenPart.append(new FieldQueryPart<Boolean>(QueryFieldNames.HIDDEN, Boolean.TRUE));
             hiddenPart.append(permissionsSubgroup);
             allSubgroup.append(hiddenPart);
         }
@@ -67,7 +67,7 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
 
         QueryPartGroup statusSubgroup = new QueryPartGroup(Operator.OR, 
                 new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, localStatuses), 
-                new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE), 
+                new FieldQueryPart<Boolean>(QueryFieldNames.HIDDEN, Boolean.FALSE), 
                 allSubgroup);
 
         return statusSubgroup.generateQueryString();

@@ -65,11 +65,11 @@ public class CollectionSearchService extends AbstractSearchService {
         // either it's not hidden and you can see it, or it is hidden but you have rights to it.
 
         QueryPartGroup rightsPart = new QueryPartGroup(Operator.OR);
-        rightsPart.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
+        rightsPart.append(new FieldQueryPart<String>(QueryFieldNames.HIDDEN, "false"));
         if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
             QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
             if (!query.isIncludeHidden()) {
-                qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "true"));
+                qpg.append(new FieldQueryPart<String>(QueryFieldNames.HIDDEN, "true"));
             }
             if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
                 // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection

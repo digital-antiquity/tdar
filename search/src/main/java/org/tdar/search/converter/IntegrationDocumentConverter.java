@@ -28,7 +28,7 @@ public class IntegrationDocumentConverter extends AbstractSolrDocumentConverter 
 //        } else {
             doc.setField(QueryFieldNames.STATUS, Status.ACTIVE.name());
 //        }
-        doc.setField(QueryFieldNames.COLLECTION_HIDDEN, integration.isHidden());
+        doc.setField(QueryFieldNames.HIDDEN, integration.isHidden());
         doc.setField(QueryFieldNames.DESCRIPTION, integration.getDescription());
         StringBuilder sb = new StringBuilder();
         sb.append(integration.getTitle()).append(" ").append(integration.getDescription()).append(" ");
