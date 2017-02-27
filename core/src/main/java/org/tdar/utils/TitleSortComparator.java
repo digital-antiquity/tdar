@@ -20,6 +20,15 @@ public class TitleSortComparator implements Comparator<HasName> {
             }
             String t1 = Sortable.getTitleSort(o1.getName());
             String t2 = Sortable.getTitleSort(o2.getName());
+            
+            if (t1 == null ^ t2 == null) {
+                return (t1 == null) ? -1 : 1;
+            }
+
+            if (t1 == null && t2 == null) {
+                return 0;
+            }
+
             return t1.compareTo(t2);
         }
 }

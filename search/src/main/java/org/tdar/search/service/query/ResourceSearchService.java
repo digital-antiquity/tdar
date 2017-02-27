@@ -213,7 +213,7 @@ public class ResourceSearchService extends AbstractSearchService {
         if (asqo.isMultiCore()) {
             queryBuilder = new MultiCoreQueryBuilder();
         }
-        logger.debug("{}", queryBuilder.getClass());
+        logger.trace("{}", queryBuilder.getClass());
         queryBuilder.setOperator(Operator.AND);
         QueryPartGroup topLevelQueryPart;
         QueryPartGroup reservedQueryPart;
