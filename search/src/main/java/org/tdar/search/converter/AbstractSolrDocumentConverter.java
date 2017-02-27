@@ -41,7 +41,7 @@ public class AbstractSolrDocumentConverter {
             hidden = hidden2;
         }
         
-        if (hidden == true && status == Status.ACTIVE) {
+        if (hidden == false && status == Status.ACTIVE) {
             doc.setField(QueryFieldNames.EFFECTIVELY_PUBLIC, true);
         } else {
             doc.setField(QueryFieldNames.EFFECTIVELY_PUBLIC, false);

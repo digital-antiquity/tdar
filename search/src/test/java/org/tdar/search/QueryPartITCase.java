@@ -24,6 +24,6 @@ public class QueryPartITCase extends AbstractWithIndexIntegrationTestCase {
         // this is really brittle, but a good test of our builder actually working
         StatusAndRelatedPermissionsQueryPart sqp = new StatusAndRelatedPermissionsQueryPart(Arrays.asList(Status.DRAFT, Status.ACTIVE), getBasicUser(), TdarGroup.TDAR_USERS);
         logger.debug(sqp.toString());
-        assertEquals("( status:(ACTIVE) OR hidden:(false) OR ( ( status:(DRAFT) AND ( usersWhoCanModify:(8092) OR usersWhoCanView:(8092) )  )  OR ( hidden:(true) AND ( usersWhoCanModify:(8092) OR usersWhoCanView:(8092) )  )  )  ) ", sqp.generateQueryString());
+        assertEquals("( effectivelyPublic:(true) OR ( ( status:(DRAFT) AND ( usersWhoCanModify:(8092) OR usersWhoCanView:(8092) )  )  OR ( hidden:(true) AND ( usersWhoCanModify:(8092) OR usersWhoCanView:(8092) )  )  )  ) ", sqp.generateQueryString());
     }
 }
