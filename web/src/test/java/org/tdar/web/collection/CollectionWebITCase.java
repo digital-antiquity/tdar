@@ -240,9 +240,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("resourceCollection.name", name);
         setInput("resourceCollection.description", desc);
         setInput("parentId", "" + parentId);
-        submitForm();
+        submitFormWithoutErrorCheck();
         // assert we're on the save
-        assertCurrentUrlContains("add");
+        assertCurrentUrlContains("save");
     }
 
     @Test
