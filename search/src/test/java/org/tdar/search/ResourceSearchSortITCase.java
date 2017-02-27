@@ -75,7 +75,7 @@ public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
         for (Resource r : results) {
             if (r instanceof InformationResource) {
                 InformationResource ir = (InformationResource)r;
-                logger.debug("{} {} {}", r.getId(), r.getName(), ir.getProjectId());
+                logger.debug("{} {} {}", r.getId(), ir.getProjectTitle() + r.getName(), ir.getProjectId());
             } else {
                 logger.debug("{} {}", r.getId(), r.getName());
             }

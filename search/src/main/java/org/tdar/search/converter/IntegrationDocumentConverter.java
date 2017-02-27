@@ -23,7 +23,11 @@ public class IntegrationDocumentConverter extends AbstractSolrDocumentConverter 
         SolrInputDocument doc = convertPersistable(integration);
         doc.setField(QueryFieldNames.NAME, integration.getName());
         doc.setField(QueryFieldNames.NAME_SORT, Sortable.getTitleSort(integration.getName()));
-        doc.setField(QueryFieldNames.STATUS, Status.ACTIVE.name());
+//        if (integration.isHidden()) {
+//            doc.setField(QueryFieldNames.STATUS, Status.DRAFT.name());
+//        } else {
+            doc.setField(QueryFieldNames.STATUS, Status.ACTIVE.name());
+//        }
         doc.setField(QueryFieldNames.COLLECTION_HIDDEN, integration.isHidden());
         doc.setField(QueryFieldNames.DESCRIPTION, integration.getDescription());
         StringBuilder sb = new StringBuilder();

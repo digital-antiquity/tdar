@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public interface Sortable {
 
-    public static final String TITLE_SORT_REGEX = "^([\\s\\W]|The |A |An )+";
+    public static final String TITLE_SORT_REGEX = "^([\\s\\W]|the |a |an )+";
 
     SortOption getSortBy();
 

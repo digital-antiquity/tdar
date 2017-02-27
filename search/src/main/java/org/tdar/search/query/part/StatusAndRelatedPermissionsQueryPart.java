@@ -31,7 +31,9 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
     @Override
     public String generateQueryString() {
         List<Status> localStatuses = new ArrayList<Status>(getFieldValues());
+        QueryPartGroup allSubgroup = new QueryPartGroup(Operator.OR);
         QueryPartGroup draftSubgroup = new QueryPartGroup(Operator.AND);
+        // handle status part
         if (PersistableUtils.isNotNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
             draftSubgroup.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.DRAFT));
             QueryPartGroup permissionsSubgroup = new QueryPartGroup(Operator.OR);
@@ -41,11 +43,32 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
                 permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, person.getId()));
                 draftSubgroup.append(permissionsSubgroup);
             }
+            allSubgroup.append(draftSubgroup);
+            
         }
-
         localStatuses.remove(Status.DRAFT);
-        QueryPartGroup statusSubgroup = new QueryPartGroup(Operator.OR, new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, localStatuses),
-                draftSubgroup);
+
+        QueryPartGroup hiddenSubgroup = new QueryPartGroup(Operator.AND);
+        // handle Collections & Integrations (hidden)
+        if (PersistableUtils.isNotNullOrTransient(getPerson()) ) {
+            QueryPartGroup hiddenPart = new QueryPartGroup(Operator.AND);
+            QueryPartGroup permissionsSubgroup = new QueryPartGroup(Operator.OR);
+            hiddenSubgroup.setOperator(Operator.AND);
+            if (!ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), getTdarGroup())) {
+                permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, person.getId()));
+                permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, person.getId()));
+                hiddenSubgroup.append(permissionsSubgroup);
+            }
+            hiddenPart.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.TRUE));
+            hiddenPart.append(permissionsSubgroup);
+            allSubgroup.append(hiddenPart);
+        }
+        // Status is allowable statuses OR...
+
+        QueryPartGroup statusSubgroup = new QueryPartGroup(Operator.OR, 
+                new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, localStatuses), 
+                new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE), 
+                allSubgroup);
 
         return statusSubgroup.generateQueryString();
     }

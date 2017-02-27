@@ -148,7 +148,7 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     }
 
     public SearchResult<Resource> doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams,
-            SortOption option) throws ParseException, SolrServerException, IOException {
+            SortOption ... option ) throws ParseException, SolrServerException, IOException {
         asqo = new AdvancedSearchQueryObject();
         SearchParameters params = params_;
         if (params == null) {
@@ -158,7 +158,12 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
             params.getAllFields().add(text);
         }
         SearchResult<Resource> result = new SearchResult<>();
-        result.setSortField(option);
+        if (option != null && option.length > 0) {
+        result.setSortField(option[0]);
+        } 
+        if (option != null && option.length > 1) {
+        result.setSecondarySortField(option[1]);
+        } 
         asqo.getSearchParameters().add(params);
         asqo.setReservedParams(reservedParams);
 

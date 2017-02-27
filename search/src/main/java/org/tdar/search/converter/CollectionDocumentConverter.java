@@ -51,7 +51,11 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         if (collection instanceof ListCollection) {
             doc.setField(QueryFieldNames.COLLECTION_TYPE, CollectionType.LIST.name());
         }
-        doc.setField(QueryFieldNames.STATUS, collection.getStatus().name());
+//        if (collection.getStatus() == Status.ACTIVE && collection.isHidden()) {
+//            doc.setField(QueryFieldNames.STATUS, Status.DRAFT.name());
+//        } else {
+            doc.setField(QueryFieldNames.STATUS, collection.getStatus().name());
+//        }
         
         doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.COLLECTION.name());
         doc.setField(QueryFieldNames.OBJECT_TYPE, ObjectType.from(collection.getType()).name());
