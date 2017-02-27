@@ -229,7 +229,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         if (ir.getProject() != null) {
             map.put(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
             map.put(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitle());
-            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, Sortable.getTitleSort(ir.getProjectTitle()) + Sortable.getTitleSort(ir.getTitle()));
+            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, Sortable.getTitleSort(ir.getProjectTitle())  + " - " + Sortable.getTitleSort(ir.getTitle()));
 
         }
         return map;
