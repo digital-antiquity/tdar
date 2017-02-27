@@ -23,6 +23,7 @@ import org.hibernate.annotations.Type;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasSubmitter;
+import org.tdar.core.bean.Hideable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Viewable;
@@ -35,7 +36,7 @@ import org.tdar.core.bean.resource.Addressable;
  */
 @Entity
 @Table(name = "data_integration_workflow")
-public class DataIntegrationWorkflow extends AbstractPersistable implements HasSubmitter, Updatable, Addressable, HasUsers, Indexable, Viewable {
+public class DataIntegrationWorkflow extends AbstractPersistable implements HasSubmitter, Updatable, Addressable, HasUsers, Indexable, Viewable, Hideable {
 
     private static final long serialVersionUID = -3687383363452908687L;
     private transient boolean viewable;
@@ -154,6 +155,7 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
         return String.format("/%s/%s", getUrlNamespace(), getId());
     }
 
+    @Override
     public boolean isHidden() {
         return hidden;
     }

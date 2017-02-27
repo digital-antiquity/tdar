@@ -9,7 +9,6 @@ import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
@@ -25,7 +24,6 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         VisibleCollection props = collection;
         doc.setField(QueryFieldNames.NAME, props.getName());
         doc.setField(QueryFieldNames.NAME_SORT, Sortable.getTitleSort(props.getTitle()));
-        doc.setField(QueryFieldNames.HIDDEN, collection.isHidden());
         doc.setField(QueryFieldNames.DESCRIPTION, props.getDescription());
         StringBuilder sb = new StringBuilder();
         sb.append(props.getTitle()).append(" ").append(props.getDescription()).append(" ");
@@ -51,12 +49,7 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         if (collection instanceof ListCollection) {
             doc.setField(QueryFieldNames.COLLECTION_TYPE, CollectionType.LIST.name());
         }
-//        if (collection.getStatus() == Status.ACTIVE && collection.isHidden()) {
-//            doc.setField(QueryFieldNames.STATUS, Status.DRAFT.name());
-//        } else {
-            doc.setField(QueryFieldNames.STATUS, collection.getStatus().name());
-//        }
-        
+
         doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.COLLECTION.name());
         doc.setField(QueryFieldNames.OBJECT_TYPE, ObjectType.from(collection.getType()).name());
         doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, ObjectType.from(collection.getType()).getSortName());

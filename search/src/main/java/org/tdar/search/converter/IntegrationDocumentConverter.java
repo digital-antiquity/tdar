@@ -17,18 +17,14 @@ public class IntegrationDocumentConverter extends AbstractSolrDocumentConverter 
 
     public static SolrInputDocument convert(DataIntegrationWorkflow integration) {
 
-    /*
-     * See solr/configsets/default/conf/collections-schema.xml
-     */
+        /*
+         * See solr/configsets/default/conf/collections-schema.xml
+         */
         SolrInputDocument doc = convertPersistable(integration);
         doc.setField(QueryFieldNames.NAME, integration.getName());
         doc.setField(QueryFieldNames.NAME_SORT, Sortable.getTitleSort(integration.getName()));
-//        if (integration.isHidden()) {
-//            doc.setField(QueryFieldNames.STATUS, Status.DRAFT.name());
-//        } else {
-            doc.setField(QueryFieldNames.STATUS, Status.ACTIVE.name());
-//        }
-        doc.setField(QueryFieldNames.HIDDEN, integration.isHidden());
+        doc.setField(QueryFieldNames.STATUS, Status.ACTIVE.name());
+
         doc.setField(QueryFieldNames.DESCRIPTION, integration.getDescription());
         StringBuilder sb = new StringBuilder();
         sb.append(integration.getTitle()).append(" ").append(integration.getDescription()).append(" ");
@@ -45,6 +41,5 @@ public class IntegrationDocumentConverter extends AbstractSolrDocumentConverter 
         doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, ObjectType.INTEGRATION.getSortName());
         return doc;
     }
-    
-    
+
 }

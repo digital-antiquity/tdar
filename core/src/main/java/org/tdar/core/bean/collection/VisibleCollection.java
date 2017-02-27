@@ -12,6 +12,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.Hideable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Slugable;
@@ -24,7 +25,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
-public abstract class VisibleCollection extends ResourceCollection implements OaiDcProvider, HasName, Slugable, Addressable, Validatable, Indexable, Viewable {
+public abstract class VisibleCollection extends ResourceCollection implements OaiDcProvider, HasName, Slugable, Addressable, Validatable, Indexable, Viewable, Hideable {
 
 
     private static final long serialVersionUID = -8963749030250029536L;
@@ -50,6 +51,7 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
 
 
     @XmlAttribute
+    @Override
     public boolean isHidden() {
         return hidden;
     }

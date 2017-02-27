@@ -66,8 +66,7 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
         // Status is allowable statuses OR...
 
         QueryPartGroup statusSubgroup = new QueryPartGroup(Operator.OR, 
-                new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, localStatuses), 
-                new FieldQueryPart<Boolean>(QueryFieldNames.HIDDEN, Boolean.FALSE), 
+                new FieldQueryPart<Boolean>(QueryFieldNames.EFFECTIVELY_PUBLIC, Boolean.FALSE), 
                 allSubgroup);
 
         return statusSubgroup.generateQueryString();

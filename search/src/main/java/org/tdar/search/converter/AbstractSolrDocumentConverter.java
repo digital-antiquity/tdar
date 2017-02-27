@@ -8,8 +8,10 @@ import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.Hideable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Updatable;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.SearchUtils;
 
@@ -25,9 +27,26 @@ public class AbstractSolrDocumentConverter {
         Class<? extends Indexable> class1 = persist.getClass();
         doc.setField(QueryFieldNames.CLASS, class1.getName());
         doc.setField(QueryFieldNames._ID, SearchUtils.createKey(persist));
+        boolean hidden = false;
+        Status status = Status.ACTIVE;
         if (persist instanceof HasStatus) {
-            doc.setField(QueryFieldNames.STATUS, ((HasStatus) persist).getStatus().name());
+            Status status2 = ((HasStatus) persist).getStatus();
+            doc.setField(QueryFieldNames.STATUS, status2.name());
+            status= status2;
         }
+        
+        if (persist instanceof Hideable) {
+            boolean hidden2 = ((Hideable) persist).isHidden();
+            doc.setField(QueryFieldNames.HIDDEN, hidden2);
+            hidden = hidden2;
+        }
+        
+        if (hidden == true && status == Status.ACTIVE) {
+            doc.setField(QueryFieldNames.EFFECTIVELY_PUBLIC, true);
+        } else {
+            doc.setField(QueryFieldNames.EFFECTIVELY_PUBLIC, false);
+        }
+
         if (persist instanceof Updatable) {
             Updatable up = (Updatable) persist;
             doc.setField(QueryFieldNames.DATE_CREATED, dateFormatUTC.format(up.getDateCreated()));
