@@ -20,6 +20,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
@@ -76,7 +77,7 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                 List<String> fieldNames = new ArrayList<String>(Arrays.asList(
                         "id", RESOURCETYPE, TITLE, "date", "authors",
                         PROJECT, DESCRIPTION, "number_of_files", "url",
-                        "physical_location"));
+                        "physical_location","collections"));
 
                 if (isEditor()) {
                     fieldNames.add("status");
@@ -126,9 +127,15 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                         }
                         Integer dateCreated = null;
                         Integer numFiles = 0;
-                        List<String> filenames = new ArrayList<String>();
+                        List<String> filenames = new ArrayList<>();
                         String location = "";
                         String projectName = "";
+                        List<String> collections = new ArrayList<>();
+                        r.getResourceCollections().forEach(rc -> {
+                            if (rc.isShared() && getAuthorizationService().canView(getAuthenticatedUser(), rc)) {
+                                collections.add(rc.getName());
+                            }
+                        });
                         if (result instanceof InformationResource) {
                             InformationResource ir = (InformationResource) result;
                             dateCreated = ir.getDate();
@@ -149,7 +156,7 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                         ArrayList<Object> data = new ArrayList<Object>(
                                 Arrays.asList(r.getId(), r.getResourceType(), r.getTitle(), dateCreated, authors,
                                         projectName, r.getShortenedDescription(), numFiles,
-                                        UrlService.absoluteUrl(r), location));
+                                        UrlService.absoluteUrl(r), location, StringUtils.join(collections, ",")));
 
                         if (isEditor()) {
                             data.add(r.getStatus());
