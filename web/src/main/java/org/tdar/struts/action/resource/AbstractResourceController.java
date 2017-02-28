@@ -639,7 +639,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedResourceCollections()) {
-            if (authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
+            if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
                 getShares().add(rc);
             } else {
                 retainedSharedCollections.add(rc);
@@ -647,7 +647,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             }
         }
         for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
-            if (authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
+            if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
                 getResourceCollections().add(rc);
             } else {
                 retainedListCollections.add(rc);
@@ -661,13 +661,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private void loadEffectiveResourceCollectionsForSave() {
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedCollections()) {
-            if (!authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
+            if (!authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
                 retainedSharedCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }
         }
         for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
-            if (!authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
+            if (!authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
                 retainedListCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }

@@ -343,11 +343,6 @@ public abstract class InformationResource extends Resource {
         return getProject().getTitle();
     }
 
-    @Transient
-    public String getProjectTitleSort() {
-        return getProject().getTitleSort() + " - " + getTitle();
-    }
-
     public void setProject(Project project) {
         if (project == Project.NULL) {
             this.project = null;

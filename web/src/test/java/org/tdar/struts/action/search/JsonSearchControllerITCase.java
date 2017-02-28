@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.external.session.SessionData;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.api.search.JsonSearchAction;
 import org.tdar.struts_base.action.TdarActionException;
@@ -130,7 +131,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         Thread.sleep(1000l);
         JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class);
         controller.setId(r.getId());
-        controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
+        controller.getObjectTypes().addAll(Arrays.asList(ObjectType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session
         assertFalse(controller.isReindexing());
         controller.viewJson();

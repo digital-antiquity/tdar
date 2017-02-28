@@ -355,6 +355,8 @@ public class AuthorizationService implements Accessible {
             return canEditCollection(authenticatedUser, (ResourceCollection) item);
         } else if (item instanceof Institution) {
             return canEditInstitution(authenticatedUser, (Institution) item);
+        } else if (item instanceof DataIntegrationWorkflow){
+            return canEditWorkflow(authenticatedUser,(DataIntegrationWorkflow) item);
         } else {
             return can(InternalTdarRights.EDIT_ANYTHING, authenticatedUser);
         }
@@ -393,7 +395,9 @@ public class AuthorizationService implements Accessible {
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
         } else if (item instanceof VisibleCollection) {
-            return canViewCollection((VisibleCollection) item, authenticatedUser);
+            return canViewCollection( authenticatedUser, (VisibleCollection) item);
+        } else if (item instanceof DataIntegrationWorkflow) {
+            return canViewWorkflow(authenticatedUser,(DataIntegrationWorkflow) item);
         } else {
             return can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser);
         }
@@ -479,18 +483,18 @@ public class AuthorizationService implements Accessible {
      * Checks whether a @link Person has rights to download a given @link InformationResourceFileVersion
      */
     @Transactional(readOnly = true)
-    public boolean canDownload(InformationResourceFileVersion irFileVersion, TdarUser person) {
+    public boolean canDownload( TdarUser person, InformationResourceFileVersion irFileVersion) {
         if (irFileVersion == null) {
             return false;
         }
-        return canDownload(irFileVersion.getInformationResourceFile(), person);
+        return canDownload(person, irFileVersion.getInformationResourceFile());
     }
 
     /*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFile
      */
     @Transactional(readOnly = true)
-    public boolean canDownload(InformationResourceFile irFile, TdarUser person) {
+    public boolean canDownload(TdarUser person, InformationResourceFile irFile) {
         if (irFile == null) {
             return false;
         }
@@ -508,7 +512,7 @@ public class AuthorizationService implements Accessible {
      * Visible collections
      */
     @Transactional(readOnly = true)
-    public boolean canViewCollection(VisibleCollection collection, TdarUser person) {
+    public boolean canViewCollection(TdarUser person, VisibleCollection collection) {
         if (collection == null) {
             return false;
         }
@@ -602,7 +606,7 @@ public class AuthorizationService implements Accessible {
         Boolean viewable = null;
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             // if (viewable == null) {
-            viewable = canDownload(irf, p);
+            viewable = canDownload(p, irf);
             // }
 
             irf.setViewable(viewable);
@@ -654,7 +658,7 @@ public class AuthorizationService implements Accessible {
             return;
         }
         InformationResourceFile irFile = informationResourceFileVersion.getInformationResourceFile();
-        if (irFile.isPublic() || canDownload(irFile, authenticatedUser)) {
+        if (irFile.isPublic() || canDownload( authenticatedUser,irFile)) {
             visible = true;
         }
         for (InformationResourceFileVersion vers : irFile.getLatestVersions()) {
@@ -696,7 +700,7 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canEditWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
+    public boolean canEditWorkflow(TdarUser authenticatedUser, DataIntegrationWorkflow workflow) {
         if (PersistableUtils.isNullOrTransient(workflow)) {
             return true;
         }
@@ -713,17 +717,17 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canViewWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
+    public boolean canViewWorkflow(TdarUser authenticatedUser, DataIntegrationWorkflow workflow) {
 
         if (!workflow.isHidden()) {
             return true;
         }
-        return canEditWorkflow(workflow, authenticatedUser);
+        return canEditWorkflow(authenticatedUser, workflow);
 
     }
 
     @Transactional(readOnly = true)
-    public boolean canEditAccount(BillingAccount account, TdarUser authenticatedUser) {
+    public boolean canEditAccount(TdarUser authenticatedUser, BillingAccount account) {
         if (can(InternalTdarRights.EDIT_BILLING_INFO, authenticatedUser)) {
             return true;
         }
@@ -736,8 +740,8 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canAdministerAccount(BillingAccount account, TdarUser authenticatedUser) {
-        return canEditAccount(account, authenticatedUser);
+    public boolean canAdministerAccount(TdarUser authenticatedUser, BillingAccount account) {
+        return canEditAccount(authenticatedUser,account);
     }
 
     @Transactional(readOnly = true)
@@ -815,7 +819,7 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canViewBillingAccount(BillingAccount account, TdarUser authenticatedUser) {
+    public boolean canViewBillingAccount(TdarUser authenticatedUser,BillingAccount account) {
         if (PersistableUtils.isNullOrTransient(authenticatedUser)) {
             return false;
         }
@@ -832,7 +836,7 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canEditCreator(Creator<?> persistable, TdarUser tdarUser) {
+    public boolean canEditCreator(TdarUser tdarUser, Creator<?> persistable) {
         if (PersistableUtils.isNullOrTransient(tdarUser)) {
             return false;
         }
@@ -847,7 +851,7 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
-    public boolean canAddToCollection(ResourceCollection collectionToAdd, TdarUser user) {
+    public boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd) {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user) || user.equals(collectionToAdd.getOwner())) {
             return true;
         }

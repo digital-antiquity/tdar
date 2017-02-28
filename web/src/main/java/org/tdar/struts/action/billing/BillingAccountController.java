@@ -71,7 +71,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return true;
         }
-        return authorizationService.canEditAccount(getPersistable(), getAuthenticatedUser());
+        return authorizationService.canEditAccount(getAuthenticatedUser(), getPersistable());
     }
     
     public Invoice getInvoice() {

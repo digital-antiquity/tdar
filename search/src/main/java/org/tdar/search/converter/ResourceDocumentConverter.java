@@ -13,6 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.geotools.geometry.jts.JTS;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -37,6 +38,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.GeneralKeywordBuilder;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
@@ -59,7 +61,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         SolrInputDocument doc = convertPersistable(resource);
         doc.setField(QueryFieldNames.NAME, resource.getName());
-        doc.setField(QueryFieldNames.NAME_SORT, resource.getTitleSort());
+        doc.setField(QueryFieldNames.NAME_SORT, Sortable.getTitleSort(resource.getName()));
         addRequiredField(resource, doc);
         if (resource.getSubmitter() != null) {
             doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
@@ -71,7 +73,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         indexTemporalInformation(doc, resource);
         Map<DataTableColumn, String> data = null;
         if (resource instanceof Project) {
-            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ((Project) resource).getTitleSort());
+            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, Sortable.getTitleSort(resource.getTitle()));
             doc.setField(QueryFieldNames.TOTAL_FILES, 0);
 
         }
@@ -227,15 +229,18 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         if (ir.getProject() != null) {
             map.put(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
             map.put(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitle());
-            map.put(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
+            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, Sortable.getTitleSort(ir.getProjectTitle())  + " - " + Sortable.getTitleSort(ir.getTitle()));
+
         }
         return map;
     }
 
     private static void addRequiredField(Resource resource, SolrInputDocument doc) {
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
-        doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
-        doc.setField(QueryFieldNames.OBJECT_TYPE, LookupSource.RESOURCE.name());
+        ObjectType objectType = ObjectType.from(resource.getResourceType());
+        doc.setField(QueryFieldNames.OBJECT_TYPE, objectType.name());
+        doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, objectType.getSortName());
+        doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.RESOURCE.name());
     }
 
     private static HashSet<String> extractSiteCodeTokens(Resource resource) {

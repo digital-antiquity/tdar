@@ -3,12 +3,13 @@ package org.tdar.search.converter;
 import java.util.HashSet;
 
 import org.apache.solr.common.SolrInputDocument;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
-import org.tdar.core.bean.resource.Status;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 
@@ -22,10 +23,12 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         SolrInputDocument doc = convertPersistable(collection);
         VisibleCollection props = collection;
         doc.setField(QueryFieldNames.NAME, props.getName());
-        doc.setField(QueryFieldNames.NAME_SORT, props.getTitleSort());
-        doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
+        doc.setField(QueryFieldNames.NAME_SORT, Sortable.getTitleSort(props.getTitle()));
         doc.setField(QueryFieldNames.DESCRIPTION, props.getDescription());
-        doc.setField(QueryFieldNames.ALL, props.getAllFieldSearch());
+        StringBuilder sb = new StringBuilder();
+        sb.append(props.getTitle()).append(" ").append(props.getDescription()).append(" ");
+
+        doc.setField(QueryFieldNames.ALL, sb.toString());
         doc.setField(QueryFieldNames.SUBMITTER_ID, collection.getOwner().getId());
         doc.setField(QueryFieldNames.RESOURCE_IDS, new HashSet<>(collection.getResourceIds()));
         if (collection instanceof HierarchicalCollection) {
@@ -46,9 +49,10 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         if (collection instanceof ListCollection) {
             doc.setField(QueryFieldNames.COLLECTION_TYPE, CollectionType.LIST.name());
         }
-        doc.setField(QueryFieldNames.STATUS, Status.ACTIVE);
-        
-        doc.setField(QueryFieldNames.OBJECT_TYPE, LookupSource.COLLECTION.name());
+
+        doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.COLLECTION.name());
+        doc.setField(QueryFieldNames.OBJECT_TYPE, ObjectType.from(collection.getType()).name());
+        doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, ObjectType.from(collection.getType()).getSortName());
         return doc;
     }
     

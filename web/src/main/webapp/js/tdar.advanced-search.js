@@ -7,9 +7,16 @@ TDAR.advancedSearch = (function () {
      */
     function _initAdvancedSearch() {
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
-
+        var $groups = $("#searchGroups");
+        $groups.on("searchchange", function(e){
+            if ($("#searchGroups .term").not(".simple").length > 0) {
+                console.log("not allowed");
+            } else { 
+                    console.log('ok');
+                } 
+            });
         // when user changes searchType: swap out the term ui snippet
-        $('#searchGroups').on('change', '.searchType', function (evt) {
+        $groups.on('change', '.searchType', function (evt) {
             "use strict";
 
             //console.log("change event on %s", this.id);
@@ -54,6 +61,7 @@ TDAR.advancedSearch = (function () {
             }
 
             _initializeSection(row);
+            $(this).trigger("searchchange");
         });
 
         // after rows added, replace attribute values

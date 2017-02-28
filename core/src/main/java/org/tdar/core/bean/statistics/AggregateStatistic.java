@@ -67,7 +67,8 @@ public class AggregateStatistic extends AbstractPersistable {
         NUM_UNCONTROLLED_SITE_TYPE("# of Site Type Keywords (Uncontroled)"), 
         NUM_COLLECTIONS_WHITE_LABEL("# of White Label Collections"), 
         NUM_SHARED_COLLECTIONS("# of Shared Collections"),
-        NUM_LIST_COLLECTIONS("# of List Collections");
+        NUM_LIST_COLLECTIONS("# of List Collections"), 
+        NUM_INTEGRATIONS("# of Data Integrations");
 
         private String label;
 

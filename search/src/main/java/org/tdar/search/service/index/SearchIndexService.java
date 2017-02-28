@@ -35,6 +35,7 @@ import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
@@ -60,6 +61,7 @@ import org.tdar.search.converter.CollectionDocumentConverter;
 import org.tdar.search.converter.ContentDocumentConverter;
 import org.tdar.search.converter.DataValueDocumentConverter;
 import org.tdar.search.converter.InstitutionDocumentConverter;
+import org.tdar.search.converter.IntegrationDocumentConverter;
 import org.tdar.search.converter.KeywordDocumentConverter;
 import org.tdar.search.converter.PersonDocumentConverter;
 import org.tdar.search.converter.ResourceDocumentConverter;
@@ -226,6 +228,9 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         }
         if (item instanceof Resource) {
             document = ResourceDocumentConverter.convert((Resource) item);
+        }
+        if (item instanceof DataIntegrationWorkflow) {
+            document = IntegrationDocumentConverter.convert((DataIntegrationWorkflow) item);
         }
         if (item instanceof VisibleCollection) {
             document = CollectionDocumentConverter.convert((VisibleCollection) item);

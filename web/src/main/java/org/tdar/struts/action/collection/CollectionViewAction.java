@@ -151,7 +151,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         if (getResourceCollection() == null) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
-        return authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
+        return authorizationService.canViewCollection(getAuthenticatedUser(), getResourceCollection());
     }
 
     public boolean isVisible() {

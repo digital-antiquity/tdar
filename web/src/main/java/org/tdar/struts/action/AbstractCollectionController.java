@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -113,6 +114,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
                 // Clear the name field or the INPUT form will be primed to fail in the same way upon submit.
                 //parentCollectionName = "";
             }
+ 
         }
         
         setupOwnerField();
@@ -123,6 +125,9 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
 
         if(getParentCollection() != null) {
             parentId = getParentCollection().getId();
+        }
+        if (PersistableUtils.isNotNullOrTransient(parentId) && PersistableUtils.isNullOrTransient((Persistable)getParentCollection())) {
+            addActionError(getText("collectionController.type_mismatch"));
         }
 
     }

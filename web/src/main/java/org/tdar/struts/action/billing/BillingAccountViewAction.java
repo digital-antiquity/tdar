@@ -69,11 +69,11 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     @Override
     public boolean authorize() {
         getLogger().info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
-        return authorizationService.canViewBillingAccount(getAccount(), getAuthenticatedUser());
+        return authorizationService.canViewBillingAccount(getAuthenticatedUser(), getAccount());
     }
 
     public boolean isEditable() {
-        return authorizationService.canEditAccount(getAccount(), getAuthenticatedUser());
+        return authorizationService.canEditAccount(getAuthenticatedUser(), getAccount());
     }
 
     @Override

@@ -80,7 +80,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         }
 
         BillingAccount account = getExportProxy().getAccount();
-        if (account != null && !authorizationService.canEditAccount(account, getAuthenticatedUser())) {
+        if (account != null && !authorizationService.canEditAccount(getAuthenticatedUser(),account)) {
             addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(account))));
         }
 
