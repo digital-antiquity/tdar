@@ -28,7 +28,7 @@ public class CollectionAdhocShareSaveAction extends AbstractCollectionAdhocShare
 
     @Override
     public boolean authorize() {
-        return getAuthorizationService().canAddToCollection(getPersistable(), getAuthenticatedUser());
+        return getAuthorizationService().canAddToCollection(getAuthenticatedUser(),getPersistable());
     }
 
     @WriteableSession

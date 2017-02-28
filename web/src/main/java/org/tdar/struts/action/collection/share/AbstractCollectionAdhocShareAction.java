@@ -57,7 +57,7 @@ public abstract class AbstractCollectionAdhocShareAction extends AbstractPersist
     @Override
     public boolean authorize() {
         //This request is authorized so long as the current user has the permission to modify the contents of the resource collection.
-        return getAuthorizationService().canAddToCollection(getPersistable(), getAuthenticatedUser());
+        return getAuthorizationService().canAddToCollection(getAuthenticatedUser(), getPersistable());
     }
 
 }
