@@ -15,7 +15,7 @@
     <#macro narrowAndSort>
     <h2>Narrow Your Search</h2>
 
-        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='allResourceTypes'  listValue='label' label="Resource Type"/>
+        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='objectTypes' list='allObjectTypes'  listValue='label' label="Object Type"/>
 
         <#if authenticated>
         <@s.checkboxlist theme="bootstrap" numColumns=3 spanClass="span2" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
@@ -216,6 +216,13 @@
                                     <@s.url action=action includeParams="get" >
                                             <@s.param name="${facetParam}">${facet.raw}</@s.param>
                                             <@s.param name="startRecord" value="0"/>
+                                            <#-- hack to get object type into the parameters list when passing from resourceType -->
+                                            <#if actionName == 'results'>
+                                                <#if (objectTypes?size > 0)>
+                                                    <@s.param name="objectTypes" value="objectTypes"/>
+                                                </#if>
+                                                <@s.param name="resourceTypes" value="" suppressEmptyParameters=true />
+                                            </#if>
                                         <#nested>
                                     </@s.url
                                 ></#local>
@@ -277,9 +284,12 @@
                         <span class="media-body">
                             <a rel="noindex" href="<@s.url includeParams="all">
                                     <@s.param suppressEmptyParameters=true />
-                                    <@s.param name="${facetParam}"value="" />
+                                    <@s.param name="${facetParam}"value="" suppressEmptyParameters=true  />
                                     <@s.param name="startRecord" value="0"/>
-
+                                    <#--  for unified search, remove resourceTypes  -->
+                                    <#if actionName == 'results'>
+    									<@s.param name="resourceTypes" value="" suppressEmptyParameters=true />
+									</#if>
                                     <#-- fixme: (TDAR-5574) commenting out the block below fixes at least some of the issues seen in TDAR-5574 - is there a scenario I'm overlooking?  -->
                                     <#--
                                     <#if facetParam != "documentType">

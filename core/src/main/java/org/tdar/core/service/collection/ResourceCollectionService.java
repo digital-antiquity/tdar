@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
@@ -68,6 +69,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.transform.jsonld.SchemaOrgCollectionTransformer;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.TitleSortComparator;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -508,7 +510,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         String name = getName(collectionToAdd);
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
-                    && !authorizationService.canAddToCollection(collectionToAdd, authenticatedUser)) {
+                    && !authorizationService.canAddToCollection(authenticatedUser, collectionToAdd)) {
                 throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(name));
             }
@@ -616,7 +618,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         allChildren.add(collection);
         allChildren.forEach(child -> {
             if (child != null && CollectionUtils.isNotEmpty(child.getTransientChildren())) {
-                child.getTransientChildren().sort(VisibleCollection.TITLE_COMPARATOR);
+                child.getTransientChildren().sort(new TitleSortComparator());
                 logger.trace("new list: {}", child.getTransientChildren());
             }
         });
@@ -857,7 +859,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<Resource> ineligibleToRemove = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
 
         if (CollectionUtils.isNotEmpty(resourcesToAdd)) {
-            if (!authorizationService.canAddToCollection((ResourceCollection) persistable, authenticatedUser)) {
+            if (!authorizationService.canAddToCollection(authenticatedUser, (ResourceCollection) persistable)) {
                 throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(getName((ResourceCollection) persistable)));
             }
@@ -1046,11 +1048,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = true)
     public CustomizableCollection getWhiteLabelCollectionForResource(Resource resource) {
         return getDao().getWhiteLabelCollectionForResource(resource);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Long> findCollectionIdsWithTimeLimitedAccess() {
-        return getDao().findCollectionIdsWithTimeLimitedAccess();
     }
 
     /**
@@ -1302,4 +1299,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
         return getDao().findUsersSharedWith(authenticatedUser);
     }
+
+    @Transactional(readOnly = true)
+    public List<TimedAccessRestriction> findTimedAccessRestrictions(List<RightsBasedResourceCollection> list) {
+        return getDao().findTimedAccessRestrictions(list);
+    }
+
 }

@@ -82,9 +82,9 @@ public abstract class QueryBuilder extends QueryPartGroup {
         }
         
         if (StringUtils.isBlank(q)) {
-            return String.format("%s:%s",QueryFieldNames.OBJECT_TYPE, type);
+            return String.format("%s:%s",QueryFieldNames.GENERAL_TYPE, type);
         }
         // bind to type
-        return String.format("%s:%s AND (%s)",QueryFieldNames.OBJECT_TYPE, type, q);
+        return String.format("%s:%s AND (%s)",QueryFieldNames.GENERAL_TYPE, type, q);
     }
 }

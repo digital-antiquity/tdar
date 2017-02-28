@@ -25,7 +25,7 @@ public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
         List<String> names = new ArrayList<>();
         String label = kwd.getLabel();
         names.add(label);
-        doc.setField(QueryFieldNames.OBJECT_TYPE, kwd.getKeywordType());
+        doc.setField(QueryFieldNames.GENERAL_TYPE, kwd.getKeywordType());
         if (kwd instanceof HierarchicalKeyword<?>) {
             HierarchicalKeyword<?> hk = (HierarchicalKeyword<?>)kwd;
             CollectionUtils.addAll(names, hk.getParentLabelList());

@@ -9,6 +9,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -34,7 +35,8 @@ public enum LookupSource implements HasLabel,Localizable {
             OtherKeyword.class, TemporalKeyword.class, SiteNameKeyword.class,
             SiteTypeKeyword.class),
     RESOURCE("resources", Resource.class),
-    COLLECTION("collections", SharedCollection.class, ListCollection.class), 
+    COLLECTION("collections", SharedCollection.class, ListCollection.class),
+    INTEGRATION("integrations", DataIntegrationWorkflow.class),
     RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class),
     CONTENTS("content",InformationResourceFile.class),
     DATA("data",DataTableRow.class);
@@ -78,8 +80,8 @@ public enum LookupSource implements HasLabel,Localizable {
             case PERSON:
                 return CoreNames.PEOPLE;
             case COLLECTION:
-                return CoreNames.RESOURCES;
             case RESOURCE:
+            case INTEGRATION:
                 return CoreNames.RESOURCES;
             case RESOURCE_ANNOTATION_KEY:
                 return CoreNames.ANNOTATION_KEY;
@@ -102,6 +104,9 @@ public enum LookupSource implements HasLabel,Localizable {
             return CoreNames.RESOURCES;
         }
         if (ResourceCollection.class.isAssignableFrom(item)) {
+            return CoreNames.RESOURCES;
+        }
+        if (DataIntegrationWorkflow.class.isAssignableFrom(item)) {
             return CoreNames.RESOURCES;
         }
         if (Keyword.class.isAssignableFrom(item)) {
@@ -127,6 +132,7 @@ public enum LookupSource implements HasLabel,Localizable {
         switch (this) {
             case COLLECTION:
             case RESOURCE:
+            case INTEGRATION:
                 return String.format("%s:%s", "type",this.name());
             default:
                 return "*:*";

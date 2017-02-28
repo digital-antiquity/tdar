@@ -29,6 +29,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.QuietIndexReciever;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
@@ -36,6 +37,7 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.TitleSortComparator;
 
 @SuppressWarnings("unchecked")
 public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
@@ -77,12 +79,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     private static List<SortTestStruct> sortTests = new ArrayList<SortTestStruct>();
 
-    public static Comparator<Resource> titleComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
-        @Override
-        public int compare(Resource item1, Resource item2) {
-            return item1.getTitleSort().compareTo(item2.getTitleSort());
-        }
-    });
+    public static Comparator<Resource> titleComparator = ComparatorUtils.nullLowComparator(new TitleSortComparator());
 
     public static Comparator<Resource> idComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
         @Override
@@ -183,7 +180,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
             @SuppressWarnings("rawtypes")
             @Override
             public Comparable getComparableFor(Resource t) {
-                return t.getResourceTypeSort();
+                return ObjectType.from(t.getResourceType()).getSortName();
             }
         };
         assertSortOrder(SortOption.RESOURCE_TYPE, resourceTypeComparator);

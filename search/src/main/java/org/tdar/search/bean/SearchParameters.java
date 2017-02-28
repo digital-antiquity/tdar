@@ -126,7 +126,8 @@ public class SearchParameters {
     // Instead, we use a single searchParameters instance to hold these terms, which will be populated via the "narrow your search" section
     // as well by selecting a faceted search.
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes = new ArrayList<LatitudeLongitudeBox>();
-    private List<ResourceType> resourceTypes = new ArrayList<ResourceType>();
+    private List<ResourceType> resourceTypes = new ArrayList<>();
+    private List<ObjectType> objectTypes = new ArrayList<>();
     private List<CollectionType> collectionTypes = new ArrayList<CollectionType>();
     private List<LookupSource> types = new ArrayList<>();
     private List<IntegratableOptions> integratableOptions = new ArrayList<IntegratableOptions>();
@@ -198,12 +199,12 @@ public class SearchParameters {
         this.titles = titles;
     }
 
-    public List<ResourceType> getResourceTypes() {
-        return resourceTypes;
-    }
-
     public void setResourceTypes(List<ResourceType> resourceTypes) {
         this.resourceTypes = resourceTypes;
+    }
+    
+    public List<ResourceType> getResourceTypes() {
+        return resourceTypes;
     }
 
     public List<String> getOtherKeywords() {
@@ -321,7 +322,7 @@ public class SearchParameters {
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, support.getText("searchParameter.id"), Operator.OR, getResourceIds()));
         if (CollectionUtils.isNotEmpty(getTypes())) {
-            queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.OBJECT_TYPE,support_.getText("searchParameter.object_type"), Operator.OR, getTypes()));
+            queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.GENERAL_TYPE,support_.getText("searchParameter.general_type"), Operator.OR, getTypes()));
         }
         if (CollectionUtils.isNotEmpty(getCollectionTypes())) {
             queryPartGroup.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
@@ -377,8 +378,14 @@ public class SearchParameters {
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, support.getText("searchParameter.project"), "project.", Resource.class,
                 getOperator(), getProjects()));
 
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, support.getText("searchParameter.resource_type"), getResourceTypes(), Operator.OR,
-                Arrays.asList(ResourceType.values()));
+        for (ResourceType rt : getResourceTypes()) {
+            if (rt != null) {
+                getObjectTypes().add(ObjectType.from(rt));
+            }
+        }
+
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.OBJECT_TYPE, support.getText("searchParameter.object_type"), getObjectTypes(), Operator.OR,
+                Arrays.asList(ObjectType.values()));
         appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE, support.getText("searchParameter.integratable"), getIntegratableOptions(),
                 Operator.OR,
                 Arrays.asList(IntegratableOptions.values()));
@@ -674,6 +681,14 @@ public class SearchParameters {
 
     public void setCollectionTypes(List<CollectionType> collectionTypes) {
         this.collectionTypes = collectionTypes;
+    }
+
+    public List<ObjectType> getObjectTypes() {
+        return objectTypes;
+    }
+
+    public void setObjectTypes(List<ObjectType> objectTypes) {
+        this.objectTypes = objectTypes;
     }
 
 }

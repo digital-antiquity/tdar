@@ -13,7 +13,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
-import org.tdar.core.bean.resource.datatable.HasStatic;
+import org.tdar.core.bean.resource.HasStatic;
 
 /**
  * Represents a Project. Projects allow for inheritance of metadata from the project to resources within the project and thus simplifying metadata entry.
@@ -44,11 +44,6 @@ public class Project extends Resource implements Sortable, HasStatic {
 
         @Override
         public String getTitle() {
-            return "";
-        }
-
-        @Override
-        public String getTitleSort() {
             return "";
         }
 
@@ -94,7 +89,7 @@ public class Project extends Resource implements Sortable, HasStatic {
 
     @Transient
     public String getProjectTitle() {
-        return getTitleSort();
+        return getTitle();
     }
 
     @Transient

@@ -44,6 +44,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.TitleSortComparator;
 
 /**
  * $Id$
@@ -160,7 +161,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
             getAllResourceCollections().add((SharedCollection) rc);
         }
 
-        allResourceCollections.sort(VisibleCollection.TITLE_COMPARATOR);
+        allResourceCollections.sort(new TitleSortComparator());
     }
 
     /**

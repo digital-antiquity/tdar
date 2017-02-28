@@ -234,9 +234,6 @@ public class TdarBaseActionSupport extends TdarActionSupport {
      * @throws TdarActionException
      */
     protected <P extends Persistable> void checkValidRequest(PersistableLoadingAction<P> pc) throws TdarActionException {
-        //fixme:  replace exception-based flow control with either boolean result,  authErrors list (akin to actionErrors) or both.
-        //fixme: why does checkValidRequest need an action argument? Is that just 'this'?
-        getLogger().debug("current action:{}  action we are checking:{}  identical?:{}", this, pc, this==pc);
         Persistable persistable = pc.getPersistable();
         // if the persistable is NULL and the ID is not null, then we have a "load" issue; if the ID is not numeric, thwn we wouldn't have even gotten here
         if (PersistableUtils.isNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(pc.getId())) {

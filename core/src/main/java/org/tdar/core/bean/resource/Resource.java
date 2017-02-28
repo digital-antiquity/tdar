@@ -76,6 +76,7 @@ import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Slugable;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.XmlLoggable;
@@ -652,13 +653,6 @@ public class Resource implements Persistable,
         return title;
     }
 
-    public String getTitleSort() {
-        if (getTitle() == null) {
-            return "";
-        }
-        return getTitle().replaceAll(PersistableUtils.TITLE_SORT_REGEX, "").toLowerCase();
-    }
-
     public void setTitle(String title) {
         this.title = StringUtils.trimToEmpty(title);
     }
@@ -872,9 +866,9 @@ public class Resource implements Persistable,
         return resourceType;
     }
 
-    public String getResourceTypeSort() {
-        return resourceType.getSortName();
-    }
+//    public String getResourceTypeSort() {
+//        return resourceType.getSortName();
+//    }
 
     @Deprecated()
     @JsonView(JsonLookupFilter.class)

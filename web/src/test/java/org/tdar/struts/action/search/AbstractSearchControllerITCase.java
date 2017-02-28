@@ -34,6 +34,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
@@ -154,10 +155,10 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return found;
     }
 
-    protected List<ResourceType> getInheritingTypes() {
-        List<ResourceType> list = new ArrayList<ResourceType>();
-        list.add(ResourceType.IMAGE);
-        list.add(ResourceType.DOCUMENT);
+    protected List<ObjectType> getInheritingTypes() {
+        List<ObjectType> list = new ArrayList<>();
+        list.add(ObjectType.IMAGE);
+        list.add(ObjectType.DOCUMENT);
         return list;
     }
 
@@ -230,7 +231,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         }
     }
 
-    protected void setResourceTypes(ResourceType... resourceTypes) {
+    protected void setResourceTypes(ResourceType ... resourceTypes) {
         setResourceTypes(Arrays.asList(resourceTypes));
     }
 
@@ -255,4 +256,13 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return controller.getMap();
     }
 
+
+    protected void setObjectTypes(ObjectType ... resourceTypes) {
+        setObjectTypes(Arrays.asList(resourceTypes));
+    }
+
+    protected void setObjectTypes(List<ObjectType> resourceTypes) {
+        controller.getObjectTypes().clear();
+        controller.getObjectTypes().addAll(resourceTypes);
+    }
 }

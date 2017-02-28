@@ -166,12 +166,12 @@ public class ObfuscationService {
     @Qualifier("obfuscationEnabled")
     public void setObfuscationEnabled(Boolean enabled) {
         this.enabled = enabled;
-        logger.debug("set enabled: {} ", enabled);
+        logger.trace("set enabled: {} ", enabled);
     }
 
     
     public boolean obfuscationInterceptorEnabled() {
-        logger.debug("get enabled: {} ", enabled);
+        logger.trace("get enabled: {} ", enabled);
         return enabled;
     }
 
