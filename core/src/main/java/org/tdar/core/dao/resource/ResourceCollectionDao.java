@@ -41,6 +41,7 @@ import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -53,6 +54,8 @@ import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.utils.PersistableUtils;
+
+import javax.persistence.TypedQuery;
 
 /**
  * @author Adam Brin
@@ -503,4 +506,24 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         query.setParameter("cids", PersistableUtils.extractIds(list));
         return query.list();
     }
+
+    public List<UserInvite> fincUserInvites(ResourceCollection resourceCollection) {
+        return getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_USERINVITES_BY_COLLECTION, UserInvite.class)
+                .setParameter("collection", resourceCollection)
+                .list();
+
+    }
+
+    public List<UserInvite> findUserInvites(TdarUser user) {
+        return getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_USERINVITES_BY_USER, UserInvite.class)
+                .setParameter("user", user)
+                .list();
+    }
+
+    public List<UserInvite> findUserInvites(Resource resource) {
+        return getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_USERINVITES_BY_COLLECTION, UserInvite.class)
+                .setParameter("resource", resource.getInternalResourceCollection())
+                .list();
+    }
+
 }

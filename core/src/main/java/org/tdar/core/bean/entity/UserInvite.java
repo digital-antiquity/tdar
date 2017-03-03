@@ -46,7 +46,7 @@ public class UserInvite extends AbstractPersistable {
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "collection_id")
-    private ResourceCollection ResourceCollection;
+    private ResourceCollection resourceCollection;
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "authorizer_id")
@@ -78,11 +78,11 @@ public class UserInvite extends AbstractPersistable {
     }
 
     public ResourceCollection getResourceCollection() {
-        return ResourceCollection;
+        return resourceCollection;
     }
 
     public void setResourceCollection(ResourceCollection resourceCollection) {
-        ResourceCollection = resourceCollection;
+        this.resourceCollection = resourceCollection;
     }
 
     public Date getDateCreated() {

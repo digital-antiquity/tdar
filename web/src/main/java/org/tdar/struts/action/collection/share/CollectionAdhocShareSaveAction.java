@@ -1,5 +1,9 @@
 package org.tdar.struts.action.collection.share;
 
+import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
+import com.opensymphony.xwork2.validator.annotations.Validations;
+import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -38,6 +42,9 @@ public class CollectionAdhocShareSaveAction extends AbstractCollectionAdhocShare
             @Result(name="input", location="edit.ftl")
     })
     @PostOnly
+    @Validations(
+            emails = { @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "adhocShare.email", key = "adhocShareCreateAction.email_required") }
+    )
     public String execute() {
         getResourceCollectionService().createShareFromAdhoc(getAdhocShare(), null, getResourceCollection(), null, getAuthenticatedUser());
         return "success";

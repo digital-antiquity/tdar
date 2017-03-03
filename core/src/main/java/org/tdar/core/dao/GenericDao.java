@@ -47,6 +47,7 @@ import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
+import javax.persistence.EntityManager;
 
 /**
  * $Id$
@@ -578,6 +579,10 @@ public class GenericDao {
     
     protected Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
+    }
+
+    protected EntityManager getEntityManager() {
+        return getCurrentSession();
     }
 
     protected Logger getLogger() {
