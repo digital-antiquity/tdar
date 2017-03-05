@@ -122,7 +122,7 @@ import com.opensymphony.xwork2.TextProvider;
          logger.debug(queryText);
          Object searchMetadata[] = { resultHandler.getMode(), ftq.getLuceneTime(), ftq.getHydrationTime(), ftq.getTotalResults(), resultHandler.getStartRecord() };
          logger.trace("query: {} ", queryText);
-         logger.debug("{}:: SOLR:{} HYDR:{} RSLT:{} START:{}", searchMetadata);
+         logger.debug("{}: LUCENE: {} | HYDR: {} | # RSLTS: {} | START #: {}", searchMetadata);
          resultHandler.setSearchTitle(q.getDescription(textProvider));
          if (resultHandler.getStartRecord() > ftq.getTotalResults()) {
              throw new SearchPaginationException(MessageHelper.getMessage("searchService.start_record_too_high", Arrays.asList(resultHandler.getStartRecord(),

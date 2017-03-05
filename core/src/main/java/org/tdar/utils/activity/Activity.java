@@ -1,15 +1,16 @@
 package org.tdar.utils.activity;
 
+import java.io.Serializable;
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.external.session.SessionData;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
-import java.util.Date;
 
 public class Activity implements Serializable {
 
@@ -146,12 +147,11 @@ public class Activity implements Serializable {
     }
 
     public String getEndString() {
-        // total time = action time + render time
-        return String.format("end>> t:%s = %s", getTotalTime(), getFreemarkerFormattedTime());
+        return String.format(">> end: %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
     }
 
     public String getStartString() {
-        return String.format("begin>> %s ", getName());
+        return String.format("<< begin: %s ", getName());
     }
 
     @Override
@@ -161,7 +161,7 @@ public class Activity implements Serializable {
 
     private String getFreemarkerFormattedTime() {
         if (freemarkerHandoffDate != null && endDate != null) {
-            return String.format("a:%s + r:%s", getActionTime(), getResultTime());
+            return String.format(" | action: %s ms; result:%s ms", getActionTime(), getResultTime());
         }
         return "";
     }
