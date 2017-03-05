@@ -1,17 +1,12 @@
 package org.tdar.utils;
 
-import static java.lang.Math.log1p;
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
-
-import java.nio.charset.Charset;
-
+import com.google.common.hash.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
+import java.nio.charset.Charset;
+
+import static java.lang.Math.*;
 
 /**
  * Helper class for for hashing messages for the purpose of using them for "tagging" the message in a logging
@@ -20,8 +15,11 @@ import com.google.common.hash.Hashing;
  */
 public class TagHelper {
 
-    HashFunction murmur128 = Hashing.murmur3_128(1);
-    Base64 base64 = new Base64(false);
+    private HashFunction murmur128 = Hashing.murmur3_128(1);
+    private Base64 base64 = new Base64(false);
+
+    public static final int DEFAULT_TAG_LENGTH = 6;
+
 
     /**
      * Java implementation of birthday collision prediction algorithm from https://en.wikipedia.org/wiki/Birthday_attack
@@ -57,13 +55,13 @@ public class TagHelper {
         }
         HashCode hashCode = murmur128.hashString(message, Charset.defaultCharset());
         String str = base64.encodeToString(hashCode.asBytes());
-        return str.substring(0, 8);
+        return str.substring(0, DEFAULT_TAG_LENGTH);
     }
 
     public String tagify(long val) {
         HashCode hashCode = murmur128.hashLong(val);
         String str = base64.encodeToString(hashCode.asBytes());
-        return str.substring(0,8);
+        return str.substring(0, DEFAULT_TAG_LENGTH);
 
     }
 }
