@@ -1580,4 +1580,39 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <@s.hidden name="startTime" value="${value?c}" />
     </#macro>
 
+    <#macro shareSection formAction>
+    <form class="form-horizontal" method="POST" action="${formAction}">
+        <div class="well">
+            <div class="row">
+                <div class="span4">
+                    <@s.textfield name="adhocShare.email" id="txtShareEmail" label="Email" labelPosistion="left" />
+                </div>
+
+                <div class="span4">
+                    <@s.select name="adhocShare.generalPermissions" label="Permission" labelposition="left" listValue='label' list="%{availablePermissions}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="span5">
+                    <div class="control-group">
+                        <label class="control-label" for="inputPassword">Until:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input class="span2 datepicker" size="16" type="text" value="12-02-2016" id="dp3" data-date-format="mm-dd-yyyy" >
+                                <span class="add-on"><i class="icon-th"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="span3">
+                    <input type="submit" class="btn tdar-button btn-primary" value="Submit">
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    </#macro>
+
+
 </#escape>

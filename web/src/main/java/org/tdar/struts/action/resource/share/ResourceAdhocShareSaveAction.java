@@ -1,7 +1,6 @@
-package org.tdar.struts.action.collection.share;
+package org.tdar.struts.action.resource.share;
 
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
-import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
 import com.opensymphony.xwork2.validator.annotations.Validations;
 import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 import org.apache.struts2.convention.annotation.Action;
@@ -12,16 +11,16 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 /**
- *  We extend APVA because it performes load and checkValidRequest(),  we don't need anything else it offers (in
- *  fact adds things we *dont* want, but we'll worry about that later).
+ * Created by jimdevos on 3/6/17.
  */
-// fixme: refactor APVA by  pulling  out  load() and checkValidRequest() into a parent class (or an interceptor).
-public class CollectionAdhocShareSaveAction extends AbstractCollectionAdhocShareAction {
+
+public class ResourceAdhocShareSaveAction extends AbstractResourceAdhocShareAction {
+
 
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        getAdhocShare().setCollectionId(getId());
+        getAdhocShare().setCollectionId(getPersistable().getInternalResourceCollection().getId());
 
     }
 
@@ -36,9 +35,12 @@ public class CollectionAdhocShareSaveAction extends AbstractCollectionAdhocShare
             emails = { @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "adhocShare.email", key = "adhocShareCreateAction.email_required") }
     )
     public String execute() {
-        getResourceCollectionService().createShareFromAdhoc(getAdhocShare(), null, getResourceCollection(), null, getAuthenticatedUser());
+        // FIXME: what is the appropriate way to create an invite to edit a resource?  Do I pass a list of one resource to the "resources" parameter, or simply specify the internal collection of that resource?
+        getResourceCollectionService().createShareFromAdhoc(getAdhocShare(), null, getPersistable().getInternalResourceCollection(), null, getAuthenticatedUser());
         return "success";
     }
+
+
 
 
 }

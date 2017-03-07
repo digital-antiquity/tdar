@@ -12,21 +12,6 @@ import org.tdar.struts_base.action.TdarActionException;
 @Scope("prototype")
 public class CollectionAdhocShareEditAction extends AbstractCollectionAdhocShareAction {
 
-    @Override
-    public Class<SharedCollection> getPersistableClass() {
-        return SharedCollection.class;
-    }
-
-    @Override
-    public boolean authorize() {
-        return getAuthorizationService().canAdministerCollection(getAuthenticatedUser(), getPersistable());
-    }
-
-    @Override
-    public String loadViewMetadata() throws TdarActionException {
-        return "success";
-    }
-
     @Action(value="edit", results={
             @Result(name="success", location="edit.ftl"),
             @Result(name="input", type="redirect", location="/dashboard")

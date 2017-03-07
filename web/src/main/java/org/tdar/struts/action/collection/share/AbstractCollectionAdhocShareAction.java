@@ -30,7 +30,6 @@ public abstract class AbstractCollectionAdhocShareAction extends AbstractPersist
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
-
     private AdhocShare adhocShare = new AdhocShare();
 
     @Override public Class<SharedCollection> getPersistableClass() {
@@ -56,8 +55,7 @@ public abstract class AbstractCollectionAdhocShareAction extends AbstractPersist
 
     @Override
     public boolean authorize() {
-        //This request is authorized so long as the current user has the permission to modify the contents of the resource collection.
-        return getAuthorizationService().canAddToCollection(getAuthenticatedUser(), getPersistable());
+        return getAuthorizationService().canAdministerCollection(getAuthenticatedUser(), getPersistable());
     }
 
 }

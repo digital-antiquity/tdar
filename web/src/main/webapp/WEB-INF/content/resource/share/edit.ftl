@@ -13,11 +13,11 @@
 </head>
 
 <div id="titlebar" parse="true">
-    <h1>Invite to Edit: ${resourceCollection.title}</span></h1>
+    <h1>Invite to Edit: ${persistable.title}</span></h1>
 </div>
 <div class="row">
     <div class="span12">
-        <@edit.shareSection formAction="/collection/share/save?id=${id?c}"/>
+        <@edit.shareSection formAction="/resource/share/save?id=${id?c}" />
     </div>
 </div>
 
