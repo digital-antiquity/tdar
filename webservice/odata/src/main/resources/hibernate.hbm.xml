@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<!-- Use this hibernate mapping file when using annotated classes is not an option (e.g. join_table indices) -->
+<hibernate-mapping>
+
+<!-- 
+    <database-object>
+        <create>create view resource_proxy as (select rp.* , date_created, project_id, inheriting_spatial_information from resource rp left join information_resource ir on rp.id=ir.id)</create>
+        <drop>drop index view resource_proxy</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+ -->
+
+    <!-- join table indices -->
+    <database-object>
+        <create>create index collection_resource_indx on collection_resource(resource_id, collection_id)</create>
+        <drop>drop index collection_resource_indx</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index collection_resource_indx2 on collection_resource(resource_id, collection_id)</create>
+        <drop>drop index collection_resource_indx2</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index rescol_cid on collection_resource(collection_id)</create>
+        <drop>drop index rescol_cid</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index rescol_rid on collection_resource(resource_id)</create>
+        <drop>drop index rescol_rid</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+
+    <database-object>
+        <create>create index resid_cultkwdid on resource_culture_keyword(resource_id, culture_keyword_id)</create>
+        <drop>drop index resid_cultkwdid</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index rck_culture_keyword_id on resource_culture_keyword(culture_keyword_id)</create>
+        <drop>drop index rck_culture_keyword_id</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index resid_geogkwdid on resource_geographic_keyword(geographic_keyword_id, resource_id)</create>
+        <drop>drop index resid_geogkwdid</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index rgk_geographic_keyword_id on resource_geographic_keyword(geographic_keyword_id)</create>
+        <drop>drop index rgk_geographic_keyword_id</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index resid_invtypeid on resource_investigation_type(resource_id, investigation_type_id)</create>
+        <drop>drop index resid_invtypeid</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index rit_investigation_type_id on resource_investigation_type(investigation_type_id)</create>
+        <drop>drop index rit_investigation_type_id</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index mgd_geogr_res on resource_managed_geographic_keyword(geographic_keyword_id, resource_id)
+        </create>
+        <drop>drop index mgd_geogr_res</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index resid_matkwdid on resource_material_keyword(material_keyword_id, resource_id)</create>
+        <drop>drop index resid_matkwdid</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index rmk_material_keyword_id on resource_material_keyword(material_keyword_id)</create>
+        <drop>drop index rmk_material_keyword_id</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <!-- indices with expression arguments -->
+    <database-object>
+        <create>create index institution_name_lc on institution ((lower(name)), id)</create>
+        <drop>drop index institution_name_lc</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+
+    <database-object>
+        <create>create index person_lc on person(lower(first_name::text), lower(last_name::text), id)</create>
+        <drop>drop index person_lc</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+    <database-object>
+        <create>create index culture_keyword_label_lc on culture_keyword( lower(label) )</create>
+        <drop>drop index culture_keyword_label_lc</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+
+
+    <database-object>
+        <create>create index site_name_keyword_label_lc on site_name_keyword( lower(label) )</create>
+        <drop>drop index site_name_keyword_label_lc</drop>
+        <dialect-scope name="org.hibernate.dialect.PostgreSQLDialect"/>
+    </database-object>
+
+
+    <database-object>
+        <create>create index site_type_keyword_label_lc on site_type_keyword( lower(label) )</create>
+        <drop>drop index site_type_keyword_label_lc</drop>
+        <dialect-scope name="org.hibernate.dialect.PostgreSQLDialect"/>
+    </database-object>
+
+
+    <database-object>
+        <create>create index geographic_keyword_label_lc on geographic_keyword( lower(label) )</create>
+        <drop>drop index geographic_keyword_label_lc</drop>
+        <dialect-scope name="org.hibernate.dialect.PostgreSQLDialect"/>
+    </database-object>
+
+    <database-object>
+        <create>create index other_keyword_label_lc on other_keyword( lower(label) )</create>
+        <drop>drop index other_keyword_label_lc</drop>
+        <dialect-scope name="org.hibernate.dialect.PostgreSQLDialect"/>
+    </database-object>
+
+    <database-object>
+        <create>create index temporal_label_lc on temporal_keyword( lower(label) )</create>
+        <drop>drop index temporal_label_lc</drop>
+        <dialect-scope name="org.hibernate.dialect.PostgreSQLDialect"/>
+    </database-object>
+    
+        <database-object>
+        <create>
+create table resource_access_day_agg (
+    id bigserial,
+    resource_id bigint,
+    count bigint,
+    date_accessed date,
+    year int);
+    create index agg_res_date on resource_access_day_agg (resource_id, date_accessed);
+    create index agg_res_year on resource_access_day_agg (resource_id, year);
+    alter table resource_access_day_agg add constraint view_per_day UNIQUE(date_accessed, resource_id);
+    </create>
+        <drop>drop table resource_access_day_agg</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+    
+        <database-object>
+        <create>
+    create table file_download_day_agg (
+    id bigserial,
+    information_resource_file_id bigint,
+    count bigint,
+    date_accessed date,
+    year int);
+
+create index agg_dwnld_date on file_download_day_agg (information_resource_file_id, date_accessed);
+create index agg_dwnld_year on file_download_day_agg (information_resource_file_id, year);</create>
+            <drop>drop table file_download_day_agg</drop>
+        <dialect-scope name='org.hibernate.dialect.PostgreSQLDialect'/>
+    </database-object>
+    
+</hibernate-mapping>
