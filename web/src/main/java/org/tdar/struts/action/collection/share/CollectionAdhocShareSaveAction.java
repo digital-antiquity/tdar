@@ -1,12 +1,8 @@
 package org.tdar.struts.action.collection.share;
 
-import com.opensymphony.xwork2.validator.annotations.EmailValidator;
-import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
-import com.opensymphony.xwork2.validator.annotations.Validations;
-import com.opensymphony.xwork2.validator.annotations.ValidatorType;
+import com.opensymphony.xwork2.validator.annotations.*;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
@@ -33,10 +29,13 @@ public class CollectionAdhocShareSaveAction extends AbstractCollectionAdhocShare
     })
     @PostOnly
     @Validations(
-            emails = { @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "adhocShare.email", key = "adhocShareCreateAction.email_required") }
+            emails = { @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "adhocShare.email", key = "adhocShareCreateAction.email_required")},
+            requiredFields = {@RequiredFieldValidator(fieldName = "adhocShare.email", key = "adhocShareCreateAction.email_required")}
+
     )
     public String execute() {
         getResourceCollectionService().createShareFromAdhoc(getAdhocShare(), null, getResourceCollection(), null, getAuthenticatedUser());
+        addActionMessage(getText("adhocShareCreateAction.invitation_sent", getAdhocShare().getEmail()));
         return "success";
     }
 
