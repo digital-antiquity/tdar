@@ -1305,7 +1305,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findTimedAccessRestrictions(list);
     }
 
-    public List<UserInvite> findUserInvites(Resource r) {
-        return getDao().findUserInvites(r);
+    public List<UserInvite> findUserInvites(Resource resource) {
+        return getDao().findUserInvites(resource);
+    }
+
+    public List<UserInvite> findUserInvites(ResourceCollection resourceCollection) {
+        return getDao().findUserInvites(resourceCollection);
+    }
+
+    public List<UserInvite> findUserInvites(TdarUser user) {
+        return getDao().findUserInvites(user);
     }
 }

@@ -1,12 +1,3 @@
-<#list userInvites>
-People you've invited:
+<#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 
-    <ul>
-        <#items as invite>
-        <li>${(invite.emailAddress)!'n/a'}</li>
-        </#items>
-    </ul>
-
-<#else>
-No invites found.
-</#list>
+<@list.listUserInvites/>

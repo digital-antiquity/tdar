@@ -507,7 +507,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return query.list();
     }
 
-    public List<UserInvite> fincUserInvites(ResourceCollection resourceCollection) {
+    public List<UserInvite> findUserInvites(ResourceCollection resourceCollection) {
         return getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_USERINVITES_BY_COLLECTION, UserInvite.class)
                 .setParameter("collection", resourceCollection)
                 .list();
