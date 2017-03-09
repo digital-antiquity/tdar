@@ -147,11 +147,12 @@ public class Activity implements Serializable {
     }
 
     public String getEndString() {
-        return String.format(">> end: %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
+        // total time = action time + render time
+        return String.format("» end: %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
     }
 
     public String getStartString() {
-        return String.format("<< begin: %s ", getName());
+        return String.format("« begin: %s ", getName());
     }
 
     @Override
