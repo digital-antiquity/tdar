@@ -262,7 +262,7 @@
 
             <h2>${siteAcronym} Collections &amp; Project</h2>
             <h4>Add to a Collection</h4>
-            <@edit.resourceCollectionSection prefix="resourceCollections" label="Collections" list=resourceCollections />
+            <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
             <#assign _projectId = 'project.id' />
             <#if resource.id == -1 >
                 <#assign _projectId = request.getParameter('projectId')!'' />
@@ -334,7 +334,7 @@
             </div>
         <#else>
             <h2>${siteAcronym} Collections</h2>
-            <@edit.resourceCollectionSection prefix="resourceCollections" label="Collections" list=resourceCollections />
+            <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
 
 
         <#if !resource.resourceType.project>

@@ -347,9 +347,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#if header>
                 <h2><a name="accessRights"></a>Access Rights</h2>
         </#if>
-    <#if type == 'resource'>
-        <@resourceCollectionSection prefix="shares" label="Shares" list=shares />
-    </#if>
+    <#--<#if type == 'resource'>-->
+        <#--<@resourceCollectionSection prefix="shares" label="Shares" list=shares />-->
+    <#--</#if>-->
 
         <h3>${label}</h3>
 
