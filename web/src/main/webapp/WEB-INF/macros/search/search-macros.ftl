@@ -200,54 +200,59 @@
     <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" ulClass="media-list tools" liCssClass="media" action=actionName link=true icon=true pictoralIcon=false>
         <#if (facetlist?has_content && !facetlist.empty)>
             <#if label != ''>
-            <h4>${label}:</h4>
+                <h4>${label}:</h4>
             </#if>
-        <ul class="${ulClass}">
-            <#list facetlist as facet>
-                <li class="${liCssClass}">
-                    <#if (facetlist?size > 1)>
+            <ul class="${ulClass}">
+                <#list facetlist as facet>
+                    <li class="${liCssClass}">
+                        <#compress>
+                            <#if (facetlist?size > 1)>
+                            <span class="media-body">
+                                <#local facetUrl>
+                                    <@s.url action=action includeParams="get" >
+                                            <@s.param name="${facetParam}">${facet.raw}</@s.param>
+                                            <@s.param name="startRecord" value="0"/>
+                                        <#nested>
+                                    </@s.url
+                                ></#local>
 
-                        <span class="media-body">
-                        <#local facetUrl><#compress><@s.url action=action includeParams="get" >
-                    <@s.param name="${facetParam}">${facet.raw}</@s.param>
-                    <@s.param name="startRecord" value="0"/>
-                    <#if (documentType!'') == '' && facetParam != 'documentType'>
-                        <@s.param name="documentType" value=""/>
-                    </#if>
-                    <#if (fileAccess!'') == '' && facetParam != 'fileAccess'>
-                        <@s.param name="fileAccess" value=""/>
-                    </#if>
-                    <#if facetParam != "integratableOptions">
-                        <@s.param name="integratableOptions" value=""/>
-                    </#if>
-                    <#nested>
-                </@s.url></#compress></#local>
-                <#if link><#t>
-                <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"></#if><#compress>
-                    <#if icon || pictoralIcon><#if pictoralIcon && facetParam?lower_case?contains('resourcetype') >
-                        <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${facet.raw?lower_case}"></use></svg>
-                    <#else>
-                        <#if currentValues?size == 1>
-                            <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
-                        <#else>
-                            <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_deselected"></use></svg>
-                        </#if>
-                    </#if></#if></a>
-                <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"><@s.text name="${facet.label}"/></a>
-                <#if link></a></#if>
-                 <span>(${facet.count})</span></span></#compress>
-                    <#elseif (currentValues?size > 0) >
-                        <@removeFacet facetlist=currentValues facetParam=facetParam />
-                    <#else>
-                        <span class="media-body"> <@s.text name="${facet.label}"/> <span>(${facet.count})</span></span>
-                    </#if>
-                </li>
-            </#list>
-        </ul>
+                                <#if link><#t>
+                                    <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>">
+                                </#if>
+                                <#if icon || pictoralIcon>
+                                    <#if pictoralIcon && facetParam?lower_case?contains('resourcetype') >
+                                        <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${facet.raw?lower_case}"></use></svg>
+                                    <#else>
+                                        <#if currentValues?size == 1>
+                                            <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
+                                        <#else>
+                                            <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_deselected"></use></svg>
+                                        </#if>
+                                    </#if>
+                                </#if>
+                                <#if link></a></#if>
+                                <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"><@s.text name="${facet.label}"/></a>
+                                <span>(${facet.count})</span>
+                            </span>
+                            <#elseif (currentValues?size > 0) >
+                                <@removeFacet facetlist=currentValues facetParam=facetParam />
+                            <#else>
+                                <span class="media-body">
+                                    <@s.text name="${facet.label}"/>
+                                    <span>(${facet.count})</span>
+                                </span>
+                            </#if>
+                        </#compress>
+                    </li>
+                </#list>
+            </ul>
         </#if>
 
     </#macro>
 
+    <#-- render a "remove this facet" link -->
+    <#-- Specifically,  render a link that has the same query parameters as the current page,  minus the query parameter that activates the facet
+            specified by the ${facetParam} argument. -->
     <#macro removeFacet facetlist="" label="Facet Label" facetParam="">
         <#if facetlist?has_content>
             <#if (facetlist?is_collection)>
@@ -260,7 +265,7 @@
             <#if facet?has_content>
                 <#assign facetText=facet/>
                 <#if facet.plural?has_content><#assign facetText=facet.plural/>
-                <#elseif facet.label?has_content><#assign facetText=facet.label/>
+                    <#elseif facet.label?has_content><#assign facetText=facet.label/>
                 </#if>
         
         <ul class="media-list tools">
