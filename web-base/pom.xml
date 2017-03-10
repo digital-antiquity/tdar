@@ -246,6 +246,10 @@
                                             <name>enableContextSwitchingConfig</name>
                                             <value>true</value>
                                         </systemProperty>
+                                        <systemProperty>
+                                        	<name>STRUTS_DEV_MODE</name>
+                                        	<value>true</value>
+                                        </systemProperty>
                                     </systemProperties>
                                 </configuration>
                             </execution>

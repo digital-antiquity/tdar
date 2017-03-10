@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.HttpParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.TdarGroup;
@@ -154,7 +155,8 @@ public class AuthenticationInterceptor extends AbstractAuthenticationInterceptor
             return;
         }
         getSessionData().setReturnUrl(returnUrl);
-        getSessionData().setParameters(invocation.getInvocationContext().getParameters());
+        HttpParameters parameters = invocation.getInvocationContext().getParameters();
+        getSessionData().setParameters(parameters.toMap());
         logger.debug("setting returnUrl to: {}", getSessionData().getReturnUrl());
 
     }

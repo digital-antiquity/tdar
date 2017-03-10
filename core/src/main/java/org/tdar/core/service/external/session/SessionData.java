@@ -58,11 +58,11 @@ public class SessionData implements Serializable {
     /**
      * appends parameters if any to the url map.
      */
-    public void setParameters(Map<String, Object> parameters) {
-        this.parameters = new String[parameters.size() * 2];
+    public void setParameters(Map<String, String[]> map) {
+        this.parameters = new String[map.size() * 2];
         int index = 0;
         ArrayList<String> queryParams = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+        for (Map.Entry<String, String[]> entry : map.entrySet()) {
             String paramName = entry.getKey();
             String paramValue = ((String[]) entry.getValue())[0];
             this.parameters[index++] = paramName;
