@@ -11,10 +11,7 @@ import java.util.TreeSet;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -128,7 +125,11 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     }
 
     @Override
-    @Action(value = "dashboard", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") })
+    @Actions( {
+            //fixme: there's a less-verbose way to define these three mappings.
+            @Action(value = "dashboard", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") }),
+            @Action(value = "dashboard/", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") }),
+            @Action(value = "dashboard/resources", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") })})
     public String execute() throws SolrServerException, IOException {
         setupRecentResources();
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));

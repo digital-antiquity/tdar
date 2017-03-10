@@ -38,7 +38,7 @@ import com.opensymphony.xwork2.Preparable;
  * @version $Revision$
  */
 @ParentPackage("secured")
-@Namespace("")
+@Namespace("/dashboard")
 @Component
 @Scope("prototype")
 public class OrganizeAction extends AbstractAuthenticatableAction implements Preparable {
@@ -70,7 +70,7 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
     }
 
     @Override
-    @Action(value = "organize", results = { @Result(name = SUCCESS, location = "dashboard/organize.ftl") })
+    @Action(value = "collections", results = { @Result(name = SUCCESS, location = "organize.ftl") })
     public String execute() throws SolrServerException, IOException {
 
         return SUCCESS;

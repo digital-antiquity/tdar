@@ -49,7 +49,7 @@ import com.opensymphony.xwork2.Preparable;
  * @version $Revision$
  */
 @ParentPackage("secured")
-@Namespace("")
+@Namespace("/dashboard")
 @Component
 @Scope("prototype")
 public class RightsAction extends AbstractAuthenticatableAction implements DataTableResourceDisplay, Preparable {
@@ -93,7 +93,7 @@ public class RightsAction extends AbstractAuthenticatableAction implements DataT
     }
 
     @Override
-    @Action(value = "rights", results = { @Result(name = SUCCESS, location = "dashboard/rights.ftl") })
+    @Action(value = "rights", results = { @Result(name = SUCCESS, location = "rights.ftl") })
     public String execute() throws SolrServerException, IOException {
 
         return SUCCESS;

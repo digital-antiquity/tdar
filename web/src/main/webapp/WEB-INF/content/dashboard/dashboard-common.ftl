@@ -4,9 +4,9 @@
         <li class="nav-header">Dashboard</li>
 
         <li <@activeIf current "dashboard" />><a href="/dashboard">Resources</a></li>
-        <li <@activeIf current "collections" />> <a href="/organize">Collections</a></li>
-        <li <@activeIf current "rights" />> <a href="/rights">Rights</a></li>
-        <li <@activeIf current "bookmarks" />> <a href="/bookmarks"> Bookmarks</a></li>
+        <li <@activeIf current "collections" />> <a href="/dashboard/collections">Collections</a></li>
+        <li <@activeIf current "rights" />> <a href="/dashboard/rights">Rights</a></li>
+        <li <@activeIf current "bookmarks" />> <a href="/dashboard/bookmarks"> Bookmarks</a></li>
 
         <#--<li <@activeIf current "share" />><a href="/share">Share</a></li>-->
 

@@ -221,7 +221,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInPage(desc);
 
         // now look for the collection on the dashboard (implicitly test encoding errors also)
-        gotoPage("/organize");
+        gotoPage("/dashboard/collections");
         assertTextPresentInPage(name);
     }
     // assign a parent collection, then go back to dashboard
