@@ -44,59 +44,63 @@
         <liquibase.version>3.5.0</liquibase.version>
         <junit.version>4.12</junit.version>
         <maven.compiler.version>3.3</maven.compiler.version>
-        <surefire-failsafe.version>2.18.1</surefire-failsafe.version>
+        <surefire-failsafe.version>2.19.1</surefire-failsafe.version>
         <antrun.version>1.8</antrun.version>
         <jvm.args>-Xms256m -Xmx3072m</jvm.args>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <slf4j.version>1.7.22</slf4j.version>
+        <slf4j.version>1.7.24</slf4j.version>
         <skipTestLiquibase>true</skipTestLiquibase>
         <exec-maven-version>1.4.0</exec-maven-version>
+        <clean-maven-version>3.0.0</clean-maven-version>
+        <deploy-maven-version>2.8.2</deploy-maven-version>
+        <install-maven-version>2.5.2</install-maven-version>
+        <site-maven-version>3.6</site-maven-version>
+        <resources-maven-version>3.0.2</resources-maven-version>
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
         <asm.version>5.2</asm.version>
         <maven-jar-version>2.6</maven-jar-version>
-        <maven-war-version>2.6</maven-war-version>
+        <maven-war-version>3.0.0</maven-war-version>
         <maven-eclipse-version>2.10</maven-eclipse-version>
-        <apache.cxf.version>3.1.8</apache.cxf.version>
+        <apache.cxf.version>3.1.10</apache.cxf.version>
         <poi.version>3.15</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
         <jena.version>3.1.0</jena.version>
         <owlapi.version>5.0.4</owlapi.version>
-        <exec-maven-version>1.3.2</exec-maven-version>
+        <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
         <geotools.version>16.1</geotools.version>
         <tika.version>1.14</tika.version>
         <batik.version>1.7</batik.version>
-        <rome.version>1.7.0</rome.version>
-        <jackson.version>2.8.5</jackson.version>
-        <pdfbox.version>2.0.3</pdfbox.version>
+        <rome.version>1.7.1</rome.version>
+        <jackson.version>2.8.7</jackson.version>
+        <pdfbox.version>2.0.4</pdfbox.version>
         <bouncycastle.version>1.56</bouncycastle.version>        
-        <http-components.version>4.4.5</http-components.version>
-        <http-client.version>4.5.2</http-client.version>
-		<guava.version>19.0.20150826</guava.version>
-		<jackcess.version>2.1.5</jackcess.version>
+        <http-components.version>4.4.6</http-components.version>
+        <http-client.version>4.5.3</http-client.version>
+		<guava.version>21.0</guava.version>
+		<jackcess.version>2.1.6</jackcess.version>
 		<jt-utils.version>1.4.0</jt-utils.version>
 		<commons-io.version>2.5</commons-io.version>
 		<commons-beanutils.version>1.9.3</commons-beanutils.version>
 		<commons-codec.version>1.10</commons-codec.version>
-		<joda-time.version>2.9.5</joda-time.version>
+		<joda-time.version>2.9.7</joda-time.version>
 		<findbugs.version>3.0.0</findbugs.version>
-		<ant.version>1.9.7</ant.version>
-		<commons-lang3.version>3.4</commons-lang3.version>
-		<cglib.version>3.2.4</cglib.version>
-		<hamcrest.version>1.3</hamcrest.version>
-		<commons-compress.version>1.12</commons-compress.version>
+		<ant.version>1.10.1</ant.version>
+		<commons-lang3.version>3.5</commons-lang3.version>
+		<cglib.version>3.2.5</cglib.version>
+		<commons-compress.version>1.13</commons-compress.version>
 		<commons-cli.version>1.3</commons-cli.version>
 		<hamcrest.version>1.3</hamcrest.version>
         <jetty.version>9.4.2.v20170220</jetty.version>
         <struts2.version>2.5.10.1</struts2.version>
         <jersey.version>2.25.1</jersey.version>
-		<icu4j.version>58.1</icu4j.version>
-        <htmlunit.version>2.23</htmlunit.version>
+		<icu4j.version>58.2</icu4j.version>
+        <htmlunit.version>2.25</htmlunit.version>
 		<selenium.version>3.0.1</selenium.version>
 
 		<commons-fileupload.version>1.3.2</commons-fileupload.version>
@@ -237,7 +241,7 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
-                <version>2.7</version>
+                <version>2.8.1</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -468,7 +472,7 @@
 			<dependency>
 			    <groupId>com.github.ben-manes.caffeine</groupId>
 			    <artifactId>caffeine</artifactId>
-			    <version>1.0.1</version>
+			    <version>2.4.0</version>
 			</dependency>
 	        <dependency>
 	            <groupId>org.apache.tika</groupId>
@@ -603,6 +607,10 @@
                     <artifactId>junit</artifactId>
                     <groupId>junit</groupId>
                 </exclusion>
+                <exclusion>
+    	            <groupId>org.hamcrest</groupId>
+    	            <artifactId>hamcrest-library</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -716,7 +724,7 @@
             <!-- needed by spring for @Transactional calls -->
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
-            <version>3.2.4</version>
+            <version>${cglib.version}</version>
             <!-- LICENSE: APACHE 1.1 -->
         </dependency>
         <dependency>

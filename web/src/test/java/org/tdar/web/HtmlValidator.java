@@ -71,7 +71,7 @@ public class HtmlValidator {
             errorHandler.setHtml(true);
             validator.setUpValidatorAndParsers(errorHandler, false, false);
             validator.checkHtmlInputSource(new InputSource(internalPage.getWebResponse().getContentAsStream()));
-            errorHandler.end("success", "failed");
+            errorHandler.end("success", "failed","en");
             logger.debug("fatal: {}, errors: {}, warnings: {} ", errorHandler.getFatalErrors(), errorHandler.getErrors(), errorHandler.getWarnings());
             List<String> errors = new ArrayList<String>();
             List<String> warnings = new ArrayList<String>();

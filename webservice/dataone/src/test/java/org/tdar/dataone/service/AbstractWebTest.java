@@ -21,7 +21,6 @@ import org.w3c.css.sac.ErrorHandler;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.CookieManager;
-import com.gargoylesoftware.htmlunit.InteractivePage;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ScriptException;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -30,7 +29,7 @@ import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener;
 
 public abstract class AbstractWebTest {
 
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
     protected Page internalPage;
     protected HtmlPage htmlPage;
     static final TestConfiguration CONFIG = TestConfiguration.getInstance();
@@ -71,26 +70,28 @@ public abstract class AbstractWebTest {
         webClient.setJavaScriptTimeout(0);
         webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
 
-            @Override
-            public void scriptException(InteractivePage page, ScriptException scriptException) {
-                logger.error("JS load exception: {} {}", page.getUrl(), scriptException);
-            }
 
             @Override
-            public void timeoutError(InteractivePage page, long allowedTime, long executionTime) {
-                logger.error("timeout exception: {} {}", page.getUrl(), allowedTime);
-                
-            }
-
-            @Override
-            public void malformedScriptURL(InteractivePage page, String url, MalformedURLException malformedURLException) {
-                logger.error("malformed script URL exception: {} {}", page.getUrl(), malformedURLException);
-                
-            }
-
-            @Override
-            public void loadScriptError(InteractivePage page, URL scriptUrl, Exception exception) {
+            public void loadScriptError(HtmlPage arg0, URL scriptUrl, Exception exception) {
                 logger.error("load script Error: {} {}", scriptUrl, exception);
+                
+            }
+
+            @Override
+            public void malformedScriptURL(HtmlPage arg0, String scriptUrl, MalformedURLException exception) {
+                logger.error("malformed url Error: {} {}", scriptUrl, exception);
+                
+            }
+
+            @Override
+            public void scriptException(HtmlPage scriptUrl, ScriptException exception) {
+                logger.error("script exception: {} {}", scriptUrl, exception);
+                
+            }
+
+            @Override
+            public void timeoutError(HtmlPage arg0, long arg1, long arg2) {
+                logger.error("timeout Error: {} ", arg0);
                 
             }
         });
