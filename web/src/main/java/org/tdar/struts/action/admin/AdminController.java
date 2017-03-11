@@ -37,6 +37,7 @@ import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -55,6 +56,7 @@ import org.tdar.utils.Pair;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
+@HttpsOnly
 public class AdminController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 4385039298623767568L;
