@@ -9,7 +9,7 @@
         >
 
     <context:annotation-config/>
-        <bean class="org.tdar.core.configuration.SimpleAppConfiguration"/>
+        <bean class="org.tdar.dataone.DataOneAppConfiguration"/>
         <bean class="org.tdar.dataone.DataOneServletConfiguration"/>
         <!--<bean id="HelloWorldService" class="com.roommateAPI.service.HelloWorldService" />-->
     

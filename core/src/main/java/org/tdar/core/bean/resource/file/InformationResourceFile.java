@@ -548,17 +548,17 @@ public class InformationResourceFile extends AbstractSequenced<InformationResour
         this.deleted = deleted;
     }
 
-	@Override
-	public void setScore(Float score) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void setScore(Float score) {
+        // TODO Auto-generated method stub
 
-	@Override
-	public Float getScore() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
+
+    @Override
+    public Float getScore() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     public String getPreservationNote() {
         return preservationNote;

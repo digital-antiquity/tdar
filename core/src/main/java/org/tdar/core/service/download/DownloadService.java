@@ -209,10 +209,52 @@ public class DownloadService {
         // downloadMap.put(resourceFile, irFileVersion.getFilename());
     }
 
+    @Transactional(readOnly = true)
+    public DownloadTransferObject validateDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
+            InformationResource resourceToDownload_, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
+        DownloadTransferObject dto = setupDownload(authenticatedUser, versionToDownload, resourceToDownload_, includeCoverPage, textProvider, authorization);
+        if (dto.getResult() != DownloadResult.SUCCESS && dto.getResult() != null) {
+            return dto;
+        }
+        try {
+            constructDownloadTransferObject(dto);
+        } catch (TdarRecoverableRuntimeException tre) {
+            logger.error("ERROR IN Download: {}", tre);
+            dto.setResult(DownloadResult.ERROR);
+            return dto;
+        }
+        dto.setResult(DownloadResult.SUCCESS);
+        return dto;
+    }
+    
+
+    
     @Transactional(readOnly = false)
-    public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
-            InformationResource resourceToDownload_, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization,
-            boolean countDownload) {
+    public DownloadTransferObject handleDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
+            InformationResource resourceToDownload_, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
+        DownloadTransferObject dto = setupDownload(authenticatedUser, versionToDownload, resourceToDownload_, includeCoverPage, textProvider, authorization);
+        if (dto.getResult() != DownloadResult.SUCCESS && dto.getResult() != null) {
+            return dto;
+        }
+        try {
+            constructDownloadTransferObject(dto);
+            logger.info("user {} downloaded {} ({})", authenticatedUser, versionToDownload, resourceToDownload_);
+            registerDownload(dto.getStatistics(), authenticatedUser);
+        } catch (TdarRecoverableRuntimeException tre) {
+            logger.error("ERROR IN Download: {}", tre);
+            dto.setResult(DownloadResult.ERROR);
+            return dto;
+        }
+        dto.setResult(DownloadResult.SUCCESS);
+        return dto;
+    }
+    
+
+    
+
+
+    private DownloadTransferObject setupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload, InformationResource resourceToDownload_,
+            boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
         InformationResource resourceToDownload = resourceToDownload_;
         List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
         if (PersistableUtils.isNotNullOrTransient(versionToDownload)) {
@@ -291,19 +333,7 @@ public class DownloadService {
             return dto;
         }
 
-        dto.setVersionsToDownload(versionsToDownload);
-        try {
-            constructDownloadTransferObject(dto);
-            logger.info("user {} downloaded {} ({})", authenticatedUser, versionToDownload, resourceToDownload);
-            if (countDownload) {
-                registerDownload(dto.getStatistics(), authenticatedUser);
-            }
-        } catch (TdarRecoverableRuntimeException tre) {
-            logger.error("ERROR IN Download: {}", tre);
-            dto.setResult(DownloadResult.ERROR);
-            return dto;
-        }
-        dto.setResult(DownloadResult.SUCCESS);
+        dto.setVersionsToDownload(versionsToDownload);  
         return dto;
     }
 
@@ -327,18 +357,28 @@ public class DownloadService {
         }
     }
 
-    @Transactional(readOnly = false)
     /**
      * Validate, filter, and setup download for latest uploaded version of the specified InformationResourceFile.
      */
-    public DownloadTransferObject validateFilterAndSetupDownload(TdarUser authenticatedUser, InformationResourceFile fileToDownload,
-            boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization,
-            boolean countDownload) {
+    @Transactional(readOnly = false)
+    public DownloadTransferObject validateDownload(TdarUser authenticatedUser, InformationResourceFile fileToDownload,
+            boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
 
         InformationResourceFileVersion fileVersion = fileToDownload.getLatestUploadedVersion();
 
-        return validateFilterAndSetupDownload(authenticatedUser, fileVersion, null, includeCoverPage, textProvider,
-                authorization, countDownload);
+        return validateDownload(authenticatedUser, fileVersion, null, includeCoverPage, textProvider, authorization);
+    }
+
+    /**
+     * Validate, filter, and setup download for latest uploaded version of the specified InformationResourceFile.
+     */
+    @Transactional(readOnly = false)
+    public DownloadTransferObject handleDownload(TdarUser authenticatedUser, InformationResourceFile fileToDownload,
+            boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
+
+        InformationResourceFileVersion fileVersion = fileToDownload.getLatestUploadedVersion();
+
+        return handleDownload(authenticatedUser, fileVersion, null, includeCoverPage, textProvider, authorization);
     }
 
 }

@@ -269,7 +269,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = StringUtils.trimToEmpty(name);
     }
 
     @Override
@@ -279,7 +279,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = StringUtils.trimToEmpty(description);
     }
 
     //if you serialize this (even if just a list IDs, hibernate will request all necessary fields and do a traversion of the full resource graph (this could crash tDAR if > 100,000)

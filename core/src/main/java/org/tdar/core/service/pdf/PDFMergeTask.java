@@ -31,7 +31,7 @@ public class PDFMergeTask implements Runnable {
 
     @Override
     protected void finalize() throws Throwable {
-        logger.debug("download took: {}", System.currentTimeMillis() -  start);
+        logger.debug("download for {} took: {}", wrapper.getDocument().getName(), System.currentTimeMillis() -  start);
         super.finalize();
     }
     

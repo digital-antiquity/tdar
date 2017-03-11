@@ -115,7 +115,7 @@
                  data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'.">
                 <@s.textfield label="Title" id="resourceRegistrationTitle"
                 title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
-                cssClass="required descriptiveTitle input-xxlarge" required=true maxlength="512"/>
+                cssClass="required descriptiveTitle input-xxlarge trim" required=true maxlength="512"/>
             </div>
             <#if resource.resourceType != 'PROJECT'>
                 <div data-tiplabel="Year"
@@ -211,7 +211,7 @@
             <div id="t-abstract" class="clear"
                  data-tiplabel="Abstract / Description"
                  data-tooltipcontent="Short description of the <@edit.resourceTypeLabel />.">
-                <@s.textarea rows="4" cols="80" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge' required=true title="A description is required" />
+                <@s.textarea rows="4" cols="80" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge trim' required=true title="A description is required" />
             </div>
         </div>
         </#if>

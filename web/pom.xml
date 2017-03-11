@@ -9,6 +9,7 @@
     <name>tDAR (web)</name>
 
     <properties>
+        <struts2.version>2.5.10.1</struts2.version>
         <servlet.api.version>3.0.1</servlet.api.version>
         <wro4j.version>1.8.0</wro4j.version>
         <display.port></display.port>
@@ -57,6 +58,10 @@
             		<artifactId>xwork-core</artifactId>
             		<groupId>org.apache.struts.xwork</groupId>
             	</exclusion>
+            	<exclusion>
+            	    <groupId>commons-io</groupId>
+            	    <artifactId>commons-io</artifactId>
+            	</exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -76,6 +81,12 @@
             <groupId>org.tdar</groupId>
             <artifactId>search</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tdar</groupId>
@@ -139,13 +150,12 @@
                     <groupId>asm</groupId>
                     <artifactId>asm-commons</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-        <groupId>org.apache.struts</groupId>
-        <artifactId>struts2-java8-support-plugin</artifactId>
-        <version>2.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.struts</groupId>
@@ -206,6 +216,10 @@
                     <artifactId>httpclient</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
@@ -213,6 +227,12 @@
             <groupId>ro.isdc.wro4j</groupId>
             <artifactId>wro4j-core</artifactId>
             <version>${wro4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.yahoo.platform.yui</groupId>

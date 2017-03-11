@@ -54,8 +54,8 @@ public class ThumbnailDownloadAction extends AbstractDownloadController implemen
             return FORBIDDEN;
         }
 
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this, null, false));
+        setDownloadTransferObject(downloadService.validateDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
+                isCoverPageIncluded(), this, null));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }

@@ -6,6 +6,10 @@ import org.tdar.search.query.QueryFieldNames;
 
 public class InstitutionDocumentConverter extends AbstractSolrDocumentConverter {
 
+    /*
+     * See solr/configsets/default/conf/institutions-schema.xml
+     */
+
     public static SolrInputDocument convert(Institution inst) {
         
         SolrInputDocument doc = convertPersistable(inst);

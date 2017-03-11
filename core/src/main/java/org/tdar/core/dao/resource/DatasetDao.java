@@ -74,6 +74,7 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.XmlEscapeHelper;
 
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl;
@@ -376,7 +377,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (StringUtils.isEmpty(text)) {
             return text;
         }
-        return StringEscapeUtils.escapeXml11(RssService.stripInvalidXMLCharacters(text));
+        XmlEscapeHelper xse = new XmlEscapeHelper(-1L);
+        return StringEscapeUtils.escapeXml11(xse.stripNonValidXMLCharacters(text));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -542,6 +544,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         try {
             File tempFile = File.createTempFile("translated", ".xlsx", TdarConfiguration.getInstance().getTempDirectory());
             translatedFileOutputStream = new FileOutputStream(tempFile);
+            
             SheetProxy sheetProxy = toExcel(dataset, translatedFileOutputStream);
             String filename = FilenameUtils.getBaseName(file.getLatestUploadedVersion().getFilename()) + "_translated." + sheetProxy.getExtension();
             FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
@@ -554,8 +557,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
 //            irFile.getInformationResourceFileVersions().add(version);
 //            TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, tempFile, version);
 //            informationResourceFileDao.saveOrUpdate(version);
-        } catch (IOException exception) {
-            getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
+        } catch (IOException ioe) {
+            getLogger().error("Unable to create translated file for Dataset: " + dataset, ioe);
         } finally {
             IOUtils.closeQuietly(translatedFileOutputStream);
         }
@@ -576,7 +579,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         for (final DataTable dataTable : dataTables) {
             // each table becomes a sheet.
             String tableName = dataTable.getDisplayName();
-            getLogger().debug(tableName);
+            getLogger().debug("{} ({})",dataTable.getName(), dataTable.getId());
             proxy.setName(tableName);
             ResultSetExtractor<Boolean> excelExtractor = new ResultSetExtractor<Boolean>() {
                 @Override
@@ -590,6 +593,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
                     return true;
                 }
             };
+            dataTable.getDataTableColumns().forEach(dataTableColumn -> {
+                getLogger().debug("\t{}", dataTableColumn);
+                getLogger().debug("\t{}", dataTableColumn.getDefaultCodingSheet());
+            });
             tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, excelExtractor, true);
         }
         BufferedOutputStream stream = new BufferedOutputStream(outputStream);

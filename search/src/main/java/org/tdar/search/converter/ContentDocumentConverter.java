@@ -16,6 +16,10 @@ public class ContentDocumentConverter extends AbstractSolrDocumentConverter {
 
     private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 
+    /*
+     * See solr/configsets/default/conf/content-schema.xml
+     */
+
     public static SolrInputDocument convert(InformationResourceFile irf) {
         if (irf == null || irf.getIndexableVersion() == null) {
             return null;

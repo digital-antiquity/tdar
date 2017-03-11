@@ -527,7 +527,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         allChildren.add(collection);
         allChildren.forEach(child -> {
             child.getTransientChildren().sort(ResourceCollection.TITLE_COMPARATOR);
-            logger.debug("new list: {}", child.getTransientChildren());
+            logger.trace("new list: {}", child.getTransientChildren());
         });
     }
 

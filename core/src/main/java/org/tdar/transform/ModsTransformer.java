@@ -9,18 +9,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.Audio;
@@ -39,6 +45,7 @@ import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UrlService;
+import org.tdar.utils.XmlEscapeHelper;
 
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.mods.ModsElementContainer;
@@ -58,13 +65,15 @@ public abstract class ModsTransformer<R extends Resource> implements
 
     @SuppressWarnings("unused")
     private final transient Logger log = LoggerFactory.getLogger(getClass());
+    private XmlEscapeHelper x;
 
     @Override
     public ModsDocument transform(R source) {
         ModsDocument mods = new ModsDocument();
+        setX(new XmlEscapeHelper(source.getId()));
 
         TitleInfo title = mods.createTitleInfo();
-        title.addTitle(source.getTitle());
+        title.addTitle(getX().stripNonValidXMLCharacters(source.getTitle()));
 
         // add resource creators
         ArrayList<ResourceCreator> creators = new ArrayList<ResourceCreator>(source.getResourceCreators());
@@ -74,55 +83,58 @@ public abstract class ModsTransformer<R extends Resource> implements
         // (2) this does not properly handle editors (see references below)
         // (3) what about the populate Author method that's defined below
         for (ResourceCreator resourceCreator : creators) {
-            Name name = mods.createName();
-            if (resourceCreator.getRole() != null) {
-                name.addRole(resourceCreator.getRole().getLabel(), false, null);
-            }
-
-            if (resourceCreator.getCreator().getCreatorType() == CreatorType.PERSON) {
-                name.setNameType(NameTypeAttribute.PERSONAL);
-                Person person = (Person) resourceCreator.getCreator();
-                name.addNamePart(person.getFirstName(), NamePartTypeValue.given);
-                name.addNamePart(person.getLastName(), NamePartTypeValue.family);
-            } else {
-                name.setNameType(NameTypeAttribute.CORPORATE);
-                name.addNamePart(resourceCreator.getCreator().getProperName(), null);
-            }
+            addResourceCreator(mods, resourceCreator);
         }
 
         // add geographic subjects
         Set<GeographicKeyword> geoTerms = source.getActiveGeographicKeywords();
         for (GeographicKeyword geoTerm : geoTerms) {
-            Subject sub = mods.createSubject();
-            sub.addGeographic(geoTerm.getLabel());
+            createTopic(mods, geoTerm);
         }
 
         // add temporal subjects
         Set<TemporalKeyword> locTemporalTerms = source.getActiveTemporalKeywords();
         for (TemporalKeyword temporalTerm : locTemporalTerms) {
             Subject sub = mods.createSubject();
-            sub.addTemporal(temporalTerm.getLabel());
+            // sub.getElementType().setHref(UrlService.absoluteSecureUrl(temporalTerm));
+            sub.setAttribute("href", UrlService.absoluteSecureUrl(temporalTerm));
+            sub.addTemporal(getX().stripNonValidXMLCharacters(temporalTerm.getLabel()));
         }
 
         // add culture subjects
         Set<CultureKeyword> cultureTerms = source.getActiveCultureKeywords();
         for (CultureKeyword cultureTerm : cultureTerms) {
-            Subject sub = mods.createSubject();
-            sub.addTopic(cultureTerm.getLabel());
+            createTopic(mods, cultureTerm);
         }
 
         // add site name subjects
         Set<SiteNameKeyword> siteNameTerms = source.getActiveSiteNameKeywords();
         for (SiteNameKeyword siteNameTerm : siteNameTerms) {
-            Subject sub = mods.createSubject();
-            sub.addTopic(siteNameTerm.getLabel());
+            createTopic(mods, siteNameTerm);
+        }
+
+        // add site name subjects
+        Set<SiteTypeKeyword> siteTypeTerms = source.getActiveSiteTypeKeywords();
+        for (SiteTypeKeyword siteTypeTerm : siteTypeTerms) {
+            createTopic(mods, siteTypeTerm);
+        }
+
+        // add site name subjects
+        Set<MaterialKeyword> materialKeywords = source.getActiveMaterialKeywords();
+        for (MaterialKeyword materialKeyword : materialKeywords) {
+            createTopic(mods, materialKeyword);
         }
 
         // add other subjects
         Set<OtherKeyword> otherTerms = source.getActiveOtherKeywords();
         for (OtherKeyword otherTerm : otherTerms) {
-            Subject sub = mods.createSubject();
-            sub.addTopic(otherTerm.getLabel());
+            createTopic(mods, otherTerm);
+        }
+
+        // add other subjects
+        Set<InvestigationType> investigationTypes = source.getActiveInvestigationTypes();
+        for (InvestigationType otherTerm : investigationTypes) {
+            createTopic(mods, otherTerm);
         }
 
         for (LatitudeLongitudeBox longLat : source.getActiveLatitudeLongitudeBoxes()) {
@@ -137,16 +149,56 @@ public abstract class ModsTransformer<R extends Resource> implements
             sub.addCartographics(coords, "wgs84", null);
         }
 
-        mods.addIdentifier(UrlService.absoluteUrl(source), "uri", false, null);
-
+        mods.addIdentifier(getX().stripNonValidXMLCharacters(UrlService.absoluteUrl(source)), "uri", false, null);
+        mods.addIdentifier(source.getId().toString(), "tdarId", false, null);
+        if (source instanceof InformationResource) {
+            InformationResource ir = (InformationResource) source;
+            if (StringUtils.isNotBlank(ir.getDoi())) {
+                mods.addIdentifier(ir.getDoi(), "doi", false, null);
+            }
+            if (StringUtils.isNotBlank(ir.getExternalId())) {
+                mods.addIdentifier(ir.getExternalId(), "doi", false, null);
+            }
+        }
         for (CoverageDate date : source.getCoverageDates()) {
             Subject sub = mods.createSubject();
-            sub.addTemporal(date.toString());
+            sub.addTemporal(getX().stripNonValidXMLCharacters(date.toString()));
         }
 
         // TODO: add URL pointer here.
-
+        getX().logChange();
         return mods;
+    }
+
+    private void createTopic(ModsDocument mods, Keyword otherTerm) {
+        Subject sub = mods.createSubject();
+        // sub.getElementType().setHref(UrlService.absoluteUrl(otherTerm));
+        sub.setAttribute("href", UrlService.absoluteSecureUrl(otherTerm));
+        sub.addTopic(getX().stripNonValidXMLCharacters(otherTerm.getLabel()));
+    }
+
+    protected void addResourceCreator(ModsElementContainer mods, ResourceCreator resourceCreator) {
+        Name name = mods.createName();
+        if (resourceCreator.getRole() != null) {
+            name.addRole(resourceCreator.getRole().getLabel(), false, null);
+        }
+
+        Creator creator = resourceCreator.getCreator();
+        name.addDisplayForm(creator.getProperName());
+        name.setAttribute("href", UrlService.absoluteSecureUrl(creator));
+
+        if (creator.getCreatorType() == CreatorType.PERSON) {
+            name.setNameType(NameTypeAttribute.PERSONAL);
+            Person person = (Person) creator;
+            name.addNamePart(getX().stripNonValidXMLCharacters(person.getFirstName()), NamePartTypeValue.given);
+            name.addNamePart(getX().stripNonValidXMLCharacters(person.getLastName()), NamePartTypeValue.family);
+            if (person.getInstitution() != null) {
+                name.addAffiliation(getX().stripNonValidXMLCharacters(person.getInstitution().getName()));
+            }
+        } else {
+            name.setNameType(NameTypeAttribute.CORPORATE);
+            name.addNamePart(getX().stripNonValidXMLCharacters(creator.getProperName()), null);
+        }
     }
 
     public static class InformationResourceTransformer<I extends InformationResource>
@@ -158,7 +210,7 @@ public abstract class ModsTransformer<R extends Resource> implements
 
             for (ResourceCreator resourceCreator : source.getResourceCreators()) {
                 if (resourceCreator.getRole() == ResourceCreatorRole.CONTACT) {
-                    mods.getOriginInfo().addPublisher(resourceCreator.getCreator().getProperName());
+                    mods.getOriginInfo().addPublisher(getX().stripNonValidXMLCharacters(resourceCreator.getCreator().getProperName()));
                 }
             }
 
@@ -181,14 +233,15 @@ public abstract class ModsTransformer<R extends Resource> implements
             // if (informationResourceFormat != null)
             // mods.createPhysicalDescription().addInternetMediaType(informationResourceFormat.getMimeType());
             populateAuthorSection(source, mods);
+            getX().logChange();
             return mods;
         }
 
         protected void populateAuthorSection(I source, ModsDocument mods) {
             if (source.getResourceProviderInstitution() != null) {
                 Name name = mods.createName();
-                name.addNamePart(source.getResourceProviderInstitution()
-                        .getName(), null);
+                name.addNamePart(getX().stripNonValidXMLCharacters(source.getResourceProviderInstitution()
+                        .getName()), null);
             }
         }
 
@@ -209,25 +262,11 @@ public abstract class ModsTransformer<R extends Resource> implements
 
             String abst = source.getDescription();
             if (abst != null) {
-                mods.addAbstract(abst, null);
-            }
-
-            // populate authors, but filter editors and series editors -- we will determine where to
-            // put them later
-            List<ResourceCreator> editors = new ArrayList<>();
-            for (ResourceCreator auth : source.getPrimaryCreators()) {
-                ResourceCreatorRole role = auth.getRole();
-
-                // FIXME: I don't think this can ever happen...
-                if (role.equals(ResourceCreatorRole.EDITOR)) {
-                    editors.add(auth);
-                } else {
-                    addDocumentCreator(mods, auth);
-                }
+                mods.addAbstract(getX().stripNonValidXMLCharacters(abst), null);
             }
 
             if (source.getDoi() != null) {
-                mods.addIdentifier(source.getDoi(), "doi", false, null);
+                mods.addIdentifier(getX().stripNonValidXMLCharacters(source.getDoi()), "doi", false, null);
             }
 
             DocumentType type = source.getDocumentType();
@@ -244,12 +283,11 @@ public abstract class ModsTransformer<R extends Resource> implements
                     addIsbn(mods, source.getIsbn());
                     addPhysicalLocation(mods, source.getCopyLocation());
                     // no other good place to put these if entered
-                    addDocumentCreators(mods, editors);
                     break;
                 case BOOK_SECTION:
                     RelatedItem bookHost = mods.createRelatedItem();
                     bookHost.setType(RelatedItemTypeValues.host);
-                    bookHost.getTitleInfo().addTitle(source.getBookTitle());
+                    bookHost.getTitleInfo().addTitle(getX().stripNonValidXMLCharacters(source.getBookTitle()));
                     addSeriesInfo(bookHost, source.getSeriesName(), source.getSeriesNumber());
                     addVolume(bookHost, source.getVolume());
                     addExtent(bookHost, source.getNumberOfPages(), source.getStartPage(), source.getEndPage());
@@ -258,18 +296,17 @@ public abstract class ModsTransformer<R extends Resource> implements
                     addIsbn(bookHost, source.getIsbn());
                     addPhysicalLocation(bookHost, source.getCopyLocation());
                     // assume that the editors are editors of the host book???
-                    addDocumentCreators(bookHost, editors);
                     break;
                 case JOURNAL_ARTICLE:
                     RelatedItem artHost = mods.createRelatedItem();
                     artHost.setType(RelatedItemTypeValues.host);
 
                     if (source.getJournalName() != null) {
-                        artHost.getTitleInfo().addTitle(source.getJournalName());
+                        artHost.getTitleInfo().addTitle(getX().stripNonValidXMLCharacters(source.getJournalName()));
                     }
                     addVolume(artHost, source.getVolume());
                     if (source.getJournalNumber() != null) {
-                        artHost.getPart().addDetail(source.getJournalNumber(),
+                        artHost.getPart().addDetail(getX().stripNonValidXMLCharacters(source.getJournalNumber()),
                                 null, null, "issue", null);
                     }
 
@@ -282,7 +319,6 @@ public abstract class ModsTransformer<R extends Resource> implements
                     addPhysicalLocation(artHost, source.getCopyLocation());
 
                     // again, is this a good assumption?
-                    addDocumentCreators(artHost, editors);
                     break;
                 case THESIS:
                     RelatedItem thesisHost = mods.createRelatedItem();
@@ -292,10 +328,9 @@ public abstract class ModsTransformer<R extends Resource> implements
                     Name degreeGrantor = thesisHost.createName();
                     degreeGrantor.setNameType(NameTypeAttribute.CORPORATE);
                     if (source.getPublisherName() != null) {
-                        degreeGrantor.addNamePart(source.getPublisherName(), null); // institution
-                        if (source.getPublisherLocation() != null)
-                        {
-                            degreeGrantor.addNamePart(source.getPublisherLocation(), null); // department
+                        degreeGrantor.addNamePart(getX().stripNonValidXMLCharacters(source.getPublisherName()), null); // institution
+                        if (source.getPublisherLocation() != null) {
+                            degreeGrantor.addNamePart(getX().stripNonValidXMLCharacters(source.getPublisherLocation()), null); // department
                         }
                         degreeGrantor.addRole("Degree grantor", false, null);
                     }
@@ -304,11 +339,11 @@ public abstract class ModsTransformer<R extends Resource> implements
                     if (source.getPublisherName() != null) {
                         Name conf = mods.createName();
                         conf.setNameType(NameTypeAttribute.CONFERENCE);
-                        conf.addNamePart(source.getPublisherName(), null);
+                        conf.addNamePart(getX().stripNonValidXMLCharacters(source.getPublisherName()), null);
                         conf.addRole("creator", false, null);
                     }
                     if (source.getPublisherName() != null) {
-                        mods.getOriginInfo().addPlace(source.getPublisherLocation(), false, null);
+                        mods.getOriginInfo().addPlace(getX().stripNonValidXMLCharacters(source.getPublisherLocation()), false, null);
                     }
                     break;
                 case OTHER:
@@ -317,39 +352,40 @@ public abstract class ModsTransformer<R extends Resource> implements
                     break;
             }
 
+            getX().logChange();
             return mods;
         }
 
         private void addVolume(ModsElementContainer elem, String volume) {
             if (volume != null) {
-                elem.getPart().addDetail(volume, null, null, "volume", null);
+                elem.getPart().addDetail(getX().stripNonValidXMLCharacters(volume), null, null, "volume", null);
             }
         }
 
         private void addPhysicalLocation(ModsElementContainer elem, String copyLocation) {
             if (copyLocation != null) {
-                elem.getLocation().addPhysicalLocation(copyLocation, null);
+                elem.getLocation().addPhysicalLocation(getX().stripNonValidXMLCharacters(copyLocation), null);
             }
         }
 
         private void addPublisher(ModsElementContainer elem, String publisher, String publisherLocation) {
             if (publisher != null) {
-                elem.getOriginInfo().addPublisher(publisher);
+                elem.getOriginInfo().addPublisher(getX().stripNonValidXMLCharacters(publisher));
             }
             if (publisherLocation != null) {
-                elem.getOriginInfo().addPlace(publisherLocation, false, null);
+                elem.getOriginInfo().addPlace(getX().stripNonValidXMLCharacters(publisherLocation), false, null);
             }
         }
 
         private void addIsbn(ModsElementContainer elem, String isbn) {
             if (isbn != null) {
-                elem.addIdentifier(isbn, "isbn", false, null);
+                elem.addIdentifier(getX().stripNonValidXMLCharacters(isbn), "isbn", false, null);
             }
         }
 
         private void addEdition(ModsElementContainer elem, String edition) {
             if (edition != null) {
-                elem.getOriginInfo().addEdition(edition);
+                elem.getOriginInfo().addEdition(getX().stripNonValidXMLCharacters(edition));
             }
         }
 
@@ -358,10 +394,10 @@ public abstract class ModsTransformer<R extends Resource> implements
                 RelatedItem series = elem.createRelatedItem();
                 series.setType(RelatedItemTypeValues.series);
                 if (seriesName != null) {
-                    series.getTitleInfo().addTitle(seriesName);
+                    series.getTitleInfo().addTitle(getX().stripNonValidXMLCharacters(seriesName));
                 }
                 if (seriesNumber != null) {
-                    series.getTitleInfo().addPartNumber(seriesNumber);
+                    series.getTitleInfo().addPartNumber(getX().stripNonValidXMLCharacters(seriesNumber));
                 }
             }
         }
@@ -372,32 +408,7 @@ public abstract class ModsTransformer<R extends Resource> implements
             String sPage = (startPage != null) ? startPage.toString() : null;
             String ePage = (endPage != null) ? endPage.toString() : null;
             if ((numPages != null) || (sPage != null) || (ePage != null)) {
-                elem.getPart().addExtent(sPage, ePage, null, "pages", numPages);
-            }
-        }
-
-        private void addDocumentCreator(ModsElementContainer elem, ResourceCreator resourceCreator) {
-            Name creatorName = elem.createName();
-            if (resourceCreator.getRole() != null) {
-                creatorName.addRole(resourceCreator.getRole().getLabel(), false, null);
-            }
-            if (resourceCreator.getCreatorType() == CreatorType.PERSON) {
-                creatorName.setNameType(NameTypeAttribute.PERSONAL);
-                Person person = (Person) resourceCreator.getCreator();
-                creatorName.addNamePart(person.getFirstName(), NamePartTypeValue.given);
-                creatorName.addNamePart(person.getLastName(), NamePartTypeValue.family);
-                if (person.getInstitution() != null) {
-                    creatorName.addAffiliation(person.getInstitution().getName());
-                }
-            } else {
-                creatorName.setNameType(NameTypeAttribute.CORPORATE);
-                creatorName.addNamePart(resourceCreator.getCreator().getProperName(), null);
-            }
-        }
-
-        private void addDocumentCreators(ModsElementContainer elem, List<ResourceCreator> resourceCreators) {
-            for (ResourceCreator resourceCreator : resourceCreators) {
-                addDocumentCreator(elem, resourceCreator);
+                elem.getPart().addExtent(getX().stripNonValidXMLCharacters(sPage), getX().stripNonValidXMLCharacters(ePage), null, "pages", numPages);
             }
         }
 
@@ -498,6 +509,14 @@ public abstract class ModsTransformer<R extends Resource> implements
         }
 
         throw new TdarRecoverableRuntimeException("transformer.no_mods_transformer", Arrays.asList(resource.getClass()));
+    }
+
+    public XmlEscapeHelper getX() {
+        return x;
+    }
+
+    public void setX(XmlEscapeHelper x) {
+        this.x = x;
     }
 
 }

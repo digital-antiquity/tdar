@@ -86,7 +86,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
         return ERROR;
     }
 
-    @HttpOnlyIfUnauthenticated
+//    @HttpOnlyIfUnauthenticated
     @Actions({
             @Action(value = "robots", results = {
                     @Result(name = SUCCESS, location = "robots.ftl", type = FREEMARKER, params = { "contentType", "text/plain" })

@@ -31,55 +31,79 @@
 
 
 <h3>User Agreement Stats</h3>
-<table class="table tableFormat">
-        <#list agreementCounts?keys as key>
-        <tr>
-			<th><@s.text name="AgreementTypes.${key}" /> </th><td>${agreementCounts.get(key)}</td>	
-        </tr>
-		</#list>
-</table>
+<div class="row">
+    <div class="span6">
+        <table class="table table-bordered table-condensed table-hover">
+            <colgroup>
+                <col style="width:40%">
+                <col>
+            </colgroup>
+            <#list agreementCounts?keys as key>
+                <tr>
+                    <td><@s.text name="AgreementTypes.${key}" /> </td>
+                    <td><div class="text-right">${agreementCounts.get(key)}</div></td>
+                </tr>
+            </#list>
+        </table>
+    </div>
+</div>
 
 
 <h3>User Affiliation Stats</h3>
-<h4>All Users</h4>
-<table class="table tableFormat">
-        <#list affiliationCounts?keys as key>
-        <tr>
-            <th><@s.text name="UserAffiliation.${key}" /> </th><td>${affiliationCounts.get(key)}</td>   
-        </tr>
-        </#list>
-</table>
-<h4>Contributors</h4>
-<table class="table tableFormat">
-        <#list contributorAffiliationCounts?keys as key>
-        <tr>
-            <th><@s.text name="UserAffiliation.${key}" /> </th><td>${contributorAffiliationCounts.get(key)}</td>   
-        </tr>
-        </#list>
-</table>
+<div class="row">
+    <div class="span6">
+        <h4>All Users</h4>
+        <table class="table table-bordered table-condensed table-hover">
+            <colgroup>
+                <col style="width:40%">
+                <col>
+            </colgroup>
+                <#list affiliationCounts?keys as key>
+                <tr>
+                    <td><@s.text name="UserAffiliation.${key}" /> </td>
+                    <td><div class="text-right">${affiliationCounts.get(key)}</div></td>
+                </tr>
+                </#list>
+        </table>
+    </div>
+
+    <div class="span6">
+        <h4>Contributors</h4>
+        <table class="table table-bordered table-condensed table-hover">
+            <colgroup>
+                <col style="width:40%">
+                <col class="text-right">
+            </colgroup>
+                <#list contributorAffiliationCounts?keys as key>
+                <tr>
+                    <td><@s.text name="UserAffiliation.${key}" /> </td>
+                    <td><div class="text-right">${contributorAffiliationCounts.get(key)}</div></td>
+                </tr>
+                </#list>
+        </table>
+    </div>
+
+</div>
 
 
-<div class="glide">
+<div>
     <h3>Recently Registered Users </h3>
-    <table class="tableFormat">
+    <table class="table tableFormat">
         <thead>
         <tr>
             <th>User</th>
             <th>Email</th>
             <th>Date Registered</th>
+            <th style="width:60%">Contributor Reason</th>
         </tr>
         </thead>
         <#list recentUsers as user>
             <tr>
                 <td><a href="<@s.url value="/browse/creators/${user.id?c}"/>">${user.properName}</a></td>
-                <td> <#if user.email?has_content>${user.email}</#if></td>
-                <td> <#if user.dateCreated?has_content>
-						<@view.shortDate user.dateCreated?datetime true />
-			</#if></td>
-            </tr>
-            <tr>
-                <td colspan=3>
-                    <div style="padding-left:25px">${user.contributorReason!""}</div>
+                <td> ${(user.email)!'n/a'}</td>
+                <td> ${(user.dateCreated)!}</td>
+                <td style="width:60%">
+                    ${user.contributorReason!""}
                 </td>
             </tr>
         </#list>

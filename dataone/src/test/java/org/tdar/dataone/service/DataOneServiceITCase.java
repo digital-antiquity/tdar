@@ -111,8 +111,31 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testObjectTotals() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
-    	ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 0, 10);
-    	assertEquals(2, listObjectsResponse.getTotal());
-    	assertEquals(2, listObjectsResponse.getObjectInfoList().size());
+        service.synchronizeTdarChangesWithDataOneObjects();
+        ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 0, 10);
+        assertEquals(4, listObjectsResponse.getTotal());
+        assertEquals(4, listObjectsResponse.getObjectInfoList().size());
+    }
+
+
+    @Test
+    @Rollback
+    public void testObjectCounts() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
+        service.synchronizeTdarChangesWithDataOneObjects();
+        ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 0, 2);
+        assertEquals(2, listObjectsResponse.getCount());
+        assertEquals(4, listObjectsResponse.getTotal());
+        assertEquals(2, listObjectsResponse.getObjectInfoList().size());
+    }
+
+
+    @Test
+    @Rollback
+    public void testObjectStarts() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
+        service.synchronizeTdarChangesWithDataOneObjects();
+        ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 3, 2);
+        assertEquals(1, listObjectsResponse.getCount());
+        assertEquals(4, listObjectsResponse.getTotal());
+        assertEquals(1, listObjectsResponse.getObjectInfoList().size());
     }
 }

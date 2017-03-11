@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <name>tDAR (web-base)</name>
     <properties>
-        <struts2.version>2.5.1</struts2.version>
+        <struts2.version>2.5.10.1</struts2.version>
         <jetty.version>9.3.9.v20160517</jetty.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
@@ -246,6 +246,10 @@
                                         <systemProperty>
                                             <name>enableContextSwitchingConfig</name>
                                             <value>true</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                        	<name>STRUTS_DEV_MODE</name>
+                                        	<value>true</value>
                                         </systemProperty>
                                     </systemProperties>
                                 </configuration>

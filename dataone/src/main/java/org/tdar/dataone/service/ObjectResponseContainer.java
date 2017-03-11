@@ -11,7 +11,7 @@ public class ObjectResponseContainer {
     private String objectFormat = "eml://ecoinformatics.org/eml-2.0.1";
     private Date lastModified = new Date();
     private String contentType = "binary/binray";
-    private String checksum = "SHA-1,2e01e17467891f7c933dbaa00e1459d23db3fe4f";
+    private String checksum = null;
     private String identifier;
     private int size;
     private Reader reader;

@@ -8,29 +8,29 @@ import java.util.regex.Matcher;
 
 import org.junit.Test;
 import org.tdar.core.service.RssService;
+import org.tdar.utils.XmlEscapeHelper;
 
 public class XMLCharMatcherTest {
 
     @Test
     public void test() {
         String tst = "\u0001";
-        Matcher matcher = RssService.INVALID_XML_CHARS.matcher(tst);
-        assertTrue(matcher.matches());
+        XmlEscapeHelper xse = new XmlEscapeHelper(-1L);
+        assertEquals("", xse.stripNonValidXMLCharacters(tst));
     }
 
     @Test
     public void testControl() {
         String tst = "\u0018";
-        Matcher matcher = RssService.INVALID_XML_CHARS.matcher(tst);
-        assertTrue(matcher.matches());
+        XmlEscapeHelper xse = new XmlEscapeHelper(-1L);
+        assertEquals("", xse.stripNonValidXMLCharacters(tst));
     }
 
     @Test
     public void testValidChar() {
         String tst = "abc1";
-        Matcher matcher = RssService.INVALID_XML_CHARS.matcher(tst);
-        assertFalse(matcher.matches());
-        assertEquals(tst, RssService.stripInvalidXMLCharacters(tst));
+        XmlEscapeHelper xse = new XmlEscapeHelper(-1L);
+        assertEquals("abc1", xse.stripNonValidXMLCharacters(tst));
     }
 
 }

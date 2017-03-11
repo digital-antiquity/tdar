@@ -28,5 +28,56 @@
             <column name="event" value="READ" />
             <column name="subject" value="DC=dataone, DC=org" />
         </insert>
+        <insert tableName="dataone_object">
+        	<column name="identifier" value="doi:10.6067:XCV8SN0B29_meta$v=1281812043684"/>
+			<column name="series_id" value="4230_meta"/>
+			<column name="entry_type" value="TDAR" />
+			<column name="format_id" value="http://ns.dataone.org/metadata/schema/onedcx/v1.0"/>
+			<column name="submitter" value="Christopher Fennell"/>
+			<column name="obsoletes" value="doi:10.6067:XCV8SN0B29_meta"/>
+			<column name="checksum" value="f4206a8b60857bd1cff5d7dc20c876a1"/>
+			<column name="size" valueNumeric="1517"/>
+			<column name="tdar_id" valueNumeric="4230"/>
+			<column name="sys_metadata_modified" valueDate="2010-08-14 11:54:03.684"/>
+        </insert>
+        <insert tableName="dataone_object">
+        	<column name="identifier" value="doi:10.6067:XCV8SN0B29_format=d1rem1281812043684"/>
+			<column name="series_id" value="4230_format=d1rem"/>
+			<column name="entry_type" value="TDAR" />
+			<column name="format_id" value="http://ns.dataone.org/metadata/schema/onedcx/v1.0"/>
+			<column name="submitter" value="Christopher Fennell"/>
+			<column name="obsoletes" value="doi:10.6067:XCV8SN0B29_format=d1rem"/>
+			<column name="checksum" value="c68e00972c8054de774b50f4ce3b5eff"/>
+			<column name="size" valueNumeric="2362"/>
+			<column name="tdar_id" valueNumeric="4230"/>
+			<column name="sys_metadata_modified" valueDate="2010-08-14 11:54:03.684"/>
+        </insert>
+        <insert tableName="dataone_object">
+        	<column name="identifier" value="doi:10.6067:XCV8SN0B29_meta"/>
+			<column name="series_id" value="4230_meta"/>
+			<column name="entry_type" value="TDAR" />
+			<column name="format_id" value="http://ns.dataone.org/metadata/schema/onedcx/v1.0"/>
+			<column name="submitter" value="Christopher Fennell"/>
+			<column name="obsoleted_by" value="doi:10.6067:XCV8SN0B29_meta$v=1281812043684"/>
+			<column name="checksum" value="f4206a8b60857bd1cff5d7dc20c876a1"/>
+			<column name="size" valueNumeric="1517"/>
+			<column name="tdar_id" valueNumeric="4230"/>
+			<column name="sys_metadata_modified" valueDate="2010-08-10 11:54:03.684"/>
+        </insert>
+        <insert tableName="dataone_object">
+        	<column name="identifier" value="doi:10.6067:XCV8SN0B29_format=d1rem"/>
+			<column name="series_id" value="4230_format=d1rem"/>
+			<column name="entry_type" value="D1" />
+			<column name="format_id" value="http://www.openarchives.org/ore/terms"/>
+			<column name="submitter" value="Christopher Fennell"/>
+			<column name="obsoleted_by" value="doi:10.6067:XCV8SN0B29_meta$v=1281812043684"/>
+			<column name="checksum" value="c68e00972c8054de774b50f4ce3b5eff"/>
+			<column name="size" valueNumeric="2362"/>
+			<column name="tdar_id" valueNumeric="4230"/>
+			<column name="sys_metadata_modified" valueDate="2010-08-10 11:54:03.684"/>
+        </insert>
+        
+        
+        
     </changeSet>
 </databaseChangeLog>

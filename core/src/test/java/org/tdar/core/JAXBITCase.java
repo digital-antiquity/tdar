@@ -16,12 +16,15 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
+import org.hibernate.ScrollableResults;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -67,12 +70,11 @@ import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.transform.ExtendedDcTransformer;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 
 public class JAXBITCase extends AbstractIntegrationTestCase {
@@ -123,12 +125,13 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         geos.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "collected around the national monument"));
         geos.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(-77.05041825771332, 38.889028630817144, -77.04992473125458, 38.88953803591012));
         geos.setTitle("map of ceramics around national monument");
-        geos.getResourceCollections().add(new ResourceCollection("test collection", "test description", SortOption.RESOURCE_TYPE, CollectionType.SHARED, true, getAdminUser()));
+        geos.getResourceCollections()
+                .add(new ResourceCollection("test collection", "test description", SortOption.RESOURCE_TYPE, CollectionType.SHARED, true, getAdminUser()));
         geos.setDescription("test map");
         geos.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 2010, 2015));
         geos.getFileProxies().add(new FileProxy("geotiff.tiff", null, VersionType.UPLOADED, FileAction.ADD));
         String xml = serializationService.convertToXML(geos);
-        xml = StringUtils.replace(xml," id=\"-1\"", "");
+        xml = StringUtils.replace(xml, " id=\"-1\"", "");
         logger.info(xml);
     }
 
@@ -144,7 +147,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         serializationService.parseXml(FileProxies.class, new StringReader(xml));
 
     }
-    
+
     @SuppressWarnings("deprecation")
     @Test
     @Rollback
@@ -159,7 +162,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         genericService.refresh(collection);
         String convertToXML = serializationService.convertToXML(collection);
         logger.debug(convertToXML);
-        
+
     }
 
     @Test
@@ -184,7 +187,6 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         assertTrue(sw.toString().contains(BEDOUIN));
     }
 
-    
     @Test
     @Rollback
     public void testJsonExportRCorder() throws Exception {
@@ -192,13 +194,13 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         p.setTitle("test");
         p.setDescription("test");
         p.markUpdated(getAdminUser());
-        for (int i=1 ; i < 10; i++) {
+        for (int i = 1; i < 10; i++) {
             ResourceCreator rc = new ResourceCreator(new Institution(i + " I"), ResourceCreatorRole.CONTACT);
             genericService.saveOrUpdate(rc.getCreator());
-            rc.setSequenceNumber(10-i);
+            rc.setSequenceNumber(10 - i);
             p.getResourceCreators().add(rc);
         }
-        
+
         genericService.saveOrUpdate(p);
         StringWriter sw = new StringWriter();
         Long pid = p.getId();
@@ -216,10 +218,9 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
                 logger.debug(l);
             }
         }
-//        logger.info(sw.toString());
+        // logger.info(sw.toString());
     }
 
-    
     @Test()
     @Rollback(true)
     public void testRelatedKeyword() throws Exception {
@@ -231,13 +232,13 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         String xml = serializationService.convertToXML(kwd);
         logger.info(xml);
         StringWriter json = new StringWriter();
-        serializationService.convertToJson(kwd,json,JsonLookupFilter.class,null);
+        serializationService.convertToJson(kwd, json, JsonLookupFilter.class, null);
         logger.info(json.toString());
         assertTrue("string contains assertions", StringUtils.contains(xml, "assertions"));
         assertTrue("string contains assertions", StringUtils.contains(json.toString(), "assertions"));
-        
+
     }
-    
+
     @Test
     public void testJAXBProjectConversion() throws Exception {
         Project project = genericService.find(Project.class, 2420l);
@@ -270,14 +271,14 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
                     newProject = (Project) serializationService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
                     newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
-                    logger.debug("collections:{}",newProject.getResourceCollections());
-                     size = newProject.getSharedResourceCollections().size();
+                    logger.debug("collections:{}", newProject.getResourceCollections());
+                    size = newProject.getSharedResourceCollections().size();
                 } catch (Exception e) {
                     exception = true;
                     logger.warn("exception: {}", e);
                 } finally {
-//                    genericService.delete(newProject.getResourceCollections());
-//                    genericService.delete(newProject);
+                    // genericService.delete(newProject.getResourceCollections());
+                    // genericService.delete(newProject);
                 }
                 assertEquals(totalShared, size.intValue());
                 assertFalse(exception);
@@ -354,7 +355,6 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         }
     }
 
-
     @Test
     /**
      * Because our our rdbms does not include timezone w/ it's timestamp values, the safest approach
@@ -362,12 +362,11 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
      */
     public void testFileProxyDateSerialization() throws IOException {
 
-        //march 9th, local time zone
+        // march 9th, local time zone
         Date dt = new DateTime(2015, 3, 9, 0, 0).toDate();
         String json = serializationService.convertToJson(dt);
         assertThat(json, containsString("2015-03-09T00:00:00"));
         logger.debug("json:{}", json);
-
 
         FileProxy fileProxy = new FileProxy();
         fileProxy.setFileCreatedDate(dt);
@@ -385,7 +384,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testFileProxySqlDateSerialization() throws IOException {
-        //slight tweak:  make the underlying date a java.sql.Date object.
+        // slight tweak: make the underlying date a java.sql.Date object.
         Date dt = new java.sql.Date(new DateTime(2015, 3, 9, 0, 0).toDate().getTime());
         InformationResourceFile informationResourceFile = new InformationResourceFile();
         informationResourceFile.setFileCreatedDate(dt);
@@ -396,4 +395,16 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         logger.debug("json:{}", json);
     }
 
+    @Test
+    public void testUnicodeReplace() {
+        List<Resource> findAll = genericService.findAll(Resource.class, Arrays.asList(371798L, 366254L));
+        findAll.forEach(r -> {
+            ExtendedDcTransformer.transformAny(r);
+        });
+//        ScrollableResults allScrollable = genericService.findAllScrollable(Resource.class, 100);
+//        while (allScrollable.next()) {
+//            Resource r = (Resource) allScrollable.get()[0];
+//            ExtendedDcTransformer.transformAny(r);
+//        }
+    }
 }

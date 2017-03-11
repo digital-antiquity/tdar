@@ -15,6 +15,10 @@ import org.tdar.search.service.SearchUtils;
 
 public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
 
+    /*
+     * See solr/configsets/default/conf/dataMappings-schema.xml
+     */
+
 	public static List<SolrInputDocument> convert(InformationResource ir, ResourceService resourceService) {
 		List<SolrInputDocument> docs = new ArrayList<>();
 		Map<DataTableColumn, String> data = resourceService.getMappedDataForInformationResource(ir, TdarConfiguration.getInstance().isProductionEnvironment());

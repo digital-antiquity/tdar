@@ -60,6 +60,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
     public void testJsonDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
+        JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         // doSearch("");
         controller.viewJson();
@@ -83,7 +84,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
     @Rollback(true)
     public void testJsonLoggedIn() throws TdarActionException, IOException {
         reindex();
-        controller = generateNewInitializedController(JsonSearchAction.class, getAdminUser());
+        JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class, getAdminUser());
         controller.viewJson();
         assertNotEmpty(controller.getResults());
         String xml = IOUtils.toString(controller.getJsonInputStream());
@@ -91,7 +92,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
     }
 
     private String setupGeoJsonCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
-        controller = generateNewInitializedController(JsonSearchAction.class);
+        JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         controller.setGeoMode(mode);
         controller.viewJson();
@@ -105,9 +106,10 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
     @Rollback(true)
     public void testJsonInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
-        document.setDescription("\u0001");
+        document.setDescription("a\u0001a");
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
+        JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         // doSearch("");
         String viewJson = controller.viewJson();
@@ -127,6 +129,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         searchIndexService.index(r);
         evictCache();
         Thread.sleep(1000l);
+        JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class);
         controller.setId(r.getId());
         controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session

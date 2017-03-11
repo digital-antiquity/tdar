@@ -10,6 +10,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
 import org.dataone.service.types.v1.SystemMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,11 @@ public class SystemMetadataResponse extends AbstractDataOneResponse {
     @Produces(APPLICATION_XML)
     public Response meta(@PathParam("id") String id) {
         setupResponseContext(response, request);
+        if (StringUtils.isBlank(id)) {
+            return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();
+        }
         try {
+            service.checkForChecksumConflict(id);
             SystemMetadata metadataRequest = service.metadataRequest(id);
             if (metadataRequest == null) {
                 return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();

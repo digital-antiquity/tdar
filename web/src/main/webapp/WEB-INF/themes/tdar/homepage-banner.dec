@@ -3,7 +3,7 @@
 <p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br/>for archaeological information.</p>
 
 <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
-    <input type="text" name="query" placeholder="Find archaeological data..." class="searchbox input-xxlarge">
+    <input type="text" name="query" placeholder="Find archaeological data..." accesskey="s" class="searchbox input-xxlarge">
     <a href="<@s.url value="/search"/>">advanced</a>
     <input type="hidden" name="_tdar.searchType" value="simple">
 </form>

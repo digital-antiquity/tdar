@@ -87,12 +87,12 @@
     <div class="span4">
     
     <h4>Rebuild Caches</h4>
-    <form action="rebuildCaches" method="POST">
+    <form action="/admin/rebuildCaches" method="POST">
         <input type="submit" name="submit" value="run" cssClass="button btn"/>
     </form>
     
     <h4>Verify Filestore</h4>
-    <form action="verifyFilestore" method="POST">
+    <form action="/admin/verifyFilestore" method="POST">
         <input type="submit" name="submit" value="run" cssClass="button btn"/>
     </form>
     
@@ -101,13 +101,13 @@
     <div class="span4">
     
     <h4>Manually run weekly tasks</h4>
-    <form action="runWeekly" method="POST">
+    <form action="/admin/runWeekly" method="POST">
         <input type="submit" name="submit" value="run" cssClass="button btn"/>
     </form>
     
     
     <h4>Update Doi's</h4>
-    <form action="updateDois" method="POST">
+    <form action="/admin/updateDois" method="POST">
         <input type="submit" name="submit" value="run" cssClass="button btn"/>
     </form>
     

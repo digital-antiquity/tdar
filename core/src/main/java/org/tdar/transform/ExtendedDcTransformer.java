@@ -49,6 +49,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.ResourceCitationFormatter;
+import org.tdar.utils.XmlEscapeHelper;
 
 import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
@@ -56,16 +57,17 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
     protected Set<String> contributors = new HashSet<>();
     protected Set<String> creators = new HashSet<>();
+    private XmlEscapeHelper x;
     
     @Override
     public QualifiedDublinCoreDocument transform(R source) {
         QualifiedDublinCoreDocument dc = new QualifiedDublinCoreDocument();
-
-        dc.addTitle(source.getTitle());
+        setX(new XmlEscapeHelper(source.getId()));
+        dc.addTitle(getX().stripNonValidXMLCharacters(source.getTitle()));
 
         String abst = source.getDescription();
         if (abst != null) {
-            dc.addAbstract(abst);
+            dc.addAbstract(getX().stripNonValidXMLCharacters(abst));
         }
 
         dc.addCreated(source.getDateCreated());
@@ -73,7 +75,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         ResourceCitationFormatter rcf = new ResourceCitationFormatter(source);
         String cit = rcf.getFullCitation();
         if (StringUtils.isNotBlank(cit)) {
-            dc.addBibliographicCitation(cit);
+            dc.addBibliographicCitation(getX().stripNonValidXMLCharacters(cit));
         }
 
         // add creators and contributors
@@ -81,7 +83,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             String name = resourceCreator.getCreator().getProperName();
             if (resourceCreator.getCreatorType() == CreatorType.PERSON) {
                 // display person names in special format
-                name = dcConstructPersonalName(resourceCreator);
+                name = getX().stripNonValidXMLCharacters(dcConstructPersonalName(resourceCreator));
             }
 
             // FIXME: check this logic
@@ -100,60 +102,60 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
         // add geographic subjects
         for (GeographicKeyword geoTerm : toSortedList(source.getActiveGeographicKeywords())) {
-            dc.addSpatial(geoTerm.getLabel());
+            dc.addSpatial(getX().stripNonValidXMLCharacters(geoTerm.getLabel()));
         }
 
         // add temporal subjects
         for (TemporalKeyword temporalTerm : toSortedList(source.getActiveTemporalKeywords())) {
-            dc.addTemporal(temporalTerm.getLabel());
+            dc.addTemporal(getX().stripNonValidXMLCharacters(temporalTerm.getLabel()));
         }
 
         // add culture subjects
         for (CultureKeyword cultureTerm : toSortedList(source.getActiveCultureKeywords())) {
-            dc.addSubject(cultureTerm.getLabel());
+            dc.addSubject(getX().stripNonValidXMLCharacters(cultureTerm.getLabel()));
         }
 
         // add culture subjects
         for (InvestigationType investigationType: toSortedList(source.getActiveInvestigationTypes())) {
-            dc.addSubject(investigationType.getLabel());
+            dc.addSubject(getX().stripNonValidXMLCharacters(investigationType.getLabel()));
         }
 
         // add site name subjects
         for (SiteNameKeyword siteNameTerm : toSortedList(source.getActiveSiteNameKeywords())) {
-            dc.addSubject(siteNameTerm.getLabel());
+            dc.addSubject(getX().stripNonValidXMLCharacters(siteNameTerm.getLabel()));
         }
 
         // add site name subjects
         for (SiteTypeKeyword siteNameTerm : toSortedList(source.getActiveSiteTypeKeywords())) {
-            dc.addSubject(siteNameTerm.getLabel());
+            dc.addSubject(getX().stripNonValidXMLCharacters(siteNameTerm.getLabel()));
         }
 
         // add site name subjects
         for (MaterialKeyword term : toSortedList(source.getActiveMaterialKeywords())) {
-            dc.addSubject(term.getLabel());
+            dc.addSubject(getX().stripNonValidXMLCharacters(term.getLabel()));
         }
 
         for (CoverageDate cov : toSortedList(source.getActiveCoverageDates())) {
             if (cov.getDateType() == CoverageType.CALENDAR_DATE) {
-                dc.addDate(String.format("start:%s end:%s", cov.getStartDate(), cov.getEndDate()));
+                dc.addDate(getX().stripNonValidXMLCharacters(String.format("start:%s end:%s", cov.getStartDate(), cov.getEndDate())));
             } else {
-                dc.addDate(cov.toString());
+                dc.addDate(getX().stripNonValidXMLCharacters(cov.toString()));
             }
         }
         
         for (ResourceCollection coll : toSortedList(source.getSharedVisibleResourceCollections())) {
-            dc.addIsPartOf(coll.getName());
+            dc.addIsPartOf(getX().stripNonValidXMLCharacters(coll.getName()));
         }
 
         // add other subjects
         for (OtherKeyword otherTerm : toSortedList(source.getActiveOtherKeywords())) {
-            dc.addSubject(otherTerm.getLabel());
+            dc.addSubject(getX().stripNonValidXMLCharacters(otherTerm.getLabel()));
         }
 
-        dc.addType(source.getResourceType().getLabel());
+        dc.addType(getX().stripNonValidXMLCharacters(source.getResourceType().getLabel()));
         
-        dc.addIdentifier(source.getId().toString());
-        dc.addReferences(UrlService.absoluteUrl(source));
+        dc.addIdentifier(getX().stripNonValidXMLCharacters(source.getId().toString()));
+        dc.addReferences(getX().stripNonValidXMLCharacters(UrlService.absoluteUrl(source)));
         for (LatitudeLongitudeBox longLat : toSortedList(source.getActiveLatitudeLongitudeBoxes())) {
             String maxy = longLat.getObfuscatedNorth().toString();
             String miny = longLat.getObfuscatedSouth().toString();
@@ -164,9 +166,10 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         }
 
         for (CoverageDate date : toSortedList(source.getCoverageDates())) {
-            dc.addTemporal(date.toString());
+            dc.addTemporal(getX().stripNonValidXMLCharacters(date.toString()));
         }
 
+        getX().logChange();
         return dc;
     }
 
@@ -217,34 +220,34 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
             String doi = source.getDoi();
             if (StringUtils.isNotBlank(doi)) {
-                dc.addIdentifier(doi);
+                dc.addIdentifier(getX().stripNonValidXMLCharacters(doi));
             }
             
             if (source.getProject() != Project.NULL) {
-                dc.addIsPartOf(source.getProjectTitle());
+                dc.addIsPartOf(getX().stripNonValidXMLCharacters(source.getProjectTitle()));
             }
 
             String copyLocation = source.getCopyLocation();
             if (copyLocation != null) {
-                dc.addRelation(copyLocation);
+                dc.addRelation(getX().stripNonValidXMLCharacters(copyLocation));
             }
 
             for (ResourceCreator resourceCreator : source.getActiveResourceCreators()) {
                 if (resourceCreator.getRole() == ResourceCreatorRole.CONTACT) {
-                    dc.addPublisher(resourceCreator.getCreator().getProperName());
+                    dc.addPublisher(getX().stripNonValidXMLCharacters(resourceCreator.getCreator().getProperName()));
                 }
             }
             if (source.getDate() != null) {
-                dc.addDate(source.getDate().toString());
+                dc.addDate(getX().stripNonValidXMLCharacters(source.getDate().toString()));
             }
 
             Language resourceLanguage = source.getResourceLanguage();
             if (resourceLanguage != null) {
-                dc.addLanguageISO639_2(resourceLanguage.getIso639_2());
+                dc.addLanguageISO639_2(getX().stripNonValidXMLCharacters(resourceLanguage.getIso639_2()));
             }
 
             if (source.getResourceType().toDcmiTypeString() != null) {
-                dc.addType(source.getResourceType().toDcmiTypeString());
+                dc.addType(getX().stripNonValidXMLCharacters(source.getResourceType().toDcmiTypeString()));
             }
             
 
@@ -252,13 +255,13 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             for (InformationResourceFileVersion version : source.getLatestUploadedVersions()) {
                 types.add(version.getMimeType());
             }
-            types.forEach(type -> dc.addType(type));
+            types.forEach(type -> dc.addType(getX().stripNonValidXMLCharacters(type)));
 
             Institution resourceProviderInstitution = source.getResourceProviderInstitution();
             if (resourceProviderInstitution != null) {
                 String name = resourceProviderInstitution.getName();
                 if (!contributors.contains(name)) {
-                    dc.addContributor(name);
+                    dc.addContributor(getX().stripNonValidXMLCharacters(name));
                     contributors.add(name);
                 }
             }
@@ -274,9 +277,10 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
                 pub += ", " + publisherLocation;
             }
             if (!pub.isEmpty()) {
-                dc.addPublisher(pub);
+                dc.addPublisher(getX().stripNonValidXMLCharacters(pub));
             }
 
+            getX().logChange();
             return dc;
         }
 
@@ -290,11 +294,11 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
             String isbn = source.getIsbn();
             if (StringUtils.isNotBlank(isbn)) {
-                dc.addIdentifier(isbn);
+                dc.addIdentifier(getX().stripNonValidXMLCharacters(isbn));
             }
             String issn = source.getIssn();
             if (StringUtils.isNotBlank(issn)) {
-                dc.addIdentifier(issn);
+                dc.addIdentifier(getX().stripNonValidXMLCharacters(issn));
             }
 
 
@@ -308,7 +312,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
                 series += " #" + seriesNumber;
             }
             if (!series.isEmpty()) {
-                dc.addRelation("Series: " + series);
+                dc.addRelation(getX().stripNonValidXMLCharacters("Series: " + series));
             }
 
             String journalName = source.getJournalName();
@@ -352,16 +356,16 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             }
 
             DocumentType documentType = source.getDocumentType();
-            dc.addType(documentType.getLabel());
+            dc.addType(getX().stripNonValidXMLCharacters(documentType.getLabel()));
             switch (documentType) {
                 case JOURNAL_ARTICLE:
                     if (!src.isEmpty()) {
-                        dc.addSource(src);
+                        dc.addSource(getX().stripNonValidXMLCharacters(src));
                     }
                     break;
                 case BOOK_SECTION:
                     if (!src.isEmpty()) {
-                        dc.addSource(src);
+                        dc.addSource(getX().stripNonValidXMLCharacters(src));
                     }
                     break;
                 case BOOK:
@@ -373,12 +377,13 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
                     if (volume != null) {
                         rel += " Volume: " + volume;
                     }
-                    dc.addRelation(rel.trim());
+                    dc.addRelation(getX().stripNonValidXMLCharacters(rel.trim()));
                     break;
                 default:
                     break;
             }
 
+            getX().logChange();
             return dc;
         }
 
@@ -457,5 +462,13 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         }
 
         throw new TdarRecoverableRuntimeException("transformer.no_extended_dc_transformer", Arrays.asList(resource.getClass()));
+    }
+
+    public XmlEscapeHelper getX() {
+        return x;
+    }
+
+    public void setX(XmlEscapeHelper x) {
+        this.x = x;
     }
 }

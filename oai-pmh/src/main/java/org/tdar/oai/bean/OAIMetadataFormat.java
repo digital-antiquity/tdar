@@ -17,6 +17,7 @@ import org.tdar.oai.exception.OAIException;
 public enum OAIMetadataFormat {
     // http://www.openarchives.org/OAI/openarchivesprotocol.html#MetadataNamespaces
     DC("oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/", "http://www.openarchives.org/OAI/2.0/oai_dc.xsd"),
+    EXTENDED_DC("qualified_dc", "http://ns.dataone.org/metadata/schema/onedcx/v1.0", "http://ns.dataone.org/metadata/schema/onedcx/v1.0/onedcx_v1.0.xsd"),
     MODS("mods", "http://www.loc.gov/mods/v3", "http://www.loc.gov/standards/mods/v3/mods-3-1.xsd"),
     TDAR("tdar", "http://www.tdar.org/namespace", "/schema/current");
 

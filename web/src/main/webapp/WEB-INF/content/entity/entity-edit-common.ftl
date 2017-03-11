@@ -14,7 +14,7 @@
         </#if>
     </#macro>
 
-    <#macro basicInformation>
+    <#macro basicInformation emailEditable=true>
             <h2 id="profile">Personal Details</h2>
         
             <#if editor>
@@ -45,8 +45,19 @@
 
         <div class="row">
             <div class="span5">
-                <@s.textfield cssClass="input-xlarge ${(person.registered??)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
-    
+                <#if emailEditable>
+                    <@s.textfield cssClass="input-xlarge ${(person.registered??)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
+                <#else>
+                    <div class="control-group">
+                        <label class="control-label">Email</label>
+
+                        <div class="controls">
+                            <span class="uneditable-input input-xlarge"> ${person.email}</span>
+                        </div>
+                    </div>
+
+                </#if>
+
                 <#if privacyControlsEnabled>
                     <@s.checkbox label='Make email public?' name="person.emailPublic" id="email-public"  />
                     <p class="field"><em><b>NOTE:</b> Making your email address public will display it to anyone who visits ${siteAcronym}, this includes search

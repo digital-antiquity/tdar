@@ -47,6 +47,10 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
+    /*
+     * See solr/configsets/default/conf/resources-schema.xml
+     */
+
     @SuppressWarnings("unused")
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 

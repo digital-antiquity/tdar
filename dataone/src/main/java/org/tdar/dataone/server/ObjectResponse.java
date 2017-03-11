@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.dataone.service.DataOneService;
+import org.tdar.dataone.service.DataOneUtils;
 import org.tdar.dataone.service.ObjectResponseContainer;
 
 @Component
@@ -131,10 +132,10 @@ public class ObjectResponse extends AbstractDataOneResponse {
             Date fromDate = null;
             Date toDate = null;
             if (StringUtils.isNotBlank(fromDate_)) {
-                fromDate = DateTime.parse(fromDate_).toDate();
+                fromDate = DataOneUtils.parseAndConvertToLocalTime(fromDate_).toDate();
             }
             if (StringUtils.isNotBlank(toDate_)) {
-                toDate = DateTime.parse(toDate_).toDate();
+                toDate = DataOneUtils.parseAndConvertToLocalTime(toDate_).toDate();
             }
             return Response.ok().entity(service.getListObjectsResponse(fromDate, toDate, formatid, identifier, start, count)).build();
         } catch (Exception e) {

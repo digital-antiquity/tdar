@@ -73,7 +73,7 @@
                                                     Please use less than {{maxDataTables}} datasets.
                                                 </div>
 
-                                                <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly()"
+                                                <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly() || isBusy()"
                                                         ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
 
                                         </th></tr>
@@ -130,7 +130,7 @@
 
                             <div class="btn-group">
                                 <div class="btn-group" >
-                                    <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length}">
+                                    <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy()}">
                                         Add Integration Column
                                         <span class="caret"></span>
                                     </a>
@@ -141,12 +141,12 @@
                                 </div>
                                 <button type="button" class="btn btn-mini" id="btnAddDisplayColumn"
                                         ng-click="ctrl.addDisplayColumnClicked()"
-                                        ng-disabled="!ctrl.integration.ontologies.length"
+                                        ng-disabled="!ctrl.integration.ontologies.length || isBusy()"
                                         >Add Display Column</button>
 
                                 <button type="button" class="btn btn-mini" id="btnAddCountColumn"
                                         ng-click="ctrl.addCountColumnClicked()"
-                                        ng-disabled="ctrl.isCountColumnDisabled()"
+                                        ng-disabled="ctrl.isCountColumnDisabled() || isBusy()"
                                         >Add Count Column</button>
                             </div>
 
@@ -492,6 +492,7 @@
                       <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active"><a href="#pivot" aria-controls="pivot" role="tab" data-toggle="tab">Summary</a></li>
                         <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
+                        <li role="presentation"><a href="#json" aria-controls="preview" role="tab" data-toggle="tab">Raw (request)</a></li>
                       </ul>
                     
                       <!-- Tab panes -->
@@ -501,6 +502,9 @@
                         </div>
                         <div role="tabpanel" class="tab-pane" id="preview">
                             <table tdar-datatable aa-data="download.previewData.rows" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="json">
+                            {{ ctrl.getIntegration() }}
                         </div>
                       </div>
                     

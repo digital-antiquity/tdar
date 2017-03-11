@@ -35,7 +35,7 @@
             <h3>Child Collections</h3>
             <@common.listCollections collections=collections showOnlyVisible=true />
         </#if>
-		<@list.displayWidget />
+        <@list.displayWidget />
     </div>
 </#macro>
 
@@ -71,7 +71,7 @@
 
     <#macro _keywordSection label keywordList searchParam>
         <#list keywordList>
-        <p>
+        <p class="break-word">
             <strong>${label}</strong><br>
             <#items as item>
                 <a href="${item.detailUrl}">${item.label}</a><#sep> &bull;</#sep>
@@ -189,7 +189,7 @@
             <#assign itemsPerRow = 5 />
         <#if ((rightSidebar!false) || (leftSidebar!false)) >
             <#assign itemsPerRow = 4 />
-		</#if>	
+        </#if>
 
 
 

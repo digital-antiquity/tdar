@@ -202,7 +202,7 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
-                <version>2.5</version>
+                <version>2.7</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -384,7 +384,19 @@
             <artifactId>hibernate-c3p0</artifactId>
             <version>${hibernate.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
+			<exclusions>
+                <exclusion>
+                    <artifactId>c3p0</artifactId>
+		            <groupId>com.mchange</groupId>
+                </exclusion>
+			</exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.2</version>
+        </dependency>
+		
         <!-- <dependency> -->
             <!-- this attempts to use the META-INF/ configuraiton for the 
                 right logging source; this allows us to pipe hibernate into slf4j -->

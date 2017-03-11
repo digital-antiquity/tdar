@@ -5,9 +5,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -90,6 +95,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     public void testRssDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         // doSearch("");
         controller.viewRss();
@@ -97,19 +103,19 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertEquals(document, controller.getResults().get(0));
     }
 
-
     @Test
     @Rollback(true)
     public void testRss404() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         // doSearch("");
         controller.setStartRecord(1000);
         String viewRss = controller.viewRss();
         assertNotEquals(TdarActionSupport.SUCCESS, viewRss);
         // the record we created should be the absolute first record
-//        assertEquals(document, controller.getResults().get(0));
+        // assertEquals(document, controller.getResults().get(0));
     }
 
     @Test
@@ -134,7 +140,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     @Rollback(true)
     public void testRSSLoggedIn() throws TdarActionException, IOException {
         reindex();
-        controller = generateNewInitializedController(RSSSearchAction.class, getAdminUser());
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class, getAdminUser());
         controller.viewRss();
         assertNotEmpty(controller.getResults());
         String xml = IOUtils.toString(controller.getInputStream());
@@ -143,7 +149,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     }
 
     private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
-        controller = generateNewInitializedController(RSSSearchAction.class);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         controller.setGeoMode(mode);
         controller.viewRss();
@@ -155,15 +161,31 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRssInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
+    public void testRssInvalidCharacters()
+            throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException, ParserConfigurationException {
         InformationResource document = generateDocumentWithUser();
-        document.setDescription("\u0001");
+        document.setDescription("a\u0001a\u000B");
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         // doSearch("");
         String viewRss = controller.viewRss();
         logger.debug(viewRss);
+        String string = IOUtils.toString(controller.getInputStream());
+        logger.debug(string);
+        assertTrue(string.contains("aa"));
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        boolean exceptions = false;
+        try {
+            Document doc = builder.parse(new ByteArrayInputStream(string.getBytes()));
+        } catch (SAXException e) {
+            exceptions = true;
+            logger.error("e: {}",e,e);
+        }
+        assertFalse("Should not have seen any parsing exceptions",exceptions);
+
         logger.debug("{}", controller.getActionErrors());
         // the record we created should be the absolute first record
         assertEquals(0, controller.getActionErrors().size());
@@ -179,6 +201,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         searchIndexService.index(r);
         evictCache();
         Thread.sleep(1000l);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setId(r.getId());
         controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -204,6 +227,5 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         }
         return found;
     }
-
 
 }

@@ -1,5 +1,14 @@
-The following users were added to ${siteAcronym} in the last day (${date?date?string.short}):
+<#list users>
+The following users registered with ${siteAcronym} since (${date?date?string.short}):
 
-<#list users as user>
- - ${user.properName} (${user.email}) - ${user.institutionName!"none"}  : ${user.contributorReason!''}
+ <#items as user>
+${user.properName}
+ ${siteAcronym} page: https://core.tdar.org/browse/creators/${user.id?c}
+ email: ${user.email}
+ institution: ${(user.institutionName)!"None"}
+ affiliation: ${(user.affiliation.label)!"None"}
+ contributor reason: ${(user.contributorReason)!"None"}
+
+
+</#items>
 </#list>

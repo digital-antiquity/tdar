@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -1096,7 +1097,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
                 assertThat(persistedResourceMap, hasKey(sparseResource.getId()));
 
                 Resource resource = persistedResourceMap.get(sparseResource.getId());
-                assertThat(sparseResource.getTitle(), is(resource.getTitle()));
+                assertThat(StringUtils.trim(sparseResource.getTitle()), is(StringUtils.trim(resource.getTitle())));
                 assertThat(sparseResource.getResourceType(), is(resource.getResourceType()));
                 assertThat(sparseResource.getStatus(), is(resource.getStatus()));
                 assertThat(sparseResource.getSubmitter(), is(resource.getSubmitter())); // here we assume ID equality

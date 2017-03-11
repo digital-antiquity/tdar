@@ -18,6 +18,7 @@
         self.integration = integration;
         self.tab = 0;
         self.sharedOntologies = [];
+
         _openModal = function(options) {
             $rootScope.$broadcast("openTdarModal", options);
         };
@@ -144,6 +145,7 @@
          * @param dataTableIds
          */
         self.addDatasets = function(dataTableIds) {
+            _isBusy = true;
             if(dataTableIds.length === 0) return;
             var tableDetailsPromise =  dataService.loadTableDetails(dataTableIds);
             self.promiseStatus(tableDetailsPromise, "Loading table details");
@@ -151,10 +153,13 @@
             tableDetailsPromise.then(function(dataTables) {
                 dataService.addDataTables(integration, dataTables);
                 var participationPromise = dataService.loadUpdatedParticipationInformation(integration);
-                self.promiseStatus(participationPromise, 
+                self.promiseStatus(participationPromise,
                     "Loadng participation data",
                     "Loading complete",
                     "Error: unable to load ontology info.  Please try again - if the problem continues please contact a system administrator");
+                participationPromise.then(function() {
+                    _isBusy=false;
+                })
             });
         };
 
@@ -249,7 +254,17 @@
 
         $scope.isReadOnly = function() {
             return _isReadOnly;
-        }
+        };
+
+        /**
+         * Return true if the app is "busy" performing a task and should prevent the user from performing actions that could be impacted by that task (e.g.
+         * adding an integration column before the app is loading ontology participation information.
+         * fixme: this should really just be a priority queue (aka map of lists) that returns true when queue is empty.
+         */
+        $scope.isBusy = function () {
+            return _isBusy;
+        };
+
         // FIXME: proper validation required
         $scope.isValid = function() {
 
@@ -354,6 +369,10 @@
         $scope.dismissDownload = function() {
             $scope.download = false;
             $scope.download = null;
+        }
+        
+        self.getIntegration = function() {
+            return JSON.stringify(dataService.dumpObject(integration));
         }
 
         /**

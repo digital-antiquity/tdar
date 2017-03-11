@@ -46,14 +46,14 @@
 <nav>
     <ul class="hidden-phone-portrait">
         <#include "/${themeDir}/nav-items.dec" />
-        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
+<!--        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> -->
         <#if ((authenticatedUser.contributor)!true)>
             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
         <li>
             <#if navSearchBoxVisible>
                 <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">
                 <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
-                    <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; "  value="${query!''}">
+                    <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${query!''}" maxlength="512">
                     <input type="hidden" name="_tdar.searchType" value="simple">
                 ${(page.properties["div.divSearchContext"])!""}
                 </form>

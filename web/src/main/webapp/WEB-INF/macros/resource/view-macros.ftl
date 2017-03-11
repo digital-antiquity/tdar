@@ -682,7 +682,6 @@ View freemarker macros
     </#macro>
 
 <#-- emit a specified date in our notion of a "short" format -->
-<#-- FIXME: FTLREFACTOR date format should be specified in theme or config file (TDAR-3550) -->
     <#macro shortDate _date includeTime=false>
         <#if includeTime>
         ${_date?string.medium}<#t>

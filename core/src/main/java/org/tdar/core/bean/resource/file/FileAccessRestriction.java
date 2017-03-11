@@ -13,6 +13,7 @@ public enum FileAccessRestriction implements HasLabel, Localizable {
     EMBARGOED_FIVE_YEARS,
     CONFIDENTIAL;
 
+    // Fixme: there is a 25% chance of this constant being incorrect ;-)
     private static final int ONE_YEAR = 365;
 
     @Override
