@@ -19,14 +19,15 @@ public enum SearchFieldType implements HasLabel, Localizable {
     // basic fields
     ALL_FIELDS("allFields", SearchFieldGroup.BASIC_FIELDS, "All Fields"),
     TITLE("titles", SearchFieldGroup.BASIC_FIELDS, "Title"),
+    DESCRIPTION("descriptions", SearchFieldGroup.BASIC_FIELDS, "Description"),
     CONTENTS("contents", SearchFieldGroup.BASIC_FIELDS, "Full-Text"),
-    RESOURCE_CREATOR_PERSON("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Person", false),
-    RESOURCE_CREATOR_INSTITUTION("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Institution", false),
+    RESOURCE_CREATOR_PERSON("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Person"),
+    RESOURCE_CREATOR_INSTITUTION("resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Institution"),
     TDAR_ID("resourceIds", SearchFieldGroup.BASIC_FIELDS, "Id"),
-    COVERAGE_DATE_CALENDAR("coverageDates", SearchFieldGroup.BASIC_FIELDS, "Calendar Dates", false),
-    COVERAGE_DATE_RADIOCARBON("coverageDates", SearchFieldGroup.BASIC_FIELDS, "RadioCarbon Dates", false),
-    PROJECT("projects", SearchFieldGroup.BASIC_FIELDS, "Project", false),
-    COLLECTION("shares", SearchFieldGroup.BASIC_FIELDS, "Collection", false),
+    COVERAGE_DATE_CALENDAR("coverageDates", SearchFieldGroup.BASIC_FIELDS, "Calendar Dates"),
+    COVERAGE_DATE_RADIOCARBON("coverageDates", SearchFieldGroup.BASIC_FIELDS, "RadioCarbon Dates"),
+    PROJECT("projects", SearchFieldGroup.BASIC_FIELDS, "Project"),
+    COLLECTION("shares", SearchFieldGroup.BASIC_FIELDS, "Collection"),
 //    SHARE("shares", SearchFieldGroup.BASIC_FIELDS, "Share", false),
     FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "File Name"),
 
@@ -40,41 +41,30 @@ public enum SearchFieldType implements HasLabel, Localizable {
     FFK_GENERAL("otherKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "General Keywords", OtherKeyword.class),
 
     // managed keywords
-    KEYWORD_INVESTIGATION("investigationTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Investigation Types", false, InvestigationType.class),
-    KEYWORD_SITE("approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Site Type(Controlled)", false, SiteTypeKeyword.class),
-    KEYWORD_MATERIAL("materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Material Types", false, MaterialKeyword.class),
-    KEYWORD_CULTURAL("approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Culture Keywords", false, CultureKeyword.class),
+    KEYWORD_INVESTIGATION("investigationTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Investigation Types", InvestigationType.class),
+    KEYWORD_SITE("approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Site Type(Controlled)", SiteTypeKeyword.class),
+    KEYWORD_MATERIAL("materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Material Types", MaterialKeyword.class),
+    KEYWORD_CULTURAL("approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Culture Keywords", CultureKeyword.class),
 
     // TODO: add these
-    CREATION_DECADE("creationDecades", SearchFieldGroup.EXPLORE, "Creation Decade", false),
+    CREATION_DECADE("creationDecades", SearchFieldGroup.EXPLORE, "Creation Decade"),
 
-    DATE_CREATED("createdDates", SearchFieldGroup.BASIC_FIELDS, "Year", false),
-    DATE_REGISTERED("registeredDates", SearchFieldGroup.BASIC_FIELDS, "Date Registered", false),
-    DATE_UPDATED("updatedDates", SearchFieldGroup.BASIC_FIELDS, "Date Updated", false);
+    DATE_CREATED("createdDates", SearchFieldGroup.BASIC_FIELDS, "Year"),
+    DATE_REGISTERED("registeredDates", SearchFieldGroup.BASIC_FIELDS, "Date Registered"),
+    DATE_UPDATED("updatedDates", SearchFieldGroup.BASIC_FIELDS, "Date Updated");
 
     private String label = "";
     private SearchFieldGroup fieldGroup;
     private String fieldName = "";
-    private boolean simple = true;
     private Class<?> associatedClass;
 
     private SearchFieldType() {
         this.fieldGroup = SearchFieldGroup.BASIC_FIELDS;
     }
 
-    private SearchFieldType(String fieldName, SearchFieldGroup fieldGroup, String label, boolean simple, Class<?> associatedClass) {
-        this(fieldName, fieldGroup, label, simple);
-        this.setAssociatedClass(associatedClass);
-    }
-
     private SearchFieldType(String fieldName, SearchFieldGroup fieldGroup, String label, Class<?> associatedClass) {
         this(fieldName, fieldGroup, label);
         this.setAssociatedClass(associatedClass);
-    }
-
-    private SearchFieldType(String fieldName, SearchFieldGroup fieldGroup, String label, boolean simple) {
-        this(fieldName, fieldGroup, label);
-        this.simple = simple;
     }
 
     private SearchFieldType(String fieldName, SearchFieldGroup fieldGroup, String label) {
@@ -114,9 +104,18 @@ public enum SearchFieldType implements HasLabel, Localizable {
     }
 
     public boolean isSimple() {
-        return simple;
+        switch (this) {
+            case ALL_FIELDS:
+            case DATE_CREATED:
+            case DATE_UPDATED:
+            case DESCRIPTION:
+            case TITLE:
+                return true;
+            default:
+                return false;
+        }
     }
-
+    
     public boolean isHidden() {
         if (this.fieldGroup == SearchFieldGroup.EXPLORE) {
             return true;

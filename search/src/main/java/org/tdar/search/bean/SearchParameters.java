@@ -97,6 +97,7 @@ public class SearchParameters {
     private boolean latScaleUsed = true;
     private List<String> allFields = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
+    private List<String> descriptions = new ArrayList<>();
     private List<String> contents = new ArrayList<>();
     private List<String> filenames = new ArrayList<>();
 
@@ -329,6 +330,7 @@ public class SearchParameters {
         }
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, support.getText("searchParameters.description"), getOperator(), this.getDescriptions()));
 
         queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(),contents));
         FieldQueryPart<String> filenamePart = new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"), getOperator(), filenames);
@@ -689,6 +691,14 @@ public class SearchParameters {
 
     public void setObjectTypes(List<ObjectType> objectTypes) {
         this.objectTypes = objectTypes;
+    }
+
+    public List<String> getDescriptions() {
+        return descriptions;
+    }
+
+    public void setDescriptions(List<String> descriptions) {
+        this.descriptions = descriptions;
     }
 
 }
