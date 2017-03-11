@@ -96,6 +96,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     public void testRssDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         // doSearch("");
         controller.viewRss();
@@ -108,6 +109,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     public void testRss404() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         // doSearch("");
         controller.setStartRecord(1000);
@@ -139,7 +141,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     @Rollback(true)
     public void testRSSLoggedIn() throws TdarActionException, IOException {
         reindex();
-        controller = generateNewInitializedController(RSSSearchAction.class, getAdminUser());
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class, getAdminUser());
         controller.viewRss();
         assertNotEmpty(controller.getResults());
         String xml = IOUtils.toString(controller.getInputStream());
@@ -148,7 +150,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     }
 
     private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
-        controller = generateNewInitializedController(RSSSearchAction.class);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         controller.setGeoMode(mode);
         controller.viewRss();
@@ -166,6 +168,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         document.setDescription("a\u0001a\u000B");
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setSessionData(new SessionData()); // create unauthenticated session
         // doSearch("");
         String viewRss = controller.viewRss();
@@ -199,6 +202,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         searchIndexService.index(r);
         evictCache();
         Thread.sleep(1000l);
+        RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
         controller.setId(r.getId());
         controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session
