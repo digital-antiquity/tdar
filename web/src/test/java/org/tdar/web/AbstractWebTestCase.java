@@ -1516,7 +1516,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/buildIndex");
         try {
-            URL url = new URL(getBaseSecureUrl() + "/admin/searchindex/checkstatus?userId=" + TestConfiguration.getInstance().getAdminUserId());
+            URL url = new URL(getBaseUrl() + "/admin/searchindex/checkstatus?userId=" + TestConfiguration.getInstance().getAdminUserId());
             internalPage = webClient.getPage(new WebRequest(url, HttpMethod.POST));
 
             logger.debug(getPageCode());
