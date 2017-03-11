@@ -191,6 +191,9 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
 
         configurationManager.addContainerProvider(new XWorkConfigurationProvider());
         configurationManager.getConfiguration().getContainer().inject(factory);
+        if (controller instanceof ActionSupport) {
+            ((ActionSupport) controller).setContainer(configurationManager.getConfiguration().getContainer());
+        }
         ValueStack stack = factory.createValueStack();
 
         context.setValueStack(stack);
