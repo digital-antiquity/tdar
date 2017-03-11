@@ -2,6 +2,17 @@ TDAR.advancedSearch = {}
 TDAR.advancedSearch = (function () {
     "use strict";
 
+    
+    function _disableCheckbox($box) {
+        $box.attr('disabled', true);
+        $box.parent().addClass("disabled");
+    }
+
+    function _enableCheckbox($box) {
+        $box.attr('disabled', false);
+        $box.parent().removeClass("disabled");
+    }
+
     /**
      * Initialize the "advanced search" page (including form validation,  autocompletes, term UI, backbutton safety)
      */
@@ -9,12 +20,18 @@ TDAR.advancedSearch = (function () {
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
         var $groups = $("#searchGroups");
         $groups.on("searchchange", function(e){
+            var $int = $("#includedResourceTypesINTEGRATION");
+            var $col = $("#includedResourceTypesSHARED_COLLECTION"); 
             if ($("#searchGroups .term").not(".simple").length > 0) {
-                console.log("not allowed");
+                _disableCheckbox($int);
+                _disableCheckbox($col);
             } else { 
-                    console.log('ok');
-                } 
+                _enableCheckbox($int);
+                _enableCheckbox($col);
+                console.log('ok');
+            } 
             });
+
         // when user changes searchType: swap out the term ui snippet
         $groups.on('change', '.searchType', function (evt) {
             "use strict";
