@@ -148,11 +148,11 @@ public class Activity implements Serializable {
 
     public String getEndString() {
         // total time = action time + render time
-        return String.format("» end: %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
+        return String.format("b» %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
     }
 
     public String getStartString() {
-        return String.format("« begin: %s ", getName());
+        return String.format("«e %s ", getName());
     }
 
     @Override
@@ -162,7 +162,7 @@ public class Activity implements Serializable {
 
     private String getFreemarkerFormattedTime() {
         if (freemarkerHandoffDate != null && endDate != null) {
-            return String.format(" | action: %s ms; result:%s ms", getActionTime(), getResultTime());
+            return String.format(" | a: %s ms; r: %s ms", getActionTime(), getResultTime());
         }
         return "";
     }
