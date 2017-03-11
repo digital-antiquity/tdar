@@ -262,7 +262,7 @@ Common macros used in multiple contexts
         <#elseif persistable.type?has_content><#t>
         COLLECTION <#if persistable.type == "LIST">(User-generated)</#if><#t>
         <#else> <#t>
-        PERSISTABLE<#t>
+        INTEGRATION<#t>
         </#if>
     </#macro>
 

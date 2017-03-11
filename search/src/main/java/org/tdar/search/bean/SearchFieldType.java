@@ -26,8 +26,8 @@ public enum SearchFieldType implements HasLabel, Localizable {
     COVERAGE_DATE_CALENDAR("coverageDates", SearchFieldGroup.BASIC_FIELDS, "Calendar Dates", false),
     COVERAGE_DATE_RADIOCARBON("coverageDates", SearchFieldGroup.BASIC_FIELDS, "RadioCarbon Dates", false),
     PROJECT("projects", SearchFieldGroup.BASIC_FIELDS, "Project", false),
-    COLLECTION("collections", SearchFieldGroup.BASIC_FIELDS, "Collection", false),
-    SHARE("shares", SearchFieldGroup.BASIC_FIELDS, "Share", false),
+    COLLECTION("shares", SearchFieldGroup.BASIC_FIELDS, "Collection", false),
+//    SHARE("shares", SearchFieldGroup.BASIC_FIELDS, "Share", false),
     FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "File Name"),
 
     // freeform keywords

@@ -32,7 +32,6 @@
     <div class="tab-content">
         <div id="resource" class="tab-pane active">
                 <input type="hidden" name="_tdar.searchType" value="advanced">
-                <input type="hidden" name="types[0]" value="RESOURCE">
 
                 <div class="searchgroup">
                     <h2>Choose Search Terms</h2>
