@@ -261,7 +261,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             i++;
         }
         if (filename.contains("2")) {
-            setInput("resourceCollections[0].name", "template name");
+            setInput("shares[0].name", "template name");
         }
         setInput("ticketId", ticketId);
         submitForm();

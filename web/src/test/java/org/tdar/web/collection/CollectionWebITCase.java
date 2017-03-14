@@ -49,7 +49,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("authorizedUsers[0].user.id", TEST.getUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         setInput("authorizedUsersFullNames[0]", "test user");
-        setInput("resourceCollections[0].name", RETAIN_COLLECTION);
+        setInput("shares[0].name", RETAIN_COLLECTION);
         submitForm();
         assertTextPresentInPage(RETAIN_COLLECTION);
         String pageUrl = getCurrentUrlPath();

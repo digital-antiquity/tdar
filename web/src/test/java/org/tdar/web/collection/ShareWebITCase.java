@@ -242,7 +242,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         loginAdmin();
         Long parentId = 1575L;
 
-        gotoPage("/share/add");
+        gotoPage("/collection/add");
         String name = "testCreateChildCollection";
         String desc = "lame child colllection";
 
@@ -254,7 +254,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInPage(desc);
 
         // now look for the collection on the dashboard (implicitly test encoding errors also)
-        gotoPage("/manage");
+        gotoPage("/dashboard/collections");
         assertTextPresentInPage(name);
     }
 
