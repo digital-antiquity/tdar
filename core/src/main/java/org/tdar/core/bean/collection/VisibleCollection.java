@@ -126,6 +126,7 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
 
     @XmlTransient
     @Override
+    // FIXME: having independent variables for "viewable" and "hidden" is courting disaster.
     public boolean isViewable() {
         return viewable;
     }

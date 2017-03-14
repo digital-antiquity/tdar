@@ -1,13 +1,8 @@
 package org.tdar.struts.action.resource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -22,11 +17,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.CustomizableCollection;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
-import org.tdar.core.bean.collection.TimedAccessRestriction;
+import org.tdar.core.bean.collection.*;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -121,7 +112,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> contactProxies;
     private ResourceCitationFormatter resourceCitation;
 
-    // private List<SharedCollection> viewableResourceCollections;
+     private List<HierarchicalCollection> viewableResourceCollections;
     private List<ListCollection> viewableListCollections;
 
     private String schemaOrgJsonLD;
@@ -402,6 +393,30 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
         viewableListCollections = new ArrayList<>(collections);
         return viewableListCollections;
+    }
+
+    /**
+     * Return a list of visible, non-system-created resource collections (including ListCollections and SharedCollections)
+     * If the request comes from an authenticated user, this method will include "hidden" collections if the authenticated user has
+     * sufficient privileges upon those collections.
+     * @return
+     */
+    public List<CustomizableCollection> getViewableResourceCollections() {
+
+        List<CustomizableCollection> collections = Stream
+                .of(getResource().getUnmanagedResourceCollections(), getResource().getSharedCollections())
+                .flatMap(Collection::stream)
+                .filter(rc -> !rc.isSystemManaged())
+                .filter(rc -> {
+                    if(isAuthenticated()) {
+                        // if logged-in, show collections that the current user can modify (irrespective of 'hidden' flag)
+                        return rc.isViewable() || authorizationService.canViewCollection(getAuthenticatedUser(), rc);
+                    } else {
+                        // otherwise, only show non-hidden collections
+                        return !rc.isHidden();
+                    }
+                }).collect(Collectors.toList());
+        return collections;
     }
 
     public boolean isUserAbleToReTranslate() {
