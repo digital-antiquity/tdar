@@ -165,8 +165,9 @@
             <h4>
                 There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
 
-
-            <#if selectedResourceTypes?has_content>
+			<#assign limited=false>
+            <#if selectedResourceTypes?has_content && selectedResourceTypes[0]?has_content >
+                <#assign limited=true>
                 <#if paginationHelper.totalNumberOfItems == 1>
                     <@s.text name="${selectedResourceTypes[0].localeKey}" />
                 <#else>
@@ -175,11 +176,13 @@
             <#else>
                     <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
             </#if>
-                 within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
-                                                                                                             href="<@s.url includeParams="all">
-                        <@s.param name="selectedResourceTypes"value="" />
-                        <@s.param name="startRecord" value=""/>
-            </@s.url>">[remove this filter]</a></sup>
+                 within this Collection <#if selectedResourceTypes?has_content> 
+				<#if limited>
+               <sup><a style="text-decoration: " href="<@s.url includeParams="all">
+                        <@s.param name="selectedResourceTypes" value="" suppressEmptyParameters=true />
+                        <@s.param name="startRecord" value="" suppressEmptyParameters=true  />
+	            </@s.url>">[remove this filter]</a></sup>
+	            </#if>
             </#if>
             </h4>
             </#if>
