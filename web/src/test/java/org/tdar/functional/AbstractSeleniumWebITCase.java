@@ -145,16 +145,21 @@ public abstract class AbstractSeleniumWebITCase {
     ScheduledExecutorService someScheduler = Executors.newScheduledThreadPool(100);
 
     // predicate that returns true if document.readystate == "complete" (use with FluentWait)
-    private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {
+    private ExpectedCondition<Boolean> pageReady = new ExpectedCondition<Boolean>() {
         @Override
-        public boolean apply(@Nullable WebDriver webDriver) {
+        public Boolean apply(@Nullable WebDriver webDriver) {
             String readyState = (String) ((JavascriptExecutor) webDriver).executeScript("return document.readyState");
             return "complete".equals(readyState);
         }
     };
 
-    // predicate that returns true if document.readystate != "complete" (use with FluentWait)
-    private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
+    private ExpectedCondition<Boolean> pageNotReady = new ExpectedCondition<Boolean>() {
+        @Override
+        public Boolean apply(@Nullable WebDriver webDriver) {
+            String readyState = (String) ((JavascriptExecutor) webDriver).executeScript("return document.readyState");
+            return !"complete".equals(readyState);
+        }
+    };
     private KillSeleniumAfter someTask;
 
     public AbstractSeleniumWebITCase() {
