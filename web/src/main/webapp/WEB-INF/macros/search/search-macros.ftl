@@ -272,8 +272,8 @@
                 <li class="media">
                     <span class="media-body">
             <a rel="noindex" href="<@s.url includeParams="all">
-            <@s.param name="${facetParam}"value="" />
-            <@s.param name="startRecord" value="0"/>
+            <@s.param name="${facetParam}"value="" suppressEmptyParameters=true />
+            <@s.param name="startRecord" value="" suppressEmptyParameters=true />
             <#--<#if facetParam != "documentType">-->
                 <#--<@s.param name="documentType" value=""/>-->
             <#--</#if>-->
@@ -386,4 +386,33 @@
     </ul>
 </#macro>
 
+<#macro partFacet selectedResourceTypes paginationHelper name tag>
+      <#if selectedResourceTypes.empty>
+            <@facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
+        <#else>
+        <${tag}>
+            There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
+
+		<#assign limited=false>
+        <#if selectedResourceTypes?has_content && selectedResourceTypes[0]?has_content >
+            <#assign limited=true>
+            <#if paginationHelper.totalNumberOfItems == 1>
+                <@s.text name="${selectedResourceTypes[0].localeKey}" />
+            <#else>
+                <@s.text name="${selectedResourceTypes[0].pluralLocaleKey}" />
+            </#if> 
+        <#else>
+                <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
+        </#if>
+             within this ${name} <#if selectedResourceTypes?has_content> 
+			<#if limited>
+           <sup><a style="text-decoration: " href="<@s.url includeParams="all">
+                    <@s.param name="selectedResourceTypes" value="" suppressEmptyParameters=true />
+                    <@s.param name="startRecord" value="" suppressEmptyParameters=true  />
+            </@s.url>">[remove this filter]</a></sup>
+            </#if>
+        </#if>
+        </${tag}>
+        </#if>
+</#macro>
 </#escape>
