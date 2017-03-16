@@ -113,7 +113,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private ResourceCitationFormatter resourceCitation;
 
      private List<HierarchicalCollection> viewableResourceCollections;
-    private List<ListCollection> viewableListCollections;
+     private List<ListCollection> viewableListCollections;
+     private List<SharedCollection> viewableSharedCollections;
 
     private String schemaOrgJsonLD;
 
@@ -331,45 +332,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return ResourceCreatorRole.getCreditRoles(CreatorType.PERSON, getResource().getResourceType());
     }
 
-    // /**
-    // * @param resourceCollections
-    // * the resourceCollections to set
-    // */
-    // public void setShares(List<RightsBasedResourceCollection> resourceCollections) {
-    // this.shares = resourceCollections;
-    // }
-    //
-    // /**
-    // * @return the resourceCollections
-    // */
-    // public List<RightsBasedResourceCollection> getShares() {
-    // return shares;
-    // }
-    //
-    //
-    // // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
-    // // shared+invisible+canEdit
-    // public List<SharedCollection> getViewableResourceCollections() {
-    // if (viewableResourceCollections != null) {
-    // return viewableResourceCollections;
-    // }
-    //
-    // // if nobody logged in, just get the shared+visible collections
-    // Set<SharedCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
-    // // if authenticated, also add the collections that the user can modify
-    // if (isAuthenticated()) {
-    // Set<SharedCollection> all = new HashSet<>(getResource().getSharedResourceCollections());
-    // for (SharedCollection resourceCollection : all) {
-    // if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
-    // collections.add(resourceCollection);
-    // }
-    // }
-    // }
-    //
-    // viewableResourceCollections = new ArrayList<>(collections);
-    // return viewableResourceCollections;
-    // }
-
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
     // shared+invisible+canEdit
     public List<ListCollection> getViewableListResourceCollections() {
@@ -378,46 +340,52 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         }
 
         // if nobody logged in, just get the shared+visible collections
-        Set<ListCollection> collections = new HashSet<ListCollection>();
+        Set<ListCollection> collections = new HashSet<>();
         collections.addAll(getResource().getVisibleUnmanagedResourceCollections());
         // if authenticated, also add the collections that the user can modify
-        if (isAuthenticated()) {
-            Set<ListCollection> all = new HashSet<>();
-            all.addAll(getResource().getUnmanagedResourceCollections());
-            for (ListCollection resourceCollection : all) {
-                if (authorizationService.canViewCollection(getAuthenticatedUser(),resourceCollection)) {
-                    collections.add(resourceCollection);
-                }
-            }
-        }
+        getViewableCollections(collections, getResource().getUnmanagedResourceCollections());
 
         viewableListCollections = new ArrayList<>(collections);
         return viewableListCollections;
     }
 
+    private <C extends VisibleCollection> void getViewableCollections(Set<C> collections, Collection<C> collection) {
+        if (isAuthenticated()) {
+            Set<C> all = new HashSet<>();
+            all.addAll(collection);
+            for (C resourceCollection : all) {
+                if (authorizationService.canViewCollection(getAuthenticatedUser(),resourceCollection) && !resourceCollection.isSystemManaged()) {
+                    collections.add(resourceCollection);
+                }
+            }
+        }
+    }
+    
     /**
-     * Return a list of visible, non-system-created resource collections (including ListCollections and SharedCollections)
-     * If the request comes from an authenticated user, this method will include "hidden" collections if the authenticated user has
-     * sufficient privileges upon those collections.
+     * All shares and list collections
      * @return
      */
-    public List<CustomizableCollection> getViewableResourceCollections() {
-
-        List<CustomizableCollection> collections = Stream
-                .of(getResource().getUnmanagedResourceCollections(), getResource().getSharedCollections())
-                .flatMap(Collection::stream)
-                .filter(rc -> !rc.isSystemManaged())
-                .filter(rc -> {
-                    if(isAuthenticated()) {
-                        // if logged-in, show collections that the current user can modify (irrespective of 'hidden' flag)
-                        return rc.isViewable() || authorizationService.canViewCollection(getAuthenticatedUser(), rc);
-                    } else {
-                        // otherwise, only show non-hidden collections
-                        return !rc.isHidden();
-                    }
-                }).collect(Collectors.toList());
-        return collections;
+    public List<VisibleCollection> getViewableResourceCollections() {
+        List<VisibleCollection> visibleCollections = new ArrayList<>();
+        visibleCollections.addAll(getViewableListResourceCollections());
+        visibleCollections.addAll(getViewableSharedResourceCollections());
+        return visibleCollections;
     }
+
+    
+    public List<SharedCollection> getViewableSharedResourceCollections() {
+        if (viewableSharedCollections != null) {
+            return viewableSharedCollections;
+        }
+
+        // if nobody logged in, just get the shared+visible collections
+        Set<SharedCollection> collections = new HashSet<>();
+        collections.addAll(getResource().getSharedVisibleResourceCollections());
+        getViewableCollections(collections, getResource().getSharedCollections());
+        viewableSharedCollections = new ArrayList<>(collections);
+        return viewableSharedCollections;
+    }
+
 
     public boolean isUserAbleToReTranslate() {
         if (authorizationService.canEdit(getAuthenticatedUser(), getPersistable())) {

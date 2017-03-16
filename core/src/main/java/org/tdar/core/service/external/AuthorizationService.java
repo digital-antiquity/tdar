@@ -517,7 +517,7 @@ public class AuthorizationService implements Accessible {
             return false;
         }
 
-        if (!collection.isHidden()) {
+        if (!collection.isHidden() && collection.getStatus() == Status.ACTIVE) {
             return true;
         }
 

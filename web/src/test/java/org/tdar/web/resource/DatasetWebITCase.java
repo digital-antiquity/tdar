@@ -67,7 +67,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put(PROJECT_ID_FIELDNAME, PROJECT_ID);
         docValMap.put("dataset.title", TITLE);
         docValMap.put("dataset.description", DESCRIPTION);
-        docValMap.put("resourceCollections[0].name", "TESTCOLLECTIONNAME");
+        docValMap.put("shares[0].name", "TESTCOLLECTIONNAME");
         docValMap.put("dataset.date", "1923");
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
     }

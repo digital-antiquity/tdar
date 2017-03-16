@@ -30,16 +30,18 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testAddingInformationResourceToProject() {
         TestConfiguration config = TestConfiguration.getInstance();
 
-        gotoPage("/listcollection/add");
-        setInput("resourceCollection.name", TEST_SECURITY_COLLECTION);
-        setInput("resourceCollection.description", "test for map secuity");
-        setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
-        setInput("resourceCollection.hidden", "false");
+        if (TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            gotoPage("/listcollection/add");
+            setInput("resourceCollection.name", TEST_SECURITY_COLLECTION);
+            setInput("resourceCollection.description", "test for map secuity");
+            setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
+            setInput("resourceCollection.hidden", "false");
+            submitForm();
+            clickLinkWithText("Rights");
+            setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
+            setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
-        clickLinkWithText("Rights");
-        setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
-        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        submitForm();
+        }
         String collectionUrl = getCurrentUrlPath();
         gotoPage("/collection/add");
         setInput("resourceCollection.name", TEST_SECURITY_SHARE);
@@ -185,7 +187,9 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
 
         setInput("shares[0].name", TEST_SECURITY_SHARE);
-        setInput("resourceCollections[0].name", TEST_SECURITY_COLLECTION);
+        if (TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            setInput("resourceCollections[0].name", TEST_SECURITY_COLLECTION);
+        }
         if (file != null) {
             setInput("ticketId", ticketId);
             FileAccessRestriction access_ = FileAccessRestriction.PUBLIC;

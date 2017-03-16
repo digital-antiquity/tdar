@@ -1412,7 +1412,7 @@ public class Resource implements Persistable,
     public Set<SharedCollection> getSharedVisibleResourceCollections() {
         Set<SharedCollection> collections = new LinkedHashSet<>(sharedCollections);
         for (SharedCollection collection : sharedCollections) {
-            if (!((SharedCollection) collection).isHidden()) {
+            if (!collection.isHidden() && collection.isActive()) {
                 collections.add((SharedCollection)collection);
             }
         }
