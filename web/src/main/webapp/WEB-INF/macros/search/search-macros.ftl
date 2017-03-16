@@ -284,8 +284,8 @@
                         <span class="media-body">
                             <a rel="noindex" href="<@s.url includeParams="all">
                                     <@s.param suppressEmptyParameters=true />
-                                    <@s.param name="${facetParam}"value="" suppressEmptyParameters=true  />
-                                    <@s.param name="startRecord" value="0"/>
+                                    <@s.param name="${facetParam}" value="" suppressEmptyParameters=true  />
+                                    <@s.param name="startRecord" value=""  suppressEmptyParameters=true/>
                                     <#--  for unified search, remove resourceTypes  -->
                                     <#if actionName == 'results'>
     									<@s.param name="resourceTypes" value="" suppressEmptyParameters=true />
@@ -293,10 +293,10 @@
                                     <#-- fixme: (TDAR-5574) commenting out the block below fixes at least some of the issues seen in TDAR-5574 - is there a scenario I'm overlooking?  -->
                                     <#--
                                     <#if facetParam != "documentType">
-                                        <@s.param name="documentType" value=""/>
+                                        <@s.param name="documentType" value=""  suppressEmptyParameters=true/>
                                     </#if>
                                     <#if facetParam != "integratableOptions">
-                                        <@s.param name="integratableOptions" value=""/>
+                                        <@s.param name="integratableOptions" value=""  suppressEmptyParameters=true/>
                                     </#if>
                                     <#nested>
                                     -->
@@ -307,6 +307,7 @@
                         </span>
                     </li>
                 </ul>
+
             </#if>
         </#if>
     </#macro>
@@ -406,4 +407,33 @@
     </ul>
 </#macro>
 
+<#macro partFacet selectedResourceTypes paginationHelper name tag>
+      <#if selectedResourceTypes.empty>
+            <@facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
+        <#else>
+        <${tag}>
+            There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
+
+		<#assign limited=false>
+        <#if selectedResourceTypes?has_content && selectedResourceTypes[0]?has_content >
+            <#assign limited=true>
+            <#if paginationHelper.totalNumberOfItems == 1>
+                <@s.text name="${selectedResourceTypes[0].localeKey}" />
+            <#else>
+                <@s.text name="${selectedResourceTypes[0].pluralLocaleKey}" />
+            </#if> 
+        <#else>
+                <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
+        </#if>
+             within this ${name} <#if selectedResourceTypes?has_content> 
+			<#if limited>
+           <sup><a style="text-decoration: " href="<@s.url includeParams="all">
+                    <@s.param name="selectedResourceTypes" value="" suppressEmptyParameters=true />
+                    <@s.param name="startRecord" value="" suppressEmptyParameters=true  />
+            </@s.url>">[remove this filter]</a></sup>
+            </#if>
+        </#if>
+        </${tag}>
+        </#if>
+</#macro>
 </#escape>
