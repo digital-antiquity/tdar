@@ -95,6 +95,14 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.4</version>
+            <classifier>jdk15</classifier>
+            <scope>test</scope>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
 		
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
@@ -117,25 +125,6 @@
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
             <version>2.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>nu.validator</groupId>
-            <artifactId>validator</artifactId>
-            <version>17.2.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>httpcore</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- Servlet & Jsp -->
         <dependency>

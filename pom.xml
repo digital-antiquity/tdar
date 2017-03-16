@@ -23,6 +23,7 @@
         <module>faims</module>
         <!-- the tdar webapp -->
         <module>web-base</module>
+        <module>web-test</module>
         <module>struts-base</module>
         <module>balk</module>
         <module>web</module>
@@ -51,6 +52,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <slf4j.version>1.7.24</slf4j.version>
+        <nu.validator.version>17.2.1</nu.validator.version>
+    
         <skipTestLiquibase>true</skipTestLiquibase>
         <exec-maven-version>1.4.0</exec-maven-version>
         <clean-maven-version>3.0.0</clean-maven-version>

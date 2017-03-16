@@ -1,6 +1,10 @@
 package org.tdar.web;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +13,13 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
+import com.gargoylesoftware.htmlunit.FormEncodingType;
+import com.gargoylesoftware.htmlunit.HttpMethod;
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
 
 public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
@@ -126,6 +136,16 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
     private void removeBookmark(String resourceId) throws IOException {
         post("/resource/removeBookmark?resourceId=" + resourceId);
+    }
+
+    private void post(String url) throws FailingHttpStatusCodeException, IOException {
+        WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
+        List<NameValuePair> parms = new ArrayList<NameValuePair>();
+        webRequest.setRequestParameters(parms);
+        webRequest.setEncodingType(FormEncodingType.MULTIPART);
+        Page page = webClient.getPage(webRequest);
+        int code = page.getWebResponse().getStatusCode();
+        
     }
 
     private void bookmark(String resourceId) throws IOException {

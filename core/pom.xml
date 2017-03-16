@@ -19,9 +19,7 @@
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
-        <dependencies>
-
-			</dependencies>
+        <dependencies></dependencies>
 	</dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>

@@ -1,4 +1,4 @@
-package org.tdar.web;
+package org.tdar.test.web;
 
 import static org.junit.Assert.fail;
 

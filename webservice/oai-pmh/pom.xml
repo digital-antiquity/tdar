@@ -12,12 +12,12 @@
         <skipJetty>false</skipJetty>
         <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
-	<parent>
-		<groupId>org.tdar</groupId>
-		<artifactId>web-base</artifactId>
-		<version>16.0.1-PREHISTORIC-SNAPSHOT</version>
-		<relativePath>../../web-base/pom.xml</relativePath>
-	</parent>
+    <parent>
+        <groupId>org.tdar</groupId>
+        <artifactId>web-base</artifactId>
+        <version>16.0.1-PREHISTORIC-SNAPSHOT</version>
+        <relativePath>../../web-base/pom.xml</relativePath>
+    </parent>
 
     <prerequisites>
         <maven>3.1.0</maven>
@@ -39,18 +39,26 @@
     </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
-		<dependency>
-			<groupId>org.tdar</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.tdar</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>web-test</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
@@ -257,29 +265,29 @@
         <profile>
             <id>setup-new-instance</id>
             <build>
-				<defaultGoal>process-resources</defaultGoal>
+                <defaultGoal>process-resources</defaultGoal>
                 <plugins>
-		            <plugin>
-		                <artifactId>maven-remote-resources-plugin</artifactId>
-		                <version>1.5</version>
-		                <executions>
-		                    <execution>
-		                        <id>process-resources</id>
-		                        <goals>
-		                            <goal>process</goal>
-		                        </goals>
-		                        <configuration>
-		                            <attachToTest>true</attachToTest>
-		                            <attachToMain>true</attachToMain>
-									<outputDirectory>${project.build.directory}/templates</outputDirectory>
-		                            <resourceBundles>
-		                                <resourceBundle>org.tdar:templates:${project.version}</resourceBundle>
-		                            </resourceBundles>
-		                        </configuration>
-		                    </execution>
-		                </executions>
-		            </plugin>
-					
+                    <plugin>
+                        <artifactId>maven-remote-resources-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>process-resources</id>
+                                <goals>
+                                    <goal>process</goal>
+                                </goals>
+                                <configuration>
+                                    <attachToTest>true</attachToTest>
+                                    <attachToMain>true</attachToMain>
+                                    <outputDirectory>${project.build.directory}/templates</outputDirectory>
+                                    <resourceBundles>
+                                        <resourceBundle>org.tdar:templates:${project.version}</resourceBundle>
+                                    </resourceBundles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
@@ -290,12 +298,10 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy
-                                            failOnError="false"
+                                        <copy failOnError="false"
                                             file="target/templates/crowd.properties.template"
                                             tofile="src/main/resources/crowd.properties" />
-                                        <copy
-                                            failOnError="false"
+                                        <copy failOnError="false"
                                             file="target/templates/ldap.properties.template"
                                             tofile="src/main/resources/ldap.properties" />
                                         <copy
@@ -304,15 +310,13 @@
                                         <copy
                                             file="target/templates/log4j2.xml.template"
                                             tofile="src/main/resources/log4j2.xml" />
-                                        <copy
-                                            failOnError="false"
+                                        <copy failOnError="false"
                                             file="target/templates/tdar.properties.template"
                                             tofile="src/main/resources/dataOne.properties" />
                                         <copy
                                             file="target/templates/spring-local-settings.xml.template"
                                             tofile="src/main/resources/spring-local-settings.xml" />
-                                        <copy
-                                            failOnError="false"
+                                        <copy failOnError="false"
                                             file="target/templates/hibernate-ehcache.xml.template"
                                             tofile="src/main/resources/hibernate-ehcache.xml" />
                                         <echo

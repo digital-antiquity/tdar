@@ -101,7 +101,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     private boolean useTransactionalEvents = true;
 
     @SuppressWarnings("unchecked")
-    private static final Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class,
+    public
+    static final Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class,
             FileProxies.class, FileProxy.class };
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

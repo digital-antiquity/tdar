@@ -29,11 +29,12 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.service.OaiPmhConfiguration;
+import org.tdar.web.AbstractGeneicWebTest;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class OAIWebITCase extends AbstractWebTest {
+public class OAIWebITCase extends AbstractGeneicWebTest {
 
     private static final OaiPmhConfiguration CONFIG = OaiPmhConfiguration.getInstance();
 
