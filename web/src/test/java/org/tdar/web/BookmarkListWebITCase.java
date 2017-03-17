@@ -38,14 +38,14 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         String resourceId = querySelectorAll(".bookmark-link").get(0).getAttribute("resource-id");
         bookmark(resourceId);
         gotoPage(viewPage);
-        gotoPage(URLConstants.DASHBOARD);
+        gotoPage(URLConstants.BOOKMARKS);
         assertTextPresentInCode(docTitle);
 
         // now delete it, and check again: it should be gone.
         gotoPage(viewPage);
         clickLinkOnPage("delete");
         submitForm("delete");
-        gotoPage(URLConstants.DASHBOARD);
+        gotoPage(URLConstants.BOOKMARKS);
         assertTextNotPresent(docTitle);
 
         // have an admin undelete the resource
@@ -60,7 +60,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
         // log back in as regular user, we should be able to see the resource in the workspace again
         login();
-        gotoPage(URLConstants.DASHBOARD);
+        gotoPage(URLConstants.BOOKMARKS);
         assertTextPresentInCode(docTitle);
     }
 
@@ -94,7 +94,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         String resourceId = querySelectorAll(".bookmark-link").get(0).getAttribute("resource-id");
         bookmark(resourceId);
         gotoPage(viewPage);
-        gotoPage(URLConstants.DASHBOARD);
+        gotoPage(URLConstants.BOOKMARKS);
 
         assertTextPresentInCode(docTitle);
 
@@ -104,7 +104,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             clickLinkOnPage("edit");
             setInput("status", status.name());
             submitForm();
-            gotoPage(URLConstants.DASHBOARD);
+            gotoPage(URLConstants.BOOKMARKS);
 
 //            boolean seen = false;
 //            for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("#bookmarks")) {
@@ -128,18 +128,20 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         clickLinkOnPage("edit");
         setInput("status", Status.ACTIVE.name());
         submitForm();
-        gotoPage(URLConstants.DASHBOARD);
+        gotoPage(URLConstants.BOOKMARKS);
         assertTextPresentInCode(docTitle);
     }
 
 
     private void removeBookmark(String resourceId) throws IOException {
-        post("/resource/removeBookmark?resourceId=" + resourceId);
+        post(getBaseSecureUrl() + "resource/removeBookmark", resourceId);
+
     }
 
-    private void post(String url) throws FailingHttpStatusCodeException, IOException {
+    private void post(String url, String resourceId) throws FailingHttpStatusCodeException, IOException {
         WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
         List<NameValuePair> parms = new ArrayList<NameValuePair>();
+        parms.add(new NameValuePair("resourceId", resourceId));
         webRequest.setRequestParameters(parms);
         webRequest.setEncodingType(FormEncodingType.MULTIPART);
         Page page = webClient.getPage(webRequest);
@@ -148,16 +150,16 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
     }
 
     private void bookmark(String resourceId) throws IOException {
-        post("/resource/bookmark?resourceId=" + resourceId);
+        post(getBaseSecureUrl() + "resource/bookmark", resourceId);
     }
 
-    private void clickBookmarkLink() {
-        try {
-            ((DomElement)htmlPage.getDocumentElement().querySelector(".bookmark-link")).click();
-        } catch (IOException e) {
-            logger.error("{}",e,e);
-        }
-    }
+//    private void clickBookmarkLink() {
+//        try {
+//            ((DomElement)htmlPage.getDocumentElement().querySelector(".bookmark-link")).click();
+//        } catch (IOException e) {
+//            logger.error("{}",e,e);
+//        }
+//    }
 
     private void setDocumentRequiredFields(String docTitle, String docDescription) {
         setInput(TestConstants.DOCUMENT_FIELD_TITLE, docTitle);
