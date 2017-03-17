@@ -581,10 +581,6 @@ public class GenericDao {
         return sessionFactory.getCurrentSession();
     }
 
-    protected EntityManager getEntityManager() {
-        return getCurrentSession();
-    }
-
     protected Logger getLogger() {
         return logger;
     }
