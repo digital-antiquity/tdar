@@ -1,8 +1,9 @@
 package org.tdar.balk.service;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.balk.bean.DropboxFile;
-import org.tdar.utils.dropbox.DropboxConstants;
+
+import main.java.org.tdar.balk.bean.DropboxFile;
+import main.java.org.tdar.utils.dropbox.DropboxConstants;
 
 public enum Phases {
     TO_PDFA, DONE_PDFA, UPLOAD_TDAR;

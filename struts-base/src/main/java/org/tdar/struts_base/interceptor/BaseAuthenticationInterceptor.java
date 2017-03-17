@@ -1,8 +1,6 @@
 package org.tdar.struts_base.interceptor;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.servlet.http.HttpServletRequest;

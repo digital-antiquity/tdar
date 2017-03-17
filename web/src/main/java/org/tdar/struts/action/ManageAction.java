@@ -1,8 +1,16 @@
 package org.tdar.struts.action;
 
-import com.opensymphony.xwork2.Preparable;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -10,7 +18,10 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.resource.*;
+import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.AdhocShare;
@@ -21,8 +32,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
-import java.io.IOException;
-import java.util.*;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * $Id$

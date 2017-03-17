@@ -623,5 +623,5 @@
 })
 package org.tdar.core.dao;
 
-import org.hibernate.annotations.NamedQuery;
 import org.hibernate.annotations.NamedQueries;
+import org.hibernate.annotations.NamedQuery;

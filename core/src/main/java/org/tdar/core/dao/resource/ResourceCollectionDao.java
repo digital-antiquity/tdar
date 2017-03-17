@@ -6,8 +6,6 @@
  */
 package org.tdar.core.dao.resource;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,8 +52,6 @@ import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.utils.PersistableUtils;
-
-import javax.persistence.TypedQuery;
 
 /**
  * @author Adam Brin

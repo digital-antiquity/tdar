@@ -18,7 +18,11 @@ import static org.openqa.selenium.By.tagName;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElementLocated;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
-import static org.tdar.functional.util.TdarExpectedConditions.*;
+import static org.tdar.functional.util.TdarExpectedConditions.bootstrapModalGone;
+import static org.tdar.functional.util.TdarExpectedConditions.locatedElementCountEquals;
+import static org.tdar.functional.util.TdarExpectedConditions.locatedElementCountGreaterThan;
+import static org.tdar.functional.util.TdarExpectedConditions.stabilityOfElement;
+import static org.tdar.functional.util.TdarExpectedConditions.textToBePresentInElementsLocated;
 
 import java.io.IOException;
 import java.util.List;

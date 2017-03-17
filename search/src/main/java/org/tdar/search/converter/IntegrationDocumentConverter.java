@@ -5,9 +5,9 @@ import java.util.Set;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.Sortable;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;

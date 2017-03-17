@@ -1,8 +1,14 @@
 package org.tdar.struts.action.resource;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -17,7 +23,14 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.*;
+import org.tdar.core.bean.collection.CustomizableCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.TimedAccessRestriction;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;

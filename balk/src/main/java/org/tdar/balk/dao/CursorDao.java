@@ -5,8 +5,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.balk.bean.PollType;
 import org.tdar.core.dao.GenericDao;
+
+import main.java.org.tdar.balk.bean.PollType;
 
 @Component
 public class CursorDao {

@@ -19,7 +19,6 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;

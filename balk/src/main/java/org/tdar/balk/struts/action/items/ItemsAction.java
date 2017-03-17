@@ -11,13 +11,14 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.balk.bean.DropboxUserMapping;
-import org.tdar.balk.service.ItemService;
-import org.tdar.balk.service.UserService;
-import org.tdar.balk.service.WorkflowStatusReport;
-import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
 
 import com.opensymphony.xwork2.Preparable;
+
+import main.java.org.tdar.balk.bean.DropboxUserMapping;
+import main.java.org.tdar.balk.service.ItemService;
+import main.java.org.tdar.balk.service.UserService;
+import main.java.org.tdar.balk.service.WorkflowStatusReport;
+import main.java.org.tdar.balk.struts.action.AbstractAuthenticatedAction;
 
 @ParentPackage("secured")
 @Namespace("/items")

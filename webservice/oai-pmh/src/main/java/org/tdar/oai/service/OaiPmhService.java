@@ -127,7 +127,6 @@ public class OaiPmhService {
      * @param response
      * @return
      * @throws OAIException
-     * @throws ParseException
      */
     public ResumptionTokenType listIdentifiersOrRecords(Date from, Date until, OAIMetadataFormat metadataPrefix,
             OAIResumptionToken resumptionToken, ListResponse response) throws OAIException {
@@ -228,7 +227,6 @@ public class OaiPmhService {
      * @param startRecord
      * @param response
      * @return
-     * @throws ParseException
      * @throws OAIException
      */
     private OaiSearchResult populateResult(OAIRecordType recordType,
@@ -440,7 +438,6 @@ public class OaiPmhService {
      * @param resumptionToken
      * @return
      * @throws OAIException
-     * @throws ParseException
      */
     @Transactional(readOnly = true)
     public ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat,
@@ -461,7 +458,6 @@ public class OaiPmhService {
      * @param resumptionToken
      * @return
      * @throws OAIException
-     * @throws ParseException
      */
     @Transactional(readOnly = true)
     public ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat,

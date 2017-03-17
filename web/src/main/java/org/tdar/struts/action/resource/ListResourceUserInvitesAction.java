@@ -1,5 +1,8 @@
 package org.tdar.struts.action.resource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -13,9 +16,6 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts_base.action.TdarActionException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by jimdevos on 3/7/17.

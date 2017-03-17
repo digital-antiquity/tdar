@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.RssService.GeoRssMode;

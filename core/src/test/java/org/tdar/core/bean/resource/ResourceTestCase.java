@@ -8,8 +8,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.Sortable;
+import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 

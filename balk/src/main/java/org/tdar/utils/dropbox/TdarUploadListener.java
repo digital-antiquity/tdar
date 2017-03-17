@@ -15,7 +15,6 @@ import javax.xml.bind.Marshaller;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.balk.service.ItemService;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -26,6 +25,8 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
+
+import main.java.org.tdar.balk.service.ItemService;
 
 public class TdarUploadListener implements MetadataListener {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

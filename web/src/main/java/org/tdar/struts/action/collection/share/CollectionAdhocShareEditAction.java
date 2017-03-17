@@ -1,10 +1,11 @@
 package org.tdar.struts.action.collection.share;
 
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.struts_base.action.TdarActionException;
 
 @ParentPackage("secured")
 @Namespace("/collection/share")

@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -19,7 +18,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.search.bean.ObjectType;

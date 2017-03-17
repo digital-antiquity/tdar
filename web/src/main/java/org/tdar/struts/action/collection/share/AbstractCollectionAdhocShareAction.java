@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.collection.AdhocShare;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;

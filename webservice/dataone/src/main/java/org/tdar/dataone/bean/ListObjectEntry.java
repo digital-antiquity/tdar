@@ -3,8 +3,6 @@ package org.tdar.dataone.bean;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.dataone.service.DataOneService;
 import org.tdar.dataone.service.IdentifierParser;
 
 /**

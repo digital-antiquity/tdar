@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
-import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionRevisionLog;

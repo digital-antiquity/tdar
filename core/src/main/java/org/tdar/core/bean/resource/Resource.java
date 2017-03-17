@@ -76,7 +76,6 @@ import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Slugable;
-import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.XmlLoggable;

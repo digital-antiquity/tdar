@@ -9,10 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.core.bean.entity.TdarUser;
 
 import com.dropbox.core.v2.users.BasicAccount;
+
+import main.java.org.tdar.balk.bean.DropboxUserMapping;
 
 @Component
 public class UserDao {

@@ -1,6 +1,5 @@
 package org.tdar.balk.struts.action;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -10,7 +9,8 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.balk.service.ItemService;
+
+import main.java.org.tdar.balk.service.ItemService;
 
 @ParentPackage("default")
 @Namespace("/")

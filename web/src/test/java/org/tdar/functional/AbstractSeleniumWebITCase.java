@@ -93,9 +93,6 @@ import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.ProcessList;
 import org.tdar.utils.TestConfiguration;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;

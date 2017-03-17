@@ -43,6 +43,15 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Selector;
+import org.apache.jena.rdf.model.SimpleSelector;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.StmtIterator;
 import org.dataone.client.v2.types.D1TypeBuilder;
 import org.dataone.configuration.Settings;
 import org.dataone.service.types.v1.Identifier;
@@ -67,16 +76,6 @@ import org.dspace.foresite.Vocab;
 import org.dspace.foresite.jena.JenaOREFactory;
 import org.dspace.foresite.jena.ORE;
 import org.dspace.foresite.jena.TripleJena;
-
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Selector;
-import org.apache.jena.rdf.model.SimpleSelector;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
 /**
  *  A utility for serializing and deserializing Resource Maps used by DataONE,
  *  following the conventions and constraints detailed in 

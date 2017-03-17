@@ -17,7 +17,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.balk.bean.DropboxUserMapping;
 
 import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
@@ -33,6 +32,8 @@ import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.files.RelocationErrorException;
 import com.dropbox.core.v2.users.BasicAccount;
 import com.dropbox.core.v2.users.FullAccount;
+
+import main.java.org.tdar.balk.bean.DropboxUserMapping;
 
 public class DropboxClient {
 

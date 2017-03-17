@@ -15,7 +15,6 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.tools.ant.IntrospectionHelper.Creator;
-import org.dataone.ns.metadata.schema.onedcx.v1.SimpleDcType;
 import org.purl.dc.terms.ElementOrRefinementContainer;
 import org.tdar.core.bean.resource.Resource;
 

@@ -5,7 +5,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.balk.service.ItemService;
+
+import main.java.org.tdar.balk.service.ItemService;
 
 public class ToPersistListener implements MetadataListener {
 

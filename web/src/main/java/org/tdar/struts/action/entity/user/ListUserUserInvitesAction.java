@@ -1,6 +1,8 @@
 package org.tdar.struts.action.entity.user;
 
-import com.opensymphony.xwork2.Preparable;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -8,8 +10,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -20,10 +20,7 @@ import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.ViewableAction;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.geotools.kml.v22.KML.value;
+import com.opensymphony.xwork2.Preparable;
 
 /**
  * List the UserInvites created by the current User.

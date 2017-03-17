@@ -1,6 +1,6 @@
 package org.tdar.balk.service;
 
-import org.tdar.balk.bean.DropboxFile;
+import main.java.org.tdar.balk.bean.DropboxFile;
 
 public class WorkflowStatusReport {
 
