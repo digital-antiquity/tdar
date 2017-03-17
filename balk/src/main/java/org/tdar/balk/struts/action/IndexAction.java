@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import main.java.org.tdar.balk.service.ItemService;
+import org.tdar.balk.service.ItemService;
 
 @ParentPackage("default")
 @Namespace("/")

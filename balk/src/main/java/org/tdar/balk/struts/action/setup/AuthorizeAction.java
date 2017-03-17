@@ -13,8 +13,8 @@ import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Preparable;
 
-import main.java.org.tdar.balk.struts.action.AbstractAuthenticatedAction;
-import main.java.org.tdar.utils.dropbox.DropboxConfig;
+import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
+import org.tdar.utils.dropbox.DropboxConfig;
 
 @ParentPackage("secured")
 @Namespace("/setup")

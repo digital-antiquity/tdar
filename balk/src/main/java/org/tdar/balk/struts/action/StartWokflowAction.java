@@ -13,12 +13,12 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
-import main.java.org.tdar.balk.bean.AbstractDropboxItem;
-import main.java.org.tdar.balk.bean.DropboxUserMapping;
-import main.java.org.tdar.balk.service.ItemService;
-import main.java.org.tdar.balk.service.Phases;
-import main.java.org.tdar.balk.service.UserService;
-import main.java.org.tdar.utils.dropbox.DropboxConstants;
+import org.tdar.balk.bean.AbstractDropboxItem;
+import org.tdar.balk.bean.DropboxUserMapping;
+import org.tdar.balk.service.ItemService;
+import org.tdar.balk.service.Phases;
+import org.tdar.balk.service.UserService;
+import org.tdar.utils.dropbox.DropboxConstants;
 
 @ParentPackage("secured")
 @Namespace("/startWorkflow")

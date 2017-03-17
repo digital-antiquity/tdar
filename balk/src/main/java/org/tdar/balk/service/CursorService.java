@@ -14,11 +14,11 @@ import org.tdar.core.dao.GenericDao;
 
 import com.dropbox.core.DbxException;
 
-import main.java.org.tdar.balk.bean.DropboxState;
-import main.java.org.tdar.balk.bean.PollType;
-import main.java.org.tdar.balk.dao.CursorDao;
-import main.java.org.tdar.utils.dropbox.DropboxClient;
-import main.java.org.tdar.utils.dropbox.MetadataListener;
+import org.tdar.balk.bean.DropboxState;
+import org.tdar.balk.bean.PollType;
+import org.tdar.balk.dao.CursorDao;
+import org.tdar.utils.dropbox.DropboxClient;
+import org.tdar.utils.dropbox.MetadataListener;
 
 @Component
 public class CursorService {

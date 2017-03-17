@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import main.java.org.tdar.balk.bean.AbstractDropboxItem;
-import main.java.org.tdar.balk.bean.DropboxDirectory;
-import main.java.org.tdar.balk.bean.DropboxFile;
-import main.java.org.tdar.balk.service.Phases;
-import main.java.org.tdar.utils.dropbox.DropboxConstants;
+import org.tdar.balk.bean.AbstractDropboxItem;
+import org.tdar.balk.bean.DropboxDirectory;
+import org.tdar.balk.bean.DropboxFile;
+import org.tdar.balk.service.Phases;
+import org.tdar.utils.dropbox.DropboxConstants;
 
 @Component
 public class ItemDao {

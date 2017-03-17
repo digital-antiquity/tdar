@@ -27,7 +27,7 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Validateable;
 
-import main.java.org.tdar.balk.service.SimpleAuthenticationService;
+import org.tdar.balk.service.SimpleAuthenticationService;
 
 /**
  * $Id$

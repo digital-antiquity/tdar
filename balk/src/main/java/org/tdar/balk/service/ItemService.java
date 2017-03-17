@@ -47,16 +47,16 @@ import org.tdar.utils.PersistableUtils;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.BasicAccount;
 
-import main.java.org.tdar.balk.bean.AbstractDropboxItem;
-import main.java.org.tdar.balk.bean.DropboxDirectory;
-import main.java.org.tdar.balk.bean.DropboxFile;
-import main.java.org.tdar.balk.bean.DropboxUserMapping;
-import main.java.org.tdar.balk.dao.ItemDao;
-import main.java.org.tdar.balk.dao.UserDao;
-import main.java.org.tdar.utils.dropbox.DropboxClient;
-import main.java.org.tdar.utils.dropbox.DropboxConstants;
-import main.java.org.tdar.utils.dropbox.DropboxItemWrapper;
-import main.java.org.tdar.utils.dropbox.ToPersistListener;
+import org.tdar.balk.bean.AbstractDropboxItem;
+import org.tdar.balk.bean.DropboxDirectory;
+import org.tdar.balk.bean.DropboxFile;
+import org.tdar.balk.bean.DropboxUserMapping;
+import org.tdar.balk.dao.ItemDao;
+import org.tdar.balk.dao.UserDao;
+import org.tdar.utils.dropbox.DropboxClient;
+import org.tdar.utils.dropbox.DropboxConstants;
+import org.tdar.utils.dropbox.DropboxItemWrapper;
+import org.tdar.utils.dropbox.ToPersistListener;
 
 @Component
 public class ItemService {

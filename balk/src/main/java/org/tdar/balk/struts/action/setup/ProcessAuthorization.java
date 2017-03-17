@@ -17,9 +17,9 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import com.dropbox.core.DbxException;
 import com.opensymphony.xwork2.Preparable;
 
-import main.java.org.tdar.balk.service.UserService;
-import main.java.org.tdar.balk.struts.action.AbstractAuthenticatedAction;
-import main.java.org.tdar.utils.dropbox.DropboxConfig;
+import org.tdar.balk.service.UserService;
+import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
+import org.tdar.utils.dropbox.DropboxConfig;
 
 @ParentPackage("secured")
 @Namespace("/setup")

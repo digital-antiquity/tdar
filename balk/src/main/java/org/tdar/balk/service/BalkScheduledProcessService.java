@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.dropbox.core.DbxException;
 
-import main.java.org.tdar.balk.bean.PollType;
-import main.java.org.tdar.utils.dropbox.DropboxClient;
-import main.java.org.tdar.utils.dropbox.DropboxConstants;
-import main.java.org.tdar.utils.dropbox.ToPersistListener;
+import org.tdar.balk.bean.PollType;
+import org.tdar.utils.dropbox.DropboxClient;
+import org.tdar.utils.dropbox.DropboxConstants;
+import org.tdar.utils.dropbox.ToPersistListener;
 
 @Service
 public class BalkScheduledProcessService {

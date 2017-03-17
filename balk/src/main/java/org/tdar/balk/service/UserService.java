@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.GenericDao;
 
-import main.java.org.tdar.balk.bean.DropboxUserMapping;
-import main.java.org.tdar.balk.dao.UserDao;
-import main.java.org.tdar.utils.dropbox.DropboxClient;
+import org.tdar.balk.bean.DropboxUserMapping;
+import org.tdar.balk.dao.UserDao;
+import org.tdar.utils.dropbox.DropboxClient;
 
 @Component
 public class UserService {

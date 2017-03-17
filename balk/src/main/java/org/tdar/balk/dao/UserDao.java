@@ -13,7 +13,7 @@ import org.tdar.core.bean.entity.TdarUser;
 
 import com.dropbox.core.v2.users.BasicAccount;
 
-import main.java.org.tdar.balk.bean.DropboxUserMapping;
+import org.tdar.balk.bean.DropboxUserMapping;
 
 @Component
 public class UserDao {

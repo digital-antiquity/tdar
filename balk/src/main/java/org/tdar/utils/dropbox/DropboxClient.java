@@ -33,7 +33,7 @@ import com.dropbox.core.v2.files.RelocationErrorException;
 import com.dropbox.core.v2.users.BasicAccount;
 import com.dropbox.core.v2.users.FullAccount;
 
-import main.java.org.tdar.balk.bean.DropboxUserMapping;
+import org.tdar.balk.bean.DropboxUserMapping;
 
 public class DropboxClient {
 

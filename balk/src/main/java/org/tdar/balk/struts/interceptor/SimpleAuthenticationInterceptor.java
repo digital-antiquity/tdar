@@ -8,7 +8,7 @@ import org.tdar.core.service.external.session.SessionData;
 import org.tdar.struts_base.interceptor.BaseAuthenticationInterceptor;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
-import main.java.org.tdar.balk.service.SimpleAuthenticationService;
+import org.tdar.balk.service.SimpleAuthenticationService;
 
 /**
  * $Id$
