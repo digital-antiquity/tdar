@@ -43,12 +43,7 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, extractor.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, extractor.getUsersWhoCanAdminister());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, extractor.getUsersWhoCanView());
-        if (collection instanceof SharedCollection) {
-            doc.setField(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name());
-        }
-        if (collection instanceof ListCollection) {
-            doc.setField(QueryFieldNames.COLLECTION_TYPE, CollectionType.LIST.name());
-        }
+        doc.setField(QueryFieldNames.COLLECTION_TYPE, collection.getType().name());
 
         doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.COLLECTION.name());
         doc.setField(QueryFieldNames.OBJECT_TYPE, ObjectType.from(collection.getType()).name());

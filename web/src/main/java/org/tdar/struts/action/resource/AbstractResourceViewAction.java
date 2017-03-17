@@ -125,7 +125,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> contactProxies;
     private ResourceCitationFormatter resourceCitation;
 
-     private List<HierarchicalCollection> viewableResourceCollections;
      private List<ListCollection> viewableListCollections;
      private List<SharedCollection> viewableSharedCollections;
 
@@ -356,19 +355,17 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         Set<ListCollection> collections = new HashSet<>();
         collections.addAll(getResource().getVisibleUnmanagedResourceCollections());
         // if authenticated, also add the collections that the user can modify
-        getViewableCollections(collections, getResource().getUnmanagedResourceCollections());
+        addViewableCollections(collections, getResource().getUnmanagedResourceCollections());
 
         viewableListCollections = new ArrayList<>(collections);
         return viewableListCollections;
     }
 
-    private <C extends VisibleCollection> void getViewableCollections(Set<C> collections, Collection<C> collection) {
+    private <C extends VisibleCollection> void addViewableCollections(Set<C> list, Collection<C> incomming) {
         if (isAuthenticated()) {
-            Set<C> all = new HashSet<>();
-            all.addAll(collection);
-            for (C resourceCollection : all) {
-                if (authorizationService.canViewCollection(getAuthenticatedUser(),resourceCollection) && !resourceCollection.isSystemManaged()) {
-                    collections.add(resourceCollection);
+            for (C resourceCollection : incomming) {
+                if (authorizationService.canViewCollection(getAuthenticatedUser(), resourceCollection) && !resourceCollection.isSystemManaged()) {
+                    list.add(resourceCollection);
                 }
             }
         }
@@ -392,9 +389,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         }
 
         // if nobody logged in, just get the shared+visible collections
-        Set<SharedCollection> collections = new HashSet<>();
-        collections.addAll(getResource().getSharedVisibleResourceCollections());
-        getViewableCollections(collections, getResource().getSharedCollections());
+        Set<SharedCollection> collections = new HashSet<>(getResource().getVisibleSharedResourceCollections());
+        addViewableCollections(collections, getResource().getSharedCollections());
+
         viewableSharedCollections = new ArrayList<>(collections);
         return viewableSharedCollections;
     }

@@ -19,6 +19,7 @@ import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -126,7 +127,6 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
 
     @XmlTransient
     @Override
-    // FIXME: having independent variables for "viewable" and "hidden" is courting disaster.
     public boolean isViewable() {
         return viewable;
     }
@@ -140,4 +140,14 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
         return false;
     }
 
+    @XmlTransient
+    public boolean isVisibleAndActive() {
+        if (hidden) {
+            return false;
+        }
+        if (getStatus() != Status.ACTIVE) {
+            return false;
+        }
+        return true;
+    }
 }

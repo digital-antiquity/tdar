@@ -1408,10 +1408,10 @@ public class Resource implements Persistable,
     }
 
     @Transient
-    public Set<SharedCollection> getSharedVisibleResourceCollections() {
-        Set<SharedCollection> collections = new LinkedHashSet<>(sharedCollections);
+    public Set<SharedCollection> getVisibleSharedResourceCollections() {
+        Set<SharedCollection> collections = new LinkedHashSet<>();
         for (SharedCollection collection : sharedCollections) {
-            if (!collection.isHidden() && collection.isActive()) {
+            if (collection.isVisibleAndActive()) {
                 collections.add((SharedCollection)collection);
             }
         }
@@ -1778,9 +1778,9 @@ public class Resource implements Persistable,
     }
 
     public Collection<ListCollection> getVisibleUnmanagedResourceCollections() {
-        Set<ListCollection> collections = new LinkedHashSet<ListCollection>();
+        Set<ListCollection> collections = new LinkedHashSet<>();
         for (ListCollection collection : getUnmanagedResourceCollections()) {
-            if (!collection.isHidden()) {
+            if (collection.isVisibleAndActive()) {
                 collections.add(collection);
             }
         }

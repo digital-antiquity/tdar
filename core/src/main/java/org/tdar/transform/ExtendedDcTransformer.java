@@ -143,7 +143,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             }
         }
         
-        for (SharedCollection coll : toSortedList(source.getSharedVisibleResourceCollections())) {
+        for (SharedCollection coll : toSortedList(source.getVisibleSharedResourceCollections())) {
             dc.addIsPartOf(getX().stripNonValidXMLCharacters(coll.getName()));
         }
 
