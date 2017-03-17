@@ -35,7 +35,9 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         docValMap.put("document.description", DESCRIPTION);
         docValMap.put("document.documentType", "BOOK");
         docValMap.put("shares[0].name", TESTSHARENAME);
-//        docValMap.put("resourceCollections[0].name", TESTCOLLECTIONNAME);
+        if (TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            docValMap.put("resourceCollections[0].name", TESTCOLLECTIONNAME);
+        }
         docValMap.put("document.date", "1923");
         docValMap.put("status", "DRAFT");
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {

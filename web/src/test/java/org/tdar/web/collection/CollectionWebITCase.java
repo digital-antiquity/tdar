@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
@@ -41,8 +42,10 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
 
     @Test
-    @Ignore("list collections")
     public void testCreateEditDocumentBlankCollection() {
+        if (!TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            return;
+        }
         gotoPage("/image/add");
         setInput("image.title", "test title");
         setInput("status", Status.DRAFT.name());
@@ -203,8 +206,10 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     // assign a parent collection, then go back to dashboard
     @Test
-    @Ignore("uses  list collection")
     public void testCreateChildCollection() {
+        if (!TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            return;
+        }
         // get a shared collection id - we don't have one in init-db so just rerun the previous test
         testCreateThenEditCollection();
         // previous test logged us out
