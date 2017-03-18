@@ -29,7 +29,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testAddingInformationResourceToProject() {
         TestConfiguration config = TestConfiguration.getInstance();
-
+        String collectionUrl = null;
         if (TdarConfiguration.getInstance().isListCollectionsEnabled()) {
             gotoPage("/listcollection/add");
             setInput("resourceCollection.name", TEST_SECURITY_COLLECTION);
@@ -40,15 +40,18 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             clickLinkWithText("Rights");
             setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
             setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        submitForm();
+            submitForm();
+            collectionUrl = getCurrentUrlPath();
         }
-        String collectionUrl = getCurrentUrlPath();
         gotoPage("/collection/add");
         setInput("resourceCollection.name", TEST_SECURITY_SHARE);
         setInput("resourceCollection.description", "test for map secuity");
         setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
         setInput("resourceCollection.hidden", "false");
         submitForm();
+        if (!TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            collectionUrl = getCurrentUrlPath();
+        }
         clickLinkWithText("Rights");
         setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
