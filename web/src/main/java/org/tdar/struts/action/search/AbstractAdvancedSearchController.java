@@ -132,7 +132,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 			getResourceTypes().clear();
 			return true;
 		}
-
+		
+		
 		LatitudeLongitudeBox latLong = getParsedLatLongBox();
 		if (latLong != null) {
 			setMap(latLong);
@@ -637,6 +638,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 		if (getProjectionModel() == null) {
 			setProjectionModel(ProjectionModel.RESOURCE_PROXY);
 		}
+
+        cleanupResourceTypes();
 
 		if (explore) {
 			return exploreSearch();

@@ -121,7 +121,7 @@ public class SearchParameters {
     // Instead, we use a single searchParameters instance to hold these terms, which will be populated via the "narrow your search" section
     // as well by selecting a faceted search.
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes = new ArrayList<LatitudeLongitudeBox>();
-    private List<ResourceType> resourceTypes = new ArrayList<ResourceType>();
+    private List<ResourceType> resourceTypes = new ArrayList<>();
     private List<IntegratableOptions> integratableOptions = new ArrayList<IntegratableOptions>();
     private List<DocumentType> documentTypes = new ArrayList<DocumentType>();
     private List<ResourceAccessType> resourceAccessTypes = new ArrayList<ResourceAccessType>();
