@@ -304,7 +304,13 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     }
 
     public List<ResourceType> getResourceTypes() {
-        return getReservedSearchParameters().getResourceTypes();
+        List<ResourceType> types = new ArrayList<>();
+        getReservedSearchParameters().getResourceTypes().forEach(rt -> {
+            if (rt != null) {
+                types.add(rt);
+            }
+        });
+        return types;
     }
 
     public List<ResourceType> getAllResourceTypes() {
