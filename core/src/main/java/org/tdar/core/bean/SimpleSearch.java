@@ -1,8 +1,8 @@
 package org.tdar.core.bean;
 
-import org.tdar.core.bean.entity.Person;
-
 import java.util.Comparator;
+
+import org.tdar.core.bean.entity.Person;
 
 /**
  * This interface is designed to ensure that fields are available for basic searhing

@@ -24,9 +24,6 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
-import com.opensymphony.xwork2.Validateable;
-import com.opensymphony.xwork2.interceptor.ValidationAware;
-
 /**
  * $Id$
  * 

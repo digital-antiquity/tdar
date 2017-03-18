@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
-import org.hibernate.ScrollableResults;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Ignore;

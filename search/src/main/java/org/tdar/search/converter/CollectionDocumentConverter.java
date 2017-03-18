@@ -1,9 +1,10 @@
 package org.tdar.search.converter;
 
+import java.util.HashSet;
+
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.search.query.QueryFieldNames;
-import java.util.HashSet;
 
 public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
 

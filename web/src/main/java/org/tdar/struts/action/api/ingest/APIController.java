@@ -22,7 +22,6 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Coupon;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;

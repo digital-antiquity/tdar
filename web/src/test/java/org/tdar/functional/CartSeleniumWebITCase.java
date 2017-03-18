@@ -1,9 +1,25 @@
 package org.tdar.functional;
 
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.tdar.URLConstants.CART_ADD;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,20 +28,6 @@ import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.functional.util.ByLabelText;
 import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.Pair;
-
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.StringEndsWith.endsWith;
-import static org.tdar.URLConstants.CART_ADD;
 
 /**
  * Created by jimdevos on 6/25/14.

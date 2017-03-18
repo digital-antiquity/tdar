@@ -3,15 +3,10 @@ package org.tdar.db.conversion;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.geotools.referencing.CRS;
 import org.junit.Test;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.Rollback;
