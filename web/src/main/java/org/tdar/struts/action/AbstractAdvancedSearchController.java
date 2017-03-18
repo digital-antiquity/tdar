@@ -127,6 +127,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         // example: an id search combined with a uncontrolledCultureKeyword
         // search on the same querystring)
 
+        cleanupResourceTypes();
         // reset legacy resourceType for modern objectType
         for (ResourceType rt : getResourceTypes()) {
             getObjectTypes().add(ObjectType.from(rt));

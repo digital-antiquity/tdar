@@ -95,7 +95,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         look.setUseSubmitterContext(isUseSubmitterContext());
         look.setReservedSearchParameters(getReservedSearchParameters());
         look.setPermission(permission);
-
+        cleanupResourceTypes();
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
