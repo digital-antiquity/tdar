@@ -91,7 +91,7 @@ public class DataOneWebITCase extends AbstractGeneicWebTest {
         StringWriter body = new StringWriter();
         HttpResponse record = getRecord("/v2/object", body);
         Document xmlDocument = getXmlDocument(new InputSource(new StringReader(body.toString())));
-        logger.trace(body.toString());
+//        logger.debug(body.toString());
         NodeList elementsByTagName = xmlDocument.getElementsByTagName("objectInfo");
         for (int i = 0; i < elementsByTagName.getLength(); i++) {
             logger.debug("-------------------------------------------------------------------------------------");
@@ -125,7 +125,7 @@ public class DataOneWebITCase extends AbstractGeneicWebTest {
             logger.debug("encoding:{}", objectResponse.getEntity().getContentEncoding());
             String xml = contents.toString();
             String md5Hex = DigestUtils.md5Hex(xml);
-            logger.debug("{}", xml);
+//            logger.debug("{}", xml);
             logger.debug("{} {} {} {}", id, md5Hex, checksum, headerChecksum);
             assertEquals(md5Hex, checksum);
 

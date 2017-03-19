@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
@@ -524,6 +525,8 @@ public class DataOneService implements DataOneConstants, D1Formatter {
                 resp.setTdarResource(parser.getIr());
                 resp.setIdentifier(id_);
             }
+        } catch (NoResultException nsr) {
+            logger.error("entity not found for id: {}", id_);
         } catch (Exception e) {
             logger.error("error in DataOneObjectRequest:" + id_, e);
         }

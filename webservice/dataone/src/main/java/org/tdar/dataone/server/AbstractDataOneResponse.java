@@ -73,7 +73,7 @@ public class AbstractDataOneResponse {
             StreamingOutput stream = new StreamingOutput() {
                 @Override
                 public void write(OutputStream os) throws IOException, WebApplicationException {
-                    logger.debug("{} - {}", os, container.getReader());
+//                    logger.debug("{} - {}", os, container.getReader());
                     OutputStreamWriter output = new OutputStreamWriter(os);
                     IOUtils.copyLarge(container.getReader(), output);
                     IOUtils.closeQuietly(output);
