@@ -93,6 +93,12 @@ public class IndexAction extends AbstractAuthenticatableAction {
         }
         return SUCCESS;
     }
+    
+    @Action(value = "page-not-found", results = { @Result(name = ERROR, type = TdarBaseActionSupport.FREEMARKERHTTP,
+            location = "/WEB-INF/content/errors/page-not-found.ftl", params = { "status", "404" }) })
+    public String execute() {
+        return "page-not-found";
+    }
 
     public Project getFeaturedProject() {
         return featuredProject;

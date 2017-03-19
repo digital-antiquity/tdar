@@ -69,14 +69,17 @@ public class PDFMergeTask implements Runnable {
      * @return
      */
     private boolean isBrokenPipeException(IOException exception) {
-        return
         // the tomcat implementation of this exception
-        exception.getClass().getSimpleName().contains("ClientAbortException")
+        if (exception.getClass().getSimpleName().contains("ClientAbortException")
                 // if not tomcat, maybe it has "pipe closed" in the error message?
-                || StringUtils.contains(exception.getMessage(), "Pipe Closed");
-
+                || StringUtils.contains(exception.getMessage(), "Pipe Closed") ||
+                StringUtils.contains(exception.getLocalizedMessage(), "Pipe Closed")) {
+            return true;
+        }
+        return false;
     }
 
+    
     private void attemptTransferWithoutMerge(File document, OutputStream os) {
         try {
             logger.warn("attempting to send pdf without cover page: {}", document);
