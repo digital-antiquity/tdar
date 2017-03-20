@@ -42,6 +42,7 @@ public class PDFMergeTask implements Runnable {
             wrapper.setSuccessful(true);
         } catch (IOException ioe) {
             // downgrade broken pipe exceptions
+            logger.debug("{}|{}",ioe.getMessage(),ioe.getLocalizedMessage());
             if (isBrokenPipeException(ioe)) {
                 logger.warn("broken pipe", ioe);
             } else {
