@@ -846,9 +846,13 @@ public class ResourceService {
                     resource.setAccount(account);
                 }
             }
-            account = genericDao.markWritableOnExistingSession(account);
-            accountDao.updateQuota(account, toEvaluate,authUser);
-            genericDao.saveOrUpdate(account);
+            
+            // if we have an account ... for some things we might not
+            if (account != null) {
+                account = genericDao.markWritableOnExistingSession(account);
+                accountDao.updateQuota(account, toEvaluate,authUser);
+                genericDao.saveOrUpdate(account);
+            }
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
 
