@@ -348,7 +348,7 @@
     <#macro templateCollection fieldIndex="{termid}" groupid="{groupid}" type="collection">
     <#local prefix="collections">
     <#local collectionType="LIST">
-    <#if type == 'share'>
+    <#if type == 'collection'>
         <#local collectionType="SHARED">
         <#local prefix="shares">
     </#if>
