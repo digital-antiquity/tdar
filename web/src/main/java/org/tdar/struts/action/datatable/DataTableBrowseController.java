@@ -53,6 +53,9 @@ public class DataTableBrowseController extends AbstractAuthenticatableAction {
             return ERROR;
         }
         DataTable dataTable = getGenericService().find(DataTable.class, getId());
+        if (PersistableUtils.isNullOrTransient(dataTable)) {
+            return ERROR;
+        }
         Dataset dataset = dataTable.getDataset();
         if (dataset.isPublicallyAccessible() || authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
             ResultMetadataWrapper selectAllFromDataTable = ResultMetadataWrapper.NULL;
