@@ -42,6 +42,7 @@ public class PDFMergeTask implements Runnable {
             wrapper.setSuccessful(true);
         } catch (IOException ioe) {
             // downgrade broken pipe exceptions
+            logger.debug("{}|{}",ioe.getMessage(),ioe.getLocalizedMessage());
             if (isBrokenPipeException(ioe)) {
                 logger.warn("broken pipe", ioe);
             } else {
@@ -72,8 +73,8 @@ public class PDFMergeTask implements Runnable {
         // the tomcat implementation of this exception
         if (exception.getClass().getSimpleName().contains("ClientAbortException")
                 // if not tomcat, maybe it has "pipe closed" in the error message?
-                || StringUtils.contains(exception.getMessage(), "Pipe Closed") ||
-                StringUtils.contains(exception.getLocalizedMessage(), "Pipe Closed")) {
+                || StringUtils.containsIgnoreCase(exception.getMessage(), "pipe xlosed") ||
+                StringUtils.containsIgnoreCase(exception.getLocalizedMessage(), "pipe closed")) {
             return true;
         }
         return false;
