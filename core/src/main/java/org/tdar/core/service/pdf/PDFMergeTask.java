@@ -73,8 +73,8 @@ public class PDFMergeTask implements Runnable {
         // the tomcat implementation of this exception
         if (exception.getClass().getSimpleName().contains("ClientAbortException")
                 // if not tomcat, maybe it has "pipe closed" in the error message?
-                || StringUtils.contains(exception.getMessage(), "Pipe Closed") ||
-                StringUtils.contains(exception.getLocalizedMessage(), "Pipe Closed")) {
+                || StringUtils.containsIgnoreCase(exception.getMessage(), "pipe xlosed") ||
+                StringUtils.containsIgnoreCase(exception.getLocalizedMessage(), "pipe closed")) {
             return true;
         }
         return false;
