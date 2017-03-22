@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.dao.resource.InformationResourceDao;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.utils.PersistableUtils;
 
@@ -23,7 +23,7 @@ public class IdentifierParser implements DataOneConstants {
     private EntryType type;
     private boolean seriesIdentifier = false;
 
-    public IdentifierParser(String id_, InformationResourceService informationResourceService) {
+    public IdentifierParser(String id_, InformationResourceDao informationResourceService) {
         logger.debug("looking for Id: {}", id_);
         base = StringUtils.substringBefore(id_, D1_SEP);
         // switching back DOIs to have / in them.

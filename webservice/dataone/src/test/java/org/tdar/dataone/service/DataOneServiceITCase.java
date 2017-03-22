@@ -21,6 +21,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.dao.resource.InformationResourceDao;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 
@@ -36,6 +37,9 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     private GenericService genericService;
 
     @Autowired
+    protected InformationResourceDao informationResourceDao;
+
+    @Autowired
     SerializationService serializationService;
     @Test
     @Rollback
@@ -49,7 +53,7 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     
     @Test
     public void testIdentifierParser() {
-        IdentifierParser ip = new IdentifierParser(TEST_META, informationResourceService);
+        IdentifierParser ip = new IdentifierParser(TEST_META, informationResourceDao);
         logger.debug(ip.getDoi());
         logger.debug(ip.getType().name());
     }

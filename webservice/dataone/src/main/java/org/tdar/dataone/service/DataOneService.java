@@ -53,7 +53,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.core.dao.resource.InformationResourceDao;
 import org.tdar.dataone.bean.DataOneObject;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.dataone.bean.ListObjectEntry;
@@ -89,7 +89,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
     private ObfuscationService obfuscationService;
 
     @Autowired
-    private InformationResourceService informationResourceService;
+    private InformationResourceDao informationResourceDao;
 
     /**
      * Create an OAI-ORE Resource Map this will include all versions of the files and metadata that get exposed to DataOne.
@@ -295,10 +295,12 @@ public class DataOneService implements DataOneConstants, D1Formatter {
     }
 
     /**
-     * Takes an ID and gets the tDAR record and D1 record; if the checksums are different, manually update the dateUpdated and the D1 Object chain by creating a new DataOneObject.
+     * Takes an ID and gets the tDAR record and D1 record; if the checksums are different, manually update the dateUpdated and the D1 Object chain by creating a
+     * new DataOneObject.
+     * 
      * @param id
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void checkForChecksumConflict(String id) {
         ObjectResponseContainer object = getObjectFromTdar(id, false);
         logger.trace("{}", object);
@@ -307,44 +309,44 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         if (object != null && object.getTdarResource() != null) {
             genericService.markReadOnly(object.getTdarResource());
         }
-        
+
         if (dataOneObject == null) {
             return;
         }
-        
+
         // if the dataone object and the tdar object differ in checksum... redo
-        if (dataOneObject != null && object != null && 
-                !StringUtils.equals(object.getChecksum(), dataOneObject.getChecksum()) && 
+        if (dataOneObject != null && object != null &&
+                !StringUtils.equals(object.getChecksum(), dataOneObject.getChecksum()) &&
                 dataOneObject.getObsoletedBy() == null) {
-            logger.debug("checksums differ? {} {} {}", object.getChecksum(), dataOneObject.getChecksum(), dataOneObject.getObsoletedBy() );
+            logger.debug("checksums differ? {} {} {}", object.getChecksum(), dataOneObject.getChecksum(), dataOneObject.getObsoletedBy());
             redo = true;
         }
-        
-        // if the date in the object Id is different such that we can't get the exact record, then we need to obsolete it 
+
+        // if the date in the object Id is different such that we can't get the exact record, then we need to obsolete it
         if (object == null && dataOneObject.getObsoletedBy() == null) {
             redo = true;
             object = getObjectFromTdar(id, true);
             logger.debug("object was null for exact date");
-            logger.debug("checksums differ? {} {} {}", object.getChecksum(), dataOneObject.getChecksum(), dataOneObject.getObsoletedBy() );
+            logger.debug("checksums differ? {} {} {}", object.getChecksum(), dataOneObject.getChecksum(), dataOneObject.getObsoletedBy());
         }
-       
-        logger.debug("{} {}", object, dataOneObject); 
-        if (object == null ) {
+
+        logger.debug("{} {}", object, dataOneObject);
+        if (object == null) {
             logger.debug("object still null... returning");
             return;
         }
         String externalId = object.getTdarResource().getExternalId();
         Long tdarId = object.getTdarResource().getId();
         String checksum = object.getChecksum();
-        object= null;
+        object = null;
 
         // if we have both, the checksums differ, and we're not archived/obsoleted
         if (redo) {
             genericService.clearCurrentSession();
             Date dateUpdated = new Date();
             dataOneDao.updateModifedDate(tdarId, dateUpdated);
-                logger.warn("checksum varied between D1 object and tDAR object: {} {} {} {}", tdarId, checksum,
-                    dataOneObject.getChecksum(), dataOneObject.getIdentifier()); 
+            logger.warn("checksum varied between D1 object and tDAR object: {} {} {} {}", tdarId, checksum,
+                    dataOneObject.getChecksum(), dataOneObject.getIdentifier());
             dataOneDao.unifyEntry(this, externalId, tdarId, DataOneUtils.toUtc(dateUpdated));
             genericService.refresh(dataOneObject);
         }
@@ -384,11 +386,11 @@ public class DataOneService implements DataOneConstants, D1Formatter {
             return null;
         }
 
-        IdentifierParser parser = new IdentifierParser(id, informationResourceService);
+        IdentifierParser parser = new IdentifierParser(id, informationResourceDao);
 
         // if we don't have an object in tDAR that's an exact match -- it's likely a request for an old version...
         if (object == null) {
-            InformationResource resource = informationResourceService.find(dataOneObject.getTdarId());
+            InformationResource resource = informationResourceDao.find(dataOneObject.getTdarId());
             metadata.setSeriesId(DataOneUtils.createIdentifier(DataOneUtils.createSeriesId(resource.getId(), parser.getType())));
             metadata.setDateUploaded(DataOneUtils.toUtc(dataOneObject.getDateUploaded()).toDate());
             markArchived(metadata, true, resource);
@@ -505,7 +507,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         ObjectResponseContainer resp = null;
         boolean ignoreDate = ignoreDate_;
         try {
-            IdentifierParser parser = new IdentifierParser(id_, informationResourceService);
+            IdentifierParser parser = new IdentifierParser(id_, informationResourceDao);
             if (parser.getModified() != null && parser.getIr().getDateUpdated().compareTo(parser.getModified()) == 0) {
                 ignoreDate = true;
             }
@@ -643,6 +645,5 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         genericService.save(entry);
 
     }
-
 
 }
