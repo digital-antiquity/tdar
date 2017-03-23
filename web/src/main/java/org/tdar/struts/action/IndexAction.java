@@ -43,6 +43,8 @@ import com.rometools.rome.feed.synd.SyndEntry;
 @Scope("prototype")
 public class IndexAction extends AbstractAuthenticatableAction {
 
+    private static final String PAGE_NOT_FOUND = "page-not-found";
+
     private static final long serialVersionUID = -4095866074424122972L;
 
     private Project featuredProject;
@@ -64,6 +66,8 @@ public class IndexAction extends AbstractAuthenticatableAction {
     private List<SyndEntry> rssEntries;
 
     private HomepageDetails homepageGraphs;
+
+    private boolean homepage = true;
 
 
     @Actions(value = {
@@ -94,10 +98,11 @@ public class IndexAction extends AbstractAuthenticatableAction {
         return SUCCESS;
     }
     
-    @Action(value = "page-not-found", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP,
+    @Action(value = PAGE_NOT_FOUND, results = { @Result(name = PAGE_NOT_FOUND, type = TdarActionSupport.FREEMARKERHTTP,
             location = "/WEB-INF/content/errors/page-not-found.ftl", params = { "status", "404" }) })
     public String execute() {
-        return "page-not-found";
+        homepage =false;
+        return PAGE_NOT_FOUND;
     }
 
     public Project getFeaturedProject() {
@@ -153,7 +158,7 @@ public class IndexAction extends AbstractAuthenticatableAction {
     }
 
     public boolean isHomepage() {
-        return true;
+        return homepage ;
     }
 
     @Override
