@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.resource.InformationResource;
@@ -13,6 +14,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.cache.BrowseDecadeCountCache;
 import org.tdar.core.cache.BrowseYearCountCache;
+import org.tdar.core.dao.DoiDao;
 
 /**
  * $Id$
@@ -29,6 +31,9 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
         super(InformationResource.class);
     }
 
+    @Autowired
+    private DoiDao doiDao;
+    
     public InformationResourceFile findFileByFilename(InformationResource resource, String filename) {
         Query<InformationResourceFile> query = getCurrentSession().createNamedQuery(QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME,InformationResourceFile.class);
         query.setParameter("filename", filename).setParameter("resource", resource);
@@ -64,9 +69,7 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
     }
 
     public InformationResource findByDoi(String doi) {
-        Query<InformationResource> query = getCurrentSession().createNamedQuery(QUERY_BY_DOI, InformationResource.class);
-        query.setParameter("doi", doi);
-        return (InformationResource) query.getSingleResult();
+        return doiDao.findByDoi(doi);
     }
 
 }

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.dao.resource.InformationResourceDao;
+import org.tdar.core.dao.DoiDao;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.utils.PersistableUtils;
 
@@ -23,17 +24,17 @@ public class IdentifierParser implements DataOneConstants {
     private EntryType type;
     private boolean seriesIdentifier = false;
 
-    public IdentifierParser(String id_, InformationResourceDao informationResourceService) {
+    public IdentifierParser(String id_, DoiDao doiDao) {
         logger.debug("looking for Id: {}", id_);
         base = StringUtils.substringBefore(id_, D1_SEP);
         // switching back DOIs to have / in them.
         doi = base.replace(D1CONFIG.getDoiPrefix() + ":", D1CONFIG.getDoiPrefix() + "/");
         partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
         if (NumberUtils.isDigits(doi)) {
-            ir = informationResourceService.find(Long.parseLong(doi));
+            ir = doiDao.find(InformationResource.class,Long.parseLong(doi));
             setSeriesIdentifier(true);
         } else {
-            ir = informationResourceService.findByDoi(doi);
+            ir = doiDao.findByDoi(doi);
         }
         if (PersistableUtils.isNullOrTransient(ir)) {
             logger.debug("resource not foound: {}", doi);

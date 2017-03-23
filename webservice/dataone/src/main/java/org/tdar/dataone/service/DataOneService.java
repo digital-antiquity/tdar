@@ -51,9 +51,9 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.dao.resource.InformationResourceDao;
+import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.DoiDao;
+import org.tdar.core.dao.ObfuscationDao;
 import org.tdar.dataone.bean.DataOneObject;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.dataone.bean.ListObjectEntry;
@@ -80,16 +80,16 @@ public class DataOneService implements DataOneConstants, D1Formatter {
     DataOneConfiguration D1CONFIG = DataOneConfiguration.getInstance();
 
     @Autowired
-    private GenericService genericService;
+    private GenericDao genericDao;
 
     @Autowired
     private DataOneDao dataOneDao;
 
     @Autowired
-    private ObfuscationService obfuscationService;
+    private ObfuscationDao obfuscationDao;
 
     @Autowired
-    private InformationResourceDao informationResourceDao;
+    private DoiDao doiDao;
 
     /**
      * Create an OAI-ORE Resource Map this will include all versions of the files and metadata that get exposed to DataOne.
@@ -307,7 +307,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         DataOneObject dataOneObject = dataOneDao.findByIdentifier(id);
         boolean redo = false;
         if (object != null && object.getTdarResource() != null) {
-            genericService.markReadOnly(object.getTdarResource());
+            genericDao.markReadOnly(object.getTdarResource());
         }
 
         if (dataOneObject == null) {
@@ -342,13 +342,13 @@ public class DataOneService implements DataOneConstants, D1Formatter {
 
         // if we have both, the checksums differ, and we're not archived/obsoleted
         if (redo) {
-            genericService.clearCurrentSession();
+            genericDao.clearCurrentSession();
             Date dateUpdated = new Date();
             dataOneDao.updateModifedDate(tdarId, dateUpdated);
             logger.warn("checksum varied between D1 object and tDAR object: {} {} {} {}", tdarId, checksum,
                     dataOneObject.getChecksum(), dataOneObject.getIdentifier());
             dataOneDao.unifyEntry(this, externalId, tdarId, DataOneUtils.toUtc(dateUpdated));
-            genericService.refresh(dataOneObject);
+            genericDao.refresh(dataOneObject);
         }
     }
 
@@ -386,11 +386,11 @@ public class DataOneService implements DataOneConstants, D1Formatter {
             return null;
         }
 
-        IdentifierParser parser = new IdentifierParser(id, informationResourceDao);
+        IdentifierParser parser = new IdentifierParser(id, doiDao);
 
         // if we don't have an object in tDAR that's an exact match -- it's likely a request for an old version...
         if (object == null) {
-            InformationResource resource = informationResourceDao.find(dataOneObject.getTdarId());
+            InformationResource resource = genericDao.find(InformationResource.class, dataOneObject.getTdarId());
             metadata.setSeriesId(DataOneUtils.createIdentifier(DataOneUtils.createSeriesId(resource.getId(), parser.getType())));
             metadata.setDateUploaded(DataOneUtils.toUtc(dataOneObject.getDateUploaded()).toDate());
             markArchived(metadata, true, resource);
@@ -490,8 +490,8 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         ObjectResponseContainer resp = getObjectFromTdar(id, false);
         if (request != null && resp != null && event != null) {
             LogEntryImpl entry = new LogEntryImpl(id, request, event);
-            genericService.markWritable(entry);
-            genericService.save(entry);
+            genericDao.markWritable(entry);
+            genericDao.save(entry);
         }
         return resp;
     }
@@ -507,7 +507,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         ObjectResponseContainer resp = null;
         boolean ignoreDate = ignoreDate_;
         try {
-            IdentifierParser parser = new IdentifierParser(id_, informationResourceDao);
+            IdentifierParser parser = new IdentifierParser(id_, doiDao);
             if (parser.getModified() != null && parser.getIr().getDateUpdated().compareTo(parser.getModified()) == 0) {
                 ignoreDate = true;
             }
@@ -624,7 +624,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
      * @return
      */
     private ObjectResponseContainer setupResponse(InformationResource ir) {
-        obfuscationService.obfuscate(ir, null);
+        obfuscationDao.obfuscate(ir, null);
         ObjectResponseContainer resp = new ObjectResponseContainer();
 
         resp.setTdarResource(ir);
@@ -641,8 +641,8 @@ public class DataOneService implements DataOneConstants, D1Formatter {
     @Transactional(readOnly = false)
     public void replicate(String pid, HttpServletRequest request) {
         LogEntryImpl entry = new LogEntryImpl(pid, request, Event.REPLICATE);
-        genericService.markWritable(entry);
-        genericService.save(entry);
+        genericDao.markWritable(entry);
+        genericDao.save(entry);
 
     }
 
