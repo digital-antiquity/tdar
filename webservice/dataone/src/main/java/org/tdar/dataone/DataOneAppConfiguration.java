@@ -5,17 +5,17 @@ import javax.persistence.Transient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.tdar.core.configuration.AbstractAppConfiguration;
-import org.tdar.core.configuration.SimpleAppConfiguration;
 
 @Configuration
 @EnableAsync
-// @EnableScheduling
+@EnableScheduling
 @Primary
 @ComponentScan(basePackages = { "org.tdar.dataone", "org.tdar.core.dao.base" },
         excludeFilters = {
