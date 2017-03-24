@@ -624,7 +624,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
      * @return
      */
     private ObjectResponseContainer setupResponse(InformationResource ir) {
-        obfuscationDao.obfuscate(ir, null);
+        obfuscationDao.obfuscate(ir, null, null);
         ObjectResponseContainer resp = new ObjectResponseContainer();
 
         resp.setTdarResource(ir);

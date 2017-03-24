@@ -257,13 +257,13 @@
 			<!-- declared dependency with excludes for DataOne and maven version management -->
 			<artifactId>foresite</artifactId>
 			<groupId>org.digitalantiquity.foresite-toolkit</groupId>
-			<version>0.2.1</version>
+			<version>0.2</version>
 			<exclusions>
-				<exclusion>
+<!-- 				<exclusion>
 					<artifactId>jena</artifactId>
 					<groupId>com.hp.hpl.jena</groupId>
 				</exclusion>
-				<exclusion>
+ -->				<exclusion>
 					<artifactId>rome</artifactId>
 					<groupId>rome</groupId>
 				</exclusion>
