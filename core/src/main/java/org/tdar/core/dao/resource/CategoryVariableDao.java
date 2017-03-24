@@ -7,7 +7,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.dao.Dao;
+import org.tdar.core.dao.base.Dao;
 
 /**
  * $Id$

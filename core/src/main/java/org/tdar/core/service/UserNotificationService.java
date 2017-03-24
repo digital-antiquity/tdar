@@ -15,8 +15,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.notification.UserNotificationType;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;

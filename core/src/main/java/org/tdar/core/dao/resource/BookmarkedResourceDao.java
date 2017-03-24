@@ -13,7 +13,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.Dao;
+import org.tdar.core.dao.base.Dao;
 
 /**
  * $Id$

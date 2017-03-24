@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.base.GenericDao;
 
 import com.opensymphony.xwork2.TextProvider;
 

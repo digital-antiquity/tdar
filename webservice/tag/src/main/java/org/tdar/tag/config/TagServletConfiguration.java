@@ -12,6 +12,7 @@ import org.springframework.web.WebApplicationInitializer;
 import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.web.AbstractServletConfiguration;
+import org.tdar.core.configuration.AbstractAppConfiguration;
 
 public class TagServletConfiguration extends AbstractServletConfiguration implements Serializable, WebApplicationInitializer {
 
@@ -22,7 +23,7 @@ public class TagServletConfiguration extends AbstractServletConfiguration implem
     }
 
     @Override
-    public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
+    public Class<? extends AbstractAppConfiguration> getConfigurationClass() {
         return TagAppConfiguration.class;
     }
     

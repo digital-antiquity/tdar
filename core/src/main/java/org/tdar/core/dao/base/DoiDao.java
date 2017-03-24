@@ -1,4 +1,4 @@
-package org.tdar.core.dao;
+package org.tdar.core.dao.base;
 
 import org.hibernate.query.Query;
 import org.slf4j.Logger;

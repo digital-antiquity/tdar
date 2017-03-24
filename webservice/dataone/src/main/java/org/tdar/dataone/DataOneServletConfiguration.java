@@ -9,6 +9,7 @@ import javax.servlet.ServletRegistration;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.web.WebApplicationInitializer;
+import org.tdar.core.configuration.AbstractAppConfiguration;
 import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.web.AbstractServletConfiguration;
 
@@ -25,7 +26,7 @@ public class DataOneServletConfiguration extends AbstractServletConfiguration im
     }
     
     @Override
-    public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
+    public Class<? extends AbstractAppConfiguration> getConfigurationClass() {
         return DataOneAppConfiguration.class;
     }
 

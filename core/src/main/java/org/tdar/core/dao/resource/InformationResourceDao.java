@@ -14,7 +14,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.cache.BrowseDecadeCountCache;
 import org.tdar.core.cache.BrowseYearCountCache;
-import org.tdar.core.dao.DoiDao;
+import org.tdar.core.dao.base.DoiDao;
 
 /**
  * $Id$

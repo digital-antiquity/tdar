@@ -77,6 +77,7 @@ public class OaiOreResourceMapGenerator implements Serializable {
         return rdfXml;
     }
 
+
     /**
      * Convert the ResourceMap to XML based on the Dryad method
      * 

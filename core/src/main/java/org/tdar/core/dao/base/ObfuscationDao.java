@@ -1,4 +1,4 @@
-package org.tdar.core.dao;
+package org.tdar.core.dao.base;
 
 import java.util.Objects;
 import java.util.Set;

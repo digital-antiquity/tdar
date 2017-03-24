@@ -32,6 +32,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.utils.Pair;
 
 @Component("genericKeywordDao")

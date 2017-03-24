@@ -22,6 +22,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.base.Dao;
 import org.tdar.core.service.billing.PricingOption;
 import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.utils.MathUtils;

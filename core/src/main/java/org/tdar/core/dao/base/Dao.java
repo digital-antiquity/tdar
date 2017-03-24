@@ -1,4 +1,4 @@
-package org.tdar.core.dao;
+package org.tdar.core.dao.base;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.utils.MessageHelper;
 
 /**

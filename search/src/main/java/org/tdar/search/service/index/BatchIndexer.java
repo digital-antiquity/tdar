@@ -20,7 +20,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.datatable.DataTableRow;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.search.index.LookupSource;

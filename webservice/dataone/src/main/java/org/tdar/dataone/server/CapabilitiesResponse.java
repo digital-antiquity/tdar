@@ -27,9 +27,6 @@ public class CapabilitiesResponse extends AbstractDataOneResponse {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private SerializationService serialize;
-
-    @Autowired
     private DataOneService service;
 
     @Context
@@ -43,7 +40,6 @@ public class CapabilitiesResponse extends AbstractDataOneResponse {
     public Response nodeinfo() {
         setupResponseContext(response, request);
         try {
-            logger.debug("d1s: {}, ss: {}", serialize, service);
             return Response.ok().entity(service.getNodeResponse()).build();
         } catch (Exception e) {
             logger.error("error in nodeInfo: {}", e, e);

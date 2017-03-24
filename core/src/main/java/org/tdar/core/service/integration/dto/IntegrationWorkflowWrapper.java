@@ -1,6 +1,6 @@
 package org.tdar.core.service.integration.dto;
 
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.integration.IntegrationContext;
 
 import com.opensymphony.xwork2.TextProvider;

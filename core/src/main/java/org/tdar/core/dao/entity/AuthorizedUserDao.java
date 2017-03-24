@@ -28,8 +28,8 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.Dao;
 import org.tdar.core.dao.entity.UserPermissionCacheKey.CacheResult;
 import org.tdar.utils.PersistableUtils;
 

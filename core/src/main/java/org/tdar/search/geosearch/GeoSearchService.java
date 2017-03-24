@@ -29,7 +29,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.base.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.utils.PersistableUtils;
 

@@ -9,7 +9,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.service.GenericService;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.utils.PersistableUtils;
 
@@ -30,7 +30,7 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private GenericService genericService;
+    private GenericDao genericDao;
 
     @Autowired
     private ReflectionService reflectionService;
@@ -61,7 +61,7 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
         JAXBPersistableRef ref = (JAXBPersistableRef)ref_;
         Class<? extends Persistable> cls = reflectionService.getMatchingClassForSimpleName(ref.getType());
         logger.debug("{} - {}" , cls, ref);
-        ResourceCollection rc = (ResourceCollection) genericService.find(cls, ref.getId());
+        ResourceCollection rc = (ResourceCollection) genericDao.find(cls, ref.getId());
         if (rc == null) {
             logger.error("null collection!");
         }

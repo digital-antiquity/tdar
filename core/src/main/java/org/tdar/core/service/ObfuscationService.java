@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.ObfuscationDao;
+import org.tdar.core.dao.base.GenericDao;
+import org.tdar.core.dao.base.ObfuscationDao;
 import org.tdar.core.service.external.AuthorizationService;
 
 /**

@@ -31,8 +31,8 @@ import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.Dao;
 
 /**
  * $Id$

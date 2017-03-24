@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.Dao;
 
 @Component
 public class ResourceRelationshipDao extends Dao.HibernateBase<ResourceRelationship> {

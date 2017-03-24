@@ -6,8 +6,8 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
-import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.Dao;
 
 @Component
 public class IntegrationWorkflowDao extends Dao.HibernateBase<DataIntegrationWorkflow> {

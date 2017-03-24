@@ -11,6 +11,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.web.WebApplicationInitializer;
 import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.web.AbstractServletConfiguration;
+import org.tdar.core.configuration.AbstractAppConfiguration;
 
 public class OaiServletConfiguration extends AbstractServletConfiguration implements Serializable, WebApplicationInitializer {
 
@@ -27,7 +28,7 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
 
 
     @Override
-    public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
+    public Class<? extends AbstractAppConfiguration> getConfigurationClass() {
         return SimpleAppConfiguration.class;
     }
 

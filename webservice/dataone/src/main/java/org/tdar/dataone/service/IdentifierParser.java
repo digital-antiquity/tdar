@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.dao.base.DoiDao;
 import org.tdar.core.dao.resource.InformationResourceDao;
-import org.tdar.core.dao.DoiDao;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.utils.PersistableUtils;
 

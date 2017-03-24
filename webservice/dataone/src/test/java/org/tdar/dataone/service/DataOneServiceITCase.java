@@ -1,6 +1,7 @@
 package org.tdar.dataone.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -10,22 +11,34 @@ import java.security.NoSuchAlgorithmException;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.dataone.service.types.v1.ObjectList;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
 import org.jdom2.JDOMException;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
-import org.tdar.core.dao.DoiDao;
-import org.tdar.core.service.GenericService;
+import org.tdar.core.configuration.TdarAppConfiguration;
+import org.tdar.core.dao.base.DoiDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.SerializationService;
+import org.tdar.dataone.DataOneAppConfiguration;
+import org.tdar.utils.TestConfiguration;
+@ContextConfiguration(classes = DataOneAppConfiguration.class)
+@SuppressWarnings("rawtypes")
+public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringContextTests {
 
-public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     private static final String TEST_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META;
     private static final String BASE = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT;
     private static final String TEST_DOI = BASE + "1281812043684";
@@ -34,17 +47,18 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     private DataOneService service;
 
     @Autowired
-    private GenericService genericService;
-
+    private GenericDao genericDao;
+    
     @Autowired
     protected DoiDao doiDao;
 
-    @Autowired
-    SerializationService serializationService;
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+//    @Autowired
+//    SerializationService serializationService;
     @Test
     @Rollback
     public void testOaiORE() throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
-        Document doc = genericService.find(Document.class, 4230L);
+        Document doc = genericDao.find(Document.class, 4230L);
         String mapDocument = service.createResourceMap(doc);
         logger.debug(mapDocument.toString());
     }
@@ -66,7 +80,11 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(false)
     public void testDCTransformer() throws Exception {
-        Image doc = createAndSaveNewInformationResource(Image.class);
+        Image doc = new Image();
+        doc.setTitle("test");
+        doc.setDescription("test");
+        doc.markUpdated(genericDao.find(TdarUser.class, TestConfiguration.getInstance().getUserId()));
+        doc.setDate(2012);
         LatitudeLongitudeBox box = new LatitudeLongitudeBox(10.0001,10.0001,10.000101,10.000101);
 //        box.setObfuscatedEast(box.getObfuscatedEast());
 //        box.setObfuscatedSouth(box.getObfuscatedSouth());
@@ -76,17 +94,17 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
 //        box.setObfuscatedValues();
         doc.getLatitudeLongitudeBoxes().add(box);
         logger.debug("n:{}", doc.getFirstActiveLatitudeLongitudeBox().getObfuscatedNorth());
-        genericService.saveOrUpdate(doc);
-        genericService.saveOrUpdate(doc.getLatitudeLongitudeBoxes());
+        genericDao.saveOrUpdate(doc);
+        genericDao.saveOrUpdate(doc.getLatitudeLongitudeBoxes());
         Long id = doc.getId();
         doc = null;
         for (int i=0;i< 1000; i++) {
              test(id, true);
         }
-        genericService.clearCurrentSession();
-        doc = genericService.find(Image.class, id);
+        genericDao.clearCurrentSession();
+        doc = genericDao.find(Image.class, id);
         doc.getFirstLatitudeLongitudeBox().setEast(0.0);
-        genericService.saveOrUpdate(doc);
+        genericDao.saveOrUpdate(doc);
         doc = null;
         test(id, false);
         
@@ -94,9 +112,9 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
 
     private String test(Long id, boolean same) throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException, IOException {
         Image doc;
-        genericService.synchronize();
-        genericService.clearCurrentSession();
-        doc = genericService.find(Image.class, id);
+        genericDao.synchronize();
+        genericDao.clearCurrentSession();
+        doc = genericDao.find(Image.class, id);
         logger.debug("n:{}", doc.getFirstActiveLatitudeLongitudeBox().getObfuscatedNorth());
         ObjectResponseContainer object = service.constructMetadataFormatObject(doc);
         if (checksum == null) {
@@ -141,5 +159,17 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(1, listObjectsResponse.getCount());
         assertEquals(4, listObjectsResponse.getTotal());
         assertEquals(1, listObjectsResponse.getObjectInfoList().size());
+    }
+
+    public static void assertNotEquals(Object obj1, Object obj2) {
+        assertNotEquals("", obj1, obj2);
+    }
+
+    public static void assertNotEquals(String msg, Object obj1, Object obj2) {
+        if (StringUtils.isNotBlank(msg)) {
+            assertTrue(msg, ObjectUtils.notEqual(obj1, obj2));
+        } else {
+            assertTrue(String.format("'%s' == '%s'", obj1, obj2), ObjectUtils.notEqual(obj1, obj2));
+        }
     }
 }
