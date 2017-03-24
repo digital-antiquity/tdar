@@ -78,10 +78,13 @@ public class ObfuscationService {
      */
     @Transactional(readOnly = true)
     public void obfuscate(Obfuscatable target, TdarUser user) {
-
         obfuscationDao.obfuscate(target,user, authService);
     }
 
+    public void obfuscateObject(Object obj, TdarUser user) {
+        obfuscationDao.obfuscateObject(obj,user, authService);
+    }
+    
     public boolean isWritableSession() {
         return genericDao.isSessionWritable();
     }
