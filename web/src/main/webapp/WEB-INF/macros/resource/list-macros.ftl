@@ -353,12 +353,41 @@ bookmark indicator, etc..
                     <#local icon = "icon-star-empty" />
                 </#if>
 
-                  <button class="btn btn-mini bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}">
+                  <button class="btn btn-mini btn-link bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}">
                         <i title="bookmark or unbookmark" class="${icon} bookmarkicon"></i>
                       <#if showLabel>
                           <span class="bookmark-label">${label}</span>
                       </#if>
                   </button>
+
+            </#if>
+        </#if>
+    </#macro>
+
+
+    <#macro bookmarkMediaLink _resource showLabel=true>
+        <#if sessionData?? && sessionData.authenticated>
+            <#if _resource.resourceType??>
+                <#local label="">
+                <#if showLabel>
+                    <#local label=_resource.bookmarked?string("Un-bookmark", "Bookmark")>
+                </#if>
+                <#if _resource.bookmarked>
+                    <#local state = "bookmarked" />
+                    <#local icon = "icon-star" />
+                <#else>
+                    <#local state = "bookmark" />
+                    <#local icon = "icon-star-empty" />
+                </#if>
+
+            <li class="media bookmark-container">
+                    <i title="bookmark or unbookmark" class="${icon} bookmarkicon pull-left"></i>
+                <div class="media-body">
+                  <a class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}" >
+                          <span class="bookmark-label">${label}</span>
+                  </a>
+                </div>
+            </li>
 
             </#if>
         </#if>

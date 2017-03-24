@@ -76,6 +76,9 @@
         var $waitingElem = $("<img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
         $this.prepend($waitingElem);
         var $icon = $(".bookmarkicon", $this);
+        if ($icon == undefined || $icon.length == 0) {
+            $icon = $this.parents(".bookmark-container").find(".bookmarkicon");
+        }
         $icon.hide();
         //console.log(resourceId + ": " + state);
         var oldclass = "icon-star-empty";

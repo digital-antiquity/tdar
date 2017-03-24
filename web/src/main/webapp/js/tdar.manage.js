@@ -45,9 +45,6 @@ TDAR.manage = (function($, console) {
 
 
     return {
-        'main': function() {
-            console.log('hello from tdar.manage:main');
-        },
 
         'init': function() {
             TDAR.notifications.init();

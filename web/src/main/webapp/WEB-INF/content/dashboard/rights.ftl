@@ -22,7 +22,8 @@
     </div>
     <div class="span10">
         <h5>Users you've shared with</h5>
-        <div class="row">
+        <div class="row" id="sharedPeople">
+            <#assign showMore=false />
             <#assign listGroups = [findUsersSharedWith]>
             <#if (findUsersSharedWith?size > 4)><#assign listGroups =  findUsersSharedWith?chunk(findUsersSharedWith?size /4 )> </#if>
             <#list listGroups as row>
@@ -30,13 +31,20 @@
                 <#list row>
                 <ul>
                 <#items as item>
-                    <li><a href="/entity/user/rights/${item.id?c}">${item.properName}</a></li>
+                    <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>"><a href="/entity/user/rights/${item.id?c}">${item.properName}</a></li>
                 </#items>
                 </ul>
                 </#list>
             </div>
         </#list>
         </div>
+        <#if showMore>
+        <div class="row">
+            <div span="span10">
+                <p class="text-center"><a href="#"  onClick="$('#sharedPeople .hidden').removeClass('hidden');$(this).hide()">show more</a></p>
+            </div>
+        </div>
+        </#if>
         <@collectionsSection />
     </div>
 

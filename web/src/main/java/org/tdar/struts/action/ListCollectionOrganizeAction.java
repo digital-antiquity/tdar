@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.Resource;
@@ -41,12 +42,12 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/dashboard")
 @Component
 @Scope("prototype")
-public class OrganizeAction extends AbstractAuthenticatableAction implements Preparable {
+public class ListCollectionOrganizeAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -5569349309409607003L;
     private List<Resource> bookmarkedResources;
-    private List<HierarchicalCollection> allResourceCollections = new ArrayList<>();
-    private List<HierarchicalCollection> sharedResourceCollections = new ArrayList<>();
+    private List<ListCollection> allResourceCollections = new ArrayList<>();
+    private List<ListCollection> sharedResourceCollections = new ArrayList<>();
 
 
     @Autowired
@@ -70,7 +71,7 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
     }
 
     @Override
-    @Action(value = "collections", results = { @Result(name = SUCCESS, location = "organize.ftl") })
+    @Action(value = "organize", results = { @Result(name = SUCCESS, location = "dashboard/organize.ftl") })
     public String execute() throws SolrServerException, IOException {
 
         return SUCCESS;
@@ -78,27 +79,27 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
 
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
-        for (HierarchicalCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
-                HierarchicalCollection.class)) {
-            getAllResourceCollections().add((HierarchicalCollection) rc);
+        for (ListCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
+                ListCollection.class)) {
+            getAllResourceCollections().add((ListCollection) rc);
         }
         getLogger().trace("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-            if (rc instanceof HierarchicalCollection) {
-                getSharedResourceCollections().add((HierarchicalCollection) rc);
+            if (rc instanceof ListCollection) {
+                getSharedResourceCollections().add((ListCollection) rc);
             }
         }
         List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
         collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
         getLogger().trace("reconcile tree1");
         resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
-                collectionIds, HierarchicalCollection.class);
+                collectionIds, ListCollection.class);
         getLogger().trace("reconcile tree2");
         resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
-                collectionIds, HierarchicalCollection.class);
+                collectionIds, ListCollection.class);
 
         getLogger().trace("removing duplicates");
-//        getSharedResourceCollections().removeAll(getAllResourceCollections());
+        getSharedResourceCollections().removeAll(getAllResourceCollections());
         getLogger().trace("sorting");
         Collections.sort(allResourceCollections);
         Collections.sort(sharedResourceCollections);
@@ -135,11 +136,11 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
 
 
     @DoNotObfuscate(reason = "not needed / performance test")
-    public List<HierarchicalCollection> getAllResourceCollections() {
+    public List<ListCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(List<HierarchicalCollection> resourceCollections) {
+    public void setAllResourceCollections(List<ListCollection> resourceCollections) {
         this.allResourceCollections = resourceCollections;
     }
 
@@ -147,7 +148,7 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
      * @return the sharedResourceCollections
      */
     @DoNotObfuscate(reason = "not needed / performance test")
-    public List<HierarchicalCollection> getSharedResourceCollections() {
+    public List<ListCollection> getSharedResourceCollections() {
         return sharedResourceCollections;
     }
 
@@ -155,7 +156,7 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
      * @param sharedResourceCollections
      *            the sharedResourceCollections to set
      */
-    public void setSharedResourceCollections(List<HierarchicalCollection> sharedResourceCollections) {
+    public void setSharedResourceCollections(List<ListCollection> sharedResourceCollections) {
         this.sharedResourceCollections = sharedResourceCollections;
     }
 
@@ -178,7 +179,7 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
      * Return the current user's bookmarks as though it were a collection (which it isn't, but it's useful to treat it like one for certain tasks)
      * @return
      */
-    public HierarchicalCollection getBookmarkCollection() {
+    public ListCollection getBookmarkCollection() {
         return null;
     }
 
@@ -186,9 +187,9 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
      * Get the collections we wish to display in the 'summary' section (including shared collections & the bookmarks 'collection')
      * @return
      */
-    public List<HierarchicalCollection> getSummaryItems() {
-            List<HierarchicalCollection> items = new ArrayList<>();
-        items.add(getBookmarkCollection());
+    public List<ListCollection> getSummaryItems() {
+            List<ListCollection> items = new ArrayList<>();
+//        items.add(getBookmarkCollection());
         //for some reason 'shared' resource list empty
         items.addAll(getAllResourceCollections());
 
