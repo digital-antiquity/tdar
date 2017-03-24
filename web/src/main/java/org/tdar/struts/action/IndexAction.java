@@ -17,10 +17,10 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.RssService;
-import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.HomepageDetails;
 import org.tdar.web.service.HomepageService;
@@ -42,6 +42,8 @@ import com.rometools.rome.feed.synd.SyndEntry;
 @Component
 @Scope("prototype")
 public class IndexAction extends AbstractAuthenticatableAction {
+
+    private static final String PAGE_NOT_FOUND = "page-not-found";
 
     private static final long serialVersionUID = -4095866074424122972L;
 
@@ -65,6 +67,8 @@ public class IndexAction extends AbstractAuthenticatableAction {
 
     private HomepageDetails homepageGraphs;
 
+    private boolean homepage = true;
+
 
     @Actions(value = {
             @Action(value = "", results = { @Result(name = SUCCESS, location = "about.ftl") }),
@@ -72,7 +76,7 @@ public class IndexAction extends AbstractAuthenticatableAction {
 
     })
     @SkipValidation
-    @HttpsOnly
+    @HttpOnlyIfUnauthenticated
     public String about() {
         setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
@@ -94,10 +98,11 @@ public class IndexAction extends AbstractAuthenticatableAction {
         return SUCCESS;
     }
     
-    @Action(value = "page-not-found", results = { @Result(name = ERROR, type = TdarBaseActionSupport.FREEMARKERHTTP,
+    @Action(value = PAGE_NOT_FOUND, results = { @Result(name = PAGE_NOT_FOUND, type = TdarActionSupport.FREEMARKERHTTP,
             location = "/WEB-INF/content/errors/page-not-found.ftl", params = { "status", "404" }) })
     public String execute() {
-        return "page-not-found";
+        homepage =false;
+        return PAGE_NOT_FOUND;
     }
 
     public Project getFeaturedProject() {
@@ -153,7 +158,7 @@ public class IndexAction extends AbstractAuthenticatableAction {
     }
 
     public boolean isHomepage() {
-        return true;
+        return homepage ;
     }
 
     @Override
