@@ -6,6 +6,7 @@ import java.io.InputStream;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,9 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.HttpNotFoundErrorOnly;
 
-@Namespace("/search")
+@Namespaces(value = { 
+        @Namespace("/search"),
+        @Namespace("/api/search") })
 @Component
 @Scope("prototype")
 @ParentPackage("default")

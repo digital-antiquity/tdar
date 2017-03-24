@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,9 @@ import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.json.JsonLookupFilter;
 
-@Namespace("/search")
+@Namespaces(value = {
+        @Namespace("/search"),
+        @Namespace("/api/search") })
 @Component
 @Scope("prototype")
 @ParentPackage("default")
