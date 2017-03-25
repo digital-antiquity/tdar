@@ -254,7 +254,8 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInPage(desc);
 
         // now look for the collection on the dashboard (implicitly test encoding errors also)
-        gotoPage("/dashboard/collections");
+        gotoPage("/dashboard");
+        clickLinkOnPage("Collections");
         assertTextPresentInPage(name);
     }
 

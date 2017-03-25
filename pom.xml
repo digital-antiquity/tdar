@@ -791,11 +791,15 @@
             <artifactId>jboss-logging</artifactId>
             <version>3.2.0.Final</version>
         </dependency> -->
-
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.1-b08</version>
+        </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.2.4.Final</version>
+            <version>5.4.1.Final</version>
 			<exclusions>
 				<exclusion>
 		            <groupId>org.jboss.logging</groupId>
