@@ -308,7 +308,7 @@ public class HtmlValidator {
                 }
                 if (!skip && line.contains("unknown entity")) {
                     String part = line.substring(5, line.indexOf("column"));
-                    int lineNum = Integer.parseInt(part.trim());
+                    int lineNum = Integer.parseInt(part.trim().replace(",", ""));
                     String lineText = lines[lineNum - 1];
                     logger.debug("{}: {}", lineNum, lineText);
                     if (lineText.toLowerCase().contains("http") || lineText.toLowerCase().contains("href")) {
@@ -334,7 +334,7 @@ public class HtmlValidator {
             if (StringUtils.isNotBlank(string.trim())) {
                 fail(string + "\r\n\r\n" + internalPage.getWebResponse().getContentAsString());
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("{}", e);
         } // run tidy, providing an input and output stream
     }

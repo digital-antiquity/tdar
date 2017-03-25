@@ -548,7 +548,7 @@
 
 
             <li class="media">
-            <li class="media"><img src="/images/tweet.png" class="pull-left" width=12 /></i>
+            <li class="media"><img src="/images/tweet.png" class="pull-left" width=12 title="tweet" alt="tweet"/></i>
                 <div class="media-body">
                     <a href="https://twitter.com/intent/tweet?url=${url?url}&text=${((resource.title)!'')?url}" target="_blank"
                        onClick="TDAR.common.registerShare('twitter','${currentUrl?js_string}','${resource.id?c}')">Tweet this</a>
