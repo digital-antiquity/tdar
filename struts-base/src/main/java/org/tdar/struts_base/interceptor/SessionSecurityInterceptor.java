@@ -92,7 +92,8 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             return resultName;
         } catch (Exception e) {
             if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
-                logger.warn("ClientAbortException:{}", e, e);
+                logger.debug("ClientAbortException");
+                logger.trace("ClientAbortException:{}", e, e);
             }
             throw e;
         }
