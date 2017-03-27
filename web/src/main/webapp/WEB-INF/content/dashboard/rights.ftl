@@ -23,28 +23,29 @@
     <div class="span10">
         <h5>Users you've shared with</h5>
         <div class="row" id="sharedPeople">
+        <div class="well span10">
             <#assign showMore=false />
             <#assign listGroups = [findUsersSharedWith]>
             <#if (findUsersSharedWith?size > 4)><#assign listGroups =  findUsersSharedWith?chunk(findUsersSharedWith?size /4 )> </#if>
             <#list listGroups as row>
-            <div  class="span2">
-                <#list row>
-                <ul>
-                <#items as item>
-                    <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>"><a href="/entity/user/rights/${item.id?c}">${item.properName}</a></li>
-                </#items>
-                </ul>
-                </#list>
-            </div>
-        </#list>
+                <div  class="span2">
+                    <#list row>
+                    <ul>
+                    <#items as item>
+                        <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>"><a href="/entity/user/rights/${item.id?c}">${item.properName}</a></li>
+                    </#items>
+                    </ul>
+                    </#list>
+                    <div class="span1">&nbsp;</div>
+                </div>
+            </#list>
+            <#if showMore>
+                <div span="span10">
+                    <p class="text-center"><a href="#"  onClick="$('#sharedPeople .hidden').removeClass('hidden');$(this).hide()">show more</a></p>
+                </div>
+            </#if>
         </div>
-        <#if showMore>
-        <div class="row">
-            <div span="span10">
-                <p class="text-center"><a href="#"  onClick="$('#sharedPeople .hidden').removeClass('hidden');$(this).hide()">show more</a></p>
-            </div>
         </div>
-        </#if>
         <@collectionsSection />
     </div>
 
@@ -61,20 +62,20 @@
         <table class="table">
             <thead>
             <tr>
-                <th>Name</th>
-                <th>Description</th>
+                <th>Collection (${allResourceCollections?size})</th>
                 <th>action</th>
             </tr>
             </thead>
             <tbody>
             <#list allResourceCollections as collection>
                 <tr>
-                <td><a href="${collection.detailUrl}">${collection.name!'no name'}</a></td>
-                <td> <@dash.collectionLegend collection /></td>
+                <td><a href="${collection.detailUrl}">${collection.name!'no name'}</a> <@dash.collectionLegend collection /><br/>
+                ${collection.description!''}
+                    </td>
                 <td>
                     <div class="btn-group inline">
-                      <a class="btn btn-mini" href="/share/${collection.id?c}/edit">Edit</a>
-                      <a class="btn btn-mini" href="/share/delete?id=${collection.id?c}">Delete</a>
+                      <a class="btn btn-mini" href="/collection/${collection.id?c}/edit">edit</a>
+                      <a class="btn btn-mini" href="/collection/delete?id=${collection.id?c}">delete</a>
                     </div>
                  </td>
                 </tr>

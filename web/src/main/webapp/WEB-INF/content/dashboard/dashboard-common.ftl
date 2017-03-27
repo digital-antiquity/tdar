@@ -66,8 +66,8 @@
 </#macro>
 
 <#macro collectionLegend collection>
-        <ul class="inline">
-            <li title="# of resources"><i class="icon-file"></i> ${((collection.unmanagedResources?size)!0 + collection.resources?size!0)}</li>
+<span class="collection-embed">
+            <span title="# of resources"><i class="icon-file"></i> ${((collection.unmanagedResources?size)!0 + collection.resources?size!0)} Resources</span>
             <#local children= (collection.transientChildren?size)!0/>
             <#local users= (collection.authorizedUsers?size)!0/>
             
@@ -75,16 +75,19 @@
             <#if (children > 0)>
                 <#local folder="icon-folder-open" />
             </#if>
-            <li title="# of collections"><i class="${folder}"></i> ${children}</li>
-            <li title="# of users"><i class="icon-user"></i> ${users}</li>
-            <#if (children + users > 0)><li><i class="icon-circle-arrow-right" data-toggle="collapse" data-target="#details${collection.id?c}"></i> </li></#if>
+            <span title="# of collections"><i class="${folder}"></i> ${children} Child Collections</span>
+            <span title="# of users"><i class="icon-user"></i> ${users} Users</span>
+<#--             <#if (children + users > 0)><li><i class="icon-circle-arrow-right" data-toggle="collapse" data-target="#details${collection.id?c}"></i> </li></#if> -->
         </ul>
+        <#-- 
         <div id="details${collection.id?c}" class="collapse">
           <ul class="">
-            <#list collection.transientChildren><li><i class="${folder}"></i> <#items as child>${child.name}<#sep>&bull;</#sep></#items></li></#list>
-            <#list collection.authorizedUsers><li><i class="icon-user"></i> <#items as user>${user.user.properName} (${user.generalPermission})<#sep>&bull;</#sep></#items></li></#list>
+            <#list collection.transientChildren><li><i class="${folder}"></i> <#items as child>${child.name}<#sep> <i class="${folder}"></i> </#sep></#items></li></#list>
+            <#list collection.authorizedUsers><li><i class="icon-user"></i> <#items as user>${user.user.properName} (${user.generalPermission.label}) <#sep><i class="icon-user"></i></#sep> </#items></li></#list>
         </ul>
-       </div>
+       </div> -->
+   </span>
+ 
 </#macro>
 
 </#escape>
