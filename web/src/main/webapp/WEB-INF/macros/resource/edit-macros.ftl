@@ -1037,11 +1037,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         as the first column in each row of the data table
 -->
 
-    <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="">
+    <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="" span="span8">
     <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> <#--you are in a span9, but assume span8 so we fit inside well -->
 
         <div class="row" >
-            <div class="span8" >
+            <div class="${span}" >
                 <@s.textfield theme="tdar" name="_tdar.query" id="query${idAddition}" cssClass='span8'
                     placeholder="Enter a full or partial title to filter results" />
                 <div>
@@ -1144,7 +1144,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </div>
     <#nested />
     <div class="row">
-        <div class="span9">
+        <div class="${span}">
 
             <table class="display table table-striped table-bordered tableFormat" id="resource_datatable${idAddition}">
                 <colgroup>

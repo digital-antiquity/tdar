@@ -70,9 +70,11 @@
     </div>
     </#if>
     <div class="row">
-<hr/>
+    <div class="span10">
+        <hr/>
+        </div>
     </div>
-<div class="row">
+<div class="">
     <#if contributor>
         <#if (activeResourceCount == 0)>
             <@gettingStarted />
@@ -174,7 +176,7 @@
 
 <#macro searchSection>
     <div class="row">
-        <div class="span9">
+        <div class="span10">
             <form name="searchheader" action="<@s.url value="/search/results"/>">
                 <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
                 <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='resourceTypes'  listValue='label' label="Resource Type"/>
@@ -190,7 +192,7 @@
 
     <#macro gettingStarted>
     <div class="row">
-        <div class="span9">
+        <div class="span10">
             <h2>Getting Started</h2>
             <ol style='list-style-position:inside'>
                 <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
@@ -210,7 +212,7 @@
     <#macro recentlyUpdatedSection>
 
     <div class="row">
-        <div class="span9">
+        <div class="span10">
             <h2><@s.text name="dashboard.recently_updated"/></h2>
             <ol id='recentlyEditedResources'>
 
@@ -238,7 +240,7 @@
     <#macro emptyProjectsSection>
         <#if (emptyProjects?? && !emptyProjects.empty )>
         <div class="row">
-            <div class="span9" id="divEmptyProjects">
+            <div class="span10" id="divEmptyProjects">
                 <h2>Empty Projects</h2>
                 <ol id="emptyProjects">
                     <#list emptyProjects as res>
@@ -267,12 +269,14 @@
 
     <#macro browseResourceSection>
         <@common.reindexingNote />
-    <div class="" id="project-list">
+    <div class="row" id="project-list">
+    <div class="span10">
         <h2>Browse Resources</h2>
 
         <div>
-            <@edit.resourceDataTable />
+            <@edit.resourceDataTable span="span10" />
         </div>
+    </div>
     </div>
     </#macro>
 
