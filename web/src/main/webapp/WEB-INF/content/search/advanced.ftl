@@ -312,7 +312,7 @@
         <@searchTypeSelect />
         <div class="controls controls-row simple">
             <div class="span8 term-container">
-                            <span class="term retain  ALL_FIELDS">
+                            <span class="term retain  ALL_FIELDS simple">
                                 <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="input-xxlarge"/>
                             </span>
             </div>

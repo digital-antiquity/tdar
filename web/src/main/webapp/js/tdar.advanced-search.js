@@ -102,6 +102,7 @@ TDAR.advancedSearch = (function () {
         $('#searchGroups').on('repeatrowdeleted', '.grouptable', function (evt) {
             var $groupDiv = $(this).closest('.searchgroup');
             _showGroupingSelectorIfNecessary($groupDiv);
+            $(this).trigger("searchchange");
         });
 
         // mimic combobox - show complete list when user clicks down-arrow
