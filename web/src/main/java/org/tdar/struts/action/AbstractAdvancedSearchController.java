@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,6 +29,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
@@ -127,7 +129,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         // example: an id search combined with a uncontrolledCultureKeyword
         // search on the same querystring)
 
-        cleanupResourceTypes();
+        setResourceTypes(cleanupFacetOptions(getResourceTypes()));
+        setIntegratableOptions(cleanupFacetOptions(getIntegratableOptions()));
         // reset legacy resourceType for modern objectType
         for (ResourceType rt : getResourceTypes()) {
             getObjectTypes().add(ObjectType.from(rt));
@@ -705,4 +708,5 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     public List<ObjectType> getObjectTypes() {
         return getReservedSearchParameters().getObjectTypes();
     }
+
 }
