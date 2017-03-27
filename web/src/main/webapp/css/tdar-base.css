@@ -1424,3 +1424,13 @@ ul .header-auto {
 .disabled {
     color:#ddd;
 }
+
+.collection-embed {
+    border:1px solid #DDD;
+    border-radius:5px;
+    /* color:#AAA; */
+    margin-left:5px;
+    margin-right:5px;
+    padding:2px;
+    font-size:90%;
+}

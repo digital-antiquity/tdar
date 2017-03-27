@@ -113,7 +113,7 @@
 <hr/>
     <#noescape>
         <#if resource.url! != ''>
-        <p><strong>URL:</strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
+        <p><strong>URL: </strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
                                    title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
         </#if>
     </#noescape>
@@ -538,11 +538,13 @@
             </#if>
         <#if (authenticatedUser.id)?has_content && editable>
             <@list.bookmarkMediaLink resource />
+            <#-- 
             <li class="media "><i class="icon-folder-open pull-left"></i>
                 <div class="media-body">
                     <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
                 </div>
             </li>
+             -->
         </#if>
         <#assign url="${((request.requestURL)!'')}" />
 
