@@ -473,7 +473,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @return
      */
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
-        //FIXME:  what about 'findGranteesViaUser', 'findGranteesOfUser', or 'findGranteesFromUser' instead?
+        logger.debug("find collections");
         Query<SharedCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, SharedCollection.class);
         shared.setParameter("userId", authenticatedUser.getId());
         shared.setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
@@ -483,10 +483,13 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             return new ArrayList<>();
         }
 
+        logger.debug("find users 1");
         Query<TdarUser> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH_USERS, TdarUser.class);
         query.setParameter("owner", authenticatedUser);
         query.setParameter("collectionIds", ids);
         List<TdarUser> users = new ArrayList<>( query.getResultList());
+        logger.debug("find users 2");
+        logger.debug("collectionIds:{}", ids);
         Query<TdarUser> query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_RESOURCES_SHARED_WITH_USERS, TdarUser.class);
         query2.setParameter("owner", authenticatedUser);
         query2.setParameter("collectionIds", ids);

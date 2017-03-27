@@ -127,4 +127,13 @@
     <dropNotNullConstraint tableName="user_invite" columnName="date_redeemed"/>
     <dropNotNullConstraint tableName="timed_access" columnName="invite_id"/>
     </changeSet>
+    <changeSet id="prehistoric-collections-11" author="abrin">
+    <createIndex tableName="collection" indexName="collection_type_status">
+        <column name="id"/>
+        <column name="collection_type"/>
+        <column name="status"/>
+        <column name="owner_id"/>
+    </createIndex>
+    
+    </changeSet>
 </databaseChangeLog>

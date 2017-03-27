@@ -52,34 +52,22 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/dashboard")
 @Component
 @Scope("prototype")
-public class RightsAction extends AbstractAuthenticatableAction implements DataTableResourceDisplay, Preparable {
+public class RightsAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 5576550365349636811L;
-    private List<Resource> filteredFullUserProjects;
-    private List<Resource> fullUserProjects;
     private List<SharedCollection> allResourceCollections = new ArrayList<>();
     private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
     private List<InternalCollection> internalCollections = new ArrayList<>();
-    private AdhocShare adhocShare = new AdhocShare();
     
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
-    @Autowired
-    private transient ProjectService projectService;
+
     @Autowired
     private transient EntityService entityService;
     @Autowired
-    private transient ResourceService resourceService;
-    @Autowired
     private transient UserNotificationService userNotificationService;
 
-    @Autowired
-    private transient BillingAccountService billingAccountService;
-
-    private List<Project> allSubmittedProjects;
     private List<UserNotification> currentNotifications;
     private String statusData;
     private String resourceTypeData;
@@ -95,7 +83,7 @@ public class RightsAction extends AbstractAuthenticatableAction implements DataT
     @Override
     @Action(value = "rights", results = { @Result(name = SUCCESS, location = "rights.ftl") })
     public String execute() throws SolrServerException, IOException {
-
+        getLogger().debug("done");
         return SUCCESS;
     }
 
@@ -129,60 +117,18 @@ public class RightsAction extends AbstractAuthenticatableAction implements DataT
         getLogger().trace("done sort");
     }
 
-    public List<Project> getAllSubmittedProjects() {
-        return allSubmittedProjects;
-    }
-
-    public List<Resource> getFullUserProjects() {
-        return fullUserProjects;
-    }
-
-    public void setFullUserProjects(List<Resource> projects) {
-        fullUserProjects = projects;
-    }
-
-    public void setAllSubmittedProjects(List<Project> projects) {
-        allSubmittedProjects = projects;
-    }
-
-    public void setFilteredFullUserProjects(List<Resource> projects) {
-        filteredFullUserProjects = projects;
-    }
-
-    public void setEditableProjects(Set<Resource> projects) {
-        editableProjects = projects;
-    }
-
-    public List<Resource> getFilteredFullUserProjects() {
-        return filteredFullUserProjects;
-    }
-
-    private Set<Resource> editableProjects = new HashSet<>();
     private List<TdarUser> findUsersSharedWith = new ArrayList<>();
-
-    public Set<Resource> getEditableProjects() {
-        return editableProjects;
-    }
 
     public void prepare() {
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
+        getLogger().debug("begin collection tree");
         setupResourceCollectionTreesForDashboard();
+        getLogger().debug("begin find shared with");
         setFindUsersSharedWith(resourceCollectionService.findUsersSharedWith(getAuthenticatedUser()));
 //        prepareProjectStuff();
-        internalCollections = resourceCollectionService.findAllInternalCollections(getAuthenticatedUser());
+//        internalCollections = resourceCollectionService.findAllInternalCollections(getAuthenticatedUser());
     }
 
-    public List<Status> getStatuses() {
-        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
-    }
-
-    public List<ResourceType> getResourceTypes() {
-        return resourceService.getAllResourceTypes();
-    }
-
-    public List<SortOption> getResourceDatatableSortOptions() {
-        return SortOption.getOptionsForContext(Resource.class);
-    }
 
     @DoNotObfuscate(reason = "not needed / performance test")
     public List<SharedCollection> getAllResourceCollections() {
@@ -245,20 +191,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements DataT
 
     public void setInternalCollections(List<InternalCollection> internalCollections) {
         this.internalCollections = internalCollections;
-    }
-
-    public AdhocShare getAdhocShare() {
-        return adhocShare;
-    }
-
-    public void setAdhocShare(AdhocShare adhocShare) {
-        this.adhocShare = adhocShare;
-    }
-
-    public List<BillingAccount> getBillingAccounts() {
-        List<BillingAccount> accts = new ArrayList<>();
-        accts.addAll(billingAccountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
-        return accts;
     }
 
     public List<TdarUser> getFindUsersSharedWith() {

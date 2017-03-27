@@ -14,7 +14,7 @@
 </head>
 
 <div id="titlebar" parse="true">
-    <h1>Dashboard &raquo; <span class="red">Manage Rights &amp; Permissions</span></h1>
+    <h1>Dashboard &raquo; <span class="red">Manage Collections &amp; Permissions</span></h1>
 </div>
 <div class="row">
     <div class="span2">
@@ -24,11 +24,12 @@
         <h5>Users you've shared with</h5>
         <div class="row" id="sharedPeople">
         <div class="well span10">
+        <div class="row">
             <#assign showMore=false />
             <#assign listGroups = [findUsersSharedWith]>
             <#if (findUsersSharedWith?size > 4)><#assign listGroups =  findUsersSharedWith?chunk(findUsersSharedWith?size /4 )> </#if>
             <#list listGroups as row>
-                <div  class="span2">
+                <div  class="span2 <#if row_index == 0>offset1</#if>">
                     <#list row>
                     <ul>
                     <#items as item>
@@ -36,9 +37,9 @@
                     </#items>
                     </ul>
                     </#list>
-                    <div class="span1">&nbsp;</div>
                 </div>
             </#list>
+            </div>
             <#if showMore>
                 <div span="span10">
                     <p class="text-center"><a href="#"  onClick="$('#sharedPeople .hidden').removeClass('hidden');$(this).hide()">show more</a></p>
@@ -82,7 +83,7 @@
             </#list>
             </tbody>
         </table>
-
+<#-- 
         <table class="table" id="allResources">
             <thead>
                 <tr>
@@ -109,7 +110,7 @@
             </#list>
             </tbody>
         </table>
-
+-->
     </#macro>
 
 
