@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -320,17 +321,20 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         getReservedSearchParameters().setIntegratableOptions(integratableOptions);
     }
 
-    protected void cleanupResourceTypes() {
-        if (CollectionUtils.isNotEmpty(getResourceTypes())) {
-            List<ResourceType> types = new ArrayList<>();
-            getResourceTypes().forEach(rt -> {
+    protected <C> List<C> cleanupFacetOptions(Collection<C> incoming) {
+        List<C> types = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(incoming)) {
+            incoming.forEach(rt -> {
                 if (rt != null) {
                     types.add(rt);
                 }
             });
-            setResourceTypes(types);
-
         }
+        return types;
+    }
+
+    protected void cleanupResourceTypes() {
+            setResourceTypes(cleanupFacetOptions(getResourceTypes()));
     }
     // REQUIRED IF YOU WANT FACETING TO ACTUALLY WORK
     public void setResourceTypes(List<ResourceType> resourceTypes) {
