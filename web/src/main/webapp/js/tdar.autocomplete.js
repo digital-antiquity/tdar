@@ -617,7 +617,11 @@ TDAR.autocomplete = (function () {
                 description = item.description;
             }
             var link = "";
-//            return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
+            var idpart = "";
+            if (item.id != -1) {
+                idpart = "("+item.id+")";
+            }
+            return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>" +idpart).appendTo(ul);
         };
 
         _applyGenericAutocomplete($elements, $.extend({}, defaults, _options));
