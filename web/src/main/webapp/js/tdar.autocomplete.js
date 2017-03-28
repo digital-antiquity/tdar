@@ -611,6 +611,15 @@ TDAR.autocomplete = (function () {
             defaults.showCreatePhrase = "Create a new collection";
         }
         defaults.minLength = 2;
+        defaults.customRender = function (ul, item) {
+            var description = "";
+            if (item.description != undefined) {
+                description = item.description;
+            }
+            var link = "";
+//            return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
+        };
+
         _applyGenericAutocomplete($elements, $.extend({}, defaults, _options));
     }
 

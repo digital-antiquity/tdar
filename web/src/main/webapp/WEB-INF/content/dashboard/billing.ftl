@@ -46,22 +46,22 @@
     <div class="span2">
         <@dash.sidebar current="billing" />
     </div>
-    <div class="span8">
+    <div class="span10">
         <@accountSection />
-    </div>
-    <div class="span2">
-      <h5>Add Space</h5>
+        <br/>
+      <h3>Add Space</h3>
+      <p>Purchase addtional files or space.</p>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='process-choice'>
                 <table class="table pTable">
                     <tbody>
                         <tr>
                             <th class="borderRight">Files</th>
+                            <th class="borderRight">Space (MB)</th>
+                        </tr>
+                        <tr>
                             <td class="custom" style="text-align:center">
                                 <@s.textfield name="invoice.numberOfFiles" theme="simple" cssClass="integer span1 orderinfo" maxlength=9  />
                             </td>
-                        </tr>
-                        <tr>
-                            <th class="borderRight">Space (MB)</th>
                             <td class="custom" style="text-align:center">
                                 <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer span1 orderinfo" maxlength=9 />
                             </td>
