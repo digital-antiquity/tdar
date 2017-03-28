@@ -20,7 +20,6 @@
                 <ul class="nav">
                     <li class="alwaysHidden"><a href="#top">top</a></li>
                     <li class="active"><a href="#basicInformationSection">Basic</a></li>
-                    <li><a href="#divAccessRights">Rights</a></li>
                     <li><a href="#divResourcesSesction">Resources</a></li>
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
