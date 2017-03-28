@@ -111,8 +111,7 @@ navigation freemarker macros
     @requires authenticatedUser:Person
  -->
     <#macro creatorToolbar current>
-
-        <#if editable >
+        <#if editable!false >
             <#if (persistable.registered)!false>
                 <#local creatorType = "user" />
             <#elseif creator??>
@@ -125,12 +124,14 @@ navigation freemarker macros
             <div class="span12 resource-nav  screen" id="toolbars" parse="true">
                 <ul>
                     <@makeLink "browse" "creators" "view" "view" current true />
-
 			    <#if "edit" != current>
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
                 <#else>
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
                 </#if>
+                <#if creatorType == 'user'>
+                	<@makeLink "browse" "creators" "rights" "rights" current true />
+				</#if>
                 </ul>
             </div>
             </#if>

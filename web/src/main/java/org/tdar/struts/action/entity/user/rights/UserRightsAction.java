@@ -44,6 +44,9 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     @Autowired
     private transient BillingAccountService accountService;
 
+    public TdarUser getPersistable() {
+        return user;
+    }
     @Override
     public void prepare() throws Exception {
         this.user = genericService.find(TdarUser.class, id);
@@ -52,6 +55,21 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         getAccounts().addAll(accountService.listAvailableAccountsForUser(user, Status.ACTIVE));
 
     }
+    
+    public boolean isEditable() {
+        if (isEditorOrSelf()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isEditorOrSelf() {
+        if (isEditor() || user.equals(getAuthenticatedUser())) {
+            return true;
+        }
+        return false;
+    }
+
     
     @Override
     @Action(value = "{id}", results = {
