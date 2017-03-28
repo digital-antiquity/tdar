@@ -1,5 +1,6 @@
 package org.tdar.struts.action.entity.user.rights;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -9,10 +10,13 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
@@ -35,12 +39,18 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     private GenericService genericService;
     private List<Resource> findResourcesSharedWith;
     private List<SharedCollection> findCollectionsSharedWith;
+    private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
+
+    @Autowired
+    private transient BillingAccountService accountService;
 
     @Override
     public void prepare() throws Exception {
         this.user = genericService.find(TdarUser.class, id);
         setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), user));
         setFindCollectionsSharedWith(resourceCollectionService.findCollectionsSharedWith(getAuthenticatedUser(), getUser(), SharedCollection.class));
+        getAccounts().addAll(accountService.listAvailableAccountsForUser(user, Status.ACTIVE));
+
     }
     
     @Override
@@ -88,6 +98,14 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
 
     public void setFindCollectionsSharedWith(List<SharedCollection> findCollectionsSharedWith) {
         this.findCollectionsSharedWith = findCollectionsSharedWith;
+    }
+
+    public List<BillingAccount> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<BillingAccount> accounts) {
+        this.accounts = accounts;
     }
     
 }

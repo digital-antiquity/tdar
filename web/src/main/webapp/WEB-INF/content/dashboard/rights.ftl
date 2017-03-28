@@ -29,9 +29,9 @@
             <#assign listGroups = [findUsersSharedWith]>
             <#if (findUsersSharedWith?size > 4)><#assign listGroups =  findUsersSharedWith?chunk(findUsersSharedWith?size /4 )> </#if>
             <#list listGroups as row>
-                <div  class="span2 <#if row_index == 0>offset1</#if>">
+                <div  class="span2">
                     <#list row>
-                    <ul>
+                    <ul class="unstyled">
                     <#items as item>
                         <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>"><a href="/entity/user/rights/${item.id?c}">${item.properName}</a></li>
                     </#items>

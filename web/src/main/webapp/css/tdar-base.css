@@ -1434,3 +1434,8 @@ ul .header-auto {
     padding:2px;
     font-size:90%;
 }
+
+
+#emptyProjects li {
+    line-height:22px;
+}

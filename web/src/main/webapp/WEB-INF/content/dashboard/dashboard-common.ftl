@@ -77,8 +77,9 @@
             </#if>
             <span title="# of collections"><i class="${folder}"></i> ${children} Child Collections</span>
             <span title="# of users"><i class="icon-user"></i> ${users} Users</span>
-<#--             <#if (children + users > 0)><li><i class="icon-circle-arrow-right" data-toggle="collapse" data-target="#details${collection.id?c}"></i> </li></#if> -->
+<#--             <#if (children + users > 0)><li><i class="icon-circle-arrow-right" data-toggle="collapse" data-target="#details${collection.id?c}"></i> </li></#if> 
         </ul>
+-->
         <#-- 
         <div id="details${collection.id?c}" class="collapse">
           <ul class="">

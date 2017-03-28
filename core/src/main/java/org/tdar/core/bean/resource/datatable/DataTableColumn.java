@@ -103,6 +103,11 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         }
         
         @Override
+        public Integer getImportOrder(){
+            return -1;
+        }
+        
+        @Override
         public boolean isStatic() {
             return true;
         }
@@ -170,6 +175,9 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
 
     @Transient
     private Map<Long, List<String>> ontologyNodeIdToValuesMap;
+
+    @Column(name="import_order")
+    private Integer importOrder;
 
     @Transient
     private Integer length = -1;
@@ -514,5 +522,13 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         String displayName = getDisplayName().replaceAll(" (?i)Ontology","");
         displayName = StringUtils.replace(displayName, "  ", " ");
         return displayName;
+    }
+
+    public Integer getImportOrder() {
+        return importOrder;
+    }
+
+    public void setImportOrder(Integer importOrder) {
+        this.importOrder = importOrder;
     }
 }

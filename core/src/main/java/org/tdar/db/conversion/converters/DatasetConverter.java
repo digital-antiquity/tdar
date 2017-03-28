@@ -165,7 +165,7 @@ public interface DatasetConverter {
             return name;
         }
 
-        public DataTableColumn createDataTableColumn(String name_, DataTableColumnType type, DataTable dataTable) {
+        public DataTableColumn createDataTableColumn(String name_, DataTableColumnType type, DataTable dataTable, int order) {
             String name = name_;
             DataTableColumn dataTableColumn = new DataTableColumn();
             if (StringUtils.length(name) > 250) {
@@ -183,6 +183,7 @@ public interface DatasetConverter {
                 internalName = extractAndIncrementIfDuplicate(internalName, columnNames, targetDatabase.getMaxColumnNameLength() - 20);
             }
             dataTableColumn.setName(internalName);
+            dataTableColumn.setImportOrder(order);
             columnNames.add(internalName);
             dataTableColumn.setColumnDataType(type);
             dataTableColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);

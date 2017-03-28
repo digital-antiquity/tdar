@@ -134,6 +134,11 @@
         <column name="status"/>
         <column name="owner_id"/>
     </createIndex>
-    
+        </changeSet>    
+
+    <changeSet id="prehistoric-collections-12" author="abrin">
+    <addColumn tableName="data_table_column">
+        <column name="import_order" type="int"/>
+    </addColumn>
     </changeSet>
 </databaseChangeLog>

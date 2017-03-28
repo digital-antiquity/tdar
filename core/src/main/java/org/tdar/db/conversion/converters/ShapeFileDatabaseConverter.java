@@ -132,6 +132,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         // Filter filter = CQL.toFilter(text.getText());
         // SimpleFeatureCollection features = source.getFeatures(filter);
         // FeatureCollectionTableModel model = new FeatureCollectionTableModel(features);
+        int count = 0;
         for (PropertyDescriptor descriptors : collection.getSchema().getDescriptors()) {
             PropertyType type = descriptors.getType();
             DataTableColumnType columnType = DataTableColumnType.BLOB;
@@ -150,7 +151,8 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             } else {
                 logger.error("unknown binding: {} ", type.getBinding());
             }
-            createDataTableColumn(descriptors.getName().getLocalPart(), columnType, dataTable);
+            createDataTableColumn(descriptors.getName().getLocalPart(), columnType, dataTable, count);
+            count++;
         }
 
         targetDatabase.createTable(dataTable);

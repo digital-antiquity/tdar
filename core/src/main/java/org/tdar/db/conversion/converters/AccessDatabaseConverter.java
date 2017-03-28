@@ -108,6 +108,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             Table currentTable = getDatabase().getTable(tableName);
 
             List<? extends Column> columnList = currentTable.getColumns();
+            int count = 0;
             for (Column currentColumn : columnList) {
                 DataTableColumnType dataType = DataTableColumnType.VARCHAR;
                 logger.info("INCOMING COLUMN: '{}'  ({})", currentColumn.getName(), currentColumn.getType());
@@ -145,7 +146,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         dataType = DataTableColumnType.VARCHAR;
                 }
 
-                DataTableColumn dataTableColumn = createDataTableColumn(currentColumn.getName(), dataType, dataTable);
+                DataTableColumn dataTableColumn = createDataTableColumn(currentColumn.getName(), dataType, dataTable, count);
+                count++;
                 currentColumn.getProperties();
 
                 Object description_ = currentColumn.getProperties().getValue(PropertyMap.DESCRIPTION_PROP);
