@@ -11,29 +11,6 @@
     <title>Billing Accounts</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     
-<style>
-    .glabel {z-index:100;display:inline-block;position:absolute}
-    <#list accounts as account>
-        <#assign spacePercent = 0>
-        <#if (account.availableSpaceInMb < 0 ) >
-            <#assign spacePercent = 101 >
-        </#if> 
-        <#if (account.availableSpaceInMb > 0)>
-            <#assign spacePercent = account.availableSpaceInMb / account.totalSpaceInMb  />
-        </#if>
-
-        <#assign filesPercent = 0>
-        <#if (account.availableNumberOfFiles < 0 ) >
-            <#assign filesPercent = 101 >
-        </#if> 
-        <#if (account.availableNumberOfFiles > 0)>
-        <#assign filesPercent = account.availableNumberOfFiles / account.totalNumberOfFiles  />
-            </#if>
-        <@makeGraphCss "space" account spacePercent /> 
-        <@makeGraphCss "files" account filesPercent />
-
-    </#list>
-                        </style>
 </head>
 
 <div id="titlebar" parse="true">
@@ -103,7 +80,16 @@
                     <tbody>
                         <#items as account>
                         <tr>
-                            <td><a href="${account.detailUrl}">${account.name}</a></td>
+                            <td><a href="${account.detailUrl}">${account.name}</a>
+                            <#local pspace= (account.totalSpaceInMb - account.availableSpaceInMb) / account.totalSpaceInMb * 100.0 >
+                            <#local pfiles= (account.totalNumberOfFiles - account.availableNumberOfFiles) / account.totalNumberOfFiles * 100.0 >
+                            <#local perc = pfiles />
+                            <#if (pspace > pfiles) >
+                            	<#local perc = pfiles>
+                        	</#if>
+                        	<#local chartid>chart${account.id?c}</#local>
+                        	<div id="${chartid}" data-val="${perc?string["0.##"]}" data-width=100 data-height=50 data-overridecolors=true class="gaugeChart pull-right" ></div>
+                            </td>
                             <td>${account.invoices?size}</td>
                             <td nowrap id="space${account.id?c}"><span class="glabel">${account.totalSpaceInMb}</span></td>
                             <td nowrap id="files${account.id?c}"><span class="glabel">${account.totalNumberOfFiles}</span>
