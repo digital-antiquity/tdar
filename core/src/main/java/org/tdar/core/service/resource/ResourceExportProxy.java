@@ -17,6 +17,8 @@ public class ResourceExportProxy implements Serializable {
 
     private TdarUser requestor;
 
+    public ResourceExportProxy() {}
+    
     public ResourceExportProxy(TdarUser requestor) {
         this.setRequestor(requestor);
     }

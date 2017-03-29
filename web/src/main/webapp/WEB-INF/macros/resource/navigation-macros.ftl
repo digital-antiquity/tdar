@@ -86,6 +86,7 @@ navigation freemarker macros
                     <@makeLink namespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink "billing" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+                    <@makeLink "export" "request?accountId=${persistable.id}" "export" "export" current true _deleteable />
 		        </#if>
 	        	<@makeLink "cart" "add?accountId=${persistable.id?c}" "add invoice" "add" "" false false />
     	    	<#if administrator>
