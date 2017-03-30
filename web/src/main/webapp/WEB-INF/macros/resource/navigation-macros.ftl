@@ -62,6 +62,7 @@ navigation freemarker macros
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
                     <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true bigCollection />
+                    <@makeLink "export" "request?collectionId=${persistable.id}" "export" "export" current true _deleteable />
 
              <#if administrator && whiteLabelCollection>
                         <@makeLink namespace "admin/whitelabel/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
