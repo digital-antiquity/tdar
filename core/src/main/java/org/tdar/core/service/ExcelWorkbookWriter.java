@@ -363,20 +363,24 @@ public class ExcelWorkbookWriter {
         Cell cell = row.createCell(position);
 
         if (!StringUtils.isEmpty(value)) {
+            try {
             if (value.startsWith("http") && isValidURL(value) ) {
                 Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(org.apache.poi.common.usermodel.Hyperlink.LINK_URL);
                 hyperlink.setAddress(value);
                 hyperlink.setLabel(value);
                 cell.setHyperlink(hyperlink);
             }
+            } catch (Throwable t) {
+                logger.warn("cannot create url: {}", value, t);
+            }
             if (StringUtils.isNumeric(value)) {
                 cell.setCellValue(Double.valueOf(value));
             } else {
-                if (value.length() > DEFAULT_EXCEL_VERSION.getMaxTextLength()) {
+                if (value.length() > version.getMaxTextLength()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append(TRUNCATED);
                     sb.append(" ");
-                    sb.append(StringUtils.substring(value, 0, DEFAULT_EXCEL_VERSION.getMaxTextLength() - TRUNCATED.length() - 2));
+                    sb.append(StringUtils.substring(value, 0, version.getMaxTextLength() - TRUNCATED.length() - 2));
                     cell.setCellValue(sb.toString());
                     logger.error("truncated cell that was too long");
                 } else {
