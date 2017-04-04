@@ -14,15 +14,117 @@
 </head>
 
 <div id="titlebar" parse="true">
-    <h1>Dashboard &raquo; <span class="red">Manage Rights &amp; Permissions</span></h1>
+    <h1>Sharing: <span class="red">My Test Resource</span></h1>
 </div>
 <div class="row">
-    <div class="span2">
-    <@dash.sidebar current="manage" />
+    <div class="span12">
+    <p><b>This resource is shared with 5 people and is in 3 collections.</b></p>
+    <p>Tasks:
+        <a href="#" class="btn ">add user</a>
+        <a href="#" class="btn ">modify existing users</a>
+        <a href="#" class="btn ">add collection</a>
+        <a href="#" class="btn ">remove collection</a>
+    </p>
+    
+    <h3>Add / Modify User(s)</h3>
+    <form class="form-horizontal tdarvalidate">
+    <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
+    <div class="row">
+        <div class='span6'>
+        <b>User or Email </b>
+        </div>
+        <div class="span2">
+         <b>Permissions</b>
+        </div>
+        <div class='span2'>
+        <b>Remove access after</b>
+        </div>
+                <div class='span1'>
+        </div>
+
     </div>
-    <div class="span10">
-        <@shareSection />
+            <div class="control-group">
+                            <div class=" repeat-row" id="authorizedUsersRow_0_">
+                            <div class="controls-row" >
+                                <div class="span6">
+                                    <div id="authorizedUsersRow_0_p" class="creatorPerson  ">
+                                        <input type="hidden" name="authorizedUsers[0].user.id" value="-1" id="authorizedUsersId__id_0_p" autocompleteparentelement="#authorizedUsersRow_0_p">
+                                            <input type="text" name="authorizedUsersFullNames[0]" maxlength="255" value="" id="metadataForm_authorizedUsersFullNames_0_" class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input" autocompleteparentelement="#authorizedUsersRow_0_p" data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below." autocomplete="off" placeholder="Username or Email Address" autocompletename="properName" autocompleteidelement="#authorizedUsersId__id_0_p">
+                                    </div>
+                                </div>
+                                <div class="span2">
+                                        <select name="authorizedUsers[0].generalPermission" id="metadataForm_authorizedUsers_0__generalPermission" class="creator-rights-select span2">
+                                            <option value="VIEW_ALL">View and Download</option>
+                                            <option value="MODIFY_METADATA">Modify Metadata</option>
+                                            <option value="MODIFY_RECORD">Modify Files &amp; Metadata</option>
+                                        </select>
+                                        <input type="hidden" name="authorizedUsers[0].generalPermission" value="" id="authorizedUsers[0]hdnGeneralPermission" class="repeat-row-remove">
+                                </div>
+                                <div class=" span2">
+                                    <div class="input-append">
+                                          <input class="datepicker" style="width:6em" size="16" type="text" value="" id="dp3" data-date-format="mm-dd-yyyy" >
+                                          <span class="add-on"><i class="icon-th"></i></span>
+                                    </div>
+                                </div>
+
+                                <div class="span1">
+                                    <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
+                                </div>
+                            </div>
+            </div>
+        </div>
     </div>
+
+<h3>Invite New User</h3>
+    <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
+    <p><i>Use this to share this resource with someone who's not currently a tDAR user</i></p>
+    <div class="row">
+        <div class='span2'> <b>First Name</b> </div>
+        <div class='span2'> <b>Last Name</b> </div>
+        <div class='span2'> <b>Email</b> </div>
+        <div class="span2"> <b>Permissions</b> </div>
+        <div class='span2'> <b>Remove access after</b> </div>
+        <div class='span1'>
+        </div>
+
+    </div>
+            <div class="control-group">
+                            <div class=" repeat-row" id="authorizedUsersRow_0_">
+                            <div class="controls-row" >
+                                <div class="span2">
+                                    <@s.textfield name="firstName" cssClass="span2" />
+                                </div>
+                                <div class="span2">
+                                    <@s.textfield name="lasstName" cssClass="span2" />
+                                </div>
+                                <div class="span2">
+                                    <@s.textfield name="email" cssClass="span2" />
+                                </div>
+                                <div class="span2">
+                                        <select name="authorizedUsers[0].generalPermission" id="metadataForm_authorizedUsers_0__generalPermission" class="creator-rights-select span2">
+                                            <option value="VIEW_ALL">View and Download</option>
+                                            <option value="MODIFY_METADATA">Modify Metadata</option>
+                                            <option value="MODIFY_RECORD">Modify Files &amp; Metadata</option>
+                                        </select>
+                                        <input type="hidden" name="authorizedUsers[0].generalPermission" value="" id="authorizedUsers[0]hdnGeneralPermission" class="repeat-row-remove">
+                                </div>
+                                <div class=" span2">
+                                    <div class="input-append">
+                                          <input class="datepicker" style="width:6em" size="16" type="text" value="" id="dp3" data-date-format="mm-dd-yyyy" >
+                                          <span class="add-on"><i class="icon-th"></i></span>
+                                    </div>
+                                </div>
+
+                                <div class="span1">
+                                    <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
+                                </div>
+                            </div>
+            </div>
+        </div>
+<#--          <@shareSection /> -->
+    </div>
+
+                </form>
 
 </div>
 
@@ -117,7 +219,7 @@
                     <label class="control-label" for="inputPassword">Until:</label>
                     <div class="controls">
                         <div class="input-append">
-                          <input class="span2 datepicker" size="16" type="text" value="12-02-2016" id="dp3" data-date-format="mm-dd-yyyy" >
+                          <input class="span2 datepicker" size="16" type="text" value="" id="dp3" data-date-format="mm-dd-yyyy" >
                           <span class="add-on"><i class="icon-th"></i></span>
                         </div>
                     </div>
@@ -135,11 +237,15 @@
 
 <@edit.personAutocompleteTemplate />
 
+<@edit.submit fileReminder=false />
 <div id="customIncludes" parse="true">
-    <script src="/js/tdar.manage.js"></script>
+    <!-- <script src="/js/tdar.manage.js"></script> -->
 <script>
 $(function() {
-    TDAR.manage.init();
+        TDAR.repeatrow.registerRepeatable(".repeatLastRow");
+
+    TDAR.autocomplete.delegateCreator("#divAccessRights", true, false);
+    
 })
 </script>
 </div>

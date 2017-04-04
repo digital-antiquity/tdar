@@ -220,7 +220,7 @@
                     <li id="li-recent-resource-${res.id?c}">
                    <span class="fixed">
                        <@common.cartouche res true>
-                           <div class="btn-group inline recent-nav">
+                           <div class="btn-group pull-right recent-nav">
                         <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
                         <a class="btn btn-mini" href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
                     </div>

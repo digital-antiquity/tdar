@@ -1,5 +1,5 @@
 
-TDAR.manage = (function($, console) {
+TDAR.manage = (function($, console, ctx) {
     'use strict';
 
     /**
@@ -52,7 +52,7 @@ TDAR.manage = (function($, console) {
             TDAR.autocomplete.applyCollectionAutocomplete($('#txtShareCollectionName'),
                 {showCreate: false}, {permission: 'ADMINISTER_GROUP',collectionType:'LIST'});
             TDAR.autocomplete.applyResourceAutocomplete($('#txtShareResourceName'), '');
-            TDAR.autocomplete.applyPersonAutoComplete($("#txtShareEmail"), true, false);
+            TDAR.autocomplete.applyPersonAutoComplete($("#accessRightsRecords"), true, false);
 
             //_convertRadiosToButtons($('#divWhat'))
 
@@ -73,4 +73,4 @@ TDAR.manage = (function($, console) {
 
 
     }
-})(jQuery, console, TDAR);
+})(jQuery, console, window);
