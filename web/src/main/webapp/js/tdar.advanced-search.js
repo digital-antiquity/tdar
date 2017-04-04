@@ -22,7 +22,7 @@ TDAR.advancedSearch = (function () {
         $groups.on("searchchange", function(e){
             var $int = $("#includedResourceTypesINTEGRATION");
             var $col = $("#includedResourceTypesSHARED_COLLECTION"); 
-            if ($("#searchGroups .term").not(".simple").length > 0) {
+            if ($("#searchGroups .term").not(".multiIndex").length > 0) {
                 _disableCheckbox($int);
                 _disableCheckbox($col);
             } else { 

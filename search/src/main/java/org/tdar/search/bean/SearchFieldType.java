@@ -123,7 +123,20 @@ public enum SearchFieldType implements HasLabel, Localizable {
                 return false;
         }
     }
-    
+
+    public boolean isMultiIndex() {
+        switch (this) {
+            case ALL_FIELDS:
+            case DATE_CREATED:
+            case DATE_UPDATED:
+            case DESCRIPTION:
+            case TITLE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public boolean isHidden() {
         if (this.fieldGroup == SearchFieldGroup.EXPLORE) {
             return true;
