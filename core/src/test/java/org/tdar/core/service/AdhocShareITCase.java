@@ -218,7 +218,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
         List<UserInvite> findAll = genericService.findAll(UserInvite.class);
         UserInvite inv = null;
         for (UserInvite invite : findAll) {
-            if (invite.getEmailAddress().equals(email)) {
+            if (invite.getUser().getEmail().equals(email)) {
                 inv = invite; 
             }
         };

@@ -273,55 +273,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @Transactional(readOnly = true)
     public Person findPerson(Person transientPerson) {
-        // now find or save the person (if the person was found the institution field is ignored
-        // entirely and replaced with the persisted person's institution
-        if ((transientPerson == null) || transientPerson.hasNoPersistableValues()) {
-            return null;
-        }
-
-        if (PersistableUtils.isNotNullOrTransient(transientPerson.getId())) {
-            if (getDao().sessionContains(transientPerson)) {
-                return transientPerson;
-            }
-            return find(transientPerson.getId());
-        }
-
-        Person blessedPerson = null;
-        if (transientPerson instanceof TdarUser) {
-            String username = ((TdarUser) transientPerson).getUsername();
-            if (StringUtils.isNotBlank(username)) {
-                blessedPerson = findByUsername(username);
-            }
-            logger.debug("find by username: {}, {}", username, blessedPerson);
-        }
-        
-        String email = transientPerson.getEmail();
-        if (StringUtils.isNotBlank(email)  && blessedPerson == null) {
-            blessedPerson = findByEmail(email);
-        } else {
-            transientPerson.setEmail(null);// make sure it's null and not just blank or empty
-        }
-
-
-        // didn't find by email? cast the net a little wider...
-        if (blessedPerson == null) {
-            Institution transientInstitution = transientPerson.getInstitution();
-            if (transientInstitution != null) {
-                Institution foundInstitution = findInstitution(transientInstitution);
-                if (foundInstitution != null) {
-                    transientPerson.setInstitution(foundInstitution);
-                }
-            }
-            Set<Person> people = getDao().findByPerson(transientPerson);
-            /*
-             * Perhaps this should match only if FirstName and LastName are not empty, but I can see cases
-             * where LastName may not be empty but firstName is...
-             */
-            if (!people.isEmpty()) {
-                blessedPerson = people.iterator().next();
-            }
-        }
-        transientPerson.setEmail(email);
+        Person blessedPerson = getDao().findOrCreatePerson(transientPerson);
         return blessedPerson;
     }
 
@@ -333,20 +285,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @Transactional(readOnly = true)
     private Institution findInstitution(Institution transientInstitution) {
-        if ((transientInstitution == null) || StringUtils.isBlank(transientInstitution.getName())) {
-            return null;
-        }
-
-        if (PersistableUtils.isNotNullOrTransient(transientInstitution.getId())) {
-            return getDao().find(Institution.class, transientInstitution.getId());
-        }
-
-        List<Institution> examples = getDao().findByExample(Institution.class, transientInstitution,
-                Arrays.asList(Institution.getIgnorePropertiesForUniqueness()), FindOptions.FIND_FIRST);
-        if (CollectionUtils.isNotEmpty(examples)) {
-            return examples.get(0);
-        }
-        return null;
+        return institutionDao.findInstitution(transientInstitution);
 
     }
 

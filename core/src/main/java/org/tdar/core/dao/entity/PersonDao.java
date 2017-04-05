@@ -19,9 +19,11 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.AgreementTypes;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -33,6 +35,7 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.base.Dao;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -50,6 +53,9 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     private static final Long TDAR_USER_PRIOR_TO_ASKING_AFFILIATION = 5215L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    private InstitutionDao institutionDao;
+    
     public PersonDao() {
         super(Person.class);
     }
@@ -312,5 +318,63 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         criteria.addOrder(Order.desc("timestamp"));
         return criteria.list();
         }
+
+    /**
+     * FInds or Creates a person (but doesn't save)
+     * @param transientPerson
+     * @return
+     */
+    public Person findOrCreatePerson(Person transientPerson) {
+        // now find or save the person (if the person was found the institution field is ignored
+        // entirely and replaced with the persisted person's institution
+        if ((transientPerson == null) || transientPerson.hasNoPersistableValues()) {
+            return null;
+        }
+
+        if (PersistableUtils.isNotNullOrTransient(transientPerson.getId())) {
+            if (sessionContains(transientPerson)) {
+                return transientPerson;
+            }
+            return find(transientPerson.getId());
+        }
+
+        Person blessedPerson = null;
+        if (transientPerson instanceof TdarUser) {
+            String username = ((TdarUser) transientPerson).getUsername();
+            if (StringUtils.isNotBlank(username)) {
+                blessedPerson = findByUsername(username);
+            }
+            logger.debug("find by username: {}, {}", username, blessedPerson);
+        }
+        
+        String email = transientPerson.getEmail();
+        if (StringUtils.isNotBlank(email)  && blessedPerson == null) {
+            blessedPerson = findByEmail(email);
+        } else {
+            transientPerson.setEmail(null);// make sure it's null and not just blank or empty
+        }
+
+
+        // didn't find by email? cast the net a little wider...
+        if (blessedPerson == null) {
+            Institution transientInstitution = transientPerson.getInstitution();
+            if (transientInstitution != null) {
+                Institution foundInstitution = institutionDao.findInstitution(transientInstitution);
+                if (foundInstitution != null) {
+                    transientPerson.setInstitution(foundInstitution);
+                }
+            }
+            Set<Person> people = findByPerson(transientPerson);
+            /*
+             * Perhaps this should match only if FirstName and LastName are not empty, but I can see cases
+             * where LastName may not be empty but firstName is...
+             */
+            if (!people.isEmpty()) {
+                blessedPerson = people.iterator().next();
+            }
+        }
+        transientPerson.setEmail(email);
+        return transientPerson;
+    }
 
 }

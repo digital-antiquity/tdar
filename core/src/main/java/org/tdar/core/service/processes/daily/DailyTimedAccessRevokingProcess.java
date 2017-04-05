@@ -23,6 +23,7 @@ import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
@@ -100,7 +101,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
             List<Long> idsToRemove = new ArrayList<>();
             while (iter.hasNext()) {
                 AuthorizedUser au = iter.next();
-                TdarUser user = persistable.getUser();
+                Person user = persistable.getUser();
                 // if the access restriction was created prior to the creation of the user, the invite might exist
                 if (user == null && persistable.getInvite() != null) {
                     user = persistable.getInvite().getUser();
@@ -109,7 +110,8 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
                     logger.debug("disabling invite for {}", persistable.getInvite());
                 }
 
-                if (Objects.equals(au.getUser(), user)) {
+                // if the user == the authorized user's user
+                if (Objects.equals(au.getUser().getId(), user.getId())) {
                     String name = "";
                     if (collection instanceof HasName) {
                         name = String.format("%s (%s)", ((HasName) collection).getName(), collection.getId());

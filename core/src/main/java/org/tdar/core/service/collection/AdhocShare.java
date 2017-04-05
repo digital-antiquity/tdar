@@ -16,6 +16,8 @@ public class AdhocShare implements Serializable {
 
     private static final long serialVersionUID = 1871697669066300301L;
     private String email;
+    private String firstName;
+    private String lastName;
     private Long userId;
     
     private Long collectionId;
@@ -78,6 +80,22 @@ public class AdhocShare implements Serializable {
 
     public void setPermission(GeneralPermissions permission) {
         this.permission = permission;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
 }

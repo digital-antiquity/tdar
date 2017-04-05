@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.TimedAccessRestriction;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -127,7 +128,11 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
         List<UserInvite> invites = resourceCollectionService.findUserInvites(getPersistable());
         invites.forEach(invite -> {
             UserRightsProxy proxy = new UserRightsProxy();
-            proxy.setEmail(invite.getEmailAddress());
+            Person user = invite.getUser();
+            proxy.setEmail(user.getEmail());
+            proxy.setFirstName(user.getFirstName());
+            proxy.setLastName(user.getLastName());
+            proxy.setDisplayName(user.getProperName());
             proxy.setInviteId(invite.getId());
             proxy.setPermission(invite.getPermissions());
             proxies.add(proxy);

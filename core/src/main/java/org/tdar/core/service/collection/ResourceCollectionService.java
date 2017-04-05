@@ -54,6 +54,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.SimpleFileProcessingDao;
+import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.event.EventType;
@@ -82,6 +83,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    private transient PersonDao personDao;
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
@@ -1239,8 +1242,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         } else {
             UserInvite invite = new UserInvite();
-            _for = share.getEmail();
-            invite.setEmailAddress(share.getEmail());
+            Person transientPerson = personDao.findOrCreatePerson(new Person(share.getFirstName(),share.getLastName(), share.getEmail()));
+            personDao.saveOrUpdate(transientPerson);
+            invite.setPerson(transientPerson);
             invite.setPermissions(share.getPermission());
             invite.setDateCreated(new Date());
             invite.setAuthorizer(authenticatedUser);
@@ -1255,7 +1259,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             emailService.sendUserInviteEmail(invite, authenticatedUser);
         }
         _share.setName(String.format("Share with %s", _for));
-        _share.setDescription(String.format("auto generated share for %s with %s resources based on %s", _for, collection.getResources().size(), from));
+        _share.setDescription(String.format("auto generated colection for %s with %s resources based on %s", _for, collection.getResources().size(), from));
         getDao().saveOrUpdate((ResourceCollection) collection);
         return collection;
     }

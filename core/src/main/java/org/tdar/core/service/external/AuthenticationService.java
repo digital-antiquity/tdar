@@ -436,7 +436,7 @@ public class AuthenticationService {
                 personDao.saveOrUpdate(invite.getResourceCollection());
                 personDao.saveOrUpdate(user);
             }
-            invite.setUser(person);
+//            invite.setUser(person);
             invite.setDateRedeemed(new Date());
             personDao.saveOrUpdate(invite);
             //FIXME: REMOVE if rights changes work

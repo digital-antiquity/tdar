@@ -137,8 +137,18 @@
         </changeSet>    
 
     <changeSet id="prehistoric-collections-12" author="abrin">
-    <addColumn tableName="data_table_column">
-        <column name="import_order" type="int"/>
-    </addColumn>
+        <addColumn tableName="data_table_column">
+            <column name="import_order" type="int"/>
+        </addColumn>
     </changeSet>
+
+    <changeSet id="prehistoric-collections-13" author="abrin">
+        <dropColumn tableName="user_invite" columnName="email"/>
+        <dropForeignKeyConstraint baseTableName="user_invite" constraintName="fk_user_invite_user_id"/>
+        <renameColumn tableName="user_invite" oldColumnName="user_id" newColumnName="person_id"/>
+         <addForeignKeyConstraint constraintName="fk_user_invite_user_id" referencedTableName="person" 
+            baseColumnNames="person_id" baseTableName="user_invite" referencedColumnNames="id" />
+        
+    </changeSet>
+    
 </databaseChangeLog>

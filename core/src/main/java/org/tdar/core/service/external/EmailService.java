@@ -93,7 +93,7 @@ public class EmailService {
     public void sendUserInviteEmail(UserInvite invite, TdarUser from) {
         Email email = new Email();
         email.setUserGenerated(false);
-        email.setTo(invite.getEmailAddress());
+        email.setTo(invite.getUser().getEmail());
         email.setSubject(String.format("%s has invited you to %s", from.getProperName(), TdarConfiguration.getInstance().getSiteAcronym() ));
         Map<String,Object> map = new HashMap<>();
         map.put("invite", invite);

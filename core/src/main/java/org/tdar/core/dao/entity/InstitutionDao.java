@@ -1,10 +1,12 @@
 package org.tdar.core.dao.entity;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.NoResultException;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
@@ -13,6 +15,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.GenericDao.FindOptions;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -61,5 +65,22 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
         } catch (NoResultException e) {
             return false;
         }
+    }
+
+    public Institution findInstitution(Institution transientInstitution) {
+        if ((transientInstitution == null) || StringUtils.isBlank(transientInstitution.getName())) {
+            return null;
+        }
+
+        if (PersistableUtils.isNotNullOrTransient(transientInstitution.getId())) {
+            return find( transientInstitution.getId());
+        }
+
+        List<Institution> examples = findByExample(Institution.class, transientInstitution,
+                Arrays.asList(Institution.getIgnorePropertiesForUniqueness()), FindOptions.FIND_FIRST);
+        if (CollectionUtils.isNotEmpty(examples)) {
+            return examples.get(0);
+        }
+        return null;
     }
 }
