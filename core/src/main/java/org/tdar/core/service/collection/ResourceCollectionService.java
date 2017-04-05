@@ -54,7 +54,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.SimpleFileProcessingDao;
-import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.event.EventType;
@@ -62,6 +61,7 @@ import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DeleteIssue;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.external.AuthorizationService;
@@ -84,7 +84,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private transient PersonDao personDao;
+    private transient EntityService entityService;
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
@@ -1242,8 +1242,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         } else {
             UserInvite invite = new UserInvite();
-            Person transientPerson = personDao.findOrCreatePerson(new Person(share.getFirstName(),share.getLastName(), share.getEmail()));
-            personDao.saveOrUpdate(transientPerson);
+            Person transientPerson = entityService.findOrSaveCreator(new Person(share.getFirstName(),share.getLastName(), share.getEmail()));
+            entityService.saveOrUpdate(transientPerson);
             invite.setPerson(transientPerson);
             invite.setPermissions(share.getPermission());
             invite.setDateCreated(new Date());
