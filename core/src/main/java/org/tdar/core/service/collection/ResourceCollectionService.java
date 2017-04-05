@@ -1073,7 +1073,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     public CustomizableCollection convertToWhitelabelCollection(CustomizableCollection rc) {
-        if (rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
+        if (rc.getProperties() != null && rc.getProperties().getWhitelabel()) {
             return rc;
         }
         return getDao().convertToWhitelabelCollection(rc);

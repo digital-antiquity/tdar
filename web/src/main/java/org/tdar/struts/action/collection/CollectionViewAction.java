@@ -245,9 +245,9 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     }
 
     public boolean isWhiteLabelCollection() {
-        if (getPersistable() instanceof ListCollection) {
-            ListCollection lc = (ListCollection) getPersistable();
-            if (lc.getProperties() != null && lc.getProperties().isWhitelabel()) {
+        if (getPersistable() instanceof CustomizableCollection) {
+            CustomizableCollection lc = (CustomizableCollection) getPersistable();
+            if (lc.getProperties() != null && lc.getProperties().getWhitelabel()) {
                 return true;
             }
         }
@@ -533,7 +533,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     public boolean isSearchHeaderEnabled() {
         if (getResourceCollection() instanceof ListCollection) {
             ListCollection lc = (ListCollection) getResourceCollection();
-            if (lc.getProperties() != null && lc.getProperties().isSearchEnabled()) {
+            if (lc.getProperties() != null && lc.getProperties().getSearchEnabled()) {
                 return true;
             }
         }

@@ -44,7 +44,7 @@ public class MakeCollectionWhiteLabelAction extends AbstractCollectionAdminActio
     })
     public String execute() throws Exception {
         CustomizableCollection lc = (CustomizableCollection)getCollection();
-        if (lc.getProperties() != null && lc.getProperties().isWhitelabel()) {
+        if (lc.getProperties() != null && lc.getProperties().getWhitelabel()) {
             return SUCCESS;
         }
         try {

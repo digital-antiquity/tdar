@@ -74,7 +74,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         List<ListCollection> rcs = new ArrayList<>();
         // if configured correctly, hibernate should know to construct sql that includes both ResourceCollection & WhiteLabelCollection objects.
         for (ListCollection rc : genericService.findAll(ListCollection.class)) {
-            if (rc != null && rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
+            if (rc != null && rc.getProperties() != null && rc.getProperties().getWhitelabel()) {
                 if (id.equals(rc.getId())) {
                     rcs.add(rc);
                 }

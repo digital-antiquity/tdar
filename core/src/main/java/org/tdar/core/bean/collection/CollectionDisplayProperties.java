@@ -69,43 +69,43 @@ public class CollectionDisplayProperties implements HasImage {
     @Transient
     private Institution institution;
 
-    public boolean isCustomHeaderEnabled() {
-        if (customHeaderEnabled == null) {
-            return false;
-        }
-        return customHeaderEnabled;
-    }
-
-    public void setCustomHeaderEnabled(boolean customHeaderEnabled) {
-        this.customHeaderEnabled = customHeaderEnabled;
-    }
-
-    public boolean isFeaturedResourcesEnabled() {
-        if (featuredResourcesEnabled == null) {
-            return false;
-        }
-        return featuredResourcesEnabled;
-    }
-
-    public void setFeaturedResourcesEnabled(boolean featuredResourcesEnabled) {
-        this.featuredResourcesEnabled = featuredResourcesEnabled;
-    }
-
-    public void setSearchEnabled(boolean searchEnabled) {
-        this.searchEnabled = searchEnabled;
-    }
-
-    public boolean isSubCollectionsEnabled() {
-        if (subCollectionsEnabled == null) {
-            return false;
-        }
-        return subCollectionsEnabled;
-    }
-
-    public void setSubCollectionsEnabled(boolean subCollectionsEnabled) {
-        this.subCollectionsEnabled = subCollectionsEnabled;
-    }
-
+//    public boolean isCustomHeaderEnabled() {
+//        if (getCustomHeaderEnabled() == null) {
+//            return false;
+//        }
+//        return getCustomHeaderEnabled();
+//    }
+//
+//    public void setCustomHeaderEnabled(boolean customHeaderEnabled) {
+//        this.customHeaderEnabled = customHeaderEnabled;
+//    }
+//
+//    public boolean isFeaturedResourcesEnabled() {
+//        if (getFeaturedResourcesEnabled() == null) {
+//            return false;
+//        }
+//        return getFeaturedResourcesEnabled();
+//    }
+//
+//    public void setFeaturedResourcesEnabled(boolean featuredResourcesEnabled) {
+//        this.featuredResourcesEnabled = featuredResourcesEnabled;
+//    }
+//
+//    public void setSearchEnabled(boolean searchEnabled) {
+//        this.searchEnabled = searchEnabled;
+//    }
+//
+//    public boolean isSubCollectionsEnabled() {
+//        if (getSubCollectionsEnabled() == null) {
+//            return false;
+//        }
+//        return getSubCollectionsEnabled();
+//    }
+//
+//    public void setSubCollectionsEnabled(boolean subCollectionsEnabled) {
+//        this.subCollectionsEnabled = subCollectionsEnabled;
+//    }
+//
     public String getCss() {
         return css;
     }
@@ -137,35 +137,35 @@ public class CollectionDisplayProperties implements HasImage {
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
     }
-
-    public boolean isCustomDocumentLogoEnabled() {
-        if (customDocumentLogoEnabled == null) {
-            return false;
-        }
-        return customDocumentLogoEnabled;
-    }
-
-    public void setCustomDocumentLogoEnabled(boolean customDocumentLogoEnabled) {
-        this.customDocumentLogoEnabled = customDocumentLogoEnabled;
-    }
-
-    public boolean isSearchEnabled() {
-        if (searchEnabled == null) {
-            return false;
-        }
-        return searchEnabled;
-    }
-
-    public boolean isWhitelabel() {
-        if (whitelabel == null) {
-            return false;
-        }
-        return whitelabel;
-    }
-
-    public void setWhitelabel(boolean whitelabel) {
-        this.whitelabel = whitelabel;
-    }
+//
+//    public boolean isCustomDocumentLogoEnabled() {
+//        if (getCustomDocumentLogoEnabled() == null) {
+//            return false;
+//        }
+//        return getCustomDocumentLogoEnabled();
+//    }
+//
+//    public void setCustomDocumentLogoEnabled(boolean customDocumentLogoEnabled) {
+//        this.customDocumentLogoEnabled = customDocumentLogoEnabled;
+//    }
+//
+//    public boolean isSearchEnabled() {
+//        if (getSearchEnabled() == null) {
+//            return false;
+//        }
+//        return getSearchEnabled();
+//    }
+//
+//    public boolean isWhitelabel() {
+//        if (whitelabel == null) {
+//            return false;
+//        }
+//        return whitelabel;
+//    }
+//
+//    public void setWhitelabel(boolean whitelabel) {
+//        this.whitelabel = whitelabel;
+//    }
 
     public Integer getMaxHeight() {
         return maxHeight;
@@ -197,6 +197,72 @@ public class CollectionDisplayProperties implements HasImage {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Boolean getCustomHeaderEnabled() {
+        if (customHeaderEnabled == null) {
+            setCustomHeaderEnabled(Boolean.FALSE);
+        }
+        return customHeaderEnabled;
+    }
+
+    public void setCustomHeaderEnabled(Boolean customHeaderEnabled) {
+        this.customHeaderEnabled = customHeaderEnabled;
+    }
+
+    public Boolean getCustomDocumentLogoEnabled() {
+        if (customDocumentLogoEnabled == null) {
+            setCustomDocumentLogoEnabled(Boolean.FALSE);
+        }
+        return customDocumentLogoEnabled;
+    }
+
+    public void setCustomDocumentLogoEnabled(Boolean customDocumentLogoEnabled) {
+        this.customDocumentLogoEnabled = customDocumentLogoEnabled;
+    }
+
+    public Boolean getFeaturedResourcesEnabled() {
+        if (featuredResourcesEnabled == null) {
+            setFeaturedResourcesEnabled(Boolean.FALSE);
+        }
+        return featuredResourcesEnabled;
+    }
+
+    public void setFeaturedResourcesEnabled(Boolean featuredResourcesEnabled) {
+        this.featuredResourcesEnabled = featuredResourcesEnabled;
+    }
+
+    public Boolean getSearchEnabled() {
+        if (searchEnabled == null) {
+            setSearchEnabled(Boolean.FALSE);
+        }
+        return searchEnabled;
+    }
+
+    public void setSearchEnabled(Boolean searchEnabled) {
+        this.searchEnabled = searchEnabled;
+    }
+
+    public Boolean getSubCollectionsEnabled() {
+        if (subCollectionsEnabled == null) {
+            setSubCollectionsEnabled(Boolean.FALSE);
+        }
+        return subCollectionsEnabled;
+    }
+
+    public void setSubCollectionsEnabled(Boolean subCollectionsEnabled) {
+        this.subCollectionsEnabled = subCollectionsEnabled;
+    }
+
+    public Boolean getWhitelabel() {
+        if (whitelabel == null) {
+            setWhitelabel(Boolean.FALSE);
+        }
+        return whitelabel;
+    }
+
+    public void setWhitelabel(Boolean whitelabel) {
+        this.whitelabel = whitelabel;
     }
 
 }

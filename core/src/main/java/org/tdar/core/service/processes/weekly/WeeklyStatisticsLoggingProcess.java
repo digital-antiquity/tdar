@@ -102,7 +102,7 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
         }
         
         for (CustomizableCollection c : findAllResourceCollections) {
-            if (c.getProperties() != null && c.getProperties().isWhitelabel()) {
+            if (c.getProperties() != null && c.getProperties().getWhitelabel()) {
                 whitelabelCount++;
             }
         }

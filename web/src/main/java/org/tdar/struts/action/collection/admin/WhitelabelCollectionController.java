@@ -57,7 +57,7 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
     public String save() throws TdarActionException {
         getGenericService().saveOrUpdate(getCollection());
 //        getGenericService().saveOrUpdate(getCollection().getProperties());
-        getLogger().trace("{} {} {} ", getCollection().getId(), getCollection().getProperties().getSubtitle(), getCollection().getProperties().isWhitelabel());
+        getLogger().trace("{} {} {} ", getCollection().getId(), getCollection().getProperties().getSubtitle(), getCollection().getProperties().getWhitelabel());
         return SUCCESS;
     }
     

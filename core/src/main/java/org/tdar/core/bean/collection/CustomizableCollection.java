@@ -40,11 +40,11 @@ public abstract class CustomizableCollection<C extends HierarchicalCollection<C>
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "whitelabel", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "custom_header_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "custom_doc_logo_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "featured_resources_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "custom_header_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "custom_doc_logo_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "featured_resources_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
             @AttributeOverride(name = "subtitle", column = @Column(table = "whitelabel_collection")),
             @AttributeOverride(name = "css", column = @Column(table = "whitelabel_collection"))
     })

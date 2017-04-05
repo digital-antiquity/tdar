@@ -339,7 +339,7 @@ public class DownloadService {
 
     private File getCoverLogo(InformationResource resourceToDownload) {
         CustomizableCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
-        if (whiteLabelCollection == null || whiteLabelCollection.getProperties() == null || !whiteLabelCollection.getProperties().isCustomDocumentLogoEnabled()) {
+        if (whiteLabelCollection == null || whiteLabelCollection.getProperties() == null || !whiteLabelCollection.getProperties().getCustomDocumentLogoEnabled()) {
             return null;
         }
         return fileSystemResourceDao.getHostedFile(WhiteLabelFiles.PDF_COVERPAGE_FILENAME, FilestoreObjectType.COLLECTION, whiteLabelCollection.getId());

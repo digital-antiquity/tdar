@@ -307,7 +307,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
         List<CustomizableCollection<?>> whiteLabelCollections = new ArrayList<>();
         for (CustomizableCollection<?> rc : resourceCollections) {
-            if (rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
+            if (rc.getProperties() != null && rc.getProperties().getWhitelabel()) {
                 whiteLabelCollections.add(rc);
             }
         }
