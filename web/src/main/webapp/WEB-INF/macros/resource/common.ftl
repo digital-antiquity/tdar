@@ -89,7 +89,7 @@ Common macros used in multiple contexts
         <table class="tableFormat table">
             <thead>
             <tr>
-                <th>Share</th>
+                <th>Collection</th>
                 <th>User</th>
                 <#list availablePermissions as permission>
                     <th>${permission.label}</th>

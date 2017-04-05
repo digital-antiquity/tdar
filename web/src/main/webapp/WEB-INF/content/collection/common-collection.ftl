@@ -40,7 +40,7 @@
 		    </div>
         </#if>
         <#if collections?has_content && !collections.empty > 
-            <h3>Child <#if resourceCollection.type == 'LIST'>Collections<#else>Shares</#if></h3>
+            <h3>Child <#if resourceCollection.type == 'LIST'>Collections<#else>Collections</#if></h3>
             <@common.listCollections collections=collections showOnlyVisible=true />
         </#if>
 		<@list.displayWidget />
