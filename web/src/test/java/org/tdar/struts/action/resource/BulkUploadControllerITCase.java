@@ -281,7 +281,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         dataset.setDate(1234);
         genericService.saveOrUpdate(dataset);
         dataset.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "This is a note, hello"));
-        Document document = resourceService.createResourceFrom(dataset, Document.class, true);
+        Document document = resourceService.createResourceFrom(getAdminUser(),dataset, Document.class, true);
         assertFalse(document.getResourceNotes().isEmpty());
         assertEquals(1, document.getResourceNotes().size());
         ResourceNote documentNote = document.getResourceNotes().iterator().next();
@@ -299,31 +299,31 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // assuming all inheritance flags are false by default.
 
         expected.setInheritingCulturalInformation(true);
-        Image image1 = resourceService.createResourceFrom(expected, Image.class, true);
+        Image image1 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
         assertEquals(expected.isInheritingCulturalInformation(), image1.isInheritingCulturalInformation());
 
         expected.setInheritingInvestigationInformation(true);
-        Image image2 = resourceService.createResourceFrom(expected, Image.class, true);
+        Image image2 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
         assertEquals(expected.isInheritingInvestigationInformation(), image2.isInheritingInvestigationInformation());
 
         expected.setInheritingMaterialInformation(true);
-        Image image3 = resourceService.createResourceFrom(expected, Image.class, true);
+        Image image3 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
         assertEquals(expected.isInheritingMaterialInformation(), image3.isInheritingMaterialInformation());
 
         expected.setInheritingOtherInformation(true);
-        Image image4 = resourceService.createResourceFrom(expected, Image.class, true);
+        Image image4 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
         assertEquals(expected.isInheritingOtherInformation(), image4.isInheritingOtherInformation());
 
         expected.setInheritingSiteInformation(true);
-        Image image5 = resourceService.createResourceFrom(expected, Image.class, true);
+        Image image5 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
         assertEquals(expected.isInheritingSiteInformation(), image5.isInheritingSiteInformation());
 
         expected.setInheritingSpatialInformation(true);
-        Image image6 = resourceService.createResourceFrom(expected, Image.class, true);
+        Image image6 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
         assertEquals(expected.isInheritingSpatialInformation(), image6.isInheritingSpatialInformation());
 
         expected.setInheritingTemporalInformation(true);
-        Image image8 = resourceService.createResourceFrom(expected, Image.class, true);
+        Image image8 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
         assertEquals(expected.isInheritingTemporalInformation(), image8.isInheritingTemporalInformation());
     }
 
@@ -341,7 +341,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         rcc.setText("rcc text");
         expected.getRelatedComparativeCollections().add(rcc);
 
-        Image image = resourceService.createResourceFrom(expected, Image.class, true);
+        Image image = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
         assertEquals(expected.getRelatedComparativeCollections().iterator().next().getText(),
                 image.getRelatedComparativeCollections().iterator().next().getText());
     }
@@ -361,7 +361,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         sc.setText("source collection text");
         expected.getSourceCollections().add(sc);
 
-        Image image = resourceService.createResourceFrom(expected, Image.class, true);
+        Image image = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
         assertEquals(expected.getSourceCollections().iterator().next().getText(),
                 image.getSourceCollections().iterator().next().getText());
     }
@@ -370,7 +370,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testCloneImageWithNoLicenceEnabled() {
         Image expected = new Image();
-        Image image = resourceService.createResourceFrom(expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
         // the assumption is that both of these will default to null
         assertTrue(image.getLicenseType() == null);
         assertTrue(image.getLicenseText() == null);
@@ -384,7 +384,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         expected.setLicenseType(LicenseType.CREATIVE_COMMONS_ATTRIBUTION);
         expected.setLicenseText("This should be ignored");
         expected.markUpdated(getAdminUser());
-        Image image = resourceService.createResourceFrom(expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
         assertTrue(LicenseType.CREATIVE_COMMONS_ATTRIBUTION.equals(image.getLicenseType()));
         assertTrue(image.getLicenseText() == null);
     }
@@ -396,7 +396,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Image expected = new Image();
         expected.setLicenseType(LicenseType.OTHER);
         expected.setLicenseText(OTHER_LICENCE_TYPE_BOILERPLATE);
-        Image image = resourceService.createResourceFrom(expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
         assertTrue(LicenseType.OTHER.equals(image.getLicenseType()));
         assertTrue(OTHER_LICENCE_TYPE_BOILERPLATE.equals(image.getLicenseText()));
     }
@@ -408,7 +408,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Image expected = new Image();
         Person copyrightHolder = entityService.find(getAdminUserId());
         expected.setCopyrightHolder(copyrightHolder);
-        Image image = resourceService.createResourceFrom(expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
         assertTrue(copyrightHolder.equals(image.getCopyrightHolder()));
     }
 
@@ -416,7 +416,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testCloneImageWithNoCopyrightEnabled() {
         Image expected = new Image();
-        Image image = resourceService.createResourceFrom(expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
         // the assumption is that this will default to null
         assertTrue(image.getCopyrightHolder() == null);
     }
@@ -461,7 +461,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         SharedCollection adHocCollection = new SharedCollection();
         // NEED TO SET THE TYPE OF THE ADHOC COLLECTION
         adHocCollection.setName("collection of bulk-uploaded resource collections");
-        bulkUploadController.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.MODIFY_RECORD));
+        bulkUploadController.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getUser(), GeneralPermissions.MODIFY_RECORD));
         bulkUploadController.getShares().add(adHocCollection);
 
         // saving

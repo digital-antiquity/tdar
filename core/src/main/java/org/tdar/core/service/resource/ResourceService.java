@@ -458,7 +458,7 @@ public class ResourceService {
      * @return
      */
     @Transactional
-    public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass, boolean save) {
+    public <T extends Resource> T createResourceFrom(TdarUser authenticatedUser, Resource proxy, Class<T> resourceClass, boolean save) {
         try {
             T resource = resourceClass.newInstance();
             genericDao.detachFromSession(resource);
@@ -493,7 +493,7 @@ public class ResourceService {
                          datasetDao.save(newInternal);
                      }
                      for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
-                         AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
+                         AuthorizedUser newAuthorizedUser = new AuthorizedUser(authenticatedUser, proxyAuthorizedUser.getUser(),
                                  proxyAuthorizedUser.getGeneralPermission());
                          newInternal.getAuthorizedUsers().add(newAuthorizedUser);
                      }

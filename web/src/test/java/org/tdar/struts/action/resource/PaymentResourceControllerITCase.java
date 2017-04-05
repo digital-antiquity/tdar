@@ -88,7 +88,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
         SharedCollection rCollection = generateResourceCollection("test", "test", true,
-                Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
+                Arrays.asList(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
                 getAdminUser(), Arrays.asList(dataset), null);
         dataset.getSharedCollections().add(rCollection);
         dataset.setSubmitter(getBasicUser());

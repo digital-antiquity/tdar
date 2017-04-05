@@ -297,7 +297,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         collection.setName("test");
         collection.setDescription("test");
         collection.markUpdated(getAdminUser());
-        collection.getAuthorizedUsers().add( new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL));
+        collection.getAuthorizedUsers().add( new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.VIEW_ALL));
         collection.getResources().add(dataset);
         genericService.saveOrUpdate(collection);
         final Long cid = collection.getId();

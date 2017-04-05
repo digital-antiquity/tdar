@@ -430,7 +430,7 @@ public class AuthenticationService {
                 continue;
             }
             
-            AuthorizedUser user = new AuthorizedUser(person, invite.getPermissions());
+            AuthorizedUser user = new AuthorizedUser(invite.getAuthorizer(), person, invite.getPermissions());
             if (invite.getResourceCollection() != null) {
                 invite.getResourceCollection().getAuthorizedUsers().add(user);
                 personDao.saveOrUpdate(invite.getResourceCollection());

@@ -143,7 +143,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
         e.markUpdated(owner);
         genericService.save(e);
         if (user != null && permission != null) {
-            AuthorizedUser au = new AuthorizedUser(user, permission);
+            AuthorizedUser au = new AuthorizedUser(getAdminUser(), user, permission);
             e.getAuthorizedUsers().add(au);
         }
         searchIndexService.index(e);

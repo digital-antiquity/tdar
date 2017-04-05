@@ -161,8 +161,8 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         SharedCollection test = new SharedCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
-        test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), MODIFY_RECORD));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), MODIFY_RECORD));
         genericService.saveOrUpdate(test);
 
         SharedCollection c1 = new SharedCollection();
@@ -180,7 +180,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         ListCollection test = new ListCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
         genericService.saveOrUpdate(test);
 
         ListCollection c1 = new ListCollection();
@@ -212,7 +212,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         child22.markUpdated(getAdminUser());
         list.markUpdated(getAdminUser());
         genericService.saveOrUpdate(parent, child1, child2, child11, child22, parent2, parent3, list, access);
-        access.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), MODIFY_RECORD));
+        access.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), MODIFY_RECORD));
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child1, parent, SharedCollection.class);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child2, parent, SharedCollection.class);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child11, child1, SharedCollection.class);
@@ -263,8 +263,8 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
-        List<AuthorizedUser> users = new ArrayList<>(asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
-                new AuthorizedUser(getAdminUser(), MODIFY_RECORD)));
+        List<AuthorizedUser> users = new ArrayList<>(asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(asList(normal, draft));
         SharedCollection collection = new SharedCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
@@ -277,7 +277,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         collection = null;
         collection = genericService.find(SharedCollection.class, id);
         List<AuthorizedUser> aus = new ArrayList<>(users);
-        aus.add(new AuthorizedUser(testPerson, MODIFY_RECORD));
+        aus.add(new AuthorizedUser(getAdminUser(),testPerson, MODIFY_RECORD));
         resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), aus, null, null, true, null, SharedCollection.class, -1l);
         genericService.synchronize();
         logger.debug("au: {}", collection.getAuthorizedUsers());
@@ -309,7 +309,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
         // now add some authusers
         collection.getAuthorizedUsers().addAll(
-                users.stream().map(user -> new AuthorizedUser(user, MODIFY_RECORD)).collect(toList()));
+                users.stream().map(user -> new AuthorizedUser(getAdminUser(), user, MODIFY_RECORD)).collect(toList()));
 
         genericService.saveOrUpdate(collection);
 

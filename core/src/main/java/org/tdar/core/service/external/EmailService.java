@@ -333,7 +333,7 @@ public class EmailService {
                         break;
                 }
             }
-            resourceCollectionDao.addToInternalCollection(resource, requestor, permission);
+            resourceCollectionDao.addToInternalCollection(resource, authenticatedUser, requestor, permission);
             if (expires != null) {
                 TimedAccessRestriction tar = new TimedAccessRestriction(expires);
                 tar.setCollection(resource.getInternalResourceCollection());

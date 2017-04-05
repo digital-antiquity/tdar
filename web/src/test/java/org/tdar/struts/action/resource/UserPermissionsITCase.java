@@ -54,7 +54,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         image.setDescription("test description");
         imageController.setServletRequest(getServletPostRequest());
         TdarUser p = createAndSaveNewPerson();
-        imageController.getAuthorizedUsers().add(new AuthorizedUser(p, GeneralPermissions.MODIFY_RECORD));
+        imageController.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),p, GeneralPermissions.MODIFY_RECORD));
 
         // create the dataset
         imageController.save();
@@ -98,7 +98,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
 
         // adminUser creates a a new image and assigns p as an authorized user
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
-        users.add(new AuthorizedUser(p, GeneralPermissions.MODIFY_METADATA));
+        users.add(new AuthorizedUser(getAdminUser(),p, GeneralPermissions.MODIFY_METADATA));
         SharedCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
         evictCache();
         ImageController imageController = generateNewInitializedController(ImageController.class);

@@ -69,8 +69,9 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
-                new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(
+                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ListCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null, 
                 ListCollectionController.class, ListCollection.class);
@@ -83,7 +84,7 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
         controller.prepare();
         controller.edit();
         controller.setServletRequest(getServletPostRequest());
-        controller.getAuthorizedUsers().add(new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD));
+        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
         controller.setAsync(false);
         controller.save();
 
@@ -103,8 +104,10 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
 
         InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
         InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
-                new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
+        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(
+                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
+                new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         ListCollection collection = 
                 generateResourceCollection(name, description, true, users, getUser(), resources, null, ListCollectionController.class, ListCollection.class);

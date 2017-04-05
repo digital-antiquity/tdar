@@ -338,12 +338,12 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return query.getResultList();
     }
 
-    public void addToInternalCollection(Resource resource, TdarUser user, GeneralPermissions permission) {
+    public void addToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission) {
         ResourceCollection internal = resource.getInternalResourceCollection();
         if (internal == null) {
             internal = createInternalResourceCollectionForResource(resource.getSubmitter(), resource, true);
         }
-        internal.getAuthorizedUsers().add(new AuthorizedUser(user, permission));
+        internal.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, user, permission));
         saveOrUpdate(internal);
     }
 

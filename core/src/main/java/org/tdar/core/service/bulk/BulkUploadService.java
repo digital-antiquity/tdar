@@ -199,7 +199,7 @@ public class BulkUploadService {
                             new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", Arrays.asList(fileName)));
                     continue;
                 }
-                InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, suggestTypeForFile.getResourceClass(), true);
+                InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(authenticatedUser,image, suggestTypeForFile.getResourceClass(), true);
                 informationResource.setTitle(fileName);
                 informationResource.setId(null);
                 informationResource.setDescription("add description");

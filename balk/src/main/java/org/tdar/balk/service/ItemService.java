@@ -269,7 +269,7 @@ public class ItemService {
         SharedCollection rc = new SharedCollection();
         rc.setHidden(true);
         if (StringUtils.isNotBlank(username)) {
-            rc.getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
+            rc.getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, username), new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
         }
         rc.setName(collection);
         rc.setDescription("(from dropbox)");

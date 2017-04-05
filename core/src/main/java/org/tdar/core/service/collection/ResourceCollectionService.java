@@ -804,8 +804,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional
-    public void addUserToInternalCollection(Resource resource, TdarUser user, GeneralPermissions permission) {
-        getDao().addToInternalCollection(resource, user, permission);
+    public void addUserToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission) {
+        getDao().addToInternalCollection(resource, authenticatedUser, user, permission);
     }
 
     @Transactional(readOnly = true)
@@ -1231,7 +1231,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         getDao().saveOrUpdate((ResourceCollection) collection);
         if (user != null) {
             _for = user.getUsername();
-            collection.getAuthorizedUsers().add(new AuthorizedUser(user, share.getPermission()));
+            collection.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, user, share.getPermission()));
             if (share.getExpires() != null) {
                 TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
                 tar.setCollection((ResourceCollection) collection);

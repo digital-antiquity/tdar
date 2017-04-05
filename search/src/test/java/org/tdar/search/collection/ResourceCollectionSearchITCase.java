@@ -42,7 +42,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
                 collection.setOwner(getAdminUser());
                 collection.setHidden(true);
                 collection.markUpdated(collection.getOwner());
-                collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+                collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
                 genericService.saveOrUpdate(collection.getAuthorizedUsers());
                 genericService.saveOrUpdate(collection);
             }

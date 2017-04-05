@@ -310,7 +310,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
     }
 
     public void addAuthorizedUser(Resource resource, TdarUser person, GeneralPermissions permission) {
-        AuthorizedUser authorizedUser = new AuthorizedUser(person, permission);
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(),person, permission);
         InternalCollection internalResourceCollection = resource.getInternalResourceCollection();
         if (internalResourceCollection == null) {
             internalResourceCollection = new InternalCollection();

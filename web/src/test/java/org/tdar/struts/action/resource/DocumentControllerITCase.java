@@ -91,7 +91,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         SharedCollection collection = createResourceCollectionWithAdminRights();
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(collection);
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
         genericService.saveOrUpdate(collection);
 
         SharedCollection collectionChild = new SharedCollection();
@@ -130,7 +130,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         InternalCollection internal = new InternalCollection();
         internal.markUpdated(getAdminUser());
         genericService.saveOrUpdate(internal);
-        internal.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        internal.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(internal);
 
         doc.getSharedCollections().add(collection);
@@ -166,7 +166,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         collection.setDescription(collection.getTitle());
         collection.markUpdated(getAdminUser());
         genericService.saveOrUpdate(collection);
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(collection);
         return collection;
     }
@@ -663,7 +663,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         doc.setTitle("test");
         doc.setDate(1234);
         doc.setDescription("my description");
-        dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.MODIFY_METADATA));
+        dc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.MODIFY_METADATA));
         dc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, dc.save());
 
@@ -675,7 +675,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         dc.setId(id);
         dc.prepare();
         dc.edit();
-        dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.ADMINISTER_SHARE));
+        dc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.ADMINISTER_SHARE));
         dc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, dc.save());
 
@@ -694,7 +694,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         doc.setTitle("test");
         doc.setDate(1234);
         doc.setDescription("my description");
-        dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.MODIFY_METADATA));
+        dc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.MODIFY_METADATA));
         dc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, dc.save());
 

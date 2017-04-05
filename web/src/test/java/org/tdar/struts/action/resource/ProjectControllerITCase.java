@@ -141,7 +141,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testProjectRightsInheritance() throws InstantiationException, IllegalAccessException {
         // create a project w/ one user who has the ability to update it.
-        AuthorizedUser user = new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD);
+        AuthorizedUser user = new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD);
         Project project = new Project();
         project.setTitle("test");
         project.setDescription("test");
@@ -187,9 +187,9 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(testCollection);
         genericService.saveOrUpdate(project_);
         List<AuthorizedUser> users2 = new ArrayList<AuthorizedUser>();
-        users2.addAll(Arrays.asList(new AuthorizedUser(testModify, GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testView,
-                GeneralPermissions.VIEW_ALL),
-                new AuthorizedUser(testAdmin, GeneralPermissions.ADMINISTER_SHARE)));
+        users2.addAll(Arrays.asList(new AuthorizedUser(getAdminUser(), testModify, GeneralPermissions.MODIFY_RECORD), 
+                new AuthorizedUser(getAdminUser(), testView, GeneralPermissions.VIEW_ALL),
+                new AuthorizedUser(getAdminUser(),testAdmin, GeneralPermissions.ADMINISTER_SHARE)));
         resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, getBasicUser());
         genericService.saveOrUpdate(testCollection);
 
@@ -247,7 +247,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         ProjectController controller = tryAndSaveCollectionToController(rc);
         assertNotEquals(Action.SUCCESS, controller.save());
 
-        rc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.ADMINISTER_SHARE));
+        rc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getUser(), GeneralPermissions.ADMINISTER_SHARE));
         genericService.saveOrUpdate(rc);
         evictCache();
         // try ... and should succeed now that we add the user + permissions

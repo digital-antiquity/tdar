@@ -17,6 +17,8 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -66,9 +68,17 @@ public class AuthorizedUser extends AbstractPersistable {
     @JoinColumn(nullable = false, name = "user_id")
     private TdarUser user;
 
-    @Transient
-    private transient Date dateExpires;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "date_created", nullable=false)
+    private Date dateCreated = new Date();
+    
+    @Temporal(TemporalType.DATE)
+    @Column(name = "date_expires", nullable=true)
+    private Date dateExpires;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false, name = "creator_id")
+    private TdarUser createdBy;
     
     private transient boolean enabled = false;
 
@@ -79,7 +89,8 @@ public class AuthorizedUser extends AbstractPersistable {
     public AuthorizedUser() {
     }
 
-    public AuthorizedUser(TdarUser person, GeneralPermissions permission) {
+    public AuthorizedUser(TdarUser authenticatedUser, TdarUser person, GeneralPermissions permission) {
+        this.createdBy = authenticatedUser;
         this.user = person;
         setGeneralPermission(permission);
     }
@@ -177,6 +188,14 @@ public class AuthorizedUser extends AbstractPersistable {
 
     public void setDateExpires(Date dateExpires) {
         this.dateExpires = dateExpires;
+    }
+
+    public TdarUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(TdarUser createdBy) {
+        this.createdBy = createdBy;
     }
 
 

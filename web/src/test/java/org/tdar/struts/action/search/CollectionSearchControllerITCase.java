@@ -108,7 +108,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
         collection.markUpdated(getUser());
         genericService.saveOrUpdate(collection);
         if (createAuthUser) {
-            AuthorizedUser authuser = new AuthorizedUser(user, GeneralPermissions.ADMINISTER_SHARE);
+            AuthorizedUser authuser = new AuthorizedUser(getAdminUser(),user, GeneralPermissions.ADMINISTER_SHARE);
             collection.getAuthorizedUsers().add(authuser);
             genericService.saveOrUpdate(collection);
         }
