@@ -104,7 +104,7 @@
         </#noescape>
 
     $(document).ready(function () {
-        TDAR.ontologyMapping.initMapping("#mapontologyform");
+        TDAR.ontologyMapping.initMapping("#mapontologyform", TDAR.loadDocumentData().flattenedOntologyNodes);
     });
 
         <#macro repeat num=0 value="  |"><#t/>
@@ -114,14 +114,16 @@
         </#macro>
 
 
-    // Ontologies
-    var ontology = [
-        {id: "", name: " -- All Values -- "},
-        <#list ontologyNodes as ont>
-            <#if (ont_index > 0 )>,</#if> {id: "${ont.id?c}", name: "<@repeat num="${ont.numberOfParents-1}" />- <#noescape>${(ont.formattedNameWithSynonyms!ont.iri)?js_string}</#noescape>"}
-        </#list>
-    ];
-
 </script>
+
+<#noescape>
+<script type="application/json" id="flattenedOntologyNodes">
+    [{"id": "", "name": " -- All Values -- "}
+    <#list ontologyNodes as ont>
+    ,{"id": "${ont.id?c}", "name": "<@repeat num="${ont.numberOfParents-1}" />- ${(ont.formattedNameWithSynonyms!ont.iri)?json_string}"}
+    </#list>
+    ]
+</script>
+</#noescape>
 </body>
 </#escape>

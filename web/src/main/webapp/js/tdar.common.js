@@ -899,6 +899,29 @@ TDAR.common = function (TDAR, fileupload) {
     }
 
 
+    // TODO: _checkWindowSize is a costly event handler - determine if it's still necessary after upgrading to Bootstrap v3 (TDAR-3295).
+    /**
+     * Assigns css classes to the body tag based on the current width.  These sizes match the bootstrap responsive grid sizes.
+     *
+     *
+     */
+    function _checkWindowSize() {
+        var width = $(window).width()
+        var new_class = _determineResponsiveClass(width);
+        $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone responsive-phone-portrait').addClass(new_class);
+    }
+
+    /**
+     * Main entrypoint - TDAR.main() will call this function on every pageload.
+     * @private
+     */
+    function _init() {
+        $(function() {
+            $(window).resize(_checkWindowSize).resize();
+            _sessionTimeoutWarning();
+        });
+    }
+
 
     $.extend(self, {
         "initEditPage": _initEditPage,
@@ -931,23 +954,10 @@ TDAR.common = function (TDAR, fileupload) {
         "initImageGallery": _initImageGallery,
         "formatNumber": _formatNumber,
         "registerAjaxStatusContainer": _registerAjaxStatusContainer,
-        "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions
+        "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions,
+        "main": _init
     });
 
     return self;
 }(TDAR, TDAR.fileupload);
 
-function checkWindowSize() {
-    var width = $(window).width()
-    var new_class = TDAR.common.determineResponsiveClass(width);
-    $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone responsive-phone-portrait').addClass(new_class);
-}
-
-/*
- * assigns a class to the body tag based on the current width.  These sizes match the bootstrap responsive grid sizes
- */
-$(document).ready(function () {
-    checkWindowSize();
-    $(window).resize(checkWindowSize);
-    TDAR.common.sessionTimeoutWarning();
-});
