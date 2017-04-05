@@ -18,7 +18,7 @@
 </div>
 <div class="row">
     <div class="span12">
-    <p><b>This resource is shared with 5 people and is in 3 collections.</b></p>
+    <p><b>This resource is shared with ${proxies?size} people and is in ${persistable.sharedCollections?size} collections.</b></p>
     
     <h3>Add / Modify User(s)</h3>
     <form class="form-horizontal tdarvalidate">
