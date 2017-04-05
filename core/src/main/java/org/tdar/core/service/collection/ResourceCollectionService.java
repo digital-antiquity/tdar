@@ -1300,7 +1300,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = true)
-    public List<TimedAccessRestriction> findTimedAccessRestrictions(List<RightsBasedResourceCollection> list) {
+    public List<TimedAccessRestriction> findTimedAccessRestrictions(Collection<RightsBasedResourceCollection> list) {
         return getDao().findTimedAccessRestrictions(list);
     }
 

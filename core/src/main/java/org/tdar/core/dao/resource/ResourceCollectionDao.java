@@ -497,7 +497,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return users;
     }
 
-    public List<TimedAccessRestriction> findTimedAccessRestrictions(List<RightsBasedResourceCollection> list) {
+    public List<TimedAccessRestriction> findTimedAccessRestrictions(Collection<RightsBasedResourceCollection> list) {
         if (CollectionUtils.isEmpty(list)) {
             return new ArrayList<>();
         }

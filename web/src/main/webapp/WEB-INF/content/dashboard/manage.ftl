@@ -19,12 +19,6 @@
 <div class="row">
     <div class="span12">
     <p><b>This resource is shared with 5 people and is in 3 collections.</b></p>
-    <p>Tasks:
-        <a href="#" class="btn ">add user</a>
-        <a href="#" class="btn ">modify existing users</a>
-        <a href="#" class="btn ">add collection</a>
-        <a href="#" class="btn ">remove collection</a>
-    </p>
     
     <h3>Add / Modify User(s)</h3>
     <form class="form-horizontal tdarvalidate">
@@ -43,22 +37,28 @@
         </div>
 
     </div>
-            <div class="control-group">
-                            <div class=" repeat-row" id="authorizedUsersRow_0_">
+            <#list proxies>
+            <#items as proxy>
+            <div class="">
+                        <div class=" control-group repeat-row" id="authorizedUsersRow_${proxy_index}_">
                             <div class="controls-row" >
                                 <div class="span6">
-                                    <div id="authorizedUsersRow_0_p" class="creatorPerson  ">
-                                        <input type="hidden" name="authorizedUsers[0].user.id" value="-1" id="authorizedUsersId__id_0_p" autocompleteparentelement="#authorizedUsersRow_0_p">
-                                            <input type="text" name="authorizedUsersFullNames[0]" maxlength="255" value="" id="metadataForm_authorizedUsersFullNames_0_" class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input" autocompleteparentelement="#authorizedUsersRow_0_p" data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below." autocomplete="off" placeholder="Username or Email Address" autocompletename="properName" autocompleteidelement="#authorizedUsersId__id_0_p">
+                                    <div id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
+                                        <input type="hidden" name="proxy.id" value="-1" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
+                                            <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName}" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
+                                            	 class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input" 
+                                            	 autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p"
+                                            	  data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below." 
+                                            	  autocomplete="off" placeholder="Username or Email Address" autocompletename="properName"
+                                            	   autocompleteidelement="#authorizedUsersId__id_${proxy_index}_p">
                                     </div>
                                 </div>
                                 <div class="span2">
-                                        <select name="authorizedUsers[0].generalPermission" id="metadataForm_authorizedUsers_0__generalPermission" class="creator-rights-select span2">
+                                        <select name="proxies[${proxy_index}].permission" id="metadataForm_authorizedUsers_${proxy_index}__generalPermission" class="creator-rights-select span2">
                                             <option value="VIEW_ALL">View and Download</option>
                                             <option value="MODIFY_METADATA">Modify Metadata</option>
                                             <option value="MODIFY_RECORD">Modify Files &amp; Metadata</option>
                                         </select>
-                                        <input type="hidden" name="authorizedUsers[0].generalPermission" value="" id="authorizedUsers[0]hdnGeneralPermission" class="repeat-row-remove">
                                 </div>
                                 <div class=" span2">
                                     <div class="input-append">
@@ -71,8 +71,11 @@
                                     <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
                                 </div>
                             </div>
+
             </div>
         </div>
+            </#items>
+            </#list>
     </div>
 
 <h3>Invite New User</h3>
