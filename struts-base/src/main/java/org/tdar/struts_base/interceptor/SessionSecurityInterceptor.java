@@ -73,7 +73,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             genericService.markReadOnly();
         }
         try {
-            // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             registerObfuscationListener(invocation, mark);
             String invoke = invocation.invoke();
