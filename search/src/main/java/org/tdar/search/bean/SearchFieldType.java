@@ -107,8 +107,6 @@ public enum SearchFieldType implements HasLabel, Localizable {
 
         switch (this) {
             case ALL_FIELDS:
-            case DATE_CREATED:
-            case DATE_UPDATED:
             case DESCRIPTION:
             case TITLE:
             case FFK_GEOGRAPHIC:
