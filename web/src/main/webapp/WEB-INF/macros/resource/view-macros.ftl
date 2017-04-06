@@ -12,9 +12,9 @@ View freemarker macros
 <#--Emit rel=canonical element.  The "canonical" url points to the preferred version of a set of pages with similar content -->
     <#macro canonical object>
     <#if object.detailUrl?has_content>
-	    <link rel="canonical" href="http://${hostName}${object.detailUrl}"/>
+        <link rel="canonical" href="http://${hostName}${object.detailUrl}"/>
     <#else>
-	    <link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}"/>
+        <link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}"/>
     </#if>
     </#macro>
 
@@ -86,14 +86,14 @@ View freemarker macros
             <#assign version=version.latestUploadedVersion />
         </#if>
         <#if (version.viewable)>
-		<#-- refactor ? -->
-		<#local irid = (irfile.informationResource.id)!-1 />
-		<#if !irid?has_content || irid == -1 >
-			<#local irid = id />
-		</#if>
-		<#if !irid?has_content>
-			<#local irid = -1 />
-		</#if>
+        <#-- refactor ? -->
+        <#local irid = (irfile.informationResource.id)!-1 />
+        <#if !irid?has_content || irid == -1 >
+            <#local irid = id />
+        </#if>
+        <#if !irid?has_content>
+            <#local irid = -1 />
+        </#if>
 
         <#local path>/filestore/download/${irid?c}/${version.id?c}</#local>
         <a href="<@s.url value='${path}'/>"
@@ -214,50 +214,50 @@ View freemarker macros
     file list is truncated if it takes up too much space-->
     <#macro uploadedFileInfo >
         <#local showAll = "">
-	    <#if (resource.totalNumberOfFiles!0) == 0 >
-		    <h3 class="downloads">Find a Copy</h3>
-	        <div id="fileSummaryContainer">
-	    	    <ul class="downloads media-list">
-	                <li class="citationNote"><b>We do not have a copy of this ${resource.resourceType.label?lower_case}, it is a citation.</b><#if resource.copyLocation?has_content><br/><br/> The information that we have indicates that a paper copy may be located
-	                at ${resource.copyLocation}.</#if></li>
-	    		</ul>
-			</div>
-	    <#else>
-		    <h3 class="downloads">
-		        Downloads
-		        <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles!0?c}</span>
-		    </h3>
-		    <div id="fileSummaryContainer">
-		        <ul class="downloads media-list">
-		            <#if ((resource.totalNumberOfFiles!0) > 0) >
-		
-		                <#if resource.hasConfidentialFiles()>
-		                    <li><@embargoCheck/></li></#if>
-		                <@fileInfoSection extended=false; irfile, showAll>
-		                    <#local showAll = showAll>
-		                    <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
-		                        <@fileIcon irfile=irfile extraClass="pull-left" />
-		                        <div class="media-body"><@createFileLink irfile true /></div>
-		                        <@translatedFileSection irfile />
-		                    </li>
-		                </@fileInfoSection>
-		                <#if (resource.totalNumberOfActiveFiles > 1)>
-		                    <li class="archiveLink media">
-		                        <i class="iconf page-white-zip pull-left"></i>
-		
-		                        <div class="media-body"><@createArchiveFileLink resource=resource /></div>
-		                    </li>
-		                </#if>
-		
-		            </#if>
-		        </ul>
-		        <#if showAll != ''>
-		            <div id="downloadsMoreArea">
-		                <a href="#allfiles">show all files</a>
-		            </div>
-		        </#if>
-		    </div>
-	    </#if>
+        <#if (resource.totalNumberOfFiles!0) == 0 >
+            <h3 class="downloads">Find a Copy</h3>
+            <div id="fileSummaryContainer">
+                <ul class="downloads media-list">
+                    <li class="citationNote"><b>We do not have a copy of this ${resource.resourceType.label?lower_case}, it is a citation.</b><#if resource.copyLocation?has_content><br/><br/> The information that we have indicates that a paper copy may be located
+                    at ${resource.copyLocation}.</#if></li>
+                </ul>
+            </div>
+        <#else>
+            <h3 class="downloads">
+                Downloads
+                <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles!0?c}</span>
+            </h3>
+            <div id="fileSummaryContainer">
+                <ul class="downloads media-list">
+                    <#if ((resource.totalNumberOfFiles!0) > 0) >
+
+                        <#if resource.hasConfidentialFiles()>
+                            <li><@embargoCheck/></li></#if>
+                        <@fileInfoSection extended=false; irfile, showAll>
+                            <#local showAll = showAll>
+                            <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
+                                <@fileIcon irfile=irfile extraClass="pull-left" />
+                                <div class="media-body"><@createFileLink irfile true /></div>
+                                <@translatedFileSection irfile />
+                            </li>
+                        </@fileInfoSection>
+                        <#if (resource.totalNumberOfActiveFiles > 1)>
+                            <li class="archiveLink media">
+                                <i class="iconf page-white-zip pull-left"></i>
+
+                                <div class="media-body"><@createArchiveFileLink resource=resource /></div>
+                            </li>
+                        </#if>
+
+                    </#if>
+                </ul>
+                <#if showAll != ''>
+                    <div id="downloadsMoreArea">
+                        <a href="#allfiles">show all files</a>
+                    </div>
+                </#if>
+            </div>
+        </#if>
     </#macro>
 
 <#macro resourceCitationSection resource>
@@ -426,7 +426,7 @@ View freemarker macros
         <#if sessionData?? && sessionData.authenticated>
         <h2>Administrative Information</h2>
 
-        	<@common.resourceUsageInfo />
+            <@common.resourceUsageInfo />
         <div>
             <dl class="dl-horizontal">
                 <dt>
@@ -728,23 +728,29 @@ View freemarker macros
     <#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>
     <div class="item <#if count==0>active</#if>">
         <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${resource.detailUrl}"/></#local>
-        <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-            <img title="map" alt="map" class="pull-right" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
-        <#else>
-            <a href="${url}" target="_top"><@firstThumbnail resource true /></a>
-        </#if>
-        <p class="title">
-            <a target="_top" href="${url}">${resource.title} </a><br>
-            <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
-                <br/></#if>
-        </p>
+        <div class="row-fluid">
+            <div class="span8">
+                <p class="title">
+                    <a target="_top" href="${url}">${resource.title} </a><br>
+                    <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
+                        <br></#if>
+                </p>
 
-        <p><@common.truncate resource.description 150 /></p>
+                <p><@common.truncate resource.description 150 /></p>
 
-        <p>
-            <a target="_top" href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top" href="/search/results">Browse all
-            Resources</a>
-        </p>
+                <p>
+                    <a target="_top" href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top" href="/search/results">Browse all
+                    Resources</a>
+                </p>
+                </div>
+            <div class="span4">
+                <#if resource.firstActiveLatitudeLongitudeBox?has_content>
+                    <img title="map" alt="map" class="" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
+                <#else>
+                    <a href="${url}" target="_top"><@firstThumbnail resource true /></a>
+                </#if>
+            </div>
+        </div>
 
     </div>
     </#macro>
