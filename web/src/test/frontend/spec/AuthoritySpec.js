@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.authority methods", function() {
+describe("AuthoritySpec.js: tests for TDAR.authority methods", function() {
 
     var responses = {
         '/api/lookup/institution': {

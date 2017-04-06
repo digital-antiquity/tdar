@@ -1,5 +1,5 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
-describe("TDAR.common: edit page tests", function () {
+describe("CommonSpec.js: edit page tests", function () {
     "use strict";
 
     var formProps = {

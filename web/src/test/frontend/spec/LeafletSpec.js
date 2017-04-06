@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("LeafletSpec.js", function() {
 
-        it("should work when we call initLeafletMaps", function() {
+        it("LeafletSpec.js: should work when we call initLeafletMaps", function() {
             var options = null;
             var expectedVal = null;
 

@@ -1,6 +1,6 @@
 /* global describe, it, expect, beforeEach */
 
-describe("collection autocomplete", function(){
+describe("AutocompleteSpec.js: collection autocomplete", function(){
     
 
     var responses = {

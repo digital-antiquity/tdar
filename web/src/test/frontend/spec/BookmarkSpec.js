@@ -1,5 +1,5 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
-describe("TDAR.bookmarkspec: edit page tests", function () {
+describe("BookmarkSpec.js: edit page tests", function () {
     "use strict";
 
     beforeEach(function() {
