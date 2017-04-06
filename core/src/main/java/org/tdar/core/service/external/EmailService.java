@@ -26,7 +26,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -333,14 +332,7 @@ public class EmailService {
                         break;
                 }
             }
-            resourceCollectionDao.addToInternalCollection(resource, authenticatedUser, requestor, permission);
-            if (expires != null) {
-                TimedAccessRestriction tar = new TimedAccessRestriction(expires);
-                tar.setCollection(resource.getInternalResourceCollection());
-                tar.setUser(requestor);
-                tar.setCreatedBy(authenticatedUser);
-                genericDao.saveOrUpdate(tar);
-            }
+            resourceCollectionDao.addToInternalCollection(resource, authenticatedUser, requestor, permission, expires);
 
         }
         queueWithFreemarkerTemplate(template, map, email);

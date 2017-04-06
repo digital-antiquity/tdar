@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.InternalCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.resource.Resource;
@@ -25,7 +23,6 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 
-import com.google.common.base.Objects;
 import com.opensymphony.xwork2.Preparable;
 
 @Component
@@ -103,15 +100,6 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
     public void prepare() throws Exception {
         prepareAndLoad(this, RequestType.EDIT);
         InternalCollection internal = resource.getInternalResourceCollection();
-        List<TimedAccessRestriction> list = resourceCollectionService.findTimedAccessRestrictions(new ArrayList<>(resource.getInternalCollections()));
-        list.forEach(tar -> {
-            ResourceCollection c = tar.getCollection();
-            c.getAuthorizedUsers().forEach(user -> {
-                if (Objects.equal(tar.getUser(), user)) {
-                    user.setDateExpires(tar.getUntil());
-                }
-            });
-        });
 
         getLogger().debug("internal:{}", internal);
         if (internal != null) {

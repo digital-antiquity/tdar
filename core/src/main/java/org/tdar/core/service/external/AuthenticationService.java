@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -429,12 +430,17 @@ public class AuthenticationService {
             if (invite.getPermissions() == null) {
                 continue;
             }
-            
+            DateTime now = DateTime.now();
+
             AuthorizedUser user = new AuthorizedUser(invite.getAuthorizer(), person, invite.getPermissions());
-            if (invite.getResourceCollection() != null) {
+            Date dateExpires = invite.getDateExpires();
+            if (invite.getResourceCollection() != null && 
+                    (dateExpires == null ||  now.isBefore(new DateTime(dateExpires)))) {
                 invite.getResourceCollection().getAuthorizedUsers().add(user);
                 personDao.saveOrUpdate(invite.getResourceCollection());
                 personDao.saveOrUpdate(user);
+            } else {
+                logger.error("added user, but invite expired...");
             }
 //            invite.setUser(person);
             invite.setDateRedeemed(new Date());

@@ -39,6 +39,10 @@ public class UserInvite extends AbstractPersistable {
     private Date dateCreated;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "date_expires", nullable=true)
+    private Date dateExpires;
+
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_redeemed", nullable=true)
     private Date dateRedeemed;
 
@@ -58,14 +62,6 @@ public class UserInvite extends AbstractPersistable {
     @Enumerated(EnumType.STRING)
     @Column(name = "permission", length = FieldLength.FIELD_LENGTH_255)
     private GeneralPermissions permissions;
-
-//    public String getEmailAddress() {
-//        return emailAddress;
-//    }
-//
-//    public void setEmailAddress(String emailAddress) {
-//        this.emailAddress = emailAddress;
-//    }
 
     public GeneralPermissions getPermissions() {
         return permissions;
@@ -113,6 +109,14 @@ public class UserInvite extends AbstractPersistable {
 
     public void setPerson(Person user) {
         this.user = user;
+    }
+
+    public Date getDateExpires() {
+        return dateExpires;
+    }
+
+    public void setDateExpires(Date dateExpires) {
+        this.dateExpires = dateExpires;
     }
 
 }

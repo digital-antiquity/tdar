@@ -24,12 +24,9 @@ import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CustomizableCollection;
-import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -62,8 +59,6 @@ import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.ResourceCitationFormatter;
-
-import com.google.common.base.Objects;
 
 /**
  * $Id$
@@ -261,15 +256,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
         // getResourceCollections().addAll(getResource().getUnmanagedResourceCollections());
         getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
-        List<TimedAccessRestriction> list = resourceCollectionService.findTimedAccessRestrictions(getEffectiveShares());
-        list.forEach(tar -> {
-            ResourceCollection c = tar.getCollection();
-            c.getAuthorizedUsers().forEach(user -> {
-                if (Objects.equal(tar.getUser(), user)) {
-                    user.setDateExpires(tar.getUntil());
-                }
-            });
-        });
     }
 
     public Resource getResource() {

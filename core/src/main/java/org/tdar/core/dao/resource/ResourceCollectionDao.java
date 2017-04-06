@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,9 +33,7 @@ import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -339,11 +338,15 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public void addToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission) {
+        addToInternalCollection(resource, authenticatedUser, user, permission, null);
+    }
+    public void addToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission, Date expires) {
         ResourceCollection internal = resource.getInternalResourceCollection();
         if (internal == null) {
             internal = createInternalResourceCollectionForResource(resource.getSubmitter(), resource, true);
         }
-        internal.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, user, permission));
+        AuthorizedUser authorizedUser = new AuthorizedUser(authenticatedUser, user, permission,expires);
+        internal.getAuthorizedUsers().add(authorizedUser);
         saveOrUpdate(internal);
     }
 
@@ -495,15 +498,6 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         query2.setParameter("collectionIds", ids);
         users.addAll(query2.getResultList());
         return users;
-    }
-
-    public List<TimedAccessRestriction> findTimedAccessRestrictions(Collection<RightsBasedResourceCollection> list) {
-        if (CollectionUtils.isEmpty(list)) {
-            return new ArrayList<>();
-        }
-        Query<TimedAccessRestriction> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_TIMED_ACCESS_RESTIRCTIONS, TimedAccessRestriction.class);
-        query.setParameter("cids", PersistableUtils.extractIds(list));
-        return query.list();
     }
 
     public List<UserInvite> findUserInvites(ResourceCollection resourceCollection) {

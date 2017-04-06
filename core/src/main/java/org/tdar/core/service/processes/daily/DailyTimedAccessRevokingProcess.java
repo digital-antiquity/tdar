@@ -1,12 +1,11 @@
 package org.tdar.core.service.processes.daily;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,9 +20,8 @@ import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.TimedAccessRestriction;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
@@ -46,7 +44,7 @@ import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 
 @Component
 @Scope("prototype")
-public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProcess<TimedAccessRestriction> {
+public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProcess<RightsBasedResourceCollection> {
 
     private static final long serialVersionUID = 7534566757094920406L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
@@ -91,56 +89,43 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     Map<TdarUser, List<String>> userNotes = new HashMap<>();
 
     @Override
-    public void process(TimedAccessRestriction persistable) throws Exception {
+    public void process(RightsBasedResourceCollection persistable) throws Exception {
         DateTime now = DateTime.now();
-        if (now.isAfter(new DateTime(persistable.getUntil()))) {
-            StringBuilder sb = new StringBuilder();
-            ResourceCollection collection = persistable.getCollection();
-            Set<AuthorizedUser> authorizedUsers = collection.getAuthorizedUsers();
-            Iterator<AuthorizedUser> iter = authorizedUsers.iterator();
-            List<Long> idsToRemove = new ArrayList<>();
-            while (iter.hasNext()) {
-                AuthorizedUser au = iter.next();
-                Person user = persistable.getUser();
-                // if the access restriction was created prior to the creation of the user, the invite might exist
-                if (user == null && persistable.getInvite() != null) {
-                    user = persistable.getInvite().getUser();
-                    persistable.getInvite().setPermissions(null);
-                    genericDao.saveOrUpdate(persistable.getInvite());
-                    logger.debug("disabling invite for {}", persistable.getInvite());
-                }
+        String name = "";
+        if (persistable instanceof HasName) {
+            name = String.format("%s (%s)", ((HasName) persistable).getName(), persistable.getId());
+        } else {
+            InternalCollection ic = (InternalCollection)persistable;
+            Resource next = ic.getResources().iterator().next();
+            name = String.format("%s (%s)", next.getName(), next.getId());
+        }
+        List<AuthorizedUser> toRemove = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        for (AuthorizedUser au : persistable.getAuthorizedUsers()) {
 
-                // if the user == the authorized user's user
-                if (Objects.equals(au.getUser().getId(), user.getId())) {
-                    String name = "";
-                    if (collection instanceof HasName) {
-                        name = String.format("%s (%s)", ((HasName) collection).getName(), collection.getId());
-                    } else {
-                        InternalCollection ic = (InternalCollection)collection;
-                        Resource next = ic.getResources().iterator().next();
-                        name = String.format("%s (%s)", next.getName(), next.getId());
-                    }
-                    ownerNotes.putIfAbsent(persistable.getCreatedBy(), new ArrayList<>());
-                    userNotes.putIfAbsent(persistable.getUser(), new ArrayList<>());
-                    ownerNotes.get(persistable.getCreatedBy()).add(String.format("- %s ; removed access for %s", name, user.getName()));
-                    userNotes.get(persistable.getUser()).add(String.format("- removed access to %s", name));
-                    String msg = String.format("disabling authorized user (%s) for %s", au, collection);
-                    logger.debug(msg);
-                    sb.append(msg);
-                    sb.append("\n");
-                    idsToRemove.add(au.getId());
-                    iter.remove();
-                }
+            Date dateExpires = au.getDateExpires();
+            if (dateExpires != null && now.isAfter(new DateTime(dateExpires))) {
+                ownerNotes.putIfAbsent(au.getCreatedBy(), new ArrayList<>());
+                userNotes.putIfAbsent(au.getUser(), new ArrayList<>());
+                ownerNotes.get(au.getCreatedBy()).add(String.format("- %s ; removed access for %s", name, au.getUser().getName()));
+                userNotes.get(au.getUser()).add(String.format("- removed access to %s", name));
+                String msg = String.format("disabling authorized user (%s) for %s", au, name);
+                logger.debug(msg);
+                sb.append(msg);
+                sb.append("\n");
+                toRemove.add(au);
             }
-            genericDao.saveOrUpdate(collection);
+        }
+        persistable.getAuthorizedUsers().removeAll(toRemove);
+
+            genericDao.saveOrUpdate(persistable);
             genericDao.delete(persistable);
             TdarUser user = genericDao.find(TdarUser.class, TdarConfiguration.getInstance().getAdminUserId());
-            CollectionRevisionLog crl = new CollectionRevisionLog(sb.toString(), collection, user, RevisionLogType.EDIT);
-            crl.setResourceCollection(collection);
+            CollectionRevisionLog crl = new CollectionRevisionLog(sb.toString(), (ResourceCollection)persistable, user, RevisionLogType.EDIT);
+            crl.setResourceCollection((ResourceCollection)persistable);
             genericDao.saveOrUpdate(crl);
-            logger.debug("result: {}", collection.getAuthorizedUsers());
-            publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
-        }
+            logger.debug("result: {}", persistable.getAuthorizedUsers());
+            publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
     }
 
     @Override
@@ -186,8 +171,8 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     }
 
     @Override
-    public Class<TimedAccessRestriction> getPersistentClass() {
-        return TimedAccessRestriction.class;
+    public Class<RightsBasedResourceCollection> getPersistentClass() {
+        return RightsBasedResourceCollection.class;
     }
 
 }

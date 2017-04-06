@@ -69,17 +69,17 @@ public class AuthorizedUser extends AbstractPersistable {
     private TdarUser user;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_created", nullable=false)
+    @Column(name = "date_created", nullable = false)
     private Date dateCreated = new Date();
-    
+
     @Temporal(TemporalType.DATE)
-    @Column(name = "date_expires", nullable=true)
+    @Column(name = "date_expires", nullable = true)
     private Date dateExpires;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "creator_id")
     private TdarUser createdBy;
-    
+
     private transient boolean enabled = false;
 
     /**
@@ -93,6 +93,13 @@ public class AuthorizedUser extends AbstractPersistable {
         this.createdBy = authenticatedUser;
         this.user = person;
         setGeneralPermission(permission);
+    }
+
+    public AuthorizedUser(TdarUser authenticatedUser, TdarUser person, GeneralPermissions permission, Date date) {
+        this(authenticatedUser, person, permission);
+        if (date != null) {
+            setDateExpires(date);
+        }
     }
 
     @XmlElement(name = "personRef")
@@ -142,7 +149,7 @@ public class AuthorizedUser extends AbstractPersistable {
             userid = user.getId();
             properName = user.getProperName();
         }
-        return String.format("%s[%s] (%s - %s)", properName, userid, generalPermission,getId());
+        return String.format("%s[%s] (%s - %s)", properName, userid, generalPermission, getId());
     }
 
     /**
@@ -197,6 +204,5 @@ public class AuthorizedUser extends AbstractPersistable {
     public void setCreatedBy(TdarUser createdBy) {
         this.createdBy = createdBy;
     }
-
 
 }

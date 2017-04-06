@@ -31,7 +31,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
@@ -289,42 +288,14 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Rollback(false)
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
-        SharedCollection collection = new SharedCollection();
-        collection.getResources().add(dataset);
-        dataset.getSharedCollections().add(collection);
-        collection.markUpdated(getAdminUser());
-//        e.setDateExpires(DateTime.now().minusDays(4).toDate());
-        collection.setName("test");
-        collection.setDescription("test");
-        collection.markUpdated(getAdminUser());
-        collection.getAuthorizedUsers().add( new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.VIEW_ALL));
-        collection.getResources().add(dataset);
-        genericService.saveOrUpdate(collection);
+        SharedCollection collection = createSharedCollection(new Date(),dataset);
         final Long cid = collection.getId();
+        Date expires = DateTime.now().minusDays(2).toDate();
+        SharedCollection expired = createSharedCollection(expires, dataset);
+        final Long eid = expired.getId();
 //        genericService.saveOrUpdate(e)
 //        dataset.getResourceCollections().add(collection);
-        TimedAccessRestriction tar = new TimedAccessRestriction();
-        TimedAccessRestriction expired = new TimedAccessRestriction();
-        tar.setDateCreated(new Date());
-        expired.setDateCreated(new Date());
 
-        Date expires = DateTime.now().minusDays(2).toDate();
-        expired.setUntil(expires);
-        expired.setCollection(collection);
-        expired.setCreatedBy(getAdminUser());
-        expired.setUser(getBasicUser());
-        genericService.saveOrUpdate(dataset);
-        genericService.save(expired);
-        tar.setUntil(DateTime.now().plusDays(2).toDate());
-        tar.setCollection(collection);
-        tar.setCreatedBy(getAdminUser());
-        tar.setUser(getBasicUser());
-        genericService.save(tar);
-        Long eid = expired.getId();
-        Long tid = tar.getId();
-        dataset = null;
-        expired = null;
-        tar = null;
         final int aus = collection.getAuthorizedUsers().size();
         collection = null;
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
@@ -334,12 +305,34 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
                 scheduledProcessService.runNextScheduledProcessesInQueue();
 //                dtarp.execute();
 //                dtarp.cleanup();
-                SharedCollection rc = genericService.find(SharedCollection.class, cid);
-                logger.debug("{}",rc);
-                logger.debug("au: {}",rc.getAuthorizedUsers());
-                assertEquals(aus -1 , rc.getAuthorizedUsers().size());
+                SharedCollection rcn = genericService.find(SharedCollection.class, cid);
+                logger.debug("{}",rcn);
+                logger.debug("au: {}",rcn.getAuthorizedUsers());
+                assertEquals(aus, rcn.getAuthorizedUsers().size());
+
+                SharedCollection rce = genericService.find(SharedCollection.class, eid);
+                logger.debug("{}",rce);
+                logger.debug("au: {}",rce.getAuthorizedUsers());
+                assertEquals(aus -1 , rce.getAuthorizedUsers().size());
                 return null;
             }
         });
+    }
+
+    private SharedCollection createSharedCollection(Date date, Dataset dataset) {
+        SharedCollection collection = new SharedCollection();
+        collection.getResources().add(dataset);
+        dataset.getSharedCollections().add(collection);
+        collection.markUpdated(getAdminUser());
+        collection.setName("test");
+        collection.setDescription("test");
+        collection.markUpdated(getAdminUser());
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.VIEW_ALL);
+        
+        authorizedUser.setDateExpires(date);
+        collection.getAuthorizedUsers().add( authorizedUser);
+        collection.getResources().add(dataset);
+        genericService.saveOrUpdate(collection);
+        return collection;
     }
 }

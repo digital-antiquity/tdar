@@ -599,10 +599,6 @@
                 query = "select distinct au.user from SharedCollection s inner join s.authorizedUsers au where  (s.id in ("
                         + "select s_.id from SharedCollection s_  left join s_.parentIds parentId where s_.owner=:owner or s_.id in (:collectionIds) or parentId in (:collectionIds) "
                         + "))"),
-        @NamedQuery(
-                name=TdarNamedQueries.QUERY_TIMED_ACCESS_RESTIRCTIONS,
-                query = "from TimedAccessRestriction tar where tar.collection.id in :cids"),
-        
         //TODO: extract constants
         @NamedQuery(
                 name=TdarNamedQueries.FIND_USERINVITES_BY_COLLECTION,

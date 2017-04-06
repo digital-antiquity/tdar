@@ -8,7 +8,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.jena.ext.com.google.common.base.Objects;
 import org.joda.time.DateTime;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -20,7 +22,7 @@ import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.TimedAccessRestriction;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
@@ -188,16 +190,15 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
         assertEquals(2, shareFromAdhoc.getResources().size());
         assertEquals(getAdminUser(), shareFromAdhoc.getOwner());
         logger.debug(shareFromAdhoc.getName());
-        TimedAccessRestriction timed = null;
-        for (TimedAccessRestriction tar : genericService.findAll(TimedAccessRestriction.class)) {
-            if (tar.getCollection().equals(shareFromAdhoc)) {
-                timed = tar;
+        AuthorizedUser au = null;
+        for (AuthorizedUser auth : shareFromAdhoc.getAuthorizedUsers()) {
+            if (Objects.equal(auth.getUser(), getBasicUser())) {
+                au = auth;
             }
         }
-        assertNotNull(timed);
-        assertEquals(expires, timed.getUntil());
-        assertEquals(getAdminUser(),timed.getCreatedBy());
-        assertEquals(shareFromAdhoc, timed.getCollection());
+        assertNotNull(au);
+        assertEquals(expires, au.getDateExpires());
+        assertEquals(getAdminUser(), au.getCreatedBy());
     }
 
     @Test

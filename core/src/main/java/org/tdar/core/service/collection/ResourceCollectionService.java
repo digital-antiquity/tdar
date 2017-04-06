@@ -43,7 +43,6 @@ import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -1231,13 +1230,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         getDao().saveOrUpdate((ResourceCollection) collection);
         if (user != null) {
             _for = user.getUsername();
-            collection.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, user, share.getPermission()));
+            AuthorizedUser authorizedUser = new AuthorizedUser(authenticatedUser, user, share.getPermission());
+            collection.getAuthorizedUsers().add(authorizedUser);
             if (share.getExpires() != null) {
-                TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
-                tar.setCollection((ResourceCollection) collection);
-                tar.setUser(user);
-                tar.setCreatedBy(authenticatedUser);
-                getDao().saveOrUpdate(tar);
+                authorizedUser.setDateExpires(share.getExpires());
+                getDao().saveOrUpdate(authenticatedUser);
             }
 
         } else {
@@ -1249,12 +1246,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             invite.setDateCreated(new Date());
             invite.setAuthorizer(authenticatedUser);
             invite.setResourceCollection((ResourceCollection) collection);
-            if (share.getExpires() != null) {
-                TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
-                tar.setCollection((ResourceCollection) collection);
-                tar.setInvite(invite);
-                getDao().saveOrUpdate(tar);
-            }
+            invite.setDateExpires(share.getExpires());
             getDao().saveOrUpdate(invite);
             emailService.sendUserInviteEmail(invite, authenticatedUser);
         }
@@ -1301,11 +1293,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = true)
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
         return getDao().findUsersSharedWith(authenticatedUser);
-    }
-
-    @Transactional(readOnly = true)
-    public List<TimedAccessRestriction> findTimedAccessRestrictions(Collection<RightsBasedResourceCollection> list) {
-        return getDao().findTimedAccessRestrictions(list);
     }
 
     public List<UserInvite> findUserInvites(Resource resource) {
