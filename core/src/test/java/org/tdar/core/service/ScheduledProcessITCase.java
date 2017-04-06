@@ -288,7 +288,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Rollback(false)
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
-        SharedCollection collection = createSharedCollection(new Date(),dataset);
+        SharedCollection collection = createSharedCollection(DateTime.now().plusDays(1).toDate(),dataset);
         final Long cid = collection.getId();
         Date expires = DateTime.now().minusDays(2).toDate();
         SharedCollection expired = createSharedCollection(expires, dataset);
@@ -296,8 +296,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 //        genericService.saveOrUpdate(e)
 //        dataset.getResourceCollections().add(collection);
 
-        final int aus = collection.getAuthorizedUsers().size();
+        final int aus = expired.getAuthorizedUsers().size();
         collection = null;
+        expired = null;
         setVerifyTransactionCallback(new TransactionCallback<Image>() {
             @Override
             public Image doInTransaction(TransactionStatus status) {
@@ -324,7 +325,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         collection.getResources().add(dataset);
         dataset.getSharedCollections().add(collection);
         collection.markUpdated(getAdminUser());
-        collection.setName("test");
+        collection.setName("test " + date);
         collection.setDescription("test");
         collection.markUpdated(getAdminUser());
         AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.VIEW_ALL);
@@ -332,7 +333,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         authorizedUser.setDateExpires(date);
         collection.getAuthorizedUsers().add( authorizedUser);
         collection.getResources().add(dataset);
+//        dataset.getSharedCollections().add(collection);
         genericService.saveOrUpdate(collection);
+        genericService.saveOrUpdate(authorizedUser);
+//        genericService.saveOrUpdate(dataset);
         return collection;
     }
 }

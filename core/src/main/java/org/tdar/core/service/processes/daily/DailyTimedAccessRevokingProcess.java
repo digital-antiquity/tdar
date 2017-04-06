@@ -44,7 +44,7 @@ import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 
 @Component
 @Scope("prototype")
-public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProcess<RightsBasedResourceCollection> {
+public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProcess<ResourceCollection> {
 
     private static final long serialVersionUID = 7534566757094920406L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
@@ -89,18 +89,28 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     Map<TdarUser, List<String>> userNotes = new HashMap<>();
 
     @Override
-    public void process(RightsBasedResourceCollection persistable) throws Exception {
+    public void process(ResourceCollection persistable) throws Exception {
         DateTime now = DateTime.now();
-        String name = "";
-        if (persistable instanceof HasName) {
-            name = String.format("%s (%s)", ((HasName) persistable).getName(), persistable.getId());
-        } else {
-            InternalCollection ic = (InternalCollection)persistable;
-            Resource next = ic.getResources().iterator().next();
-            name = String.format("%s (%s)", next.getName(), next.getId());
-        }
+        String name = getCollectionName(persistable);
         List<AuthorizedUser> toRemove = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
+        evaluateAuthorizedUsersForCollection(persistable, now, name, toRemove, sb);
+
+        if (CollectionUtils.isNotEmpty(toRemove)) {
+            persistable.getAuthorizedUsers().removeAll(toRemove);
+
+            genericDao.saveOrUpdate(persistable);
+            genericDao.delete(persistable);
+            TdarUser user = genericDao.find(TdarUser.class, TdarConfiguration.getInstance().getAdminUserId());
+            CollectionRevisionLog crl = new CollectionRevisionLog(sb.toString(), (ResourceCollection)persistable, user, RevisionLogType.EDIT);
+            crl.setResourceCollection((ResourceCollection)persistable);
+            genericDao.saveOrUpdate(crl);
+            logger.debug("result: {}", persistable.getAuthorizedUsers());
+            publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
+        }
+    }
+
+    private void evaluateAuthorizedUsersForCollection(ResourceCollection persistable, DateTime now, String name, List<AuthorizedUser> toRemove, StringBuilder sb) {
         for (AuthorizedUser au : persistable.getAuthorizedUsers()) {
 
             Date dateExpires = au.getDateExpires();
@@ -116,16 +126,20 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
                 toRemove.add(au);
             }
         }
-        persistable.getAuthorizedUsers().removeAll(toRemove);
+    }
 
-            genericDao.saveOrUpdate(persistable);
-            genericDao.delete(persistable);
-            TdarUser user = genericDao.find(TdarUser.class, TdarConfiguration.getInstance().getAdminUserId());
-            CollectionRevisionLog crl = new CollectionRevisionLog(sb.toString(), (ResourceCollection)persistable, user, RevisionLogType.EDIT);
-            crl.setResourceCollection((ResourceCollection)persistable);
-            genericDao.saveOrUpdate(crl);
-            logger.debug("result: {}", persistable.getAuthorizedUsers());
-            publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
+    private String getCollectionName(ResourceCollection persistable) {
+        String name = "";
+        if (persistable instanceof HasName) {
+            name = String.format("%s (%s)", ((HasName) persistable).getName(), persistable.getId());
+        } else if ( persistable instanceof InternalCollection) {
+            InternalCollection ic = (InternalCollection)persistable;
+            if (CollectionUtils.isNotEmpty(ic.getResources())) {
+            Resource next = ic.getResources().iterator().next();
+            name = String.format("%s (%s)", next.getName(), next.getId());
+            }
+        }
+        return name;
     }
 
     @Override
@@ -171,8 +185,8 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     }
 
     @Override
-    public Class<RightsBasedResourceCollection> getPersistentClass() {
-        return RightsBasedResourceCollection.class;
+    public Class<ResourceCollection> getPersistentClass() {
+        return ResourceCollection.class;
     }
 
 }

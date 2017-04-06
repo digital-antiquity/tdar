@@ -208,6 +208,8 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
         adhoc.getResourceIds().add(TestConstants.DOCUMENT_INHERITING_NOTHING_ID);
         String email = "abc123@qhe1.com";
         adhoc.setEmail(email);
+        adhoc.setFirstName("abc123");
+        adhoc.setLastName("1234");
         adhoc.setPermission(GeneralPermissions.MODIFY_RECORD);
         
         List<Resource> resources = genericService.findAll(Resource.class, adhoc.getResourceIds());

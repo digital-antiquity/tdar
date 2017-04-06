@@ -57,7 +57,7 @@ public class ListCollection extends CustomizableCollection<ListCollection> imple
     private Set<Resource> unmanagedResources = new LinkedHashSet<Resource>();
 
     public ListCollection() {
-        setProperties(new CollectionDisplayProperties());
+        setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
         setType(CollectionType.LIST);
     }
     
@@ -68,7 +68,7 @@ public class ListCollection extends CustomizableCollection<ListCollection> imple
         setSortBy(sortBy);
         setHidden(hidden);
         this.setType(CollectionType.LIST);
-        setProperties(new CollectionDisplayProperties());
+        setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
     }
 
     public ListCollection(String name, String description, SortOption sort, boolean hidden, TdarUser basicUser) {
@@ -78,7 +78,7 @@ public class ListCollection extends CustomizableCollection<ListCollection> imple
         setHidden(hidden);
         this.setType(CollectionType.LIST);
         setOwner(basicUser);
-        setProperties(new CollectionDisplayProperties());
+        setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
     }
 
     @XmlTransient

@@ -167,6 +167,11 @@
             <column name="date_expires" type='timestamp'/>
         </addColumn>
         <dropTable tableName="timed_access" />
+        <dropNotNullConstraint tableName="whitelabel_collection" columnName="custom_header_enabled"/>
+        <dropNotNullConstraint tableName="whitelabel_collection" columnName="custom_doc_logo_enabled"/>
+        <dropNotNullConstraint tableName="whitelabel_collection" columnName="featured_resources_enabled"/>
+        <dropNotNullConstraint tableName="whitelabel_collection" columnName="search_enabled"/>
+        <dropNotNullConstraint tableName="whitelabel_collection" columnName="sub_collections_enabled"/>
     </changeSet>
         
 </databaseChangeLog>

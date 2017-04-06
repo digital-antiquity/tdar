@@ -45,7 +45,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
 
     private Long setup() {
         ListCollection rc = new ListCollection();
-        rc.setProperties(new CollectionDisplayProperties());
+        rc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
         rc.markUpdated(getAdminUser());
@@ -107,7 +107,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         logger.debug("wlcid:{},  resources:{}", wlcId, wlc.getUnmanagedResources());
         assertThat(wlc.getUnmanagedResources().size(), greaterThan(0));
         if (wlc.getProperties() == null) {
-            wlc.setProperties(new CollectionDisplayProperties());
+            wlc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
         }
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().getFeaturedResources().add(featuredDocument);
@@ -117,7 +117,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @SuppressWarnings("unused")
     private ListCollection createAndSaveWhiteLabelCollection() {
         ListCollection rc = new ListCollection();
-        rc.setProperties(new CollectionDisplayProperties());
+        rc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
         rc.markUpdated(getAdminUser());
@@ -143,7 +143,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testWhitelabelsetup() {
-        CollectionDisplayProperties props = new CollectionDisplayProperties();
+        CollectionDisplayProperties props = new CollectionDisplayProperties(false,false,false,false,false,false);
         ListCollection c = new ListCollection();
         c.setName("test");
         c.markUpdated(getAdminUser());

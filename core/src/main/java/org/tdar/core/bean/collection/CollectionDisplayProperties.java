@@ -31,21 +31,34 @@ public class CollectionDisplayProperties implements HasImage {
     @Column(name = "whitelabel", nullable = false, columnDefinition = "boolean default false")
     private Boolean whitelabel = false;
 
-    @Column(name = "custom_header_enabled", nullable = false)
+    @Column(name = "custom_header_enabled", nullable = false, columnDefinition = "boolean default false")
     private Boolean customHeaderEnabled = false;
 
-    @Column(name = "custom_doc_logo_enabled", nullable = false)
+    @Column(name = "custom_doc_logo_enabled", nullable = false, columnDefinition = "boolean default false")
     private Boolean customDocumentLogoEnabled = false;
 
-    @Column(name = "featured_resources_enabled", nullable = false)
+    @Column(name = "featured_resources_enabled", nullable = false, columnDefinition = "boolean default false")
     private Boolean featuredResourcesEnabled = false;
 
-    @Column(name = "search_enabled", nullable = false)
+    @Column(name = "search_enabled", nullable = false, columnDefinition = "boolean default false")
     private Boolean searchEnabled = false;
 
-    @Column(name = "sub_collections_enabled", nullable = false)
+    @Column(name = "sub_collections_enabled", nullable = false, columnDefinition = "boolean default false")
     private Boolean subCollectionsEnabled = false;
 
+    public CollectionDisplayProperties() {
+        this(false,false,false,false,false,false);
+    }
+    
+    public CollectionDisplayProperties(boolean whitelable, boolean customHeaderEnabled, boolean customLogoEnabled, boolean featuredResourceEnabled, boolean searchEnabled, boolean subCollectionEnabled) {
+        this.whitelabel = whitelable;
+        this.customDocumentLogoEnabled= customLogoEnabled;
+        this.customHeaderEnabled = customHeaderEnabled;
+        this.featuredResourcesEnabled =featuredResourceEnabled;
+        this.searchEnabled = searchEnabled;
+        this.subCollectionsEnabled = subCollectionEnabled;
+    }
+    
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     private String css;
@@ -59,53 +72,10 @@ public class CollectionDisplayProperties implements HasImage {
                     nullable = false, name = "resource_id") })
     private List<Resource> featuredResources = new ArrayList<>();
 
-    // @OneToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REFRESH })
-    // @JoinColumn(nullable = false)
-    // // Hibernate will not cascade saveOrUpdate() if object is transient and relation is also transient. (see
-    // // http://www.mkyong.com/hibernate/cascade-jpa-hibernate-annotation-common-mistake/)
-    // // This is probably not a big deal, as it's unlikely we will be saving a new institution and a new WhiteLabelCollection in the same session in real-world
-    // // conditions.
-    // @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
+
     @Transient
     private Institution institution;
 
-//    public boolean isCustomHeaderEnabled() {
-//        if (getCustomHeaderEnabled() == null) {
-//            return false;
-//        }
-//        return getCustomHeaderEnabled();
-//    }
-//
-//    public void setCustomHeaderEnabled(boolean customHeaderEnabled) {
-//        this.customHeaderEnabled = customHeaderEnabled;
-//    }
-//
-//    public boolean isFeaturedResourcesEnabled() {
-//        if (getFeaturedResourcesEnabled() == null) {
-//            return false;
-//        }
-//        return getFeaturedResourcesEnabled();
-//    }
-//
-//    public void setFeaturedResourcesEnabled(boolean featuredResourcesEnabled) {
-//        this.featuredResourcesEnabled = featuredResourcesEnabled;
-//    }
-//
-//    public void setSearchEnabled(boolean searchEnabled) {
-//        this.searchEnabled = searchEnabled;
-//    }
-//
-//    public boolean isSubCollectionsEnabled() {
-//        if (getSubCollectionsEnabled() == null) {
-//            return false;
-//        }
-//        return getSubCollectionsEnabled();
-//    }
-//
-//    public void setSubCollectionsEnabled(boolean subCollectionsEnabled) {
-//        this.subCollectionsEnabled = subCollectionsEnabled;
-//    }
-//
     public String getCss() {
         return css;
     }
@@ -137,35 +107,6 @@ public class CollectionDisplayProperties implements HasImage {
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
     }
-//
-//    public boolean isCustomDocumentLogoEnabled() {
-//        if (getCustomDocumentLogoEnabled() == null) {
-//            return false;
-//        }
-//        return getCustomDocumentLogoEnabled();
-//    }
-//
-//    public void setCustomDocumentLogoEnabled(boolean customDocumentLogoEnabled) {
-//        this.customDocumentLogoEnabled = customDocumentLogoEnabled;
-//    }
-//
-//    public boolean isSearchEnabled() {
-//        if (getSearchEnabled() == null) {
-//            return false;
-//        }
-//        return getSearchEnabled();
-//    }
-//
-//    public boolean isWhitelabel() {
-//        if (whitelabel == null) {
-//            return false;
-//        }
-//        return whitelabel;
-//    }
-//
-//    public void setWhitelabel(boolean whitelabel) {
-//        this.whitelabel = whitelabel;
-//    }
 
     public Integer getMaxHeight() {
         return maxHeight;

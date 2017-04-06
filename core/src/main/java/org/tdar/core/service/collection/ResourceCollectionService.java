@@ -1019,10 +1019,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         if (persistable instanceof ListCollection) {
             ListCollection hasProps = (ListCollection) persistable;
-            if (hasProps.getProperties() == null) {
-                hasProps.setProperties(new CollectionDisplayProperties());
-                getDao().saveOrUpdate(hasProps.getProperties());
-            }
+//            if (hasProps.getProperties() == null) {
+//                hasProps.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
+//                getDao().saveOrUpdate(hasProps.getProperties());
+//            }
             simpleFileProcessingDao.processFileProxyForCreatorOrCollection(hasProps.getProperties(), fileProxy);
         }
 
