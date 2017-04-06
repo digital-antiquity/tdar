@@ -195,13 +195,14 @@ describe("CommonSpec.js: edit page tests", function () {
             expect($j(".treeview")).toHaveLength(1);
         });
     
-        xit("initializes a the search box on view page", function () {
+        it("should display the 'search within this collectin' checkbox when user focuses on the search textbox on a collection view page", function () {
             loadFixtures('searchheader.html');
             var result = TDAR.common.initializeView();
-            $expect('.active').not.toBeInDOM();
+            $expect('#divSearchContext.active').not.toBeInDOM();
     
             $(".searchbox").focus(); //workaround for ff issue. test fails unless focus event triggered twice
             $(".searchbox").focus();
+            $expect('#divSearchContext.active').toBeInDOM();
             expect($j('#divSearchContext')).toHaveClass('active');
         });
     
