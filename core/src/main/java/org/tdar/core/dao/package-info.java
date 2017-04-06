@@ -572,7 +572,7 @@
                 query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col"),
         @NamedQuery(
                 name=TdarNamedQueries.CHECK_INVITES,
-                query = "from UserInvite where lower(emailAddress) like lower(:email)"),
+                query = "from UserInvite ui inner join ui.user as user where lower(user.email) like lower(:email)"),
         @NamedQuery(
                 name = TdarNamedQueries.ALL_INTERNAL_COLLECTIONS,
                 query = "select distinct ic from InternalCollection ic right join ic.authorizedUsers as user right join ic.resources as res where (ic.owner.id=:owner or res.submitter.id=:owner) and res.status in ('ACTIVE','DRAFT') "),
