@@ -2,8 +2,11 @@ package org.tdar.functional;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.openqa.selenium.By.id;
+import static org.openqa.selenium.By.partialLinkText;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -106,7 +109,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     }
 
     private void addUserWithRights(String name, String username, Long userId, GeneralPermissions permissions) {
-        WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
+        WebElementSelection addAnother = find(id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
         waitFor(By.name("authorizedUsersFullNames[2]"));
@@ -120,7 +123,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoEdit(url, CollectionType.LIST);
         applyEditPageHacks();
 
-        WebElementSelection select = find(By.id("collection-selector"));
+        WebElementSelection select = find(id("collection-selector"));
         url = getCurrentUrl();
         logger.debug("url:{}", url);
 
@@ -269,7 +272,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         assertPageViewable(titles);
         String url = getCurrentUrl();
         find(By.partialLinkText("RIGHTS")).click();
-        WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
+        WebElementSelection addAnother = find(id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
 
@@ -280,6 +283,27 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         return url;
     }
+
+
+    /**
+     * Assert that we properly render the "refine search" form when the search contains a collection filter.
+     */
+    @Test
+    public void testRefineSearchWithCollectionFilter() {
+        String url = setupCollectionForTest(TITLE + " (permissions visible)",titles, CollectionVisibility.HIDDEN);
+        gotoPage("/search");
+        find("select.searchType").val("COLLECTION");
+        find( id("groups[0].shares[0].name")).val(TITLE);
+        selectAutocompleteValue(find( id("groups_0__shares_0__name")).first(), TITLE, TITLE, null);
+        submitForm();
+
+        // hopefully we are on the results page - look for "refine this search" link and click it.
+        find( partialLinkText("Refine your search")).click();
+        waitForPageload();
+        assertThat(find(id("searchGroups_groups_0__shares_0__name")).val(), containsString(TITLE));
+        assertThat(find(id("group0searchType_0_")).val(), is("COLLECTION"));
+    }
+
 
 
     //fixme:  probably better to just accept a transient collection object
@@ -306,7 +330,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         assertPageViewable(resourceTitles);
         String url = getCurrentUrl();
         find(By.partialLinkText("RIGHTS")).click();
-        WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
+        WebElementSelection addAnother = find(id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
 
@@ -461,10 +485,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logger.debug(id);
         Assert.assertTrue("should have found at least one remove button with matching title: " + title, found);
         if (StringUtils.isNotBlank(id)) {
-            if (rows.find(By.id(id)).isSelected()) {
-                rows.find(By.id(id)).click();
+            if (rows.find(id(id)).isSelected()) {
+                rows.find(id(id)).click();
             }
-            Assert.assertFalse(rows.find(By.id(id)).isSelected());
+            Assert.assertFalse(rows.find(id(id)).isSelected());
         }
     }
 
