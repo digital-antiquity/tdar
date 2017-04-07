@@ -327,6 +327,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     }
                     checkSelfEscalation(actor, user.getUser(), source, user.getGeneralPermission());
                     actual.setGeneralPermission(user.getGeneralPermission());
+                    actual.setDateExpires(user.getDateExpires());
                     ;
                 }
             }

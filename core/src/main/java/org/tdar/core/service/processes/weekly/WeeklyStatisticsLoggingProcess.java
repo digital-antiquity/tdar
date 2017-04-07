@@ -49,9 +49,6 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
     @Autowired
     private transient StatisticService statisticService;
 
-    @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
-
     private boolean run = false;
 
     @Override

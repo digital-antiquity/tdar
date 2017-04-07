@@ -82,4 +82,12 @@ public class UserRightsProxy implements Serializable {
         this.inviteId = inviteId;
     }
 
+    public boolean isEmpty() {
+        if (inviteId == null && email == null && id == null) {
+            
+            return true;
+        }
+        return false;
+    }
+
 }

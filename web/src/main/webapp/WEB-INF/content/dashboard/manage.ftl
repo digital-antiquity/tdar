@@ -16,12 +16,12 @@
 <div id="titlebar" parse="true">
     <h1>Sharing: <span class="red">My Test Resource</span></h1>
 </div>
+    <form class="form-horizontal tdarvalidate" action="save">
 <div class="row">
     <div class="span12">
     <p><b>This resource is shared with ${proxies?size} people and is in ${persistable.sharedCollections?size} collections.</b></p>
-    
+    <@s.hidden name="id" />
     <h3>Add / Modify User(s)</h3>
-    <form class="form-horizontal tdarvalidate">
     <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
     <div class="row">
         <div class='span6'>
@@ -39,13 +39,22 @@
     </div>
             <#list proxies>
             <#items as proxy>
-            <div class="">
+				<@_proxy proxy_index proxy/>
+            </#items>
+            <#else>
+				<@_proxy 0 blankProxy />
+            </#list>
+    </div>
+    
+    <#macro _proxy proxy_index proxy>
+    
+                <div class="">
                         <div class=" control-group repeat-row" id="authorizedUsersRow_${proxy_index}_">
                             <div class="controls-row" >
                                 <div class="span6">
                                     <div id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
-                                        <input type="hidden" name="proxy.id" value="-1" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
-                                            <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName}" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
+                                        <input type="hidden" name="proxies[${proxy_index}].id" value="${(proxy.id!-1)?c}" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
+                                            <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''}" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
                                             	 class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input" 
                                             	 autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p"
                                             	  data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below." 
@@ -54,11 +63,8 @@
                                     </div>
                                 </div>
                                 <div class="span2">
-                                        <select name="proxies[${proxy_index}].permission" id="metadataForm_authorizedUsers_${proxy_index}__generalPermission" class="creator-rights-select span2">
-                                            <option value="VIEW_ALL">View and Download</option>
-                                            <option value="MODIFY_METADATA">Modify Metadata</option>
-                                            <option value="MODIFY_RECORD">Modify Files &amp; Metadata</option>
-                                        </select>
+	                                <@s.select theme="tdar" cssClass="creator-rights-select span2" name="proxies[${proxy_index}].permission" emptyOption='false'
+                    					listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                                 </div>
                                 <div class=" span2">
                                     <div class="input-append">
@@ -74,9 +80,7 @@
 
             </div>
         </div>
-            </#items>
-            </#list>
-    </div>
+    </#macro>
 
 <h3>Invite New User</h3>
     <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
@@ -127,9 +131,9 @@
 <#--          <@shareSection /> -->
     </div>
 
-                </form>
 
 </div>
+                </form>
 
     <#macro repeat num val>
         <#if (num > 0)>
@@ -245,10 +249,10 @@
     <!-- <script src="/js/tdar.manage.js"></script> -->
 <script>
 $(function() {
-        TDAR.repeatrow.registerRepeatable(".repeatLastRow");
-
-    TDAR.autocomplete.delegateCreator("#divAccessRights", true, false);
-    
+    TDAR.repeatrow.registerRepeatable(".repeatLastRow");
+	TDAR.autocomplete.delegateCreator("#divAccessRights", true, false);
+    $("form").on("repeatrowadded",function() {TDAR.datepicker.bind($("input.datepicker",$("form")))});
+            
 })
 </script>
 </div>
