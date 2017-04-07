@@ -216,6 +216,9 @@ public class OaiPmhServer {
                 response.setListMetadataFormats(service.listMetadataFormats(identifier));
                 break;
             case LIST_RECORDS:
+                if (requestedFormat == null) {
+                    throw new OAIException(getText("oaiController.invalid_metadata_param"), OAIPMHerrorcodeType.BAD_ARGUMENT);
+                }
                 response.setListRecords(service.listRecords(from, until, requestedFormat, resumptionToken));
                 break;
             case LIST_SETS:
