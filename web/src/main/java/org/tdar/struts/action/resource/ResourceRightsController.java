@@ -35,15 +35,15 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespaces({
-        @Namespace("/document"),
-        @Namespace("/image"),
-        @Namespace("/dataset"),
-        @Namespace("/image"),
-        @Namespace("/resource"),
-        @Namespace("/geospatial"),
-        @Namespace("/sensory-data"),
-        @Namespace("/coding-sheet"),
-        @Namespace("/ontology")
+//        @Namespace("/document"),
+//        @Namespace("/image"),
+//        @Namespace("/dataset"),
+//        @Namespace("/image"),
+        @Namespace("/resource")
+//        @Namespace("/geospatial"),
+//        @Namespace("/sensory-data"),
+//        @Namespace("/coding-sheet"),
+//        @Namespace("/ontology")
 })
 public class ResourceRightsController extends AbstractAuthenticatableAction implements
         Preparable, PersistableLoadingAction<Resource> {

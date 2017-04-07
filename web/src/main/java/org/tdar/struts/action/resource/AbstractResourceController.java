@@ -284,12 +284,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             revisionType = RevisionLogType.CREATE;
         }
     
-        String result = super.save();
-        getLogger().debug("result: {} ; submit: {}", result, submit);
-        if (SUCCESS.equals(result) && StringUtils.containsIgnoreCase(submit, "Assign Rights")) {
-                return RIGHTS;
-        }
-        return result;
+        return super.save();
     }
 
     
