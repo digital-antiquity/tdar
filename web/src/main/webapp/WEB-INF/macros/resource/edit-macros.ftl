@@ -459,7 +459,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     @nested any additional html/freemarker content - will be injected in div#editFormActions prior to the save button
         element
 -->
-    <#macro submit label="Save" fileReminder=true buttonid="submitButton" span="span9">
+    <#macro submit label="Save" fileReminder=true buttonid="submitButton" span="span9" class="btn-primary submitButton">
     <div class="errorsection row">
         <div class="${span}">
             <#if fileReminder>
@@ -473,7 +473,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </div>
             <div class="form-actions" id="editFormActions">
                 <#nested>
-                <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}" id="${buttonid}">
+                <input type="submit" class='btn ${class}' name="submitAction" value="${label}" id="${buttonid}">
                 <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
             </div>
         </div>

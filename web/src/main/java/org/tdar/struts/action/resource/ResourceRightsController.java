@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -33,13 +34,26 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/resource")
+@Namespaces({
+        @Namespace("/document"),
+        @Namespace("/image"),
+        @Namespace("/dataset"),
+        @Namespace("/image"),
+        @Namespace("/resource"),
+        @Namespace("/geospatial"),
+        @Namespace("/sensory-data"),
+        @Namespace("/coding-sheet"),
+        @Namespace("/ontology")
+})
 public class ResourceRightsController extends AbstractAuthenticatableAction implements
         Preparable, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = 8551222659351457637L;
 
     private static final String RIGHTS = "rights";
+
+    private static final String SUCCESS_INVITE = "invite";
+    private static final String INVITE = "invite.ftl";
 
     private Resource resource;
     @Autowired
@@ -97,7 +111,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
 
     @SkipValidation
     @Action(value = RIGHTS, results = {
-            @Result(name = SUCCESS, location = "../dashboard/manage.ftl")
+            @Result(name = SUCCESS, location = "rights.ftl")
     })
     public String edit() throws TdarActionException {
         setupEdit();
@@ -112,6 +126,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
     @SkipValidation
     @Action(value = SAVE, results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${resource.detailUrl}"),
+            @Result(name= SUCCESS_INVITE, location = INVITE),
             @Result(name = INPUT, location = RIGHTS)
     })
     @PostOnly
@@ -131,6 +146,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
             resourceCollectionService.saveAuthorizedUsersForResource(getResource(), authorizedUsers, true, getAuthenticatedUser());
         } catch (Exception e) {
             getLogger().error("issue saving", e);
+            return INPUT;
         }
         return SUCCESS;
     }

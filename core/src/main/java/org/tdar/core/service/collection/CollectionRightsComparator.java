@@ -126,7 +126,7 @@ public class CollectionRightsComparator {
 
     private String getCompareKey(AuthorizedUser user) {
         String key = String.format("%s-%s", user.getGeneralPermission(), user.getDateExpires());
-        logger.debug(key);
+        logger.trace(key);
         return key;
     }
 

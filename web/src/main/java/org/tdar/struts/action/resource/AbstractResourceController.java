@@ -99,13 +99,16 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
 
     private static final long serialVersionUID = 8620875853247755760L;
+
+    private static final String RIGHTS = "rights";
     private boolean select2Enabled = TdarConfiguration.getInstance().isSelect2Enabled();
     private boolean select2SingleEnabled = TdarConfiguration.getInstance().isSelect2SingleEnabled();
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
     private RevisionLogType revisionType = RevisionLogType.EDIT;
-
+    private String submit;
+    
     @Autowired
     private SerializationService serializationService;
 
@@ -262,7 +265,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             results = {
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
-                    @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
+                    @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE),
+                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT,  location = "/resource/rights?id=${id}")
             })
     @WriteableSession
     @PostOnly
@@ -280,7 +284,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             revisionType = RevisionLogType.CREATE;
         }
     
-        return super.save();
+        String result = super.save();
+        getLogger().debug("result: {} ; submit: {}", result, submit);
+        if (SUCCESS.equals(result) && StringUtils.containsIgnoreCase(submit, "Assign Rights")) {
+                return RIGHTS;
+        }
+        return result;
     }
 
     
@@ -1169,5 +1178,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setResourceCollections(List<ListCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
+    }
+
+    public String getSubmit() {
+        return submit;
+    }
+
+    public void setSubmit(String submit) {
+        this.submit = submit;
     }
 }
