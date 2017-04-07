@@ -26,6 +26,7 @@ import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -114,6 +115,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${resource.detailUrl}"),
             @Result(name = INPUT, location = RIGHTS)
     })
+    @PostOnly
     public String save() {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         List<UserInvite> invites = new ArrayList<>();
@@ -137,7 +139,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
     private UserInvite toInvite(UserRightsProxy proxy) {
         UserInvite invite = new UserInvite();
         invite.setAuthorizer(getAuthenticatedUser());
-        invite.setDateExpires(proxy.getUntil());
+        invite.setDateExpires(proxy.getUntilDate());
         invite.setId(proxy.getInviteId());
         invite.setPermissions(proxy.getPermission());
         Person person = new Person(proxy.getFirstName(),proxy.getLastName(),proxy.getEmail());
@@ -147,10 +149,11 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
     }
 
     private AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
+        getLogger().debug("{}",proxy.getUntil());
         AuthorizedUser au = new AuthorizedUser();
         au.setUser(getGenericService().find(TdarUser.class, proxy.getId()));
         au.setGeneralPermission(proxy.getPermission());
-        au.setDateExpires(proxy.getUntil());
+        au.setDateExpires(proxy.getUntilDate());
         getLogger().debug("{}",au);
         return au;
     }
@@ -170,6 +173,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
                 proxy.setDisplayName(au.getUser().getProperName());
                 proxy.setId(au.getUser().getId());
                 proxy.setPermission(au.getGeneralPermission());
+                proxy.setUntilDate(au.getDateExpires());
                 proxies.add(proxy);
                 getLogger().debug("{}", au);
             });
@@ -185,6 +189,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
             proxy.setDisplayName(user.getProperName());
             proxy.setInviteId(invite.getId());
             proxy.setPermission(invite.getPermissions());
+            proxy.setUntilDate(invite.getDateExpires());
             proxies.add(proxy);
         });
         getLogger().debug("proxies:{}", proxies);

@@ -16,7 +16,7 @@
 <div id="titlebar" parse="true">
     <h1>Sharing: <span class="red">My Test Resource</span></h1>
 </div>
-    <form class="form-horizontal tdarvalidate" action="save">
+    <form class="form-horizontal tdarvalidate" action="save" method="POST">
 <div class="row">
     <div class="span12">
     <p><b>This resource is shared with ${proxies?size} people and is in ${persistable.sharedCollections?size} collections.</b></p>
@@ -68,7 +68,13 @@
                                 </div>
                                 <div class=" span2">
                                     <div class="input-append">
-                                          <input class="datepicker" style="width:6em" size="16" type="text" value="" id="dp3" data-date-format="mm-dd-yyyy" >
+                                    <#local val=""/>
+                                    <#if proxy.until?has_content>
+                                    	<#local val=proxy.until />
+                                    </#if>
+                                          <input class="datepicker" name="proxies[${proxy_index}].until" style="width:6em" 
+                                          	size="16" type="text" value="${val}" data-date-format="mm-dd-yyyy" >
+
                                           <span class="add-on"><i class="icon-th"></i></span>
                                     </div>
                                 </div>

@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.validator.internal.util.privilegedactions.GetDeclaredConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
@@ -150,7 +151,11 @@ public class AuthorizedUser extends AbstractPersistable {
             userid = user.getId();
             properName = user.getProperName();
         }
-        return String.format("%s[%s] (%s - %s)", properName, userid, generalPermission, getId());
+        String ex = "";
+        if (getDateExpires() != null) {
+            ex = dateExpires.toString();
+        }
+        return String.format("%s[%s] (%s - %s%s)", properName, userid, generalPermission, getId(), ex);
     }
 
     /**
@@ -187,9 +192,6 @@ public class AuthorizedUser extends AbstractPersistable {
         this.enabled = enabled;
     }
 
-    @Transient
-    @XmlTransient
-    @JsonIgnore
     public Date getDateExpires() {
         return dateExpires;
     }

@@ -1,8 +1,13 @@
 package org.tdar.struts.action.resource;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 
 public class UserRightsProxy implements Serializable {
@@ -17,6 +22,7 @@ public class UserRightsProxy implements Serializable {
     private String email;
     private GeneralPermissions permission;
     private Date until;
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     public String getDisplayName() {
         return displayName;
@@ -66,12 +72,24 @@ public class UserRightsProxy implements Serializable {
         this.permission = permission;
     }
 
-    public Date getUntil() {
+    public String getUntil() {
+        if (until != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            return sdf.format(until);
+        }
+        return "";
+    }
+
+    public void setUntilDate(Date date) {
+        this.until = date;
+    }
+
+    public Date getUntilDate() {
         return until;
     }
 
-    public void setUntil(Date until) {
-        this.until = until;
+    public void setUntil(String until) {
+        this.until = DateTime.parse(until, DateTimeFormat.forPattern("MM/dd/yyyy")).toDate();
     }
 
     public Long getInviteId() {
@@ -84,7 +102,7 @@ public class UserRightsProxy implements Serializable {
 
     public boolean isEmpty() {
         if (inviteId == null && email == null && id == null) {
-            
+
             return true;
         }
         return false;
