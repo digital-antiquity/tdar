@@ -45,7 +45,7 @@
         <liquibase.version>3.5.3</liquibase.version>
         <junit.version>4.12</junit.version>
         <maven.compiler.version>3.3</maven.compiler.version>
-        <surefire-failsafe.version>2.19.1</surefire-failsafe.version>
+        <surefire-failsafe.version>2.18.1</surefire-failsafe.version>
         <antrun.version>1.8</antrun.version>
         <jvm.args>-Xms256m -Xmx3072m</jvm.args>
         <use.test.classpath>false</use.test.classpath>
@@ -85,28 +85,28 @@
         <bouncycastle.version>1.56</bouncycastle.version>        
         <http-components.version>4.4.6</http-components.version>
         <http-client.version>4.5.3</http-client.version>
-		<guava.version>21.0</guava.version>
-		<jackcess.version>2.1.6</jackcess.version>
-		<jt-utils.version>1.4.0</jt-utils.version>
-		<commons-io.version>2.5</commons-io.version>
-		<commons-beanutils.version>1.9.3</commons-beanutils.version>
-		<commons-codec.version>1.10</commons-codec.version>
-		<joda-time.version>2.9.7</joda-time.version>
-		<findbugs.version>3.0.0</findbugs.version>
-		<ant.version>1.10.1</ant.version>
-		<commons-lang3.version>3.5</commons-lang3.version>
-		<cglib.version>3.2.5</cglib.version>
-		<commons-compress.version>1.13</commons-compress.version>
-		<commons-cli.version>1.3</commons-cli.version>
-		<hamcrest.version>1.3</hamcrest.version>
+        <guava.version>21.0</guava.version>
+        <jackcess.version>2.1.6</jackcess.version>
+        <jt-utils.version>1.4.0</jt-utils.version>
+        <commons-io.version>2.5</commons-io.version>
+        <commons-beanutils.version>1.9.3</commons-beanutils.version>
+        <commons-codec.version>1.10</commons-codec.version>
+        <joda-time.version>2.9.7</joda-time.version>
+        <findbugs.version>3.0.0</findbugs.version>
+        <ant.version>1.10.1</ant.version>
+        <commons-lang3.version>3.5</commons-lang3.version>
+        <cglib.version>3.2.5</cglib.version>
+        <commons-compress.version>1.13</commons-compress.version>
+        <commons-cli.version>1.3</commons-cli.version>
+        <hamcrest.version>1.3</hamcrest.version>
         <jetty.version>9.4.2.v20170220</jetty.version>
         <struts2.version>2.5.10.1</struts2.version>
         <jersey.version>2.25.1</jersey.version>
-		<icu4j.version>58.2</icu4j.version>
+        <icu4j.version>58.2</icu4j.version>
         <htmlunit.version>2.25</htmlunit.version>
-		<selenium.version>3.3.1</selenium.version>
+        <selenium.version>3.3.1</selenium.version>
 
-		<commons-fileupload.version>1.3.2</commons-fileupload.version>
+        <commons-fileupload.version>1.3.2</commons-fileupload.version>
         
         <clover.licenseDir>/home/bamboo</clover.licenseDir>
         <!-- Following points to the profile directory to use for filtering 
@@ -255,19 +255,19 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-	        <dependency>
-	            <groupId>org.slf4j</groupId>
-	            <artifactId>jcl-over-slf4j</artifactId>
-	            <version>${slf4j.version}</version>
-	            <!-- LICENSE: MIT -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.slf4j</groupId>
-	            <artifactId>slf4j-api</artifactId>
-	            <version>${slf4j.version}</version>
-	            <!-- LICENSE: MIT -->
-	        </dependency>
-			<dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+                <!-- LICENSE: MIT -->
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+                <!-- LICENSE: MIT -->
+            </dependency>
+            <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
                 <version>3.1.0</version>
@@ -277,287 +277,287 @@
                 <artifactId>cglib-nodep</artifactId>
                 <version>${cglib.version}</version>
             </dependency>
-	        <dependency>
-	            <groupId>org.ow2.asm</groupId>
-	            <artifactId>asm-commons</artifactId>
-	            <version>${asm.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.ow2.asm</groupId>
-	            <artifactId>asm</artifactId>
-	            <version>${asm.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.ow2.asm</groupId>
-	            <artifactId>asm-debug-all</artifactId>
-	            <version>${asm.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>com.google.guava</groupId>
-	            <artifactId>guava</artifactId>
-	            <version>${guava.version}</version>
-	            <!-- LICENSE: Apache 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>com.healthmarketscience.jackcess</groupId>
-	            <artifactId>jackcess</artifactId>
-	            <version>${jackcess.version}</version>
-	            <!-- LICENSE: LGPL 2.1 -->
-	        </dependency>
-			<dependency>
-				<groupId>org.jaitools</groupId>
-				<artifactId>jt-utils</artifactId>
-				<version>${jt-utils.version}</version>
-			</dependency>
-	        <dependency>
-	            <groupId>org.apache.commons</groupId>
-	            <artifactId>commons-lang3</artifactId>
-	            <version>${commons-lang3.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-			<dependency>
-	            <groupId>commons-lang</groupId>
-	            <artifactId>commons-lang</artifactId>
-	            <version>2.6</version>
-			</dependency>
-			<dependency>
-	            <groupId>commons-io</groupId>
-	            <artifactId>commons-io</artifactId>
-	            <version>${commons-io.version}</version>
-			</dependency>
-			<dependency>
-	            <groupId>commons-collections</groupId>
-	            <artifactId>commons-collections</artifactId>
-	            <version>3.2.2</version>
-			</dependency>
-			<dependency>
-	            <groupId>commons-beanutils</groupId>
-	            <artifactId>commons-beanutils</artifactId>
-	            <version>${commons-beanutils.version}</version>
-			</dependency>
-			<dependency>
-	            <groupId>commons-logging</groupId>
-	            <artifactId>commons-logging</artifactId>
-	            <version>1.2</version>
-			</dependency>
-			<dependency>
-	            <groupId>commons-codec</groupId>
-	            <artifactId>commons-codec</artifactId>
-	            <version>${commons-codec.version}</version>
-			</dependency>
-	        <dependency>
-	            <groupId>org.apache.commons</groupId>
-	            <artifactId>commons-compress</artifactId>
-	            <version>${commons-compress.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>commons-cli</groupId>
-	            <artifactId>commons-cli</artifactId>
-	            <version>${commons-cli.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>com.rometools</groupId>
-	            <artifactId>rome</artifactId>
-	            <version>${rome.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>com.rometools</groupId>
-	            <artifactId>rome-modules</artifactId>
-	            <version>${rome.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.httpcomponents</groupId>
-	            <artifactId>httpmime</artifactId>
-	            <version>${http-client.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.httpcomponents</groupId>
-	            <artifactId>httpclient</artifactId>
-	            <version>${http-client.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.httpcomponents</groupId>
-	            <artifactId>httpclient-cache</artifactId>
-	            <version>${http-client.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.httpcomponents</groupId>
-	            <artifactId>httpcore</artifactId>
-	            <version>${http-components.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>joda-time</groupId>
-	            <artifactId>joda-time</artifactId>
-	            <version>${joda-time.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.ant</groupId>
-	            <artifactId>ant</artifactId>
-	            <version>${ant.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.pdfbox</groupId>
-	            <artifactId>pdfbox</artifactId>
-	            <version>${pdfbox.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-commons</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-debug-all</artifactId>
+                <version>${asm.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+                <!-- LICENSE: Apache 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>com.healthmarketscience.jackcess</groupId>
+                <artifactId>jackcess</artifactId>
+                <version>${jackcess.version}</version>
+                <!-- LICENSE: LGPL 2.1 -->
+            </dependency>
+            <dependency>
+                <groupId>org.jaitools</groupId>
+                <artifactId>jt-utils</artifactId>
+                <version>${jt-utils.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>commons-lang</groupId>
+                <artifactId>commons-lang</artifactId>
+                <version>2.6</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>3.2.2</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons-beanutils.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>commons-cli</groupId>
+                <artifactId>commons-cli</artifactId>
+                <version>${commons-cli.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>com.rometools</groupId>
+                <artifactId>rome</artifactId>
+                <version>${rome.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>com.rometools</groupId>
+                <artifactId>rome-modules</artifactId>
+                <version>${rome.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpmime</artifactId>
+                <version>${http-client.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${http-client.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient-cache</artifactId>
+                <version>${http-client.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${http-components.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>joda-time</groupId>
+                <artifactId>joda-time</artifactId>
+                <version>${joda-time.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ant</groupId>
+                <artifactId>ant</artifactId>
+                <version>${ant.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
 
-	        <dependency>
-	            <groupId>com.fasterxml.jackson.core</groupId>
-	            <artifactId>jackson-core</artifactId>
-	            <version>${jackson.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.bouncycastle</groupId>
-	            <artifactId>bcprov-jdk15on</artifactId>
-	            <version>${bouncycastle.version}</version>
-	            <!-- LICENSE: MIT -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.bouncycastle</groupId>
-	            <artifactId>bcmail-jdk15on</artifactId>
-	            <version>${bouncycastle.version}</version>
-	            <!-- LICENSE: MIT -->
-	        </dependency>
-	        <dependency>
-	            <groupId>com.vividsolutions</groupId>
-	            <artifactId>jts</artifactId>
-	            <version>1.13</version>
-	        </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-core</artifactId>
+                <version>${jackson.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+                <!-- LICENSE: MIT -->
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcmail-jdk15on</artifactId>
+                <version>${bouncycastle.version}</version>
+                <!-- LICENSE: MIT -->
+            </dependency>
+            <dependency>
+                <groupId>com.vividsolutions</groupId>
+                <artifactId>jts</artifactId>
+                <version>1.13</version>
+            </dependency>
 
-	        <dependency>
-	            <groupId>com.fasterxml.jackson.datatype</groupId>
-	            <artifactId>jackson-datatype-hibernate5</artifactId>
-	            <version>${jackson.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>com.fasterxml.jackson.dataformat</groupId>
-	            <artifactId>jackson-dataformat-smile</artifactId>
-	            <version>${jackson.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>com.fasterxml.jackson.core</groupId>
-	            <artifactId>jackson-databind</artifactId>
-	            <version>${jackson.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>com.fasterxml.jackson.module</groupId>
-	            <artifactId>jackson-module-jaxb-annotations</artifactId>
-	            <version>${jackson.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>com.fasterxml.jackson.core</groupId>
-	            <artifactId>jackson-annotations</artifactId>
-	            <version>${jackson.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>com.google.code.findbugs</groupId>
-	            <artifactId>annotations</artifactId>
-	            <version>${findbugs.version}</version>
-	            <!-- LICENSE: LGPL -->
-	        </dependency>
-			<!-- https://mvnrepository.com/artifact/org.jdom/jdom2 -->
-			<dependency>
-			    <groupId>org.jdom</groupId>
-			    <artifactId>jdom2</artifactId>
-			    <version>2.0.6</version>
-			</dependency>
-			<dependency>
-			    <groupId>com.github.ben-manes.caffeine</groupId>
-			    <artifactId>caffeine</artifactId>
-			    <version>2.4.0</version>
-			</dependency>
-	        <dependency>
-	            <groupId>org.apache.tika</groupId>
-	            <artifactId>tika-core</artifactId>
-	            <version>${tika.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-	        <dependency>
-	            <groupId>org.apache.tika</groupId>
-	            <artifactId>tika-parsers</artifactId>
-	            <version>${tika.version}</version>
-	            <!-- LICENSE: APACHE 2.0 -->
-	        </dependency>
-			<dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-hibernate5</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
+                <artifactId>jackson-dataformat-smile</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+                <version>${jackson.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-annotations</artifactId>
+                <version>${jackson.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>annotations</artifactId>
+                <version>${findbugs.version}</version>
+                <!-- LICENSE: LGPL -->
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.jdom/jdom2 -->
+            <dependency>
+                <groupId>org.jdom</groupId>
+                <artifactId>jdom2</artifactId>
+                <version>2.0.6</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>2.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-core</artifactId>
+                <version>${tika.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-parsers</artifactId>
+                <version>${tika.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
                 <artifactId>javassist</artifactId>
                 <groupId>org.javassist</groupId>
-				<version>3.21.0-GA</version>
-			</dependency>
-			<dependency>
+                <version>3.21.0-GA</version>
+            </dependency>
+            <dependency>
                 <artifactId>xml-apis</artifactId>
                 <groupId>xml-apis</groupId>
-				<version>2.0.2</version>
-			</dependency>
-			<dependency>
+                <version>2.0.2</version>
+            </dependency>
+            <dependency>
                 <artifactId>json-simple</artifactId>
                 <groupId>com.googlecode.json-simple</groupId>
-				<version>1.1.1</version>
-			</dependency>
-	        <dependency>
-	            <groupId>org.hamcrest</groupId>
-	            <artifactId>hamcrest-all</artifactId>
-	            <version>${hamcrest.version}</version>
-	        </dependency>
-	        <dependency>
-	            <artifactId>jetty-io</artifactId>
-	            <groupId>org.eclipse.jetty</groupId>
-	            <version>${jetty.version}</version>
-	        </dependency>
-	        <dependency>
-	            <artifactId>jetty-servlets</artifactId>
-	            <groupId>org.eclipse.jetty</groupId>
-	            <version>${jetty.version}</version>
-	        </dependency>
-	        <dependency>
-	            <artifactId>jetty-http</artifactId>
-	            <groupId>org.eclipse.jetty</groupId>
-	            <version>${jetty.version}</version>
-	        </dependency>
-	        <dependency>
-	            <artifactId>jetty-security</artifactId>
-	            <groupId>org.eclipse.jetty</groupId>
-	            <version>${jetty.version}</version>
-	        </dependency>
-	        <dependency>
-	            <artifactId>websocket-client</artifactId>
-	            <groupId>org.eclipse.jetty.websocket</groupId>
-	            <version>${jetty.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>org.eclipse.jetty</groupId>
-	            <artifactId>jetty-server</artifactId>
-	            <version>${jetty.version}</version>
-	        </dependency>
-	        <dependency>
-	            <artifactId>jetty-util</artifactId>
-	            <groupId>org.eclipse.jetty</groupId>
-	            <version>${jetty.version}</version>
-	        </dependency>
-	        <dependency>
-	            <artifactId>jetty-continuation</artifactId>
-	            <groupId>org.eclipse.jetty</groupId>
-	            <version>${jetty.version}</version>
-	        </dependency>
-	        <dependency>
-	            <groupId>xerces</groupId>
-	            <artifactId>xercesImpl</artifactId>
-	            <version>2.11.0</version>
-	        </dependency>
+                <version>1.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-all</artifactId>
+                <version>${hamcrest.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>jetty-io</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>jetty-servlets</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>jetty-http</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>jetty-security</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>websocket-client</artifactId>
+                <groupId>org.eclipse.jetty.websocket</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-server</artifactId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>jetty-util</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>jetty-continuation</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>xerces</groupId>
+                <artifactId>xercesImpl</artifactId>
+                <version>2.11.0</version>
+            </dependency>
         <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -615,8 +615,8 @@
                     <groupId>junit</groupId>
                 </exclusion>
                 <exclusion>
-    	            <groupId>org.hamcrest</groupId>
-    	            <artifactId>hamcrest-library</artifactId>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-library</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -775,19 +775,19 @@
             <artifactId>hibernate-c3p0</artifactId>
             <version>${hibernate.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
-			<exclusions>
+            <exclusions>
                 <exclusion>
                     <artifactId>c3p0</artifactId>
-		            <groupId>com.mchange</groupId>
+                    <groupId>com.mchange</groupId>
                 </exclusion>
-			</exclusions>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
             <version>0.9.5.2</version>
         </dependency>
-		
+
         <!-- <dependency> -->
             <!-- this attempts to use the META-INF/ configuraiton for the 
                 right logging source; this allows us to pipe hibernate into slf4j -->
@@ -804,16 +804,16 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>5.4.1.Final</version>
-			<exclusions>
-				<exclusion>
-		            <groupId>org.jboss.logging</groupId>
-		            <artifactId>jboss-logging</artifactId>
-				</exclusion>
-				<exclusion>
-		            <groupId>com.fasterxml</groupId>
-		            <artifactId>classmate</artifactId>
-				</exclusion>
-			</exclusions>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.logging</groupId>
+                    <artifactId>jboss-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml</groupId>
+                    <artifactId>classmate</artifactId>
+                </exclusion>
+            </exclusions>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
     </dependencies>
