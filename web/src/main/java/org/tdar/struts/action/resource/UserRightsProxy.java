@@ -74,7 +74,7 @@ public class UserRightsProxy implements Serializable {
 
     public String getUntil() {
         if (until != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
             return sdf.format(until);
         }
         return "";
@@ -82,14 +82,16 @@ public class UserRightsProxy implements Serializable {
 
     public void setUntilDate(Date date) {
         this.until = date;
-    }
+        logger.trace("{}", this.until);
+        }
 
     public Date getUntilDate() {
         return until;
     }
 
     public void setUntil(String until) {
-        this.until = DateTime.parse(until, DateTimeFormat.forPattern("MM/dd/yyyy")).toDate();
+        this.until = DateTime.parse(until, DateTimeFormat.forPattern("MM-dd-yyyy")).toDate();
+        logger.trace("{} {}", until, this.until);
     }
 
     public Long getInviteId() {

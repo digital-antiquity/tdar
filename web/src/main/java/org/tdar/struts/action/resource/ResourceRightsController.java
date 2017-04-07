@@ -103,12 +103,11 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
         setupEdit();
         return SUCCESS;
     }
-    
+
     public List<GeneralPermissions> getAvailablePermissions() {
         List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
-
 
     @SkipValidation
     @Action(value = SAVE, results = {
@@ -120,18 +119,18 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         List<UserInvite> invites = new ArrayList<>();
         for (UserRightsProxy proxy : proxies) {
-            if (proxy  == null || proxy.isEmpty()) {
-                
+            if (proxy == null || proxy.isEmpty()) {
+
             } else if (proxy.getEmail() != null) {
                 invites.add(toInvite(proxy));
-            } else if (proxy.getId()  != null){
+            } else if (proxy.getId() != null) {
                 authorizedUsers.add(toAuthorizedUser(proxy));
-            } 
+            }
         }
-        try{
-        resourceCollectionService.saveAuthorizedUsersForResource(getResource(), authorizedUsers, true, getAuthenticatedUser());
-        } catch (Exception e){
-            getLogger().error("issue saving",e);
+        try {
+            resourceCollectionService.saveAuthorizedUsersForResource(getResource(), authorizedUsers, true, getAuthenticatedUser());
+        } catch (Exception e) {
+            getLogger().error("issue saving", e);
         }
         return SUCCESS;
     }
@@ -142,19 +141,19 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
         invite.setDateExpires(proxy.getUntilDate());
         invite.setId(proxy.getInviteId());
         invite.setPermissions(proxy.getPermission());
-        Person person = new Person(proxy.getFirstName(),proxy.getLastName(),proxy.getEmail());
+        Person person = new Person(proxy.getFirstName(), proxy.getLastName(), proxy.getEmail());
         person = entityService.findOrSaveCreator(person);
         invite.setPerson(person);
         return invite;
     }
 
     private AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
-        getLogger().debug("{}",proxy.getUntil());
+        getLogger().debug("{}", proxy.getUntil());
         AuthorizedUser au = new AuthorizedUser();
         au.setUser(getGenericService().find(TdarUser.class, proxy.getId()));
         au.setGeneralPermission(proxy.getPermission());
         au.setDateExpires(proxy.getUntilDate());
-        getLogger().debug("{}",au);
+        getLogger().debug("{}", au);
         return au;
     }
 
