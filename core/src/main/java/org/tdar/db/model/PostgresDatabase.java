@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -227,6 +228,23 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         if (includeGeneratedValues) {
             builder.getColumns().add(DataTableColumn.TDAR_ROW_ID.getName());
         }
+        List<DataTableColumn> columns = table.getDataTableColumns();
+        columns.sort(new Comparator<DataTableColumn>() {
+
+            @Override
+            public int compare(DataTableColumn o1, DataTableColumn o2) {
+                Integer c1 = 0;
+                Integer c2 = 0;
+                if (o1.getImportOrder() != null) {
+                    c1 = o1.getImportOrder();
+                }
+                if (o2.getImportOrder() != null) {
+                    c2 = o2.getImportOrder();
+                }
+                return c1.compareTo(c2);
+            }
+            
+        });
         table.getDataTableColumns().forEach(dtc -> {
             builder.getColumns().add(dtc.getName());
             if (dtc.getDefaultCodingSheet() != null && includeGeneratedValues) {

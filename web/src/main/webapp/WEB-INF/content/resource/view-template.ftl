@@ -193,7 +193,7 @@
                     <th>Ontology</th>
                 </tr>
                 </thead>
-                <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
+                <#list dataTable.dataTableColumns?sort_by("importOrder") as column>
                 <#assign oddEven="oddC" />
                 <#if column_index % 2 == 0>
                     <#assign oddEven="evenC" />

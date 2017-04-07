@@ -178,5 +178,9 @@
              update authorized_user au set date_created = (select date_created from collection where collection.id=au.resource_collection_id);</sql>
         <addNotNullConstraint tableName="authorized_user" columnName="creator_id"/>
      </changeSet>
+     <changeSet id="prehistoric-collections-18" author="abrin">
+        <sql>update data_table_column set import_order = sequence_number;</sql>
+        <addNotNullConstraint tableName="authorized_user" columnName="creator_id"/>
+     </changeSet>
      
 </databaseChangeLog>
