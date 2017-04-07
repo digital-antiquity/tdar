@@ -173,5 +173,10 @@
         <dropNotNullConstraint tableName="whitelabel_collection" columnName="search_enabled"/>
         <dropNotNullConstraint tableName="whitelabel_collection" columnName="sub_collections_enabled"/>
     </changeSet>
-        
+     <changeSet id="prehistoric-collections-16" author="abrin">
+        <sql>update authorized_user au set creator_id = (select owner_id from collection where collection.id=au.resource_collection_id);
+             update authorized_user au set date_created = (select date_created from collection where collection.id=au.resource_collection_id);</sql>
+        <addNotNullConstraint tableName="authorized_user" columnName="creator_id"/>
+     </changeSet>
+     
 </databaseChangeLog>
