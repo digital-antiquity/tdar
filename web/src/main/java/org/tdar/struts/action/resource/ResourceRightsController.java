@@ -35,22 +35,22 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespaces({
-//        @Namespace("/document"),
-//        @Namespace("/image"),
-//        @Namespace("/dataset"),
-//        @Namespace("/image"),
-        @Namespace("/resource")
-//        @Namespace("/geospatial"),
-//        @Namespace("/sensory-data"),
-//        @Namespace("/coding-sheet"),
-//        @Namespace("/ontology")
+        @Namespace("/document/rights"),
+        @Namespace("/image/rights"),
+        @Namespace("/dataset/rights"),
+        @Namespace("/image/rights"),
+        @Namespace("/resource/rights"),
+        @Namespace("/geospatial/rights"),
+        @Namespace("/sensory-data/rights"),
+        @Namespace("/coding-sheet/rights"),
+        @Namespace("/ontology/rights")
 })
 public class ResourceRightsController extends AbstractAuthenticatableAction implements
         Preparable, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = 8551222659351457637L;
 
-    private static final String RIGHTS = "rights";
+    private static final String RIGHTS = "{id}";
 
     private static final String SUCCESS_INVITE = "invite";
     private static final String INVITE = "invite.ftl";
@@ -111,7 +111,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
 
     @SkipValidation
     @Action(value = RIGHTS, results = {
-            @Result(name = SUCCESS, location = "rights.ftl")
+            @Result(name = SUCCESS, location = "../rights.ftl")
     })
     public String edit() throws TdarActionException {
         setupEdit();
