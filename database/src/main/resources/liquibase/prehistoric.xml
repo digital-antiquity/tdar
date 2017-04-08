@@ -182,5 +182,9 @@
         <sql>update data_table_column set import_order = sequence_number;</sql>
         <addNotNullConstraint tableName="authorized_user" columnName="creator_id"/>
      </changeSet>
+     <changeSet id="prehistoric-collections-19" author="abrin">
+        <sql>update data_table_column set sequence_number = 0 where sequence_number is null;</sql>
+        <sql>update data_table_column set import_order = sequence_number where import_order is null;</sql>
+     </changeSet>
      
 </databaseChangeLog>
