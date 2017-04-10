@@ -3,6 +3,7 @@ package org.tdar.struts.action.resource;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Namespaces;
@@ -13,12 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.InternalCollection;
-import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -131,19 +130,8 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
     })
     @PostOnly
     public String save() {
-        List<AuthorizedUser> authorizedUsers = new ArrayList<>();
-        List<UserInvite> invites = new ArrayList<>();
-        for (UserRightsProxy proxy : proxies) {
-            if (proxy == null || proxy.isEmpty()) {
-
-            } else if (proxy.getEmail() != null) {
-                invites.add(toInvite(proxy));
-            } else if (proxy.getId() != null) {
-                authorizedUsers.add(toAuthorizedUser(proxy));
-            }
-        }
         try {
-            resourceCollectionService.saveAuthorizedUsersForResource(getResource(), authorizedUsers, true, getAuthenticatedUser());
+            resourceCollectionService.saveResourceRights(proxies, getAuthenticatedUser(), getResource());
         } catch (Exception e) {
             getLogger().error("issue saving", e);
             return INPUT;
@@ -151,27 +139,6 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
         return SUCCESS;
     }
 
-    private UserInvite toInvite(UserRightsProxy proxy) {
-        UserInvite invite = new UserInvite();
-        invite.setAuthorizer(getAuthenticatedUser());
-        invite.setDateExpires(proxy.getUntilDate());
-        invite.setId(proxy.getInviteId());
-        invite.setPermissions(proxy.getPermission());
-        Person person = new Person(proxy.getFirstName(), proxy.getLastName(), proxy.getEmail());
-        person = entityService.findOrSaveCreator(person);
-        invite.setPerson(person);
-        return invite;
-    }
-
-    private AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
-        getLogger().debug("{}", proxy.getUntil());
-        AuthorizedUser au = new AuthorizedUser();
-        au.setUser(getGenericService().find(TdarUser.class, proxy.getId()));
-        au.setGeneralPermission(proxy.getPermission());
-        au.setDateExpires(proxy.getUntilDate());
-        getLogger().debug("{}", au);
-        return au;
-    }
 
     @Override
     public void prepare() throws Exception {
@@ -184,29 +151,16 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
         getLogger().debug("internal:{}", internal);
         if (internal != null) {
             internal.getAuthorizedUsers().forEach(au -> {
-                UserRightsProxy proxy = new UserRightsProxy();
-                proxy.setDisplayName(au.getUser().getProperName());
-                proxy.setId(au.getUser().getId());
-                proxy.setPermission(au.getGeneralPermission());
-                proxy.setUntilDate(au.getDateExpires());
-                proxies.add(proxy);
-                getLogger().debug("{}", au);
+                proxies.add(new UserRightsProxy(au));
             });
         }
 
         List<UserInvite> invites = resourceCollectionService.findUserInvites(getPersistable());
-        invites.forEach(invite -> {
-            UserRightsProxy proxy = new UserRightsProxy();
-            Person user = invite.getUser();
-            proxy.setEmail(user.getEmail());
-            proxy.setFirstName(user.getFirstName());
-            proxy.setLastName(user.getLastName());
-            proxy.setDisplayName(user.getProperName());
-            proxy.setInviteId(invite.getId());
-            proxy.setPermission(invite.getPermissions());
-            proxy.setUntilDate(invite.getDateExpires());
-            proxies.add(proxy);
-        });
+        if (CollectionUtils.isNotEmpty(invites)) {
+            invites.forEach(invite -> {
+                proxies.add(new UserRightsProxy(invite));
+            });
+        }
         getLogger().debug("proxies:{}", proxies);
     }
 

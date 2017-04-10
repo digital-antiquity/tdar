@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.core.bean.resource;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -8,6 +8,9 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 
 public class UserRightsProxy implements Serializable {
@@ -23,6 +26,26 @@ public class UserRightsProxy implements Serializable {
     private GeneralPermissions permission;
     private Date until;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    public UserRightsProxy() {}
+    
+    public UserRightsProxy(UserInvite invite) {
+        Person user = invite.getUser();
+        setEmail(user.getEmail());
+        setFirstName(user.getFirstName());
+        setLastName(user.getLastName());
+        setDisplayName(user.getProperName());
+        setInviteId(invite.getId());
+        setPermission(invite.getPermissions());
+        setUntilDate(invite.getDateExpires());
+    }
+
+    public UserRightsProxy(AuthorizedUser au) {
+        setDisplayName(au.getUser().getProperName());
+        setId(au.getUser().getId());
+        setPermission(au.getGeneralPermission());
+        setUntilDate(au.getDateExpires());
+    }
 
     public String getDisplayName() {
         return displayName;

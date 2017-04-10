@@ -34,7 +34,6 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
@@ -52,6 +51,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -1297,15 +1297,68 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findUsersSharedWith(authenticatedUser);
     }
 
+    @Transactional(readOnly = true)
     public List<UserInvite> findUserInvites(Resource resource) {
         return getDao().findUserInvites(resource);
     }
 
+    @Transactional(readOnly = true)
     public List<UserInvite> findUserInvites(ResourceCollection resourceCollection) {
         return getDao().findUserInvites(resourceCollection);
     }
 
+    @Transactional(readOnly = true)
     public List<UserInvite> findUserInvites(TdarUser user) {
         return getDao().findUserInvites(user);
     }
+
+    @Transactional(readOnly=false)
+    public void saveResourceRights(List<UserRightsProxy> proxies, TdarUser authenticatedUser, Resource resource) {
+        List<AuthorizedUser> authorizedUsers = new ArrayList<>();
+        List<UserInvite> invites = new ArrayList<>();
+        for (UserRightsProxy proxy : proxies) {
+            if (proxy == null || proxy.isEmpty()) {
+
+            } else if (proxy.getEmail() != null) {
+                invites.add(toInvite(proxy, authenticatedUser));
+            } else if (proxy.getId() != null) {
+                authorizedUsers.add(toAuthorizedUser(proxy));
+            }
+        }
+        if (CollectionUtils.isNotEmpty(authorizedUsers)) {
+            saveAuthorizedUsersForResource(resource, authorizedUsers, true, authenticatedUser);
+        }
+        if (CollectionUtils.isNotEmpty(invites)) {
+            for (UserInvite invite : invites) {
+                if (PersistableUtils.isTransient(invite)) {
+                    continue;
+                }
+                getDao().saveOrUpdate(invite);
+                emailService.sendUserInviteEmail(invite, authenticatedUser);
+            }
+        }
+    }
+    
+    private UserInvite toInvite(UserRightsProxy proxy, TdarUser user) {
+        UserInvite invite = new UserInvite();
+        invite.setAuthorizer(user);
+        invite.setDateExpires(proxy.getUntilDate());
+        invite.setId(proxy.getInviteId());
+        invite.setPermissions(proxy.getPermission());
+        Person person = new Person(proxy.getFirstName(), proxy.getLastName(), proxy.getEmail());
+        person = entityService.findOrSaveCreator(person);
+        invite.setPerson(person);
+        return invite;
+    }
+
+    private AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
+        getLogger().debug("{}", proxy.getUntil());
+        AuthorizedUser au = new AuthorizedUser();
+        au.setUser(getDao().find(TdarUser.class, proxy.getId()));
+        au.setGeneralPermission(proxy.getPermission());
+        au.setDateExpires(proxy.getUntilDate());
+        getLogger().debug("{}", au);
+        return au;
+    }
+
 }
