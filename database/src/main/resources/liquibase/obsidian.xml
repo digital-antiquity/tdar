@@ -227,4 +227,10 @@
     </addColumn>
     
     </changeSet>
+    <changeSet id="obsidian-21" author="abrin">
+        <addColumn tableName="information_resource_file_download_statistics">
+            <column name="bot" type="boolean" defaultValueBoolean="false" />
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>
