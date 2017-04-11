@@ -181,10 +181,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage("/project/" + _139 + "/edit");
         setFieldByName("status", Status.ACTIVE.name());
         submitForm();
-        gotoPage(url);
-        if (!getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT)) {
-            gotoPage(url);
-        }
+        reloadUntilFound(getCurrentUrl(), RUDD_CREEK_ARCHAEOLOGICAL_PROJECT, 10);
         Assert.assertTrue(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
         logout();
         gotoPage(url);

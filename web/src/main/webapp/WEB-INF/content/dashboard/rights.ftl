@@ -21,32 +21,34 @@
     <@dash.sidebar current="rights" />
     </div>
     <div class="span10">
+    <#if ((findUsersSharedWith?size!0) > 0)>
         <h5>Users you've shared with</h5>
         <div class="row" id="sharedPeople">
-        <div class="well span10">
-        <div class="row">
-            <#assign showMore=false />
-            <#assign listGroups = [findUsersSharedWith]>
-            <#if (findUsersSharedWith?size > 4)><#assign listGroups =  findUsersSharedWith?chunk(findUsersSharedWith?size /4 )> </#if>
-            <#list listGroups as row>
-                <div  class="span2">
-                    <#list row>
-                    <ul class="unstyled">
-                    <#items as item>
-                        <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>"><a href="/entity/user/rights/${item.id?c}">${item.properName}</a></li>
-                    </#items>
-                    </ul>
+            <div class="well span10">
+                <div class="row">
+                    <#assign showMore=false />
+                    <#assign listGroups = [findUsersSharedWith]>
+                    <#if (findUsersSharedWith?size > 4)><#assign listGroups =  findUsersSharedWith?chunk(findUsersSharedWith?size /4 )> </#if>
+                    <#list listGroups as row>
+                        <div  class="span2">
+                            <#list row>
+                            <ul class="unstyled">
+                            <#items as item>
+                                <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>"><a href="/entity/user/rights/${item.id?c}">${item.properName}</a></li>
+                            </#items>
+                            </ul>
+                            </#list>
+                        </div>
                     </#list>
+                    </div>
+                    <#if showMore>
+                        <div span="span10">
+                            <p class="text-center"><a href="#"  onClick="$('#sharedPeople .hidden').removeClass('hidden');$(this).hide()">show more</a></p>
+                        </div>
+                    </#if>
                 </div>
-            </#list>
             </div>
-            <#if showMore>
-                <div span="span10">
-                    <p class="text-center"><a href="#"  onClick="$('#sharedPeople .hidden').removeClass('hidden');$(this).hide()">show more</a></p>
-                </div>
-            </#if>
-        </div>
-        </div>
+        <?#if>
         <@collectionsSection />
     </div>
 

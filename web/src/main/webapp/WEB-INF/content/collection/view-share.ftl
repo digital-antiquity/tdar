@@ -25,7 +25,7 @@
 
         <@commonCollection.descriptionSection/>
 
-        <@commonCollection.resultsSection header="in this Share"/>
+        <@commonCollection.resultsSection header="in this Collection"/>
 
         <@commonCollection.adminSection/>
     </#if>
