@@ -100,7 +100,9 @@ public class RequestAccessAction extends AbstractAuthenticatableAction
         }
         // only add the SAA option if ...
         custom  = resourceService.findCustom(resource);
-        emailTypes.add(EmailMessageType.CUSTOM);
+        if (custom != null) {
+            emailTypes.add(EmailMessageType.CUSTOM);
+        }
 
     }
 

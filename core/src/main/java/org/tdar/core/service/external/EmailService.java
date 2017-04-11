@@ -230,8 +230,10 @@ public class EmailService {
 
         if(type == EmailMessageType.CUSTOM) {
             RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
-            subjectPart = params.get("customName")[0];
+            logger.debug("{}", customRequest);
+            subjectPart = customRequest.getName();
             map.put("descriptionRequest", customRequest.getDescriptionRequest());
+            map.put("customName", customRequest.getName());
 
         }
         if (CONFIG.isSendEmailToTester()) {

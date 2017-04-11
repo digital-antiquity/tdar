@@ -111,16 +111,16 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private boolean showNavSearchBox = true;
     private FacetWrapper facetWrapper = new FacetWrapper();
 
-	private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
+    private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
 
     private boolean keywordSectionVisible = true;
 
-	private DisplayOrientation orientation;
+    private DisplayOrientation orientation;
 
     private HomepageDetails homepageGraphs;
 
     private String schemaOrgJsonLD;
-    
+
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
      * 
@@ -172,7 +172,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public String loadViewMetadata() {
         setParentId(getPersistable().getParentId());
         if (!isEditor()) {
-            ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable());
+            ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable(), isBot());
             getGenericService().saveOrUpdate(rcvs);
         } else {
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
@@ -228,7 +228,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public boolean isWhiteLabelCollection() {
         return getPersistable().isWhiteLabelCollection();
     }
-
 
     public FacetWrapper getFacetWrapper() {
         return facetWrapper;
@@ -311,7 +310,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public List<ResourceCollection> getCollections() {
         return this.collections;
     }
-    
+
     @Override
     public boolean isRightSidebar() {
         return true;
@@ -410,9 +409,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public ProjectionModel getProjectionModel() {
         return projectionModel;
     }
-    
+
     public void setProjectionModel(ProjectionModel model) {
-    	this.projectionModel  = model;
+        this.projectionModel = model;
     }
 
     /**
@@ -457,7 +456,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             try {
                 setSchemaOrgJsonLD(resourceCollectionService.getSchemaOrgJsonLD(getPersistable()));
             } catch (Exception ioe) {
-                getLogger().warn("issues creating json",ioe);
+                getLogger().warn("issues creating json", ioe);
             }
             if (isKeywordSectionVisible()) {
                 getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
@@ -480,7 +479,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
             }
         }
-        
+
     }
 
     @Override
@@ -532,7 +531,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return baseUrl;
     }
 
-    
     @Override
     public boolean isNavSearchBoxVisible() {
         return showNavSearchBox;
@@ -541,22 +539,21 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     @Override
     public void setSearchTitle(String description) {
         // TODO Auto-generated method stub
-        
+
     }
 
+    @Override
+    public DisplayOrientation getOrientation() {
+        if (orientation == null) {
+            return getPersistable().getOrientation();
+        }
+        return orientation;
+    }
 
-	@Override
-	public DisplayOrientation getOrientation() {
-		if (orientation == null) {
-			return getPersistable().getOrientation();
-		}
-		return orientation;
-	}
+    public void setOrientation(DisplayOrientation orientation) {
+        this.orientation = orientation;
+    }
 
-	public void setOrientation(DisplayOrientation orientation) {
-		this.orientation = orientation;
-	}
-	
     public boolean isKeywordSectionVisible() {
         return keywordSectionVisible;
     }
@@ -580,6 +577,5 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
         this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
-
 
 }

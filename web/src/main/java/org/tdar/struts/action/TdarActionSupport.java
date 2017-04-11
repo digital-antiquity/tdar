@@ -966,5 +966,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public Collection<String> getErrorMessages() {
         return getActionErrors();
     }
+    
+    protected boolean isBot() {
+        return Activity.testUserAgent(ServletActionContext.getRequest().getHeader("User-Agent"));
+
+    }
+
 
 }

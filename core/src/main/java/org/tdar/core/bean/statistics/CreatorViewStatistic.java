@@ -25,9 +25,10 @@ public class CreatorViewStatistic extends AbstractResourceStatistic<Creator<?>> 
     public CreatorViewStatistic() {
     };
 
-    public CreatorViewStatistic(Date date, Creator<?> r) {
+    public CreatorViewStatistic(Date date, Creator<?> r, boolean isBot) {
         setDate(date);
         setReference(r);
+        setBot(isBot);
     }
 
     @Override

@@ -80,6 +80,7 @@ import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.activity.Activity;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
@@ -230,8 +231,8 @@ public class ResourceService {
      * @param r
      */
     @Transactional(readOnly = false)
-    public void incrementAccessCounter(Resource r) {
-        ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r);
+    public void incrementAccessCounter(Resource r, boolean b) {
+        ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r, b);
         datasetDao.markWritable(rac);
         genericDao.save(rac);
     }

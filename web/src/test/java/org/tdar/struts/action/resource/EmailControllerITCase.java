@@ -3,9 +3,14 @@ package org.tdar.struts.action.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.collection.RequestCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Document;
@@ -19,9 +24,23 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
     RecaptchaService recaptchaService;
 
     @SuppressWarnings("deprecation")
-    @Test
+    @Test()
     public void testSuccess() throws Exception {
         Document document = genericService.find(Document.class, Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
+        ResourceCollection test = createAndSaveNewResourceCollection("testing");
+        test.getResources().add(document);
+        document.getResourceCollections().add(test);
+        genericService.saveOrUpdate(test);
+        genericService.saveOrUpdate(document);
+        RequestCollection request = new RequestCollection();
+        request.setName("test request");
+        request.setPermission(GeneralPermissions.VIEW_ALL);
+        request.setContact(getAdminUser());
+        request.setDescriptionRequest("dr");
+        request.setDescriptionResponse("resDe");
+        request.setCollections(Arrays.asList(test.getId()));
+        genericService.saveOrUpdate(request);
+        
         for (EmailMessageType type : EmailMessageType.values()) {
             EmailController ec = generateNewInitializedController(EmailController.class, getBasicUser());
             AntiSpamHelper h = new AntiSpamHelper();

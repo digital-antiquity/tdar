@@ -234,7 +234,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
 
         if (!isEditor() && !PersistableUtils.isEqual(creator, getAuthenticatedUser())) {
-            CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), creator);
+            CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), creator, isBot());
             getGenericService().saveOrUpdate(cvs);
         }
 

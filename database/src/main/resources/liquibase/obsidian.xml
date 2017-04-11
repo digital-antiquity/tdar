@@ -211,4 +211,20 @@
     <changeSet id="obsidian-19" author="abrin">
         <sql>update email_queue set message_type ='CUSTOM' where message_type='SAA';</sql>
     </changeSet>
+    <changeSet id="obsidian-20" author="abrin">
+    <addColumn tableName="resource_access_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    <addColumn tableName="creator_view_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+
+    <addColumn tableName="resource_collection_view_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    <addColumn tableName="resource_access_day_agg">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    
+    </changeSet>
 </databaseChangeLog>
