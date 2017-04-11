@@ -393,7 +393,7 @@
             <@edit.relatedCollections inheritanceEnabled />
         </#if>
 
-        <@edit.fullAccessRights />
+<#--         <@edit.fullAccessRights /> -->
 
         <#if !resource.resourceType.project>
             <@edit.submit fileReminder=((resource.id == -1) && fileReminder) class="button btn" >
