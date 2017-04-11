@@ -232,5 +232,11 @@
             <column name="bot" type="boolean" defaultValueBoolean="false" />
         </addColumn>
     </changeSet>
+    <changeSet id="obsidian-22" author="abrin">
+    <dropColumn tableName="resource_access_day_agg" columnName="bot"/>
+        <addColumn tableName="resource_access_day_agg">
+            <column name="bot" type="bigint" />
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>
