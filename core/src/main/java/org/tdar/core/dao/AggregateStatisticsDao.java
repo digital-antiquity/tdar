@@ -103,10 +103,6 @@ public class AggregateStatisticsDao extends GenericDao {
         String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_UPDATE, date);
         getLogger().trace(sql);
         getCurrentSession().createSQLQuery(sql).executeUpdate();
-        sql = String.format(TdarNamedQueries.DAILY_RESOURCE_UPDATE_BOT, date);
-        getLogger().trace(sql);
-        getCurrentSession().createSQLQuery(sql).executeUpdate();
-
     }
 
     /**
