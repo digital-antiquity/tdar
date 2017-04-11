@@ -48,7 +48,7 @@
                     </#if>
                 </div>
             </div>
-        <?#if>
+        </#if>
         <@collectionsSection />
     </div>
 
