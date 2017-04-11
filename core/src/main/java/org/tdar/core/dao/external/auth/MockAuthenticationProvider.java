@@ -267,7 +267,8 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public boolean updateBasicUserInformation(TdarUser user) {
-        throw new TdarRecoverableRuntimeException("error.not_implemented");
+        //our mock service doesn't store email, firstname, or lastname so a no-op is sufficient here
+        return true;
     }
 
     @Override
