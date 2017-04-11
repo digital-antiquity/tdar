@@ -208,4 +208,7 @@
         referencedTableName="collection" 
         baseColumnNames="collection_id" baseTableName="collection_request_collection_ids" referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="obsidian-19" author="abrin">
+        <sql>update email_queue set message_type ='CUSTOM' where message_type='SAA';</sql>
+    </changeSet>
 </databaseChangeLog>

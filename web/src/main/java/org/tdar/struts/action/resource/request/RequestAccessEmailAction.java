@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource.request;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -74,6 +75,8 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
         if (type == EmailMessageType.CUSTOM) {
             RequestCollection custom = resourceService.findCustom(getResource());
             to = custom.getContact();
+            params.put("customName", new String[] { custom.getName()});
+            params.put("descriptionRequest", new String[] { custom.getDescriptionRequest()});
         }
         emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
         addActionMessage("Message Sent");

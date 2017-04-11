@@ -1002,8 +1002,9 @@ public class ResourceService {
 
     @Transactional(readOnly=true)
     public RequestCollection findCustom(Resource resource) {
+        List<Long> ids = PersistableUtils.extractIds(resource.getResourceCollections());
             for (RequestCollection rc : genericDao.findAll(RequestCollection.class)) {
-                if (CollectionUtils.containsAny(rc.getCollections(), resource.getResourceCollections())) {
+                if (CollectionUtils.containsAny(rc.getCollections(), ids)) {
                     return rc;
                 }
             }

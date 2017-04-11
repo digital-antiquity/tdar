@@ -224,20 +224,18 @@ public class EmailService {
         Email email = new Email();
         genericDao.markWritable(email);
         email.setFrom(CONFIG.getDefaultFromEmail());
+        String subjectPart = MessageHelper.getMessage(type.getLocaleKey());
+        if(type == EmailMessageType.CUSTOM) {
+            subjectPart = params.get("customName")[0];
+        }
         if (CONFIG.isSendEmailToTester()) {
             email.setTo(from.getEmail());
         }
         email.setTo(to.getEmail());
-        String msg = String.format("%s[%s] requesting access (%s) sent to %s[%s]", from.getProperName(), from.getId(), type.name(), to.getProperName(), to.getId());
-        TdarUser user = genericDao.find(TdarUser.class, CONFIG.getAdminUserId());
-        if (from instanceof TdarUser) {
-            user = (TdarUser) from;
-        }
-        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, user, RevisionLogType.REQUEST);
-        genericDao.markWritable(rrl);
-        genericDao.saveOrUpdate(rrl);
-        String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(),
-                from.getProperName());
+        createResourceRevisionLogEntry(from, to, resource, subjectPart);
+        
+        
+        String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), subjectPart, resource.getId(), from.getProperName());
         if (StringUtils.isNotBlank(subjectSuffix)) {
             subject += " - " + subjectSuffix;
         }
@@ -263,6 +261,17 @@ public class EmailService {
         queueWithFreemarkerTemplate(type.getTemplateName(), map, email);
         return email;
 
+    }
+
+    private void createResourceRevisionLogEntry(Person from, HasEmail to, Resource resource, String subjectPart) {
+        String msg = String.format("%s[%s] requesting access (%s) sent to %s[%s]", from.getProperName(), from.getId(), subjectPart, to.getProperName(), to.getId());
+        TdarUser user = genericDao.find(TdarUser.class, CONFIG.getAdminUserId());
+        if (from instanceof TdarUser) {
+            user = (TdarUser) from;
+        }
+        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, user, RevisionLogType.REQUEST);
+        genericDao.markWritable(rrl);
+        genericDao.saveOrUpdate(rrl);
     }
 
     @Transactional(readOnly = false)

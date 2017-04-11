@@ -29,7 +29,7 @@ public class RequestCollection extends AbstractPersistable {
     @ElementCollection()
     @CollectionTable(name = "collection_request_collection_ids", joinColumns = @JoinColumn(name = "collection_request_id") )
     @Column(name = "collection_id")
-    private List<ResourceCollection> collections = new ArrayList<>();
+    private List<Long> collections = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "general_permission", length = FieldLength.FIELD_LENGTH_50)
@@ -51,11 +51,11 @@ public class RequestCollection extends AbstractPersistable {
     @JoinColumn(name = "contact_id", nullable = false)
     private TdarUser contact;
     
-    public List<ResourceCollection> getCollections() {
+    public List<Long> getCollections() {
         return collections;
     }
 
-    public void setCollections(List<ResourceCollection> collections) {
+    public void setCollections(List<Long> collections) {
         this.collections = collections;
     }
 
