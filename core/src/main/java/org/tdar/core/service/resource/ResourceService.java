@@ -61,6 +61,7 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.dao.resource.ResourceTypeStatusInfo;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
@@ -112,6 +113,8 @@ public class ResourceService {
     private BillingAccountDao accountDao;
     @Autowired
     private SerializationService serializationService;
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
     private GeoSearchService geoSearchService;
@@ -1002,13 +1005,7 @@ public class ResourceService {
 
     @Transactional(readOnly=true)
     public RequestCollection findCustom(Resource resource) {
-        List<Long> ids = PersistableUtils.extractIds(resource.getResourceCollections());
-            for (RequestCollection rc : genericDao.findAll(RequestCollection.class)) {
-                if (CollectionUtils.containsAny(rc.getCollections(), ids)) {
-                    return rc;
-                }
-            }
-            return null;
+        return resourceCollectionDao.findCustomRequest(resource);
     }
 
 }

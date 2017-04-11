@@ -26,6 +26,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -225,8 +226,13 @@ public class EmailService {
         genericDao.markWritable(email);
         email.setFrom(CONFIG.getDefaultFromEmail());
         String subjectPart = MessageHelper.getMessage(type.getLocaleKey());
+        Map<String, Object> map = new HashMap<>();
+
         if(type == EmailMessageType.CUSTOM) {
+            RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
             subjectPart = params.get("customName")[0];
+            map.put("descriptionRequest", customRequest.getDescriptionRequest());
+
         }
         if (CONFIG.isSendEmailToTester()) {
             email.setTo(from.getEmail());
@@ -245,7 +251,6 @@ public class EmailService {
             email.setResource(resource);
         }
         email.setStatus(Status.IN_REVIEW);
-        Map<String, Object> map = new HashMap<>();
         map.put("from", from);
         map.put("to", to);
         setupBasicComponents(map);
@@ -308,6 +313,11 @@ public class EmailService {
         map.put("requestor", requestor);
         map.put("resource", resource);
         map.put("authorizedUser", authenticatedUser);
+        if (type == EmailMessageType.CUSTOM) {
+            RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
+            map.put("customName", customRequest.getName());
+            map.put("descriptionResponse", customRequest.getDescriptionResponse());
+        }
         setupBasicComponents(map);
         if (StringUtils.isNotBlank(comment)) {
             map.put("message", comment);
@@ -319,7 +329,7 @@ public class EmailService {
             if (type != null) {
                 switch (type) {
                     case CUSTOM:
-                        template = "email-form/saa-accept.ftl";
+                        template = "email-form/custom-accept.ftl";
                         break;
                     default:
                         break;

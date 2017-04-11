@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
+import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -397,4 +398,16 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             delete(da);
         }
     }
+
+    public RequestCollection findCustomRequest(Resource resource) {
+        List<Long> ids = PersistableUtils.extractIds(resource.getResourceCollections());
+        for (RequestCollection rc : findAll(RequestCollection.class)) {
+            if (CollectionUtils.containsAny(rc.getCollections(), ids)) {
+                return rc;
+            }
+        }
+        return null;
+    }
+    
+    
 }
