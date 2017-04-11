@@ -82,11 +82,11 @@
                     <param name="logLevel">ERROR</param>
                     <!-- <param name="exception.logCategory">org.tdar.struts</param> -->
                 </interceptor-ref>
+                <interceptor-ref name="httpsMethod" />
+                <interceptor-ref name="httpMethod" />
                 <interceptor-ref name="activityLogging" />
                 <interceptor-ref name="sessionSecurity" />
                 <interceptor-ref name="cacheControl" />
-                <interceptor-ref name="httpsMethod" />
-                <interceptor-ref name="httpMethod" />
                 <interceptor-ref name="store">
                     <param name="operationMode">AUTOMATIC</param>
                 </interceptor-ref>
