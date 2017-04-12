@@ -89,10 +89,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
-        // docValMap.put("authorizedUsers[0].user.id", "121");
-        // docValMap.put("authorizedUsers[1].user.id", "5349");
-        // docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        // docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "10.1016/j.iheduc.2003.11.004");

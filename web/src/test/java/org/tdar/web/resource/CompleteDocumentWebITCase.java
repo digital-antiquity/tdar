@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.jena.sparql.pfunction.library.alt;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
@@ -68,14 +69,6 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
         // authorizedUsers[0].user.id
-        docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
-        docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
-        docUnorderdValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        docUnorderdValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docUnorderdValMap.put("authorizedUsersFullNames[0]", "Michelle Elliott");
-        docUnorderdValMap.put("authorizedUsersFullNames[1]", "Joshua Watts");
-        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
-        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "doi:10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
@@ -219,12 +212,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
 
         docValMap.putAll(docUnorderdValMap);
 
-        for (String key : docValMap.keySet()) {
-            setInput(key, docValMap.get(key));
-        }
-        for (String key : docMultiValMap.keySet()) {
-            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
-        }
+        setInputs();
 
         submitForm();
 
@@ -238,6 +226,74 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         // e.printStackTrace();
         // }
 
+        assertViewPage();
+
+        webClient.getCache().clear();
+
+        // go to the edit page and ensure (some) of the form fields and values that we originally created are still present
+        clickLinkWithText("edit");
+        logger.debug("----now on edit page----");
+        logger.trace(getPageText());
+        // try {
+        // FileUtils.writeStringToFile(new File("pre-save.html"), getPageCode());
+        // } catch (IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+
+        assertEditPage();
+
+        // FIXME: need assert for 'friendly' role name
+        // FIXME: need assert for 'friendly' creatorType
+
+        // make sure our 'async' file was added to the resource
+        assertTextPresentInPage(TEST_DOCUMENT_NAME);
+        
+        clickLinkOnPage("permissions");
+        docUnorderdValMap.clear();
+        alternateCodeLookup.clear();
+        docUnorderdValMap.put("proxies[0].id", "121");
+        docUnorderdValMap.put("proxies[1].id", "5349");
+        docUnorderdValMap.put("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
+        docUnorderdValMap.put("proxies[1].permission", GeneralPermissions.VIEW_ALL.name());
+        docUnorderdValMap.put("proxies[0].displayName", "Michelle Elliott");
+        docUnorderdValMap.put("proxies[1].displayName", "Joshua Watts");
+        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
+        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
+
+        
+        setInputs();
+        submitForm();
+        assertViewPage();
+        clickLinkOnPage("permissions");
+        assertEditPage();
+
+    }
+
+    private void assertEditPage() {
+        for (String key : docValMap.keySet()) {
+            String val = docValMap.get(key);
+
+            // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
+            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val)) {
+                continue;
+            }
+
+            if (docUnorderdValMap.containsKey(key)) {
+                assertTextPresent(docValMap.get(key));
+            } else {
+                assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
+            }
+        }
+
+        for (String key : docMultiValMap.keySet()) {
+            for (String val : docMultiValMap.get(key)) {
+                assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
+            }
+        }
+    }
+
+    private void assertViewPage() {
         logger.trace(getPageText());
         for (String key : docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just
@@ -269,47 +325,15 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
                 assertTextPresent(val);
             }
         }
+    }
 
-        webClient.getCache().clear();
-
-        // go to the edit page and ensure (some) of the form fields and values that we originally created are still present
-        clickLinkWithText("edit");
-        logger.debug("----now on edit page----");
-        logger.trace(getPageText());
-        // try {
-        // FileUtils.writeStringToFile(new File("pre-save.html"), getPageCode());
-        // } catch (IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-
+    private void setInputs() {
         for (String key : docValMap.keySet()) {
-            String val = docValMap.get(key);
-
-            // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
-            if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val)) {
-                continue;
-            }
-
-            if (docUnorderdValMap.containsKey(key)) {
-                assertTextPresent(docValMap.get(key));
-            } else {
-                assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
-            }
+            setInput(key, docValMap.get(key));
         }
-
         for (String key : docMultiValMap.keySet()) {
-            for (String val : docMultiValMap.get(key)) {
-                assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
-            }
+            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
         }
-
-        // FIXME: need assert for 'friendly' role name
-        // FIXME: need assert for 'friendly' creatorType
-
-        // make sure our 'async' file was added to the resource
-        assertTextPresentInPage(TEST_DOCUMENT_NAME);
-
     }
 
 }

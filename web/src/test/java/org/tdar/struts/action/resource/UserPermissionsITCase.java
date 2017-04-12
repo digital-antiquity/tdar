@@ -43,49 +43,6 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
 
     private List<AuthorizedUser> authUsers;
 
-    @Test
-    @Rollback
-    public void testUserRemoveThemself() throws TdarActionException {
-
-        ImageController imageController = generateNewInitializedController(ImageController.class);
-        imageController.prepare();
-        Image image = imageController.getImage();
-        image.setTitle("test image");
-        image.setDescription("test description");
-        imageController.setServletRequest(getServletPostRequest());
-        TdarUser p = createAndSaveNewPerson();
-        imageController.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),p, GeneralPermissions.MODIFY_RECORD));
-
-        // create the dataset
-        imageController.save();
-        evictCache();
-        Long imgId = image.getId();
-        assertNotNull(imgId);
-
-        imageController = generateNewController(ImageController.class);
-        init(imageController, p);
-        imageController.setId(imgId);
-        imageController.prepare();
-        imageController.edit();
-        imageController.setAuthorizedUsers(new ArrayList<AuthorizedUser>());
-        imageController.setServletRequest(getServletPostRequest());
-        // create the dataset
-        assertEquals(Action.SUCCESS, imageController.save());
-        evictCache();
-        imageController = generateNewController(ImageController.class);
-        init(imageController, p);
-        imageController.setId(imgId);
-        boolean seen = false;
-        try {
-            imageController.prepare();
-            imageController.edit();
-        } catch (TdarActionException e) {
-            seen = true;
-        }
-        assertTrue(seen);
-
-    }
-
     /**
      * tests that a user with MODIFY_METADATA Permissions has limited rights -- specifically cannot modify collection assignments or authorized users
      * @throws Exception
