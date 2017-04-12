@@ -46,17 +46,18 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.browse.BrowseCollectionController;
-import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.ResourceDeleteAction;
+import org.tdar.struts.action.resource.ResourceRightsController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
@@ -117,14 +118,14 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         String slug = collection.getSlug();
         collection = null;
 
-        controller = generateNewInitializedController(ShareCollectionController.class, getAdminUser());
-        controller.setId(id);
-        controller.prepare();
-        controller.edit();
-        controller.setServletRequest(getServletPostRequest());
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
-        controller.setAsync(false);
-        controller.save();
+        ShareCollectionRightsController sc = generateNewInitializedController(ShareCollectionRightsController.class, getAdminUser());
+        sc.setId(id);
+        sc.prepare();
+        sc.edit();
+        sc.setServletRequest(getServletPostRequest());
+        sc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
+        sc.setAsync(false);
+        sc.save();
 
         // setVerifyTransactionCallback(new TransactionCallback<Resource>() {
         //
@@ -404,17 +405,25 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         // rc.setSortBy(SortOption.ID);
         // rc.setOrientation(DisplayOrientation.LIST);
 
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        
+        Long id = rc.getId();
+
+        ShareCollectionRightsController sc = generateNewInitializedController(ShareCollectionRightsController.class);
+        sc.setId(id);
+        sc.prepare();
+        sc.edit();
         // Add three authusers. two of the authusers are redundant and should be normalized to the user with
         // the best permissions.
         AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
         AuthorizedUser user1Modifier = new AuthorizedUser(getAdminUser(),user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
         AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_SHARE);
-        controller.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
+        sc.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
+        sc.setServletRequest(getServletPostRequest());
+        sc.save();
 
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
 
-        Long id = rc.getId();
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setSessionData(getSessionData());
         vc.setId(id);
@@ -669,11 +678,21 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         document.setTitle("test");
         document.setDescription("test");
         document.setDate(1234);
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.VIEW_ALL));
         controller.getShares().add(collection1);
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, controller.save());
 
+        Long id = document.getId();
+        document = null;
+        ResourceRightsController rrc = generateNewInitializedController(ResourceRightsController.class);
+        rrc.setId(id);
+        rrc.prepare();
+        rrc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.VIEW_ALL)));
+        rrc.setServletRequest(getServletPostRequest());
+        assertEquals(Action.SUCCESS, rrc.save());
+
+        evictCache();
+        document = genericService.find(Document.class, id);
         assertEquals(2, document.getRightsBasedResourceCollections().size());
         assertTrue(document.getRightsBasedResourceCollections().contains(collection1));
         assertEquals(1, collection1.getResources().size());
@@ -765,12 +784,13 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.MODIFY_RECORD);
         genericService.save(dataset);
         dataset = null;
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
+
+        ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class);
         controller.setId(datasetId);
         controller.prepare();
         controller.edit();
 
-        addAuthorizedUser(controller.getDataset(), getUser(), GeneralPermissions.MODIFY_RECORD);
+        addAuthorizedUser(genericService.find(Dataset.class, datasetId), getUser(), GeneralPermissions.MODIFY_RECORD);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         dataset = datasetService.find(datasetId);
@@ -786,15 +806,15 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
         genericService.save(dataset);
         dataset = null;
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class);
         controller.setId(datasetId);
         controller.prepare();
         controller.edit();
-        assertEquals(1, controller.getAuthorizedUsers().size());
-        ArrayList<AuthorizedUser> authorizedUsers = new ArrayList<>();
-        authorizedUsers.add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.VIEW_ALL));
-        authorizedUsers.add(new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.VIEW_ALL));
-        controller.setAuthorizedUsers(authorizedUsers);
+        assertEquals(1, controller.getProxies().size());
+        ArrayList<UserRightsProxy> authorizedUsers = new ArrayList<>();
+        authorizedUsers.add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.VIEW_ALL)));
+        authorizedUsers.add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.VIEW_ALL)));
+        controller.setProxies(authorizedUsers);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         genericService.synchronize();
@@ -821,11 +841,11 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
         genericService.save(dataset);
         dataset = null;
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class);
         controller.setId(datasetId);
         controller.prepare();
         controller.edit();
-        controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
+        controller.setProxies(Collections.<UserRightsProxy> emptyList());
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         dataset = datasetService.find(datasetId);
@@ -840,11 +860,11 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
         genericService.save(dataset);
         dataset = null;
-        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class);
         controller.setId(datasetId);
         controller.prepare();
         controller.edit();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         dataset = datasetService.find(datasetId);

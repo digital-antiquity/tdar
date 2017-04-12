@@ -23,6 +23,7 @@ public class UserRightsProxy implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+    private String note;
     private GeneralPermissions permission;
     private Date until;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -131,6 +132,14 @@ public class UserRightsProxy implements Serializable {
             return true;
         }
         return false;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
 }

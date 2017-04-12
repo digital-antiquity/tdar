@@ -41,7 +41,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -677,10 +676,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         rrc.prepare();
         rrc.edit();
         rrc.setServletRequest(getServletPostRequest());
-        rrc.save();
         assertEquals(Action.SUCCESS, rrc.save());
-        
         evictCache();
+        genericService.synchronize();
+        
         UploadController uc = generateNewInitializedController(UploadController.class, newUser);
         uc.grabTicket();
         Long ticketId = uc.getPersonalFilestoreTicket().getId();
@@ -688,10 +687,13 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         uc.getUploadFile().add(new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
         uc.upload();
-        assertFalse(authenticationAndAuthorizationService.canDo(newUser, dc.getDocument(),
+        
+        doc = genericService.find(Document.class, id);
+        assertFalse(authenticationAndAuthorizationService.canDo(newUser, doc,
                 InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.ADMINISTER_SHARE));
-        assertEquals(1, dc.getDocument().getInternalResourceCollection().getAuthorizedUsers().size());
+        assertEquals(1, doc.getInternalResourceCollection().getAuthorizedUsers().size());
         // try to edit as basic user -- should fail
+        doc = null;
         dc = generateNewInitializedController(DocumentController.class, newUser);
         dc.setId(id);
         dc.prepare();

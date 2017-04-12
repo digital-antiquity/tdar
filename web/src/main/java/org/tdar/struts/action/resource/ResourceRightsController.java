@@ -14,14 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.InternalCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.EntityService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts_base.action.PersistableLoadingAction;
@@ -59,8 +62,10 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
-    @Autowired
-    private transient EntityService entityService;
+
+    private List<SharedCollection> shares = new ArrayList<>();
+    private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
+    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
 
     private List<UserRightsProxy> proxies = new ArrayList<>();
 
@@ -68,7 +73,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
 
     @Override
     public boolean authorize() {
-        return authorizationService.canEdit(getAuthenticatedUser(), getPersistable());
+        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(),GeneralPermissions.MODIFY_RECORD);
     }
 
     public UserRightsProxy getBlankProxy() {
@@ -131,6 +136,20 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
     @PostOnly
     public String save() {
         try {
+            getLogger().debug("proxies:{}",proxies);
+            loadEffectiveResourceCollectionsForSave();
+            getLogger().debug("retained collections:{}", getRetainedSharedCollections());
+            getShares().addAll(getRetainedSharedCollections());
+            
+                resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getSharedCollections(),
+                        getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+
+                if (!authorizationService.canEdit(getAuthenticatedUser(), getResource())) {
+//                    addActionError("abstractResourceController.cannot_remove_collection");
+                    getLogger().error("user is trying to remove themselves from the collection that granted them rights");
+                    addActionMessage("abstractResourceController.collection_rights_remove");
+                }
+
             resourceCollectionService.saveResourceRights(proxies, getAuthenticatedUser(), getResource());
         } catch (Exception e) {
             getLogger().error("issue saving", e);
@@ -147,7 +166,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
 
     private void setupEdit() {
         InternalCollection internal = getResource().getInternalResourceCollection();
-
+        loadEffectiveResourceCollectionsForEdit();
         getLogger().debug("internal:{}", internal);
         if (internal != null) {
             internal.getAuthorizedUsers().forEach(au -> {
@@ -176,4 +195,57 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
         this.resource = resource;
     }
 
+
+    private void loadEffectiveResourceCollectionsForEdit() {
+        getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
+
+        getLogger().debug("loadEffective...");
+        for (SharedCollection rc : getResource().getSharedResourceCollections()) {
+            if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+                getShares().add(rc);
+            } else {
+                getRetainedSharedCollections().add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+    }
+
+    
+    private void loadEffectiveResourceCollectionsForSave() {
+        getLogger().debug("loadEffective...");
+        for (SharedCollection rc : getResource().getSharedCollections()) {
+            if (!authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+                getRetainedSharedCollections().add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+    }
+
+    public SharedCollection getBlankShare() {
+        return new SharedCollection();
+    }
+
+    public List<SharedCollection> getRetainedSharedCollections() {
+        return retainedSharedCollections;
+    }
+
+    public void setRetainedSharedCollections(List<SharedCollection> retainedSharedCollections) {
+        this.retainedSharedCollections = retainedSharedCollections;
+    }
+
+    public List<RightsBasedResourceCollection> getEffectiveShares() {
+        return effectiveShares;
+    }
+
+    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveShares) {
+        this.effectiveShares = effectiveShares;
+    }
+
+    public List<SharedCollection> getShares() {
+        return shares;
+    }
+
+    public void setShares(List<SharedCollection> shares) {
+        this.shares = shares;
+    }
 }

@@ -15,7 +15,7 @@
 <div id="titlebar" parse="true">
     <h1>Sharing: <span class="red">My Test Resource</span></h1>
 </div>
-    <form class="form-horizontal tdarvalidate" action="save" method="POST">
+    <@s.form class="form-horizontal tdarvalidate" action="save" method="POST">
 <div class="row">
     <div class="span12">
     <p><b>This resource is shared with ${proxies?size} people and is in ${persistable.sharedCollections?size} collections.</b></p>
@@ -101,43 +101,41 @@
 
     </div>
             <div class="control-group">
-                            <div class=" repeat-row" id="authorizedUsersRow_0_">
+                            <div class="" id="invites">
                             <div class="controls-row" >
                                 <div class="span2">
-                                    <@s.textfield name="firstName" cssClass="span2" />
+                                    <@s.textfield name="proxies[100].firstName" cssClass="span2" />
                                 </div>
                                 <div class="span2">
-                                    <@s.textfield name="lasstName" cssClass="span2" />
+                                    <@s.textfield name="proxies[100].lasstName" cssClass="span2" />
                                 </div>
                                 <div class="span2">
-                                    <@s.textfield name="email" cssClass="span2" />
+                                    <@s.textfield name="proxies[100].email" cssClass="span2" />
                                 </div>
+                                
                                 <div class="span2">
-                                        <select name="authorizedUsers[0].generalPermission" id="metadataForm_authorizedUsers_0__generalPermission" class="creator-rights-select span2">
-                                            <option value="VIEW_ALL">View and Download</option>
-                                            <option value="MODIFY_METADATA">Modify Metadata</option>
-                                            <option value="MODIFY_RECORD">Modify Files &amp; Metadata</option>
-                                        </select>
-                                        <input type="hidden" name="authorizedUsers[0].generalPermission" value="" id="authorizedUsers[0]hdnGeneralPermission" class="repeat-row-remove">
+                                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="proxies[100].permission" emptyOption='false'
+                                        listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                                 </div>
                                 <div class=" span2">
                                     <div class="input-append">
-                                          <input class="datepicker" style="width:6em" size="16" type="text" value="" id="dp3" data-date-format="mm-dd-yyyy" >
+                                          <input class="datepicker" name="proxies[100].until" style="width:6em" 
+                                            size="16" type="text" value="" data-date-format="mm-dd-yyyy" >
+
                                           <span class="add-on"><i class="icon-th"></i></span>
                                     </div>
                                 </div>
-
-                                <div class="span1">
-                                    <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
-                                </div>
                             </div>
+                            <textarea name="proxies[100].note"/>
             </div>
         </div>
     </div>
 
 
 </div>
-                </form>
+</div>
+<@edit.submit fileReminder=false />
+                </@s.form>
 
     <#macro repeat num val>
         <#if (num > 0)>
@@ -148,7 +146,6 @@
 
 <@edit.personAutocompleteTemplate />
 
-<@edit.submit fileReminder=false />
 <div id="customIncludes" parse="true">
     <!-- <script src="/js/tdar.manage.js"></script> -->
 <script>

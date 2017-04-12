@@ -175,9 +175,17 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         setFieldByName("projectId", "-1");
         
         submitForm();
-        find(By.linkText("PERMISSIONS")).click();
-        waitForPageload();
-        WebElementSelection find = find("#accessRightsRecordsAddAnotherButton");
+        
+        assertEquals("count of edit buttons", 1, find(By.partialLinkText("PERMISSIONS")).size());
+        WebElementSelection button = find(By.partialLinkText("PERMISSIONS"));
+        try {
+            button.click();
+        } catch(Throwable t) {
+            logger.error("{}",t,t);
+        }
+//        waitForPageload();
+        logger.debug(getPageCode());
+        WebElementSelection find = waitFor("#divAccessRightsAddAnotherButton");
         find.click();
         find.click();
         addAuthuser("proxies[0].displayName", "proxies[0].permission", "Michelle Elliott", "michelle elliott , arizona state",

@@ -26,12 +26,14 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.struts.action.resource.ResourceRightsController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 
@@ -337,10 +339,10 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         genericService.save(document);
         Long docId = document.getId();
         // document = null;
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class, getAdminUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
@@ -364,24 +366,24 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         document.setSubmitter(getAdminUser());
         genericService.save(document);
         Long docId = document.getId();
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class, getAdminUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
         controller = null;
         // try and assign access to aa document that user should not have rights
         // to add, assert that this document cannot be added
-        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
+        controller = generateNewInitializedController(ResourceRightsController.class, getBasicUser());
         controller.setId(docId);
         controller.prepare();
         controller.edit();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD)));
         Exception e = null;
         try {
-            resourceCollectionService.saveAuthorizedUsersForResource(controller.getDocument(), controller.getAuthorizedUsers(), true, getBasicUser());
+            resourceCollectionService.saveResourceRights(controller.getProxies(), getBasicUser(), controller.getResource());
         } catch (Exception es) {
             e = es;
         }
@@ -442,21 +444,21 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         genericService.save(document);
         Long docId = document.getId();
         document = null;
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class, getAdminUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
-        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
-        controller.setId(docId);
-        controller.prepare();
-        controller.getShares().add(new SharedCollection("test123", "test123", getBasicUser()));
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.setId(docId);
+        dc.prepare();
+        dc.getShares().add(new SharedCollection("test123", "test123", getBasicUser()));
+        dc.setServletRequest(getServletPostRequest());
+        dc.save();
         Long id = -1L;
-        for (ResourceCollection c : controller.getShares()) {
+        for (ResourceCollection c : dc.getShares()) {
             if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals("test123")) {
                 id = c.getId();
             }
@@ -487,26 +489,26 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         genericService.save(document);
         Long docId = document.getId();
         document = null;
-        DocumentController controller = generateNewInitializedController(DocumentController.class, getAdminUser());
+        ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class, getAdminUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
-        controller = generateNewInitializedController(DocumentController.class, getBasicUser());
-        controller.setId(docId);
-        controller.prepare();
-        controller.getShares().add(new SharedCollection("test123", "test123", getBasicUser()));
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
+        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.setId(docId);
+        dc.prepare();
+        dc.getShares().add(new SharedCollection("test123", "test123", getBasicUser()));
+        dc.setServletRequest(getServletPostRequest());
+        dc.save();
         Long id = -1L;
-        for (ResourceCollection c : controller.getShares()) {
+        for (ResourceCollection c : dc.getShares()) {
             if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals("test123")) {
                 id = c.getId();
             }
         }
-        controller = null;
+        dc = null;
         // try and assign access to aa document that user should not have rights
         // to add, assert that this document cannot be added
 

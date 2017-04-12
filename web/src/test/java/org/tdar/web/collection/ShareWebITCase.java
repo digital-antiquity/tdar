@@ -45,12 +45,15 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("status", Status.DRAFT.name());
         setInput("image.date", "2000");
         setInput("image.description", "test description of a image with edit rights by user");
-        setInput("authorizedUsers[0].user.id", TEST.getUserId());
-        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        setInput("authorizedUsersFullNames[0]", "test user");
         setInput("shares[0].name", RETAIN_COLLECTION);
         submitForm();
         assertTextPresentInPage(RETAIN_COLLECTION);
+        clickLinkWithText("permissions");
+        setInput("proxies[0].id", TEST.getUserId());
+        setInput("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
+        setInput("proxies[0].displayName", "test user");
+        submitForm();
+        
         String pageUrl = getCurrentUrlPath();
         clickLinkWithText(RETAIN_COLLECTION);
         clickLinkWithText("edit");

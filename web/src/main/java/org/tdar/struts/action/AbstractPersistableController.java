@@ -450,21 +450,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         this.authorizedUsers = authorizedUsers;
     }
 
-    /**
-     * @return the authorizedUsers
-     */
-    public List<AuthorizedUser> getAuthorizedUsers() {
-        if (authorizedUsers == null) {
-            authorizedUsers = new ArrayList<AuthorizedUser>();
-        }
-        return authorizedUsers;
-    }
-
-    public AuthorizedUser getBlankAuthorizedUser() {
-        AuthorizedUser user = new AuthorizedUser();
-        user.setUser(new TdarUser());
-        return user;
-    }
 
     public List<GeneralPermissions> getAvailablePermissions() {
         List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());

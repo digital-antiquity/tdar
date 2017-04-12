@@ -44,7 +44,7 @@ public class ResourceRightsControllerITCase extends AbstractResourceControllerIT
         AuthorizedUser au = new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.MODIFY_METADATA);
         ResourceRightsController rrc;
         saveUser(id, au);
-
+        doc = genericService.find(Document.class, id);
         logger.debug("RC: {}", doc.getInternalResourceCollection().getAuthorizedUsers());
         // change the submitter to the admin
         AuthorizedUser au2 = new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.ADMINISTER_SHARE);

@@ -86,7 +86,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
             getLogger().debug("resourceCreators:{} {}", rc, rc.getId());
         }
 
-        getAuthorizedUsers().clear();
         if (isAsync()) {
             getLogger().info("running asyncronously");
             bulkUploadService.saveAsync(image, getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());

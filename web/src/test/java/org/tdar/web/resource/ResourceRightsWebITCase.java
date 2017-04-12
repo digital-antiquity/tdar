@@ -12,6 +12,8 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
+    private static final String PERMISSIONS = "permissions";
+
     @Test
     @Rollback(true)
     /**
@@ -29,7 +31,7 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
             setInput(key, docValMap.get(key));
         }
         submitForm();
-        clickLinkOnPage("permissions");
+        clickLinkOnPage(PERMISSIONS);
         Map<String,String> docUnorderdValMap = new HashMap<>();
         docUnorderdValMap.put("proxies[0].id", "121");
         docUnorderdValMap.put("proxies[1].id", "5349");
@@ -44,11 +46,11 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
         logger.trace(getPageText());
         submitForm();
         assertTextPresentInPage(docValMap.get("image.title"));
-        clickLinkWithText("permissios");
+        clickLinkWithText(PERMISSIONS);
         setInput("proxies[0].generalPermission", GeneralPermissions.VIEW_ALL.name());
         setInput("proxies[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
         submitForm();
-        assertFalse(getCurrentUrlPath().contains("permissions"));
+        assertFalse(getCurrentUrlPath().contains(PERMISSIONS));
         assertFalse(getPageCode().contains(GeneralPermissions.MODIFY_METADATA.name()));
         assertTextPresentInPage(docValMap.get("image.title"));
     }

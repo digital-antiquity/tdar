@@ -70,6 +70,7 @@ import org.tdar.transform.jsonld.SchemaOrgCollectionTransformer;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
 
+import com.atlassian.crowd.embedded.api.User;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -1320,17 +1321,18 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             if (proxy == null || proxy.isEmpty()) {
 
             } else if (proxy.getEmail() != null) {
-                invites.add(toInvite(proxy, authenticatedUser));
+                UserInvite invite = toInvite(proxy, authenticatedUser);
+                if (invite != null) {
+                    invites.add(invite);
+                }
             } else if (proxy.getId() != null) {
                 authorizedUsers.add(toAuthorizedUser(proxy));
             }
         }
-        if (CollectionUtils.isNotEmpty(authorizedUsers)) {
-            saveAuthorizedUsersForResource(resource, authorizedUsers, true, authenticatedUser);
-        }
+        saveAuthorizedUsersForResource(resource, authorizedUsers, true, authenticatedUser);
         if (CollectionUtils.isNotEmpty(invites)) {
             for (UserInvite invite : invites) {
-                if (PersistableUtils.isTransient(invite)) {
+                if (PersistableUtils.isNotTransient(invite) || invite == null || invite.getUser().hasNoPersistableValues()) {
                     continue;
                 }
                 getDao().saveOrUpdate(invite);
@@ -1346,13 +1348,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         invite.setId(proxy.getInviteId());
         invite.setPermissions(proxy.getPermission());
         Person person = new Person(proxy.getFirstName(), proxy.getLastName(), proxy.getEmail());
+        if (person.hasNoPersistableValues()) {
+            return null;
+        }
         person = entityService.findOrSaveCreator(person);
         invite.setPerson(person);
         return invite;
     }
 
     private AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
-        getLogger().debug("{}", proxy.getUntil());
         AuthorizedUser au = new AuthorizedUser();
         au.setUser(getDao().find(TdarUser.class, proxy.getId()));
         au.setGeneralPermission(proxy.getPermission());

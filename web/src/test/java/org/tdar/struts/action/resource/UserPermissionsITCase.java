@@ -72,17 +72,16 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         coll = null;
 
         // p logs in and wants to edit the image
-        imageController = generateNewController(ImageController.class);
-        init(imageController, p);
-        imageController.setId(imgId);
-        imageController.prepare();
-        imageController.edit();
+        ResourceRightsController resourceRightsController = generateNewController(ResourceRightsController.class);
+        init(resourceRightsController, p);
+        resourceRightsController.setId(imgId);
+        resourceRightsController.prepare();
+        resourceRightsController.edit();
 
         // Whaaat? p just removed the authuser entry that gives p the ability to edit this item in the first place. p, you crazy.
-        imageController.getAuthorizedUsers().clear();
-        imageController.getShares().clear();
-        imageController.setServletRequest(getServletPostRequest());
-        assertEquals(Action.SUCCESS, imageController.save());
+        resourceRightsController.getProxies().clear();
+        resourceRightsController.setServletRequest(getServletPostRequest());
+        assertEquals(Action.SUCCESS, resourceRightsController.save());
         evictCache();
 
         genericService.refresh(image);
@@ -118,7 +117,6 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
 
         Long pid = p.getId();
 
-        logger.debug("authusers on view: {}  result: {}", imageController.getAuthorizedUsers(), result);
         // we should have received an exception.
         if (!exceptionOccured) {
             fail("controller action was expected to throw an exception, but didn't");

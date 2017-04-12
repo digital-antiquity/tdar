@@ -454,7 +454,7 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
         assertFalse(statusCode == SC_INTERNAL_SERVER_ERROR);
         assertNoErrorTextPresent();
         assertNoEscapeIssues();
-        logger.debug(getPageCode());
+        logger.trace(getPageCode());
         assertPageValidHtml();
         return statusCode;
     }
