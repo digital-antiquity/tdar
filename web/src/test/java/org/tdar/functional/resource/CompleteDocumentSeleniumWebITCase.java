@@ -89,8 +89,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
-        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
-        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
@@ -175,13 +173,17 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         assertTrue(getText().contains("Conference Location"));
         setFieldByName("document.date", "1923");
         setFieldByName("projectId", "-1");
+        
+        submitForm();
+        find(By.linkText("PERMISSIONS")).click();
+        waitForPageload();
         WebElementSelection find = find("#accessRightsRecordsAddAnotherButton");
         find.click();
         find.click();
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle elliott , arizona state",
+        addAuthuser("proxies[0].displayName", "proxies[0].permission", "Michelle Elliott", "michelle elliott , arizona state",
                 "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
+        addAuthuser("proxies[1].displayName", "proxies[1].permission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
                 VIEW_ALL);
         submitForm();
     }
@@ -324,6 +326,8 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
                 MODIFY_RECORD);
         addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
                 VIEW_ALL);
+        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
+        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
 
         docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
         docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
