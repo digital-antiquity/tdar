@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -15,6 +16,7 @@ import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_ME
 import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_RECORD;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -29,10 +31,9 @@ import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Image;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.*;
+import org.tdar.core.bean.resource.ref.CollectionRef;
+import org.tdar.core.bean.resource.ref.ResourceRef;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
@@ -316,6 +317,35 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         assertThat(sessionFactory.getCurrentSession(), notNullValue());
         List<TdarUser> grantees = resourceCollectionDao.findUsersSharedWith(collection.getOwner());
         assertThat(grantees, containsInAnyOrder(getEditorUser(), getBillingUser(), getAdminUser()));
+    }
+
+    @Test
+    @Rollback
+    public void testResourcesAvailableToUser() {
+        List<ResourceRef> refs = resourceCollectionDao.findResourcesAvailableToUser(getBasicUser());
+        refs.forEach( r -> logger.debug("ref id:{}  type:{}  title:{}", r.getId(), r.getResourceType(), r.getTitle()));
+
+        //now try to access an actual subclass instance and assert that we can access subclass-specific fields
+        refs.stream()
+                .filter( ref -> ref.getResourceType() == ResourceType.IMAGE)
+                .map( ref -> (Image) ref.getResource())
+                .forEach( image -> {
+                    // If hibernate successfully lazy-fetched the actual object behind this ref (an image), we should be able to call
+                    // a subclass-specific method such as getInformationResourceFiles()
+                    assertThat(image.getInformationResourceFiles(), not( nullValue()));
+                });
+
+
+        assertThat(refs, not( empty()));
+    }
+
+    @Test
+    @Rollback
+    public void testCollectionsAvailableToUser() {
+        List<CollectionRef> refs = resourceCollectionDao.findCollectionsAvailableToUser(getBasicUser());
+
+        //TODO: create some collections with that convey rights to basicUser, and assert they are found via this dao method
+        assertThat(refs, not( nullValue()));
     }
 
 }
