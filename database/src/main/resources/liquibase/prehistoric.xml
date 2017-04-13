@@ -186,5 +186,26 @@
         <sql>update data_table_column set sequence_number = 0 where sequence_number is null;</sql>
         <sql>update data_table_column set import_order = sequence_number where import_order is null;</sql>
      </changeSet>
+
+    <changeSet id="prehistoric-default-20" author="jtdevos">
+        <!-- view of all permutations of a collection's progeny - self, children, grandchildren, and so on. (Hat tip: laelliso)-->
+        <createView replaceIfExists="false" viewName="vw_collection_progeny">
+            with recursive cc(id, parent_id) as (
+                select id, parent_id, id starting_id from collection
+                UNION
+                select cc2.id, cc2.parent_id, cc.starting_id from collection cc2 join cc on cc.id = cc2.parent_id)
+            select  * from cc
+        </createView>
+
+
+        <!-- view of all permutations of a collection's ancestors (self, parent, grandparent, and so on) -->
+        <createView replaceIfExists="false" viewName="vw_collection_ancestry">
+            with recursive cc(id, parent_id) as (
+                select id, parent_id, id starting_id from collection
+                UNION
+                select cc2.id,  cc2.parent_id, cc.starting_id from collection cc2 join cc on cc.parent_id = cc2.id)
+            select * from cc;
+        </createView>
+    </changeSet>
      
 </databaseChangeLog>

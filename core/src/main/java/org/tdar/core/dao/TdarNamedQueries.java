@@ -308,6 +308,24 @@ public interface TdarNamedQueries {
     String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id=project_id and information_resource.id in :resourceIds";
 
     String HOMEPAGE_GEOGRAPHIC = "select code, resource_type, sum(count), id from ( ( select code, count(*), r.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource r on r.id = rgk.resource_id left join information_resource ir on (ir.id = r.id and ir.inheriting_spatial_information = false) where (code !='') and r.status = 'ACTIVE' group by code, r.resource_type, gk.id ) union all select code, count(*), irr.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource p on p.id = rgk.resource_id join information_resource ir on (ir.project_id = p.id and ir.inheriting_spatial_information = true) join resource irr on (irr.id = ir.id) where (code !='') and irr.status = 'ACTIVE' group by code, irr.resource_type, gk.id ) as allrecs group by code, resource_type, id order by 1, 2";
-    
+
+
+    String SQL_RESOURCES_VIA_COLLECTION_PROGENY = ""
+            + " select"
+            + "     r.*"
+            + " from"
+            + "     resource r"
+            + " where"
+            + "     r.submitter_id = :user_id"
+            + "     or exists("
+            + "         select *"
+            + "         from authorized_user au"
+            + "             join vw_collection_progeny vcp on au.resource_collection_id = vcp.starting_id"
+            + "                 join collection_resource cr on vcp.id = cr.collection_id"
+            + "         where"
+            + "             au.general_permission_int >= :permission_int"
+            + "             and cr.resource_id = r.id"
+            + "             and au.user_id = :user_id"
+            + "     )";
 
 }
