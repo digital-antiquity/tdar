@@ -145,16 +145,26 @@ public abstract class AbstractSeleniumWebITCase {
     private ExpectedCondition<Boolean> pageReady = new ExpectedCondition<Boolean>() {
         @Override
         public Boolean apply(@Nullable WebDriver webDriver) {
+            try {
             String readyState = (String) ((JavascriptExecutor) webDriver).executeScript("return document.readyState");
             return "complete".equals(readyState);
+            } catch (Throwable t) {
+                logger.error("{}",t,t);
+            }
+            return false;
         }
     };
 
     private ExpectedCondition<Boolean> pageNotReady = new ExpectedCondition<Boolean>() {
         @Override
         public Boolean apply(@Nullable WebDriver webDriver) {
-            String readyState = (String) ((JavascriptExecutor) webDriver).executeScript("return document.readyState");
-            return !"complete".equals(readyState);
+            try {
+                String readyState = (String) ((JavascriptExecutor) webDriver).executeScript("return document.readyState");
+                return !"complete".equals(readyState);
+            } catch (Throwable t) {
+                logger.error("{}",t,t);
+            }
+            return true;
         }
     };
     private KillSeleniumAfter someTask;
@@ -374,6 +384,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     @After
     public void after() {
+        report();
         //disable navigation warning
         executeJavascript("$(window).off('beforeunload');");
         try {
@@ -432,7 +443,7 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
-    @After
+    
     public final void report() {
         String fmt = " *** COMPLETED TEST: {}.{}() ***";
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
@@ -882,6 +893,10 @@ public abstract class AbstractSeleniumWebITCase {
             setCachedPageText(body.getText());
         }
         return getCachedPageText();
+    }
+
+    public String getPageCode() {
+        return driver.getPageSource();
     }
 
     @SuppressWarnings("unchecked")

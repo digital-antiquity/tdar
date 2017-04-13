@@ -652,9 +652,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
     }
 
+
     @Test
     @Rollback
-    public void testUserPermIssuesUsers() throws TdarActionException {
+    public void testUserPermIssUpload() throws Exception {
         // setup document
         TdarUser newUser = createAndSaveNewPerson();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
@@ -663,46 +664,22 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         doc.setTitle("test");
         doc.setDate(1234);
         doc.setDescription("my description");
-        dc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.MODIFY_METADATA));
-        dc.setServletRequest(getServletPostRequest());
-        assertEquals(Action.SUCCESS, dc.save());
-
-        logger.debug("RC: {}", doc.getInternalResourceCollection().getAuthorizedUsers());
-        // change the submitter to the admin
-        Long id = doc.getId();
-        doc = null;
-        dc = generateNewInitializedController(DocumentController.class, newUser);
-        dc.setId(id);
-        dc.prepare();
-        dc.edit();
-        dc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.ADMINISTER_SHARE));
-        dc.setServletRequest(getServletPostRequest());
-        assertEquals(Action.SUCCESS, dc.save());
-
-        evictCache();
-
-    }
-
-    @Test
-    @Rollback
-    public void testUserPermIssUpload() throws TdarActionException {
-        // setup document
-        TdarUser newUser = createAndSaveNewPerson();
-        DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
-        dc.prepare();
-        Document doc = dc.getDocument();
-        doc.setTitle("test");
-        doc.setDate(1234);
-        doc.setDescription("my description");
-        dc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.MODIFY_METADATA));
         dc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, dc.save());
 
         // change the submitter to the admin
         Long id = doc.getId();
         doc = null;
-
         evictCache();
+        ResourceRightsController rrc = generateNewInitializedController(ResourceRightsController.class, getBasicUser());
+        rrc.setId(id);
+        rrc.prepare();
+        rrc.edit();
+        rrc.setServletRequest(getServletPostRequest());
+        assertEquals(Action.SUCCESS, rrc.save());
+        evictCache();
+        genericService.synchronize();
+        
         UploadController uc = generateNewInitializedController(UploadController.class, newUser);
         uc.grabTicket();
         Long ticketId = uc.getPersonalFilestoreTicket().getId();
@@ -710,10 +687,13 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         uc.getUploadFile().add(new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
         uc.upload();
-        assertFalse(authenticationAndAuthorizationService.canDo(newUser, dc.getDocument(),
+        
+        doc = genericService.find(Document.class, id);
+        assertFalse(authenticationAndAuthorizationService.canDo(newUser, doc,
                 InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.ADMINISTER_SHARE));
-        assertEquals(1, dc.getDocument().getInternalResourceCollection().getAuthorizedUsers().size());
+        assertEquals(1, doc.getInternalResourceCollection().getAuthorizedUsers().size());
         // try to edit as basic user -- should fail
+        doc = null;
         dc = generateNewInitializedController(DocumentController.class, newUser);
         dc.setId(id);
         dc.prepare();

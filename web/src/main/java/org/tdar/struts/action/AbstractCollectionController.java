@@ -76,6 +76,8 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     private Long parentId;
     private C parentCollection;
 
+    private ArrayList<AuthorizedUser> authorizedUsers;
+
 
     @Override
     public boolean authorize() {
@@ -390,6 +392,23 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
 
     public void setParentCollection(C parentCollection) {
         this.parentCollection = parentCollection;
+    }
+
+    
+    /**
+     * @return the authorizedUsers
+     */
+    public List<AuthorizedUser> getAuthorizedUsers() {
+        if (authorizedUsers == null) {
+            authorizedUsers = new ArrayList<AuthorizedUser>();
+        }
+        return authorizedUsers;
+    }
+
+    public AuthorizedUser getBlankAuthorizedUser() {
+        AuthorizedUser user = new AuthorizedUser();
+        user.setUser(new TdarUser());
+        return user;
     }
 
 }

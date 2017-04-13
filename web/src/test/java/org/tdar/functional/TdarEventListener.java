@@ -31,31 +31,38 @@ public class TdarEventListener extends WebDriverEventAdapter {
      */
         @Override
         public void afterNavigateTo(String url, WebDriver driver) {
+            logger.trace("afterNavigateTo");
             afterPageChange();
         }
 
         @Override
         public void beforeNavigateBack(WebDriver driver) {
+            logger.trace("beforeNavigateBack");
             beforePageChange();
         }
 
         @Override
         public void afterNavigateBack(WebDriver driver) {
+            logger.trace("afterNavigateBack");
             afterPageChange();
         }
 
         @Override
         public void beforeNavigateForward(WebDriver driver) {
+            logger.trace("beforeNavigateForward");
             beforePageChange();
         }
 
         @Override
         public void afterNavigateForward(WebDriver driver) {
+            logger.trace("afterNavigateForward");
             afterPageChange();
         }
 
         @Override
         public void onError(Throwable throwable, WebDriver driver) {
+            logger.error("--------------------------------------------------------");
+            logger.error("hey there was an error {}", throwable, throwable);
             getBrowserConsoleLogEntries(driver);
             if (!throwable.getMessage().contains("n is null")) {
                 logger.error("hey there was an error", throwable, throwable);
@@ -75,6 +82,7 @@ public class TdarEventListener extends WebDriverEventAdapter {
 
         @Override
         public void beforeClickOn(WebElement element, WebDriver driver) {
+            logger.trace("beforeClickOn");
             if (elementCausesNavigation(element)) {
                 beforePageChange();
             } else {
@@ -86,6 +94,7 @@ public class TdarEventListener extends WebDriverEventAdapter {
 
         @Override
         public void afterClickOn(WebElement element, WebDriver driver) {
+            logger.trace("afterClickOn");
         }
 
         private boolean elementCausesNavigation(WebElement element) {
@@ -97,30 +106,31 @@ public class TdarEventListener extends WebDriverEventAdapter {
 
         @Override
         public void beforeNavigateTo(String url, WebDriver driver) {
+            logger.trace("beforeNavigateTo");
             beforePageChange();
         }
 
         @Override
         public void afterNavigateRefresh(WebDriver arg0) {
-            // TODO Auto-generated method stub
+            logger.trace("afterNavigateRefresh");
             
         }
 
         @Override
         public void beforeNavigateRefresh(WebDriver arg0) {
-            // TODO Auto-generated method stub
+            logger.trace("beforeNavigateRefresh");
             
         }
 
         @Override
         public void afterChangeValueOf(WebElement arg0, WebDriver arg1, CharSequence[] arg2) {
-            // TODO Auto-generated method stub
+            logger.trace("afterChangeValueOf");
             
         }
 
         @Override
         public void beforeChangeValueOf(WebElement arg0, WebDriver arg1, CharSequence[] arg2) {
-            // TODO Auto-generated method stub
+            logger.trace("beforeChangeValueOf");
             
         }
 
@@ -158,26 +168,25 @@ public class TdarEventListener extends WebDriverEventAdapter {
 
         @Override
         public void afterAlertAccept(WebDriver arg0) {
-            // TODO Auto-generated method stub
+            logger.trace("afterAlertAccept");
             
         }
 
         @Override
         public void afterAlertDismiss(WebDriver arg0) {
-            // TODO Auto-generated method stub
+            logger.trace("afterAlertDismiss");
             
         }
 
         @Override
         public void beforeAlertAccept(WebDriver arg0) {
-            // TODO Auto-generated method stub
+            logger.trace("beforeAlertAccept");
             
         }
 
         @Override
         public void beforeAlertDismiss(WebDriver arg0) {
-            // TODO Auto-generated method stub
-            
+            logger.trace("beforeAlertDismiss");
         }
 
 

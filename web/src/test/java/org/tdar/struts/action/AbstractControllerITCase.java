@@ -52,7 +52,9 @@ import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.api.resource.BookmarkApiController;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.collection.ListCollectionController;
+import org.tdar.struts.action.collection.ListCollectionRightsController;
 import org.tdar.struts.action.collection.ShareCollectionController;
+import org.tdar.struts.action.collection.ShareCollectionRightsController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
@@ -208,10 +210,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
             controller.setParentId(parentId);
         }
 
-        if (users != null) {
-            controller.getAuthorizedUsers().clear();
-            controller.getAuthorizedUsers().addAll(users);
-        }
         if (resourceCollection instanceof CustomizableCollection) {
             ((CustomizableCollection) resourceCollection).setSortBy(SortOption.RESOURCE_TYPE);
         }
@@ -231,6 +229,23 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         genericService.synchronize();
         Long id = resourceCollection.getId();
         genericService.evictFromCache(resourceCollection);
+        
+        
+        if (users != null) {
+        AbstractCollectionRightsController sc = generateNewInitializedController(ShareCollectionRightsController.class, controller.getAuthenticatedUser());
+            if (controller instanceof ListCollectionController) {
+                sc = generateNewInitializedController(ListCollectionRightsController.class, controller.getAuthenticatedUser());
+            }
+            sc.setId(id);
+            sc.prepare();
+            sc.edit();
+            sc.getAuthorizedUsers().clear();
+            sc.getAuthorizedUsers().addAll(users);
+            assertTrue(sc.save().equals(Action.SUCCESS));
+            genericService.synchronize();
+       }
+
+        
         resourceCollection = null;
         resourceCollection = genericService.find(cls, id);
         logger.debug("parentId: {}", parentId);

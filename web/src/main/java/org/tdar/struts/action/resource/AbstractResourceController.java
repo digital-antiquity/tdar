@@ -31,7 +31,6 @@ import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -521,15 +520,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             getPersistable().setSubmitter(uploader);
         }
 
-        // only modify these permissions if the user has the right to
-        if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
-                GeneralPermissions.MODIFY_RECORD)) {
-            resourceCollectionService.saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource(), getAuthenticatedUser());
-            getLogger().debug("collections: {}", getResource().getUnmanagedResourceCollections());
-            getLogger().debug("shares: {}", getResource().getSharedCollections());
-        } else {
-            getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
-        }
 
         saveKeywords();
         saveTemporalContext();
@@ -625,14 +615,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Collections.sort(getResourceNotes());
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
-        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
-        for (AuthorizedUser au : getAuthorizedUsers()) {
-            String name = null;
-            if (au != null && au.getUser() != null) {
-                name = au.getUser().getProperName();
-            }
-            getAuthorizedUsersFullNames().add(name);
-        }
         initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
         loadEffectiveResourceCollectionsForEdit();
