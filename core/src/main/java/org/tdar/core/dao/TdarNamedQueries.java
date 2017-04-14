@@ -339,6 +339,51 @@ public interface TdarNamedQueries {
             + "     )";
 
     /**
+     * Given a specified USER, USER_PERMISSION, and VIEWER, return all resources that the USER can modify that are also visible to a specified VIEWER.
+     *
+     * Using Venn diagram terminology: this table returns the intersection of <ul>
+     *
+     *
+     *      <li> "Resources that USER #1 has USER_PERMISSION on"</li>
+     *      <li>"Active resources + non-active resources that VIEWER is allowed to see"</li>
+     * </ul>
+     *
+     */
+    String QUERY_SQL_RESOURCES_VIA_COLLECTION_PROGENY_FILTERED = "";
+
+
+    /**
+     * Given a specifie USER, USER_PERMISSION,  and VIEWER, return all the collections that a USER has access to (that are visible to a specified viewer).
+     * Similar to RESOURCES_VIA_COLLECTION_PROGENY, however, it restricts the results based what the VIEWER has permissions to see.
+     *
+     * Using Venn diagram terminology: this table returns the intersection of <ul>
+     *
+     *
+     *      <li> "collections that USER #1 has USER_PERMISSION on"</li>
+     *      <li>"collections that VIEWER is allowed to see"</li>
+     * </ul>
+     */
+    String QUERY_SQL_COLLECTIONS_VIA_COLLECTION_PROGENY_FILTERED = ""
+            + " select"
+            + "     cc.*"
+            + " from"
+            + "     authorized_user au"
+            + "     join vw_collection_progeny vcp on au.resource_collection_id = vcp.starting_id"
+            + "     join collection cc on vcp.id = cc.id"
+            + " where"
+            + "     au.general_permission_int >= :perm"
+            + "     and au.user_id = :user_id"
+            + "     and collection_type <> 'INTERNAL'"
+            + "     and ("
+            + "         cc.hidden = false"
+            + "         or :user_id = :viewer_id"
+            + "         or exists("
+            + "             select * from vw_hidden_collection_access vhc where vhc.collection_id = cc.id and vhc.viewer_id = :viewer_id"
+            + "         )"
+            + "     )";
+
+
+    /**
      * List the collections available to a specified user with a specified minimum permission.   Note that this query does <em>not</em>
      * include INTERNAL collections.
      *
@@ -355,4 +400,6 @@ public interface TdarNamedQueries {
             + "     au.general_permission_int >= :perm"
             + "     and au.user_id = :user_id"
             + "     and collection_type <> 'INTERNAL'";
+
+
 }

@@ -348,4 +348,22 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         assertThat(refs, not( nullValue()));
     }
 
+    @Test
+    @Rollback
+    public void testResourcesAvailableToUserFilteredByViewer() {
+        List<ResourceRef> refs = resourceCollectionDao.findResourcesAvailableToUser(getBasicUser(), getEditorUser());
+        refs.forEach( r -> logger.debug("ref id:{}  type:{}  title:{}", r.getId(), r.getResourceType(), r.getTitle()));
+        assertThat(refs, not( empty()));
+    }
+
+    @Test
+    @Rollback
+    public void testCollectionsAvailableToUserFilteredByViewer() {
+        List<CollectionRef> refs = resourceCollectionDao.findCollectionsAvailableToUser(getBasicUser(), getBasicUser());
+
+        //TODO: create some collections with that convey rights to basicUser, and assert they are found via this dao method
+        assertThat(refs, not( nullValue()));
+    }
+
+
 }

@@ -52,6 +52,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.UserRightsProxy;
+import org.tdar.core.bean.resource.ref.ResourceRef;
 import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -1275,13 +1276,35 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     }
 
+//    @Transactional(readOnly = true)
+//    public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user) {
+//        boolean admin = false;
+//        if (authorizationService.isEditor(authenticatedUser)) {
+//            admin = true;
+//        }
+//        return getDao().findResourcesSharedWith(authenticatedUser, user, admin);
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public <C extends ResourceCollection> List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Class<C> cls) {
+//        boolean admin = false;
+//        if (authorizationService.isEditor(authenticatedUser)) {
+//            admin = true;
+//        }
+//        return getDao().findCollectionsSharedWith(authenticatedUser, user, cls, admin);
+//    }
+
     @Transactional(readOnly = true)
-    public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user) {
-        boolean admin = false;
+    public List<ResourceRef> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user) {
+
+        List<ResourceRef> refs;
+
         if (authorizationService.isEditor(authenticatedUser)) {
-            admin = true;
+            refs = getDao().findResourcesAvailableToUser(user);
+        } else {
+            refs = getDao().findResourcesAvailableToUser(user, authenticatedUser);
         }
-        return getDao().findResourcesSharedWith(authenticatedUser, user, admin);
+        return refs;
     }
 
     @Transactional(readOnly = true)
@@ -1292,6 +1315,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         return getDao().findCollectionsSharedWith(authenticatedUser, user, cls, admin);
     }
+
+    //Note: the underlying query visits lots of tables and we lock them for the sake of a non-vital task, so,  we omit the Transactional annotation.
+
+
 
     @Transactional(readOnly = true)
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
@@ -1340,6 +1367,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
         }
     }
+
+
     
     private UserInvite toInvite(UserRightsProxy proxy, TdarUser user) {
         UserInvite invite = new UserInvite();

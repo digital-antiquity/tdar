@@ -1,8 +1,11 @@
 package org.tdar.core.bean.resource.ref;
 
 import org.hibernate.annotations.Immutable;
+import org.tdar.core.bean.Slugable;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.util.UrlUtils;
 
 import javax.persistence.*;
 
@@ -12,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @Immutable
 @Table(name="resource")
-public final class ResourceRef
+public final class ResourceRef implements Addressable, Slugable
 {
 
     @Id
@@ -33,6 +36,10 @@ public final class ResourceRef
 
     public Long getId() {
         return id;
+    }
+
+    @Override public String getUrlNamespace() {
+        return getResourceType().getUrlNamespace();
     }
 
     public void setId(Long id) {
@@ -71,4 +78,13 @@ public final class ResourceRef
         this.resource = resource;
     }
 
+    @Override
+    public String getSlug() {
+        return UrlUtils.slugify(getTitle());
+    }
+
+    @Override
+    public String getDetailUrl() {
+        return getUrlNamespace() + "/" + getId();
+    }
 }

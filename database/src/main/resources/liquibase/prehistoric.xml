@@ -207,5 +207,35 @@
             select * from cc;
         </createView>
     </changeSet>
+
+    <changeSet id="prehistoric-default-21" author="jtdevos">
+
+        <!-- hidden collections that are visible to  has access to via collection permissions -->
+        <createView replaceIfExists="false" viewName="vw_hidden_collection_access">
+            select distinct
+                vca.starting_id collection_id,
+                au.user_id viewer_id
+            from
+                authorized_user au
+                    join vw_collection_ancestry vca on vca.starting_id = au.resource_collection_id
+                        join collection cc on cc.id = vca.id
+            where
+                cc.hidden
+        </createView>
+
+        <createView replaceIfExists="false" viewName="vw_hidden_resource_access">
+            select
+                cr.resource_id,
+                au.user_id viewer_id
+            from
+                authorized_user au
+                    join vw_collection_ancestry vca on au.resource_collection_id = vca.starting_id
+                        join collection_resource cr on vca.id = cr.collection_id
+                            join resource r on r.id = cr.resource_id
+            where
+                r.status IN  ('FLAGGED', 'FLAGGED_ACCOUNT_BALANCE', 'DRAFT')
+        </createView>
+
+    </changeSet>
      
 </databaseChangeLog>

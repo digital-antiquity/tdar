@@ -538,4 +538,24 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
                 .list();
     }
 
+    public List<ResourceRef> findResourcesAvailableToUser(TdarUser user, TdarUser viewer) {
+        NativeQuery<ResourceRef> query = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_SQL_RESOURCES_VIA_COLLECTION_PROGENY_FILTERED, ResourceRef.class);
+        return query.setParameter("user_id", user.getId())
+                .setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions())
+                .setParameter("viewer_id", user.getId())
+                .list();
+    }
+
+    public List<CollectionRef> findCollectionsAvailableToUser(TdarUser user, TdarUser viewer) {
+        NativeQuery<CollectionRef> query = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_SQL_COLLECTIONS_VIA_COLLECTION_PROGENY_FILTERED,
+                CollectionRef.class);
+        return query
+                .setParameter("user_id", user.getId())
+                .setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions())
+                .setParameter("viewer_id", user.getId())
+                .list();
+    }
+
+
+
 }

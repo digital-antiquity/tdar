@@ -15,6 +15,7 @@ import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.ref.ResourceRef;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -37,7 +38,7 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     private ResourceCollectionService resourceCollectionService;
     @Autowired
     private GenericService genericService;
-    private List<Resource> findResourcesSharedWith;
+    private List<ResourceRef> findResourcesSharedWith;
     private List<SharedCollection> findCollectionsSharedWith;
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
 
@@ -102,11 +103,11 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         this.user = user;
     }
 
-    public List<Resource> getFindResourcesSharedWith() {
+    public List<ResourceRef> getFindResourcesSharedWith() {
         return findResourcesSharedWith;
     }
 
-    public void setFindResourcesSharedWith(List<Resource> findResourcesSharedWith) {
+    public void setFindResourcesSharedWith(List<ResourceRef> findResourcesSharedWith) {
         this.findResourcesSharedWith = findResourcesSharedWith;
     }
 
