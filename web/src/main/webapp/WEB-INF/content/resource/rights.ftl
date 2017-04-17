@@ -126,7 +126,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <textarea name="proxies[100].note"/>
+                            <@s.textarea name="proxies[100].note" />
             </div>
         </div>
     </div>
