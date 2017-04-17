@@ -809,6 +809,21 @@
                             </configuration>
                             <executions>
                                 <execution>
+                                    <!--liquibase has problems dropping sequences and views in proper order, so we do it manually here -->
+                                    <id>pre-dropall</id>
+                                    <configuration>
+                                        <!--  NOTE CHANGELOGS can VARY so that we can load the integration data or not
+                                        changelog.xml or changelog-integration.xml -->
+                                        <changeLogFile>target/liquibase-test/pre-dropall.xml</changeLogFile>
+                                        <skip>${skipTestLiquibase}</skip>
+                                        <logging>warning</logging>
+                                    </configuration>
+                                    <phase>pre-integration-test</phase>
+                                    <goals>
+                                        <goal>update</goal>
+                                    </goals>
+                                </execution>
+                                <execution>
                                     <!-- in the "test" context, drop the database contents, 
                                         and reload it -->
                                     <id>test-liquibase</id>
