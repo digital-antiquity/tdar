@@ -1,6 +1,7 @@
 package org.tdar.struts.action.entity.user.rights;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -15,6 +16,7 @@ import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.ref.CollectionRef;
 import org.tdar.core.bean.resource.ref.ResourceRef;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.BillingAccountService;
@@ -38,8 +40,13 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     private ResourceCollectionService resourceCollectionService;
     @Autowired
     private GenericService genericService;
-    private List<ResourceRef> findResourcesSharedWith;
+    private List<Resource> findResourcesSharedWith;
     private List<SharedCollection> findCollectionsSharedWith;
+
+    private List<ResourceRef> resourcesAvailableToUser = Collections.EMPTY_LIST;
+    private List<CollectionRef> collectionsAvailableToUser = Collections.EMPTY_LIST;
+
+
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
 
     @Autowired
@@ -103,11 +110,11 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         this.user = user;
     }
 
-    public List<ResourceRef> getFindResourcesSharedWith() {
+    public List<Resource> getFindResourcesSharedWith() {
         return findResourcesSharedWith;
     }
 
-    public void setFindResourcesSharedWith(List<ResourceRef> findResourcesSharedWith) {
+    public void setFindResourcesSharedWith(List<Resource> findResourcesSharedWith) {
         this.findResourcesSharedWith = findResourcesSharedWith;
     }
 
@@ -126,5 +133,21 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
     }
-    
+
+    public List<ResourceRef> getResourcesAvailableToUser() {
+        return resourcesAvailableToUser;
+    }
+
+    public void setResourcesAvailableToUser(List<ResourceRef> resourcesAvailableToUser) {
+        this.resourcesAvailableToUser = resourcesAvailableToUser;
+    }
+
+    public List<CollectionRef> getCollectionsAvailableToUser() {
+        return collectionsAvailableToUser;
+    }
+
+    public void setCollectionsAvailableToUser(List<CollectionRef> collectionsAvailableToUser) {
+        this.collectionsAvailableToUser = collectionsAvailableToUser;
+    }
+
 }
