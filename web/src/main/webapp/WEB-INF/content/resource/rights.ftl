@@ -38,10 +38,10 @@
     </div>
             <#list proxies>
             <#items as proxy>
-				<@_proxy proxy_index proxy/>
+                <@_proxy proxy_index proxy/>
             </#items>
             <#else>
-				<@_proxy 0 blankProxy />
+                <@_proxy 0 blankProxy />
             </#list>
     </div>
     
@@ -54,25 +54,25 @@
                                     <div id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
                                         <input type="hidden" name="proxies[${proxy_index}].id" value="${(proxy.id!-1)?c}" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
                                             <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''}" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
-                                            	 class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input" 
-                                            	 autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p"
-                                            	  data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below." 
-                                            	  autocomplete="off" placeholder="Username or Email Address" autocompletename="properName"
-                                            	   autocompleteidelement="#authorizedUsersId__id_${proxy_index}_p">
+                                                 class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input"
+                                                 autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p"
+                                                  data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."
+                                                  autocomplete="off" placeholder="Username or Email Address" autocompletename="properName"
+                                                   autocompleteidelement="#authorizedUsersId__id_${proxy_index}_p">
                                     </div>
                                 </div>
                                 <div class="span2">
-	                                <@s.select theme="tdar" cssClass="creator-rights-select span2" name="proxies[${proxy_index}].permission" emptyOption='false'
-                    					listValue='label' list='%{availablePermissions}' disabled=isDisabled />
+                                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="proxies[${proxy_index}].permission" emptyOption='false'
+                                        listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                                 </div>
                                 <div class=" span2">
                                     <div class="input-append">
                                     <#local val=""/>
                                     <#if proxy.until?has_content>
-                                    	<#local val=proxy.until />
+                                        <#local val=proxy.until />
                                     </#if>
                                           <input class="datepicker" name="proxies[${proxy_index}].until" style="width:6em" 
-                                          	size="16" type="text" value="${val}" data-date-format="mm-dd-yyyy" >
+                                            size="16" type="text" value="${val}" data-date-format="mm-dd-yyyy" >
 
                                           <span class="add-on"><i class="icon-th"></i></span>
                                     </div>
@@ -151,7 +151,7 @@
 <script>
 $(function() {
     TDAR.repeatrow.registerRepeatable(".repeatLastRow");
-	TDAR.autocomplete.delegateCreator("#divAccessRights", true, false);
+    TDAR.autocomplete.delegateCreator("#divAccessRights", true, false);
     $("form").on("repeatrowadded",function() {TDAR.datepicker.bind($("input.datepicker",$("form")))});
             
 })
