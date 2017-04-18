@@ -3,7 +3,7 @@
     <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='process-access-request'>
         <@s.token name='struts.csrf.token' />
         <#assign label = type.label />
-        <#if type == 'CUSTOM'>
+        <#if type!'' == 'CUSTOM'>
             <#assign label = custom.name />
         </#if>
 
