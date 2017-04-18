@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tdar:document submitterRef="Person:135028" updaterRef="Person:8344"
+	xsi:schemaLocation="http://core.tdar.org/schema/current schema.xsd"
+	xmlns:ns3="http://archaeologydataservice.ac.uk/tag/schema" xmlns:tdar="http://www.tdar.org/namespace"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<tdar:coverageDates />
+	<tdar:cultureKeywords />
+	<tdar:dateCreated>2011-07-16T02:36:35.549-07:00</tdar:dateCreated>
+	<tdar:description>The information in this record has been migrated into
+		tDAR from the National Archaeological Database Reports Module (NADB-R)
+		and updated. Most NADB-R records consist of a document citation and
+		other metadata but do not have the documents themselves uploaded.
+
+		If
+		you have a copy of the document and would like to upload it, please
+		contact us at comments@tdar.org.
+	</tdar:description>
+	<tdar:geographicKeywords>
+		<tdar:geographicKeyword id="10460">
+			<tdar:label>United States</tdar:label>
+		</tdar:geographicKeyword>
+		<tdar:geographicKeyword level="STATE" id="1825">
+			<tdar:label>Arkansas (State / Territory)</tdar:label>
+		</tdar:geographicKeyword>
+		<tdar:geographicKeyword level="COUNTRY" id="384">
+			<tdar:label>United States of America (Country)</tdar:label>
+		</tdar:geographicKeyword>
+		<tdar:geographicKeyword level="CONTINENT" id="2890">
+			<tdar:label>North America (Continent)</tdar:label>
+		</tdar:geographicKeyword>
+		<tdar:geographicKeyword id="15764">
+			<tdar:label>n-us---</tdar:label>
+		</tdar:geographicKeyword>
+		<tdar:geographicKeyword level="FIPS_CODE" id="8994">
+			<tdar:label>05998 (Fips Code)</tdar:label>
+		</tdar:geographicKeyword>
+	</tdar:geographicKeywords>
+	<tdar:id>152922</tdar:id>
+	<tdar:investigationTypes>
+		<tdar:investigationType id="6">
+			<tdar:label>Methodology, Theory, or Synthesis</tdar:label>
+		</tdar:investigationType>
+	</tdar:investigationTypes>
+	<tdar:latitudeLongitudeBoxes>
+		<tdar:latitudeLongitudeBox id="360977">
+			<tdar:maximumLatitude>36.499755859375</tdar:maximumLatitude>
+			<tdar:maximumLongitude>-89.64439392089844</tdar:maximumLongitude>
+			<tdar:minimumLatitude>33.00410842895508</tdar:minimumLatitude>
+			<tdar:minimumLongitude>-94.61792755126953</tdar:minimumLongitude>
+		</tdar:latitudeLongitudeBox>
+	</tdar:latitudeLongitudeBoxes>
+	<tdar:managedGeographicKeywords>
+		<tdar:managedGeographicKeyword level="STATE"
+			id="1825">
+			<tdar:label>Arkansas (State / Territory)</tdar:label>
+		</tdar:managedGeographicKeyword>
+		<tdar:managedGeographicKeyword level="COUNTRY"
+			id="384">
+			<tdar:label>United States of America (Country)</tdar:label>
+		</tdar:managedGeographicKeyword>
+		<tdar:managedGeographicKeyword level="CONTINENT"
+			id="2890">
+			<tdar:label>North America (Continent)</tdar:label>
+		</tdar:managedGeographicKeyword>
+		<tdar:managedGeographicKeyword level="ISO_COUNTRY"
+			id="276">
+			<tdar:label>US (ISO Country Code)</tdar:label>
+		</tdar:managedGeographicKeyword>
+	</tdar:managedGeographicKeywords>
+	<tdar:materialKeywords />
+	<tdar:otherKeywords>
+		<tdar:otherKeyword id="20073">
+			<tdar:label>Vegetation Study</tdar:label>
+		</tdar:otherKeyword>
+		<tdar:otherKeyword id="1064">
+			<tdar:label>SWD-ST</tdar:label>
+		</tdar:otherKeyword>
+		<tdar:otherKeyword id="81104">
+			<tdar:label>Prairie ecology</tdar:label>
+		</tdar:otherKeyword>
+		<tdar:otherKeyword id="3235">
+			<tdar:label>Environment</tdar:label>
+		</tdar:otherKeyword>
+	</tdar:otherKeywords>
+	<tdar:relatedComparativeCollections />
+	<tdar:resourceAnnotations>
+		<tdar:resourceAnnotation id="750762">
+			<tdar:resourceAnnotationKey
+				resourceAnnotationType="IDENTIFIER" id="23">
+				<tdar:key>ddc</tdar:key>
+			</tdar:resourceAnnotationKey>
+			<tdar:value>574.5 / 264</tdar:value>
+		</tdar:resourceAnnotation>
+		<tdar:resourceAnnotation id="750761">
+			<tdar:resourceAnnotationKey
+				resourceAnnotationType="IDENTIFIER" id="19">
+				<tdar:key>NADB document id number</tdar:key>
+			</tdar:resourceAnnotationKey>
+			<tdar:value>2150371</tdar:value>
+		</tdar:resourceAnnotation>
+		<tdar:resourceAnnotation id="750764">
+			<tdar:resourceAnnotationKey
+				resourceAnnotationType="IDENTIFIER" id="22">
+				<tdar:key>lcc</tdar:key>
+			</tdar:resourceAnnotationKey>
+			<tdar:value>QH104 .T78 1981</tdar:value>
+		</tdar:resourceAnnotation>
+		<tdar:resourceAnnotation id="750763">
+			<tdar:resourceAnnotationKey
+				resourceAnnotationType="IDENTIFIER" id="25">
+				<tdar:key>isbn</tdar:key>
+			</tdar:resourceAnnotationKey>
+			<tdar:value>0879333618</tdar:value>
+		</tdar:resourceAnnotation>
+		<tdar:resourceAnnotation id="750760">
+			<tdar:resourceAnnotationKey
+				resourceAnnotationType="IDENTIFIER" id="18">
+				<tdar:key>NADB citation id number</tdar:key>
+			</tdar:resourceAnnotationKey>
+			<tdar:value>000000009534</tdar:value>
+		</tdar:resourceAnnotation>
+		<tdar:resourceAnnotation id="750759">
+			<tdar:resourceAnnotationKey
+				resourceAnnotationType="IDENTIFIER" id="21">
+				<tdar:key>lccn</tdar:key>
+			</tdar:resourceAnnotationKey>
+			<tdar:value>79019857</tdar:value>
+		</tdar:resourceAnnotation>
+	</tdar:resourceAnnotations>
+	<tdar:resourceCollections>
+		<tdar:resourceCollection ownerIdRef="Person:135028"
+			parentIdRef="NULL_REF" id="17727">
+			<tdar:dateCreated>2012-09-12T12:16:28.971-07:00</tdar:dateCreated>
+			<tdar:resources>
+				<tdar:resourceRef>Document:152922</tdar:resourceRef>
+			</tdar:resources>
+			<tdar:sortBy>TITLE</tdar:sortBy>
+			<tdar:type>INTERNAL</tdar:type>
+			<tdar:viewable>false</tdar:viewable>
+			<tdar:visible>true</tdar:visible>
+		</tdar:resourceCollection>
+	</tdar:resourceCollections>
+	<tdar:resourceCreators>
+		<tdar:resourceCreator sequenceNumber="0" id="1041049">
+			<tdar:person>
+				<tdar:id>72236</tdar:id>
+				<tdar:contributor>false</tdar:contributor>
+				<tdar:emailPublic>false</tdar:emailPublic>
+				<tdar:firstName>Paul G.</tdar:firstName>
+				<tdar:lastName>Risser</tdar:lastName>
+				<tdar:phonePublic>false</tdar:phonePublic>
+				<tdar:registered>false</tdar:registered>
+				<tdar:totalLogins>0</tdar:totalLogins>
+			</tdar:person>
+			<tdar:role>AUTHOR</tdar:role>
+		</tdar:resourceCreator>
+	</tdar:resourceCreators>
+	<tdar:resourceNotes>
+		<tdar:resourceNote type="GENERAL" sequenceNumber="0"
+			id="182183">
+			<tdar:note>Includes indexes.</tdar:note>
+		</tdar:resourceNote>
+		<tdar:resourceNote type="GENERAL" sequenceNumber="0"
+			id="182184">
+			<tdar:note>Bibliography: p. 477-515.</tdar:note>
+		</tdar:resourceNote>
+	</tdar:resourceNotes>
+	<tdar:resourceType>DOCUMENT</tdar:resourceType>
+	<tdar:siteNameKeywords />
+	<tdar:siteTypeKeywords />
+	<tdar:sourceCollections />
+	<tdar:status>ACTIVE</tdar:status>
+	<tdar:temporalKeywords />
+	<tdar:title>The True Prairie ecosystem</tdar:title>
+	<tdar:url></tdar:url>
+	<tdar:viewable>false</tdar:viewable>
+	<tdar:copyLocation>AAS Citation Data Tranfer, Location Unknown [ 20370]
+	</tdar:copyLocation>
+	<tdar:date>1981</tdar:date>
+	<tdar:dateNormalized>1980</tdar:dateNormalized>
+	<tdar:externalReference>false</tdar:externalReference>
+	<tdar:informationResourceFiles />
+	<tdar:inheritingCollectionInformation>false
+	</tdar:inheritingCollectionInformation>
+	<tdar:inheritingCulturalInformation>false
+	</tdar:inheritingCulturalInformation>
+	<tdar:inheritingIdentifierInformation>false
+	</tdar:inheritingIdentifierInformation>
+	<tdar:inheritingInvestigationInformation>false
+	</tdar:inheritingInvestigationInformation>
+	<tdar:inheritingMaterialInformation>false
+	</tdar:inheritingMaterialInformation>
+	<tdar:inheritingNoteInformation>false</tdar:inheritingNoteInformation>
+	<tdar:inheritingOtherInformation>false
+	</tdar:inheritingOtherInformation>
+	<tdar:inheritingSiteInformation>false</tdar:inheritingSiteInformation>
+	<tdar:inheritingSpatialInformation>false
+	</tdar:inheritingSpatialInformation>
+	<tdar:inheritingTemporalInformation>false
+	</tdar:inheritingTemporalInformation>
+	<tdar:projectRef>:-1</tdar:projectRef>
+	<tdar:resourceLanguage>FNGLISH</tdar:resourceLanguage>
+	<tdar:bookTitle></tdar:bookTitle>
+	<tdar:documentType>BOOK</tdar:documentType>
+	<tdar:doi></tdar:doi>
+	<tdar:edition></tdar:edition>
+	<tdar:endPage></tdar:endPage>
+	<tdar:isbn>0879333618</tdar:isbn>
+	<tdar:issn></tdar:issn>
+	<tdar:journalName></tdar:journalName>
+	<tdar:journalNumber></tdar:journalNumber>
+	<tdar:seriesName>US / IBP synthesis series ; 16</tdar:seriesName>
+	<tdar:seriesNumber></tdar:seriesNumber>
+	<tdar:startPage></tdar:startPage>
+	<tdar:volume></tdar:volume>
+</tdar:document>
