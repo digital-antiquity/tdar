@@ -41,7 +41,7 @@ navigation freemarker macros
 			        </#if>
 					<@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
 			        <#if editable>
-						<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
+                        <@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
 					</#if>
 			    </#if>
 			    <#nested>
@@ -63,6 +63,7 @@ navigation freemarker macros
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
                     <#local _large = (persistable.resources?size &gt; 50000) />
                     <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
+                    <@makeLink "resource" "compare?collectionId=${persistable.id?c}" "review" "review" "" false />
 
              <#if administrator && whiteLabelCollection>
                         <@makeLink namespace "admin/whitelabel/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
