@@ -325,6 +325,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    @Ignore
     public void testResourcesAvailableToUser() {
         List<ResourceRef> refs = resourceCollectionDao.findResourcesAvailableToUser(getBasicUser());
         refs.forEach( r -> logger.debug("ref id:{}  type:{}  title:{}", r.getId(), r.getResourceType(), r.getTitle()));
