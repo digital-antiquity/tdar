@@ -2,7 +2,12 @@
 
     <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='process-access-request'>
         <@s.token name='struts.csrf.token' />
-        <h1>Respond to user:<span class="red"> ${(type.label)!'Access Request'}</span></h1>
+        <#assign label = type.label />
+        <#if type == 'CUSTOM'>
+            <#assign label = custom.name />
+        </#if>
+
+        <h1>Respond to user:<span class="red"> ${(label)!'Access Request'}</span></h1>
         
         <p>Please specify the level of rights you'd like to grant <b><a href="${requestor.detailUrl}">${requestor.properName}</a></b> access to <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></p>
         <@s.hidden name="resourceId" value="${resource.id?c}"/>

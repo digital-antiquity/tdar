@@ -36,6 +36,8 @@ public class AdminPermissonsRequestAction extends AbstractProcessPermissonsActio
 
     @Autowired
     private transient ResourceService resourceService;
+
+    private RequestCollection custom;
     
     @Action(value = "grant",
             results = {
@@ -47,18 +49,21 @@ public class AdminPermissonsRequestAction extends AbstractProcessPermissonsActio
             })
     @HttpsOnly
     public String requestAccess() throws TdarActionException {
+        custom = resourceService.findCustom(getResource());
         return SUCCESS;
     }
 
     @Override
 	public List<GeneralPermissions> getAvailablePermissions() {
     	if (getType() != null && getType() == EmailMessageType.CUSTOM) {
-    	    RequestCollection rc = resourceService.findCustom(getResource());
-    	    if (rc != null) {
-    	        return Arrays.asList(rc.getPermission());
+    	    if (custom != null) {
+    	        return Arrays.asList(custom.getPermission());
     	    }
     	}
 		return super.getAvailablePermissions();
 	}
 
+    public RequestCollection getCustom() {
+        return custom;
+    }
 }
