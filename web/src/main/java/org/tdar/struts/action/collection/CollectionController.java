@@ -83,8 +83,11 @@ public class CollectionController extends AbstractPersistableController<Resource
     private TdarUser owner;
 
     private String parentCollectionName;
+    private String alternateParentCollectionName;
     private Long parentId;
+    private Long alternateParentId;
     private ResourceCollection parentCollection;
+    private ResourceCollection alternateParentCollection;
 
 
     @Override
@@ -112,24 +115,31 @@ public class CollectionController extends AbstractPersistableController<Resource
         super.prepare();
 
         // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
-        if(PersistableUtils.isNotNullOrTransient(parentId)) {
-            parentCollection = resourceCollectionService.find(parentId);
-            getLogger().debug("lookup parent collection by id:{}  result:{}", parentId, parentCollection);
+        parentCollection = prepareParent(parentId, parentCollectionName);
+        alternateParentCollection = prepareParent(alternateParentId, alternateParentCollectionName);
+    }
+
+    private ResourceCollection prepareParent(Long pid, String parentName) {
+        ResourceCollection parentC = null;
+        if(PersistableUtils.isNotNullOrTransient(pid)) {
+            parentC = resourceCollectionService.find(pid);
+            getLogger().debug("lookup parent collection by id:{}  result:{}", pid, parentC);
 
         }
-        else if(StringUtils.isNotBlank(parentCollectionName)) {
+        else if(StringUtils.isNotBlank(parentName)) {
             List<ResourceCollection> results = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(),
-                    parentCollectionName);
-            getLogger().debug("lookup parent collection by name:{}  results:{}", parentCollectionName, results.size());
+                    parentName);
+            getLogger().debug("lookup parent collection by name:{}  results:{}", parentName, results.size());
 
             if(results.size() != 1) {
                 addActionError(getText("collectionController.ambiguous_parent_name"));
                 // Clear the name field or the INPUT form will be primed to fail in the same way upon submit.
                 //parentCollectionName = "";
             } else {
-                parentCollection = results.get(0);
+                parentC = results.get(0);
             }
         }
+        return parentC;
     }
 
     @Override
@@ -143,16 +153,8 @@ public class CollectionController extends AbstractPersistableController<Resource
             getPersistable().setOwner(uploader);
         }
 
-//        lookupParent();
-        if(parentCollection != null) {
-            parentId = parentCollection.getId();
-        }
-
-        // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
-        if (PersistableUtils.isNotNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(parentCollection)
-                && (parentCollection.getParentIds().contains(persistable.getId()) || parentCollection.getId().equals(persistable.getId()))) {
-            addActionError(getText("collectionController.cannot_set_self_parent"));
-        }
+        parentId = evlauteParent(persistable.getParent(), parentCollection);
+        alternateParentId = evlauteParent(persistable.getAlternateParent(), alternateParentCollection);
 
         //FIXME: this section is necessary because our prepare code is here, but we can't put it in prepare() because dozens of our tests will break because they do not correctly mock their controllers and assume that prepare() is never called.
         if(hasActionErrors()) {
@@ -162,6 +164,20 @@ public class CollectionController extends AbstractPersistableController<Resource
                 toRemove, publicToAdd, publicToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), getStartTime());
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
+    }
+
+    private Long evlauteParent(ResourceCollection _parent,ResourceCollection _parentCollection) {
+        Long _parentId = null;
+        if(_parent!= null) {
+            _parentId = _parent.getId();
+        }
+        
+        // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
+        if (PersistableUtils.isNotNullOrTransient(_parent) && PersistableUtils.isNotNullOrTransient(_parent)
+                && (_parent.getParentIds().contains(_parent.getId()) || _parentCollection.getId().equals(_parent.getId()))) {
+            addActionError(getText("collectionController.cannot_set_self_parent"));
+        }
+        return _parentId;
     }
 
     @Override
@@ -444,6 +460,30 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setPublicToRemove(List<Long> publicToRemove) {
         this.publicToRemove = publicToRemove;
+    }
+
+    public String getAlternateParentCollectionName() {
+        return alternateParentCollectionName;
+    }
+
+    public void setAlternateParentCollectionName(String alternateParentCollectionName) {
+        this.alternateParentCollectionName = alternateParentCollectionName;
+    }
+
+    public Long getAlternateParentId() {
+        return alternateParentId;
+    }
+
+    public void setAlternateParentId(Long alternateParentId) {
+        this.alternateParentId = alternateParentId;
+    }
+
+    public ResourceCollection getAlternateParentCollection() {
+        return alternateParentCollection;
+    }
+
+    public void setAlternateParentCollection(ResourceCollection alternateParentCollection) {
+        this.alternateParentCollection = alternateParentCollection;
     }
 
 }

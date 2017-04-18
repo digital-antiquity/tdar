@@ -20,8 +20,13 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
 		 }
         doc.setField(QueryFieldNames.RESOURCE_OWNER, collection.getOwner().getId());
         doc.setField(QueryFieldNames.COLLECTION_PARENT, collection.getParentId());
+        HashSet<Long> parentIds = new HashSet<>();
+        if (collection.getAlternateParent() != null) {
+            parentIds.add(collection.getAlternateParent().getId());
+        }
         if (collection.getParentIds() != null) {
-             doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, new HashSet<>(collection.getParentIds()));
+             parentIds.addAll(collection.getParentIds());
+            doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, parentIds);
         }
         doc.setField(QueryFieldNames.DESCRIPTION, collection.getDescription());
         doc.setField(QueryFieldNames.TOP_LEVEL, collection.isTopLevel());
