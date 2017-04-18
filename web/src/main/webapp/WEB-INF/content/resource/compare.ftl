@@ -25,6 +25,12 @@ th {border-right:1px solid #DDD}
         </#list>
     </tr>
     <tr>
+        <th>Status:</th>
+        <#list resources as resource>
+            <td>${resource.status}</td>
+        </#list>
+    </tr>
+    <tr>
         <th>Project:</th>
         <#list resources as resource>
         <td><#if resource.project??>
@@ -48,7 +54,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b><a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a></b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -63,7 +69,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b><a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a></b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
 	        </#list>
 		</td>
         </#list>
@@ -88,7 +94,7 @@ th {border-right:1px solid #DDD}
                     <b><a href="${it.detailUrl}">${it.name}</a></b>
                 </#if>
 				</#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
 
         </td>
@@ -101,7 +107,7 @@ th {border-right:1px solid #DDD}
             <#if resource.informationResourceFiles??>
             <#list resource.informationResourceFiles as file>
 				${file.filename} (${file.restriction})
-            <#sep>,</#sep>
+            <#sep> <b>&bull;</b> </#sep>
             </#list>
             </#if>
         </td>
@@ -117,7 +123,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -132,7 +138,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -147,7 +153,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -162,7 +168,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -177,7 +183,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -192,7 +198,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -207,7 +213,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -222,7 +228,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -237,7 +243,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -252,7 +258,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>
@@ -267,7 +273,7 @@ th {border-right:1px solid #DDD}
                 <#else>
                     <b>${it.resourceAnnotationKey.key}: ${it.value}</b>
                 </#if>
-                <#sep>, </#sep>
+                <#sep> <b>&bull;</b> </#sep>
             </#list>
         </td>
         </#list>

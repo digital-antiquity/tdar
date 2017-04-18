@@ -77,7 +77,7 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         }
         resources.forEach(resource -> {
                 if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD)) {
-                    addActionError("abstractPersistableController.unable_to_view_edit");
+                    addActionError(getText("abstractPersistableController.unable_to_view_edit"));
                 }
             }
         );
