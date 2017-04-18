@@ -19,7 +19,7 @@
                  			<#assign label = custom.name />
                  		</#if>
                  		<label class="radio inline" for="metadataForm_type${type_}">
-                 		<input type="radio" name="type" id="metadataForm_type${type_}" value="${type_}" class="required" <#if type == type_ >checked="checked"</#if>
+                 		<input type="radio" name="type" id="metadataForm_type${type_}" value="${type_}" class="required" <#if type?has_content && type == type_ >checked="checked"</#if>
                  			 aria-required="true">${label}</label>
                  	 </#items>
              	 </#list> 

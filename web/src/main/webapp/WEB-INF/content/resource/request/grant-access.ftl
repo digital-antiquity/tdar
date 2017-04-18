@@ -2,9 +2,12 @@
 
     <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='process-access-request'>
         <@s.token name='struts.csrf.token' />
-        <#assign label = type.label />
-        <#if type!'' == 'CUSTOM'>
-            <#assign label = custom.name />
+        <#assign label = "" />
+        <#if type?has_content>
+            <#assign label=type.label />
+            <#if type == 'CUSTOM'>
+                <#assign label = custom.name />
+            </#if>
         </#if>
 
         <h1>Respond to user:<span class="red"> ${(label)!'Access Request'}</span></h1>
