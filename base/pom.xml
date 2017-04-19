@@ -11,7 +11,6 @@
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
         <testChangeLog>changelog.xml</testChangeLog>
-        <skipCleanup>false</skipCleanup>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -859,7 +858,7 @@
                                     <id>cleanup-database</id>
                                     <configuration>
                                         <changeLogFile>target/liquibase-test/post-integration-test.xml</changeLogFile>
-                                        <skip>${skipCleanup}</skip>
+                                        <skip>${skipUpgradeLiquibase}</skip>
                                         <logging>warning</logging>
                                     </configuration>
                                     <phase>post-integration-test</phase>
