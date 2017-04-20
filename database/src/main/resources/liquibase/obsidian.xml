@@ -239,4 +239,20 @@
         </addColumn>
     </changeSet>
     
+    <changeSet id="obsidian-23" author="abrin">
+        <addColumn tableName="collection">
+            <column name="alternate_parent_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="collection_alternate_parent_id" 
+            referencedTableName="collection" 
+            baseColumnNames="alternate_parent_id" baseTableName="collection" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="obsidian-24" author="abrin">
+        <createIndex tableName="resource" indexName="resource_updated_status_id">
+            <column name="date_updated"/>
+            <column name="status"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
