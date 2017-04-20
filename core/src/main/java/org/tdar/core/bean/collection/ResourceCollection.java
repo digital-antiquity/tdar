@@ -431,6 +431,14 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         return getParent().getId();
     }
 
+    @Transient
+    public Long getAlternateParentId() {
+        if (getAlternateParent() == null) {
+            return null;
+        }
+        return getAlternateParent().getId();
+    }
+
 
     /*
      * Default to sorting by name, but grouping by parentId, used for sorting int he tree

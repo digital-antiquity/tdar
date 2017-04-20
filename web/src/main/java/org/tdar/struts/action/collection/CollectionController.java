@@ -26,6 +26,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
@@ -153,21 +154,32 @@ public class CollectionController extends AbstractPersistableController<Resource
             getPersistable().setOwner(uploader);
         }
 
-        parentId = evlauteParent(persistable.getParent(), parentCollection);
-        alternateParentId = evlauteParent(persistable.getAlternateParent(), alternateParentCollection);
+        parentId = evaluteParent(parentId, persistable.getParent(), parentCollection);
+        alternateParentId = evaluteParent(alternateParentId, persistable.getAlternateParent(), alternateParentCollection);
 
         //FIXME: this section is necessary because our prepare code is here, but we can't put it in prepare() because dozens of our tests will break because they do not correctly mock their controllers and assume that prepare() is never called.
         if(hasActionErrors()) {
             return INPUT;
         }
-        resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parentCollection, getAuthenticatedUser(), getAuthorizedUsers(), toAdd,
-                toRemove, publicToAdd, publicToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), getStartTime());
+        getLogger().debug("parentId: {} parent: {}", parentId, parentCollection);
+        CollectionSaveObject cso = new CollectionSaveObject(getPersistable(), getAuthenticatedUser(), getStartTime(), getAuthorizedUsers());
+        cso.setParent(parentCollection);
+        cso.setParentId(parentId);
+        cso.setAlternateParent(alternateParentCollection);
+        cso.setAlternateParentId(alternateParentId);
+        cso.setToAdd(toAdd);
+        cso.setToRemove(toRemove);
+        cso.setPublicToAdd(publicToAdd);
+        cso.setPublicToRemove(publicToRemove);
+        cso.setFileProxy(generateFileProxy(getFileFileName(), getFile()));
+        cso.setShouldSave(shouldSaveResource());
+        resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
 
-    private Long evlauteParent(ResourceCollection _parent,ResourceCollection _parentCollection) {
-        Long _parentId = null;
+    private Long evaluteParent(Long _pid, ResourceCollection _parent, ResourceCollection _parentCollection) {
+        Long _parentId = _pid;
         if(_parent!= null) {
             _parentId = _parent.getId();
         }

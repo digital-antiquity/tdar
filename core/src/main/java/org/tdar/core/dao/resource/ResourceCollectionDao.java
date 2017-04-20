@@ -411,7 +411,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     public List<ResourceCollection> findAlternateChildren(List<Long> ids) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS);
-        query.setParameter("collectionIds", ids);
+        query.setParameterList("collectionIds", ids);
         return query.list();
     }
     
