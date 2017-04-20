@@ -27,6 +27,7 @@
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
         <@s.hidden name="id" value="${persistable.id?c}" />
+
         <#if editor>
             <div class="control-group" id="divSubmitter">
                 <label class="control-label">Owner</label>

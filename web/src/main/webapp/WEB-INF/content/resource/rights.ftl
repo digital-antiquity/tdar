@@ -20,6 +20,11 @@
     <div class="span12">
     <p><b>This resource is shared with ${proxies?size} people and is in ${persistable.sharedCollections?size} collections.</b></p>
     <@s.hidden name="id" />
+    
+
+    <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
+
+
     <h3>Add / Modify User(s)</h3>
     <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
     <div class="row">
