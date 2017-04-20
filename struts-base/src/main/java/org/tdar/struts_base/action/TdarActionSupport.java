@@ -736,5 +736,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public final boolean isListCollectionsEnabled() {
         return TdarConfiguration.getInstance().isListCollectionsEnabled();
     }
-    
+ 
+    protected boolean isBot() {
+        return Activity.testUserAgent(ServletActionContext.getRequest().getHeader("User-Agent"));
+
+    }
+
 }

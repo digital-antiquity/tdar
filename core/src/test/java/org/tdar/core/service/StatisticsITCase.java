@@ -63,9 +63,9 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         document.setDate(1234);
         document.markUpdated(getAdminUser());
         genericService.saveOrUpdate(document);
-        genericService.saveOrUpdate(new ResourceAccessStatistic(new Date(), document));
+        genericService.saveOrUpdate(new ResourceAccessStatistic(new Date(), document, false));
         Date date = DateTime.now().minusDays(1).toDate();
-        genericService.saveOrUpdate(new ResourceAccessStatistic(date, document));
+        genericService.saveOrUpdate(new ResourceAccessStatistic(date, document,true));
         genericService.synchronize();
         Number count = datasetService.getDao().getAccessCount(document);
         assertEquals(1l, count.longValue());

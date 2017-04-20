@@ -186,5 +186,73 @@
 	    </addColumn>
     
     </changeSet>
+    <changeSet id="obsidian-18" author="abrin">
+    <createTable tableName="collection_request">
+        <column name="id" type="bigserial" />
+        <column name="general_permission" type="varchar(50)"/>
+        <column name="name" type="varchar(500)"/>
+        <column name="description_request" type="varchar(500)" />
+        <column name="description_response" type="varchar(500)" />
+        <column name="contact_id" type="bigint" />
+    </createTable>
+    <createTable tableName="collection_request_collection_ids">
+        <column name="collection_request_id" type="bigint" />
+        <column name="collection_id" type="bigint" />
+        <column name="collections_id" type="bigint" />
+    </createTable>
+    <addPrimaryKey tableName="collection_request" columnNames="id"/>
+    <addForeignKeyConstraint constraintName="collection_request_user_id" 
+        referencedTableName="tdar_user" 
+        baseColumnNames="contact_id" baseTableName="collection_request" referencedColumnNames="id"/>
+    <addForeignKeyConstraint constraintName="collection_request_collection_id" 
+        referencedTableName="collection" 
+        baseColumnNames="collection_id" baseTableName="collection_request_collection_ids" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="obsidian-19" author="abrin">
+        <sql>update email_queue set message_type ='CUSTOM' where message_type='SAA';</sql>
+    </changeSet>
+    <changeSet id="obsidian-20" author="abrin">
+    <addColumn tableName="resource_access_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    <addColumn tableName="creator_view_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+
+    <addColumn tableName="resource_collection_view_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    <addColumn tableName="resource_access_day_agg">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
     
+    </changeSet>
+    <changeSet id="obsidian-21" author="abrin">
+        <addColumn tableName="information_resource_file_download_statistics">
+            <column name="bot" type="boolean" defaultValueBoolean="false" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-22" author="abrin">
+    <dropColumn tableName="resource_access_day_agg" columnName="bot"/>
+        <addColumn tableName="resource_access_day_agg">
+            <column name="bot" type="bigint" />
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-23" author="abrin">
+        <addColumn tableName="collection">
+            <column name="alternate_parent_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="collection_alternate_parent_id" 
+            referencedTableName="collection" 
+            baseColumnNames="alternate_parent_id" baseTableName="collection" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="obsidian-24" author="abrin">
+        <createIndex tableName="resource" indexName="resource_updated_status_id">
+            <column name="date_updated"/>
+            <column name="status"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

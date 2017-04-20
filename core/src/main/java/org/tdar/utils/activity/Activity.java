@@ -2,6 +2,7 @@ package org.tdar.utils.activity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,6 +21,7 @@ public class Activity implements Serializable {
     @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private static final String MOZILLA = "Mozilla/5.0 (compatible;";
+    static Pattern pattern = Pattern.compile("(bot|googlebot|crawler|spider|robot|crawling)");
     private Date startDate;
     private Date freemarkerHandoffDate;
     private Date endDate;
@@ -281,4 +283,16 @@ public class Activity implements Serializable {
     public String getUsername() {
         return username;
     }
+    
+    public boolean isBot() {
+        return Activity.testUserAgent(getBrowser());
+    }
+
+    public static boolean testUserAgent(String userAgent) {
+        if (StringUtils.isBlank(userAgent)) {
+            return false;
+        }
+        return pattern.matcher(userAgent).find();
+    }
+    
 }

@@ -33,6 +33,7 @@ import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
@@ -557,5 +558,14 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
 
-
+    public RequestCollection findCustomRequest(Resource resource) {
+        List<Long> ids = PersistableUtils.extractIds(resource.getSharedCollections());
+        for (RequestCollection rc : findAll(RequestCollection.class)) {
+            if (CollectionUtils.containsAny(rc.getCollections(), ids)) {
+                return rc;
+            }
+        }
+        return null;
+    }
+    
 }

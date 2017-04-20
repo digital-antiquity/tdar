@@ -186,7 +186,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     public String loadViewMetadata() {
         setParentId(getPersistable().getParentId());
         if (!isEditor()) {
-            ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable());
+            ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable(), isBot());
             getGenericService().saveOrUpdate(rcvs);
         } else {
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));

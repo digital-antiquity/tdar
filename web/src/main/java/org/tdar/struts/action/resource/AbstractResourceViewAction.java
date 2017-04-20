@@ -42,6 +42,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
@@ -196,7 +197,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         }
         // don't count if we're an admin
         if (!PersistableUtils.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
-            resourceService.incrementAccessCounter(getPersistable());
+            resourceService.incrementAccessCounter(getPersistable(), isBot());
         }
         accountService.updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
         bookmarkedResourceService.applyTransientBookmarked(Arrays.asList(getResource()), getAuthenticatedUser());
