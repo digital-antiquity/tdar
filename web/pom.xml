@@ -391,7 +391,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${surefire-failsafe.version}</version>
                 <executions>
-                    <execution>
+<!--                    <execution>
                         <id>integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
@@ -445,7 +445,7 @@
                                 <exclude>**/org/tdar/web/**/*</exclude>
                                 <exclude>**/org/tdar/core/**/*</exclude>
                                 <!-- <exclude>**/org/tdar/struts/**/*ITCase.java</exclude> -->
-                            </excludes>
+<!--                            </excludes>
                             <includes>
                                 <include>**/org/tdar/struts/**/Struts*ITCase.java</include>
                             </includes>
@@ -471,7 +471,7 @@
                             <reportsDirectory>target/failsafe-reports/htmlunit</reportsDirectory>
                             <skip>${skipWebTests}</skip>
                         </configuration>
-                    </execution>
+                    </execution> -->
                     <execution>
                         <id>integration-test-selenium</id>
                         <goals>
