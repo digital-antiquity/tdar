@@ -1353,10 +1353,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return refs;
     }
 
-    //Note: the underlying query visits lots of tables and we lock them for the sake of a non-vital task, so,  we omit the Transactional annotation.
-
-
-
     @Transactional(readOnly = true)
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
         return getDao().findUsersSharedWith(authenticatedUser);
