@@ -351,7 +351,28 @@ public interface TdarNamedQueries {
      * </ul>
      *
      */
-    String QUERY_SQL_RESOURCES_VIA_COLLECTION_PROGENY_FILTERED = "";
+    String QUERY_SQL_RESOURCES_VIA_COLLECTION_PROGENY_FILTERED = ""
+            + "select r.*"
+            + "from"
+            + "    resource r"
+            + "where"
+            + "    ("
+            + "        r.submitter_id = :user_id"
+            + "        or exists("
+            + "            select *"
+            + "            from authorized_user au"
+            + "                join vw_collection_progeny vcp on au.resource_collection_id = vcp.starting_id"
+            + "                join collection_resource cr on vcp.id = cr.collection_id"
+            + "            where"
+            + "                au.general_permission_int >= :permission_int"
+            + "                and cr.resource_id = r.id"
+            + "                and au.user_id = :user_id"
+            + "        )"
+            + "    )"
+            + "    and ("
+            + "        r.status = 'ACTIVE'"
+            + "        or exists (select * from vw_hidden_resource_access vha where vha.resource_id = r.id and vha.viewer_id = :viewer_id)"
+            + "    )";
 
 
     /**
