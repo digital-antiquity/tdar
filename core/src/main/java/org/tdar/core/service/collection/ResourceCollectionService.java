@@ -1338,7 +1338,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *
      * @param user User object representing the 'target user'.  The system will return a list of collections that are available to the target user.]
      *
-     * @return a list of ResourceRef objects representing the collections available to the target user *and* visible to the authenticatedUser
+     * @return a list of CollectionRef objects representing the collections available to the target user *and* visible to the authenticatedUser
      */
     @Transactional(readOnly = true)
     public List<CollectionRef> findCollectionsAvailableToUser(TdarUser authenticatedUser, TdarUser user) {
