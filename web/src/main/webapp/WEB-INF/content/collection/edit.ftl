@@ -81,6 +81,20 @@
                     </#if>
                 </div>
             </div>
+            
+            <div id="altParentIdContainer" class="control-group">
+                <label class="control-label">Secondary Parent Collection (No rights)</label>
+
+                <div class="controls">
+                    <@s.hidden name="alternateParentId"  id="hdnAltParentId" cssClass=""
+                    autocompleteParentElement="#altParentIdContainer"  />
+            <@s.textfield theme="simple" name="alternateParentCollectionName" cssClass="input-xxlarge collectionAutoComplete"  autocomplete="off"
+                autocompleteIdElement="#hdnAltParentId" maxlength=255 autocompleteParentElement="#altParentIdContainer" autocompleteName="name"
+                placeholder="parent collection name" id="txtAltParentCollectionName"
+                />
+                </div>
+            </div>
+
         </#if>
 
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
@@ -231,6 +245,7 @@
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
+                TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
         });

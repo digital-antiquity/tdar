@@ -114,7 +114,6 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-
         // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
         parentCollection = prepareParent(parentId, parentCollectionName);
         alternateParentCollection = prepareParent(alternateParentId, alternateParentCollectionName);
@@ -153,7 +152,6 @@ public class CollectionController extends AbstractPersistableController<Resource
             TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
             getPersistable().setOwner(uploader);
         }
-
         parentId = evaluteParent(parentId, persistable.getParent(), parentCollection);
         alternateParentId = evaluteParent(alternateParentId, persistable.getAlternateParent(), alternateParentCollection);
 
@@ -178,15 +176,15 @@ public class CollectionController extends AbstractPersistableController<Resource
         return SUCCESS;
     }
 
-    private Long evaluteParent(Long _pid, ResourceCollection _parent, ResourceCollection _parentCollection) {
+    private Long evaluteParent(Long _pid, ResourceCollection _currentParent, ResourceCollection _incomingParent) {
         Long _parentId = _pid;
-        if(_parent!= null) {
-            _parentId = _parent.getId();
+        if(PersistableUtils.isNotNullOrTransient(_incomingParent)) {
+            _parentId = _incomingParent.getId();
         }
         
         // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
-        if (PersistableUtils.isNotNullOrTransient(_parent) && PersistableUtils.isNotNullOrTransient(_parentCollection)
-                && (_parent.getParentIds().contains(_parent.getId()) || _parentCollection.getId().equals(_parent.getId()))) {
+        if (PersistableUtils.isNotNullOrTransient(_incomingParent) && PersistableUtils.isNotNullOrTransient(_currentParent)
+                && (_incomingParent.getParentIds().contains(_incomingParent.getId()) || _currentParent.getId().equals(_incomingParent.getId()))) {
             addActionError(getText("collectionController.cannot_set_self_parent"));
         }
         return _parentId;
