@@ -1044,17 +1044,27 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         setIgnoreActionErrors(false);
 
         Long ruid = registeredUser.getId();
-        // now make the user an authorizedUser
+        
+        
+        
         controller = generateNewInitializedController(ShareCollectionController.class);
         controller.setId(rcid);
         controller.prepare();
-        AuthorizedUser authUser = new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.MODIFY_RECORD);
-        List<AuthorizedUser> authList = new ArrayList<>(Arrays.asList(authUser));
-        controller.setAuthorizedUsers(authList);
         controller.getToAdd().add(proxy.getId());
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         controller.save();
+        
+        // now make the user an authorizedUser
+        ShareCollectionRightsController scc = generateNewInitializedController(ShareCollectionRightsController.class);
+        scc.setId(rcid);
+        scc.prepare();
+        AuthorizedUser authUser = new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.MODIFY_RECORD);
+        List<AuthorizedUser> authList = new ArrayList<>(Arrays.asList(authUser));
+        scc.setAuthorizedUsers(authList);
+        scc.setServletRequest(getServletPostRequest());
+        scc.setAsync(false);
+        scc.save();
         evictCache();
         genericService.synchronize();
 

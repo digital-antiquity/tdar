@@ -73,7 +73,7 @@ public class ShareCollectionController extends AbstractCollectionController<Shar
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
 
-        resourceCollectionService.saveCollectionForController(getPersistable(), getParentId(), getParentCollection(), getAuthenticatedUser(), getAuthorizedUsers(), getToAdd(),
+        resourceCollectionService.saveCollectionForController(getPersistable(), getParentId(), getParentCollection(), getAuthenticatedUser(), getPersistable().getAuthorizedUsers(), getToAdd(),
                 getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), SharedCollection.class, getStartTime());
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
@@ -117,6 +117,6 @@ public class ShareCollectionController extends AbstractCollectionController<Shar
      * @return
      */
     public boolean isBigCollection() {
-        return (getPersistable().getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        return (getPersistable().getResources().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 }

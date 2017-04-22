@@ -72,7 +72,7 @@ public class ListCollectionController extends AbstractCollectionController<ListC
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
 
-        resourceCollectionService.saveCollectionForController(getPersistable(), getParentId(), getParentCollection(), getAuthenticatedUser(), getAuthorizedUsers(), getToAdd(),
+        resourceCollectionService.saveCollectionForController(getPersistable(), getParentId(), getParentCollection(), getAuthenticatedUser(), getPersistable().getAuthorizedUsers(), getToAdd(),
                 getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), ListCollection.class, getStartTime());
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
@@ -116,6 +116,6 @@ public class ListCollectionController extends AbstractCollectionController<ListC
      * @return
      */
     public boolean isBigCollection() {
-        return (getPersistable().getUnmanagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        return (getPersistable().getUnmanagedResources().size() ) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 }

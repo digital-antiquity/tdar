@@ -1,6 +1,7 @@
 package org.tdar.core.service.collection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,7 +32,7 @@ public class CollectionRightsComparator {
     private List<AuthorizedUser> deletions = new ArrayList<>();
     private List<AuthorizedUser> changes = new ArrayList<>();
 
-    public CollectionRightsComparator(Set<AuthorizedUser> currentUsers, List<AuthorizedUser> incomingUsers) {
+    public CollectionRightsComparator(Set<AuthorizedUser> currentUsers, Collection<AuthorizedUser> incomingUsers) {
         this.currentUsers = new HashSet<>(currentUsers);
         this.incomingUsers = new HashSet<>(incomingUsers);
     }

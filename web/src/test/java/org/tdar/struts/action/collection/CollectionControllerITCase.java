@@ -79,15 +79,15 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
         String slug = collection.getSlug();
         collection = null;
 
-        controller = generateNewInitializedController(ListCollectionController.class, getAdminUser());
-        controller.setId(id);
-        controller.prepare();
-        controller.edit();
-        controller.setServletRequest(getServletPostRequest());
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
-        controller.setAsync(false);
-        controller.save();
-
+        ListCollectionRightsController cc = generateNewInitializedController(ListCollectionRightsController.class, getAdminUser());
+        cc.setId(id);
+        cc.prepare();
+        cc.edit();
+        cc.setServletRequest(getServletPostRequest());
+        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
+        cc.setAsync(false);
+        cc.save();
+        cc = null;
         assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
         assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_RECORD));
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, draft));

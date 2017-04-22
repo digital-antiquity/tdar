@@ -285,7 +285,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param shouldSaveResource
      */
     @Transactional(readOnly = false)
-    public void saveAuthorizedUsersForResourceCollection(HasSubmitter source, ResourceCollection resourceCollection, List<AuthorizedUser> incomingUsers,
+    public void saveAuthorizedUsersForResourceCollection(HasSubmitter source, ResourceCollection resourceCollection, Collection<AuthorizedUser> incomingUsers,
             boolean shouldSaveResource, TdarUser actor) {
         if (resourceCollection == null) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_save");
@@ -987,7 +987,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     @Transactional(readOnly = false)
     public <C extends HierarchicalCollection> void saveCollectionForController(C persistable, Long parentId, C parent, TdarUser authenticatedUser,
-            List<AuthorizedUser> authorizedUsers, List<Long> toAdd, List<Long> toRemove,
+            Collection<AuthorizedUser> authorizedUsers, List<Long> toAdd, List<Long> toRemove,
             boolean shouldSaveResource, FileProxy fileProxy, Class<C> cls, Long startTime) {
 
         if (persistable == null) {

@@ -76,7 +76,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     private Long parentId;
     private C parentCollection;
 
-    private ArrayList<AuthorizedUser> authorizedUsers;
+//    private ArrayList<AuthorizedUser> authorizedUsers;
 
 
     @Override
@@ -185,14 +185,14 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     public String loadEditMetadata() throws TdarActionException {
         setOwner(getPersistable().getOwner());
         setupOwnerField();
-        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
-        for (AuthorizedUser au : getAuthorizedUsers()) {
-            String name = null;
-            if (au != null && au.getUser() != null) {
-                name = au.getUser().getProperName();
-            }
-            getAuthorizedUsersFullNames().add(name);
-        }
+//        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
+//        for (AuthorizedUser au : getAuthorizedUsers()) {
+//            String name = null;
+//            if (au != null && au.getUser() != null) {
+//                name = au.getUser().getProperName();
+//            }
+//            getAuthorizedUsersFullNames().add(name);
+//        }
 
         prepareDataTableSection();
         setParentId(getPersistable().getParentId());
@@ -395,15 +395,15 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     }
 
     
-    /**
-     * @return the authorizedUsers
-     */
-    public List<AuthorizedUser> getAuthorizedUsers() {
-        if (authorizedUsers == null) {
-            authorizedUsers = new ArrayList<AuthorizedUser>();
-        }
-        return authorizedUsers;
-    }
+//    /**
+//     * @return the authorizedUsers
+//     */
+//    public List<AuthorizedUser> getAuthorizedUsers() {
+//        if (authorizedUsers == null) {
+//            authorizedUsers = new ArrayList<AuthorizedUser>();
+//        }
+//        return authorizedUsers;
+//    }
 
     public AuthorizedUser getBlankAuthorizedUser() {
         AuthorizedUser user = new AuthorizedUser();

@@ -1,9 +1,6 @@
 package org.tdar.struts.action.collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +27,7 @@ import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.struts.action.AbstractCollectionRightsController;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
@@ -40,6 +38,8 @@ import org.tdar.struts_base.action.TdarActionSupport;
 import com.opensymphony.xwork2.Action;
 
 public class ResourceCollectionRightsITCase extends AbstractResourceControllerITCase {
+
+    private static final String TEST123 = "test123";
 
     @Autowired
     private GenericService genericService;
@@ -378,11 +378,11 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         // to add, assert that this document cannot be added
         controller = generateNewInitializedController(ResourceRightsController.class, getBasicUser());
         controller.setId(docId);
-        controller.prepare();
-        controller.edit();
-        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD)));
         Exception e = null;
         try {
+            controller.prepare();
+            controller.edit();
+            controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD)));
             resourceCollectionService.saveResourceRights(controller.getProxies(), getBasicUser(), controller.getResource());
         } catch (Exception es) {
             e = es;
@@ -435,6 +435,20 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         assertFalse(Action.SUCCESS.equals(result));
     }
 
+    private void assertWeFailedToSave(AbstractCollectionRightsController cc) {
+        cc.setServletRequest(getServletPostRequest());
+        String result = Action.SUCCESS;
+        setIgnoreActionErrors(true);
+        try {
+            cc.prepare();
+            result = cc.save();
+        } catch (Exception e) {
+            logger.error("{}", e);
+            result = null;
+        }
+        assertFalse(Action.SUCCESS.equals(result));
+    }
+
     @Test
     @Rollback
     public void testRightsEscalationUserUpsSelf() throws Exception {
@@ -450,29 +464,49 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
-
+        
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.setId(docId);
         dc.prepare();
-        dc.getShares().add(new SharedCollection("test123", "test123", getBasicUser()));
+        dc.getShares().add(new SharedCollection(TEST123, TEST123, getBasicUser()));
         dc.setServletRequest(getServletPostRequest());
         dc.save();
-        Long id = -1L;
-        for (ResourceCollection c : dc.getShares()) {
-            if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals("test123")) {
-                id = c.getId();
-            }
-        }
+        
         controller = null;
+        dc = null;
+        genericService.synchronize();
+        evictCache();
+        Long id = getTestCollectionId(docId);
+        assertNull(id);
         // try and assign access to aa document that user should not have rights
         // to add, assert that this document cannot be added
-
-        ShareCollectionController cc = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
+        ShareCollectionRightsController cc = generateNewInitializedController(ShareCollectionRightsController.class, getBasicUser());
         cc.setId(id);
-        // cc.prepare();
+        logger.debug("id: {}" , id);
+        boolean seenException = false;
+        try {
+         cc.prepare();
         // controller.getResources().add(document);
         cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         assertWeFailedToSave(cc);
+        
+        } catch (Exception e) {
+            seenException = true;
+            logger.error("{}",e,e);
+        }
+        assertTrue("should have gotten exception when trying to edit rights",seenException);
+    }
+
+    private Long getTestCollectionId(Long docId) {
+        Document document;
+        document = genericService.find(Document.class, docId);
+        Long id = null;
+        for (ResourceCollection c : document.getSharedCollections()) {
+            if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals(TEST123)) {
+                id = c.getId();
+            }
+        }
+        return id;
     }
 
     @SuppressWarnings("unchecked")
@@ -499,12 +533,12 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.setId(docId);
         dc.prepare();
-        dc.getShares().add(new SharedCollection("test123", "test123", getBasicUser()));
+        dc.getShares().add(new SharedCollection(TEST123, TEST123, getBasicUser()));
         dc.setServletRequest(getServletPostRequest());
         dc.save();
         Long id = -1L;
         for (ResourceCollection c : dc.getShares()) {
-            if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals("test123")) {
+            if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals(TEST123)) {
                 id = c.getId();
             }
         }
@@ -531,27 +565,36 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.prepare();
         // project = null;
         // Long pid = project.getId();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_SHARE));
         controller.getPersistable().setName("test");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         String result = controller.save();
         assertEquals(Action.SUCCESS, result);
+        controller = null;
         genericService.synchronize();
         final Long rcid = controller.getPersistable().getId();
+        ShareCollectionRightsController cc = generateNewInitializedController(ShareCollectionRightsController.class, getBasicUser());
+        cc.setId(rcid);
+        cc.prepare();
+        cc.edit();
+        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_SHARE));
+        cc.setServletRequest(getServletPostRequest());
+        cc.setAsync(false);
+        assertEquals(Action.SUCCESS, cc.save());
+        
         // confirm resource is viewable by author of collection
-        controller = generateNewInitializedController(ShareCollectionController.class, getUser());
-        controller.setId(rcid);
-        controller.prepare();
-        controller.edit();
-        controller.getAuthorizedUsers().clear();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getEditorUser(), GeneralPermissions.ADMINISTER_SHARE));
-        controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
-        result = controller.save();
-        genericService.evictFromCache(controller.getResourceCollection());
-        controller = null;
+        cc = generateNewInitializedController(ShareCollectionRightsController.class, getUser());
+        cc.setId(rcid);
+        cc.prepare();
+        cc.edit();
+        cc.getAuthorizedUsers().clear();
+        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getEditorUser(), GeneralPermissions.ADMINISTER_SHARE));
+        cc.setServletRequest(getServletPostRequest());
+        cc.setAsync(false);
+        result = cc.save();
+        genericService.evictFromCache(cc.getResourceCollection());
+        cc = null;
         genericService.synchronize();
         ResourceCollection collection = genericService.find(ResourceCollection.class, rcid);
         logger.debug("AU:{}", collection.getAuthorizedUsers());
@@ -588,7 +631,6 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         ResourceCollection rc = controller.getPersistable();
         // project = null;
         // Long pid = project.getId();
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_SHARE));
         controller.getPersistable().setName("test");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -596,6 +638,15 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         String result = controller.save();
         assertEquals(Action.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
+
+        ShareCollectionRightsController cc = generateNewInitializedController(ShareCollectionRightsController.class, getBasicUser());
+        cc.setId(rcid);
+        cc.prepare();
+        cc.edit();
+        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_SHARE));
+        cc.setServletRequest(getServletPostRequest());
+        cc.setAsync(false);
+        assertEquals(Action.SUCCESS, cc.save());
 
         controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.setParentId(rcid);
@@ -649,12 +700,20 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         // Long pid = project.getId();
         controller.getPersistable().setName("test");
         controller.getPersistable().setDescription("description");
-        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getUser(), GeneralPermissions.ADMINISTER_SHARE));
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         String result = controller.save();
         assertEquals(Action.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
+
+        ShareCollectionRightsController cc = generateNewInitializedController(ShareCollectionRightsController.class, registeredUser);
+        cc.setId(rcid);
+        cc.prepare();
+        cc.edit();
+        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getUser(), GeneralPermissions.ADMINISTER_SHARE));
+        cc.setServletRequest(getServletPostRequest());
+        cc.setAsync(false);
+        assertEquals(Action.SUCCESS, cc.save());
 
         controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.setParentId(rcid);
