@@ -390,7 +390,16 @@ TDAR.autocomplete = (function () {
                         }
                         // console.log(options.dataPath + " autocomplete returned " + values.length);
 
-                        if (options.showCreate) {
+
+                        // if one of the results matches the search term exactly,  omit the "create new" option.
+                        var exactMatch = false;
+                        $.each(values, function(idx, item) {
+                            exactMatch = item.name === $.trim(request.term);
+                            //if we find an exact match, return false to 'break' this loop.
+                            return !exactMatch;
+                        });
+
+                        if (options.showCreate && !exactMatch) {
                             var createRow = _buildRequestData($elem);
                             createRow.value = request.term;
                             // allow for custom phrasing
