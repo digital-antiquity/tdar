@@ -185,7 +185,7 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
         
         // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
-        if (PersistableUtils.isNotNullOrTransient(_parent) && PersistableUtils.isNotNullOrTransient(_parent)
+        if (PersistableUtils.isNotNullOrTransient(_parent) && PersistableUtils.isNotNullOrTransient(_parentCollection)
                 && (_parent.getParentIds().contains(_parent.getId()) || _parentCollection.getId().equals(_parent.getId()))) {
             addActionError(getText("collectionController.cannot_set_self_parent"));
         }
