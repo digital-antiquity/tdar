@@ -55,7 +55,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
 
         // adminUser creates a a new image and assigns p as an authorized user
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
-        users.add(new AuthorizedUser(getAdminUser(),p, GeneralPermissions.MODIFY_METADATA));
+        users.add(new AuthorizedUser(getAdminUser(),p, GeneralPermissions.MODIFY_RECORD));
         SharedCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
         evictCache();
         ImageController imageController = generateNewInitializedController(ImageController.class);

@@ -41,6 +41,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -675,6 +676,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         rrc.setId(id);
         rrc.prepare();
         rrc.edit();
+        rrc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getBasicUser(), newUser, GeneralPermissions.MODIFY_METADATA)));
         rrc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, rrc.save());
         evictCache();

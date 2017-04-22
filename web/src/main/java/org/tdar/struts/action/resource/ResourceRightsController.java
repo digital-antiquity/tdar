@@ -248,4 +248,9 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
     public void setShares(List<SharedCollection> shares) {
         this.shares = shares;
     }
+    
+    public ListCollection getBlankResourceCollection() {
+        return new ListCollection();
+    }
+
 }

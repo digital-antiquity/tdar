@@ -687,12 +687,15 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         ResourceRightsController rrc = generateNewInitializedController(ResourceRightsController.class);
         rrc.setId(id);
         rrc.prepare();
+        rrc.edit();
         rrc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.VIEW_ALL)));
         rrc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, rrc.save());
 
         evictCache();
         document = genericService.find(Document.class, id);
+        logger.debug("RRC: {}", document.getRightsBasedResourceCollections());
+        logger.debug("IC: {}", document.getInternalCollections());
         assertEquals(2, document.getRightsBasedResourceCollections().size());
         assertTrue(document.getRightsBasedResourceCollections().contains(collection1));
         assertEquals(1, collection1.getResources().size());
