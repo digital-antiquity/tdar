@@ -24,8 +24,6 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    private static final String PERMISSIONS = "permissions";
-
 
     private void gotoEdit(String url_) {
         String url = url_;
@@ -51,7 +49,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("shares[0].name", RETAIN_COLLECTION);
         submitForm();
         assertTextPresentInPage(RETAIN_COLLECTION);
-        clickLinkWithText(PERMISSIONS);
+        clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         setInput("proxies[0].id", TEST.getUserId());
         setInput("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
         setInput("proxies[0].displayName", "test user");
@@ -101,7 +99,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         clickLinkWithText("edit");
         setInput("resourceCollection.hidden", "true");
         submitForm();
-        clickLinkWithText("Rights");
+        clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         setInput(String.format(FMT_AUTHUSERS_ID, 0), TEST.getUserId()); // leave the id blank
         setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
@@ -159,7 +157,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
 
         submitForm();
-        clickLinkOnPage(PERMISSIONS);
+        clickLinkOnPage(CollectionWebITCase.PERMISSIONS);
         logger.debug("adding users: {}" , registeredUsers);
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
@@ -289,7 +287,8 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
 
         Person user = new Person("joe", "blow", "testAssignNonUserToCollection@tdar.net");
-
+        submitForm();
+        clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         createInput("hidden", String.format(FMT_AUTHUSERS_ID, 1), ""); // leave the id blank
         createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, 1), user.getLastName());
         createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, 1), user.getFirstName());
@@ -322,7 +321,8 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             logger.debug("setting  fieldName:{}\t value:{}", fieldName, fieldValue);
             createInput("hidden", "resources.id", fieldValue);
         }
-
+        submitForm();
+        clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         List<Person> nonUsers = getSomePeople();
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person person : nonUsers) {
@@ -380,7 +380,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(url);
         assertTextPresent("my fancy collection");
-        clickLinkWithText("Rights");
+        clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         assertTextPresent("my fancy collection");
         removeElementsByName(String.format(FMT_AUTHUSERS_ID, 0));
         removeElementsByName(String.format(FMT_AUTHUSERS_PERMISSION, 0));

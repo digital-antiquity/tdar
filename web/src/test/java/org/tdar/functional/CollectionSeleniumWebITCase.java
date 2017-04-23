@@ -31,6 +31,7 @@ import org.tdar.utils.TestConfiguration;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
+    private static final String RIGHTS = "PERMISSIONS";
     private static final String SHARE = "/collection/";
     private static final String LISTCOLLECTION = "/listcollection/";
     TestConfiguration config = TestConfiguration.getInstance();
@@ -268,7 +269,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         assertPageViewable(titles);
         String url = getCurrentUrl();
-        find(By.partialLinkText("RIGHTS")).click();
+        find(By.partialLinkText(RIGHTS)).click();
         WebElementSelection addAnother = find(id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
@@ -326,7 +327,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         assertPageViewable(resourceTitles);
         String url = getCurrentUrl();
-        find(By.partialLinkText("RIGHTS")).click();
+        find(By.partialLinkText(RIGHTS)).click();
         WebElementSelection addAnother = find(id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();

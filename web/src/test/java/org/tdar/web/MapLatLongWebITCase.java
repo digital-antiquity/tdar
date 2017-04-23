@@ -12,6 +12,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.TestConfiguration;
+import org.tdar.web.collection.CollectionWebITCase;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.DomNode;
@@ -52,7 +53,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         if (!TdarConfiguration.getInstance().isListCollectionsEnabled()) {
             collectionUrl = getCurrentUrlPath();
         }
-        clickLinkWithText("Rights");
+        clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();

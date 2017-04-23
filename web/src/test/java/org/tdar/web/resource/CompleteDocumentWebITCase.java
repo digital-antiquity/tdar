@@ -35,6 +35,7 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTestCase {
+    private static final String ASSIGN_RIGHTS = "Assign Rights";
     public HashMap<String, String> docValMap;
     public HashMap<String, List<String>> docMultiValMap = new HashMap<String, List<String>>();
     public HashMap<String, List<String>> docMultiValMapLab = new HashMap<String, List<String>>();
@@ -247,7 +248,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
 
         // make sure our 'async' file was added to the resource
         assertTextPresentInPage(TEST_DOCUMENT_NAME);
-        clickLinkOnPage("assign rights");
+        clickLinkOnPage(ASSIGN_RIGHTS);
         docUnorderdValMap.clear();
         alternateCodeLookup.clear();
         docUnorderdValMap.put("proxies[0].id", "121");

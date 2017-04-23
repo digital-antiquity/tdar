@@ -25,7 +25,7 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    private static final String PERMISSIONS = "permissions";
+    public static final String PERMISSIONS = "permissions";
     private static final String LISTCOLLECTION = "/listcollection/";
 
 
@@ -107,10 +107,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 assertTextPresent(resource.getTitle());
             }
         }
-
+        clickLinkWithText(PERMISSIONS);
         // now go back to the edit page, add some users and remove some of the resources
         List<TdarUser> registeredUsers = getSomeUsers();
-        gotoEdit(currentUrlPath);
         logger.debug("adding users: {}" , registeredUsers);
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
@@ -120,7 +119,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             createUserWithPermissions(i, user, GeneralPermissions.VIEW_ALL);
             i++;
         }
-
+        submitForm();
+        gotoEdit(currentUrlPath);
         // remove the first 2 resources
         int removeCount = 2;
         Assert.assertTrue("this test needs at least 2 resources in the test DB", someResources.size() > removeCount);
@@ -368,7 +368,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(url);
         assertTextPresent("my fancy collection");
-        clickLinkWithText("Rights");
+        clickLinkWithText(PERMISSIONS);
         assertTextPresent("my fancy collection");
         removeElementsByName(String.format(FMT_AUTHUSERS_ID, 0));
         removeElementsByName(String.format(FMT_AUTHUSERS_PERMISSION, 0));

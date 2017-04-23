@@ -1016,17 +1016,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         if (persistable instanceof ListCollection) {
             cls = (Class<C>) ListCollection.class;
-            getLogger().debug("pToAdd: {}", resourcesToAdd);
-            getLogger().debug("pToRemove: {}", resourcesToRemove);
             ListCollection list = (ListCollection) persistable;
             reconcileIncomingResourcesForCollectionWithoutRights(list, authenticatedUser, resourcesToAdd, resourcesToRemove);
             saveAuthorizedUsersForResourceCollection(list, list, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
-
-            ListCollection hasProps = (ListCollection) persistable;
-//            if (hasProps.getProperties() == null) {
-//                hasProps.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
-//                getDao().saveOrUpdate(hasProps.getProperties());
-//            }
         }
         simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection<ListCollection>) persistable).getProperties(), cso.getFileProxy());
 
@@ -1037,10 +1029,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (!Objects.equals(cso.getAlternateParentId(), persistable.getAlternateParentId())) {
             persistable.setAlternateParent(cso.getAlternateParent());
         }
-//        reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);
-//        reconcileIncomingResourcesForCollectionWithoutRights(persistable, authenticatedUser, publicResourcesToAdd, publicResourcesToRemove);
         saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
-//        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, cso.getFileProxy());
 
         String msg = String.format("%s modified %s", authenticatedUser, persistable.getTitle());
         CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, type);
