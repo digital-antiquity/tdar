@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.bean.FileProxy;
@@ -27,7 +28,7 @@ public class CollectionSaveObject<C extends HierarchicalCollection> implements S
     private Long startTime;
     private List<Long> publicToAdd;
     private List<Long> publicToRemove;
-    private List<AuthorizedUser> authorizedUsers;
+    private List<AuthorizedUser> authorizedUsers = new ArrayList<>();
 
     private Class<C> persistableClass;
     

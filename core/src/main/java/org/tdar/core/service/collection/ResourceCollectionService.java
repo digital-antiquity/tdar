@@ -250,7 +250,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param authorizedUsers
      */
     @Transactional(readOnly = false)
-    public void normalizeAuthorizedUsers(Collection<AuthorizedUser> authorizedUsers) {
+    public void normalizeAuthorizedUsers(final Collection<AuthorizedUser> authorizedUsers_) {
+        Collection<AuthorizedUser> authorizedUsers = authorizedUsers_;
+        if (CollectionUtils.isEmpty(authorizedUsers_)){
+            authorizedUsers = new ArrayList<>();
+        }
         logger.trace("incoming " + authorizedUsers);
         Map<Long, AuthorizedUser> bestMap = new HashMap<>();
         Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();

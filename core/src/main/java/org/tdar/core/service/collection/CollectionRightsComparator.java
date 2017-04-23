@@ -33,8 +33,14 @@ public class CollectionRightsComparator {
     private List<AuthorizedUser> changes = new ArrayList<>();
 
     public CollectionRightsComparator(Set<AuthorizedUser> currentUsers, Collection<AuthorizedUser> incomingUsers) {
-        this.currentUsers = new HashSet<>(currentUsers);
-        this.incomingUsers = new HashSet<>(incomingUsers);
+        this.currentUsers = new HashSet<>();
+        this.incomingUsers = new HashSet<>();
+        if (CollectionUtils.isNotEmpty(currentUsers)) {
+            this.currentUsers.addAll(currentUsers);
+        }
+        if (CollectionUtils.isNotEmpty(incomingUsers)) {
+            this.incomingUsers.addAll(incomingUsers);
+        }
     }
 
     public boolean rightsDifferent() {
