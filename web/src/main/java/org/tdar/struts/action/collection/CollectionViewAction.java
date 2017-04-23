@@ -212,6 +212,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
                 findAllChildCollections.add((HierarchicalCollection) c);
             }
         }
+        findAllChildCollections.addAll(resourceCollectionService.findAlternateChildren(Arrays.asList(getId()), getAuthenticatedUser(), getActualClass()));
         setCollections(new ArrayList<HierarchicalCollection>(findAllChildCollections));
         getLogger().trace("child collections: sort");
         Collections.sort(collections);

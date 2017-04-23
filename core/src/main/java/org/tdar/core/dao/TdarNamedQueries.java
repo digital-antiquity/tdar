@@ -176,6 +176,8 @@ public interface TdarNamedQueries {
     String  FIND_USERINVITES_BY_COLLECTION = "query.user_invites_by_collection";
     String  FIND_USERINVITES_BY_USER = "query.user_invites_by_user";
     String  FIND_USERINVITES_BY_RESOURCE = "query.find_user_invites_by_resource";
+    String FIND_ALTERNATE_CHILDRENS = "query_alternate_children";
+
     // raw SQL/HQL queries
 
     /**

@@ -11,6 +11,7 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
@@ -54,7 +55,16 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public abstract C getParent();
 
+
+    @XmlAttribute(name = "altParentIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public abstract C getAlternateParent();
+
+
     public abstract void setParent(C c);
+
+    
+    public abstract void setAlternateParent(C c);
 
     @XmlTransient
     @Transient
@@ -131,6 +141,15 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
         }
         return getParent().getId();
     }
+
+    @Transient
+    public Long getAlternateParentId() {
+        if (getAlternateParent() == null) {
+            return null;
+        }
+        return getAlternateParent().getId();
+    }
+
 
     /*
      * Default to sorting by name, but grouping by parentId, used for sorting int he tree

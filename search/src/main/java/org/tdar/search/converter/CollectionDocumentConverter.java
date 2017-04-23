@@ -34,6 +34,14 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         if (collection instanceof HierarchicalCollection) {
             HierarchicalCollection hier = (HierarchicalCollection)collection;
             doc.setField(QueryFieldNames.COLLECTION_PARENT, hier.getParentId());
+            HashSet<Long> parentIds = new HashSet<>();
+            if (hier.getAlternateParent() != null) {
+                parentIds.add(hier.getAlternateParent().getId());
+            }
+            if (hier.getParentIds() != null) {
+                 parentIds.addAll(hier.getParentIds());
+                doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, parentIds);
+            }
             doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, new HashSet<>(hier.getParentIds()));
             doc.setField(QueryFieldNames.TOP_LEVEL, hier.isTopLevel());
         } else {

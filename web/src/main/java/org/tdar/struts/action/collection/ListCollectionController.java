@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractCollectionController;
@@ -71,9 +72,16 @@ public class ListCollectionController extends AbstractCollectionController<ListC
     protected String save(ListCollection persistable) {
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
-
-        resourceCollectionService.saveCollectionForController(getPersistable(), getParentId(), getParentCollection(), getAuthenticatedUser(), getPersistable().getAuthorizedUsers(), getToAdd(),
-                getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), ListCollection.class, getStartTime());
+        CollectionSaveObject<ListCollection> cso = new CollectionSaveObject<ListCollection>(persistable, getAuthenticatedUser(), getStartTime(), null,ListCollection.class);
+        cso.setParent(getParentCollection());
+        cso.setAlternateParent(getAlternateParentCollection());
+        cso.setParentId(getParentId());
+        cso.setAlternateParentId(getAlternateParentId());
+        cso.setShouldSave(shouldSaveResource());
+        cso.setFileProxy(generateFileProxy(getFileFileName(), getFile()));
+        cso.setToAdd(getToAdd());
+        cso.setToRemove(getToRemove());
+        resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }

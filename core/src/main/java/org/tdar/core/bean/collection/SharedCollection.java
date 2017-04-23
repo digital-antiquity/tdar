@@ -84,6 +84,10 @@ public class SharedCollection extends CustomizableCollection<SharedCollection>
     @JoinColumn(name = "parent_id")
     private SharedCollection parent;
 
+    @ManyToOne
+    @JoinColumn(name = "alternate_parent_id")
+    private SharedCollection alternateParent;
+    
     public SharedCollection getParent() {
         return parent;
     }
@@ -135,6 +139,14 @@ public class SharedCollection extends CustomizableCollection<SharedCollection>
     @XmlTransient
     public List<SharedCollection> getVisibleParents() {
         return getVisibleParents(SharedCollection.class);
+    }
+
+    public SharedCollection getAlternateParent() {
+        return alternateParent;
+    }
+
+    public void setAlternateParent(SharedCollection alternateParent) {
+        this.alternateParent = alternateParent;
     }
 
 }

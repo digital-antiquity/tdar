@@ -73,10 +73,13 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     private TdarUser owner;
 
     private String parentCollectionName;
+    private String alternateParentCollectionName;
     private Long parentId;
+    private Long alternateParentId;
     private C parentCollection;
+    private C alternateParentCollection;
 
-//    private ArrayList<AuthorizedUser> authorizedUsers;
+    //    private ArrayList<AuthorizedUser> authorizedUsers;
 
 
     @Override
@@ -100,24 +103,8 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     public void prepare() throws TdarActionException {
         super.prepare();
 
-        // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
-        if(PersistableUtils.isNotNullOrTransient(parentId)) {
-            setParentCollection(getGenericService().find(getPersistableClass(), parentId));
-            getLogger().debug("lookup parent collection by id:{}  result:{}", parentId, getParentCollection());
-
-        }
-        else if(StringUtils.isNotBlank(parentCollectionName)) {
-            setParentCollection(resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(),
-                    parentCollectionName, getPersistableClass()));
-            getLogger().debug("lookup parent collection by name:{}  results:{}", parentCollectionName, getParentCollection());
-
-            if(getParentCollection() == null) {
-                addActionError(getText("collectionController.ambiguous_parent_name"));
-                // Clear the name field or the INPUT form will be primed to fail in the same way upon submit.
-                //parentCollectionName = "";
-            }
- 
-        }
+        parentCollection = prepareParent(parentId, parentCollectionName);
+        setAlternateParentCollection(prepareParent(getAlternateParentId(), getAlternateParentCollectionName()));
         
         setupOwnerField();
         if (PersistableUtils.isNotNullOrTransient(getOwner())) {
@@ -128,26 +115,54 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         if(getParentCollection() != null) {
             parentId = getParentCollection().getId();
         }
+        if(getAlternateParentCollection() != null) {
+            setAlternateParentId(getAlternateParentCollection().getId());
+        }
+
         if (PersistableUtils.isNotNullOrTransient(parentId) && PersistableUtils.isNullOrTransient((Persistable)getParentCollection())) {
             addActionError(getText("collectionController.type_mismatch"));
         }
 
     }
     
+    
+
+    private C prepareParent(Long pid, String parentName) {
+        C parentC = null;
+        if(PersistableUtils.isNotNullOrTransient(pid)) {
+            parentC = getGenericService().find(getPersistableClass(), pid);
+            getLogger().debug("lookup parent collection by id:{}  result:{}", pid, parentC);
+        }
+        else if(StringUtils.isNotBlank(parentName)) {
+            parentC = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(),
+                    parentName, getPersistableClass());
+            getLogger().debug("lookup parent collection by name:{}  results:{}", parentName, parentC);
+        }
+        return parentC;
+    }
+    
     @Override
     public void validate() {
         super.validate();
-        if(getParentCollection() != null) {
-            parentId = getParentCollection().getId();
-        }
-
-        if (PersistableUtils.isNotNullOrTransient(getPersistable()) && PersistableUtils.isNotNullOrTransient(getParentCollection())
-                && (getParentCollection().getParentIds().contains(getPersistable().getId()) || Objects.equal(parentId, getPersistable().getId()))) {
-            addActionError(getText("collectionController.cannot_set_self_parent"));
-        }
+        parentId = evaluteParent(parentId, getPersistable().getParent(), parentCollection);
+        setAlternateParentId(evaluteParent(getAlternateParentId(), getPersistable().getAlternateParent(), getAlternateParentCollection()));
 
     }
 
+
+    private Long evaluteParent(Long _pid, C _currentParent, C _incomingParent) {
+        Long _parentId = _pid;
+        if(PersistableUtils.isNotNullOrTransient(_incomingParent)) {
+            _parentId = _incomingParent.getId();
+        }
+        
+        // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
+        if (PersistableUtils.isNotNullOrTransient(_incomingParent) && PersistableUtils.isNotNullOrTransient(_currentParent)
+                && (_incomingParent.getParentIds().contains(_incomingParent.getId()) || _currentParent.getId().equals(_incomingParent.getId()))) {
+            addActionError(getText("collectionController.cannot_set_self_parent"));
+        }
+        return _parentId;
+    }
     @Override
     public void indexPersistable() {
         /*
@@ -409,6 +424,30 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         AuthorizedUser user = new AuthorizedUser();
         user.setUser(new TdarUser());
         return user;
+    }
+
+    public C getAlternateParentCollection() {
+        return alternateParentCollection;
+    }
+
+    public void setAlternateParentCollection(C alternateParentCollection) {
+        this.alternateParentCollection = alternateParentCollection;
+    }
+
+    public Long getAlternateParentId() {
+        return alternateParentId;
+    }
+
+    public void setAlternateParentId(Long alternateParentId) {
+        this.alternateParentId = alternateParentId;
+    }
+
+    public String getAlternateParentCollectionName() {
+        return alternateParentCollectionName;
+    }
+
+    public void setAlternateParentCollectionName(String alternateParentCollectionName) {
+        this.alternateParentCollectionName = alternateParentCollectionName;
     }
 
 }

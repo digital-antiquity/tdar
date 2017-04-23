@@ -608,14 +608,14 @@
                 name=TdarNamedQueries.FIND_USERINVITES_BY_RESOURCE,
                 query="select ui from UserInvite ui where exists (from InternalCollection ic join ic.resources res where ui.resourceCollection = ic and res = :resource ) "
         ),
-
-        //TODO: extract constants
         @NamedQuery(
                 name=TdarNamedQueries.FIND_USERINVITES_BY_USER,
                 query="from UserInvite u where u.user = :user"
-        )
-        
-        
+        ),
+        @NamedQuery(
+                name=TdarNamedQueries.FIND_ALTERNATE_CHILDRENS,
+                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds")
+                
 })
 package org.tdar.core.dao;
 

@@ -128,6 +128,15 @@
         </#list>
     </#macro>
 
+<#macro formatCollectionLink collection>
+    <#if collection.hidden && !authenticated >
+        ${collection.name!"(n/a)"}
+    <#else>
+     <a
+        href="${collection.detailUrl}">${collection.name!"(n/a)"}</a>
+    </#if>
+</#macro>
+
 <#macro descriptionSection>
     <#if editor>
     <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/collection/admin/${id?c}"/>">ADMIN</a></div>
@@ -135,11 +144,10 @@
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.formattedDescription?? || collections??>
         <div>
             <#if resourceCollection.parent??><p><b>Part of:</b>
-                <#if resourceCollection.parent.hidden && !authenticated >
-                    ${resourceCollection.parent.name!"(n/a)"}
-                <#else>
-                 <a
-                    href="${resourceCollection.parent.detailUrl}">${resourceCollection.parent.name!"(n/a)"}</a>
+                    <@formatCollectionLink resourceCollection.parent />
+                <#if resourceCollection.alternateParent?has_content>
+                    <#assign alternate = resourceCollection.alternateParent>,
+                    <@formatCollectionLink alternate />
                 </#if>
             </p></#if>
 

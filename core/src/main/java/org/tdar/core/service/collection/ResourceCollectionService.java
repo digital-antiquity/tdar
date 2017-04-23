@@ -30,11 +30,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
@@ -61,6 +61,7 @@ import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.SerializationService;
@@ -72,7 +73,6 @@ import org.tdar.transform.jsonld.SchemaOrgCollectionTransformer;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
 
-import com.atlassian.crowd.embedded.api.User;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -986,54 +986,61 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public <C extends HierarchicalCollection> void saveCollectionForController(C persistable, Long parentId, C parent, TdarUser authenticatedUser,
-            Collection<AuthorizedUser> authorizedUsers, List<Long> toAdd, List<Long> toRemove,
-            boolean shouldSaveResource, FileProxy fileProxy, Class<C> cls, Long startTime) {
-
+    public <C extends HierarchicalCollection> void saveCollectionForController(CollectionSaveObject cso) {
+        C persistable = (C) cso.getCollection();
+        Class<C> cls = cso.getPersistableClass();
+        TdarUser authenticatedUser = cso.getUser();
         if (persistable == null) {
             throw new TdarRecoverableRuntimeException();
-        }
-
-        if (!Objects.equals(parentId, persistable.getParentId())) {
-            updateCollectionParentTo(authenticatedUser, persistable, parent, cls);
         }
 
         RevisionLogType type = RevisionLogType.CREATE;
         if (PersistableUtils.isNotTransient(persistable)) {
             type = RevisionLogType.EDIT;
         }
-
-        List<Resource> resourcesToRemove = getDao().findAll(Resource.class, toRemove);
-        List<Resource> resourcesToAdd = getDao().findAll(Resource.class, toAdd);
+        
+        List<Resource> resourcesToRemove = getDao().findAll(Resource.class, cso.getToRemove());
+        List<Resource> resourcesToAdd = getDao().findAll(Resource.class, cso.getToAdd());
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
 
         if (persistable instanceof SharedCollection) {
             SharedCollection shared = (SharedCollection) persistable;
             reconcileIncomingResourcesForCollection(shared, authenticatedUser, resourcesToAdd, resourcesToRemove);
-            saveAuthorizedUsersForResourceCollection(shared, shared, authorizedUsers, shouldSaveResource, authenticatedUser);
+            saveAuthorizedUsersForResourceCollection(shared, shared, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
         }
 
         if (persistable instanceof ListCollection) {
+            cls = (Class<C>) ListCollection.class;
             getLogger().debug("pToAdd: {}", resourcesToAdd);
             getLogger().debug("pToRemove: {}", resourcesToRemove);
             ListCollection list = (ListCollection) persistable;
             reconcileIncomingResourcesForCollectionWithoutRights(list, authenticatedUser, resourcesToAdd, resourcesToRemove);
-            saveAuthorizedUsersForResourceCollection(list, list, authorizedUsers, shouldSaveResource, authenticatedUser);
-        }
+            saveAuthorizedUsersForResourceCollection(list, list, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
 
-        if (persistable instanceof ListCollection) {
             ListCollection hasProps = (ListCollection) persistable;
 //            if (hasProps.getProperties() == null) {
 //                hasProps.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
 //                getDao().saveOrUpdate(hasProps.getProperties());
 //            }
-            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(hasProps.getProperties(), fileProxy);
         }
+        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection<ListCollection>) persistable).getProperties(), cso.getFileProxy());
+
+        if (!Objects.equals(cso.getParentId(), persistable.getParentId())) {
+            updateCollectionParentTo(authenticatedUser, persistable, (C)cso.getParent(), cls);
+        }
+
+        if (!Objects.equals(cso.getAlternateParentId(), persistable.getAlternateParentId())) {
+            persistable.setAlternateParent(cso.getAlternateParent());
+        }
+//        reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);
+//        reconcileIncomingResourcesForCollectionWithoutRights(persistable, authenticatedUser, publicResourcesToAdd, publicResourcesToRemove);
+        saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
+//        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, cso.getFileProxy());
 
         String msg = String.format("%s modified %s", authenticatedUser, persistable.getTitle());
         CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, type);
-        revision.setTimeBasedOnStart(startTime);
+        revision.setTimeBasedOnStart(cso.getStartTime());
         getDao().saveOrUpdate(revision);
         publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
     }
@@ -1120,6 +1127,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             resource.getUnmanagedResourceCollections().add((ListCollection) toCollection);
             ((ListCollection) toCollection).getUnmanagedResources().add(resource);
         }
+
         getDao().saveOrUpdate(resource);
         saveOrUpdate(fromCollection);
         saveOrUpdate(toCollection);
@@ -1425,6 +1433,18 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         au.setDateExpires(proxy.getUntilDate());
         getLogger().debug("{}", au);
         return au;
+    }
+
+
+    @Transactional(readOnly = true)
+    public <C  extends HierarchicalCollection> List<C>  findAlternateChildren(List<Long> ids, TdarUser authenticatedUser, Class<C> cls) {
+        List<C> findAlternateChildren = getDao().findAlternateChildren(ids, cls);
+        if (CollectionUtils.isNotEmpty(findAlternateChildren)) {
+            findAlternateChildren.forEach(c -> {
+                authorizationService.applyTransientViewableFlag(c, authenticatedUser);
+            });
+        }
+        return findAlternateChildren;
     }
 
 }

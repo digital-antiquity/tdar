@@ -40,6 +40,7 @@ import org.tdar.core.bean.resource.ref.CollectionRef;
 import org.tdar.core.bean.resource.ref.ResourceRef;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.utils.PersistableUtils;
 
@@ -273,8 +274,9 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         List<Resource> resources = new ArrayList<Resource>(asList(normal, draft));
         SharedCollection collection = new SharedCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
-        resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), users, PersistableUtils.extractIds(resources), null, true,
-                null, SharedCollection.class,-1L);
+        CollectionSaveObject<SharedCollection> cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, users, SharedCollection.class);
+        cso.setToAdd(PersistableUtils.extractIds(resources));
+        resourceCollectionService.saveCollectionForController(cso);
         genericService.synchronize();
 
         final Long id = collection.getId();
@@ -283,7 +285,8 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         collection = genericService.find(SharedCollection.class, id);
         List<AuthorizedUser> aus = new ArrayList<>(users);
         aus.add(new AuthorizedUser(getAdminUser(),testPerson, MODIFY_RECORD));
-        resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), aus, null, null, true, null, SharedCollection.class, -1l);
+        CollectionSaveObject<SharedCollection> cso2 = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, aus, SharedCollection.class);
+        resourceCollectionService.saveCollectionForController(cso2);
         genericService.synchronize();
         logger.debug("au: {}", collection.getAuthorizedUsers());
         logger.debug("no: {}", normal.getSharedCollections());

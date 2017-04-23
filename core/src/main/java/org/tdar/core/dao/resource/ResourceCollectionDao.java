@@ -567,5 +567,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
         return null;
     }
+
+    public <C extends HierarchicalCollection> List<C> findAlternateChildren(List<Long> ids, Class<C> cls) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS);
+        query.setParameterList("collectionIds", ids);
+        return query.list();
+    }
     
 }

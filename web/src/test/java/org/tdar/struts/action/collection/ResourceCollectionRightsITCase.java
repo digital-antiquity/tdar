@@ -648,6 +648,8 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());
 
+        
+        logger.debug("--------- creating child ----------");
         controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.setParentId(rcid);
 
@@ -655,6 +657,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         ResourceCollection rcChild = controller.getPersistable();
         // project = null;
         // Long pid = project.getId();
+        controller.setParentId(rcid);
         controller.getPersistable().setName("test child");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -664,7 +667,9 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         Long rcid2 = controller.getPersistable().getId();
 
         // confirm resource is viewable by author of collection
+        logger.debug("--------- clearing parent ----------");
         controller = generateNewInitializedController(ShareCollectionController.class, registeredUser);
+
         controller.setId(rcid2);
         controller.prepare();
         controller.edit();
@@ -673,6 +678,8 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         result = controller.save();
+
+        genericService.synchronize();
 
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         controller = generateNewInitializedController(ShareCollectionController.class, registeredUser);

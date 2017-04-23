@@ -37,6 +37,10 @@ public class ListCollection extends CustomizableCollection<ListCollection> imple
     @JoinColumn(name = "parent_id")
     private ListCollection parent;
 
+    @ManyToOne
+    @JoinColumn(name = "alternate_parent_id")
+    private ListCollection alternateParent;
+
     public ListCollection getParent() {
         return parent;
     }
@@ -134,6 +138,14 @@ public class ListCollection extends CustomizableCollection<ListCollection> imple
 
     public void setIncludedCollection(SharedCollection includedCollection) {
         this.includedCollection = includedCollection;
+    }
+
+    public ListCollection getAlternateParent() {
+        return alternateParent;
+    }
+
+    public void setAlternateParent(ListCollection alternateParent) {
+        this.alternateParent = alternateParent;
     }
 
 }
