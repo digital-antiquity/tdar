@@ -93,7 +93,7 @@
             <@nav.makeLink
                 namespace="${path}"
                 action="${id?c}/rights"
-                label="Rights"
+                label="permissions"
                 name="rights"
                 includeResourceId=false
                 current=current

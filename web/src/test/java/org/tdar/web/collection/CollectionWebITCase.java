@@ -25,6 +25,7 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
+    private static final String PERMISSIONS = "permissions";
     private static final String LISTCOLLECTION = "/listcollection/";
 
 
@@ -310,6 +311,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             createInput("hidden", "resources.id", fieldValue);
         }
 
+        submitForm();
+        clickLinkOnPage(PERMISSIONS);
         List<Person> nonUsers = getSomePeople();
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person person : nonUsers) {

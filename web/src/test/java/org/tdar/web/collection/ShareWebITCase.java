@@ -24,6 +24,9 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
+    private static final String PERMISSIONS = "permissions";
+
+
     private void gotoEdit(String url_) {
         String url = url_;
         url = url.substring(0, url.lastIndexOf("/"));
@@ -48,7 +51,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("shares[0].name", RETAIN_COLLECTION);
         submitForm();
         assertTextPresentInPage(RETAIN_COLLECTION);
-        clickLinkWithText("permissions");
+        clickLinkWithText(PERMISSIONS);
         setInput("proxies[0].id", TEST.getUserId());
         setInput("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
         setInput("proxies[0].displayName", "test user");
@@ -145,6 +148,18 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         gotoEdit(currentUrlPath);
 
+        // remove the first 2 resources
+        int removeCount = 2;
+        Assert.assertTrue("this test needs at least 2 resources in the test DB", someResources.size() > removeCount);
+        List<Resource> removedResources = new ArrayList<Resource>();
+        for (int i = 0; i < removeCount; i++) {
+            createInput("hidden", "toRemove[" + i + "]", someResources.get(i).getId());
+            // htmlPage.getElementById("hrid" + someResources.get(i).getId()).remove();
+            removedResources.add(someResources.remove(i));
+        }
+
+        submitForm();
+        clickLinkOnPage(PERMISSIONS);
         logger.debug("adding users: {}" , registeredUsers);
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
@@ -154,19 +169,8 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             createUserWithPermissions(i, user, GeneralPermissions.VIEW_ALL);
             i++;
         }
-
-        // remove the first 2 resources
-        int removeCount = 2;
-        Assert.assertTrue("this test needs at least 2 resources in the test DB", someResources.size() > removeCount);
-        List<Resource> removedResources = new ArrayList<Resource>();
-        for (i = 0; i < removeCount; i++) {
-            createInput("hidden", "toRemove[" + i + "]", someResources.get(i).getId());
-            // htmlPage.getElementById("hrid" + someResources.get(i).getId()).remove();
-            removedResources.add(someResources.remove(i));
-        }
-
         submitForm();
-
+        
         // we should be on the view page now
         logger.trace("now on page {}", getCurrentUrlPath());
         logger.trace("page contents: {}", getPageText());
