@@ -31,6 +31,7 @@ import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
+import org.tdar.web.collection.CollectionWebITCase;
 
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
@@ -212,7 +213,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
 
         docValMap.putAll(docUnorderdValMap);
 
-        setInputs();
+        setInputs(docValMap, docMultiValMap);
 
         submitForm();
 
@@ -226,7 +227,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         // e.printStackTrace();
         // }
 
-        assertViewPage();
+        assertViewPage(docValMap, docMultiValMapLab);
 
         webClient.getCache().clear();
 
@@ -241,74 +242,76 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         // e.printStackTrace();
         // }
 
-        assertEditPage();
+        assertEditPage(docValMap, docMultiValMap, docUnorderdValMap);
 
         // FIXME: need assert for 'friendly' role name
         // FIXME: need assert for 'friendly' creatorType
 
         // make sure our 'async' file was added to the resource
         assertTextPresentInPage(TEST_DOCUMENT_NAME);
-        submitForm(ASSIGN_RIGHTS);
-        docUnorderdValMap.clear();
+        submitForm();
+
+        clickLinkOnPage(CollectionWebITCase.PERMISSIONS);
         alternateCodeLookup.clear();
-        docUnorderdValMap.put("proxies[0].id", "121");
-        docUnorderdValMap.put("proxies[1].id", "5349");
-        docUnorderdValMap.put("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
-        docUnorderdValMap.put("proxies[1].permission", GeneralPermissions.VIEW_ALL.name());
-        docUnorderdValMap.put("proxies[0].displayName", "Michelle Elliott");
-        docUnorderdValMap.put("proxies[1].displayName", "Joshua Watts");
+        Map<String,String> authMap = new HashMap<>();
+        authMap.put("proxies[0].id", "121");
+        authMap.put("proxies[1].id", "5349");
+        authMap.put("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
+        authMap.put("proxies[1].permission", GeneralPermissions.VIEW_ALL.name());
+        authMap.put("proxies[0].displayName", "Michelle Elliott");
+        authMap.put("proxies[1].displayName", "Joshua Watts");
         alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
 
         
-        setInputs();
+        setInputs(authMap, new HashMap<>());
         submitForm();
-        assertViewPage();
-        clickLinkOnPage("permissions");
-        assertEditPage();
+        assertViewPage(authMap, new HashMap<>());
+        clickLinkOnPage(CollectionWebITCase.PERMISSIONS);
+        assertEditPage(authMap, new HashMap<String,List<String>>(), authMap);
 
     }
 
-    private void assertEditPage() {
-        for (String key : docValMap.keySet()) {
-            String val = docValMap.get(key);
+    private void assertEditPage(Map<String, String> _docValMap, Map<String, List<String>> _docMultiValMap, Map<String, String> _docUnorderdValMap) {
+        for (String key : _docValMap.keySet()) {
+            String val = _docValMap.get(key);
 
             // ignore id fields, file uploads, and fields with UPPER CASE VALUES (huh?)
             if (key.contains("Ids") || key.contains("upload") || val.toUpperCase().equals(val)) {
                 continue;
             }
 
-            if (docUnorderdValMap.containsKey(key)) {
-                assertTextPresent(docValMap.get(key));
+            if (_docUnorderdValMap.containsKey(key)) {
+                assertTextPresent(_docValMap.get(key));
             } else {
                 assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
             }
         }
 
-        for (String key : docMultiValMap.keySet()) {
-            for (String val : docMultiValMap.get(key)) {
+        for (String key : _docMultiValMap.keySet()) {
+            for (String val : _docMultiValMap.get(key)) {
                 assertTrue("element:" + key + " should be set to:" + val, checkInput(key, val));
             }
         }
     }
 
-    private void assertViewPage() {
+    private void assertViewPage(Map<String,String> _docValMap, Map<String,List<String>> _docMultiValMapLab) {
         logger.trace(getPageText());
-        for (String key : docValMap.keySet()) {
+        for (String key : _docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just
             // the top of the lat/long
             if (key.startsWith("latitudeLongitudeBox")) {
-                assertTextPresentInPage(docValMap.get(key).substring(0, docValMap.get(key).indexOf(".")));
+                assertTextPresentInPage(_docValMap.get(key).substring(0, _docValMap.get(key).indexOf(".")));
                 // these are displayed by "type" or not "displayed"
             } else if (key.equals("document.documentType") || key.equals("resourceLanguage")) {
-                assertTextPresentInPage(docValMap.get(key), false);
+                assertTextPresentInPage(_docValMap.get(key), false);
             } else if (!key.equals("document.journalName") && !key.equals("document.bookTitle") && !key.startsWith("authorInstitutions")
                     && !key.equals(PROJECT_ID_FIELDNAME) && !key.contains("Ids") && !key.contains("Email") && !key.equals("ticketId")
-                    && !key.contains("generalPermission")
+                    && !key.contains("permission")
                     && !key.contains(".id") && !key.contains(".email") && !key.contains(".type") && !key.contains(".dateType") && !key.contains(".licenseType")
                     && !key.contains("role")
                     && !key.contains("person.institution.name")) {
-                assertTextPresentInPage(docValMap.get(key));
+                assertTextPresentInPage(_docValMap.get(key));
             }
         }
         for (String alt : alternateTextLookup) {
@@ -319,19 +322,19 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         }
 
         assertTextNotPresent("embargo");
-        for (String key : docMultiValMapLab.keySet()) {
-            for (String val : docMultiValMapLab.get(key)) {
+        for (String key : _docMultiValMapLab.keySet()) {
+            for (String val : _docMultiValMapLab.get(key)) {
                 assertTextPresent(val);
             }
         }
     }
 
-    private void setInputs() {
-        for (String key : docValMap.keySet()) {
-            setInput(key, docValMap.get(key));
+    private void setInputs(Map<String,String> valMap, Map<String, List<String>>  multiValMap) {
+        for (String key : valMap.keySet()) {
+            setInput(key, valMap.get(key));
         }
-        for (String key : docMultiValMap.keySet()) {
-            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
+        for (String key : multiValMap.keySet()) {
+            setInput(key, multiValMap.get(key).toArray(new String[0]));
         }
     }
 
