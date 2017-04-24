@@ -348,9 +348,9 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
 
         submitFormWithoutErrorCheck();
-
+        logger.debug(getPageText());
         assertTrue(getPageText().contains("User does not exist"));
-        assertTrue(getCurrentUrlPath().contains("/share/save"));
+        assertTrue(getCurrentUrlPath().contains("rights-save"));
 
         assertTextPresent("my fancy collection");
     }
