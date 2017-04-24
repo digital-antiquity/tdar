@@ -131,13 +131,19 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
     @SkipValidation
     @Action(value = RIGHTS_SAVE, results = {
             @Result(name = SUCCESS, type=TDAR_REDIRECT, location = "${persistable.detailUrl}"),
-            @Result(name = INPUT, location = RIGHTS)
+            @Result(name = INPUT, location =  "../collection/rights.ftl")
     })
     @WriteableSession
     @PostOnly
     public String save() throws TdarActionException {
+        try {
         resourceCollectionService.saveCollectionForRightsController(getPersistable(), getAuthenticatedUser(), getAuthorizedUsers(), getPersistableClass(), null);
         indexPersistable();
+        } catch (Exception e) {
+            getLogger().error("error saving righs", e);
+            addActionErrorWithException(getText("abstractPersistableController.unable_to_save", getPersistable()), e);
+            return INPUT;
+        }
         return SUCCESS;
     }
 

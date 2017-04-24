@@ -93,7 +93,7 @@
     </#macro>
 
 <h3>Invite New User</h3>
-    <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
+    <div id="divAccessRights">
     <p><i>Use this to share this resource with someone who's not currently a tDAR user</i></p>
     <div class="row">
         <div class='span2'> <b>First Name</b> </div>

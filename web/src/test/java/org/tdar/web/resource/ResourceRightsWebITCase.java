@@ -47,8 +47,8 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
         submitForm();
         assertTextPresentInPage(docValMap.get("image.title"));
         clickLinkWithText(PERMISSIONS);
-        setInput("proxies[0].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        setInput("proxies[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+        setInput("proxies[0].permission", GeneralPermissions.VIEW_ALL.name());
+        setInput("proxies[1].permission", GeneralPermissions.VIEW_ALL.name());
         submitForm();
         assertFalse(getCurrentUrlPath().contains(PERMISSIONS));
         assertFalse(getPageCode().contains(GeneralPermissions.MODIFY_METADATA.name()));

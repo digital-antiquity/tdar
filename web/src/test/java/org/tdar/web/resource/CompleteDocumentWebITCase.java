@@ -248,7 +248,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
 
         // make sure our 'async' file was added to the resource
         assertTextPresentInPage(TEST_DOCUMENT_NAME);
-        clickLinkOnPage(ASSIGN_RIGHTS);
+        submitForm(ASSIGN_RIGHTS);
         docUnorderdValMap.clear();
         alternateCodeLookup.clear();
         docUnorderdValMap.put("proxies[0].id", "121");
