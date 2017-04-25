@@ -26,7 +26,7 @@ public class OaiPmhDao {
 	private GenericDao genericDao;
 
 	@SuppressWarnings("unchecked")
-    public List<OaiDcProvider> handleSearch(OAIRecordType recordType, OaiSearchResult search, Date effectiveFrom,
+    public List<OaiDcProvider> handleSearch(OAIRecordType recordType, OaiSearchResult search, Date effectiveFrom_,
 			Date effectiveUntil, Long collectionId) {
 		String qn = "query.oai.collections";
 		if (recordType != null) {
@@ -44,16 +44,20 @@ public class OaiPmhDao {
 				break;
 			}
 		}
-		
+		Date effectiveFrom = effectiveFrom_;
 		Query query = genericDao.getNamedQuery(qn + "_count");
+		if (search.getCursor().getAfter().after(effectiveFrom)) {
+		    effectiveFrom = search.getCursor().getAfter();
+		}
 		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
+        query.setParameter("id", search.getCursor().getIdFrom());
 		search.setTotalRecords(((Long) query.uniqueResult()).intValue());
 
 		query = genericDao.getNamedQuery(qn);
 		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
+		query.setParameter("id", search.getCursor().getIdFrom());
 
 		query.setMaxResults(search.getRecordsPerPage());
-		query.setFirstResult(search.getStartRecord());
 		List<OaiDcProvider> results = new ArrayList<>();
 		results.addAll(query.list());
 		search.setResults(results);
