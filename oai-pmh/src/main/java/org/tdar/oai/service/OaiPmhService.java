@@ -63,6 +63,8 @@ import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
 import org.w3c.dom.Document;
 
+import com.ibm.icu.util.BytesTrie.Result;
+
 import edu.asu.lib.dc.DublinCoreDocument;
 
 @Service
@@ -159,9 +161,8 @@ public class OaiPmhService {
 
 		}
 
-		OaiSearchResult persons = null;
-		OaiSearchResult institutions = null;
-		int maxResults = 0;
+//		OaiSearchResult persons = null;
+//		OaiSearchResult institutions = null;
 		if (enableEntities && !Objects.equals(metadataFormat, OAIMetadataFormat.MODS) && !Objects.equals(metadataFormat, OAIMetadataFormat.EXTENDED_DC)) {
 			// list people
 		    throw new TdarRecoverableRuntimeException("not implemented");
@@ -181,15 +182,12 @@ public class OaiPmhService {
 		// list the resources
 		OaiSearchResult resources = populateResult(OAIRecordType.RESOURCE, metadataFormat, effectiveFrom, effectiveUntil, cursor, response, collectionId);
 
-		if (resources.getTotalRecords() > maxResults) {
-			maxResults = resources.getTotalRecords();
-		}
 
 		token = new ResumptionTokenType();
 		// if any of the queries returned more than a page of search results,
 		// create a resumptionToken to allow
 		// the client to continue harvesting from that point
-		if (resources.getNextPageStartRecord() < maxResults) {
+		if (resources.getResultSize() >= resources.getRecordsPerPage() ) {
 			// ... then this is a partial response, and should be terminated
 			// with a ResumptionToken
 			// which may be empty if this is the last page of results advance
@@ -209,7 +207,7 @@ public class OaiPmhService {
 		}
 
 		// if there were no records found, then throw an exception
-		if (maxResults == 0) {
+		if (resources.getResultSize() == 0) {
 			throw new OAIException(MessageHelper.getInstance().getText("oaiController.no_matches"),
 					OAIPMHerrorcodeType.NO_RECORDS_MATCH);
 		}
@@ -509,12 +507,12 @@ public class OaiPmhService {
 		}
 		OAIMetadataFormat metadataFormat = null;
 		// now actually build the queries and execute them
-		int total = 0;
+//		int total = 0;
 		Collection<SetType> setList = new ArrayList<>();
 		List<? extends OaiDcProvider> results =  new ArrayList<>();
 		try {
 			results = oaiDao.handleSearch(null, search, effectiveFrom, effectiveUntil,null);
-			total = search.getTotalRecords();
+//			total = search.getTotalRecords();
 			for (OaiDcProvider i : results) {
 				logger.debug("{}, {}", i, ((Viewable) i).isViewable());
 				SetType set = new SetType();
@@ -539,18 +537,16 @@ public class OaiPmhService {
 		// create a resumptionToken to allow
 		// the client to continue harvesting from that point
 		int recordsPerPage = search.getRecordsPerPage();
-		if (total > recordsPerPage) {
+		if (search.getResultSize() >= recordsPerPage) {
 			// ... then this is a partial response, and should be terminated
 			// with a ResumptionToken
 			// which may be empty if this is the last page of results
 			// advance the cursor by one page
-			int nextRecord = search.getNextPageStartRecord();
 			// check if there would be any resources, persons or institutions in
 			// that hypothetical next page
 
 			// check if there would be any resources, persons or institutions in
 			// that hypothetical next page
-			if (total > nextRecord) {
 				// ... populate the resumptionToken so the harvester can
 				// continue harvesting from the next page
 				OAIResumptionToken newResumptionToken = new OAIResumptionToken();
@@ -560,7 +556,6 @@ public class OaiPmhService {
 						null);
 				token.setValue(newResumptionToken.getToken());
 				response.setResumptionToken(token);
-			}
 		}
 		response.getSet().addAll(setList);
 		return response;

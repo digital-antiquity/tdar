@@ -45,15 +45,15 @@ public class OaiPmhDao {
 			}
 		}
 		Date effectiveFrom = effectiveFrom_;
-		Query query = genericDao.getNamedQuery(qn + "_count");
+		Query query = genericDao.getNamedQuery(qn);
 		if (search.getCursor().getAfter().after(effectiveFrom)) {
 		    effectiveFrom = search.getCursor().getAfter();
 		}
-		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
-        query.setParameter("id", search.getCursor().getIdFrom());
-		search.setTotalRecords(((Long) query.uniqueResult()).intValue());
+//		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
+//        query.setParameter("id", search.getCursor().getIdFrom());
+//		search.setTotalRecords(((Long) query.uniqueResult()).intValue());
 
-		query = genericDao.getNamedQuery(qn);
+//		query = genericDao.getNamedQuery(qn);
 		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
 		query.setParameter("id", search.getCursor().getIdFrom());
 
@@ -61,6 +61,7 @@ public class OaiPmhDao {
 		List<OaiDcProvider> results = new ArrayList<>();
 		results.addAll(query.list());
 		search.setResults(results);
+		search.setResultSize(results.size());
 		return results;
 	}
 
