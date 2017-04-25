@@ -53,6 +53,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("proxies[0].id", TEST.getUserId());
         setInput("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
         setInput("proxies[0].displayName", "test user");
+        logger.debug(getPageText());
         submitForm();
         
         String pageUrl = getCurrentUrlPath();

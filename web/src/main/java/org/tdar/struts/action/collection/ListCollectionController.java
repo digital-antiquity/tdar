@@ -81,6 +81,7 @@ public class ListCollectionController extends AbstractCollectionController<ListC
         cso.setFileProxy(generateFileProxy(getFileFileName(), getFile()));
         cso.setToAdd(getToAdd());
         cso.setToRemove(getToRemove());
+        cso.setAuthorizedUsers(new ArrayList<>(getPersistable().getAuthorizedUsers()));
         resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;

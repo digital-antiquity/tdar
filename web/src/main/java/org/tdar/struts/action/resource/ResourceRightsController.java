@@ -140,6 +140,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
             loadEffectiveResourceCollectionsForSave();
             getLogger().debug("retained collections:{}", getRetainedSharedCollections());
             getShares().addAll(getRetainedSharedCollections());
+            getLogger().debug("shares:{}", getShares());
             
                 resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getSharedCollections(),
                         getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
@@ -208,6 +209,7 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
                 getLogger().debug("adding: {} to retained collections", rc);
             }
         }
+        getLogger().debug("Shares: {}", shares);
     }
 
     
@@ -251,6 +253,10 @@ public class ResourceRightsController extends AbstractAuthenticatableAction impl
     
     public ListCollection getBlankResourceCollection() {
         return new ListCollection();
+    }
+    
+    public boolean isRightsPage() {
+        return true;
     }
 
 }
