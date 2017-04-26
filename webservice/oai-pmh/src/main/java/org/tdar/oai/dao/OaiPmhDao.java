@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Query;
 import javax.persistence.Transient;
 
-import org.hibernate.Query;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,59 +25,65 @@ public class OaiPmhDao {
     @Autowired
     private GenericDao genericDao;
 
-    @SuppressWarnings("unchecked")
-    public List<OaiDcProvider> handleSearch(OAIRecordType recordType, OaiSearchResult search, Date effectiveFrom,
-            Date effectiveUntil, Long collectionId) {
-        String qn = "query.oai.collections";
-        if (recordType != null) {
-            switch (recordType) {
-            case INSTITUTION:
-                qn = "query.oai.institutions";
-                break;
-            case PERSON:
-                qn = "query.oai.people";
-                break;
-            case RESOURCE:
-                qn = "query.oai.resources";
-                break;
-            default:
-                break;
-            }
-        }
 
-        Query query = genericDao.getNamedQuery(qn + "_count");
-        setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
-        search.setTotalRecords(((Long) query.uniqueResult()).intValue());
+	@SuppressWarnings("unchecked")
+    public List<OaiDcProvider> handleSearch(OAIRecordType recordType, OaiSearchResult search, Date effectiveFrom_,
+			Date effectiveUntil, Long collectionId) {
+		String qn = "query.oai.collections";
+		if (recordType != null) {
+			switch (recordType) {
+			case INSTITUTION:
+				qn = "query.oai.institutions";
+				break;
+			case PERSON:
+				qn = "query.oai.people";
+				break;
+			case RESOURCE:
+				qn = "query.oai.resources";
+				break;
+			default:
+				break;
+			}
+		}
+		Date effectiveFrom = effectiveFrom_;
+		Query query = genericDao.getNamedQuery(qn);
+		if (search.getCursor().getAfter().after(effectiveFrom)) {
+		    effectiveFrom = search.getCursor().getAfter();
+		}
+//		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
+//        query.setParameter("id", search.getCursor().getIdFrom());
+//		search.setTotalRecords(((Long) query.uniqueResult()).intValue());
 
-        query = genericDao.getNamedQuery(qn);
-        setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
+//		query = genericDao.getNamedQuery(qn);
+		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
+		query.setParameter("id", search.getCursor().getIdFrom());
 
-        query.setMaxResults(search.getRecordsPerPage());
-        query.setFirstResult(search.getStartRecord());
-        List<OaiDcProvider> results = new ArrayList<>();
-        results.addAll(query.list());
-        search.setResults(results);
-        return results;
-    }
+		query.setMaxResults(search.getRecordsPerPage());
+		List<OaiDcProvider> results = new ArrayList<>();
+		results.addAll(query.getResultList());
+		search.setResults(results);
+		search.setResultSize(results.size());
+		return results;
+	}
 
-    void setupQuery(Query query, Date effectiveFrom, Date effectiveUntil, OAIRecordType recordType, Long collectionId) {
-        Date to = DateTime.now().toDate();
-        Date from = new DateTime(1900).toDate();
-        if (effectiveFrom != null) {
-            from = effectiveFrom;
-        }
-        if (effectiveUntil != null) {
-            effectiveUntil = to;
-        }
-        query.setParameter("start", from);
-        query.setParameter("end", to);
-        Long id = -1L;
-        if (collectionId != null && collectionId > -1L) {
-            id = collectionId;
-        }
-        if (recordType == OAIRecordType.RESOURCE) {
-            query.setParameter("collectionId", id);
-        }
+	void setupQuery(Query query, Date effectiveFrom, Date effectiveUntil, OAIRecordType recordType, Long collectionId) {
+		Date to = DateTime.now().toDate();
+		Date from = new DateTime(1900).toDate();
+		if (effectiveFrom != null) {
+			from = effectiveFrom;
+		}
+		if (effectiveUntil != null) {
+			effectiveUntil = to;
+		}
+		query.setParameter("start", from);
+		query.setParameter("end", to);
+		Long id = -1L;
+		if (collectionId != null && collectionId > -1L) {
+			id = collectionId;
+		}
+		if (recordType == OAIRecordType.RESOURCE) {
+			query.setParameter("collectionId", id);
+		}
 
     }
 }

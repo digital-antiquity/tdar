@@ -18,11 +18,12 @@ import org.tdar.utils.MessageHelper;
  */
 public class OAIResumptionToken {
     private static final String OAI_REGEX_CONSTANT = "[0-9]{4}\\-[0-9]{2}\\-[0-9]{2}";
-    private int cursor = 0;
+
     private Date fromDate;
     private Date untilDate;
     private String metadataPrefix;
     private String token = "";
+    private Token cursor = new Token();
     private Long set;
 
     /**
@@ -41,7 +42,7 @@ public class OAIResumptionToken {
         setToken(token);
     }
 
-    public OAIResumptionToken(int cursor2, Date effectiveFrom, Date effectiveUntil, OAIMetadataFormat metadataFormat, Long collectionId) throws OAIException {
+    public OAIResumptionToken(Token cursor2, Date effectiveFrom, Date effectiveUntil, OAIMetadataFormat metadataFormat, Long collectionId) throws OAIException {
         try {
         setCursor(cursor2);
         setFromDate(effectiveFrom);
@@ -59,7 +60,7 @@ public class OAIResumptionToken {
     /**
      * @return the cursor
      */
-    public int getCursor() {
+    public Token getCursor() {
         return cursor;
     }
 
@@ -67,7 +68,7 @@ public class OAIResumptionToken {
      * @param cursor
      *            the cursor to set
      */
-    public void setCursor(int cursor) {
+    public void setCursor(Token cursor) {
         this.cursor = cursor;
         invalidateToken();
     }
@@ -147,7 +148,7 @@ public class OAIResumptionToken {
     public String getToken() {
         if (token == null) {
             // recompute the token
-            StringBuffer tokenBuffer = new StringBuffer(String.valueOf(cursor));
+            StringBuffer tokenBuffer = new StringBuffer(cursor.toString());
             tokenBuffer.append(",");
             tokenBuffer.append(new DateTime(fromDate).toString("yyyy-MM-dd"));
             tokenBuffer.append(",");
@@ -174,7 +175,7 @@ public class OAIResumptionToken {
             // e.g. it might contain "200,20101201,20110101,tdar" or it might contain "100,1900,3000,oai_dc"
             String[] tokenPart = token.split(",", 4);
             // First parameter is the index of the next record to return
-            cursor = Integer.valueOf(tokenPart[0]);
+            cursor = new Token(tokenPart[0]);
             // Second and third parameters are optional from and until dates
             setFromDate(tokenPart[1]);
             setUntilDate(tokenPart[2]);
