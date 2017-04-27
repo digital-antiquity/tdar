@@ -318,6 +318,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end,
 			Long minCount) {
 		Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
+		logger.debug(query.getQueryString());
 		return query.list();
 	}
 
