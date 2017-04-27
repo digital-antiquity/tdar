@@ -241,4 +241,11 @@ public class AggregateStatisticsDao extends GenericDao {
         return sql;
     }
 
+    public void cleanupOldDailyStats(Date date) {
+        String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_STATS_CLEANUP, date);
+        getLogger().trace(sql);
+        getCurrentSession().createSQLQuery(sql).executeUpdate();
+        
+    }
+
 }

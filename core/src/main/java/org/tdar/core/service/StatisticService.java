@@ -149,6 +149,12 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
         aggregateStatisticsDao.generateAggregateDailyResourceData(date);
     }
 
+    @Transactional(readOnly=false)
+    public void cleanupOldDailyStats(Date date) {
+        aggregateStatisticsDao.cleanupOldDailyStats(date);
+        
+    }
+
     @Transactional
     public void generateAggregateDailyDownloadData(Date date) {
         aggregateStatisticsDao.generateAggregateDailyDownloadData(date);
@@ -202,4 +208,5 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
                 return null;
         }
     }
+
 }
