@@ -159,30 +159,7 @@
                 <#assign mapSize="1000" />
             </#if>
 -->
-            <#if selectedResourceTypes.empty>
-                <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
-            <#else>
-            <h4>
-                There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
-
-
-            <#if selectedResourceTypes?has_content>
-                <#if paginationHelper.totalNumberOfItems == 1>
-                    <@s.text name="${selectedResourceTypes[0].localeKey}" />
-                <#else>
-                    <@s.text name="${selectedResourceTypes[0].pluralLocaleKey}" />
-                </#if> 
-            <#else>
-                    <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
-            </#if>
-                 within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
-                                                                                                             href="<@s.url includeParams="all">
-                        <@s.param name="selectedResourceTypes"value="" />
-                        <@s.param name="startRecord" value=""/>
-            </@s.url>">[remove this filter]</a></sup>
-            </#if>
-            </h4>
-            </#if>
+			<@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4"/>
         </div>
 
         <div class="tdarresults">

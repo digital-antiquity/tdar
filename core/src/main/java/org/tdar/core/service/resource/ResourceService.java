@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -60,6 +61,7 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.dao.resource.ResourceTypeStatusInfo;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
@@ -78,6 +80,7 @@ import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.activity.Activity;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
@@ -111,6 +114,8 @@ public class ResourceService {
     private BillingAccountDao accountDao;
     @Autowired
     private SerializationService serializationService;
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
     private GeoSearchService geoSearchService;
@@ -226,8 +231,8 @@ public class ResourceService {
      * @param r
      */
     @Transactional(readOnly = false)
-    public void incrementAccessCounter(Resource r) {
-        ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r);
+    public void incrementAccessCounter(Resource r, boolean b) {
+        ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r, b);
         datasetDao.markWritable(rac);
         genericDao.save(rac);
     }
@@ -848,9 +853,13 @@ public class ResourceService {
                     resource.setAccount(account);
                 }
             }
-            account = genericDao.markWritableOnExistingSession(account);
-            accountDao.updateQuota(account, toEvaluate,authUser);
-            genericDao.saveOrUpdate(account);
+            
+            // if we have an account ... for some things we might not
+            if (account != null) {
+                account = genericDao.markWritableOnExistingSession(account);
+                accountDao.updateQuota(account, toEvaluate,authUser);
+                genericDao.saveOrUpdate(account);
+            }
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
 
@@ -993,6 +1002,11 @@ public class ResourceService {
         if (PersistableUtils.isNotNullOrTransient(collectionToAdd)) {
             genericDao.saveOrUpdate(collectionToAdd);
         }
+    }
+
+    @Transactional(readOnly=true)
+    public RequestCollection findCustom(Resource resource) {
+        return resourceCollectionDao.findCustomRequest(resource);
     }
 
 }

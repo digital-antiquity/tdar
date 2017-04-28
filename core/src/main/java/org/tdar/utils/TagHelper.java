@@ -1,12 +1,17 @@
 package org.tdar.utils;
 
-import com.google.common.hash.*;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
+import static java.lang.Math.log1p;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 import java.nio.charset.Charset;
 
-import static java.lang.Math.*;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
 
 /**
  * Helper class for for hashing messages for the purpose of using them for "tagging" the message in a logging

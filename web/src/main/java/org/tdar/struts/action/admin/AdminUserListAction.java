@@ -10,7 +10,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.convention.annotation.*;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,6 +23,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -29,6 +34,7 @@ import com.opensymphony.xwork2.Preparable;
 @Results({
         @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "resultJson" })
 })
+@HttpsOnly
 public class AdminUserListAction extends TdarActionSupport implements Preparable {
 
     private static final long serialVersionUID = 1951574309670698251L;

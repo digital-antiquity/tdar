@@ -21,6 +21,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.StatisticService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.Pair;
 
 /**
@@ -36,6 +37,7 @@ import org.tdar.utils.Pair;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
+@HttpsOnly
 public class AdminUserStatsController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 757363810823550815L;

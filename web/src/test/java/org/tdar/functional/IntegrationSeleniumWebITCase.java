@@ -1,22 +1,39 @@
 package org.tdar.functional;
 
-import org.junit.*;
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.tdar.functional.util.ByLabelText;
-import org.tdar.functional.util.WebElementSelection;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.openqa.selenium.By.className;
+import static org.openqa.selenium.By.cssSelector;
+import static org.openqa.selenium.By.id;
+import static org.openqa.selenium.By.linkText;
+import static org.openqa.selenium.By.name;
+import static org.openqa.selenium.By.partialLinkText;
+import static org.openqa.selenium.By.tagName;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.openqa.selenium.support.ui.ExpectedConditions.textToBePresentInElementLocated;
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
+import static org.tdar.functional.util.TdarExpectedConditions.bootstrapModalGone;
+import static org.tdar.functional.util.TdarExpectedConditions.locatedElementCountEquals;
+import static org.tdar.functional.util.TdarExpectedConditions.locatedElementCountGreaterThan;
+import static org.tdar.functional.util.TdarExpectedConditions.textToBePresentInElementsLocated;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
-import static org.openqa.selenium.By.*;
-import static org.openqa.selenium.support.ui.ExpectedConditions.*;
-import static org.tdar.functional.util.TdarExpectedConditions.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.tdar.functional.util.ByLabelText;
+import org.tdar.functional.util.WebElementSelection;
 
 public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 

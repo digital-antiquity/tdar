@@ -3,6 +3,7 @@ package org.tdar.core.bean.statistics;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
@@ -28,7 +29,7 @@ public class ResourceAccessStatistic extends AbstractResourceStatistic<Resource>
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "resource_id")
     private Resource reference;
-
+    
     @Override
     public Resource getReference() {
         return reference;
@@ -42,9 +43,10 @@ public class ResourceAccessStatistic extends AbstractResourceStatistic<Resource>
     public ResourceAccessStatistic() {
     };
 
-    public ResourceAccessStatistic(Date date, Resource r) {
+    public ResourceAccessStatistic(Date date, Resource r, boolean isBot) {
         setDate(date);
         setReference(r);
+        setBot(isBot);
     }
 
 }

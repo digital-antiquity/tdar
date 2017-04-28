@@ -932,18 +932,18 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("transactional.events",true);
     }
 
-    public List<Long> getSaaCollectionIds() {
-        String ids = assistant.getStringProperty("saa.conferences", "29442,29441");
-        List<Long> toReturn = new ArrayList<>();
-        for (String id_ : ids.split(",")) {
-            try {
-             toReturn.add(Long.parseLong(id_));
-            } catch (Exception e) {
-                logger.warn("{}",e,e);
-            }
-        }
-        return toReturn;
-    }
+//    public List<Long> getSaaCollectionIds() {
+//        String ids = assistant.getStringProperty("saa.conferences", "29442,29441");
+//        List<Long> toReturn = new ArrayList<>();
+//        for (String id_ : ids.split(",")) {
+//            try {
+//             toReturn.add(Long.parseLong(id_));
+//            } catch (Exception e) {
+//                logger.warn("{}",e,e);
+//            }
+//        }
+//        return toReturn;
+//    }
 
     public Long getSAAContactId() {
         return assistant.getLongProperty("saa.contact_id", getAdminUserId());

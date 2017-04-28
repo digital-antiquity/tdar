@@ -53,6 +53,7 @@ web/phantomjsdriver.log
 *.diff
 syntax: regexp
 ^src/main/webapp/robots\.txt$
+webservice/([^\/]+)/build/.*
 
 syntax: regexp
 ^src/main/db/log\.txt$

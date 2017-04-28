@@ -17,6 +17,7 @@ import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -33,6 +34,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
+@HttpsOnly
 public class AdminUsageStatsController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 6455397601247694602L;

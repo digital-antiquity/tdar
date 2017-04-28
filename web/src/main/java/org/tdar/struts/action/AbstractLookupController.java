@@ -11,11 +11,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -319,6 +321,21 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         getReservedSearchParameters().setIntegratableOptions(integratableOptions);
     }
 
+    protected <C> List<C> cleanupFacetOptions(Collection<C> incoming) {
+        List<C> types = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(incoming)) {
+            incoming.forEach(rt -> {
+                if (rt != null) {
+                    types.add(rt);
+                }
+            });
+        }
+        return types;
+    }
+
+    protected void cleanupResourceTypes() {
+            setResourceTypes(cleanupFacetOptions(getResourceTypes()));
+    }
     // REQUIRED IF YOU WANT FACETING TO ACTUALLY WORK
     public void setResourceTypes(List<ResourceType> resourceTypes) {
         getReservedSearchParameters().setResourceTypes(resourceTypes);

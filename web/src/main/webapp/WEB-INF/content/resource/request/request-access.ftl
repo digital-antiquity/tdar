@@ -9,7 +9,22 @@
         <@s.token name='struts.csrf.token' />
               <p>Select the type of message you'd like to send to another ${siteAcronym} user.</p>
                  <br/>
-                <@s.radio name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type' cssClass="required" />
+                 <div class="control-group">
+                 <label class="control-label" for="metadataForm_type">Email Type</label>
+                 <div class="controls">
+                 <#list emailTypes>
+                 	<#items as type_>
+                 		<#assign label = type_.label />
+                 		<#if type_ == 'CUSTOM'>
+                 			<#assign label = custom.name />
+                 		</#if>
+                 		<label class="radio inline" for="metadataForm_type${type_}">
+                 		<input type="radio" name="type" id="metadataForm_type${type_}" value="${type_}" class="required" <#if type?has_content && type == type_ >checked="checked"</#if>
+                 			 aria-required="true">${label}</label>
+                 	 </#items>
+             	 </#list> 
+             	 </div>
+             	 </div>
                 <#assign contactId = resource.submitter.id />
                 <#if contactProxies?has_content>
                 <#list contactProxies as prox>

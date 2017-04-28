@@ -65,7 +65,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.ExcelWorkbookWriter;
-import org.tdar.core.service.RssService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.resource.FileProxyWrapper;

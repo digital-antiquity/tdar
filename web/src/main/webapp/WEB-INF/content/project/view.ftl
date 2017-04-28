@@ -28,27 +28,7 @@
 
 
         <#if (totalRecords > 0)>
-
-        <h3>There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
-            <#if selectedResourceTypes?has_content>
-                <#if paginationHelper.totalNumberOfItems == 1>
-                    <@s.text name="${selectedResourceTypes[0].localeKey}" />
-                <#else>
-                    <@s.text name="${selectedResourceTypes[0].pluralLocaleKey}" />
-                </#if> 
-            <#else>
-                <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
-            </#if>
- within this Project <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
-                                                                                                      href="<@s.url includeParams="all">
-            <@s.param name="selectedResourceTypes"value="" />
-            <@s.param name="startRecord" value=""/>
-</@s.url>">[remove this filter]</a></sup>
-            </#if>
-        </h3>
-            <#if selectedResourceTypes.empty>
-                <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
-            </#if>
+			<@search.partFacet selectedResourceTypes paginationHelper "Project" "h3" />
 
             <#if ( results?has_content )>
                 <@rlist.listResources resourcelist=results listTag="ol" headerTag="h4" titleTag="h5" itemsPerRow=4

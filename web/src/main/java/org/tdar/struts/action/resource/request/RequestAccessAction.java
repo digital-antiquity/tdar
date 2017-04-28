@@ -14,16 +14,17 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts_base.action.PersistableLoadingAction;
@@ -51,6 +52,9 @@ public class RequestAccessAction extends AbstractAuthenticatableAction
     @SuppressWarnings("unused")
     @Autowired
     private transient RecaptchaService recaptchaService;
+    @Autowired
+    private transient ResourceService resourceService;
+    
     private AntiSpamHelper h = new AntiSpamHelper();
     private Set<EmailMessageType> emailTypes = new HashSet<>(EmailMessageType.valuesWithoutConfidentialFiles());
     private List<ResourceCreatorProxy> proxies = new ArrayList<>();
@@ -62,6 +66,7 @@ public class RequestAccessAction extends AbstractAuthenticatableAction
     private Long id;
     private Resource resource;
     private EmailMessageType type = EmailMessageType.CONTACT;
+    private RequestCollection custom;
 
     @Override
     public void prepare() throws Exception {
@@ -90,16 +95,13 @@ public class RequestAccessAction extends AbstractAuthenticatableAction
         if (getResource() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) getResource();
             if (informationResource.hasConfidentialFiles()) {
-                emailTypes = new HashSet<>(EmailMessageType.valuesWithoutSAA());
+                emailTypes = new HashSet<>(EmailMessageType.valuesWithoutCustom());
             }
         }
         // only add the SAA option if ...
-        if (CollectionUtils.isNotEmpty(resource.getResourceCollections())) {
-            resource.getResourceCollections().forEach(c -> {
-                if (TdarConfiguration.getInstance().getSaaCollectionIds().contains(c.getId())) {
-                    emailTypes.add(EmailMessageType.SAA);
-                }
-            });
+        custom  = resourceService.findCustom(resource);
+        if (custom != null) {
+            emailTypes.add(EmailMessageType.CUSTOM);
         }
 
     }
@@ -195,5 +197,13 @@ public class RequestAccessAction extends AbstractAuthenticatableAction
 
     public void setMessageBody(String messageBody) {
         this.messageBody = messageBody;
+    }
+
+    public RequestCollection getCustom() {
+        return custom;
+    }
+
+    public void setCustom(RequestCollection custom) {
+        this.custom = custom;
     }
 }

@@ -63,18 +63,20 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         document.setDate(1234);
         document.markUpdated(getAdminUser());
         genericService.saveOrUpdate(document);
-        genericService.saveOrUpdate(new ResourceAccessStatistic(new Date(), document));
-        Date date = DateTime.now().minusDays(1).toDate();
-        genericService.saveOrUpdate(new ResourceAccessStatistic(date, document));
+        genericService.saveOrUpdate(new ResourceAccessStatistic(DateTime.now().toDate(), document, false));
+        genericService.saveOrUpdate(new ResourceAccessStatistic(DateTime.now().minusDays(1).toDate(), document, false));
+        genericService.saveOrUpdate(new ResourceAccessStatistic(DateTime.now().minusDays(1).toDate(), document,true));
         genericService.synchronize();
+        // should only catch 1 day(today) beacause the rest aren't in the agg stats table yet
         Number count = datasetService.getDao().getAccessCount(document);
         assertEquals(1l, count.longValue());
         dailyTask.execute();
         genericService.synchronize();
         count = datasetService.getDao().getAccessCount(document);
         assertEquals(2l, count.longValue());
+        // should only have 1 for the aggregates
         List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, DateTime.now().minusDays(5).toDate(),
-                DateTime.now().toDate(), 1L);
+                DateTime.now().plusDays(1).toDate(), 0L);
         assertEquals(1, aggregateUsageStats.size());
 
     }

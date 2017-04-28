@@ -103,7 +103,6 @@ public class AggregateStatisticsDao extends GenericDao {
         String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_UPDATE, date);
         getLogger().trace(sql);
         getCurrentSession().createSQLQuery(sql).executeUpdate();
-
     }
 
     /**
@@ -238,6 +237,13 @@ public class AggregateStatisticsDao extends GenericDao {
         String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
         getLogger().trace(sql);
         return sql;
+    }
+
+    public void cleanupOldDailyStats(Date date) {
+        String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_STATS_CLEANUP, date);
+        getLogger().trace(sql);
+        getCurrentSession().createSQLQuery(sql).executeUpdate();
+        
     }
 
 }

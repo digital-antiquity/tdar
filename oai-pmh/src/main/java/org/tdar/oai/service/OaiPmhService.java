@@ -34,6 +34,7 @@ import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.bean.OAIRecordType;
 import org.tdar.oai.bean.OAIResumptionToken;
 import org.tdar.oai.bean.OaiIdentifier;
+import org.tdar.oai.bean.Token;
 import org.tdar.oai.bean.generated.oai._2_0.DeletedRecordType;
 import org.tdar.oai.bean.generated.oai._2_0.DescriptionType;
 import org.tdar.oai.bean.generated.oai._2_0.GetRecordType;
@@ -61,6 +62,8 @@ import org.tdar.transform.ExtendedDcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
 import org.w3c.dom.Document;
+
+import com.ibm.icu.util.BytesTrie.Result;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 
@@ -133,7 +136,7 @@ public class OaiPmhService {
 		Long collectionId = null;
 		// start record number (cursor)
 		Date effectiveFrom = from;
-		int startRecord = 0;
+		Token cursor = null;
 		Date effectiveUntil = until;
 		OAIMetadataFormat metadataFormat = metadataPrefix;
 		if (resumptionToken != null) {
@@ -144,7 +147,7 @@ public class OaiPmhService {
 			 * a resumption token.
 			 */
 			collectionId = resumptionToken.getSet();
-			startRecord = resumptionToken.getCursor();
+			cursor = resumptionToken.getCursor();
 			effectiveFrom = resumptionToken.getEffectiveFrom(from);
 			effectiveUntil = resumptionToken.getEffectiveUntil(until);
 			metadataFormat = resumptionToken.getEffectiveMetadataPrefix(metadataPrefix);
@@ -158,36 +161,33 @@ public class OaiPmhService {
 
 		}
 
-		OaiSearchResult persons = null;
-		OaiSearchResult institutions = null;
-		int maxResults = 0;
+//		OaiSearchResult persons = null;
+//		OaiSearchResult institutions = null;
 		if (enableEntities && !Objects.equals(metadataFormat, OAIMetadataFormat.MODS) && !Objects.equals(metadataFormat, OAIMetadataFormat.EXTENDED_DC)) {
 			// list people
-			persons = populateResult(OAIRecordType.PERSON, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response, null);
-
-			if (persons.getTotalRecords() > maxResults) {
-				maxResults = persons.getTotalRecords();
-			}
-
-			institutions = populateResult(OAIRecordType.INSTITUTION, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response, null);
-
-			if (institutions.getTotalRecords() > maxResults) {
-				maxResults = institutions.getTotalRecords();
-			}
+		    throw new TdarRecoverableRuntimeException("not implemented");
+//			persons = populateResult(OAIRecordType.PERSON, metadataFormat, effectiveFrom, effectiveUntil, token, response, null);
+//
+//			if (persons.getTotalRecords() > maxResults) {
+//				maxResults = persons.getTotalRecords();
+//			}
+//
+//			institutions = populateResult(OAIRecordType.INSTITUTION, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response, null);
+//
+//			if (institutions.getTotalRecords() > maxResults) {
+//				maxResults = institutions.getTotalRecords();
+//			}
 		}
 
 		// list the resources
-		OaiSearchResult resources = populateResult(OAIRecordType.RESOURCE, metadataFormat, effectiveFrom, effectiveUntil, startRecord, response, collectionId);
+		OaiSearchResult resources = populateResult(OAIRecordType.RESOURCE, metadataFormat, effectiveFrom, effectiveUntil, cursor, response, collectionId);
 
-		if (resources.getTotalRecords() > maxResults) {
-			maxResults = resources.getTotalRecords();
-		}
 
 		token = new ResumptionTokenType();
 		// if any of the queries returned more than a page of search results,
 		// create a resumptionToken to allow
 		// the client to continue harvesting from that point
-		if (resources.getNextPageStartRecord() < maxResults) {
+		if (resources.getResultSize() >= resources.getRecordsPerPage() ) {
 			// ... then this is a partial response, and should be terminated
 			// with a ResumptionToken
 			// which may be empty if this is the last page of results advance
@@ -195,7 +195,8 @@ public class OaiPmhService {
 			OAIResumptionToken newResumptionToken = new OAIResumptionToken();
 			// ... populate the resumptionToken so the harvester can continue
 			// harvesting from the next page
-			newResumptionToken = new OAIResumptionToken(resources.getNextPageStartRecord(), effectiveFrom,
+			Token cursor2 = extractCursorFromResults(resources.getResults());
+			newResumptionToken = new OAIResumptionToken(cursor2, effectiveFrom,
 					effectiveUntil, metadataFormat, collectionId);
 			logger.debug("newToken: {}", newResumptionToken.getToken());
 			token.setValue(newResumptionToken.getToken());
@@ -206,7 +207,7 @@ public class OaiPmhService {
 		}
 
 		// if there were no records found, then throw an exception
-		if (maxResults == 0) {
+		if (resources.getResultSize() == 0) {
 			throw new OAIException(MessageHelper.getInstance().getText("oaiController.no_matches"),
 					OAIPMHerrorcodeType.NO_RECORDS_MATCH);
 		}
@@ -230,14 +231,16 @@ public class OaiPmhService {
 	 * @throws OAIException
 	 */
 	private OaiSearchResult populateResult(OAIRecordType recordType, 
-			OAIMetadataFormat metadataFormat, Date effectiveFrom, Date effectiveUntil, int startRecord,
+			OAIMetadataFormat metadataFormat, Date effectiveFrom, Date effectiveUntil, Token cursor,
 			ListResponse response, Long collectionId) throws OAIException {
 		boolean includeRecords = false;
 		if (response instanceof ListRecordsType) {
 			includeRecords = true;
 		}
 		OaiSearchResult search = new OaiSearchResult();
-		search.setStartRecord(startRecord);
+		if (cursor != null) {
+		    search.setCursor(cursor);
+		}
 
 		List<RecordType> records = new ArrayList<>();
 		try {
@@ -498,17 +501,18 @@ public class OaiPmhService {
 			// this case there are no separate "from" and "until" parameters
 			// passed by the client;
 			// instead all the parameters come packed into a resumption token.
-			search.setStartRecord(resumptionToken.getCursor());
+			search.setCursor(resumptionToken.getCursor());
 			effectiveFrom = resumptionToken.getEffectiveFrom(from);
 			effectiveUntil = resumptionToken.getEffectiveUntil(until);
 		}
 		OAIMetadataFormat metadataFormat = null;
 		// now actually build the queries and execute them
-		int total = 0;
+//		int total = 0;
 		Collection<SetType> setList = new ArrayList<>();
+		List<? extends OaiDcProvider> results =  new ArrayList<>();
 		try {
-			List<? extends OaiDcProvider> results = oaiDao.handleSearch(null, search, effectiveFrom, effectiveUntil,null);
-			total = search.getTotalRecords();
+			results = oaiDao.handleSearch(null, search, effectiveFrom, effectiveUntil,null);
+//			total = search.getTotalRecords();
 			for (OaiDcProvider i : results) {
 				logger.debug("{}, {}", i, ((Viewable) i).isViewable());
 				SetType set = new SetType();
@@ -533,30 +537,35 @@ public class OaiPmhService {
 		// create a resumptionToken to allow
 		// the client to continue harvesting from that point
 		int recordsPerPage = search.getRecordsPerPage();
-		if (total > recordsPerPage) {
+		if (search.getResultSize() >= recordsPerPage) {
 			// ... then this is a partial response, and should be terminated
 			// with a ResumptionToken
 			// which may be empty if this is the last page of results
 			// advance the cursor by one page
-			int cursor = search.getNextPageStartRecord();
 			// check if there would be any resources, persons or institutions in
 			// that hypothetical next page
 
 			// check if there would be any resources, persons or institutions in
 			// that hypothetical next page
-			if (total > cursor) {
 				// ... populate the resumptionToken so the harvester can
 				// continue harvesting from the next page
 				OAIResumptionToken newResumptionToken = new OAIResumptionToken();
 				ResumptionTokenType token = new ResumptionTokenType();
+				Token cursor = extractCursorFromResults(results);
 				newResumptionToken = new OAIResumptionToken(cursor, effectiveFrom, effectiveUntil, metadataFormat,
 						null);
 				token.setValue(newResumptionToken.getToken());
 				response.setResumptionToken(token);
-			}
 		}
 		response.getSet().addAll(setList);
 		return response;
 	}
 
+    private Token extractCursorFromResults(List<? extends OaiDcProvider> results) {
+        Token token = new Token();
+        OaiDcProvider lastRecord = results.get(results.size() - 1);
+        token.setAfter(lastRecord.getDateUpdated());
+        token.setIdFrom(lastRecord.getId());    
+        return token;
+    }
 }

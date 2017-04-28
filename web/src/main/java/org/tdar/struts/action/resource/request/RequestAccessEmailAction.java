@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource.request;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,7 @@ import org.apache.struts2.interceptor.ParameterAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
@@ -22,6 +24,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
@@ -38,6 +41,8 @@ import com.opensymphony.xwork2.Preparable;
 public class RequestAccessEmailAction extends AbstractRequestAccessController implements Preparable, ParameterAware {
 
     private static final long serialVersionUID = 2598289601940169922L;
+    @Autowired
+    private transient ResourceService resourceService;
 
     @Autowired
     private transient RecaptchaService recaptchaService;
@@ -67,8 +72,9 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     @PostOnly
     public String execute() {
         // if we're in the SAA process, then override the "to" with the specified ID
-        if (type == EmailMessageType.SAA) {
-            to = genericService.find(TdarUser.class, TdarConfiguration.getInstance().getSAAContactId());
+        if (type == EmailMessageType.CUSTOM) {
+            RequestCollection custom = resourceService.findCustom(getResource());
+            to = custom.getContact();
         }
         emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
         addActionMessage("Message Sent");

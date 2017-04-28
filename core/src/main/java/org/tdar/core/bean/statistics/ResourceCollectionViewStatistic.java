@@ -32,9 +32,10 @@ public class ResourceCollectionViewStatistic extends AbstractResourceStatistic<R
     public ResourceCollectionViewStatistic() {
     };
 
-    public ResourceCollectionViewStatistic(Date date, ResourceCollection r) {
+    public ResourceCollectionViewStatistic(Date date, ResourceCollection r, boolean isBot) {
         setDate(date);
         setReference(r);
+        setBot(isBot);
     }
 
     @Override

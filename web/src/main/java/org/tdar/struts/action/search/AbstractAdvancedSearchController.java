@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,6 +27,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
@@ -132,7 +134,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 			getResourceTypes().clear();
 			return true;
 		}
-
+		
+		
 		LatitudeLongitudeBox latLong = getParsedLatLongBox();
 		if (latLong != null) {
 			setMap(latLong);
@@ -638,6 +641,9 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 			setProjectionModel(ProjectionModel.RESOURCE_PROXY);
 		}
 
+        setResourceTypes(cleanupFacetOptions(getResourceTypes()));
+        setIntegratableOptions(cleanupFacetOptions(getIntegratableOptions()));
+        
 		if (explore) {
 			return exploreSearch();
 		}
@@ -652,7 +658,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
 	}
 
-	public List<String> getAllGeneralQueryFields() {
+	
+    public List<String> getAllGeneralQueryFields() {
 		List<String> allFields = new ArrayList<>();
 		for (SearchParameters param : groups) {
 			if (param == null) {

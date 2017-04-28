@@ -31,6 +31,7 @@ import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -41,6 +42,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 @Namespace("/admin/system")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
 @IgnoreActivity
+@HttpsOnly
 public class AdminActivityController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 6261948544478872563L;

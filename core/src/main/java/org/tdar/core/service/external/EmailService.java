@@ -26,6 +26,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -224,20 +225,25 @@ public class EmailService {
         Email email = new Email();
         genericDao.markWritable(email);
         email.setFrom(CONFIG.getDefaultFromEmail());
+        String subjectPart = MessageHelper.getMessage(type.getLocaleKey());
+        Map<String, Object> map = new HashMap<>();
+
+        if(type == EmailMessageType.CUSTOM) {
+            RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
+            logger.debug("{}", customRequest);
+            subjectPart = customRequest.getName();
+            map.put("descriptionRequest", customRequest.getDescriptionRequest());
+            map.put("customName", customRequest.getName());
+
+        }
         if (CONFIG.isSendEmailToTester()) {
             email.setTo(from.getEmail());
         }
         email.setTo(to.getEmail());
-        String msg = String.format("%s[%s] requesting access (%s) sent to %s[%s]", from.getProperName(), from.getId(), type.name(), to.getProperName(), to.getId());
-        TdarUser user = genericDao.find(TdarUser.class, CONFIG.getAdminUserId());
-        if (from instanceof TdarUser) {
-            user = (TdarUser) from;
-        }
-        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, user, RevisionLogType.REQUEST);
-        genericDao.markWritable(rrl);
-        genericDao.saveOrUpdate(rrl);
-        String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(),
-                from.getProperName());
+        createResourceRevisionLogEntry(from, to, resource, subjectPart);
+        
+        
+        String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), subjectPart, resource.getId(), from.getProperName());
         if (StringUtils.isNotBlank(subjectSuffix)) {
             subject += " - " + subjectSuffix;
         }
@@ -247,7 +253,6 @@ public class EmailService {
             email.setResource(resource);
         }
         email.setStatus(Status.IN_REVIEW);
-        Map<String, Object> map = new HashMap<>();
         map.put("from", from);
         map.put("to", to);
         setupBasicComponents(map);
@@ -263,6 +268,17 @@ public class EmailService {
         queueWithFreemarkerTemplate(type.getTemplateName(), map, email);
         return email;
 
+    }
+
+    private void createResourceRevisionLogEntry(Person from, HasEmail to, Resource resource, String subjectPart) {
+        String msg = String.format("%s[%s] requesting access (%s) sent to %s[%s]", from.getProperName(), from.getId(), subjectPart, to.getProperName(), to.getId());
+        TdarUser user = genericDao.find(TdarUser.class, CONFIG.getAdminUserId());
+        if (from instanceof TdarUser) {
+            user = (TdarUser) from;
+        }
+        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, user, RevisionLogType.REQUEST);
+        genericDao.markWritable(rrl);
+        genericDao.saveOrUpdate(rrl);
     }
 
     @Transactional(readOnly = false)
@@ -299,6 +315,11 @@ public class EmailService {
         map.put("requestor", requestor);
         map.put("resource", resource);
         map.put("authorizedUser", authenticatedUser);
+        if (type == EmailMessageType.CUSTOM) {
+            RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
+            map.put("customName", customRequest.getName());
+            map.put("descriptionResponse", customRequest.getDescriptionResponse());
+        }
         setupBasicComponents(map);
         if (StringUtils.isNotBlank(comment)) {
             map.put("message", comment);
@@ -309,8 +330,8 @@ public class EmailService {
         } else {
             if (type != null) {
                 switch (type) {
-                    case SAA:
-                        template = "email-form/saa-accept.ftl";
+                    case CUSTOM:
+                        template = "email-form/custom-accept.ftl";
                         break;
                     default:
                         break;

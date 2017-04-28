@@ -27,6 +27,10 @@ public abstract class AbstractResourceStatistic<S extends Persistable> extends A
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
+
+    @Column(name="bot", nullable=false, columnDefinition="boolean default false")
+    private boolean bot;
+
     public abstract S getReference();
 
     public abstract void setReference(S reference);
@@ -37,5 +41,13 @@ public abstract class AbstractResourceStatistic<S extends Persistable> extends A
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public boolean isBot() {
+        return bot;
+    }
+
+    public void setBot(boolean bot) {
+        this.bot = bot;
     }
 }
