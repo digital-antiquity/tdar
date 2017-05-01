@@ -60,7 +60,7 @@ public class LoginAction extends AbstractAuthenticatedAction implements Validate
     private transient AuthorizationService authorizationService;
 
     @Override
-    @Action(value = "login", results = {
+    @Action(value = LOGIN, results = {
             @Result(name = TdarActionSupport.SUCCESS, location = "/WEB-INF/content/login.ftl")
     })
     @SkipValidation

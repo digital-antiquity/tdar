@@ -308,7 +308,7 @@ public class ItemService {
         int total = itemDao.findAllWithPath(path, findAll, page, size, managed);
         for (DropboxFile file : findAll) {
             String key = Phases.createKey(file);
-            logger.debug("{} --> {}", file.getPath(), key);
+            logger.trace("{} --> {}", file.getPath(), key);
             map.putIfAbsent(key, new WorkflowStatusReport());
             WorkflowStatusReport status = map.get(key);
             if (status.getFirst() == null) {
@@ -318,7 +318,7 @@ public class ItemService {
             for (Phases phase : Phases.values()) {
                 phase.updateStatus(status, file);
             }
-            logger.debug(" {} [{}]", status.getCurrentPhase(), file.getTdarReferences());
+            logger.trace(" {} [{}]", status.getCurrentPhase(), file.getTdarReferences());
         }
         return total;
     }
