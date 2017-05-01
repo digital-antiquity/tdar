@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -53,13 +52,11 @@ import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.dropbox.DropboxClient;
-import org.tdar.utils.dropbox.DropboxConstants;
+import org.tdar.utils.dropbox.DropboxConfig;
 import org.tdar.utils.dropbox.DropboxItemWrapper;
 import org.tdar.utils.dropbox.ToPersistListener;
 
-import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.Metadata;
-import com.dropbox.core.v2.files.RelocationErrorException;
 import com.dropbox.core.v2.users.BasicAccount;
 
 @Component
@@ -68,6 +65,7 @@ public class ItemService {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private APIClient apiClient;
     boolean loggedIn = false;
+    private DropboxConfig config = DropboxConfig.getInstance();
 
     @Autowired
     EmailService emailService;
@@ -113,10 +111,12 @@ public class ItemService {
 
     @Transactional(readOnly = false)
     public void markUploaded(String id, Long tdarId, boolean dir) {
-        AbstractDropboxItem item = itemDao.findByDropboxId(id, dir);
-        item.getTdarReferences().add(new TdarReference(id, tdarId));
-        genericDao.saveOrUpdate(item);
-        genericDao.saveOrUpdate(item.getTdarReferences());
+        if (PersistableUtils.isNotNullOrTransient(tdarId)) {
+            AbstractDropboxItem item = itemDao.findByDropboxId(id, dir);
+            item.getTdarReferences().add(new TdarReference(id, tdarId));
+            genericDao.saveOrUpdate(item);
+            genericDao.saveOrUpdate(item.getTdarReferences());
+        }
 
     }
 
@@ -181,7 +181,7 @@ public class ItemService {
             try {
                 upload(file);
                 TdarReference ref = file.getTdarReference();
-                if (PersistableUtils.isNotNullOrTransient(ref.getTdarId())) {
+                if (ref != null && PersistableUtils.isNotNullOrTransient(ref.getTdarId())) {
                     msg.append(" - ").append(file.getName()).append(" (").append(ref.getTdarId()).append(")\n");
                 }
             } catch (Exception e) {
@@ -190,13 +190,13 @@ public class ItemService {
         }
         if (CollectionUtils.isNotEmpty(files) && StringUtils.isNotBlank(msg.toString())) {
             msg.insert(0, "the following files were uploaded to tDAR:\n");
-            sendEmail("balk@tdar.org", new String[]{"adam.brin@asu.edu","Rachel.Fernandez.1@asu.edu"}, "Uploaded files to tDAR", msg.toString());
+            sendEmail("balk@tdar.org", config.getEmailAddresses(), "Uploaded files to tDAR", msg.toString());
         }
 
     }
 
     private void upload(DropboxFile file) throws IllegalStateException, Exception {
-        File rootDir = new File(DropboxConstants.UPLOAD_PATH);
+        File rootDir = new File(config.getUploadPath());
         DropboxClient client = new DropboxClient();
         logger.debug(file.getPath());
         File path = new File(file.getPath()).getParentFile();
@@ -229,7 +229,21 @@ public class ItemService {
         }
         if (debug == false) {
             logger.debug("uploading: {}", file);
-            ApiClientResponse response = apiClient.uploadRecordWithDefaultAccount(docXml, null, actualFile);
+            Long accountId = apiClient.getDefaultAccount();
+            if (file.getAccountId() != null) {
+                accountId = file.getAccountId();
+            } else {
+                String parentId = file.getParentId();
+                while (parentId != null) {
+                    AbstractDropboxItem parent = findByDropboxId(parentId, true);
+                    if (parent.getAccountId() != null) {
+                        accountId = parent.getAccountId();
+                        break;
+                    }
+                    parentId = parent.getParentId();
+                }
+            }
+            ApiClientResponse response = apiClient.uploadRecord(docXml, null, accountId, actualFile);
             markUploaded(file.getDropboxId(), response.getTdarId(), false);
         }
     }
@@ -272,14 +286,16 @@ public class ItemService {
         object.setDescription(filename);
         object.setStatus(Status.DRAFT);
         object.setDate(2016);
-        ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
-        rc.setHidden(true);
-        if (StringUtils.isNotBlank(username)) {
-            rc.getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
+        if (StringUtils.isNotBlank(collection)) {
+            ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
+            rc.setHidden(true);
+            if (StringUtils.isNotBlank(username)) {
+                rc.getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
+            }
+            rc.setName(collection);
+            rc.setDescription("(from dropbox)");
+            object.getResourceCollections().add(rc);
         }
-        rc.setName(collection);
-        rc.setDescription("(from dropbox)");
-        object.getResourceCollections().add(rc);
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);
         return writer.toString();
@@ -292,6 +308,7 @@ public class ItemService {
         int total = itemDao.findAllWithPath(path, findAll, page, size, managed);
         for (DropboxFile file : findAll) {
             String key = Phases.createKey(file);
+            logger.debug("{} --> {}", file.getPath(), key);
             map.putIfAbsent(key, new WorkflowStatusReport());
             WorkflowStatusReport status = map.get(key);
             if (status.getFirst() == null) {
@@ -301,6 +318,7 @@ public class ItemService {
             for (Phases phase : Phases.values()) {
                 phase.updateStatus(status, file);
             }
+            logger.debug(" {} [{}]", status.getCurrentPhase(), file.getTdarReferences());
         }
         return total;
     }
@@ -335,15 +353,14 @@ public class ItemService {
         // store(listener);
     }
 
-    
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public Set<String> listChildPaths(String path) {
         return itemDao.findTopLevelPaths(path);
     }
 
     @Transactional(readOnly = true)
     public Set<String> listTopLevelPaths() {
-        return itemDao.findTopLevelPaths(DropboxConstants.CLIENT_DATA.replace("/", ""));
+        return itemDao.findTopLevelPaths(config.getBaseDropboxPath().replace("/", ""));
     }
 
     @Transactional(readOnly = true)

@@ -58,9 +58,12 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
 
     @Column(name = "parent_id", length = 512)
     private String parentId;
-    
+
+    @Column(name = "billing_account_id")
+    private Long accountId;
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(nullable = true, updatable = false, name = "dropbox_ref_id", referencedColumnName="dropbox_item")
+    @JoinColumn(nullable = true, updatable = false, name = "dropbox_id", referencedColumnName="dropbox_id")
     private Set<TdarReference> tdarReferences = new LinkedHashSet<>();
 
 
@@ -161,5 +164,13 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
 
     public void setTdarReferences(Set<TdarReference> tdarReference) {
         this.tdarReferences = tdarReference;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }

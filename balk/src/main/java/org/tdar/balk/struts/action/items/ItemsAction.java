@@ -17,7 +17,6 @@ import org.tdar.balk.service.UserService;
 import org.tdar.balk.service.WorkflowStatusReport;
 import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
 
-import com.ibm.icu.impl.StringUCharacterIterator;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
@@ -36,21 +35,22 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
 
     private TreeMap<String, WorkflowStatusReport> itemStatusReport = new TreeMap<>();
     private DropboxUserMapping userInfo;
-    private String path;
+    private String path = "";
     private int page = 0;
     private int size = 100;
     private int total = 0;
     private boolean managed = false;
 
     private Set<String> children;
+
     @Override
     public void prepare() throws Exception {
         userInfo = userService.findUser(getAuthenticatedUser());
     }
-    
-    @Action(value="" , results={@Result(name=SUCCESS, type=FREEMARKER, location="items.ftl")})
+
+    @Action(value = "list", results = { @Result(name = SUCCESS, type = FREEMARKER, location = "items.ftl") })
     public String execute() throws Exception {
-        setTotal(itemService.itemStatusReport(path, page, size,itemStatusReport, isManaged()));
+        setTotal(itemService.itemStatusReport(path, page, size, itemStatusReport, isManaged()));
         String path_ = StringUtils.stripEnd(path, "/");
         if (path_.contains("/")) {
             path_ = StringUtils.substringAfterLast(path_, "/");

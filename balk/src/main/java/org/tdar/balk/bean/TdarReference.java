@@ -2,10 +2,12 @@ package org.tdar.balk.bean;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import org.tdar.core.bean.AbstractPersistable;
 
-@Entity(name = "dropbox_tdar_ref")
+@Entity
+@Table(name = "dropbox_tdar_ref")
 public class TdarReference extends AbstractPersistable {
 
     private static final long serialVersionUID = -5214936809901946473L;

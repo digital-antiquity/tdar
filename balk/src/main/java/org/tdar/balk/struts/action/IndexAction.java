@@ -1,6 +1,5 @@
 package org.tdar.balk.struts.action;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;

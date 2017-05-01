@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.balk.bean.PollType;
 import org.tdar.utils.dropbox.DropboxClient;
+import org.tdar.utils.dropbox.DropboxConfig;
 import org.tdar.utils.dropbox.DropboxConstants;
 import org.tdar.utils.dropbox.ToPersistListener;
 
@@ -49,7 +50,7 @@ public class BalkScheduledProcessService {
     public void cronPollingStatsQueue() {
         try {
             ToPersistListener listener = new ToPersistListener(itemService);
-            cursorService.pollAndProcess(PollType.STATUS, DropboxConstants.CLIENT_DATA, listener);
+            cursorService.pollAndProcess(PollType.STATUS, DropboxConfig.getInstance().getBaseDropboxPath(), listener);
 //            itemService.store(listener);
         } catch (URISyntaxException | IOException | DbxException e) {
             logger.error("polling error {}", e,e);
