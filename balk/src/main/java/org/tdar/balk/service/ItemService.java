@@ -31,6 +31,7 @@ import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxDirectory;
 import org.tdar.balk.bean.DropboxFile;
 import org.tdar.balk.bean.DropboxUserMapping;
+import org.tdar.balk.bean.TdarReference;
 import org.tdar.balk.dao.ItemDao;
 import org.tdar.balk.dao.UserDao;
 import org.tdar.core.bean.collection.CollectionType;
@@ -104,7 +105,7 @@ public class ItemService {
         if (item == null) {
             return false;
         }
-        if (item.getTdarId() == null) {
+        if (CollectionUtils.isEmpty(item.getTdarReferences())) {
             return false;
         }
         return true;
@@ -113,8 +114,9 @@ public class ItemService {
     @Transactional(readOnly = false)
     public void markUploaded(String id, Long tdarId, boolean dir) {
         AbstractDropboxItem item = itemDao.findByDropboxId(id, dir);
-        item.setTdarId(tdarId);
+        item.getTdarReferences().add(new TdarReference(id, tdarId));
         genericDao.saveOrUpdate(item);
+        genericDao.saveOrUpdate(item.getTdarReferences());
 
     }
 
@@ -178,8 +180,9 @@ public class ItemService {
         for (DropboxFile file : files) {
             try {
                 upload(file);
-                if (PersistableUtils.isNotNullOrTransient(file.getTdarId())) {
-                    msg.append(" - ").append(file.getName()).append(" (").append(file.getTdarId()).append(")\n");
+                TdarReference ref = file.getTdarReference();
+                if (PersistableUtils.isNotNullOrTransient(ref.getTdarId())) {
+                    msg.append(" - ").append(file.getName()).append(" (").append(ref.getTdarId()).append(")\n");
                 }
             } catch (Exception e) {
                 logger.error("{}", e, e);

@@ -59,4 +59,12 @@
             <column name="owner_name" type="varchar(512)" />
 	    </addColumn>    
     </changeSet>
+    <changeSet id="drobox-7" author="abrin">
+        <createTable tableName="dropbox_tdar_ref">
+            <column name="id" type="bigserial" />
+            <column name="tdar_id" type="bigint" />
+            <column name="dropbox_id" type="varchar(512)" />
+            <column name="dropbox_ref_id" type="varchar(512)" />
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
