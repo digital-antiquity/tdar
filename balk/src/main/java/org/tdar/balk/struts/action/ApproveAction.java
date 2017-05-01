@@ -8,16 +8,15 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.struts_base.interceptor.annotation.PostOnly;
-import org.tdar.struts_base.interceptor.annotation.WriteableSession;
-
-import com.opensymphony.xwork2.Preparable;
-
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.service.ItemService;
 import org.tdar.balk.service.Phases;
 import org.tdar.balk.service.UserService;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
+
+import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
 @Namespace("/approve")
@@ -47,7 +46,7 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
         userMapping = userService.findUser(getAuthenticatedUser());
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items/?path=${path}")})
+    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items/list?path=${path}")})
     @Override
     public String execute() throws Exception {
         try {

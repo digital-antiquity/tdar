@@ -26,7 +26,7 @@ public class StatReporter implements MetadataListener {
         String key = fileWrapper.getFullPath().toLowerCase();
         key = StringUtils.replace(key, "/input/", "/");
         key = StringUtils.replace(key, "/output/", "/");
-        key = StringUtils.remove(key, DropboxConstants.CLIENT_DATA.toLowerCase());
+        key = StringUtils.remove(key, DropboxConfig.getInstance().getBaseDropboxPath().toLowerCase());
         key = StringUtils.substringAfter(key, "/");
         logger.debug(key);
         key = StringUtils.replace(key, "_ocr_pdfa.pdf", ".pdf");

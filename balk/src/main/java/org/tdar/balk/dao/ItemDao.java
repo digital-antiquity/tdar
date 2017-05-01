@@ -13,11 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxDirectory;
 import org.tdar.balk.bean.DropboxFile;
 import org.tdar.balk.service.Phases;
+import org.tdar.utils.dropbox.DropboxConfig;
 import org.tdar.utils.dropbox.DropboxConstants;
 
 @Component
@@ -77,7 +77,7 @@ public class ItemDao {
 
     @SuppressWarnings("unchecked")
     public List<DropboxFile> findToUpload() {
-        String query = "from DropboxFile where tdar_id is null and lower(path) like lower('%/"+DropboxConstants.UPLOAD_TO_TDAR+"/%')";
+        String query = "from DropboxFile df where lower(path) like lower('%/"+DropboxConstants.UPLOAD_TO_TDAR+"/%') and not exists (select tr from TdarReference tr where df.dropboxId=tr.dropboxId)";
         Query query2 = getCurrentSession().createQuery(query);
         return query2.list();
     }
@@ -115,17 +115,19 @@ public class ItemDao {
         Query query = getCurrentSession().createQuery("select name from DropboxDirectory where parentId in (select dropboxId from DropboxDirectory where lower(name)=lower(:path) )");
         query.setParameter("path", path);
         Set<String> toReturn = new HashSet<>(query.list());
-        toReturn.remove(DropboxConstants.CREATE_PDFA);
-        toReturn.remove(DropboxConstants.COMBINE_PDF_DIR);
-        toReturn.remove(DropboxConstants.UPLOAD_TO_TDAR);
+        toReturn.remove(CONFIG.getCreatePdfaPath());
+        toReturn.remove(CONFIG.getCombinePath());
+        toReturn.remove(CONFIG.getUploadPath());
         return toReturn;
     }
 
+    private DropboxConfig CONFIG = DropboxConfig.getInstance();
+
     public Set<String> findTopLevelManagedPaths() {
         Set<String> paths = new HashSet<>();
-        paths.addAll(findTopLevelPaths(DropboxConstants.UPLOAD_TO_TDAR));
-        paths.addAll(findTopLevelPaths(DropboxConstants.INPUT));
-        paths.addAll(findTopLevelPaths(DropboxConstants.OUTPUT));
+        paths.addAll(findTopLevelPaths(CONFIG.getUploadPath()));
+        paths.addAll(findTopLevelPaths(CONFIG.getInputPath()));
+        paths.addAll(findTopLevelPaths(CONFIG.getOutputPath()));
         return paths;
     }
 

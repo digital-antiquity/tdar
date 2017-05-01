@@ -153,7 +153,11 @@ public class APIClient {
      * @throws IOException
      */
     public ApiClientResponse uploadRecordWithDefaultAccount(String docXml, Long tdarId, File... files) throws ClientProtocolException, IOException {
-        return uploadRecord(docXml, tdarId, Long.parseLong((String)props.get("account.id")), files);
+        return uploadRecord(docXml, tdarId, getDefaultAccount(), files);
+    }
+
+    public long getDefaultAccount() {
+        return Long.parseLong((String)props.get("account.id"));
     }
 
     /**

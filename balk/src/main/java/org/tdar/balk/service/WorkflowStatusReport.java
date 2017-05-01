@@ -17,7 +17,7 @@ public class WorkflowStatusReport {
     }
     
     public Phases getNextPhase() {
-        if (doneOcr != null && toUpload == null) {
+        if (doneOcr != null && toUpload == null || toUpload != null && toUpload.getTdarReference() == null) {
             return Phases.UPLOAD_TDAR;
         }
         return null;

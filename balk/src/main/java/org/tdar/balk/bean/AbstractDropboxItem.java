@@ -1,19 +1,27 @@
 package org.tdar.balk.bean;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.tdar.balk.bean.TdarReference;
 import org.tdar.core.bean.AbstractPersistable;
 
 @Entity(name = "dropbox_items")
@@ -45,14 +53,19 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateModified;
 
-    @Column(name = "tdar_id")
-    private Long tdarId;
-
     @Column(name = "deleted")
     private Boolean deleted = false;
 
     @Column(name = "parent_id", length = 512)
     private String parentId;
+
+    @Column(name = "billing_account_id")
+    private Long accountId;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = true, updatable = false, name = "dropbox_id", referencedColumnName="dropbox_id")
+    private Set<TdarReference> tdarReferences = new LinkedHashSet<>();
+
 
     public String getParentId() {
         return parentId;
@@ -126,14 +139,6 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
         this.dateModified = dateModified;
     }
 
-    public Long getTdarId() {
-        return tdarId;
-    }
-
-    public void setTdarId(Long tdarId) {
-        this.tdarId = tdarId;
-    }
-
     public String getParentDirName() {
         return StringUtils.substringBeforeLast(getPath(), "/");
     }
@@ -144,5 +149,28 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
 
     public void setOwnerName(String ownerName) {
         this.ownerName = ownerName;
+    }
+
+    public TdarReference getTdarReference() {
+        if (CollectionUtils.isEmpty(tdarReferences )) {
+            return null;
+        }
+        return tdarReferences.iterator().next();
+    }
+    
+    public Set<TdarReference> getTdarReferences() {
+        return tdarReferences;
+    }
+
+    public void setTdarReferences(Set<TdarReference> tdarReference) {
+        this.tdarReferences = tdarReference;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 }

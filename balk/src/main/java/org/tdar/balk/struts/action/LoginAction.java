@@ -14,6 +14,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.balk.service.SimpleAuthenticationService;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
@@ -26,8 +27,6 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Validateable;
-
-import org.tdar.balk.service.SimpleAuthenticationService;
 
 /**
  * $Id$
@@ -61,7 +60,7 @@ public class LoginAction extends AbstractAuthenticatedAction implements Validate
     private transient AuthorizationService authorizationService;
 
     @Override
-    @Action(value = "login", results = {
+    @Action(value = LOGIN, results = {
             @Result(name = TdarActionSupport.SUCCESS, location = "/WEB-INF/content/login.ftl")
     })
     @SkipValidation

@@ -59,4 +59,21 @@
             <column name="owner_name" type="varchar(512)" />
 	    </addColumn>    
     </changeSet>
+    <changeSet id="drobox-7" author="abrin">
+        <createTable tableName="dropbox_tdar_ref">
+            <column name="id" type="bigserial" />
+            <column name="tdar_id" type="bigint" />
+            <column name="dropbox_id" type="varchar(512)" />
+            <column name="dropbox_ref_id" type="varchar(512)" />
+        </createTable>
+    </changeSet>
+    <changeSet id="drobox-8" author="abrin">
+        <addColumn tableName="dropbox_items">
+            <column name="billing_account_id" type="bigint" />
+        </addColumn>    
+    </changeSet>
+    <changeSet id="drobox-9" author="abrin">
+        <addUniqueConstraint columnNames="dropbox_id" tableName="dropbox_tdar_ref"/>
+    </changeSet>
+    
 </databaseChangeLog>

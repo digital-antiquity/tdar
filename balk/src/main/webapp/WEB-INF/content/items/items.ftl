@@ -77,7 +77,7 @@
 	<@_printrow itemStatusReport row "DONE_PDFA"/>
 	<@_printrow itemStatusReport row "UPLOAD_TDAR"/>
     <td>
-        <#if (row.toUpload.tdarId)?has_content><a href="http://core.tdar.org/resource/${row.toUpload.tdarId?c}">${row.toUpload.tdarId?c}</a></#if>
+        <#if (row.toUpload.tdarReference.tdarId)?has_content><a href="http://core.tdar.org/resource/${row.toUpload.tdarReference.tdarId?c}">${row.toUpload.tdarReference.tdarId?c}</a></#if>
     </td>
 </tr>
 </#list>
@@ -95,7 +95,6 @@
 <#if phase == 'UPLOAD_TDAR' && row.toUpload?has_content>
     <#local item=row.toUpload />
 </#if>
-
 <#if item?has_content>
     <td><#if item.dateModified?is_date><a href="https://www.dropbox.com/work${item.parentDirName?ensure_starts_with("/")?url_path}?preview=${item.name}" target="_blank">${item.dateModified?string.short}</#if></td>
     <td>${item.ownerId!''} </td>
