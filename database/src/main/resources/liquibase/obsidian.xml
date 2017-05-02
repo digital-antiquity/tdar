@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
+
+    <changeSet id="obsidian-1" author="abrin" failOnError="false">
+        <dropColumn tableName="institution" columnName="merge_creator_id" />
+        <dropColumn tableName="person" columnName="merge_creator_id" />
+    </changeSet>
+
+    <changeSet id="obsidian-2" author="abrin">
+        <addPrimaryKey tableName="data_integration_workflow" columnNames="id"/>
+        <createTable tableName="data_integration_users">
+            <column name="id" type="bigserial" />
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" references="tdar_user"
+                    foreignKeyName="fk_integration_authorization__tdar_user_id" />
+            </column>
+            <column name="integration_id" type="bigint">
+                <constraints nullable="false"
+                    references="data_integration_workflow"
+                    foreignKeyName="fk_integration_authorization___id" />
+            </column>
+        </createTable>
+        <addColumn tableName="data_integration_workflow">
+            <column name="hidden" defaultValueBoolean="false" type="boolean"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-3" author="abrin">
+        <addColumn tableName="email_queue">
+            <column name="resource_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_email_resource_id" referencedTableName="resource" baseColumnNames="resource_id" baseTableName="email_queue" referencedColumnNames="id" />        
+        <addColumn tableName="email_queue">
+            <column name="message_type" type="varchar(50)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-4" author="abrin">
+        <addColumn tableName="resource_revision_log">
+            <column name="revision_type" type="varchar(50)" />
+            <column name="time_seconds" type="bigint" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="obsidian-5" author="abrin">
+        <update tableName="data_integration_workflow">
+        <column name="hidden" valueBoolean="true"/></update>
+    </changeSet>
+    
+    <changeSet id="obsidian-6" author="abrin">
+    <comment>setting up resource revision log (type) based on unique keys/values</comment>    
+    <sql>
+        update  resource_revision_log set revision_type='DELETE' where log_message ilike '%deleted by%';
+        update  resource_revision_log set revision_type='EDIT' where log_message ilike '%edited and saved%';
+        update  resource_revision_log set revision_type='CREATE' where log_message ilike '%created\:%';
+        update  resource_revision_log set revision_type='EDIT' where log_message ilike 'updated:%';
+        update  resource_revision_log set revision_type='CREATE' where log_message ilike 'clone%';
+        update  resource_revision_log set revision_type='EDIT' where log_message ilike '%genearting%';
+    </sql>
+    </changeSet>
+    <changeSet id="obsidian-7" author="abrin">
+        <addColumn tableName="keyword_mapping">
+            <column name="label" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-8" author="abrin">
+        <addColumn tableName="tdar_user">
+            <column name="user_agent" type="varchar(512)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian9" author="abrin">
+        <createIndex tableName="culture_keyword" indexName="idx_culture_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="geographic_keyword" indexName="idx_geographic_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="material_keyword" indexName="idx_material_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="site_name_keyword" indexName="idx_site_name_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="site_type_keyword" indexName="idx_site_type_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="temporal_keyword" indexName="idx_temporal_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="investigation_type" indexName="idx_investigation_type_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="other_keyword" indexName="idx_other_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="obsidian-9" author="abrin">
+        <modifyDataType tableName="geographic_keyword" columnName="code" newDataType="varchar(10)"/>
+    </changeSet>
+    <changeSet id="obsidian-10" author="abrin">
+        <addColumn tableName="information_resource_file">
+            <column name="preservation_note" type="text" />
+            <column name="preservation_status" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="obsidian-11" author="abrin">
+    <createTable tableName="collection_revision_log">
+        <column name="id" type="bigserial" />
+        <column name="revision_type" type="varchar(25)" />
+        <column name="log_message" type="varchar(512)" />
+        <column name="time_seconds" type="bigint" />
+        <column name="person_id" type="bigint">
+            <constraints nullable="false" references="tdar_user"
+                foreignKeyName="fk_collection_revision__tdar_user_id" />
+        </column>
+        <column name="collection_id" type="bigint">
+            <constraints nullable="true" references="collection"
+                foreignKeyName="fk_collection_revision__collection_id" />
+        </column>
+    </createTable>
+    </changeSet>
+    <changeSet id="obsidian-12" author="abrin">
+        <addColumn tableName="collection_revision_log">
+            <column name="timestamp" type="timestamp" />
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-13" author="abrin">
+    <dropForeignKeyConstraint baseTableName="collection_revision_log" constraintName="fk_collection_revision__collection_id"/>
+    </changeSet>
+
+    <changeSet id="obsidian-14" author="abrin">
+    	<addColumn tableName="collection">
+    		<column name="system_managed" type="boolean" defaultValueBoolean="false" />
+   		</addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-15" author="abrin">
+        <renameColumn tableName="resource_culture_keyword" oldColumnName="culture_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_site_name_keyword" oldColumnName="site_name_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_site_type_keyword" oldColumnName="site_type_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_temporal_keyword" oldColumnName="temporal_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_other_keyword" oldColumnName="other_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_geographic_keyword" oldColumnName="geographic_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_managed_geographic_keyword" oldColumnName="geographic_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_investigation_type" oldColumnName="investigation_type_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_material_keyword" oldColumnName="material_keyword_id" newColumnName="keyword_id"/>
+    </changeSet>
+        
+    
+    <changeSet id="obsidian-16" author="abrin">
+        <createTable tableName="dataone_object">
+        <column name="id" type="bigserial" />
+        <column name="identifier" type="varchar(100)" />
+        <column name="series_id" type="varchar(100)" />
+        <column name="entry_type" type="varchar(100)" />
+        <column name="format_id" type="varchar(255)" />
+        <column name="submitter" type="varchar(512)" />
+        <column name="obsoletes" type="varchar(100)" />
+        <column name="obsoleted_by" type="varchar(100)" />
+        <column name="checksum" type="varchar(255)" />
+        <column name="size" type="bigint" />
+        <column name="tdar_id" type="bigint" />
+        <column name="sys_metadata_modified" type="timestamp" />
+        <column name="date_created" type="timestamp" />
+    </createTable>
+        </changeSet>
+    
+    <changeSet id="obsidian-17" author="abrin">
+	    <addColumn tableName="dataone_object">
+	        <column name="date_uploaded" type="timestamp" />
+	    </addColumn>
+    
+    </changeSet>
+    <changeSet id="obsidian-18" author="abrin">
+    <createTable tableName="collection_request">
+        <column name="id" type="bigserial" />
+        <column name="general_permission" type="varchar(50)"/>
+        <column name="name" type="varchar(500)"/>
+        <column name="description_request" type="varchar(500)" />
+        <column name="description_response" type="varchar(500)" />
+        <column name="contact_id" type="bigint" />
+    </createTable>
+    <createTable tableName="collection_request_collection_ids">
+        <column name="collection_request_id" type="bigint" />
+        <column name="collection_id" type="bigint" />
+        <column name="collections_id" type="bigint" />
+    </createTable>
+    <addPrimaryKey tableName="collection_request" columnNames="id"/>
+    <addForeignKeyConstraint constraintName="collection_request_user_id" 
+        referencedTableName="tdar_user" 
+        baseColumnNames="contact_id" baseTableName="collection_request" referencedColumnNames="id"/>
+    <addForeignKeyConstraint constraintName="collection_request_collection_id" 
+        referencedTableName="collection" 
+        baseColumnNames="collection_id" baseTableName="collection_request_collection_ids" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="obsidian-19" author="abrin">
+        <sql>update email_queue set message_type ='CUSTOM' where message_type='SAA';</sql>
+    </changeSet>
+    <changeSet id="obsidian-20" author="abrin">
+    <addColumn tableName="resource_access_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    <addColumn tableName="creator_view_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+
+    <addColumn tableName="resource_collection_view_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    <addColumn tableName="resource_access_day_agg">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    
+    </changeSet>
+    <changeSet id="obsidian-21" author="abrin">
+        <addColumn tableName="information_resource_file_download_statistics">
+            <column name="bot" type="boolean" defaultValueBoolean="false" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-22" author="abrin">
+    <dropColumn tableName="resource_access_day_agg" columnName="bot"/>
+        <addColumn tableName="resource_access_day_agg">
+            <column name="bot" type="bigint" />
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-23" author="abrin">
+        <addColumn tableName="collection">
+            <column name="alternate_parent_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="collection_alternate_parent_id" 
+            referencedTableName="collection" 
+            baseColumnNames="alternate_parent_id" baseTableName="collection" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="obsidian-24" author="abrin">
+        <createIndex tableName="resource" indexName="resource_updated_status_id">
+            <column name="date_updated"/>
+            <column name="status"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

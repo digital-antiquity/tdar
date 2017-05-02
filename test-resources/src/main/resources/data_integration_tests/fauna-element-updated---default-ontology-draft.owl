@@ -1,0 +1,476 @@
+<?xml version="1.0"?>
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+xmlns:owl="http://www.w3.org/2002/07/owl#"
+xmlns="http://www.tdar.org/ontologies/5863#"
+xml:base="http://www.tdar.org/ontologies/5863">
+<owl:Ontology rdf:about=""/>
+<owl:Class rdf:ID="Skull">
+</owl:Class>
+<owl:Class rdf:ID="Antler">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Horncore">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Antler_OR_Horncore">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Premaxilla">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Nasal">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Vomer">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Maxillary_OR_mandibular">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Mandible">
+<rdfs:subClassOf rdf:resource="#Maxillary_OR_mandibular"/>
+</owl:Class>
+<owl:Class rdf:ID="Maxilla">
+<rdfs:subClassOf rdf:resource="#Maxillary_OR_mandibular"/>
+</owl:Class>
+<owl:Class rdf:ID="Frontal_OR_Parietal">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Frontal">
+<rdfs:subClassOf rdf:resource="#Frontal_OR_Parietal"/>
+</owl:Class>
+<owl:Class rdf:ID="Parietal">
+<rdfs:subClassOf rdf:resource="#Frontal_OR_Parietal"/>
+</owl:Class>
+<owl:Class rdf:ID="Lacrimal">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Zygomaticus">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Temporal">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Interparietal">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Occipital">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Occipital_condyle">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Sphenoid">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Palatinal">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Petrous">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Hyoid">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Basiooccipital">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Squamous">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Bulla">
+<rdfs:subClassOf rdf:resource="#Skull"/>
+</owl:Class>
+<owl:Class rdf:ID="Tooth">
+</owl:Class>
+<owl:Class rdf:ID="Incisor">
+<rdfs:subClassOf rdf:resource="#Tooth"/>
+</owl:Class>
+<owl:Class rdf:ID="Canine">
+<rdfs:subClassOf rdf:resource="#Tooth"/>
+</owl:Class>
+<owl:Class rdf:ID="Upper_canine">
+<rdfs:subClassOf rdf:resource="#Canine"/>
+</owl:Class>
+<owl:Class rdf:ID="Lower_canine">
+<rdfs:subClassOf rdf:resource="#Canine"/>
+</owl:Class>
+<owl:Class rdf:ID="Molar_OR_Premolar">
+<rdfs:subClassOf rdf:resource="#Tooth"/>
+</owl:Class>
+<owl:Class rdf:ID="Molar">
+<rdfs:subClassOf rdf:resource="#Molar_OR_Premolar"/>
+</owl:Class>
+<owl:Class rdf:ID="Lower_M3">
+<rdfs:subClassOf rdf:resource="#Molar"/>
+</owl:Class>
+<owl:Class rdf:ID="Premolar">
+<rdfs:subClassOf rdf:resource="#Molar_OR_Premolar"/>
+</owl:Class>
+<owl:Class rdf:ID="Lower_d4">
+<rdfs:subClassOf rdf:resource="#Tooth"/>
+</owl:Class>
+<owl:Class rdf:ID="Enamel_Fragment">
+<rdfs:subClassOf rdf:resource="#Tooth"/>
+</owl:Class>
+<owl:Class rdf:ID="Vertebra">
+</owl:Class>
+<owl:Class rdf:ID="Atlas">
+<rdfs:subClassOf rdf:resource="#Vertebra"/>
+</owl:Class>
+<owl:Class rdf:ID="Axis">
+<rdfs:subClassOf rdf:resource="#Vertebra"/>
+</owl:Class>
+<owl:Class rdf:ID="Cervical_vertebra">
+<rdfs:subClassOf rdf:resource="#Vertebra"/>
+</owl:Class>
+<owl:Class rdf:ID="Thoracic_vertebra">
+<rdfs:subClassOf rdf:resource="#Vertebra"/>
+</owl:Class>
+<owl:Class rdf:ID="Lumbar_vertebra">
+<rdfs:subClassOf rdf:resource="#Vertebra"/>
+</owl:Class>
+<owl:Class rdf:ID="Caudal_vertebra">
+<rdfs:subClassOf rdf:resource="#Vertebra"/>
+</owl:Class>
+<owl:Class rdf:ID="Vertebral_pad">
+<rdfs:subClassOf rdf:resource="#Vertebra"/>
+</owl:Class>
+<owl:Class rdf:ID="Sternum">
+</owl:Class>
+<owl:Class rdf:ID="Rib">
+</owl:Class>
+<owl:Class rdf:ID="Costal_Cartilage">
+</owl:Class>
+<owl:Class rdf:ID="Baculum">
+</owl:Class>
+<owl:Class rdf:ID="Clavicle">
+</owl:Class>
+<owl:Class rdf:ID="Scapula">
+</owl:Class>
+<owl:Class rdf:ID="Humerus">
+</owl:Class>
+<owl:Class rdf:ID="Radius">
+</owl:Class>
+<owl:Class rdf:ID="Ulna">
+</owl:Class>
+<owl:Class rdf:ID="Radius_OR_Ulna">
+</owl:Class>
+<owl:Class rdf:ID="Carpal">
+</owl:Class>
+<owl:Class rdf:ID="Scaphoid_(Radial)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Lunate_(Intermediate)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Scaphoid_(Radial)_and_lunate_(intermediate)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Triquetrum_(Ulnar)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Pisiform_(Accessory)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Trapezium_(1st_carpal)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Trapezoid_(2nd_carpal)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Capitate_(3rd_carpal)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Carpato-trapezoid_(2nd_and_3rd_carpal)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Hamate_(4th_carpal)">
+<rdfs:subClassOf rdf:resource="#Carpal"/>
+</owl:Class>
+<owl:Class rdf:ID="Metacarpal_(Carpometacarpus)">
+</owl:Class>
+<owl:Class rdf:ID="1st_metacarpal">
+<rdfs:subClassOf rdf:resource="#Metacarpal_(Carpometacarpus)"/>
+</owl:Class>
+<owl:Class rdf:ID="2nd_metacarpal">
+<rdfs:subClassOf rdf:resource="#Metacarpal_(Carpometacarpus)"/>
+</owl:Class>
+<owl:Class rdf:ID="2nd_and_3rd_metacarpal">
+<rdfs:subClassOf rdf:resource="#Metacarpal_(Carpometacarpus)"/>
+</owl:Class>
+<owl:Class rdf:ID="3rd_metacarpal">
+<rdfs:subClassOf rdf:resource="#Metacarpal_(Carpometacarpus)"/>
+</owl:Class>
+<owl:Class rdf:ID="4th_metacarpal">
+<rdfs:subClassOf rdf:resource="#Metacarpal_(Carpometacarpus)"/>
+</owl:Class>
+<owl:Class rdf:ID="3rd_and_4th_metacarpal">
+<rdfs:subClassOf rdf:resource="#Metacarpal_(Carpometacarpus)"/>
+</owl:Class>
+<owl:Class rdf:ID="5th_metacarpal">
+<rdfs:subClassOf rdf:resource="#Metacarpal_(Carpometacarpus)"/>
+</owl:Class>
+<owl:Class rdf:ID="Peripheral_metacarpal">
+<rdfs:subClassOf rdf:resource="#Metacarpal_(Carpometacarpus)"/>
+</owl:Class>
+<owl:Class rdf:ID="Pelvis">
+</owl:Class>
+<owl:Class rdf:ID="Acetabulum">
+<rdfs:subClassOf rdf:resource="#Pelvis"/>
+</owl:Class>
+<owl:Class rdf:ID="Ilium">
+<rdfs:subClassOf rdf:resource="#Pelvis"/>
+</owl:Class>
+<owl:Class rdf:ID="Ischium">
+<rdfs:subClassOf rdf:resource="#Pelvis"/>
+</owl:Class>
+<owl:Class rdf:ID="Pubis">
+<rdfs:subClassOf rdf:resource="#Pelvis"/>
+</owl:Class>
+<owl:Class rdf:ID="Sacrum">
+</owl:Class>
+<owl:Class rdf:ID="Femur">
+</owl:Class>
+<owl:Class rdf:ID="Patella">
+</owl:Class>
+<owl:Class rdf:ID="Tibia_(Tibiotarsus)">
+</owl:Class>
+<owl:Class rdf:ID="Fibula">
+</owl:Class>
+<owl:Class rdf:ID="Tarsal">
+</owl:Class>
+<owl:Class rdf:ID="Astragalus">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="Calcaneus">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="Navicular_(Central)">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="1st_cuneiform_(1st_tarsal)">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="2nd_cuneiform_(2nd_tarsal)">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="3rd_cuneiform_(3rd_tarsal)">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="2nd_and_3rd_cuneiform_(2nd_and_3rd_tarsal)">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="Cuboid_(4th_tarsal)">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="Navicular_(Central)_and_cuboid_(4th_tarsal)">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="Lateral_malleolus">
+<rdfs:subClassOf rdf:resource="#Tarsal"/>
+</owl:Class>
+<owl:Class rdf:ID="Carpal_OR_Tarsal">
+</owl:Class>
+<owl:Class rdf:ID="Metatarsal_(Tarsometatarsus)">
+</owl:Class>
+<owl:Class rdf:ID="1st_metatarsal">
+<rdfs:subClassOf rdf:resource="#Metatarsal_(Tarsometatarsus)"/>
+</owl:Class>
+<owl:Class rdf:ID="2nd_metatarsal">
+<rdfs:subClassOf rdf:resource="#Metatarsal_(Tarsometatarsus)"/>
+</owl:Class>
+<owl:Class rdf:ID="3rd_metatarsal">
+<rdfs:subClassOf rdf:resource="#Metatarsal_(Tarsometatarsus)"/>
+</owl:Class>
+<owl:Class rdf:ID="3rd_and_4th_metatarsal">
+<rdfs:subClassOf rdf:resource="#Metatarsal_(Tarsometatarsus)"/>
+</owl:Class>
+<owl:Class rdf:ID="4th_metatarsal">
+<rdfs:subClassOf rdf:resource="#Metatarsal_(Tarsometatarsus)"/>
+</owl:Class>
+<owl:Class rdf:ID="5th_metatarsal">
+<rdfs:subClassOf rdf:resource="#Metatarsal_(Tarsometatarsus)"/>
+</owl:Class>
+<owl:Class rdf:ID="Peripheral_metatarsal">
+<rdfs:subClassOf rdf:resource="#Metatarsal_(Tarsometatarsus)"/>
+</owl:Class>
+<owl:Class rdf:ID="Phalanx">
+</owl:Class>
+<owl:Class rdf:ID="1st_phalanx">
+<rdfs:subClassOf rdf:resource="#Phalanx"/>
+</owl:Class>
+<owl:Class rdf:ID="2nd_phalanx">
+<rdfs:subClassOf rdf:resource="#Phalanx"/>
+</owl:Class>
+<owl:Class rdf:ID="1st_OR_2nd_phalanx">
+<rdfs:subClassOf rdf:resource="#Phalanx"/>
+</owl:Class>
+<owl:Class rdf:ID="3rd_phalanx">
+<rdfs:subClassOf rdf:resource="#Phalanx"/>
+</owl:Class>
+<owl:Class rdf:ID="Peripheral_1st_phalanx">
+<rdfs:subClassOf rdf:resource="#Phalanx"/>
+</owl:Class>
+<owl:Class rdf:ID="Peripheral_2nd_phalanx">
+<rdfs:subClassOf rdf:resource="#Phalanx"/>
+</owl:Class>
+<owl:Class rdf:ID="Peripheral_3rd_phalanx">
+<rdfs:subClassOf rdf:resource="#Phalanx"/>
+</owl:Class>
+<owl:Class rdf:ID="Ossified_tendon">
+</owl:Class>
+<owl:Class rdf:ID="Metapodial">
+</owl:Class>
+<owl:Class rdf:ID="Peripheral_metapodial">
+</owl:Class>
+<owl:Class rdf:ID="Sesamoid">
+</owl:Class>
+<owl:Class rdf:ID="Long_bone_fragment">
+</owl:Class>
+<owl:Class rdf:ID="Unidentifed_fragment">
+</owl:Class>
+<owl:Class rdf:ID="Bird_elements">
+</owl:Class>
+<owl:Class rdf:ID="Beak">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Jugal">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Quadrate">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Furculum">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Coracoid">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Synsacrum">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Pygostyle">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Pollex">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Wing_Phalanges">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="1st_Phalanx_-Digit_II">
+<rdfs:subClassOf rdf:resource="#Wing_Phalanges"/>
+</owl:Class>
+<owl:Class rdf:ID="2nd_Phalanx_-Digit_II">
+<rdfs:subClassOf rdf:resource="#Wing_Phalanges"/>
+</owl:Class>
+<owl:Class rdf:ID="Eggshell">
+<rdfs:subClassOf rdf:resource="#Bird_elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Amphibian_OR_Reptile_Elements">
+</owl:Class>
+<owl:Class rdf:ID="Urostyle">
+<rdfs:subClassOf rdf:resource="#Amphibian_OR_Reptile_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Radius_OR_Ulna">
+<rdfs:subClassOf rdf:resource="#Amphibian_OR_Reptile_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Tibia_OR_Fibula">
+<rdfs:subClassOf rdf:resource="#Amphibian_OR_Reptile_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Carapace_OR_Plastron">
+<rdfs:subClassOf rdf:resource="#Amphibian_OR_Reptile_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Carapace">
+<rdfs:subClassOf rdf:resource="#Carapace_OR_Plastron"/>
+</owl:Class>
+<owl:Class rdf:ID="Plastron">
+<rdfs:subClassOf rdf:resource="#Carapace_OR_Plastron"/>
+</owl:Class>
+<owl:Class rdf:ID="Fish_Elements">
+</owl:Class>
+<owl:Class rdf:ID="Articular">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Basioccipital_Fish">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Branchiostegal_Ray">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Ceratohyal">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Ceratobranchial">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Cleithrum">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Dentary">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Ectopterygoid">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Hyomandibular">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Interhaemal_Spine">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Interopercular">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Opercular">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Parasphenoid">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Pharyngeal_Bone">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Postcleithrum">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Posttemporal">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Preopercular">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Quadrate_Fish">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Fin_Ray">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Fin_Spine">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Subopercular.">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Supraoccipital">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Urostyle_Fish">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Vertebra_Abdominal._Anterior">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Vertebra_Abdominal_Posterior">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Vomer_Fish">
+<rdfs:subClassOf rdf:resource="#Fish_Elements"/>
+</owl:Class>
+<owl:Class rdf:ID="Not_Recorded">
+</owl:Class>
+</rdf:RDF>
