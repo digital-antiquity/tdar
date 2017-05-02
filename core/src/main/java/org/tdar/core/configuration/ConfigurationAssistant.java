@@ -75,35 +75,24 @@ public class ConfigurationAssistant implements Serializable {
             logger.warn("Unable to load properties normally, trying loadFromXML", e);
         }
     }
-
-    public static InputStream toInputStream(final String resource) {
+    @SuppressWarnings("resource")
+    public static InputStream toInputStream(String resource) {
         // first try to read it as a file
         InputStream stream = null;
-//        String CONFIG_DIR = System.getenv(DEFAULT_CONFIG_PATH);
+
         try {
+            File file = new File(resource);
+            if (file.isFile()) {
+                stream = new FileInputStream(file);
+            }
+            else {
+                stream = getResourceAsStream(resource);
+            }
+        } catch (AccessControlException e) {
             stream = getResourceAsStream(resource);
-            return stream;
-        } catch (Exception e) {
-            // not found in default locations...expanding search
+        } catch (FileNotFoundException e) {
+            stream = getResourceAsStream(resource);
         }
-        
-//        try {
-//            if (CONFIG_DIR != null) {
-//                File file = new File(CONFIG_DIR, resource);
-//                if (file.exists()) {
-//                    return new FileInputStream(file);
-//                }
-//            }
-//
-//            File file = new File(resource);
-//            if (file.isFile() && file.exists()) {
-//                stream = new FileInputStream(file);
-//            }
-//        } catch (AccessControlException e) {
-//            stream = getResourceAsStream(resource);
-//        } catch (FileNotFoundException e) {
-//            stream = getResourceAsStream(resource);
-//        }
         return stream;
     }
 
@@ -116,11 +105,11 @@ public class ConfigurationAssistant implements Serializable {
             stream = ClassLoader.getSystemResourceAsStream(path);
         }
         if (stream == null) {
-            throw new ConfigurationFileException("configurationFileException.not_found", Arrays.asList(path));
+            throw new RuntimeException("Couldn't load resource from system classpath or context classpath: " + path);
         }
         return stream;
     }
-
+    
     public String getProperty(String key) {
         return getStringProperty(key, "");
     }
