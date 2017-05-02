@@ -22,20 +22,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.external.session.SessionData;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.struts.action.api.search.JsonSearchAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.xml.sax.SAXException;
 
 @Transactional
 public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
-    @Autowired
-    private JsonSearchAction controller;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -131,7 +130,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         Thread.sleep(1000l);
         JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class);
         controller.setId(r.getId());
-        controller.getResourceTypes().addAll(Arrays.asList(ResourceType.DATASET));
+        controller.getObjectTypes().addAll(Arrays.asList(ObjectType.DATASET));
         controller.setSessionData(new SessionData()); // create unauthenticated session
         assertFalse(controller.isReindexing());
         controller.viewJson();

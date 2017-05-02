@@ -21,11 +21,13 @@ import org.slf4j.MDC;
 import org.tdar.core.LoggingConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 
@@ -61,6 +63,8 @@ public class SolrSearchObject<I extends Indexable> {
     private List<String> statsFields = new ArrayList<>();
     private List<String> filters = new ArrayList<>();
     private Integer totalResults = 0;
+    private boolean deemphasizeSupportingTypes = false;
+    private ResourceType boostType = null;
     // max # of facets
     private Integer facetLimit;
     // min # of items to show in a facet
@@ -75,7 +79,7 @@ public class SolrSearchObject<I extends Indexable> {
     private Map<String, List<Long>> searchByMap = new HashMap<>();
     private StringBuilder facetText = new StringBuilder();
     private ProjectionModel projection;
-
+    private List<String> boosts = new ArrayList<>();
     public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
         this.builder = queryBuilder;
         this.coreName = queryBuilder.getCoreName();
@@ -89,6 +93,16 @@ public class SolrSearchObject<I extends Indexable> {
         }
         if (handler.getSecondarySortField() != null) {
             addSortField(handler.getSecondarySortField(), sort);
+        }
+        if (queryBuilder instanceof ResourceQueryBuilder && handler.getSortField() == SortOption.RELEVANCE) {
+            ResourceQueryBuilder qb = (ResourceQueryBuilder) queryBuilder;
+//            if (qb.getBoostType() != null) {
+//                boosts.add(String.format("{!boost b=\"if(exists(query({!v='resourceType:(%s)'})),10,1)\"}", StringUtils.join(qb.getBoostType(), " ")));
+//            }
+            if (qb.isDeemphasizeSupporting()) {
+                boosts.add("{!boost b=\"if(exists(query({!v='resourceType:(ONTOLOGY CODING_SHEET)'})),-10,1)\"} ");
+            }
+            
         }
         if (CollectionUtils.isNotEmpty(sort)) {
             setSortParam(StringUtils.join(sort, ","));
@@ -191,7 +205,7 @@ public class SolrSearchObject<I extends Indexable> {
 
     public SolrParams getSolrParams() {
         SolrQuery solrQuery = new SolrQuery();
-        setQueryString(builder.generateQueryString());
+        setQueryString(StringUtils.join(boosts,"") + builder.generateQueryString());
         solrQuery.setParam("q", getQueryString());
         solrQuery.setParam("start", Integer.toString(startRecord));
         solrQuery.setParam("rows", Integer.toString(resultSize));
@@ -376,6 +390,22 @@ public class SolrSearchObject<I extends Indexable> {
 
     public void setStatsFields(List<String> statsFields) {
         this.statsFields = statsFields;
+    }
+
+    public ResourceType getBoostType() {
+        return boostType;
+    }
+
+    public void setBoostType(ResourceType boostType) {
+        this.boostType = boostType;
+    }
+
+    public boolean isDeemphasizeSupportingTypes() {
+        return deemphasizeSupportingTypes;
+    }
+
+    public void setDeemphasizeSupportingTypes(boolean deemphasizeSupportingTypes) {
+        this.deemphasizeSupportingTypes = deemphasizeSupportingTypes;
     }
 
     

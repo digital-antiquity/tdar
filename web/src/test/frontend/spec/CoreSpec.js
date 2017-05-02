@@ -1,5 +1,5 @@
 /* global describe, it */
-describe("TDAR root functions", function() {
+describe("CoreSpec.js: TDAR root functions", function() {
 
 
     it("TDAR.uri should build correct URI strings", function() {

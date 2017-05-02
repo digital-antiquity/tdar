@@ -26,8 +26,10 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.CustomizableCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
@@ -47,8 +49,12 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.account.UserAccountController;
+import org.tdar.struts.action.api.resource.BookmarkApiController;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
-import org.tdar.struts.action.collection.CollectionController;
+import org.tdar.struts.action.collection.ListCollectionController;
+import org.tdar.struts.action.collection.ListCollectionRightsController;
+import org.tdar.struts.action.collection.ShareCollectionController;
+import org.tdar.struts.action.collection.ShareCollectionRightsController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
@@ -105,13 +111,17 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
 
     public void bookmarkResource(Resource r_, boolean ajax, TdarUser user) throws Exception {
         Resource r = r_;
-        BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
-        logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
-        bookmarkController.setResourceId(r.getId());
-        bookmarkController.prepare();
         if (ajax) {
+            BookmarkApiController bookmarkController = generateNewInitializedController(BookmarkApiController .class);
+            logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
+            bookmarkController.setResourceId(r.getId());
+            bookmarkController.prepare();
             bookmarkController.bookmarkResourceAjaxAction();
         } else {
+            BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController .class);
+            logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
+            bookmarkController.setResourceId(r.getId());
+            bookmarkController.prepare();
             bookmarkController.bookmarkResourceAction();
         }
         r = resourceService.find(r.getId());
@@ -129,7 +139,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
     @SuppressWarnings("deprecation")
     public void removeBookmark(Resource r, boolean ajax, TdarUser user_) throws Exception {
         TdarUser user = user_;
-        BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         boolean seen = false;
         for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {
             if (ObjectUtils.equals(b.getResource(), r)) {
@@ -139,11 +148,15 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
 
         Assert.assertTrue("should have seen resource in bookmark list", seen);
         logger.info("removing bookmark " + r.getTitle() + " (" + r.getId() + ")");
-        bookmarkController.setResourceId(r.getId());
-        bookmarkController.prepare();
         if (ajax) {
+            BookmarkApiController bookmarkController = generateNewInitializedController(BookmarkApiController .class);
+            bookmarkController.setResourceId(r.getId());
+            bookmarkController.prepare();
             bookmarkController.removeBookmarkAjaxAction();
         } else {
+            BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
+            bookmarkController.setResourceId(r.getId());
+            bookmarkController.prepare();
             bookmarkController.removeBookmarkAction();
         }
         seen = false;
@@ -157,41 +170,49 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         Assert.assertFalse("should not see resource", seen);
     }
 
-    public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
+    public SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             List<? extends Resource> resources, Long parentId)
             throws Exception {
-        return generateResourceCollection(name, description, type, visible, users, getUser(), resources, parentId);
+        return generateResourceCollection(name, description, visible, users, getUser(), resources, parentId);
     }
 
-    @SuppressWarnings("deprecation")
-    public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
+    public SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
-        CollectionController controller = generateNewInitializedController(CollectionController.class, owner);
+        return generateResourceCollection(name, description, visible, users, owner, resources, parentId,ShareCollectionController.class, SharedCollection.class);
+    }
+
+
+    @SuppressWarnings("deprecation")
+    public <C extends HierarchicalCollection, D extends AbstractCollectionController> C generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
+            TdarUser owner, List<? extends Resource> resources, Long parentId, Class<D> ctlClss,Class<C> cls) throws Exception {
+        D controller = generateNewInitializedController(ctlClss, owner);
         controller.setServletRequest(getServletPostRequest());
         
         // controller.setSessionData(getSessionData());
         logger.info("{}", getUser());
-        assertEquals(owner, controller.getAuthenticatedUser());
-        ResourceCollection resourceCollection = controller.getResourceCollection();
+        assertEquals(controller.getAuthenticatedUser(), owner);
+        C resourceCollection = (C) controller.getResourceCollection();
         resourceCollection.setName(name);
-        	
-        resourceCollection.setType(type);
+
         controller.setAsync(false);
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
         if (resources != null) {
-            controller.getToAdd().addAll(PersistableUtils.extractIds(resources));
+            if (controller instanceof ShareCollectionController) {
+                ((ShareCollectionController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
+            }
+            if (controller instanceof ListCollectionController) {
+                ((ListCollectionController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
+            }
         }
         
         if (parentId != null) {
-        	controller.setParentId(parentId);
+            controller.setParentId(parentId);
         }
 
-        if (users != null) {
-            controller.getAuthorizedUsers().clear();
-            controller.getAuthorizedUsers().addAll(users);
+        if (resourceCollection instanceof CustomizableCollection) {
+            ((CustomizableCollection) resourceCollection).setSortBy(SortOption.RESOURCE_TYPE);
         }
-        resourceCollection.setSortBy(SortOption.RESOURCE_TYPE);
         controller.setServletRequest(getServletPostRequest());
 
         //A better replication of the struts lifecycle would include calls to prepare() and validate(), however, this
@@ -208,15 +229,37 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         genericService.synchronize();
         Long id = resourceCollection.getId();
         genericService.evictFromCache(resourceCollection);
+        
+        
+        if (users != null) {
+        AbstractCollectionRightsController sc = generateNewInitializedController(ShareCollectionRightsController.class, controller.getAuthenticatedUser());
+            if (controller instanceof ListCollectionController) {
+                sc = generateNewInitializedController(ListCollectionRightsController.class, controller.getAuthenticatedUser());
+            }
+            sc.setId(id);
+            sc.prepare();
+            sc.edit();
+            sc.getAuthorizedUsers().clear();
+            sc.getAuthorizedUsers().addAll(users);
+            assertTrue(sc.save().equals(Action.SUCCESS));
+            genericService.synchronize();
+       }
+
+        
         resourceCollection = null;
-        resourceCollection = genericService.find(ResourceCollection.class, id);
+        resourceCollection = genericService.find(cls, id);
         logger.debug("parentId: {}", parentId);
         logger.debug("Resources: {}", resources);
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
             assertEquals(parentId, resourceCollection.getParent().getId());
         }
         if (CollectionUtils.isNotEmpty(resources)) {
-            assertThat(resourceCollection.getResources(), containsInAnyOrder(resources.toArray()));
+            if (resourceCollection instanceof SharedCollection) {
+                assertThat(((SharedCollection) resourceCollection).getResources(), containsInAnyOrder(resources.toArray()));
+            } 
+            if (resourceCollection instanceof ListCollection) {
+                assertThat(((ListCollection) resourceCollection).getUnmanagedResources(), containsInAnyOrder(resources.toArray()));
+            }
         }
         return resourceCollection;
     }

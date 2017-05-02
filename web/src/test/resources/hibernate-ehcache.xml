@@ -5,10 +5,11 @@
           http://www.ehcache.org/documentation/user-guide/hibernate#ehcache-xml
           
      -->
-    <diskStore path="java.io.tmpdir"/>        
+    <diskStore path="target/ehcache"/>
 
     <defaultCache
             maxElementsInMemory="10000"
+            name="test-ehcache"
             eternal="false"
             timeToIdleSeconds="120"
             timeToLiveSeconds="120"

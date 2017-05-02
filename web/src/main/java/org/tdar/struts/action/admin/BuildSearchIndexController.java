@@ -29,9 +29,7 @@ import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.struts_base.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.Pair;
-import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 
@@ -40,7 +38,6 @@ import org.tdar.utils.activity.IgnoreActivity;
 @ParentPackage("secured")
 @Namespace("/admin/searchindex")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
-@HttpsOnly
 public class BuildSearchIndexController extends AbstractAuthenticatableAction implements AsyncUpdateReceiver {
 
     private static final long serialVersionUID = -8927970945627420725L;

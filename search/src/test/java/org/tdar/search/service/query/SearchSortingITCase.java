@@ -17,6 +17,7 @@ import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.QuietIndexReciever;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
@@ -35,19 +37,19 @@ import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.TitleSortComparator;
 
 @SuppressWarnings("unchecked")
 public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
-
-    private ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
 
     @Autowired
     SearchService<Resource> searchService;
     
     public static class SortTestStruct {
-        public SortTestStruct(LookupSource type, QueryBuilder queryBuilder) {
+        public SortTestStruct(LookupSource type) {
             this.type = type;
-            this.qb = queryBuilder;
+            this.qb = setupQueryBuilder();
+            
         }
 
         public LookupSource type;
@@ -77,12 +79,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     private static List<SortTestStruct> sortTests = new ArrayList<SortTestStruct>();
 
-    public static Comparator<Resource> titleComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
-        @Override
-        public int compare(Resource item1, Resource item2) {
-            return item1.getTitleSort().compareTo(item2.getTitleSort());
-        }
-    });
+    public static Comparator<Resource> titleComparator = ComparatorUtils.nullLowComparator(new TitleSortComparator());
 
     public static Comparator<Resource> idComparator = ComparatorUtils.nullLowComparator(new Comparator<Resource>() {
         @Override
@@ -120,7 +117,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     @BeforeClass
     public static void before() {
-        SortTestStruct resourceInfo = new SortTestStruct(LookupSource.RESOURCE, new ResourceQueryBuilder());
+        SortTestStruct resourceInfo = new SortTestStruct(LookupSource.RESOURCE);
         resourceInfo.comparators.put(SortOption.TITLE, titleComparator);
         resourceInfo.comparators.put(SortOption.TITLE_REVERSE, titleComparator);
         resourceInfo.comparators.put(SortOption.ID, idComparator);
@@ -132,11 +129,6 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     public void testYearSorting() throws ParseException, SolrServerException, IOException {
-        resourceQueryBuilder = new ResourceQueryBuilder();
-        // get information resources only
-        FieldQueryPart<ResourceType> fqp = new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE, ResourceType.PROJECT);
-        fqp.setInverse(true);
-        resourceQueryBuilder.append(fqp);
         Comparator<Resource> yearComparator = new Comparator<Resource>() {
             @Override
             public int compare(Resource arg0, Resource arg1) {
@@ -148,6 +140,16 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
         };
         assertSortOrder(SortOption.DATE, yearComparator);
         assertSortOrder(SortOption.DATE_REVERSE, yearComparator);
+    }
+
+
+    static ResourceQueryBuilder setupQueryBuilder() {
+        ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
+        // get information resources only
+        FieldQueryPart<String> fqp = new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE,Operator.OR, 
+                Arrays.asList(ResourceType.DATASET.name(), ResourceType.DOCUMENT.name(),ResourceType.IMAGE.name(),ResourceType.CODING_SHEET.name(), ResourceType.ONTOLOGY.name()));
+        resourceQueryBuilder.append(fqp);
+        return resourceQueryBuilder;
     }
 
     @SuppressWarnings({ "unused", "rawtypes" })
@@ -178,7 +180,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
             @SuppressWarnings("rawtypes")
             @Override
             public Comparable getComparableFor(Resource t) {
-                return t.getResourceTypeSort();
+                return ObjectType.from(t.getResourceType()).getSortName();
             }
         };
         assertSortOrder(SortOption.RESOURCE_TYPE, resourceTypeComparator);
@@ -242,7 +244,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     private void assertSortOrder(SortOption sortOption, Comparator<Resource> comparator) throws ParseException, SolrServerException, IOException {
         SearchResult<Resource> result = new SearchResult<>();
         result.setSortField(sortOption);
-        searchService.handleSearch(resourceQueryBuilder, result, MessageHelper.getInstance());
+        searchService.handleSearch(setupQueryBuilder(), result, MessageHelper.getInstance());
         List<Resource> resources = result.getResults();
         assertFalse("results should not be empty", resources.isEmpty());
         for (int i = 0; i < (resources.size() - 2); i++) {

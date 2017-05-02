@@ -35,6 +35,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
@@ -207,7 +208,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Address> addresses = new LinkedHashSet<>();
 
-    private transient Float score = -1f;
     private transient Integer maxHeight;
     private transient Integer maxWidth;
     private transient VersionType maxSize;
@@ -222,7 +222,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     
     
     public String getLabel() {
-    	return getName();
+        return getName();
     }
     @JsonView(JsonLookupFilter.class)
     public abstract String getProperName();
@@ -309,7 +309,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
      *            the description to set
      */
     public void setDescription(String description) {
-        this.description = description;
+        this.description = StringUtils.trimToEmpty(description);
     }
 
     /**
@@ -318,18 +318,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Override
     public String getDescription() {
         return description;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public Float getScore() {
-        return score;
-    }
-
-    @Override
-    public void setScore(Float score) {
-        this.score = score;
     }
 
     @Transient
@@ -370,28 +358,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
         this.status = status;
     }
 
-    @Override
-    public boolean isActive() {
-        return this.status == Status.ACTIVE;
-    }
-
-    @Override
-    public boolean isDeleted() {
-        return this.status == Status.DELETED;
-    }
-
-    /*
-     * @XmlIDREF
-     * 
-     * @XmlAttribute(name = "updaterId")
-     * public Person getUpdatedBy() {
-     * return updatedBy;
-     * }
-     * 
-     * public void setUpdatedBy(Person updatedBy) {
-     * this.updatedBy = updatedBy;
-     * }
-     */
     @Override
     @XmlTransient
     public Date getDateUpdated() {
@@ -437,25 +403,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
 
     public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public boolean isDraft() {
-        return status == Status.DRAFT;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public boolean isFlagged() {
-        return status == Status.FLAGGED;
-    }
-
-    @Override
-    public boolean isDuplicate() {
-        return status == Status.DUPLICATE;
     }
 
     public Long getOccurrence() {
@@ -534,6 +481,40 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Override
     public void setMaxSize(VersionType maxSize) {
         this.maxSize = maxSize;
+    }
+
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isDeleted() {
+        return status == Status.DELETED;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isDraft() {
+        return status == Status.DRAFT;
+    }
+
+    @Override
+    public boolean isDuplicate() {
+        return status == Status.DUPLICATE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isFlagged() {
+        return status == Status.FLAGGED;
     }
 
 }

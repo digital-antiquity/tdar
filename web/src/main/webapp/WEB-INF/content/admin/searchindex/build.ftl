@@ -4,12 +4,21 @@
     <script type="text/javascript">
         var $buildStatus, $buildLog, $progressbar;
         var production = ${production?string('true', 'false')};
+        function updateProgressBar(valeur) {
+			  $(".progress-bar").attr('aria-valuenow', valeur);
+			  $(".progress-bar").html(valeur + "%");
+			  $(".progress-bar").css("width",valeur+'%');
+		  }    
+		  
         $(document).ready(function () {
             $buildStatus = $('#buildStatus');
             $buildLog = $('#buildLog');
             $progressbar = $('#progressbar');
 
-            $progressbar.progressbar({value: 0});
+
+
+
+			updateProgressBar( 0);
             $("#idxBtn").click(function () {
                         var confirmed = true;
                         if (production) {
@@ -42,7 +51,7 @@
                 $("#idxBtn").removeAttr('disabled');
             } else if (data.percentDone != 100) {
                 var timeString = (new Date()).toLocaleTimeString();
-                $progressbar.progressbar("option", "value", data.percentDone);
+                updateProgressBar(data.percentDone);
                 document.title = "(" + data.percentDone + "%) Build ${siteAcronym} Index";
                 if (data.errorHtml) {
                     $('#errors').show();
@@ -53,7 +62,7 @@
                     $buildStatus.empty().append(data.phase);
                 }
             } else {
-                $progressbar.progressbar("option", "value", 100);
+                updateProgressBar(100);
                 document.title = "Indexing complete.";
                 $buildStatus.empty().append("<span id='spanDone'>Done.</span>");
                 $("#idxBtn").removeAttr('disabled');
@@ -75,7 +84,11 @@
 <h1>Rebuild Search Indexes</h1>
 <@s.checkboxlist id="sources" name='indexesToRebuild' list='allSources'  spanClass="span4" numColumns="3"  />
 <div>
-    <div id="progressbar"></div>
+
+    <div class="progress progress-success"  id="progressbar">
+  		<div class="progress-bar bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:60%"> 0% </div>
+  </div>
+    
     <br/>
     <#if reindexing!false>
         <div class="alert">

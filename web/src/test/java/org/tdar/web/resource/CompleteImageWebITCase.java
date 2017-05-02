@@ -32,9 +32,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCase {
-	
+
     private static final String TITLE = "My Sample Image";
-	private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";
+    private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";
     private static final String COPYRIGHT_HOLDER_PERSON_LAST_NAME = "copyrightHolderProxies.person.lastName";
     private static final List<String> VALUES_NOT_SHOWN_ON_OVERVIEW_PAGE = Arrays.asList(new String[] { COPYRIGHT_HOLDER_PERSON_FIRST_NAME,
             COPYRIGHT_HOLDER_PERSON_LAST_NAME });
@@ -54,12 +54,6 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         docMultiValMap.put("approvedSiteTypeKeywordIds", Arrays.asList(new String[] { "273", "312" }));
         docMultiValMap.put("approvedMaterialKeywordIds", Arrays.asList(new String[] { "15", "12", "5" }));
         docMultiValMap.put("approvedCultureKeywordIds", Arrays.asList(new String[] { "12", "15", "26" }));
-        docValMap.put("authorizedUsers[0].user.id", "121");
-        docValMap.put("authorizedUsers[1].user.id", "5349");
-        docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        docValMap.put("authorizedUsersFullNames[0]", "Michelle Elliott");
-        docValMap.put("authorizedUsersFullNames[1]", "Joshua Watts");
 
         docValMap.put("authorshipProxies[0].person.firstName", "Adam");
         docValMap.put("authorshipProxies[0].person.lastName", "Brin");
@@ -126,26 +120,6 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
     }
 
     
-    @Test
-    @Rollback(true)
-    public void testImageAuthorizedRightsIssue() {
-        gotoPage("/image/add");
-        for (String key : docValMap.keySet()) {
-            setInput(key, docValMap.get(key));
-        }
-        for (String key : docMultiValMap.keySet()) {
-            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
-        }
-        logger.trace(getPageText());
-        submitForm();
-        clickLinkWithText("edit");
-        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        setInput("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        submitForm();
-        assertFalse(getCurrentUrlPath().contains("edit"));
-        assertFalse(getPageCode().contains(GeneralPermissions.MODIFY_METADATA.name()));
-        assertTextPresentInPage(TITLE);
-    }
     
     @Test
     @Rollback(true)

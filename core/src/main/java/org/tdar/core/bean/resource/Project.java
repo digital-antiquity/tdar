@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
@@ -23,7 +24,7 @@ import org.tdar.core.bean.Sortable;
 @Entity
 @Table(name = "project")
 @XmlRootElement(name = "project")
-public class Project extends Resource implements Sortable {
+public class Project extends Resource implements Sortable, HasStatic {
 
     private static final long serialVersionUID = -3339534452963234622L;
 
@@ -46,14 +47,15 @@ public class Project extends Resource implements Sortable {
         }
 
         @Override
-        public String getTitleSort() {
-            return "";
-        }
-
-        @Override
         public boolean isActive() {
             return false;
         }
+
+        @Override
+        public boolean isStatic() {
+            return true;
+        }
+
     };
 
     /**
@@ -86,7 +88,7 @@ public class Project extends Resource implements Sortable {
 
     @Transient
     public String getProjectTitle() {
-        return getTitleSort();
+        return getTitle();
     }
 
     @Transient
@@ -118,6 +120,13 @@ public class Project extends Resource implements Sortable {
 
     public void setSecondarySortBy(SortOption secondarySortBy) {
         this.secondarySortBy = secondarySortBy;
+    }
+
+    @Override
+    @XmlTransient
+    @Transient
+    public boolean isStatic() {
+        return false;
     }
 
 }

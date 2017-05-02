@@ -20,7 +20,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.datatable.DataTableRow;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.search.index.LookupSource;
@@ -28,21 +28,21 @@ import org.tdar.utils.activity.Activity;
 
 public class BatchIndexer implements Serializable {
 
-	private static final long serialVersionUID = 3336640315201232201L;
+    private static final long serialVersionUID = 3336640315201232201L;
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
-	private GenericDao genericDao;
-	private DatasetDao datasetDao;
-	private SearchIndexService searchIndexService;
+    private GenericDao genericDao;
+    private DatasetDao datasetDao;
+    private SearchIndexService searchIndexService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
 
     public BatchIndexer(GenericDao genericDao, DatasetDao datasetDao, SearchIndexService searchIndexService) {
-		this.genericDao = genericDao;
-		this.datasetDao = datasetDao;
-		this.searchIndexService = searchIndexService;
-	}
+        this.genericDao = genericDao;
+        this.datasetDao = datasetDao;
+        this.searchIndexService = searchIndexService;
+    }
     
     /**
      * Index all of the @link Indexable items. Uses a ScrollableResult to manage memory and object complexity
@@ -75,35 +75,35 @@ public class BatchIndexer implements Serializable {
             Long total = 0L;
             Map<Class<? extends Indexable>,Number> totals = new HashMap<>();
             for (LookupSource src : sources) {
-            	if (src == LookupSource.DATA) {
-            		Long count = datasetDao.countMappedResources().longValue();
-            		totals.put(DataTableRow.class,count);
-            		continue;
-            	}
-	            for (Class<? extends Indexable> toIndex : src.getClasses()) {
-	                Long count = genericDao.count(toIndex).longValue();
-					total += count;
-	                totals.put(toIndex, count);
-	            }
+                if (src == LookupSource.DATA) {
+                    Long count = datasetDao.countMappedResources().longValue();
+                    totals.put(DataTableRow.class,count);
+                    continue;
+                }
+                for (Class<? extends Indexable> toIndex : src.getClasses()) {
+                    Long count = genericDao.count(toIndex).longValue();
+                    total += count;
+                    totals.put(toIndex, count);
+                }
             }
             Counter counter = new Counter();
             counter.setTotal(total);
             for (LookupSource src : sources) {
-                searchIndexService.purgeCore(src.getCoreName());
-	            for (Class<? extends Indexable> toIndex : src.getClasses()) {
-	                updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", counter.getPercent());
-	                ScrollableResults scrollableResults = null;
-	                if ( src == LookupSource.DATA) {
-	                	scrollableResults = datasetDao.findMappedResources(null);
-	                } else {
-	                	scrollableResults = genericDao.findAllScrollable(toIndex);
-	                }
-	                counter.setSubTotal(totals.get(toIndex).longValue());
-	                counter.getSubCount().set(0);
-	                indexScrollable(updateReceiver, activity, counter, src, toIndex, scrollableResults, false);
-	                String message = "finished indexing all " + toIndex.getSimpleName() + "(s)";
-	                updateAllStatuses(updateReceiver, activity, message, counter.getPercent());
-	            }            
+                searchIndexService.purgeCore(src);
+                for (Class<? extends Indexable> toIndex : src.getClasses()) {
+                    updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", counter.getPercent());
+                    ScrollableResults scrollableResults = null;
+                    if ( src == LookupSource.DATA) {
+                        scrollableResults = datasetDao.findMappedResources(null);
+                    } else {
+                        scrollableResults = genericDao.findAllScrollable(toIndex);
+                    }
+                    counter.setSubTotal(totals.get(toIndex).longValue());
+                    counter.getSubCount().set(0);
+                    indexScrollable(updateReceiver, activity, counter, src, toIndex, scrollableResults, false);
+                    String message = "finished indexing all " + toIndex.getSimpleName() + "(s)";
+                    updateAllStatuses(updateReceiver, activity, message, counter.getPercent());
+                }
             }
 
             complete(updateReceiver, activity, null, null);
@@ -141,7 +141,7 @@ public class BatchIndexer implements Serializable {
         while (scrollableResults.next()) {
             Indexable item = (Indexable) scrollableResults.get(0);
             currentId = item.getId();
-			searchIndexService.index(src, item, deleteFirst);
+            searchIndexService.index(src, item, deleteFirst);
             count.getCount().incrementAndGet();
             long numProcessed = count.getSubCount().incrementAndGet();
             float totalProgress = count.getPercent();
@@ -169,7 +169,7 @@ public class BatchIndexer implements Serializable {
             }
         }
         try {
-        	searchIndexService.commit(coreForClass);
+            searchIndexService.commit(coreForClass);
         } catch (SolrServerException | IOException e) {
             logger.error("error committing: {}", e);
         }
@@ -185,7 +185,7 @@ public class BatchIndexer implements Serializable {
         return AsyncUpdateReceiver.DEFAULT_RECEIVER;
     }
 
-	/**
+    /**
      * Completes the reindexing process and resets the flush mode
      * 
      * @param updateReceiver
@@ -205,7 +205,7 @@ public class BatchIndexer implements Serializable {
             updateReceiver.setPercentComplete(complete);
             updateReceiver.setStatus(status);
             if (updateReceiver instanceof DefaultReceiver) {
-            	logger.debug(status);
+                logger.debug(status);
             }
         }
         if (activity != null) {
@@ -214,14 +214,14 @@ public class BatchIndexer implements Serializable {
         }
     }
 
-	public void indexScrollable(Long total, Class<? extends Indexable> toIndex, ScrollableResults results) {
-    	AsyncUpdateReceiver updateReceiver = getDefaultUpdateReceiver();
-    	Counter counter = new Counter();
-    	counter.setTotal(total);
-    	counter.setSubTotal(total);
-    	indexScrollable(updateReceiver, null, counter, null, toIndex, results, true);
+    public void indexScrollable(Long total, Class<? extends Indexable> toIndex, ScrollableResults results) {
+        AsyncUpdateReceiver updateReceiver = getDefaultUpdateReceiver();
+        Counter counter = new Counter();
+        counter.setTotal(total);
+        counter.setSubTotal(total);
+        indexScrollable(updateReceiver, null, counter, null, toIndex, results, true);
         complete(updateReceiver, null, null, null);
-		
-	}
+
+    }
 
 }

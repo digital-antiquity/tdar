@@ -9,7 +9,7 @@ import org.tdar.core.service.Configurable;
 
 public interface AuthenticationProvider extends Configurable {
 
-    TdarGroup[] DEFAULT_GROUPS = { TdarGroup.TDAR_USERS, TdarGroup.JIRA_USERS, TdarGroup.CONFLUENCE_USERS };
+    TdarGroup[] DEFAULT_GROUPS = { TdarGroup.TDAR_USERS, TdarGroup.JIRA_USERS };
 
     void logout(HttpServletRequest request, HttpServletResponse response, String token, TdarUser user);
 
@@ -35,5 +35,9 @@ public interface AuthenticationProvider extends Configurable {
     String getPasswordResetURL();
 
     AuthenticationResult checkToken(String token, HttpServletRequest request);
+
+    boolean updateBasicUserInformation(TdarUser user);
+
+    boolean renameUser(TdarUser user, String newUserName);
 
 }

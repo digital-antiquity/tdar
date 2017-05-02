@@ -30,10 +30,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
@@ -42,7 +44,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -59,6 +61,7 @@ import org.tdar.search.converter.CollectionDocumentConverter;
 import org.tdar.search.converter.ContentDocumentConverter;
 import org.tdar.search.converter.DataValueDocumentConverter;
 import org.tdar.search.converter.InstitutionDocumentConverter;
+import org.tdar.search.converter.IntegrationDocumentConverter;
 import org.tdar.search.converter.KeywordDocumentConverter;
 import org.tdar.search.converter.PersonDocumentConverter;
 import org.tdar.search.converter.ResourceDocumentConverter;
@@ -226,8 +229,11 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         if (item instanceof Resource) {
             document = ResourceDocumentConverter.convert((Resource) item);
         }
-        if (item instanceof ResourceCollection) {
-            document = CollectionDocumentConverter.convert((ResourceCollection) item);
+        if (item instanceof DataIntegrationWorkflow) {
+            document = IntegrationDocumentConverter.convert((DataIntegrationWorkflow) item);
+        }
+        if (item instanceof VisibleCollection) {
+            document = CollectionDocumentConverter.convert((VisibleCollection) item);
         }
         if (item instanceof Keyword) {
             document = KeywordDocumentConverter.convert((Keyword) item);
@@ -248,7 +254,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @param collectionToReindex
      */
     @Transactional
-    public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
+    public void indexAllResourcesInCollectionSubTree(HierarchicalCollection collectionToReindex) {
         logger.trace("indexing collection async");
         Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
         ScrollableResults results = resourceCollectionDao
@@ -265,7 +271,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      */
     @Async
     @Transactional
-    public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
+    public void indexAllResourcesInCollectionSubTreeAsync(final HierarchicalCollection collectionToReindex) {
         indexAllResourcesInCollectionSubTree(collectionToReindex);
     }
 
@@ -342,9 +348,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
             // processBatch(docs);
         }
 
-        if (indexable != null && CollectionUtils.size(indexable) > 1) {
-            logger.debug("Done indexing");
-        }
+        logger.debug("Done indexing: {} items ", CollectionUtils.size(indexable));
         return exceptions;
     }
 
@@ -401,18 +405,17 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      */
     public void purgeAll(LookupSource... sources) {
         for (LookupSource src : sources) {
-            for (Class<? extends Indexable> clss : src.getClasses()) {
-                purgeCore(LookupSource.getCoreForClass(clss));
-            }
+            purgeCore(src);
         }
     }
 
-    void purgeCore(String core) {
+    void purgeCore(LookupSource src) {
         try {
-            template.deleteByQuery(core, "*:*");
-            commit(core);
+            // in most cases this is *:*, but for the shared core (Resources/Collections) it is limited by type
+            template.deleteByQuery(src.getCoreName(), src.getDeleteQuery());
+            commit(src.getCoreName());
         } catch (SolrServerException | IOException e) {
-            logger.error("error purging index: {}", core, e);
+            logger.error("error purging index: {}", src.getCoreName(), e);
         }
     }
 
@@ -528,7 +531,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         if (o.getEventType() == EventType.DELETE) {
             purge(core, id);
         } else {
-			logger.trace("indexing {}, {}, {}", core, id, doc);
+            logger.trace("indexing {}, {}, {}", core, id, doc);
             index(core, id, doc);
         }
         commit(core);
@@ -544,7 +547,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @param persistable
      */
     @Transactional(readOnly=true)
-    public void partialIndexAllResourcesInCollectionSubTree(ResourceCollection persistable) {
+    public <C extends HierarchicalCollection> void partialIndexAllResourcesInCollectionSubTree(C persistable) {
         Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(persistable);
         logger.debug("partially indexing {} resources from {} ({})", total, persistable.getName(), persistable.getId());
         ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(persistable);
@@ -583,7 +586,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
 
     @Transactional(readOnly=true)
     @Async
-    public void partialIndexAllResourcesInCollectionSubTreeAsync(ResourceCollection persistable) {
+    public void partialIndexAllResourcesInCollectionSubTreeAsync(HierarchicalCollection persistable) {
         indexAllResourcesInCollectionSubTree(persistable);
     }
 

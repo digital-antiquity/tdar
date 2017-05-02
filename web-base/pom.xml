@@ -7,20 +7,53 @@
     <packaging>pom</packaging>
     <name>tDAR (web-base)</name>
     <properties>
-        <struts2.version>2.5.10.1</struts2.version>
-        <jetty.version>9.3.9.v20160517</jetty.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>
         <skipJetty>true</skipJetty>
-        <jersey.version>2.22.2</jersey.version>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>15.1.0-OBSIDIAN-DROPBOX-SNAPSHOT</version>
+        <version>16.0.1-PREHISTORIC-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
+
+    <dependencyManagement>
+        <dependencies>
+	        <dependency>
+	            <groupId>net.sourceforge.htmlunit</groupId>
+	            <artifactId>htmlunit</artifactId>
+	            <version>${htmlunit.version}</version>
+            </dependency>
+	        <dependency>
+	            <groupId>org.apache.cxf</groupId>
+	            <artifactId>cxf-rt-transports-http</artifactId>
+	            <version>${apache.cxf.version}</version>
+	            <!-- LICENSE: APACHE 2.0 -->
+	        </dependency>
+            <dependency>
+	            <groupId>net.arnx</groupId>
+	            <artifactId>jsonic</artifactId>
+	            <version>1.3.9</version>
+            </dependency>
+	        <dependency>
+	            <groupId>org.apache.cxf</groupId>
+	            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+	            <version>${apache.cxf.version}</version>
+	            <!-- LICENSE: APACHE 2.0 -->
+	        </dependency>
+	        <dependency>
+	            <groupId>org.apache.cxf</groupId>
+	            <artifactId>cxf-core</artifactId>
+	            <version>${apache.cxf.version}</version>
+	            <!-- LICENSE: APACHE 2.0 -->
+	        </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
     <dependencies>
         <dependency>
             <groupId>stax</groupId>
@@ -63,9 +96,18 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.4</version>
+            <classifier>jdk15</classifier>
+            <scope>test</scope>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+		
+        <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
-            <version>2.21</version>
+            <version>${htmlunit.version}</version>
             <scope>test</scope>
             <!-- LICENSE: APACHE 2.0 -->
             <exclusions>
@@ -83,25 +125,6 @@
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
             <version>2.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>nu.validator</groupId>
-            <artifactId>validator</artifactId>
-            <version>16.3.3</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>httpcore</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- Servlet & Jsp -->
         <dependency>
@@ -127,6 +150,17 @@
             <version>1.5</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+        <dependency>
+            <groupId>ro.isdc.wro4j</groupId>
+            <artifactId>wro4j-core</artifactId>
+            <version>${wro4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yahoo.platform.yui</groupId>
+            <artifactId>yuicompressor</artifactId>
+            <version>2.4.8</version>
+        </dependency>
+		
     </dependencies>
     <profiles>
         <profile>
@@ -257,13 +291,6 @@
                             <execution>
                                 <id>stop-jetty</id>
                                 <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop-jetty2</id>
-                                <phase>install</phase>
                                 <goals>
                                     <goal>stop</goal>
                                 </goals>

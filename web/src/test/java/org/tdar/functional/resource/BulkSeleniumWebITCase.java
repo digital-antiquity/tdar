@@ -78,7 +78,7 @@ public class BulkSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
     @Test
     public void testBasicBulkUploadSetup()  {
-        gotoPage("/batch/add");
+        gotoPage("/bulk/add");
         WebElement form = find("#metadataForm").first();
         expandAllTreeviews();
         prepIndexedFields();

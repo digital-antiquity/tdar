@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.charts methods", function() {  
+describe("ChartsSpec.js: tests for TDAR.charts methods", function() {
 
 xit("should work when we call adminUsageStats", function() {
    var options = null;

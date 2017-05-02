@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>web-base</artifactId>
-        <version>15.1.0-OBSIDIAN-DROPBOX-SNAPSHOT</version>
+        <version>16.0.1-PREHISTORIC-SNAPSHOT</version>
         <relativePath>../web-base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
@@ -29,11 +29,18 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!--force specified version of struts2-core, even if sub-project specifies a different version-->
+            <dependency>
+                <groupId>org.apache.struts</groupId>
+                <artifactId>struts2-core</artifactId>
+                <version>${struts2.version}</version>
+            </dependency>
+			
         </dependencies>
     </dependencyManagement>
     
     <dependencies>
-        
         <dependency>
             <groupId>org.tdar</groupId>
             <artifactId>core</artifactId>
@@ -75,13 +82,12 @@
                     <groupId>asm</groupId>
                     <artifactId>asm-commons</artifactId>
                 </exclusion>
+                <exclusion>
+			  		  <groupId>org.freemarker</groupId>
+			  		  <artifactId>freemarker</artifactId>
+			    </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-        <groupId>org.apache.struts</groupId>
-        <artifactId>struts2-java8-support-plugin</artifactId>
-        <version>2.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.struts</groupId>
@@ -109,6 +115,19 @@
             <artifactId>struts2-convention-plugin</artifactId>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+        <dependency>
+            <groupId>com.jgeppert.struts2.bootstrap</groupId>
+            <artifactId>struts2-bootstrap-plugin</artifactId>
+            <version>1.7.0</version>
+            <exclusions>
+	            <exclusion>
+		            <groupId>org.apache.struts</groupId>
+	                <artifactId>struts2-core</artifactId>
+	            </exclusion>
+			</exclusions>			
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+
         <dependency>
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>
@@ -157,54 +176,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <!-- needed by spring for @Transactional calls -->
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>3.2.1</version>
-            <!-- LICENSE: APACHE 1.1 -->
-        </dependency>
         
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>2.21</version>
-            <scope>test</scope>
-            <!-- LICENSE: APACHE 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpmime</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
             <version>2.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>nu.validator</groupId>
-            <artifactId>validator</artifactId>
-            <version>16.3.3</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>httpcore</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- Servlet & Jsp -->
         <dependency>
@@ -230,6 +206,7 @@
             <version>1.5</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+
     </dependencies>
     <build>
         <finalName>tdar-struts-base</finalName>

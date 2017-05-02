@@ -262,7 +262,7 @@
 
             <h2>${siteAcronym} Collections &amp; Project</h2>
             <h4>Add to a Collection</h4>
-            <@edit.resourceCollectionSection />
+            <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
             <#assign _projectId = 'project.id' />
             <#if resource.id == -1 >
                 <#assign _projectId = request.getParameter('projectId')!'' />
@@ -281,7 +281,7 @@
                     <div class="controls">
                         <div class="">
                             <select id="projectId" name="projectId" class="resource-autocomplete input-xxlarge" tabindex="-1" aria-hidden="true"
-                                    data-ajax--url="/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
+                                    data-ajax--url="/api/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
                                     data-allow-clear="false"
                                     data-placeholder="Search for a project..."
                                     data-minimum-input-length="0">
@@ -334,7 +334,8 @@
             </div>
         <#else>
             <h2>${siteAcronym} Collections</h2>
-            <@edit.resourceCollectionSection />
+            <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
+
 
         <#if !resource.resourceType.project>
             <h4>Create a Project</h4>
@@ -392,12 +393,16 @@
             <@edit.relatedCollections inheritanceEnabled />
         </#if>
 
-        <@edit.fullAccessRights />
+<#--         <@edit.fullAccessRights /> -->
 
         <#if !resource.resourceType.project>
-            <@edit.submit fileReminder=((resource.id == -1) && fileReminder) />
+            <@edit.submit fileReminder=((resource.id == -1) && fileReminder) class="button btn" >
+                <input type="submit" name="submit" value="Assign Rights" class="button btn" />
+            </@edit.submit>
         <#else>
-            <@edit.submit fileReminder=false />
+            <@edit.submit fileReminder=false class="button btn">
+                    <input type="submit" name="submit" value="Assign Rights"  class="button btn btn-primary " />
+            </@edit.submit>
         </#if>
     </@s.form>
 

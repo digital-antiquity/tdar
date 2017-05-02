@@ -32,16 +32,17 @@ navigation freemarker macros
 			        <#if editable>
 			            <@makeLink namespace "edit" "edit" "edit" current />
 			            <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-			            <@makeLink "resource" "delete?id=${resource.id}" "delete" "delete" current true _deleteable />
+                        <@makeLink "resource" "delete?id=${resource.id?c}" "delete" "delete" current true _deleteable />
+                        <@makeLink "resource" "rights/${resource.id?c}" "permissions" "permissions" current false false />
 			        </#if>
-			        <@list.bookmark resource true true />
 			        <#if resource.resourceType.project >
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
 			        </#if>
 					<@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
 			        <#if editable>
-                        <@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
+						<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
+<#--						<@makeLink "resource" "share/${resource.id?c}" "share" "share" "" false /> -->
 					</#if>
 			    </#if>
 			    <#nested>
@@ -58,12 +59,12 @@ navigation freemarker macros
             <ul>
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
-                    <@makeLink namespace "edit" "edit" "edit" current />
+                    <@makeLink resourceCollection.type.urlNamespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-                    <#local _large = (persistable.resources?size &gt; 50000) />
-                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
+                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true bigCollection />
                     <@makeLink "resource" "compare?collectionId=${persistable.id?c}" "review" "review" "" false />
+                    <@makeLink "export" "request?collectionId=${persistable.id}" "export" "export" current true _deleteable />
 
              <#if administrator && whiteLabelCollection>
                         <@makeLink namespace "admin/whitelabel/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
@@ -88,6 +89,7 @@ navigation freemarker macros
                     <@makeLink namespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink "billing" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+                    <@makeLink "export" "request?accountId=${persistable.id}" "export" "export" current true _deleteable />
 		        </#if>
 	        	<@makeLink "cart" "add?accountId=${persistable.id?c}" "add invoice" "add" "" false false />
     	    	<#if administrator>
@@ -113,8 +115,7 @@ navigation freemarker macros
     @requires authenticatedUser:Person
  -->
     <#macro creatorToolbar current>
-
-        <#if editable >
+        <#if editable!false >
             <#if (persistable.registered)!false>
                 <#local creatorType = "user" />
             <#elseif creator??>
@@ -127,12 +128,14 @@ navigation freemarker macros
             <div class="span12 resource-nav  screen" id="toolbars" parse="true">
                 <ul>
                     <@makeLink "browse" "creators" "view" "view" current true />
-
 			    <#if "edit" != current>
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
                 <#else>
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
                 </#if>
+                <#if creatorType == 'user'>
+                	<@makeLink "browse" "creators" "rights" "rights" current true />
+				</#if>
                 </ul>
             </div>
             </#if>

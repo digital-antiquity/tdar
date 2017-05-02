@@ -19,6 +19,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.struts.action.TdarBaseActionSupport;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 
@@ -45,7 +46,7 @@ import com.opensymphony.xwork2.Preparable;
         ),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" }) })
-public class NonFilestoreDownloadController extends TdarActionSupport implements Preparable, Serializable {
+public class NonFilestoreDownloadController extends TdarBaseActionSupport implements Preparable, Serializable {
 
     private static final long serialVersionUID = 520143306023106607L;
     private String contentType;

@@ -237,8 +237,6 @@ TDAR.common = function (TDAR, fileupload) {
             }
         }
 
-        //wire up jquery-ui datepicker to our date fields
-        $(".singleFileUpload .date, .existing-file .date, .date.datepicker").datepicker({dateFormat: "mm/dd/yy"});
 
         //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it.
         _submitButtonStopWait();
@@ -295,8 +293,12 @@ TDAR.common = function (TDAR, fileupload) {
         TDAR.autocomplete.applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
         TDAR.autocomplete.applyInstitutionAutocomplete($('#publisher'), true);
         $('#resourceCollectionTable').on("focus", ".collectionAutoComplete", function () {
-                    TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADMINISTER_GROUP"});
-                });
+            TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADMINISTER_GROUP"});
+});
+
+        $('#sharesTable').on("focus", ".collectionAutoComplete", function () {
+            TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADMINISTER_SHARE"});
+});
 
         // prevent "enter" from submitting
         _suppressKeypressFormSubmissions($form);
@@ -552,50 +554,6 @@ TDAR.common = function (TDAR, fileupload) {
     }
 
     /**
-     * Click event handler used when user clicks on the "bookmark" icon beside a resource. If the resource is
-     * "bookmarked" it is  tagged as a potential integration source on the "integrate" page.  This function shows the
-     * correct state (clicking the button togges the state on/off)  and sends an ajax request to update
-     * the bookmark status on the server-side
-     * @returns {boolean}
-     * @private
-     */
-    function _applyBookmarks() {
-        var $this = $(this);
-        var resourceId = $this.attr("resource-id");
-        var state = $this.attr("bookmark-state");
-        var $waitingElem = $("<img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
-        $this.prepend($waitingElem);
-        var $icon = $(".bookmark-icon", $this);
-        $icon.hide();
-        //console.log(resourceId + ": " + state);
-        var oldclass = "tdar-icon-" + state;
-        var newtext = "un-bookmark";
-        var newstate = "bookmarked";
-        var action = "bookmarkAjax";
-        var newUrl = "/resource/removeBookmark?resourceId=" + resourceId;
-
-        if (state == 'bookmarked') {
-            newtext = "bookmark";
-            newstate = "bookmark";
-            action = "removeBookmarkAjax";
-            newUrl = "/resource/bookmark?resourceId=" + resourceId;
-        }
-        var newclass = "tdar-icon-" + newstate;
-
-        $.post(TDAR.uri() + "resource/" + action + "?resourceId=" + resourceId, function (data) {
-                    if (data.success) {
-                        $(".bookmark-label", $this).text(newtext);
-                        $icon.removeClass(oldclass).addClass(newclass).show();
-                        $this.attr("bookmark-state", newstate);
-                        $this.attr("href", newUrl);
-                        $(".waiting", $this).remove();
-                    }
-                });
-
-        return false;
-    }
-
-    /**
      *  apply watermark input tags in context with watermark attribute.   'context' can be any valid
      *  argument to jQuery(selector[, context])
      * @param context
@@ -803,7 +761,7 @@ TDAR.common = function (TDAR, fileupload) {
         var $subCategoryIdSelect = $(subCategoryIdSelect);
         $subCategoryIdSelect.empty();
         $categoryIdSelect.siblings(".waitingSpinner").show();
-        $.get(TDAR.uri() + "resource/ajax/column-metadata-subcategories", {
+        $.get(TDAR.uri() + "api/resource/column-metadata-subcategories", {
             "categoryVariableId": $categoryIdSelect.val()
         }, function (data, textStatus) {
             var result = "";
@@ -941,6 +899,29 @@ TDAR.common = function (TDAR, fileupload) {
     }
 
 
+    // TODO: _checkWindowSize is a costly event handler - determine if it's still necessary after upgrading to Bootstrap v3 (TDAR-3295).
+    /**
+     * Assigns css classes to the body tag based on the current width.  These sizes match the bootstrap responsive grid sizes.
+     *
+     *
+     */
+    function _checkWindowSize() {
+        var width = $(window).width()
+        var new_class = _determineResponsiveClass(width);
+        $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone responsive-phone-portrait').addClass(new_class);
+    }
+
+    /**
+     * Main entrypoint - TDAR.main() will call this function on every pageload.
+     * @private
+     */
+    function _init() {
+        $(function() {
+            $(window).resize(_checkWindowSize).resize();
+            _sessionTimeoutWarning();
+        });
+    }
+
 
     $.extend(self, {
         "initEditPage": _initEditPage,
@@ -957,7 +938,6 @@ TDAR.common = function (TDAR, fileupload) {
         "switchType": _switchType,
         "setupDocumentEditForm": _setupDocumentEditForm,
         "sessionTimeoutWarning": _sessionTimeoutWarning,
-        "applyBookmarks": _applyBookmarks,
         "sprintf": _sprintf,
         "htmlDecode": _htmlDecode,
         "htmlEncode": _htmlEncode,
@@ -974,25 +954,10 @@ TDAR.common = function (TDAR, fileupload) {
         "initImageGallery": _initImageGallery,
         "formatNumber": _formatNumber,
         "registerAjaxStatusContainer": _registerAjaxStatusContainer,
-        "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions
+        "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions,
+        "main": _init
     });
 
     return self;
 }(TDAR, TDAR.fileupload);
 
-function checkWindowSize() {
-    var width = $(window).width()
-    var new_class = TDAR.common.determineResponsiveClass(width);
-    $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone responsive-phone-portrait').addClass(new_class);
-}
-
-/*
- * assigns a class to the body tag based on the current width.  These sizes match the bootstrap responsive grid sizes
- */
-$(document).ready(function () {
-    checkWindowSize();
-    $(window).resize(checkWindowSize);
-    TDAR.common.sessionTimeoutWarning();
-    $(document).delegate(".bookmark-link", "click", TDAR.common.applyBookmarks);
-
-});

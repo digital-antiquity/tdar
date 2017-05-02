@@ -7,9 +7,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
+import org.tdar.struts.action.workspace.integration.IntegrationSettingsController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.struts.action.workspace.integration.IntegrationSettingsController;
 
 public class WorkspaceSettingsActionITCase extends AbstractWorkspaceActionITCase {
 

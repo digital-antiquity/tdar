@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
-    <#import "common-collection.ftl" as commonCollection>
+    <#import "../collection/common-collection.ftl" as commonCollection>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
@@ -20,7 +20,6 @@
                 <ul class="nav">
                     <li class="alwaysHidden"><a href="#top">top</a></li>
                     <li class="active"><a href="#basicInformationSection">Basic</a></li>
-                    <li><a href="#divAccessRights">Rights</a></li>
                     <li><a href="#divResourcesSesction">Resources</a></li>
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
@@ -52,7 +51,7 @@
                 <@s.hidden name="id"  value="${resourceCollection.id?c}" />
             </#if>
             <@edit.hiddenStartTime />
-            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge trim"  title="A title is required for all collections." maxlength="500" />
+            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="500" />
 
             <div id="parentIdContainer" class="control-group">
                 <label class="control-label">Parent Collection</label>
@@ -67,7 +66,7 @@
                 </div>
             </div>
 
-        <#if editor>
+                <#if editor>
             <div class="control-group" id="divSubmitter">
                 <label class="control-label">Owner</label>
 
@@ -81,28 +80,24 @@
                     </#if>
                 </div>
             </div>
+            
+            <div id="altParentIdContainer" class="control-group">
+                <label class="control-label">Secondary Parent Collection (No rights)</label>
+
+                <div class="controls">
+                    <@s.hidden name="alternateParentId"  id="hdnAltParentId" cssClass=""
+                    autocompleteParentElement="#altParentIdContainer"  />
+            <@s.textfield theme="simple" name="alternateParentCollectionName" cssClass="input-xxlarge collectionAutoComplete"  autocomplete="off"
+                autocompleteIdElement="#hdnAltParentId" maxlength=255 autocompleteParentElement="#altParentIdContainer" autocompleteName="name"
+                placeholder="parent collection name" id="txtAltParentCollectionName"
+                />
+                </div>
+            </div>
+
         </#if>
 
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
-            cssClass='resizable input-xxlarge trim' title="Please enter the description " />
-
-
-            <#if administrator>
-                <@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
-                cssClass='resizable input-xxlarge' title="Please enter the description " />
-            </#if>
-
-        <#if editor>
-            <div class="control-group">
-                <label class="control-label">Associate an Image/Logo with this Collection</label>
-                <div class="controls">
-                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField"
-                    labelposition='left' size='40' dynamicAttributes={
-                        "data-rule-extension":"jpg,tiff,jpeg,png"
-                    }/>
-                </div>
-            </div>
-        </#if>
+            cssClass='resizable input-xxlarge' title="Please enter the description " />
 
         </div>
 
@@ -153,7 +148,6 @@
                 <dd>
             </dl>
         </div>
-            <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" label="Users who can View or Modify this Collection"/>
 
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
@@ -161,7 +155,7 @@
             <h2>Share Resources with other users</h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && (resourceCollection.resources?size > 0)>
-            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection>
+            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
             </@edit.resourceDataTable>
 
             <div id="divNoticeContainer" style="display:none">
@@ -173,24 +167,6 @@
 
         </div>
 
-        <#--
-        <div class="glide" id="divPublicResourcesSesction" data-tiplabel="Include Other Resources" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
-                    in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
-                    of results.">
-            <h2>Include other resources (display only)</h2>
-            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection idAddition="public">
-            </@edit.resourceDataTable>
-
-            <div id="divNoticeContainerpublic" style="display:none">
-                <div id="divAddProjectToCollectionNoticepublic" class="alert">
-                    <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="divAddProjectToCollectionNoticepublic">×</button>
-                    <em>Reminder:</em> Adding projects to a collection does not include the resources within a project.
-                </div>
-            </div>
-
-        </div>
-
-        -->
         <div id="divAddRemove">
             <h2>Modifications</h2>
 
@@ -216,6 +192,7 @@
             $(function () {
                 TDAR.datatable.setupDashboardDataTable({
                     isAdministrator: ${(editor!false)?string},
+                    limitContext: ${(editor!false)?string},
                     isSelectable: true,
                     showDescription: false,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
@@ -230,7 +207,8 @@
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
+                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
+                TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
         });

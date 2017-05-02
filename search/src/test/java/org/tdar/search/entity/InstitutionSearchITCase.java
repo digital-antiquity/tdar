@@ -59,8 +59,8 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
     @Test
     public void testNamePhrase() throws ParseException, SolrServerException, IOException {
-    	LuceneSearchResultHandler<Institution> result = new SearchResult<>();
-		creatorSearchService.searchInstitution("Arizona State Unive", result, MessageHelper.getInstance());
+        LuceneSearchResultHandler<Institution> result = new SearchResult<>();
+        creatorSearchService.searchInstitution("Arizona State Unive", result, MessageHelper.getInstance());
     }
     
     @Test

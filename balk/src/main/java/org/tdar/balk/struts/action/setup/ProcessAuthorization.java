@@ -10,15 +10,16 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.balk.service.UserService;
-import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
-import org.tdar.utils.dropbox.DropboxConfig;
 
 import com.dropbox.core.DbxException;
 import com.opensymphony.xwork2.Preparable;
+
+import org.tdar.balk.service.UserService;
+import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
+import org.tdar.utils.dropbox.DropboxConfig;
 
 @ParentPackage("secured")
 @Namespace("/setup")

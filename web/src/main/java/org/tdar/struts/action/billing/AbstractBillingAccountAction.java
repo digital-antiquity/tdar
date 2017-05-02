@@ -29,7 +29,7 @@ public abstract class AbstractBillingAccountAction extends AbstractAuthenticatab
     private BillingAccount account;
     
     public boolean isEditable() {
-        return authorizationService.canEditAccount(getAccount(), getAuthenticatedUser());
+        return authorizationService.canEditAccount(getAuthenticatedUser(), getAccount());
     }
     
     @Override
@@ -64,7 +64,7 @@ public abstract class AbstractBillingAccountAction extends AbstractAuthenticatab
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditAccount(getAccount(), getAuthenticatedUser());
+        return authorizationService.canEditAccount(getAuthenticatedUser(), getAccount());
     }
 
     @Override

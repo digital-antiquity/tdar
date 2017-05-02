@@ -24,7 +24,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractSequenced;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
@@ -65,12 +64,10 @@ public class ResourceCreator extends AbstractSequenced<ResourceCreator> implemen
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "creator_id")
     @NotNull
-    @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, key = "RESOURCE_CREATOR", order = 1)
     @JsonView(JsonLookupFilter.class)
     private Creator creator;
 
     @Enumerated(EnumType.STRING)
-    @BulkImportField(key = "CREATOR_ROLE", order = 200)
     @Column(length = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private ResourceCreatorRole role;
@@ -115,12 +112,12 @@ public class ResourceCreator extends AbstractSequenced<ResourceCreator> implemen
 
     @Override
     public String toString() {
-    	String properName = "";
-    	Long id = -1L;
-    	if (creator != null) {
-    		id = creator.getId();
-    		properName = creator.getProperName();
-    	}
+        String properName = "";
+        Long id = -1L;
+        if (creator != null) {
+            id = creator.getId();
+            properName = creator.getProperName();
+        }
         return String.format("%s[%s] (%s)", properName,id, role);
     }
 

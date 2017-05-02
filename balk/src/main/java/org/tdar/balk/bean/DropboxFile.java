@@ -1,7 +1,7 @@
 package org.tdar.balk.bean;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 @Entity

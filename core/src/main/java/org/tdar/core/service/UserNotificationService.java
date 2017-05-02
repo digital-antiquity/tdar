@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.notification.UserNotificationType;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -44,7 +45,9 @@ public class UserNotificationService {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public List<UserNotification> findAll(UserNotificationType userNotificationType) {
-        return genericDao.getNamedQuery(TdarNamedQueries.QUERY_USER_NOTIFICATIONS_BY_TYPE).setParameter("messageType", userNotificationType).list();
+        Query query = genericDao.getNamedQuery(TdarNamedQueries.QUERY_USER_NOTIFICATIONS_BY_TYPE);
+        query.setParameter("messageType", userNotificationType);
+        return query.getResultList();
     }
 
     /**
@@ -65,11 +68,11 @@ public class UserNotificationService {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public List<UserNotification> getCurrentNotifications(final TdarUser user) {
-    	if (PersistableUtils.isNullOrTransient(user)) {
-    		return Collections.emptyList();
-    	}
+        if (PersistableUtils.isNullOrTransient(user)) {
+            return Collections.emptyList();
+        }
         List<UserNotification> notifications =
-                genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setLong("userId", user.getId()).list();
+                genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setParameter("userId", user.getId()).getResultList();
         Date dismissedNotificationsDate = user.getDismissedNotificationsDate();
         if (dismissedNotificationsDate != null) {
             for (Iterator<UserNotification> iter = notifications.iterator(); iter.hasNext();) {

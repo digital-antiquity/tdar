@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
@@ -38,7 +38,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     private Long collectionId;
     private Long accountId;
 
-    private ResourceExportProxy exportProxy;
+    private ResourceExportProxy exportProxy = new ResourceExportProxy();
 
     @Autowired
     ResourceExportService resourceExportService;
@@ -55,10 +55,10 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
 
     @Override
     public void prepare() throws Exception {
-        exportProxy = new ResourceExportProxy(getAuthenticatedUser());
+        getExportProxy().setRequestor(getAuthenticatedUser());
         getExportProxy().setResources(getGenericService().findAll(Resource.class, ids));
         getExportProxy().setAccount(getGenericService().find(BillingAccount.class, accountId));
-        getExportProxy().setCollection(getGenericService().find(ResourceCollection.class, collectionId));
+        getExportProxy().setCollection(getGenericService().find(SharedCollection.class, collectionId));
     }
 
     @Override
@@ -74,13 +74,13 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
             }
         }
 
-        ResourceCollection collection = getExportProxy().getCollection();
+        SharedCollection collection = getExportProxy().getCollection();
         if (collection != null && !authorizationService.canEditCollection(getAuthenticatedUser(), collection)) {
             addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(collection))));
         }
 
         BillingAccount account = getExportProxy().getAccount();
-        if (account != null && !authorizationService.canEditAccount(account, getAuthenticatedUser())) {
+        if (account != null && !authorizationService.canEditAccount(getAuthenticatedUser(),account)) {
             addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(account))));
         }
 

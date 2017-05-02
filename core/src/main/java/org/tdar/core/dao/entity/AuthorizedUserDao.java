@@ -13,19 +13,23 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasSubmitter;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.Dao;
 import org.tdar.core.dao.entity.UserPermissionCacheKey.CacheResult;
 import org.tdar.utils.PersistableUtils;
 
@@ -47,7 +51,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
     public boolean isAllowedTo(TdarUser person, HasSubmitter resource, GeneralPermissions permission) {
         if (resource instanceof ResourceCollection) {
-            return isAllowedTo(person, (ResourceCollection) resource, permission);
+            return isAllowedTo(person, (VisibleCollection) resource, permission);
         } else {
             return isAllowedTo(person, (Resource) resource, permission);
         }
@@ -75,8 +79,10 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         }
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-            ids.addAll(collection.getParentIds());
+        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+            if (collection instanceof SharedCollection) {
+                ids.addAll(((SharedCollection)collection).getParentIds());
+            }
             ids.add(collection.getId());
         }
         getLogger().trace("allowed to rights collection ids: {}", ids);
@@ -84,15 +90,17 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
     }
 
     public boolean isAllowedTo(TdarUser person, ResourceCollection collection, GeneralPermissions permission) {
-        if (collection.isPublic()) {
-            return false;
-        }
+
         if (Objects.equals(collection.getOwner(), person)) {
             return true;
         }
-        List<Long> ids = new ArrayList<>(collection.getParentIds());
+        List<Long> ids = new ArrayList<>();
+        if (collection instanceof HierarchicalCollection) {
+            HierarchicalCollection<?> hierarchicalCollection = (HierarchicalCollection<?>)collection;
+            ids.addAll(hierarchicalCollection.getParentIds());
+        }
+
         ids.add(collection.getId());
-        ids.addAll(collection.getParentIds());
         return isAllowedTo(person, permission, ids);
     }
 
@@ -115,13 +123,12 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         CacheResult cacheResult = checkUserPermissionsCache(person, permission, ids, getCurrentSession());
         String cached = "";
         if (cacheResult == null || cacheResult == CacheResult.NOT_FOUND) {
-            Query query = getCurrentSession().getNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE);
-            query.setLong("userId", person.getId());
-            query.setInteger("effectivePermission", permission.getEffectivePermissions() - 1);
-            query.setParameterList("resourceCollectionIds", ids);
+            Query<Integer> query = getCurrentSession().createNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE, Integer.class);
+            query.setParameter("userId", person.getId());
+            query.setParameter("effectivePermission", permission.getEffectivePermissions() - 1);
+            query.setParameter("resourceCollectionIds", ids);
 
-            @SuppressWarnings("unchecked")
-            List<Integer> result = query.list();
+            List<Integer> result = query.getResultList();
             getLogger().trace("results: {}", result);
             if (result.isEmpty() || result.get(0) != 1) {
                 updateUserPermissionsCache(person, permission, ids, getCurrentSession(), CacheResult.FALSE);
@@ -181,13 +188,12 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
      * @param person
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<Resource> findSpaseEditableResources(TdarUser person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted) {
         String namedQuery = sorted ? QUERY_SPARSE_EDITABLE_SORTED_RESOURCES : QUERY_SPARSE_EDITABLE_RESOURCES;
-        Query query = getCurrentSession().getNamedQuery(namedQuery);// QUERY_PROJECT_EDITABLE
-        query.setLong("userId", person.getId());
+        Query<Resource> query = getCurrentSession().createNamedQuery(namedQuery, Resource.class);// QUERY_PROJECT_EDITABLE
+        query.setParameter("userId", person.getId());
         query.setParameter("admin", isAdmin);
-        query.setParameterList("resourceTypes", resourceTypes);
+        query.setParameter("resourceTypes", resourceTypes);
         query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         if (resourceTypes.size() == ResourceType.values().length) {
             query.setParameter("allResourceTypes", true);
@@ -195,17 +201,16 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             query.setParameter("allResourceTypes", false);
         }
         query.setParameter("allStatuses", false);
-        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        return query.list();
+        query.setParameter("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Resource> findEditableResources(TdarUser person, List<ResourceType> resourceTypes, boolean isAdmin) {
         String namedQuery = QUERY_EDITABLE_RESOURCES;
-        Query query = getCurrentSession().getNamedQuery(namedQuery);// QUERY_PROJECT_EDITABLE
-        query.setLong("userId", person.getId());
+        Query<Resource> query = getCurrentSession().createNamedQuery(namedQuery, Resource.class);// QUERY_PROJECT_EDITABLE
+        query.setParameter("userId", person.getId());
         query.setParameter("admin", isAdmin);
-        query.setParameterList("resourceTypes", resourceTypes);
+        query.setParameter("resourceTypes", resourceTypes);
         query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         if (resourceTypes.size() == ResourceType.values().length) {
             query.setParameter("allResourceTypes", true);
@@ -213,11 +218,10 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
             query.setParameter("allResourceTypes", false);
         }
         query.setParameter("allStatuses", false);
-        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        return query.list();
+        query.setParameter("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Resource> findEditableResources(TdarUser person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted, List<Long> collectionIds_) {
         List<Long> collectionIds = collectionIds_;
         // Hey guess what - you always get sorted results.
@@ -228,20 +232,20 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         if (PersistableUtils.isNullOrTransient(person)) {
             return Collections.emptyList();
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED);
-        query.setInteger("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
-        query.setLong("userId", person.getId());
+        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED, Resource.class);
+        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
+        query.setParameter("userId", person.getId());
         query.setParameter("admin", isAdmin);
-        query.setParameterList("resourceTypes", resourceTypes);
+        query.setParameter("resourceTypes", resourceTypes);
         if (resourceTypes.size() == ResourceType.values().length) {
             query.setParameter("allResourceTypes", true);
         } else {
             query.setParameter("allResourceTypes", false);
         }
         query.setParameter("allStatuses", false);
-        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        // query.setParameterList("rescolIds", collectionIds);
-        return query.list();
+        query.setParameter("statuses", Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        // query.setParameter("rescolIds", collectionIds);
+        return query.getResultList();
     }
 
     public Set<Resource> findSparseEditableResources(TdarUser person, List<ResourceType> resourceTypes, boolean isAdmin) {
@@ -264,11 +268,11 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
      * @param user
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<ResourceCollection> findAccessibleResourceCollections(TdarUser user) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO);// QUERY_PROJECT_EDITABLE
-        query.setLong("userId", user.getId());
-        return (List<ResourceCollection>) query.list();
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, ResourceCollection.class);// QUERY_PROJECT_EDITABLE
+        query.setParameter("userId", user.getId());
+        query.setParameter("perm", null);
+        return (List<ResourceCollection>) query.getResultList();
     }
 
 }

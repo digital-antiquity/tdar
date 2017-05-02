@@ -9,9 +9,9 @@ import org.tdar.core.configuration.SimpleAppConfiguration;
 public class TdarSimpleSearchAppConfiguration extends SimpleAppConfiguration implements HasSearchIndex {
 
 
-	private static final long serialVersionUID = 1223691178620339445L;
+    private static final long serialVersionUID = 1223691178620339445L;
 
-	public boolean disableHibernateSearch() {
+    public boolean disableHibernateSearch() {
         return false;
     }
     

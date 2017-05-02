@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -34,15 +35,14 @@ import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.struts.action.api.search.RSSSearchAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 @Transactional
 public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
-
-    @Autowired
-    private RSSSearchAction controller;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -145,7 +145,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertNotEmpty(controller.getResults());
         String xml = IOUtils.toString(controller.getInputStream());
         logger.debug(xml);
-        assertTrue(xml.contains("link rel=\"enclosure\" type=\"application/vnd.ms-excel"));
+        StringUtils.containsAny(xml, "<link rel=\"enclosure\" type=\"application/pdf\"", "<link rel=\"enclosure\" type=\"application/vnd.ms-excel");
     }
 
     private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {

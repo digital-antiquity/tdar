@@ -23,15 +23,15 @@ import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.web.WebFileSystemResourceService;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.TdarServletConfiguration;
+import org.tdar.web.WebFileSystemResourceService;
 
 import ro.isdc.wro.model.resource.ResourceType;
 
 public class TdarBaseActionSupport extends TdarActionSupport {
-
+    
     @Autowired
     private transient WebFileSystemResourceService webFilesystemResourceService;
 
@@ -187,6 +187,7 @@ public class TdarBaseActionSupport extends TdarActionSupport {
 
         // get the ID
         Long id = pc.getId();
+        getLogger().trace("{} {}", persistableClass, id);
         // if we're not null or transient, somehow we've been initialized wrongly
         if (PersistableUtils.isNotNullOrTransient(pc.getPersistable())) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", pc.getPersistable().getId(), id);
@@ -233,7 +234,6 @@ public class TdarBaseActionSupport extends TdarActionSupport {
      * @throws TdarActionException
      */
     protected <P extends Persistable> void checkValidRequest(PersistableLoadingAction<P> pc) throws TdarActionException {
-
         Persistable persistable = pc.getPersistable();
         // if the persistable is NULL and the ID is not null, then we have a "load" issue; if the ID is not numeric, thwn we wouldn't have even gotten here
         if (PersistableUtils.isNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(pc.getId())) {

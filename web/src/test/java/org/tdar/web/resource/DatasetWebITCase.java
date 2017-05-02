@@ -6,15 +6,21 @@
  */
 package org.tdar.web.resource;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +42,7 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String DATA_DEFAULT_DATA_TABLE_ID = "data-default-data-table-id=\"";
-	// FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
+    // FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
 
     private static final String AZ_PALEOINDIAN_POINT_SURVEY_MDB = "az-paleoindian-point-survey.mdb";
     private static final String WEST_COAST_CITIES = "West Coast Cities";
@@ -67,7 +73,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put(PROJECT_ID_FIELDNAME, PROJECT_ID);
         docValMap.put("dataset.title", TITLE);
         docValMap.put("dataset.description", DESCRIPTION);
-        docValMap.put("resourceCollections[0].name", "TESTCOLLECTIONNAME");
+        docValMap.put("shares[0].name", "TESTCOLLECTIONNAME");
         docValMap.put("dataset.date", "1923");
         docValMap.put("uploadedFiles", TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_NAME);
     }
@@ -169,7 +175,12 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInPage(TEST_DATASET_NAME);
         Long datasetId = extractTdarIdFromCurrentURL();
         Long ontologyId = testOntologyCreation();
-        Long codingSheetId = testCodingSheetCreation(ontologyId);
+        Long codingSheetId = null;
+        try {
+            codingSheetId = testCodingSheetCreation(ontologyId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         gotoPage("/dataset/" + datasetId);
         assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
@@ -222,17 +233,17 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTrue(getPageBodyCode().matches("(?s)(.*)\"results\"(\\s*):(\\s*)[(\\s*)](.*)"));
     }
 
-	private String getDataTableId() {
+    private String getDataTableId() {
         Long datasetId = extractTdarIdFromCurrentURL();
         gotoPage("/dataset/" + datasetId);
 //        logger.debug(getPageCode());
-		int indexOf = getPageCode().indexOf(DATA_DEFAULT_DATA_TABLE_ID) + DATA_DEFAULT_DATA_TABLE_ID.length();
-		logger.debug("index:{}", indexOf);
-		String substring = StringUtils.substring(getPageCode(), indexOf,indexOf + 100);
-		logger.debug("index:{}", substring);
+        int indexOf = getPageCode().indexOf(DATA_DEFAULT_DATA_TABLE_ID) + DATA_DEFAULT_DATA_TABLE_ID.length();
+        logger.debug("index:{}", indexOf);
+        String substring = StringUtils.substring(getPageCode(), indexOf,indexOf + 100);
+        logger.debug("index:{}", substring);
         substring = StringUtils.substring(substring,0, substring.indexOf("\""));
         return substring;
-	}
+    }
 
     @SuppressWarnings("unused")
     @Test
@@ -317,7 +328,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
     }
 
-    public Long testCodingSheetCreation(Long ontologyId) {
+    public Long testCodingSheetCreation(Long ontologyId) throws IOException {
         gotoPage("/coding-sheet/add");
         HashMap<String, String> codingMap = new HashMap<String, String>();
         codingMap.put(PROJECT_ID_FIELDNAME, PROJECT_ID);
@@ -370,24 +381,22 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // assertTextPresent(EAST_COAST_CITIES);
         // assertTextPresent(WEST_COAST_CITIES);
 
-        int indexOfOntology = getPageCode().indexOf("var ontology");
-        String ontologyNodeInfo = getPageCode().substring(indexOfOntology, getPageCode().indexOf("];", indexOfOntology));
-        logger.debug("ONTOLOGY NODE TEXT: {}", ontologyNodeInfo);
+        // This page should have the flattened ontology nodes in a <script> element in JSON format.
+        // Convert this JSON to a map of ontology ID's keyed by ontology name
+        String json = querySelectorAll("#flattenedOntologyNodes").get(0).getTextContent();
+        ObjectMapper mapper = new ObjectMapper();
+        List<Map<String, String>> nodes = mapper.readValue(json, new TypeReference<List<Map<String, String>>>(){});
 
-        String regex = "id: \\\"(\\d+)\\\",(?:\\s+)name: \\\"(.+)\\\"";
-        logger.info("regex is: {}", regex);
-        Pattern p = Pattern.compile(regex);
+        // Let's further transform the list of maps into a single map
+        Map<String, Long> ontologyMap = nodes.stream()
+                // filter out blank items
+                .filter(m -> isNotBlank(m.get("id"))  && isNotBlank(m.get("name")))
+                // merge the list of maps into a single map (key = "name", value = "id")
+                .collect(Collectors.toMap(
+                        node -> node.get("name").toString().replaceAll("[\\|\\-]", "").trim().toLowerCase(),
+                        node -> Long.parseLong(node.get("id"))));
 
-        HashMap<String, Long> ontologyMap = new HashMap<String, Long>();
-        for (String line : ontologyNodeInfo.split("([{]|(}\\s?,?))")) {
-            Matcher matcher = p.matcher(line);
-            logger.info("line:{} \t matches:{}", line, matcher.matches());
-            if (matcher.matches()) {
-                String key = matcher.group(2).replaceAll("[\\|\\-]", "").trim().toLowerCase();
-                logger.info("{} : {}", matcher.group(1), key);
-                ontologyMap.put(key, Long.parseLong(matcher.group(1)));
-            }
-        }
+        // Now that we have our map, let's assert it contains the right stuff and use it to fill out a few coding rules
         assertTrue(ontologyMap.containsKey("united states"));
         setInput("codingRules[0].ontologyNode.id", ontologyMap.get(NEW_YORK_1).toString(), false);
         setInput("codingRules[1].ontologyNode.id", ontologyMap.get(SAN_FRANCISCO_2).toString(), false);

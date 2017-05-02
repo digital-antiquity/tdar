@@ -143,11 +143,8 @@ TDAR.select2autocomplete = (function ($, ctx) {
     }
 
     return {
-        "init": _init
+        "init": _init,
+        "main": _init
     };
 })(jQuery, window);
 
-//FIXME: inline onload binding complicates testing and makes it harder to discover the total number of initializers (and their sequence)
-$(function () {
-    TDAR.select2autocomplete.init();
-});

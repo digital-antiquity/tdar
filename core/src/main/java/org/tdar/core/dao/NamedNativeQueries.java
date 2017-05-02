@@ -10,9 +10,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.query.NativeQuery;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
@@ -74,11 +73,11 @@ public final class NamedNativeQueries {
                         user.getId(), (permission.getEffectivePermissions() - 1), user.getId(), user.getId());
     }
 
-    public static SQLQuery generateDashboardGraphQuery(Session currentSession) {
+    public static NativeQuery generateDashboardGraphQuery(Session currentSession) {
         return currentSession
-                .createSQLQuery(TdarNamedQueries.QUERY_SQL_DASHBOARD)
-                .addScalar("id", StandardBasicTypes.LONG)
-                .addScalar("status", StandardBasicTypes.STRING)
-                .addScalar("resource_type", StandardBasicTypes.STRING);
+                .createNativeQuery(TdarNamedQueries.QUERY_SQL_DASHBOARD);
+//                .addScalar("id", StandardBasicTypes.LONG)
+//                .addScalar("status", StandardBasicTypes.STRING)
+//                .addScalar("resource_type", StandardBasicTypes.STRING);
     }
 }

@@ -21,7 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.Keyword;
@@ -38,6 +39,7 @@ import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.builder.MultiCoreQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
@@ -72,7 +74,7 @@ public class ResourceSearchService extends AbstractSearchService {
             throws ParseException, SolrServerException, IOException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE));
+        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.HIDDEN, Boolean.FALSE));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         searchService.handleSearch(qb, result, provider);
         return result;
@@ -122,10 +124,23 @@ public class ResourceSearchService extends AbstractSearchService {
      * @throws ParseException
      */
     @Transactional(readOnly = true)
-    public LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(ResourceCollection indexable, String term, TdarUser user,
+    public LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(VisibleCollection indexable, String term, TdarUser user,
             LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
-        qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, indexable.getId()));
+        List<Long> ids = new ArrayList<>();
+        ids.add(indexable.getId());
+        QueryPartGroup idGroup = new QueryPartGroup(Operator.OR);
+        if (indexable instanceof ListCollection) {
+            ListCollection listCollection = (ListCollection) indexable;
+            if (PersistableUtils.isNotNullOrTransient(listCollection.getIncludedCollection())) {
+                ids.add(listCollection.getIncludedCollection().getId());
+//                idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, Operator.OR, ids));
+            }
+            idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, Operator.OR, ids));
+            qb.append(idGroup);
+        } else {
+            qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, indexable.getId()));
+        }
         runContainedInQuery(term, user, result, provider, qb);
         return result;
     }
@@ -142,34 +157,40 @@ public class ResourceSearchService extends AbstractSearchService {
             q.append(new ProjectIdLookupQueryPart(look.getProjectId()));
         }
 
-        String colQueryField = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
-        if (look.getIncludeParent() == Boolean.FALSE || look.getIncludeParent() == null) {
-            colQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
-        }
-
         if (StringUtils.isNotBlank(look.getGeneralQuery())) {
             q.append(new GeneralSearchResourceQueryPart(look.getGeneralQuery()));
         }
 
-        Set<Long> filtered = new HashSet<>();
-        for (Long cid : look.getCollectionIds()) {
-            if (PersistableUtils.isNotNullOrTransient(cid)) {
-                filtered.add(cid);
-            }
+        String colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS;
+        String shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
+        if (look.getIncludeParent() == Boolean.FALSE || look.getIncludeParent() == null) {
+            colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS;
+            shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
         }
-        ;
-
-        q.append(new FieldQueryPart<Long>(colQueryField, Operator.OR, filtered));
+        setupCollectionLookup(look, q, colQueryField, look.getCollectionIds());
+        setupCollectionLookup(look, q, shareQueryField, look.getShareIds());
 
         ReservedSearchParameters reservedSearchParameters = look.getReservedSearchParameters();
         reservedSearchParameters.setUseSubmitterContext(look.isUseSubmitterContext());
         initializeReservedSearchParameters(reservedSearchParameters, user);
         q.append(reservedSearchParameters.toQueryPartGroup(support));
+
         q.appendFilter(reservedSearchParameters.getFilters());
 
         searchService.handleSearch(q, result, MessageHelper.getInstance());
         return result;
 
+    }
+
+    private void setupCollectionLookup(ResourceLookupObject look, ResourceQueryBuilder q, String colQueryField, List<Long> colids) {
+        Set<Long> filtered = new HashSet<>();
+        for (Long cid : colids) {
+            if (PersistableUtils.isNotNullOrTransient(cid)) {
+                filtered.add(cid);
+            }
+        }
+
+        q.append(new FieldQueryPart<Long>(colQueryField, Operator.OR, filtered));
     }
 
     @Transactional(readOnly = true)
@@ -188,7 +209,11 @@ public class ResourceSearchService extends AbstractSearchService {
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> buildAdvancedSearch(AdvancedSearchQueryObject asqo, TdarUser authenticatedUser,
             LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SolrServerException, IOException, ParseException {
-        QueryBuilder queryBuilder = new ResourceQueryBuilder();
+        ResourceQueryBuilder queryBuilder = new ResourceQueryBuilder();
+        if (asqo.isMultiCore()) {
+            queryBuilder = new MultiCoreQueryBuilder();
+        }
+        logger.trace("{}", queryBuilder.getClass());
         queryBuilder.setOperator(Operator.AND);
         QueryPartGroup topLevelQueryPart;
         QueryPartGroup reservedQueryPart;
@@ -218,7 +243,8 @@ public class ResourceSearchService extends AbstractSearchService {
         reservedQueryPart = processReservedTerms(asqo.getReservedParams(), authenticatedUser, provider);
         asqo.setRefinedBy(reservedQueryPart.getDescription(provider));
         queryBuilder.append(reservedQueryPart);
-        // TODO Auto-generated method stub
+
+        queryBuilder.setDeemphasizeSupporting(true);
         searchService.handleSearch(queryBuilder, result, provider);
         return result;
     }
@@ -298,6 +324,9 @@ public class ResourceSearchService extends AbstractSearchService {
         reservedSearchParameters.setTdarGroup(authenticationService.findGroupWithGreatestPermissions(user));
         Set<Status> allowedSearchStatuses = authorizationService.getAllowedSearchStatuses(user);
         List<Status> statuses = reservedSearchParameters.getStatuses();
+        if (statuses == null) {
+            statuses = new ArrayList<>();
+        }
         statuses.removeAll(Collections.singletonList(null));
 
         if (CollectionUtils.isEmpty(statuses)) {

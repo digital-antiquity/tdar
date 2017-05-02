@@ -1,6 +1,5 @@
 package org.tdar.core.dao;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,11 +10,11 @@ import javax.persistence.Table;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -33,6 +32,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.utils.Pair;
 
 @Component("genericKeywordDao")
@@ -62,11 +62,12 @@ public class GenericKeywordDao extends GenericDao {
         return findByPropertyIgnoreCase(cls, LABEL, StringUtils.trim(label));
     }
 
+    @SuppressWarnings("rawtypes")
     @Transactional
     protected <T extends Keyword> List<Pair<T, Integer>> getKeywordStats(String namedQuery) {
         List<Pair<T, Integer>> list = new ArrayList<Pair<T, Integer>>();
         Query q = getCurrentSession().getNamedQuery(namedQuery);
-        for (Object result : q.list()) {
+        for (Object result : q.getResultList()) {
             Object[] cols = (Object[]) result;
             @SuppressWarnings("unchecked")
             T keyword = (T) cols[0];
@@ -134,23 +135,23 @@ public class GenericKeywordDao extends GenericDao {
             String tableName = (String) AnnotationUtils.getValue(AnnotationUtils.getAnnotation(type.getKeywordClass(), Table.class), NAME);
             Session session = getCurrentSession();
             logger.info("{} {} ", inheritanceField, tableName);
-            session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT, tableName)).executeUpdate();
+            session.createNativeQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT, tableName)).executeUpdate();
             String format = String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT, tableName);
             logger.trace(format);
-            session.createSQLQuery(format).executeUpdate();
+            session.createNativeQuery(format).executeUpdate();
             format = String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE, tableName, inheritanceField);
             logger.trace(format);
-            session.createSQLQuery(format).executeUpdate();
+            session.createNativeQuery(format).executeUpdate();
             logger.info("completed update on {}", tableName);
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Transactional
     public Keyword findAuthority(Keyword kwd) {
         Table table = AnnotationUtils.findAnnotation(kwd.getClass(), Table.class);
-        Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()));
-        @SuppressWarnings("unchecked")
-        List<BigInteger> result = query.list();
+        Query query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()));
+        List<Number> result = query.getResultList();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         } else {

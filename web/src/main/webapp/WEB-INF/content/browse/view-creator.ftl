@@ -12,9 +12,9 @@
     <link rel="alternate" href="/api/lod/creator/${id?c}" type="application/ld+json" />    
 
 	<#if creator.creatorType.person >
-    	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.person.id=${creator.id?c}&groups[0].creatorOwner.person.lastName=${creator.lastName}&groups[0].creatorOwner.person.firstName=${creator.firstName}">
+    	<#assign rssUrl = "/api/search/rss?groups[0].creatorOwner.person.id=${creator.id?c}&groups[0].creatorOwner.person.lastName=${creator.lastName}&groups[0].creatorOwner.person.firstName=${creator.firstName}">
 	<#else>
-    	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.institution.id=${creator.id?c}&groups[0].creatorOwner.institution.name=${creator.name}">
+    	<#assign rssUrl = "/api/search/rss?groups[0].creatorOwner.institution.id=${creator.id?c}&groups[0].creatorOwner.institution.name=${creator.name}">
 	</#if>
     <@search.rssUrlTag url=rssUrl />
 

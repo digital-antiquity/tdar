@@ -98,8 +98,8 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testAuthorizedUserInEquality() {
         // with the equals and hashCode of AuthorizedUser, this is now never going to be true
-        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
-        AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), GeneralPermissions.VIEW_ALL);
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.VIEW_ALL);
+        AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), getAdminUser(), GeneralPermissions.VIEW_ALL);
         assertNotEquals(authorizedUser, authorizedUser2);
     }
 

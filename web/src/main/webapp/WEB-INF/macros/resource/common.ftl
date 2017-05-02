@@ -41,6 +41,7 @@ Common macros used in multiple contexts
     </#macro>
 
 <#-- emit the javascript necessary for google analytics -->
+<#-- FIXME: replace this embed and wrapper functions as part of upgrade to Universal Analytics (TDAR-3515) -->
     <#macro googleAnalyticsJavascript>
     <#noescape>
     <script>
@@ -81,7 +82,7 @@ Common macros used in multiple contexts
 <#-- @param collections:list? a list of resourceCollections -->
 <#-- @param owner:object? Person object representing the collection owner
 <#-- FIXME:  both of these parameters have invalid defaults. consider making them mandatory  -->
-    <#macro resourceCollectionsRights collections=effectiveResourceCollections_ owner="">
+    <#macro resourceCollectionsRights collections=[] owner="">
         <#if collections?has_content>
         <h3>Access Permissions</h3>
             <#nested />
@@ -93,6 +94,7 @@ Common macros used in multiple contexts
                 <#list availablePermissions as permission>
                     <th>${permission.label}</th>
                 </#list>
+                <th>Expires</th>
             </tr>
                 <#if owner?has_content>
                 <tr>
@@ -101,6 +103,7 @@ Common macros used in multiple contexts
                     <td><i class="icon-ok"></i></td>
                     <td><i class="icon-ok"></i></td>
                     <td><i class="icon-ok"></i></td>
+                    <td></td>
                 </tr>
                 </#if>
                 <#list collections as collection_ >
@@ -108,7 +111,7 @@ Common macros used in multiple contexts
                         <#list collection_.authorizedUsers as user>
                         <tr>
                             <td>
-                                <#if !collection_.internal>
+                                <#if collection_.topCollection?has_content >
                                     <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
                                 <#else>
                                     Local Resource
@@ -126,8 +129,18 @@ Common macros used in multiple contexts
                                     </#if>
                                 </td>
                             </#list>
+                            <td>${(user.dateExpires?string("MM/dd/yyyy"))!''}</td>
                         </tr>
                         </#list>
+                    <#else>
+                        <#if collection_.type == 'SHARED'>
+                        <tr>
+                            <td>
+                                <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
+                            </td>
+                            <td colspan=5>n/a</td>
+                        </tr>                    
+                        </#if>
                     </#if>
                 </#list>
         </table>
@@ -228,6 +241,8 @@ Common macros used in multiple contexts
         <#local type>svg-icons_icon-${persistable.resourceType?lower_case}</#local>
     <#elseif persistable.type?has_content><#t>
         <#local type>svg-icons_collection</#local>
+    <#else><#t>
+        <#local type>svg-icons_integration</#local>
     </#if>
     <svg class="svgicon white svg-cartouche"><use xlink:href="/images/svg/symbol-defs.svg#${type}"></use></svg>
     <#--        <#if (persistable.status)?? && !persistable.active>
@@ -245,9 +260,9 @@ Common macros used in multiple contexts
         <#if persistable.resourceType?has_content><#t>
         ${persistable.resourceType?replace("_", " ")?upper_case} <#t>
         <#elseif persistable.type?has_content><#t>
-        COLLECTION<#t>
+        COLLECTION <#if persistable.type == "LIST">(User-generated)</#if><#t>
         <#else> <#t>
-        PERSISTABLE<#t>
+        INTEGRATION<#t>
         </#if>
     </#macro>
 
@@ -371,7 +386,7 @@ Common macros used in multiple contexts
 
 <#-- emit a "combobox" control.  A combobox is essentially text field element that features both autocomplete support as
  as the ability to view a list of all possible values (by clicking on a 'dropdown' button beside the text box)-->
-    <#macro combobox name target autocompleteIdElement placeholder  cssClass value=false autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="">
+    <#macro combobox name target autocompleteIdElement placeholder  cssClass value=false autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="" collectionType="">
         <#if bootstrapControl>
         <div class="control-group">
             <label class="control-label">${label}</label>
@@ -385,13 +400,15 @@ Common macros used in multiple contexts
                 label="${label}"
                 autocompleteParentElement="${autocompleteParentElement}"
                 autocompleteIdElement="${autocompleteIdElement}"
-                placeholder="${placeholder}"
-                value="${value}" cssClass="${cssClass}" />
+                placeholder="${placeholder}" cssClass="${cssClass}"
+                collectionType="${collectionType}"
+                value="${value}"  />
             <#else>
                 <@s.textfield theme="simple" name="${name}"  target="${target}"
                 label="${label}"
                 autocompleteParentElement="${autocompleteParentElement}"
                 autocompleteIdElement="${autocompleteIdElement}"
+                collectionType="${collectionType}"
                 placeholder="${placeholder}" cssClass="${cssClass}" />
             </#if>
             <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>

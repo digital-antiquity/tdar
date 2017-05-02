@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -32,16 +32,16 @@ public class OntologyDao extends ResourceDao<Ontology> {
     }
 
     public int getNumberOfMappedDataValues(Ontology ontology) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY);
-        query.setLong("ontologyId", ontology.getId());
-        return ((Long) query.uniqueResult()).intValue();
+        Query<Number> query = getNamedQuery(TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY, Number.class);
+        query.setParameter("ontologyId", ontology.getId());
+        return query.getSingleResult().intValue();
     }
 
     public int getNumberOfMappedDataValues(DataTableColumn dataTableColumn) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN);
+        Query<Number> query = getNamedQuery(TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_COLUMN, Number.class);
         query.setParameter("ontology", dataTableColumn.getMappedOntology());
         query.setParameter("codingSheet", dataTableColumn.getDefaultCodingSheet());
-        return ((Long) query.uniqueResult()).intValue();
+        return query.getSingleResult().intValue();
     }
 
     public void removeReferencesToOntologyNodes(List<OntologyNode> incoming) {
@@ -56,20 +56,20 @@ public class OntologyDao extends ResourceDao<Ontology> {
         if (CollectionUtils.isEmpty(toDelete)) {
             return;
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES);
-        query.setParameterList("ontologyNodes", toDelete);
+        Query query = getNamedQuery(TdarNamedQueries.QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES);
+        query.setParameter("ontologyNodes", toDelete);
         query.executeUpdate();
 
     }
 
     @SuppressWarnings("unchecked")
     public IntegrationOntologySearchResult findOntologies(OntologySearchFilter searchFilter) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_ONTOLOGY);
+        Query query = getNamedQuery(QUERY_INTEGRATION_ONTOLOGY);
         query.setProperties(searchFilter);
         query.setFirstResult(searchFilter.getStartRecord());
         query.setMaxResults(searchFilter.getRecordsPerPage());
         IntegrationOntologySearchResult result = new IntegrationOntologySearchResult();
-        for (Ontology ontology : (List<Ontology>) query.list()) {
+        for (Ontology ontology : (List<Ontology>) query.getResultList()) {
             result.getOntologies().add(new OntologyProxy(ontology));
         }
         return result;

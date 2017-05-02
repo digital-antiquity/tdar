@@ -9,11 +9,12 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
 import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.utils.dropbox.DropboxConfig;
 
 import com.opensymphony.xwork2.Preparable;
+
+import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
+import org.tdar.utils.dropbox.DropboxConfig;
 
 @ParentPackage("secured")
 @Namespace("/setup")

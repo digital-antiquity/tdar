@@ -12,48 +12,48 @@ import org.tdar.core.event.EventType;
  */
 public abstract class ObjectContainer<T> {
 
-	String id;
-	T doc;
-	Long dateAdded = System.nanoTime();
-	private EventType eventType;
+    String id;
+    T doc;
+    Long dateAdded = System.nanoTime();
+    private EventType eventType;
 
-	public ObjectContainer(T doc, String generateId, EventType eventType) {
-		this.doc = doc;
-		this.id = generateId;
-		this.setEventType(eventType);
-	}
+    public ObjectContainer(T doc, String generateId, EventType eventType) {
+        this.doc = doc;
+        this.id = generateId;
+        this.setEventType(eventType);
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public T getDoc() {
-		return doc;
-	}
+    public T getDoc() {
+        return doc;
+    }
 
-	public void setDoc(T doc) {
-		this.doc = doc;
-	}
+    public void setDoc(T doc) {
+        this.doc = doc;
+    }
 
-	public Long getDateAdded() {
-		return dateAdded;
-	}
+    public Long getDateAdded() {
+        return dateAdded;
+    }
 
-	public void setDateAdded(Long dateAdded) {
-		this.dateAdded = dateAdded;
-	}
+    public void setDateAdded(Long dateAdded) {
+        this.dateAdded = dateAdded;
+    }
 
-	public EventType getEventType() {
-		return eventType;
-	}
+    public EventType getEventType() {
+        return eventType;
+    }
 
-	public void setEventType(EventType eventType) {
-		this.eventType = eventType;
-	}
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
 
-	public abstract String getType();
+    public abstract String getType();
 }

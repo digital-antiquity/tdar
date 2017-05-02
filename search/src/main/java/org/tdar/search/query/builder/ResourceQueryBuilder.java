@@ -1,5 +1,7 @@
 package org.tdar.search.query.builder;
 
+import java.util.Set;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
@@ -19,7 +21,7 @@ import com.opensymphony.xwork2.TextProvider;
 public class ResourceQueryBuilder extends QueryBuilder {
 
     public ResourceQueryBuilder() {
-        this.setClasses(LookupSource.RESOURCE.getClasses());
+        setTypeLimit(LookupSource.RESOURCE.name());
     }
     
 
@@ -40,5 +42,25 @@ public class ResourceQueryBuilder extends QueryBuilder {
         }
         
     }
+
+    private boolean deemphasizeSupporting = true;
+    private Set<String> boostType = null;
+    
+    public boolean isDeemphasizeSupporting() {
+        return deemphasizeSupporting;
+    }
+
+    public void setDeemphasizeSupporting(boolean deemphasizeSupporting) {
+        this.deemphasizeSupporting = deemphasizeSupporting;
+    }
+
+    public Set<String> getBoostType() {
+        return boostType;
+    }
+
+    public void setBoostType(Set<String> matches) {
+        this.boostType = matches;
+    }
+
 
 }

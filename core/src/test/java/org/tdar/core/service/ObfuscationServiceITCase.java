@@ -21,8 +21,9 @@ import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
 
 /**
@@ -43,10 +44,22 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         Project project = genericService.find(Project.class, 3805l);
         assertNotObfuscated(project);
         logger.debug("submitter: {} ", project.getSubmitter());
-        logger.debug("{}", project.getResourceCollections());
-
+        logger.debug("{}", project.getSharedCollections());
+        logger.debug("{}", project.getInternalCollections());
         // setup a fake user on the resource collection (just in case)
-        ResourceCollection internalResourceCollection = project.getInternalResourceCollection();
+        InternalCollection internalResourceCollection = project.getInternalResourceCollection();
+        // THIS IS A CASE OF BAD SETUP -- A PREVIOUS TEST IS ADJUSTING THIS PROJECT'S COLLECTION ASSIGNMENTS FROM 1 INTERNAL COLLECTION TO 1 SHARED COLLECTION
+        if (internalResourceCollection == null) {
+            logger.warn("collection was null");
+            internalResourceCollection = new InternalCollection();
+            project.setInternalCollection(internalResourceCollection);
+            internalResourceCollection.markUpdated(project.getSubmitter());
+            genericService.saveOrUpdate(internalResourceCollection);
+            internalResourceCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+            genericService.saveOrUpdate(internalResourceCollection.getAuthorizedUsers());
+            genericService.saveOrUpdate(internalResourceCollection);
+        }
+        logger.debug("{}", internalResourceCollection);
         Long collectionId = internalResourceCollection.getId();
 
         for (AuthorizedUser user : internalResourceCollection.getAuthorizedUsers()) {
@@ -56,6 +69,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
 
         obfuscationService.obfuscate(project, null);
         logger.debug("submitter: {} ", project.getSubmitter());
+        logger.debug("{}", project.getInternalCollections());
         // test that the obfuscation is correct
         assertIsObfuscated(project);
         // remaining assertions occur in verifyPostObfuscationData to ensure that we are in a fresh new transaction.

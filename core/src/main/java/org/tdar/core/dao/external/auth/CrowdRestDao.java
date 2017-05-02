@@ -85,7 +85,8 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(crowdProperties);
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
             securityServerClient = factory.newInstance(clientProperties);
-            setPasswordResetURL(crowdProperties.getProperty("crowd.passwordreseturl","http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action"));
+            setPasswordResetURL(
+                    crowdProperties.getProperty("crowd.passwordreseturl", "http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action"));
             httpAuthenticator = new CrowdHttpAuthenticatorImpl(securityServerClient, clientProperties,
                     CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
             logger.debug("maxHttpConnections: {} timeout: {}", clientProperties.getHttpMaxConnections(), clientProperties.getHttpTimeout());
@@ -194,14 +195,14 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     public void requestPasswordReset(TdarUser person) {
         try {
             securityServerClient.requestPasswordReset(person.getUsername());
         } catch (UserNotFoundException | OperationFailedException | InvalidAuthenticationException | ApplicationPermissionException
                 | InvalidEmailAddressException e) {
-            logger.error("exception requesting password reset",e);
+            logger.error("exception requesting password reset", e);
         }
     }
 
@@ -218,7 +219,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         try {
 
             user = securityServerClient.getUser(login);
-            
+
             // if this succeeds, then this principal already exists.
             // FIXME: if they already exist in the system, we should let them know
             // that they already have an account in the system and that they can
@@ -413,6 +414,53 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Update user information (not including password) via the Atlassian CrowdClient Java API.
+     * 
+     * @param user
+     * @return
+     */
+    @Override
+    public boolean updateBasicUserInformation(TdarUser user) {
+        UserEntity crowdUser = new UserEntity(user.getUsername(), user.getFirstName(), user.getLastName(), user.getProperName(), user.getEmail(), null,
+                user.isActive());
+        try {
+            securityServerClient.updateUser(crowdUser);
+        } catch (InvalidUserException | UserNotFoundException | OperationFailedException | InvalidAuthenticationException | ApplicationPermissionException e) {
+            logger.debug("failed to update user: {}", e);
+            return false;
+        }
+        return true;
+
+    }
+
+    @Override
+    public boolean renameUser(TdarUser user, String newUserName) {
+        try {
+            securityServerClient.renameUser(user.getUsername(), newUserName);
+        } catch (UserNotFoundException | InvalidUserException | OperationFailedException | ApplicationPermissionException | InvalidAuthenticationException e) {
+            logger.error("could not rename user: {}", e, e);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Used for testing to get User Information
+     * 
+     * @param user
+     * @return
+     * @throws UserNotFoundException
+     * @throws OperationFailedException
+     * @throws ApplicationPermissionException
+     * @throws InvalidAuthenticationException
+     */
+    protected User getUser(TdarUser user)
+            throws UserNotFoundException, OperationFailedException, ApplicationPermissionException, InvalidAuthenticationException {
+        return securityServerClient.getUser(user.getUsername());
+
     }
 
 }

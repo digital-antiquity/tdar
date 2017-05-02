@@ -12,7 +12,6 @@
         // we need to make two passes through the groups
         // pass 1: transform each group into new data structure that is easier to work with
         var groupDict = xdoc.children.reduce(function(prev, group, i){
-            console.log('encountered child: %s', group.attr.name);
 
             //tranform each group into object w/ three 'buckets' that hold list of js/css/group-ref names.
             var obj = {

@@ -76,6 +76,14 @@ public class CodingSheet extends InformationResource implements SupportsResource
         setResourceType(ResourceType.CODING_SHEET);
     }
 
+    public CodingSheet(Long id, String title, String description, Status status) {
+        this();
+        setId(id);
+        setTitle(title);
+        setDescription(description);
+        setStatus(status);
+    }
+    
     @XmlElementWrapper(name = "codingRules")
     @XmlElement(name = "codingRule")
     public Set<CodingRule> getCodingRules() {

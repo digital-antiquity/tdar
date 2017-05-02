@@ -35,16 +35,16 @@ public class ProjectionITCase extends AbstractResourceSearchITCase {
         resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
         boolean seenCreator = false;
         for (Resource r : result.getResults()) {
-        	logger.debug("{} {}", r, r.isViewable());
-        	if (r instanceof InformationResource) {
-        		InformationResource ir = (InformationResource)r;
-        		logger.debug("\t{}", ir.getProject());
-        	}
-        	if (CollectionUtils.isNotEmpty(r.getPrimaryCreators())) {
-        	    seenCreator = true;
-        	}
-        	logger.debug("\t{}",r.getActiveLatitudeLongitudeBoxes());
-        	logger.debug("\t{}",r.getPrimaryCreators());
+            logger.debug("{} {}", r, r.isViewable());
+            if (r instanceof InformationResource) {
+                InformationResource ir = (InformationResource)r;
+                logger.debug("\t{}", ir.getProject());
+            }
+            if (CollectionUtils.isNotEmpty(r.getPrimaryCreators())) {
+                seenCreator = true;
+            }
+            logger.debug("\t{}",r.getActiveLatitudeLongitudeBoxes());
+            logger.debug("\t{}",r.getPrimaryCreators());
         }
         assertTrue(seenCreator);
     }

@@ -49,13 +49,13 @@ public class CollectionAccessQueryPart implements QueryPart<Person> {
                     userAccessQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY);
                     group.append(userAccessQueryPart);
                     break;
-                case ADMINISTER_GROUP:
+                case ADMINISTER_SHARE:
                     userAccessQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER);
                     group.append(userAccessQueryPart);
                     break;
                 default:
                     QueryPartGroup rightsGroup = new QueryPartGroup(Operator.OR);
-                    rightsGroup.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE));
+                    rightsGroup.append(new FieldQueryPart<Boolean>(QueryFieldNames.HIDDEN, Boolean.FALSE));
                     rightsGroup.append(userAccessQueryPart);
                     group.append(rightsGroup);
                     break;

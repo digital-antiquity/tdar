@@ -22,6 +22,8 @@ module.exports = function(config) {
     var wroFiles = buildFilesFromWro('default');
     config.set({
 
+        browserConsoleLogOptions: {terminal:false},
+
         // base path that will be used to resolve all patterns (eg. files, exclude)
         basePath: '',
 
@@ -82,8 +84,6 @@ module.exports = function(config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            //converts html to js strings and stores them in window.__html__
-			
             //caveat: files deeclared here cannot also be used as jasmine fixtures (known bug)
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
             'src/test/frontend/html2js/*.html': ['html2js'],

@@ -12,7 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -72,7 +75,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             ScrollableResults allScrollable = resourceService.findAllActiveScrollableForSitemap();
             while (allScrollable.next()) {
                 Resource object = (Resource) allScrollable.get(0);
-                String url = UrlService.absoluteUrl(object);
+                String url = UrlService.absoluteSecureUrl(object);
                 addUrl(wsg, url);
             }
 
@@ -89,7 +92,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
                 if (!creator.isBrowsePageVisible()) {
                     continue;
                 }
-                String url = UrlService.absoluteUrl(creator);
+                String url = UrlService.absoluteSecureUrl(creator);
                 addUrl(wsg, url);
                 totalCreator++;
                 if (totalCreator % 500 == 0) {
@@ -99,23 +102,11 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             logger.info("({}) creators in sitemap", totalCreator);
             total += totalCreator;
 
-            ScrollableResults activeCollections = genericService.findAllScrollable(ResourceCollection.class);
+            ScrollableResults activeCollections = genericService.findAllScrollable(SharedCollection.class);
             int totalCollections = 0;
-            while (activeCollections.next()) {
-                ResourceCollection collection = (ResourceCollection) activeCollections.get(0);
-                if (collection.isInternal() || collection.isHidden()) {
-                    continue;
-                }
-                String url = UrlService.absoluteUrl(collection);
-                addUrl(wsg, url);
-                totalCollections++;
-                if (totalCollections % 500 == 0) {
-                    genericService.clearCurrentSession();
-                }
-
-            }
-            logger.info("({}) collections in sitemap", totalCollections);
-            total += totalCollections;
+            total += processCollections(wsg, activeCollections);
+            activeCollections = genericService.findAllScrollable(ListCollection.class);
+            total += processCollections(wsg, activeCollections);
 
             if (total > 0) {
                 wsg.write();
@@ -147,6 +138,25 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private <T extends HierarchicalCollection<?>>  int processCollections(WebSitemapGenerator wsg, ScrollableResults activeCollections) throws MalformedURLException {
+        int totalCollections = 0;
+        while (activeCollections.next()) {
+            T collection = (T) activeCollections.get(0);
+            if (collection.isHidden()) {
+                continue;
+            }
+            String url = UrlService.absoluteSecureUrl((VisibleCollection)collection);
+            addUrl(wsg, url);
+            totalCollections++;
+            if (totalCollections % 500 == 0) {
+                genericService.clearCurrentSession();
+            }
+
+        }
+        logger.info("({}) collections in sitemap", totalCollections);
+        return totalCollections;
     }
 
     private void addUrl(WebSitemapGenerator wsg, String url) throws MalformedURLException {

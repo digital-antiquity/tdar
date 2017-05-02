@@ -1,8 +1,8 @@
 /* global describe, it, expect */
-describe("tests for TDAR.authority methods", function() {
+describe("AuthoritySpec.js: tests for TDAR.authority methods", function() {
 
     var responses = {
-        '/lookup/institution': {
+        '/api/lookup/institution': {
             "status": {
                 "startRecord": 0,
                 "sortField": "ID",
@@ -112,7 +112,7 @@ describe("tests for TDAR.authority methods", function() {
             }
             ]
         },
-        'lookup/person': {
+        'api/lookup/person': {
             "status": {
                 "startRecord": 0,
                 "sortField": "ID",
@@ -347,11 +347,11 @@ describe("tests for TDAR.authority methods", function() {
         TDAR.authority.initAuthTable();
 
         //default lookup is institution
-        expect(jasmine.Ajax.requests.mostRecent().url).toContain('/lookup/institution');
+        expect(jasmine.Ajax.requests.mostRecent().url).toContain('/api/lookup/institution');
 
         //after returning results, the table should have stuff in it.
         var request = jasmine.Ajax.requests.mostRecent();
-        var response = jsonpEncode(responses['/lookup/institution'], request);
+        var response = jsonpEncode(responses['/api/lookup/institution'], request);
         jasmine.Ajax.requests.mostRecent().respondWith({
             status:200,
             contentType: 'text/json',
@@ -365,7 +365,7 @@ describe("tests for TDAR.authority methods", function() {
     it("lists selected dupes", function(){
         TDAR.authority.initAuthTable();
         var request = jasmine.Ajax.requests.mostRecent();
-        var response = jsonpEncode(responses['/lookup/institution'], request);
+        var response = jsonpEncode(responses['/api/lookup/institution'], request);
         jasmine.Ajax.requests.mostRecent().respondWith({
             status:200,
             contentType: 'text/json',

@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -148,7 +148,7 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     }
 
     public SearchResult<Resource> doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams,
-            SortOption option) throws ParseException, SolrServerException, IOException {
+            SortOption ... option ) throws ParseException, SolrServerException, IOException {
         asqo = new AdvancedSearchQueryObject();
         SearchParameters params = params_;
         if (params == null) {
@@ -158,7 +158,12 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
             params.getAllFields().add(text);
         }
         SearchResult<Resource> result = new SearchResult<>();
-        result.setSortField(option);
+        if (option != null && option.length > 0) {
+        result.setSortField(option[0]);
+        } 
+        if (option != null && option.length > 1) {
+        result.setSecondarySortField(option[1]);
+        } 
         asqo.getSearchParameters().add(params);
         asqo.setReservedParams(reservedParams);
 
@@ -191,8 +196,8 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         return project;
     }
 
-    protected ResourceCollection sparseCollection(Long id) {
-        ResourceCollection collection = new ResourceCollection();
+    protected SharedCollection sparseCollection(Long id) {
+        SharedCollection collection = new SharedCollection();
         collection.setId(id);
         return collection;
     }
@@ -248,7 +253,7 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
             ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, int max) throws ParseException, SolrServerException, IOException {
         SearchResult<Resource> result = new SearchResult<>(max);
         logger.debug("{}, {}", resourceSearchService, MessageHelper.getInstance());
-        ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent, collectionId, categoryId, permission, reservedSearchParameters);
+        ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent,null, collectionId, categoryId, permission, reservedSearchParameters);
         resourceSearchService.lookupResource(user, rl, result, MessageHelper.getInstance());
         return result;
     }

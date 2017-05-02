@@ -18,7 +18,27 @@
             <column name="date_updated" valueDate="2016-01-01" />
             <column name="json_data">{}</column>
         </insert>
+	</changeSet>
+    
+	<changeSet id="unmanaged-collections" author="abrin">
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1000"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1001"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1002"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1003"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
     </changeSet>
+
     <changeSet id="dateone_old" author="abrin">
         <insert tableName="dataone_log">
             <column name="date_logged" value="2010-01-01" />

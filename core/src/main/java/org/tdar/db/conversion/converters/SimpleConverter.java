@@ -81,8 +81,7 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
         DataTable dataTable = createDataTable(getTableName());
 
         for (int i = 0; i < getHeaderLine().length; i++) {
-            createDataTableColumn(getHeaderLine()[i], DataTableColumnType.TEXT,
-                    dataTable);
+            createDataTableColumn(getHeaderLine()[i], DataTableColumnType.TEXT, dataTable, i);
         }
 
         targetDatabase.createTable(dataTable);

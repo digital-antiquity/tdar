@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
@@ -238,9 +237,9 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     }
 
     protected void indexPersistable() throws SolrServerException, IOException {
-    	if (getPersistable() instanceof Indexable) {
-    		publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
-    	}
+        if (getPersistable() instanceof Indexable) {
+            publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
+        }
     }
 
     private void logAction(String action_) {
@@ -397,10 +396,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         RequestType type = RequestType.EDIT;
 
         if (getId() == null && (getCurrentUrl().contains("/add") || 
-        		(getTdarConfiguration().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
+                (getTdarConfiguration().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
             getLogger().debug("setting persistable");
             if (getPersistable() == null) {
-            	setPersistable(createPersistable());
+                setPersistable(createPersistable());
             }
             type = RequestType.CREATE;
         }
@@ -451,29 +450,9 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         this.authorizedUsers = authorizedUsers;
     }
 
-    /**
-     * @return the authorizedUsers
-     */
-    public List<AuthorizedUser> getAuthorizedUsers() {
-        if (authorizedUsers == null) {
-            authorizedUsers = new ArrayList<AuthorizedUser>();
-        }
-        return authorizedUsers;
-    }
-
-    public AuthorizedUser getBlankAuthorizedUser() {
-        AuthorizedUser user = new AuthorizedUser();
-        user.setUser(new TdarUser());
-        return user;
-    }
 
     public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
-        for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if ((permission.getContext() == null) ||  ClassUtils.isAssignable(permission.getContext(), getPersistableClass())) {
-                permissions.add(permission);
-            }
-        }
+        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
 

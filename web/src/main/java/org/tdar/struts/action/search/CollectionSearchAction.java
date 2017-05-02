@@ -21,14 +21,14 @@ import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.struts.action.AbstractLookupController;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 @Namespace("/search")
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class CollectionSearchAction extends AbstractLookupController<ResourceCollection> {
 
     private static final long serialVersionUID = -4107940683143336985L;

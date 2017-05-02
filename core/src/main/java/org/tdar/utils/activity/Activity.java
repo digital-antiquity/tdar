@@ -151,11 +151,11 @@ public class Activity implements Serializable {
 
     public String getEndString() {
         // total time = action time + render time
-        return String.format("b» %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
+        return String.format("e» %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
     }
 
     public String getStartString() {
-        return String.format("«e %s ", getName());
+        return String.format("«b %s ", getName());
     }
 
     @Override
@@ -267,11 +267,7 @@ public class Activity implements Serializable {
     public void setShortName(Object shortName) {
         this.shortName = shortName;
     }
-    
-    public boolean isBot() {
-        return Activity.testUserAgent(getBrowser());
-    }
-    
+
     public void setUserId(Long tdarUserId) {
         this.userId = tdarUserId;
     }
@@ -287,6 +283,10 @@ public class Activity implements Serializable {
     public String getUsername() {
         return username;
     }
+    
+    public boolean isBot() {
+        return Activity.testUserAgent(getBrowser());
+    }
 
     public static boolean testUserAgent(String userAgent) {
         if (StringUtils.isBlank(userAgent)) {
@@ -294,6 +294,5 @@ public class Activity implements Serializable {
         }
         return pattern.matcher(userAgent).find();
     }
-    
     
 }

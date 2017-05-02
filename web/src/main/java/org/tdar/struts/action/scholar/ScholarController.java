@@ -14,14 +14,14 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 @SuppressWarnings("rawtypes")
 @Namespace("/scholar")
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class ScholarController extends AbstractLookupController {
 
     private static final long serialVersionUID = -4680630242612817779L;

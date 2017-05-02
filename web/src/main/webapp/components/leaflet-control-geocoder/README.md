@@ -6,7 +6,7 @@ I strongly believe that it is my &mdash; and your &mdash; duty to make the open 
 
 While I can't force anyone to do anything, if you happen to disagree with this, I ask of you not to use any of the open source I have published. Nor am I interested in contributions from people who can't accept or act respectfully towards other humans regardless of gender identity, sexual orientation, disability, ethnicity, religion, age, physical appearance, body size, race, or similar personal characteristics. If you think feminism, anti-racism or the LGBT movement is somehow wrong, disturbing or irrelevant, I ask you to go elsewhere to find software.
 
-Leaflet Control Geocoder [![NPM version](https://badge.fury.io/js/leaflet-control-geocoder.png)](http://badge.fury.io/js/leaflet-control-geocoder)
+Leaflet Control Geocoder [![NPM version](https://img.shields.io/npm/v/leaflet-control-geocoder.svg)](https://www.npmjs.com/package/leaflet-control-geocoder) ![Leaflet 1.0.0 compatible!](https://img.shields.io/badge/Leaflet%201.0.0-%E2%9C%93-1EB300.svg?style=flat)
 =============================
 
 A simple geocoder for [Leaflet](http://leafletjs.com/) that by default uses [OSM](http://www.openstreetmap.org/)/[Nominatim](http://wiki.openstreetmap.org/wiki/Nominatim).
@@ -23,7 +23,9 @@ The plugin supports many different data providers:
 * [Mapzen Search](https://mapzen.com/projects/search)
 * [HERE Geocoder API] (https://developer.here.com/rest-apis/documentation/geocoder/topics/overview.html)
 
-The plugin can easily be extended to support other providers.
+The plugin can easily be extended to support other providers. Current extensions:
+
+* [DAWA Geocoder](https://github.com/kjoller/leaflet-control-geocoder-dawa/tree/new) - support for Danish Address Web API by [Niels Kjøller Hansen](https://github.com/kjoller)
 
 See the [Leaflet Control Geocoder Demo](http://perliedman.github.com/leaflet-control-geocoder/).
 

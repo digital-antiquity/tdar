@@ -12,7 +12,7 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
@@ -123,7 +123,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     protected void constructQueryPhrase(StringBuilder sb, String fieldName) {
-        StringBuilder startPhrase = new StringBuilder(getInverse());
+        StringBuilder startPhrase = new StringBuilder();
         // support for "all fields query"
         if (StringUtils.isNotBlank(fieldName)) {
             startPhrase.append(fieldName).append(":");
@@ -282,8 +282,8 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             }
             if (Resource.class.isAssignableFrom(fieldValue.getClass())) {
                 fieldValue = ((Resource) fieldValue).getTitle();
-            } else if (ResourceCollection.class.isAssignableFrom(fieldValue.getClass())) {
-                fieldValue = ((ResourceCollection) fieldValue).getTitle();
+            } else if (VisibleCollection.class.isAssignableFrom(fieldValue.getClass())) {
+                fieldValue = ((VisibleCollection) fieldValue).getTitle();
             } else if (fieldValue instanceof Localizable) {
                 fieldValue = provider.getText(((Localizable) fieldValue).getLocaleKey());
             } else if (fieldValue instanceof HasLabel) {
@@ -309,27 +309,27 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.operator = operator;
     }
 
-    /**
-     * @param inverse
-     *            the inverse to set
-     */
-    public void setInverse(boolean inverse) {
-        this.inverse = inverse;
-    }
+//    /**
+//     * @param inverse
+//     *            the inverse to set
+//     */
+//    public void setInverse(boolean inverse) {
+//        this.inverse = inverse;
+//    }
 
-    protected String getInverse() {
-        if (isInverse()) {
-            return NOT;
-        }
-        return "";
-    }
-
-    /**
-     * @return the inverse
-     */
-    public boolean isInverse() {
-        return inverse;
-    }
+//    protected String getInverse() {
+//        if (isInverse()) {
+//            return NOT;
+//        }
+//        return "";
+//    }
+//
+//    /**
+//     * @return the inverse
+//     */
+//    public boolean isInverse() {
+//        return inverse;
+//    }
 
     public List<PhraseFormatter> getPhraseFormatters() {
         return phraseFormatters;

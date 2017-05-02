@@ -1,5 +1,5 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
-describe("TDAR.validate: edit page tests", function () {
+describe("ValidateSpec.js: TDAR.validate tests", function () {
     "use strict";
 
     // FIXME: this does nothing in the leaflet world
@@ -31,8 +31,8 @@ describe("TDAR.validate: edit page tests", function () {
 
     it("should work when we call prepareDateFields (NONE)", function () {
         console.log("prepare-date-test (none)");
-    	loadFixtures("coverage-dates.html");
-    	var $form = $("#coverage");
+        loadFixtures("coverage-dates.html");
+        var $form = $("#coverage");
         var sel = $form.find('select')[0];
         var validator = TDAR.validate.initForm($form);
 
@@ -47,8 +47,8 @@ describe("TDAR.validate: edit page tests", function () {
 
     it("should work when we call prepareDateFields (calendar missing)", function () {
         console.log("prepare-date-test calendar(missing value)");
-    	loadFixtures("coverage-dates.html");
-    	var $form = $("#coverage");
+        loadFixtures("coverage-dates.html");
+        var $form = $("#coverage");
         var sel = $form.find('select')[0];
         var validator = TDAR.validate.initForm($form);
 
@@ -63,8 +63,8 @@ describe("TDAR.validate: edit page tests", function () {
 
     it("should work when we call prepareDateFields (calendar wrong order)", function () {
         console.log("prepare-date-test calendar(invalid)");
-    	loadFixtures("coverage-dates.html");
-    	var $form = $("#coverage");
+        loadFixtures("coverage-dates.html");
+        var $form = $("#coverage");
         var validator = TDAR.validate.initForm($form);
         var sel = $form.find('select')[0];
 
@@ -80,8 +80,8 @@ describe("TDAR.validate: edit page tests", function () {
     
     it("should work when we call prepareDateFields (RC valid)", function () {
         console.log("prepare-date-test rc-valid");
-    	loadFixtures("coverage-dates.html");
-    	var $form = $("#coverage");
+        loadFixtures("coverage-dates.html");
+        var $form = $("#coverage");
         var sel = $form.find('select')[0];
         setFixtures($form);
         var validator = TDAR.validate.initForm($form);
@@ -109,9 +109,9 @@ describe("TDAR.validate: edit page tests", function () {
     });
 
     it("should apply coding-sheet & ontology validation rules (1 file - valid)", function() {
-    	loadFixtures("supporting-resource-upload.html");
-    	var $form = $("#supporting");
-    	$form.data("total-files",1);
+        loadFixtures("supporting-resource-upload.html");
+        var $form = $("#supporting");
+        $form.data("total-files",1);
         var validator = TDAR.validate.initForm($form);
         TDAR.common.setupSupportingResourceForm(1, 'coding-sheet');
         $form.valid();
@@ -119,9 +119,9 @@ describe("TDAR.validate: edit page tests", function () {
     });
     
     it("should apply coding-sheet & ontology validation rules (0 files - invalid)", function() {
-    	console.log("test coding-sheet-upload invalid");
-    	loadFixtures("supporting-resource-upload.html");
-    	var $form = $("#supporting");
+        console.log("test coding-sheet-upload invalid");
+        loadFixtures("supporting-resource-upload.html");
+        var $form = $("#supporting");
         var validator = TDAR.validate.initForm($form);
         $form.valid();
         console.log(validator.errorList);

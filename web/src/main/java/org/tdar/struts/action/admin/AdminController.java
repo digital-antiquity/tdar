@@ -40,7 +40,6 @@ import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
-import org.tdar.struts_base.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.Pair;
 import org.tdar.web.service.WebScheduledProcessService;
 
@@ -57,7 +56,6 @@ import org.tdar.web.service.WebScheduledProcessService;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-@HttpsOnly
 public class AdminController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 4385039298623767568L;

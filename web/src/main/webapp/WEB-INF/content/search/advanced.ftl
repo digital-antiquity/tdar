@@ -81,7 +81,7 @@
     <textarea id="autosave"></textarea>
 </form>
 
-<div id="template" style="display:none;visibility:hidden">
+<div id="template" style="display:none;visibility:hidden" >
     <#list allSearchFieldTypes as fieldType>
         <@fieldTemplate fieldType=fieldType fieldIndex="{termid}" groupid="{groupid}" />
     </#list>
@@ -99,7 +99,7 @@
                 <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="number" />
             </div>
             <#elseif fieldType.simple>
-            <div class="term retain  ${fieldType}">
+            <div class="term retain  ${fieldType} simple <#if fieldType.multiIndex>multiIndex</#if>">
                 <@s.textfield theme="tdar" type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="input-xxlarge" />
             </div>
             <#elseif fieldType="COVERAGE_DATE_RADIOCARBON" || fieldType="COVERAGE_DATE_CALENDAR" >
@@ -213,18 +213,26 @@
             <#elseif fieldType?starts_with("DATE_")>
             <div class="term retain ${fieldType} controls-row">
                 <div class="span3">
-                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"/>
+                    <div class="input-append">
+	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"
+	                    	 dynamicAttributes={"data-date-format":"mm/dd/yy"} />
+                          <span class="add-on"><i class="icon-th"></i></span>
+                        </div>
                 </div>
                 <div class="span3">
-                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"/>
+                    <div class="input-append">
+	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"
+	                    dynamicAttributes={"data-date-format":"mm/dd/yy"} />
+                          <span class="add-on"><i class="icon-th"></i></span>
+                        </div>
                 </div>
             </div>
             <#elseif fieldType="PROJECT">
-            <!-- FIXME: refactor to not repeat the same block -->
                 <@templateProject fieldIndex groupid />
             <#elseif fieldType="COLLECTION">
-            <!-- FIXME: refactor to not repeat the same block -->
-                <@templateCollection fieldIndex groupid />
+                <@templateCollection fieldIndex groupid "collection" />
+            <#elseif fieldType="SHARE" && authenticated>
+                <@templateCollection fieldIndex groupid "share" />
 
             </#if>
         </#if>
@@ -299,12 +307,13 @@
 
     </#macro>
 
+    <#--render an empty "all fields" form input element -->
     <#macro blankRow groupid=0 fieldType_index=0 idAttr="grouptablerow_${groupid}_">
     <div id="${idAttr}" class="control-group termrow repeat-row">
         <@searchTypeSelect />
-        <div class="controls controls-row">
+        <div class="controls controls-row simple multiIndex">
             <div class="span8 term-container">
-                            <span class="term retain  ALL_FIELDS">
+                            <span class="term retain ALL_FIELDS simple multiIndex">
                                 <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="input-xxlarge"/>
                             </span>
             </div>
@@ -337,12 +346,18 @@
     </#macro>
 
 <!-- FIXME: refactor to not repeat the same block -->
-    <#macro templateCollection fieldIndex="{termid}" groupid="{groupid}">
-    <div class="term COLLECTION">
-        <@s.hidden name="groups[${groupid}].collections[${fieldIndex}].id" id="collections_${groupid}_${fieldIndex}_id" />
-            <@common.combobox name="groups[${groupid}].collections[${fieldIndex}].name" id="collections_${groupid}_${fieldIndex}_name"
-    cssClass="input-xxlarge-combo collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id"
-    target="" label="" placeholder="enter collection name" bootstrapControl=false/>
+    <#macro templateCollection fieldIndex="{termid}" groupid="{groupid}" type="collection">
+    <#local prefix="collections">
+    <#local collectionType="LIST">
+    <#if type == 'collection'>
+        <#local collectionType="SHARED">
+        <#local prefix="shares">
+    </#if>
+    <div class="term ${type?upper_case}">
+        <@s.hidden name="groups[${groupid}].${prefix}[${fieldIndex}].id" id="${prefix}_${groupid}_${fieldIndex}_id" />
+            <@common.combobox name="groups[${groupid}].${prefix}[${fieldIndex}].name" id="${prefix}_${groupid}_${fieldIndex}_name"
+    cssClass="input-xxlarge-combo collectioncombo" autocompleteIdElement="#${prefix}_${groupid}_${fieldIndex}_id"
+    target="" label="" placeholder="enter ${type} name" bootstrapControl=false collectionType="${collectionType}"/>
     </div>
     </#macro>
 

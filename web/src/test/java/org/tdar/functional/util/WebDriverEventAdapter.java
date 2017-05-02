@@ -42,9 +42,9 @@ public abstract class WebDriverEventAdapter implements WebDriverEventListener {
 
     @Override public void afterClickOn(WebElement element, WebDriver driver) {}
 
-    @Override public void beforeChangeValueOf(WebElement element, WebDriver driver) {}
+//    @Override public void beforeChangeValueOf(WebElement element, WebDriver driver) {}
 
-    @Override public void afterChangeValueOf(WebElement element, WebDriver driver) {}
+//    @Override public void afterChangeValueOf(WebElement element, WebDriver driver) {}
 
     @Override public void beforeScript(String script, WebDriver driver) {}
 

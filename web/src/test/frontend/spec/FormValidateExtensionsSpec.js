@@ -1,5 +1,5 @@
 /* global describe, jasmine, $, $j, beforeEach, afterEach, it, xit, loadFixtures */
-xdescribe("form validation suite - root", function(){
+xdescribe("FormValidateExtensionsSpec.js: form validation suite - root", function(){
     "use strict";
 
     var helper, fileValidator;

@@ -44,6 +44,8 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
+import com.opensymphony.xwork2.Preparable;
+
 @Component
 @Scope("prototype")
 @ParentPackage("default")
@@ -55,7 +57,6 @@ public class MockNelnetController extends AbstractAuthenticatableAction implemen
     private Map<String, String[]> params;
     private Map<String, String[]> responseParams = new HashMap<String, String[]>();
 
-    
     @Autowired
     private transient NelNetPaymentDao nelnet;
 

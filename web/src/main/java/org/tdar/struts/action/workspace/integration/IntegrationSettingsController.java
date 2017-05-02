@@ -37,7 +37,7 @@ public class IntegrationSettingsController extends AbstractPersistableController
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return true;
         }
-        return authorizationService.canEditWorkflow(getPersistable(), getAuthenticatedUser());
+        return authorizationService.canEditWorkflow( getAuthenticatedUser(),getPersistable());
     }
 
     @Override

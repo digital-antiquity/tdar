@@ -3,11 +3,12 @@ package org.tdar.balk.struts.interceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.balk.service.SimpleAuthenticationService;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.struts_base.interceptor.BaseAuthenticationInterceptor;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+
+import org.tdar.balk.service.SimpleAuthenticationService;
 
 /**
  * $Id$

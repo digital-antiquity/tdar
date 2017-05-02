@@ -15,7 +15,7 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
@@ -31,7 +31,7 @@ public class ProjectAndInheritanceSearchITCase extends AbstractResourceSearchITC
     public void testForInheritedCulturalInformationFromProject() throws ParseException, SolrServerException, IOException {
         searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
-        rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
+        rparams.setObjectTypes(Arrays.asList(ObjectType.DOCUMENT, ObjectType.IMAGE));
         SearchResult<Resource> result = doSearch("Archaic",null,null,rparams);
         assertTrue("'Archaic' defined inparent project should be found in information resource", resultsContainId(result,DOCUMENT_INHERITING_CULTURE_ID));
         assertFalse("A child document that inherits nothing from parent project should not appear in results", resultsContainId(result,DOCUMENT_INHERITING_NOTHING_ID));
@@ -52,7 +52,7 @@ public class ProjectAndInheritanceSearchITCase extends AbstractResourceSearchITC
         SearchParameters rparams = new SearchParameters();
         rparams.getApprovedCultureKeywordIdLists().add(new ArrayList<String>());
         rparams.getApprovedCultureKeywordIdLists().get(0).add(ck.getId().toString());
-        rparams.setResourceTypes(Arrays.asList(ResourceType.PROJECT));
+        rparams.setObjectTypes(Arrays.asList(ObjectType.PROJECT));
         SearchResult<Resource> result = doSearch(null,null,rparams, null);
         assertTrue(result.getResults().contains(project));
     }

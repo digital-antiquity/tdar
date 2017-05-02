@@ -169,8 +169,10 @@ public class ExcelConverter extends DatasetConverter.Base {
         }
         // create the data table + columns based on the SheetEvaluator's reported headers.
         DataTable dataTable = createDataTable(sheetName);
+        int count = 0;
         for (String columnName : sheetEvaluator.getHeaderColumnNames()) {
-            createDataTableColumn(columnName, DataTableColumnType.TEXT, dataTable);
+            createDataTableColumn(columnName, DataTableColumnType.TEXT, dataTable, count);
+            count++;
         }
         // FIXME: will this conditional ever happen?
         if ((dataTable.getDataTableColumns() == null) || dataTable.getDataTableColumns().isEmpty()) {

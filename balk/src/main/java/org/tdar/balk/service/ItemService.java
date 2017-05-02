@@ -33,8 +33,7 @@ import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.bean.TdarReference;
 import org.tdar.balk.dao.ItemDao;
 import org.tdar.balk.dao.UserDao;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -45,7 +44,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.APIClient;
@@ -287,14 +286,14 @@ public class ItemService {
         object.setStatus(Status.DRAFT);
         object.setDate(2016);
         if (StringUtils.isNotBlank(collection)) {
-            ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
+            SharedCollection rc = new SharedCollection();
             rc.setHidden(true);
             if (StringUtils.isNotBlank(username)) {
-                rc.getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
+                rc.getAuthorizedUsers().add(new AuthorizedUser(null,new TdarUser( null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
             }
             rc.setName(collection);
             rc.setDescription("(from dropbox)");
-            object.getResourceCollections().add(rc);
+            object.getSharedCollections().add(rc);
         }
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);

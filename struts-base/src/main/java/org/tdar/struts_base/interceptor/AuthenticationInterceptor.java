@@ -1,28 +1,12 @@
 package org.tdar.struts_base.interceptor;
 
-import java.lang.reflect.Method;
-import java.util.WeakHashMap;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.session.SessionData;
-import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
-import org.tdar.struts_base.interceptor.annotation.HttpNotFoundErrorOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
-
-import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.ActionProxy;
 
 /**
  * $Id$

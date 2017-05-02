@@ -6,6 +6,10 @@
 
 <head>
 <title>Admin: ${collection.name}</title>
+<style>
+textarea {height:10rem;}
+</style>
+
 </head>
 <body>
 
@@ -36,35 +40,33 @@
     </div>
 </div>
 
-		<@s.hidden name="id" />
+        <@s.hidden name="id" />
 
         <#list resources>
             <#items as res>
                 <p><b>${res.id?c}</b> - <a href="${res.detailUrl}">${res.title}</a> (${res.resourceType} - ${res.status})</p>
-                <@s.hidden name="ids[${res_index}]" value="${res.id?c}" /> 
+                <@s.hidden name="ids[${res_index}]" value="${res.id?c}" cssClass="resource-id-field" />
                 
                 <svg class="svgicon svg-small red pull-left" style="position:absolute"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${res.resourceType?lower_case}"></use></svg>                 
-                <@s.textfield name="titles[${res_index}]" value="${res.title}" label="Title" cssClass="input-xxlarge span8" />
+                <@s.textfield name="titles[${res_index}]" value="${res.title}" label="Title" cssClass="input-xxlarge span8 resource-title-field" />
                 <#if res.resourceType.project>
                     <@s.hidden name="dates[${res_index}]" value="-1" label="Date" cssClass="input" /> 
                 <#else>
                     <@s.textfield name="dates[${res_index}]" value="${res.date?c}" label="Date" cssClass="input" /> 
                 </#if>
-                <@s.textarea name="descriptions[${res_index}]" value="${res.description}" label="Description" cssClass="input-xxlarge span8" /> 
+                <@s.textarea name="descriptions[${res_index}]" value="${res.description}" label="Description" cssClass="input-xxlarge span8 resource-description-field" />
             </#items>
         </#list>
         <@edit.submit fileReminder=false />
-    	</@s.form>
+        </@s.form>
     </div>
 
+</div>
 </div>
 <script>
 $(document).ready(function() {
     TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
 });
 </script>
-<style>
-textarea {height:10rem;}
-</style>
 </body>
 </#escape>

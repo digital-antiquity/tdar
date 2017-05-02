@@ -25,7 +25,7 @@ TDAR.datatable = function() {
             requestCallback : doNothingCallback,
             selectableRows : false,
             rowSelectionCallback : doNothingCallback,
-            "sAjaxSource" : TDAR.uri( 'lookup/resource'),
+            "sAjaxSource" : TDAR.uri( 'api/lookup/resource'),
             "sAjaxDataProp" : 'resources',
             "bJQueryUI" : false,
             "sScrollY" : "350px",
@@ -139,6 +139,7 @@ TDAR.datatable = function() {
                 // determine whether the user selected this item already (if so check the box)
                 var $cb = $(nRow).find('input[type=checkbox]');
                 var id = $cb.val();
+                $(nRow).attr("id","row-"+id);
                 $cb.prop('checked', obj.isCurrentlySelected );
                 return nRow;
             };
@@ -299,7 +300,7 @@ TDAR.datatable = function() {
         var $dataTable = $('#resource_datatable');
         _registerLookupDataTable({
             tableSelector : '#resource_datatable',
-            sAjaxSource : TDAR.uri( 'lookup/resource'),
+            sAjaxSource : TDAR.uri( 'api/lookup/resource'),
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
@@ -317,9 +318,14 @@ TDAR.datatable = function() {
                     'term' : $("#query").val(),
                     'projectId' : $("#project-selector").val(),
                     'collectionId' : $("#collection-selector").val(),
-                    useSubmitterContext : !_options.isAdministrator,
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid
                 };
+                if (!_options.isAdministrator && _options.limitContext == true ) {
+                    parms['useSubmitterContext'] = true;
+                } else {
+                    parms['useSubmitterContext'] = false;
+                }
+                console.log(parms);
                 if($("#parentCollectionsIncluded").length) {
                     parms.parentCollectionsIncluded = (!$("#parentCollectionsIncluded").prop("checked")).toString();
                 }
@@ -562,7 +568,7 @@ TDAR.datatable = function() {
     function _registerUserLookupDatatable() {
         var settings = {
             tableSelector : '#dataTable',
-            sAjaxSource : TDAR.uri() + 'lookup/person',
+            sAjaxSource : TDAR.uri() + 'api/lookup/person',
             "sDom" : "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
             sPaginationType : "bootstrap",
             "bLengthChange" : true,

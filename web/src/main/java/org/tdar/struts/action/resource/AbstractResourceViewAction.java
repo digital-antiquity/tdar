@@ -2,6 +2,7 @@ package org.tdar.struts.action.resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -22,8 +23,11 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.CustomizableCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -41,9 +45,9 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.billing.BillingAccountService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ResourceService;
@@ -107,15 +111,18 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private ResourceService resourceService;
 
-    private List<ResourceCollection> resourceCollections = new ArrayList<>();
-    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
+    // private List<RightsBasedResourceCollection> shares = new ArrayList<>();
+    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
+    // private List<ListCollection> resourceCollections = new ArrayList<>();
+    private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
     private List<ResourceCreatorProxy> contactProxies;
     private ResourceCitationFormatter resourceCitation;
 
-    private List<ResourceCollection> viewableResourceCollections;
+     private List<ListCollection> viewableListCollections;
+     private List<SharedCollection> viewableSharedCollections;
 
     private String schemaOrgJsonLD;
 
@@ -246,7 +253,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     private void loadEffectiveResourceCollections() {
-        getResourceCollections().addAll(getResource().getSharedResourceCollections());
+        // getShares().addAll(getResource().getSharedResourceCollections());
+        getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
+        // getResourceCollections().addAll(getResource().getUnmanagedResourceCollections());
         getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
     }
 
@@ -322,60 +331,58 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return ResourceCreatorRole.getCreditRoles(CreatorType.PERSON, getResource().getResourceType());
     }
 
-    /**
-     * @param resourceCollections
-     *            the resourceCollections to set
-     */
-    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
-    }
-
-    /**
-     * @return the resourceCollections
-     */
-    public List<ResourceCollection> getResourceCollections() {
-        return resourceCollections;
-    }
-
-    /**
-     * @return the effectiveResourceCollections
-     */
-    public List<ResourceCollection> getEffectiveResourceCollections() {
-        return effectiveResourceCollections;
-    }
-
-    /**
-     * @param effectiveResourceCollections
-     *            the effectiveResourceCollections to set
-     */
-    public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
-        this.effectiveResourceCollections = effectiveResourceCollections;
-    }
-
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
     // shared+invisible+canEdit
-    public List<ResourceCollection> getViewableResourceCollections() {
-        if (viewableResourceCollections != null) {
-            return viewableResourceCollections;
+    public List<ListCollection> getViewableListResourceCollections() {
+        if (viewableListCollections != null) {
+            return viewableListCollections;
         }
 
         // if nobody logged in, just get the shared+visible collections
-        Set<ResourceCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
+        Set<ListCollection> collections = new HashSet<>();
         collections.addAll(getResource().getVisibleUnmanagedResourceCollections());
         // if authenticated, also add the collections that the user can modify
+        addViewableCollections(collections, getResource().getUnmanagedResourceCollections());
+
+        viewableListCollections = new ArrayList<>(collections);
+        return viewableListCollections;
+    }
+
+    private <C extends VisibleCollection> void addViewableCollections(Set<C> list, Collection<C> incomming) {
         if (isAuthenticated()) {
-            Set<ResourceCollection> all = new HashSet<>(getResource().getSharedResourceCollections());
-            all.addAll(getResource().getUnmanagedResourceCollections());
-            for (ResourceCollection resourceCollection : all) {
-                if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
-                    collections.add(resourceCollection);
+            for (C resourceCollection : incomming) {
+                if (authorizationService.canViewCollection(getAuthenticatedUser(), resourceCollection) && !resourceCollection.isSystemManaged()) {
+                    list.add(resourceCollection);
                 }
             }
         }
-
-        viewableResourceCollections = new ArrayList<>(collections);
-        return viewableResourceCollections;
     }
+    
+    /**
+     * All shares and list collections
+     * @return
+     */
+    public List<VisibleCollection> getViewableResourceCollections() {
+        List<VisibleCollection> visibleCollections = new ArrayList<>();
+        visibleCollections.addAll(getViewableListResourceCollections());
+        visibleCollections.addAll(getViewableSharedResourceCollections());
+        return visibleCollections;
+    }
+
+    
+    public List<SharedCollection> getViewableSharedResourceCollections() {
+        if (viewableSharedCollections != null) {
+            return viewableSharedCollections;
+        }
+
+        // if nobody logged in, just get the shared+visible collections
+        Set<SharedCollection> collections = new HashSet<>(getResource().getVisibleSharedResourceCollections());
+        addViewableCollections(collections, getResource().getSharedCollections());
+
+        viewableSharedCollections = new ArrayList<>(collections);
+        return viewableSharedCollections;
+    }
+
 
     public boolean isUserAbleToReTranslate() {
         if (authorizationService.canEdit(getAuthenticatedUser(), getPersistable())) {
@@ -462,15 +469,15 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 
-    private transient WhiteLabelCollection whiteLabelCollection;
-    
+    private transient CustomizableCollection whiteLabelCollection;
+
     @XmlTransient
     /**
      * We assume for now that a resource will only belong to a single white-label collection.
      *
      * @return
      */
-    public WhiteLabelCollection getWhiteLabelCollection() {
+    public CustomizableCollection getWhiteLabelCollection() {
         if (whiteLabelCollection == null) {
             whiteLabelCollection = resourceCollectionService.getWhiteLabelCollectionForResource(getResource());
         }
@@ -478,7 +485,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     public boolean isWhiteLabelLogoAvailable() {
-        WhiteLabelCollection wlc = getWhiteLabelCollection();
+        CustomizableCollection wlc = getWhiteLabelCollection();
         return wlc != null && checkLogoAvailable(FilestoreObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
     }
 
@@ -505,5 +512,29 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Override
     public boolean isRightSidebar() {
         return true;
+    }
+
+    public List<RightsBasedResourceCollection> getEffectiveShares() {
+        return effectiveShares;
+    }
+
+    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveShares) {
+        this.effectiveShares = effectiveShares;
+    }
+
+    // public List<ListCollection> getResourceCollections() {
+    // return resourceCollections;
+    // }
+    //
+    // public void setResourceCollections(List<ListCollection> resourceCollections) {
+    // this.resourceCollections = resourceCollections;
+    // }
+
+    public List<ListCollection> getEffectiveResourceCollections() {
+        return effectiveResourceCollections;
+    }
+
+    public void setEffectiveResourceCollections(List<ListCollection> effectiveResourceCollections) {
+        this.effectiveResourceCollections = effectiveResourceCollections;
     }
 }

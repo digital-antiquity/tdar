@@ -9,10 +9,10 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
-import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts.action.AbstractCartController;
 import org.tdar.struts.action.UserAgreementController;
-import org.tdar.struts.action.cart.AbstractCartController;
-import org.tdar.struts.action.cart.CartApiPollingAction;
+import org.tdar.struts.action.api.cart.CartApiPollingAction;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.ActionInvocation;

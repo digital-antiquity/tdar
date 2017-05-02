@@ -49,7 +49,7 @@ public class ThumbnailDownloadAction extends AbstractDownloadController implemen
             return ERROR;
         }
 
-        if (!authorizationService.canDownload(getInformationResourceFileVersion(), getAuthenticatedUser())) {
+        if (!authorizationService.canDownload(getAuthenticatedUser(), getInformationResourceFileVersion())) {
             getLogger().warn("thumbail request: resource is confidential/embargoed: {}", getInformationResourceFileVersionId());
             return FORBIDDEN;
         }

@@ -27,9 +27,9 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -42,169 +42,169 @@ import com.opensymphony.xwork2.Validateable;
 @HttpsOnly
 public class BillingAccountSelectionAction extends AbstractAuthenticatableAction implements Preparable, Validateable {
 
-	public static final String UPDATE_QUOTAS = "updateQuotas";
-	public static final String FIX_FOR_DELETE_ISSUE = "fix";
-	public static final String CHOOSE = "choose";
-	public static final String VIEW_ID = "${id}";
-	private static final long serialVersionUID = 2912533895769561917L;
-	public static final String NEW_ACCOUNT = "new_account";
-	private Long invoiceId;
-	private List<BillingAccount> accounts = new ArrayList<>();
-	private List<Resource> resources = new ArrayList<>();
+    public static final String UPDATE_QUOTAS = "updateQuotas";
+    public static final String FIX_FOR_DELETE_ISSUE = "fix";
+    public static final String CHOOSE = "choose";
+    public static final String VIEW_ID = "${id}";
+    private static final long serialVersionUID = 2912533895769561917L;
+    public static final String NEW_ACCOUNT = "new_account";
+    private Long invoiceId;
+    private List<BillingAccount> accounts = new ArrayList<>();
+    private List<Resource> resources = new ArrayList<>();
 
-	private BillingAccountGroup accountGroup;
-	private List<TdarUser> authorizedMembers = new ArrayList<>();
-	private Long accountGroupId;
-	private String name;
-	private Date expires = new DateTime().plusYears(1).toDate();
+    private BillingAccountGroup accountGroup;
+    private List<TdarUser> authorizedMembers = new ArrayList<>();
+    private Long accountGroupId;
+    private String name;
+    private Date expires = new DateTime().plusYears(1).toDate();
 
-	private String description;
-	private String ownerProperName;
-	private TdarUser owner;
+    private String description;
+    private String ownerProperName;
+    private TdarUser owner;
 
-	@Autowired
-	private transient BillingAccountService accountService;
-	@Autowired
-	private transient AuthorizationService authorizationService;
+    @Autowired
+    private transient BillingAccountService accountService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
-	private Invoice invoice;
-	@Override
-	public void prepare() {
-		if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
-			invoice = getGenericService().find(Invoice.class, invoiceId);
-		}
-	}
+    private Invoice invoice;
+    @Override
+    public void prepare() {
+        if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
+            invoice = getGenericService().find(Invoice.class, invoiceId);
+        }
+    }
 
-	@Override
-	public void validate() {
-	    if (invoice == null) {
-	        throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
-	    }
-	    if (!authorizationService.canAssignInvoice(invoice, getAuthenticatedUser())) {
-	        throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
-	    }
-	}
+    @Override
+    public void validate() {
+        if (invoice == null) {
+            throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
+        }
+        if (!authorizationService.canAssignInvoice(invoice, getAuthenticatedUser())) {
+            throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
+        }
+    }
 
-	@Action(value = CHOOSE, results = { @Result(name = SUCCESS, location = "select-account.ftl"),
-			@Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = TDAR_REDIRECT) })
-	public String selectAccount() throws TdarActionException {
+    @Action(value = CHOOSE, results = { @Result(name = SUCCESS, location = "select-account.ftl"),
+            @Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = TDAR_REDIRECT) })
+    public String selectAccount() throws TdarActionException {
 
-	    setAccounts(accountService.listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
-		
-	    if (CollectionUtils.isNotEmpty(getAccounts())) {
-			return SUCCESS;
-		}
-		
-	    return NEW_ACCOUNT;
-	}
+        setAccounts(accountService.listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
 
-	public Invoice getInvoice() {
-		return invoice;
-	}
+        if (CollectionUtils.isNotEmpty(getAccounts())) {
+            return SUCCESS;
+        }
 
-	public Long getInvoiceId() {
-		return invoiceId;
-	}
+        return NEW_ACCOUNT;
+    }
 
-	public void setInvoiceId(Long invoiceId) {
-		this.invoiceId = invoiceId;
-	}
+    public Invoice getInvoice() {
+        return invoice;
+    }
 
-	public List<BillingAccount> getAccounts() {
-		return accounts;
-	}
+    public Long getInvoiceId() {
+        return invoiceId;
+    }
 
-	public void setAccounts(List<BillingAccount> accounts) {
-		this.accounts = accounts;
-	}
+    public void setInvoiceId(Long invoiceId) {
+        this.invoiceId = invoiceId;
+    }
 
-	public BillingAccountGroup getAccountGroup() {
-		return accountGroup;
-	}
+    public List<BillingAccount> getAccounts() {
+        return accounts;
+    }
 
-	public void setAccountGroup(BillingAccountGroup accountGroup) {
-		this.accountGroup = accountGroup;
-	}
+    public void setAccounts(List<BillingAccount> accounts) {
+        this.accounts = accounts;
+    }
 
-	public Long getAccountGroupId() {
-		return accountGroupId;
-	}
+    public BillingAccountGroup getAccountGroup() {
+        return accountGroup;
+    }
 
-	public void setAccountGroupId(Long accountGroupId) {
-		this.accountGroupId = accountGroupId;
-	}
+    public void setAccountGroup(BillingAccountGroup accountGroup) {
+        this.accountGroup = accountGroup;
+    }
 
-	public Person getBlankPerson() {
-		return new Person();
-	}
+    public Long getAccountGroupId() {
+        return accountGroupId;
+    }
 
-	@DoNotObfuscate(reason = "needs access to Email Address on view page")
-	public List<TdarUser> getAuthorizedMembers() {
-		return authorizedMembers;
-	}
+    public void setAccountGroupId(Long accountGroupId) {
+        this.accountGroupId = accountGroupId;
+    }
 
-	public void setAuthorizedMembers(List<TdarUser> authorizedMembers) {
-		this.authorizedMembers = authorizedMembers;
-	}
+    public Person getBlankPerson() {
+        return new Person();
+    }
 
-	public boolean isBillingAdmin() {
-		return authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER);
-	}
+    @DoNotObfuscate(reason = "needs access to Email Address on view page")
+    public List<TdarUser> getAuthorizedMembers() {
+        return authorizedMembers;
+    }
 
-	public BillingActivityModel getBillingActivityModel() {
-		return accountService.getLatestActivityModel();
-	}
+    public void setAuthorizedMembers(List<TdarUser> authorizedMembers) {
+        this.authorizedMembers = authorizedMembers;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public boolean isBillingAdmin() {
+        return authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER);
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public BillingActivityModel getBillingActivityModel() {
+        return accountService.getLatestActivityModel();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public List<Resource> getResources() {
-		return resources;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setResources(List<Resource> resources) {
-		this.resources = resources;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public List<Status> getStatuses() {
-		return Arrays.asList(Status.ACTIVE, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE, Status.DELETED);
-	}
+    public List<Resource> getResources() {
+        return resources;
+    }
 
-	public String getOwnerProperName() {
-		return ownerProperName;
-	}
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
+    }
 
-	public void setOwnerProperName(String ownerProperName) {
-		this.ownerProperName = ownerProperName;
-	}
+    public List<Status> getStatuses() {
+        return Arrays.asList(Status.ACTIVE, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE, Status.DELETED);
+    }
 
-	public TdarUser getOwner() {
-		return owner;
-	}
+    public String getOwnerProperName() {
+        return ownerProperName;
+    }
 
-	public void setOwner(TdarUser owner) {
-		this.owner = owner;
-	}
+    public void setOwnerProperName(String ownerProperName) {
+        this.ownerProperName = ownerProperName;
+    }
 
-	public Date getExpires() {
-		return expires;
-	}
+    public TdarUser getOwner() {
+        return owner;
+    }
 
-	public void setExpires(Date expires) {
-		this.expires = expires;
-	}
+    public void setOwner(TdarUser owner) {
+        this.owner = owner;
+    }
+
+    public Date getExpires() {
+        return expires;
+    }
+
+    public void setExpires(Date expires) {
+        this.expires = expires;
+    }
 
 }
