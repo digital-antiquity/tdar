@@ -431,4 +431,15 @@ public interface TdarNamedQueries {
 
     
 
+    String QUERY_USERS_SHARED_WITH = "select id from tdar_user where id in " +
+            "    (select user_id from authorized_user where resource_collection_id  in " +
+            "    /* find direct collections where the owner is the person, or the authorized_user matches */" +
+            "        (select c.id from collection c left join authorized_user au on au.resource_collection_id=c.id where" +
+            "             c.status='ACTIVE' and (au.user_id=:userId and au.general_permission_int > :permission ) or c.owner_id=:userId " +
+            "     /* find child collections where the owner is the person, or the authorized_user matches */" +
+            "        union select collection_id from collection_parents where collection_id in (select c.id from collection c left join authorized_user au on au.resource_collection_id=c.id where " +
+            "            c.status='ACTIVE' and (au.user_id=:userId and au.general_permission_int > :permission ) or c.owner_id=:userId )" +
+            "    /*  find collections (likely internal) where the resource's submitter matches */" +
+            "     union select collection_id from collection_resource left join resource r on r.id=collection_resource.resource_id and r.status in ('ACTIVE','DRAFT') and r.submitter_id=:userId ))";
+
 }

@@ -480,27 +480,14 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @return
      */
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
-        logger.debug("find collections");
-        Query<SharedCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, SharedCollection.class);
+        Query<Long> shared = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_USERS_SHARED_WITH,Long.class);
         shared.setParameter("userId", authenticatedUser.getId());
-        shared.setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
-        List<SharedCollection> resultList = shared.getResultList();
-        List<Long> ids = PersistableUtils.extractIds(resultList);
-        if (CollectionUtils.isEmpty(ids)) {
+        shared.setParameter("permission", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        List<Long> resultList = shared.getResultList();
+        if (CollectionUtils.isEmpty(resultList)) {
             return new ArrayList<>();
         }
-
-        logger.debug("find users 1");
-        Query<TdarUser> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH_USERS, TdarUser.class);
-        query.setParameter("owner", authenticatedUser);
-        query.setParameter("collectionIds", ids);
-        List<TdarUser> users = new ArrayList<>( query.getResultList());
-        logger.debug("find users 2");
-        logger.debug("collectionIds:{}", ids);
-        Query<TdarUser> query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_RESOURCES_SHARED_WITH_USERS, TdarUser.class);
-        query2.setParameter("owner", authenticatedUser);
-        query2.setParameter("collectionIds", ids);
-        users.addAll(query2.getResultList());
+        List<TdarUser> users = new ArrayList<>(findAll(TdarUser.class, resultList));
         return users;
     }
 
