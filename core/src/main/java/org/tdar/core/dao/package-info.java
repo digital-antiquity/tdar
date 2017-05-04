@@ -581,8 +581,10 @@
                 query = "from DownloadAuthorization da where da.sharedCollection.id=:collectionId"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_RESOURCES_SHARED_WITH,
-                query = "select distinct r from Resource r inner join r.internalCollections ic inner join ic.authorizedUsers au where au.user=:user and (:admin is true or r.id in ("
-                        + "select r_.id from Resource r_ left join r_.resourceCollections as rc_ left join rc_.parentIds parentId where r_.submitter=:owner or rc_.id in (:collectionIds) or parentId in (:collectionIds) "
+                query = "select new Resource(r.id, r.title, r.resourceType, r.description, r.status) from Resource r "
+                        + " left join r.internalCollections ic inner join ic.authorizedUsers au where au.user=:user and r.status in ('ACTIVE','DRAFT') and (:admin is true or r.id in "
+                        + "     (select r_.id from Resource r_ left join r_.resourceCollections as rc_ left join rc_.parentIds parentId "
+                        + "             where r_.submitter=:owner or rc_.id in (:collectionIds) or parentId in (:collectionIds) "
                         + "))"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH,
@@ -621,3 +623,5 @@ package org.tdar.core.dao;
 
 import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Status;

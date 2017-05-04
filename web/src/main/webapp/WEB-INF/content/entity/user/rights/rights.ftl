@@ -18,7 +18,7 @@
 </div>
 <div class="span10">
 <#list findResourcesSharedWith>
-<h5>${findResourcesSharedWith?size } Shared Resources:</h5>
+<h5>${findResourcesSharedWith?size } Directly Shared Resources: (not through a collection)</h5>
     <ul>
     <#items as item>
         <li><a href="${item.detailUrl}">${item.title}</a> (${item.id?c})</li>

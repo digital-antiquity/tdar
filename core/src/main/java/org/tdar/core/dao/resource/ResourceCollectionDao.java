@@ -20,10 +20,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
-import org.hibernate.transform.ResultTransformer;
-import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +48,6 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.ref.CollectionRef;
-import org.tdar.core.bean.resource.ref.ResourceRef;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.base.Dao;
@@ -513,41 +508,6 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
                 .setParameter("resource", resource)
                 .list();
     }
-
-
-    public List<ResourceRef> findResourcesAvailableToUser(TdarUser user) {
-        NativeQuery<ResourceRef> query = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_SQL_RESOURCES_VIA_COLLECTION_PROGENY, ResourceRef.class);
-        return query.setParameter("user_id", user.getId())
-                .setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions())
-                .list();
-    }
-
-    public List<CollectionRef> findCollectionsAvailableToUser(TdarUser user) {
-        NativeQuery<CollectionRef> query = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_SQL_COLLECTIONS_VIA_COLLECTION_PROGENY,
-                CollectionRef.class);
-        return query.setParameter("user_id", user.getId())
-                .setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions())
-                .list();
-    }
-
-    public List<ResourceRef> findResourcesAvailableToUser(TdarUser user, TdarUser viewer) {
-        NativeQuery<ResourceRef> query = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_SQL_RESOURCES_VIA_COLLECTION_PROGENY_FILTERED, ResourceRef.class);
-        return query.setParameter("user_id", user.getId())
-                .setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions())
-                .setParameter("viewer_id", user.getId())
-                .list();
-    }
-
-    public List<CollectionRef> findCollectionsAvailableToUser(TdarUser user, TdarUser viewer) {
-        NativeQuery<CollectionRef> query = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_SQL_COLLECTIONS_VIA_COLLECTION_PROGENY_FILTERED,
-                CollectionRef.class);
-        return query
-                .setParameter("user_id", user.getId())
-                .setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions())
-                .setParameter("viewer_id", user.getId())
-                .list();
-    }
-
 
     public RequestCollection findCustomRequest(Resource resource) {
         List<Long> ids = PersistableUtils.extractIds(resource.getSharedCollections());

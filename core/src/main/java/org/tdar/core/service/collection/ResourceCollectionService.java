@@ -34,7 +34,6 @@ import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
@@ -52,8 +51,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.UserRightsProxy;
-import org.tdar.core.bean.resource.ref.CollectionRef;
-import org.tdar.core.bean.resource.ref.ResourceRef;
 import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -1294,64 +1291,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             admin = true;
         }
         return getDao().findCollectionsSharedWith(authenticatedUser, user, cls, GeneralPermissions.MODIFY_RECORD, admin);
-    }
-
-    /**
-     * List the resources available to a specified 'target user'.  This method potentially filters this list based upon the permissions of
-     * the specified 'requesting user'.  This method considers a resource "available" to the target user based on any of the following criteria:
-     * <ul>
-     *     <li>The target user owns the resource. </li>
-     *     <li>The resource owner has granted explicit editing permissions to the target user (i.e. target user is an internal collection authuser).</li>
-     *     <li>A collection contains the resource and the collection conveys edit rights to the target user.</li>
-     * </ul>
-
-     *
-     * @param authenticatedUser User object associated with the 'requesting user', that is, the user requesting this information.  If the authenticatedUser has sufficient
-     *                          privileges the system will show all of the resources associated with the supplied target user.  Otherwise, this method
-     *                          will filter the list of results to include only the union of "what the requesting user has access to see"  and "resources
-     *                          available to the target user".
-     *
-     * @param user User object representing the 'target user'.  The system will return a list of resources that are available to the target user.]
-     *
-     * @return a list of ResourceRef objects representing the resources available to the target user *and* visible to the authenticatedUser
-     */
-    @Transactional(readOnly = true)
-    public List<ResourceRef> findResourcesAvailableToUser(TdarUser authenticatedUser, TdarUser user) {
-
-        List<ResourceRef> refs;
-        if (authorizationService.isEditor(authenticatedUser)) {
-            refs = getDao().findResourcesAvailableToUser(user);
-        } else {
-            refs = getDao().findResourcesAvailableToUser(user, authenticatedUser);
-        }
-        return refs;
-    }
-
-    /**
-     * List the collections available to a specified 'target user'.  This method potentially filters this list based upon the permissions of
-     * the specified 'requesting user'. This method will not include any InternalCollection objects in the results.
-
-     *
-     * @param authenticatedUser User object associated with the 'requesting user', that is, the user requesting this information.  If the authenticatedUser has sufficient
-     *                          privileges the system will show all of the collections associated with the supplied target user.  Otherwise, this method
-     *                          will filter the list of results to include only the union of "what the requesting user has access to see"  and "collections
-     *                          available to the target user".
-     *
-     * @param user User object representing the 'target user'.  The system will return a list of collections that are available to the target user.]
-     *
-     * @return a list of CollectionRef objects representing the collections available to the target user *and* visible to the authenticatedUser
-     */
-    @Transactional(readOnly = true)
-    public List<CollectionRef> findCollectionsAvailableToUser(TdarUser authenticatedUser, TdarUser user) {
-        List<CollectionRef> refs;
-
-        if (authorizationService.isEditor(authenticatedUser)) {
-            refs = getDao().findCollectionsAvailableToUser(user);
-        } else {
-            refs = getDao().findCollectionsAvailableToUser(user, authenticatedUser);
-        }
-
-        return refs;
     }
 
     @Transactional(readOnly = true)
