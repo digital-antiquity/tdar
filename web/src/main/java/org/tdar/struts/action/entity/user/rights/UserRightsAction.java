@@ -1,7 +1,6 @@
 package org.tdar.struts.action.entity.user.rights;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -16,8 +15,6 @@ import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.ref.CollectionRef;
-import org.tdar.core.bean.resource.ref.ResourceRef;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -35,17 +32,13 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     private static final long serialVersionUID = -967084931743446966L;
     private Long id;
     private TdarUser user;
-    
+
     @Autowired
     private ResourceCollectionService resourceCollectionService;
     @Autowired
     private GenericService genericService;
-    private List<Resource> findResourcesSharedWith;
-    private List<SharedCollection> findCollectionsSharedWith;
-
-    private List<ResourceRef> resourcesAvailableToUser = Collections.EMPTY_LIST;
-    private List<CollectionRef> collectionsAvailableToUser = Collections.EMPTY_LIST;
-
+    private List<Resource> findResourcesSharedWith = new ArrayList<>();
+    private List<SharedCollection> findCollectionsSharedWith = new ArrayList<>();
 
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
 
@@ -55,15 +48,19 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     public TdarUser getPersistable() {
         return user;
     }
+
     @Override
     public void prepare() throws Exception {
         this.user = genericService.find(TdarUser.class, id);
-        setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), user));
+        getLogger().debug("find collections");
         setFindCollectionsSharedWith(resourceCollectionService.findCollectionsSharedWith(getAuthenticatedUser(), getUser(), SharedCollection.class));
+        getLogger().debug("find resources");
+        setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), getFindCollectionsSharedWith(), user));
+        getLogger().debug("find accounts");
         getAccounts().addAll(accountService.listAvailableAccountsForUser(user, Status.ACTIVE));
-
+        getLogger().debug("done");
     }
-    
+
     public boolean isEditable() {
         if (isEditorOrSelf()) {
             return true;
@@ -78,7 +75,6 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         return false;
     }
 
-    
     @Override
     @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = FREEMARKER, location = "rights.ftl"),
@@ -132,22 +128,6 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
 
     public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
-    }
-
-    public List<ResourceRef> getResourcesAvailableToUser() {
-        return resourcesAvailableToUser;
-    }
-
-    public void setResourcesAvailableToUser(List<ResourceRef> resourcesAvailableToUser) {
-        this.resourcesAvailableToUser = resourcesAvailableToUser;
-    }
-
-    public List<CollectionRef> getCollectionsAvailableToUser() {
-        return collectionsAvailableToUser;
-    }
-
-    public void setCollectionsAvailableToUser(List<CollectionRef> collectionsAvailableToUser) {
-        this.collectionsAvailableToUser = collectionsAvailableToUser;
     }
 
 }

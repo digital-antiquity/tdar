@@ -439,12 +439,8 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
     }
 
-    public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user, boolean admin) {
-        Query<SharedCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, SharedCollection.class);
-        shared.setParameter("userId", authenticatedUser.getId());
-        shared.setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
-        List<SharedCollection> resultList = shared.getResultList();
-        List<Long> ids = PersistableUtils.extractIds(resultList);
+    public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, List<SharedCollection> list, TdarUser user, boolean admin) {
+        List<Long> ids = PersistableUtils.extractIds(list);
         if (CollectionUtils.isEmpty(ids)) {
             return new ArrayList<>();
         }
@@ -457,10 +453,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         
     }
 
-    public <C extends ResourceCollection> List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Class<C> cls, boolean admin) {
+    public <C extends ResourceCollection> List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Class<C> cls, GeneralPermissions perm , boolean admin) {
         Query<SharedCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, SharedCollection.class);
         shared.setParameter("userId", authenticatedUser.getId());
-        shared.setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        shared.setParameter("perm", perm.getEffectivePermissions() - 1);
         List<SharedCollection> resultList = shared.getResultList();
         List<Long> ids = PersistableUtils.extractIds(resultList);
         if (CollectionUtils.isEmpty(ids)) {
