@@ -24,7 +24,6 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.core.service.collection.AdhocShare;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
@@ -55,7 +54,6 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
     private List<SharedCollection> allResourceCollections = new ArrayList<>();
     private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
     private List<InternalCollection> internalCollections = new ArrayList<>();
-    private AdhocShare adhocShare = new AdhocShare();
     
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -200,14 +198,6 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
 
     public void setInternalCollections(List<InternalCollection> internalCollections) {
         this.internalCollections = internalCollections;
-    }
-
-    public AdhocShare getAdhocShare() {
-        return adhocShare;
-    }
-
-    public void setAdhocShare(AdhocShare adhocShare) {
-        this.adhocShare = adhocShare;
     }
 
     public List<BillingAccount> getBillingAccounts() {
