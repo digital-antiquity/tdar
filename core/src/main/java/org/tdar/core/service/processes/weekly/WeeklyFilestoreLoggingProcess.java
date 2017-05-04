@@ -59,7 +59,7 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
 
     @Override
     public void execute() {
-        Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
+//        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         logger.info("beginning automated verification of files");
         scrollableResults = informationResourceFileService.findScrollableVersionsForVerification();
         for (int i = 0; i < taskExecutor.getCorePoolSize(); i++) {
