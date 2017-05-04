@@ -1,25 +1,22 @@
 package org.tdar.core.bean;
 
-import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_METADATA;
-import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_RECORD;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.hibernate.SessionFactory;
+import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +46,6 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Autowired
     ResourceCollectionDao resourceCollectionDao;
 
-    @Autowired
-    private transient SessionFactory sessionFactory;
-
 
     private static final String TEST_TITLE = "Brookville Reservoir Survey 1991-1992";
 
@@ -72,7 +66,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         Long collectionId = collection.getId();
         collection = null;
 
-        collection = genericService.findAll(SharedCollection.class, asList(collectionId)).get(0);
+        collection = genericService.findAll(SharedCollection.class, Arrays.asList(collectionId)).get(0);
 
         for (Resource resource : collection.getResources()) {
             logger.info("{} {} ", resource, resource.getSubmitter());
@@ -168,7 +162,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         test.setName("test");
         test.markUpdated(getAdminUser());
         test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), MODIFY_RECORD));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(test);
 
         SharedCollection c1 = new SharedCollection();
@@ -218,7 +212,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         child22.markUpdated(getAdminUser());
         list.markUpdated(getAdminUser());
         genericService.saveOrUpdate(parent, child1, child2, child11, child22, parent2, parent3, list, access);
-        access.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), MODIFY_RECORD));
+        access.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child1, parent, SharedCollection.class);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child2, parent, SharedCollection.class);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child11, child1, SharedCollection.class);
@@ -269,9 +263,9 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
-        List<AuthorizedUser> users = new ArrayList<>(asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), MODIFY_RECORD)));
-        List<Resource> resources = new ArrayList<Resource>(asList(normal, draft));
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+        List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         SharedCollection collection = new SharedCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
         CollectionSaveObject<SharedCollection> cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, users, SharedCollection.class);
@@ -284,17 +278,17 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         collection = null;
         collection = genericService.find(SharedCollection.class, id);
         List<AuthorizedUser> aus = new ArrayList<>(users);
-        aus.add(new AuthorizedUser(getAdminUser(),testPerson, MODIFY_RECORD));
+        aus.add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
         CollectionSaveObject<SharedCollection> cso2 = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, aus, SharedCollection.class);
         resourceCollectionService.saveCollectionForController(cso2);
         genericService.synchronize();
         logger.debug("au: {}", collection.getAuthorizedUsers());
         logger.debug("no: {}", normal.getSharedCollections());
         logger.debug("df: {}", draft.getSharedCollections());
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, GeneralPermissions.MODIFY_METADATA));
 
         assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), draft));
         assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), normal));
@@ -306,7 +300,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     //make a collection w/ three authusers, and confirm those users found via findUsersSharedWith()
     public void testFindUsersSharedWith() {
         final String collectionName = "the best collection ever";
-        List<TdarUser> users = new ArrayList<>(asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
+        List<TdarUser> users = new ArrayList<>(Arrays.asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
 
         SharedCollection collection = createAndSaveNewResourceCollection(collectionName, SharedCollection.class);
         users.remove(collection.getOwner());
@@ -317,13 +311,15 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
         // now add some authusers
         collection.getAuthorizedUsers().addAll(
-                users.stream().map(user -> new AuthorizedUser(getAdminUser(), user, MODIFY_RECORD)).collect(toList()));
+                users.stream().map(user -> new AuthorizedUser(getAdminUser(), user, GeneralPermissions.MODIFY_RECORD)).collect(Collectors.toList()));
 
         genericService.saveOrUpdate(collection);
-
-        assertThat(sessionFactory.getCurrentSession(), notNullValue());
+        genericService.saveOrUpdate(collection.getAuthorizedUsers());
+        genericService.synchronize();
         List<TdarUser> grantees = resourceCollectionDao.findUsersSharedWith(collection.getOwner());
-        assertThat(grantees, containsInAnyOrder(getEditorUser(), getBillingUser(), getAdminUser()));
+        for (TdarUser grantee : users) {
+            assertTrue(String.format("grantees should contain: %s", grantee),grantees.contains(grantee));
+        }
     }
 
     @Test

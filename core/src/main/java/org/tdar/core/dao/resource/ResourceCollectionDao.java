@@ -6,6 +6,7 @@
  */
 package org.tdar.core.dao.resource;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,6 +22,8 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
+import org.hibernate.transform.ResultTransformer;
+import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -480,14 +483,19 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @return
      */
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
-        Query<Long> shared = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_USERS_SHARED_WITH,Long.class);
+        logger.debug("user: {}",authenticatedUser);
+        Query<BigInteger> shared = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_USERS_SHARED_WITH);
         shared.setParameter("userId", authenticatedUser.getId());
         shared.setParameter("permission", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
-        List<Long> resultList = shared.getResultList();
+        List<BigInteger> resultList = shared.getResultList();
         if (CollectionUtils.isEmpty(resultList)) {
             return new ArrayList<>();
         }
-        List<TdarUser> users = new ArrayList<>(findAll(TdarUser.class, resultList));
+        logger.debug("userIds: {}",resultList);
+        List<Long> lst = new ArrayList<>();
+        resultList.forEach(i -> {lst.add(i.longValue());});
+        List<TdarUser> users = new ArrayList<>(findAll(TdarUser.class, lst));
+        logger.debug("users: {}",users);
         return users;
     }
 
