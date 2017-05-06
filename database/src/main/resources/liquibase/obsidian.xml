@@ -256,7 +256,7 @@
     </changeSet>
     <changeSet id="obsidian-25" author="abrin">
         <addColumn tableName="resource_access_day_agg">
-            <column name="month" type='int' />
+            <column name="day" type='int' />
         </addColumn>
     </changeSet>
 
