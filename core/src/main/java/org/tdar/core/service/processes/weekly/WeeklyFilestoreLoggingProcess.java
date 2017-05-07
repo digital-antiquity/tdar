@@ -7,7 +7,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersionProxy;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
@@ -32,6 +36,7 @@ import org.tdar.filestore.Filestore.LogType;
 @Scope("prototype")
 public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
 
+    private static final int BATCH_SIZE = 10;
     public static final String PROBLEM_FILES_REPORT = "Problem Files Report";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -45,30 +50,45 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
 
     @Autowired
     private transient EmailService emailService;
+    @Autowired
+    private transient GenericDao genericDao;
 
     @Autowired
     private transient ThreadPoolTaskExecutor taskExecutor;
 
-    private boolean run = false;
     private ScrollableResults scrollableResults;
+    boolean started = false;
+    private boolean run = false;
     private List<FileStoreFileProxy> missing = new ArrayList<>();
     private List<FileStoreFileProxy> other = new ArrayList<>();
     private List<FileStoreFileProxy> tainted = new ArrayList<>();
     private int count = 0;
     private Filestore filestore = getTdarConfiguration().getFilestore();
+    private Stack<FileStoreFileProxy> proxies = new Stack<>();
 
     @Override
     public void execute() {
-//        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        // Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         logger.info("beginning automated verification of files");
-        scrollableResults = informationResourceFileService.findScrollableVersionsForVerification();
+        // create a processor for each available thread
         for (int i = 0; i < taskExecutor.getCorePoolSize(); i++) {
+            // add to the stack enough to start (double what's needed)
+            proxies.addAll(createBatch());
+            proxies.addAll(createBatch());
             taskExecutor.execute(new FilestoreVerificationTask(filestore, this));
         }
 
+        // monitor the active threads and make sure we're doing what we need to
         while (taskExecutor.getActiveCount() != 0) {
             int count = taskExecutor.getActiveCount();
             try {
+                List<FileStoreFileProxy> batch = createBatch();
+                // add more to the stack if needed
+                if (CollectionUtils.isNotEmpty(batch)) {
+                    while (proxies.size() < (taskExecutor.getCorePoolSize() + 2) * BATCH_SIZE) {
+                        proxies.addAll(batch);
+                    }
+                }
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -82,7 +102,8 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
         run = true;
     }
 
-    private synchronized FileStoreFileProxy setupVersionFromResult() throws IllegalAccessException, InvocationTargetException {
+    // create a proxy from the result
+    private FileStoreFileProxy setupVersionFromResult(ScrollableResults scrollableResults) throws IllegalAccessException, InvocationTargetException {
         Long irId = scrollableResults.getLong(0);
         Long irfId = scrollableResults.getLong(1);
         Integer latestVersion = scrollableResults.getInteger(2);
@@ -97,21 +118,47 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
         return version;
     }
 
+    /**
+     * This is executed in the ThreadExecutable's thread, so not on the current sesson, hence we need to manage
+     * the stack from another thread
+     * 
+     * @return
+     */
     public synchronized List<FileStoreFileProxy> createThreadBatch() {
+        List<FileStoreFileProxy> ret = new ArrayList<>();
+        for (int i = 0; i < BATCH_SIZE; i++) {
+            if (!proxies.isEmpty()) {
+                ret.add(proxies.pop());
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Create and manage the batch from the parent thread that's on the session...
+     * 
+     * @return
+     */
+    private List<FileStoreFileProxy> createBatch() {
         List<FileStoreFileProxy> current = new ArrayList<>();
+        if (!started) {
+            scrollableResults = informationResourceFileService.findScrollableVersionsForVerification();
+            started = true;
+        }
+
         if (scrollableResults == null) {
             return current;
         }
-        for (int i = 0; i < 10; i++) {
+        genericDao.clearCurrentSession();
+        for (int i = 0; i < BATCH_SIZE; i++) {
             if (scrollableResults != null && scrollableResults.next()) {
                 try {
-                    FileStoreFileProxy result = setupVersionFromResult();
+                    FileStoreFileProxy result = setupVersionFromResult(scrollableResults);
                     current.add(result);
                 } catch (Exception e) {
                     logger.error("error in loading from resultsset: {}", e);
                 }
-            }
-            else {
+            } else {
                 if (scrollableResults != null) {
                     scrollableResults.close();
                     scrollableResults = null;
@@ -132,8 +179,7 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
 
         if (totalIssues == 0) {
             subject.append(" [NONE]");
-        }
-        else {
+        } else {
             subject.append(" [" + totalIssues + "]");
         }
         map.put("siteAcronym", TdarConfiguration.getInstance().getSiteAcronym());

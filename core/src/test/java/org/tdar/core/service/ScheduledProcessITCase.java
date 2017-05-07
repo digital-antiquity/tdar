@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.ScrollableResults;
 import org.joda.time.DateTime;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,6 +36,9 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersionProxy;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
@@ -43,7 +48,10 @@ import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
+import org.tdar.core.service.processes.weekly.FilestoreVerificationTask;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
+import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.filestore.FileStoreFileProxy;
 
 /**
  * $Id$
@@ -286,4 +294,5 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
             salesforce.execute();
         }
     }
+    
 }
