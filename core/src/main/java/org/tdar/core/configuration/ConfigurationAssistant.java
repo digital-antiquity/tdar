@@ -90,7 +90,8 @@ public class ConfigurationAssistant implements Serializable {
             }
         } catch (AccessControlException e) {
             stream = getResourceAsStream(resource);
-        } catch (FileNotFoundException e) {
+            return stream;
+        } catch (Exception e) {
             stream = getResourceAsStream(resource);
         }
         return stream;
