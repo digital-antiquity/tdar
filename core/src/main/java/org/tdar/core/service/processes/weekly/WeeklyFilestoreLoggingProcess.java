@@ -8,9 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ import org.tdar.filestore.Filestore.LogType;
 @Scope("prototype")
 public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
 
-    private static final int BATCH_SIZE = 10;
+    private static final int BATCH_SIZE = 100;
     public static final String PROBLEM_FILES_REPORT = "Problem Files Report";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -64,7 +65,7 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
     private List<FileStoreFileProxy> tainted = new ArrayList<>();
     private int count = 0;
     private Filestore filestore = getTdarConfiguration().getFilestore();
-    private Stack<FileStoreFileProxy> proxies = new Stack<>();
+    private BlockingQueue<FileStoreFileProxy> proxies = new ArrayBlockingQueue<FileStoreFileProxy>(1_000_000);
 
     @Override
     public void execute() {
@@ -82,17 +83,21 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
         while (taskExecutor.getActiveCount() != 0) {
             int count = taskExecutor.getActiveCount();
             try {
-                List<FileStoreFileProxy> batch = createBatch();
-                // add more to the stack if needed
-                if (CollectionUtils.isNotEmpty(batch)) {
-                    while (proxies.size() < (taskExecutor.getCorePoolSize() + 2) * BATCH_SIZE) {
+                while (proxies.size() < (taskExecutor.getCorePoolSize() + 2) * BATCH_SIZE * 2) {
+                    List<FileStoreFileProxy> batch = createBatch();
+                    // add more to the stack if needed,],
+                    if (CollectionUtils.isNotEmpty(batch)) {
+                        logger.trace("adding to stack...");
                         proxies.addAll(batch);
+                    } else {
+                        break;
                     }
                 }
-                Thread.sleep(1000);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            // consider check for scrollable results, and then spinning up new threads if needed
             if (count == 0) {
                 taskExecutor.shutdown();
                 break;
@@ -128,8 +133,8 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
         List<FileStoreFileProxy> ret = new ArrayList<>();
         for (int i = 0; i < BATCH_SIZE; i++) {
             if (!proxies.isEmpty()) {
-                ret.add(proxies.pop());
-            }
+                ret.add(proxies.remove());
+            } 
         }
         return ret;
     }

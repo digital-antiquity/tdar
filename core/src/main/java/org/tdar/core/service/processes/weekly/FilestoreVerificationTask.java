@@ -41,10 +41,29 @@ public class FilestoreVerificationTask implements Runnable {
 
     @Override
     public void run() {
-        while (setup(parent.createThreadBatch())) {
+        boolean running = true;
+        int slept = 10;
+        while (running) {
             verify();
             parent.updateCounts(proxyList, tainted, missing);
             cleanup();
+            boolean setup = setup(parent.createThreadBatch());
+            if (setup == false) {
+                try {
+                    logger.debug("sleeeping #{}, maybe there will be more work to do???", slept);
+                    Thread.sleep(1000);
+                    slept--;
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                if (slept == 0) {
+                    running = false;
+                }
+            } else {
+                // reset
+                slept = 10;
+            }
         }
     }
 
