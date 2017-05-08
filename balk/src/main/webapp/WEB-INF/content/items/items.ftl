@@ -105,7 +105,7 @@
     <td></td>
 </#if>
 <td style="border-right:1px solid #999">
-<#if row.nextPhase?has_content && item?has_content && userInfo?has_content && userInfo.token?has_content && row.currentPhase!'' == phase>
+<#if row.nextPhase?has_content && item?has_content && userInfo?has_content && userInfo.token?has_content && row.currentPhase?has_content && row.currentPhase == phase>
 	<@s.form action="/approve/?" method="POST">
 		<@s.hidden name="id" value="${item.dropboxId}"/>
 		<@s.hidden name="phase" value="${row.nextPhase}"/>
