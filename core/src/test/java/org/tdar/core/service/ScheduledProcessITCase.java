@@ -154,6 +154,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testVerifyProcess() throws InstantiationException, IllegalAccessException {
         Document document = generateDocumentWithFileAndUseDefaultUser();
+        Number totalFiles = genericService.count(InformationResourceFileVersion.class);
         fsp.execute();
         setupQueue(SendEmailProcess.class, sep);
         scheduledProcessService.queue(SendEmailProcess.class);
@@ -165,7 +166,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         SimpleMailMessage received = checkMailAndGetLatest("reporting on files with issues");
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
-        assertTrue(received.getText().contains("Total Files: 59"));
+        assertTrue("should find " + totalFiles.intValue(), received.getText().contains("Total Files: "+totalFiles.intValue()));
         assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
