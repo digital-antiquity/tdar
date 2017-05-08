@@ -146,7 +146,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         Document document = generateDocumentWithFileAndUseDefaultUser();
         scheduledProcessService.queue(WeeklyFilestoreLoggingProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-
+        Number totalFiles = genericService.count(InformationResourceFileVersion.class);
         setupQueue(SendEmailProcess.class, sep);
         scheduledProcessService.queue(SendEmailProcess.class);
         int count = 0;
@@ -157,7 +157,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         SimpleMailMessage received = checkMailAndGetLatest("reporting on files with issues");
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
-        assertTrue(received.getText().contains("Total Files: 59"));
+        assertTrue("should find " + totalFiles.intValue(), received.getText().contains("Total Files: "+totalFiles.intValue()));
         assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
