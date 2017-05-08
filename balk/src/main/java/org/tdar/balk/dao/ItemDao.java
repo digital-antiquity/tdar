@@ -48,7 +48,7 @@ public class ItemDao {
         logger.trace("in: {} out: {}", fullPath, path);
         try {
             // FIXME: FIgure out deleted paths/directories
-            String query = "from DropboxDirectory where lower(path)=lower(:path) order by id desc";
+            String query = "from DropboxDirectory where dropboxId not like 'deleted%' and  lower(path)=lower(:path) order by id desc";
             Query query2 = getCurrentSession().createQuery(query);
             query2.setParameter("path", path);
             query2.setFirstResult(0);
@@ -83,9 +83,9 @@ public class ItemDao {
     }
 
     public int findAllWithPath(String path, List<DropboxFile> findAll, int page, int size, boolean managed) {
-        String query = "from DropboxFile";
+        String query = "from DropboxFile where dropboxId not like 'deleted%'";
         if (StringUtils.isNotBlank(path) && path != "/") {
-            query = "from DropboxFile where lower(path) like lower('%/" + path + "/% and dropboxId not like 'delete%')";
+            query = " and lower(path) like lower('%/" + path + "/%') )";
         }
         
         if (managed) {
@@ -112,7 +112,7 @@ public class ItemDao {
     }
 
     public Set<String> findTopLevelPaths(String path) {
-        Query query = getCurrentSession().createQuery("select name from DropboxDirectory where parentId in (select dropboxId from DropboxDirectory where lower(name)=lower(:path) )");
+        Query query = getCurrentSession().createQuery("select name from DropboxDirectory where parentId in (select dropboxId from DropboxDirectory where lower(name)=lower(:path) ) and dropboxId not like 'deleted%' ");
         query.setParameter("path", path);
         Set<String> toReturn = new HashSet<>(query.list());
         toReturn.remove(CONFIG.getCreatePdfaPath());
