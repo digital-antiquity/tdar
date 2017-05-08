@@ -83,9 +83,9 @@ public class ItemDao {
     }
 
     public int findAllWithPath(String path, List<DropboxFile> findAll, int page, int size, boolean managed) {
-        String query = "from DropboxFile where dropboxId not like 'deleted%'";
+        String query = "from DropboxFile where dropboxId not like 'deleted%' ";
         if (StringUtils.isNotBlank(path) && path != "/") {
-            query = " and lower(path) like lower('%/" + path + "/%') )";
+            query += " and lower(path) like lower('%/" + path + "/%') )";
         }
         
         if (managed) {
