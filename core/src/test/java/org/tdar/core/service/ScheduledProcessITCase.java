@@ -157,6 +157,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         SimpleMailMessage received = checkMailAndGetLatest("reporting on files with issues");
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getText().contains("not found"));
+        assertTrue(received.getText().contains("Total Files: 59"));
         assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
@@ -339,4 +340,5 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 //        genericService.saveOrUpdate(dataset);
         return collection;
     }
+    
 }

@@ -253,4 +253,9 @@
             <column name="id"/>
         </createIndex>
     </changeSet>
+    <changeSet id="obsidian-25" author="abrin">
+        <addColumn tableName="resource_access_day_agg">
+            <column name="day" type='int' />
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

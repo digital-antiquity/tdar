@@ -242,7 +242,7 @@
                                     </#if>
                                 </#if>
                                 <#if link></a></#if>
-                                <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"><@s.text name="${facet.label}"/></a>
+                                <#if link><a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"></#if><@s.text name="${facet.label}"/><#if link></a></#if>
                                 <span>(${facet.count})</span>
                             </span>
                             <#elseif (currentValues?size > 0) >
