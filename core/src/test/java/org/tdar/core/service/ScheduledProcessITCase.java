@@ -41,6 +41,7 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
