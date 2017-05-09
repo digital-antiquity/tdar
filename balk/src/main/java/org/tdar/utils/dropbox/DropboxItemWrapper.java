@@ -68,6 +68,7 @@ public class DropboxItemWrapper {
                     logger.trace("\t {} -> {} ", es.getKey(), es.getValue());
                 });
             }
+            
             this.size = (Integer) readValue.get("size");
             this.dir = !StringUtils.equals("file", (String) readValue.get(".tag"));
             this.id = (String) readValue.get("id");

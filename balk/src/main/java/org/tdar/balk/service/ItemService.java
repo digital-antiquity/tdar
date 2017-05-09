@@ -129,7 +129,8 @@ public class ItemService {
         }
         AbstractDropboxItem item = itemDao.findByDropboxId(dropboxItemWrapper.getId(), dropboxItemWrapper.isDir());
         if (item != null) {
-            logger.debug("{} {}", dropboxItemWrapper.getPath(), item);
+            logger.debug("move/delete {} | {}", dropboxItemWrapper.getPath(), item);
+            logger.debug("{}", dropboxItemWrapper.getMetadata());
             // fixme: better handling of "move/delete"
             item.setDropboxId("deleted:" + item.getDropboxId());
             genericDao.saveOrUpdate(item);
