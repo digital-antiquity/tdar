@@ -125,6 +125,7 @@ public class ItemService {
     public void store(DropboxItemWrapper dropboxItemWrapper) {
         if (dropboxItemWrapper == null || dropboxItemWrapper.getId() == null) {
             logger.warn("id is null for path: {}", dropboxItemWrapper.getFullPath());
+            logger.debug("{}", dropboxItemWrapper.getMetadata());
             return;
         }
         AbstractDropboxItem item = itemDao.findByDropboxId(dropboxItemWrapper.getId(), dropboxItemWrapper.isDir());
