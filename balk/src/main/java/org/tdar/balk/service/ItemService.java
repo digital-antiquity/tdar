@@ -63,6 +63,7 @@ import com.dropbox.core.v2.users.BasicAccount;
 @Component
 public class ItemService {
 
+    private static final String DELETED = "deleted:";
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private APIClient apiClient;
     boolean loggedIn = false;
@@ -124,10 +125,11 @@ public class ItemService {
     @Transactional(readOnly = false)
     public void store(DropboxItemWrapper dropboxItemWrapper) {
         if (dropboxItemWrapper == null || dropboxItemWrapper.getId() == null) {
+            // when something is deleted, the first step is that an event for the file with  a .tag:deleted is passed
             logger.warn("id is null for path: {} (deleted: {})", dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDeleted());
             DropboxFile file = itemDao.findByPath(dropboxItemWrapper.getFullPath());
             if (file != null && dropboxItemWrapper.isDeleted()) {
-                file.setDropboxId("deleted:" + file.getDropboxId());
+                file.setDropboxId(DELETED + file.getDropboxId());
                 genericDao.saveOrUpdate(file);
             }
             logger.debug("{}", dropboxItemWrapper.getMetadata());
@@ -135,12 +137,16 @@ public class ItemService {
         }
         AbstractDropboxItem item = itemDao.findByDropboxId(dropboxItemWrapper.getId(), dropboxItemWrapper.isDir());
         if (item != null) {
-            logger.debug("move/delete {} | {}", dropboxItemWrapper.getPath(), item);
+            // second time... i shows up separately
+            logger.debug("move/delete {} | {}", dropboxItemWrapper.getPath(), item.getDropboxId());
             logger.debug("{}", dropboxItemWrapper.getMetadata());
             // fixme: better handling of "move/delete"
             if (dropboxItemWrapper.isDeleted()) {
-                item.setDropboxId("deleted:" + item.getDropboxId());
+                item.setDropboxId(DELETED + item.getDropboxId());
+            } else if (StringUtils.contains(item.getDropboxId(), DELETED)) {
+                item.setDropboxId(item.getDropboxId().replace(DELETED, ""));
             }
+            updatePathInfo(dropboxItemWrapper, item);
             genericDao.saveOrUpdate(item);
             return;
         }
@@ -151,20 +157,24 @@ public class ItemService {
             item = new DropboxFile();
             ((DropboxFile) item).setExtension(dropboxItemWrapper.getExtension());
         }
-        item.setPath(dropboxItemWrapper.getFullPath());
         item.setDateAdded(new Date());
         item.setSize(dropboxItemWrapper.getSize());
         item.setDateModified(dropboxItemWrapper.getModified());
         item.setDropboxId(dropboxItemWrapper.getId());
-        item.setName(dropboxItemWrapper.getName());
         item.setOwnerId(dropboxItemWrapper.getModifiedBy());
         item.setOwnerName(dropboxItemWrapper.getModifiedByName());
+        updatePathInfo(dropboxItemWrapper, item);
+        genericDao.saveOrUpdate(item);
+
+    }
+
+    private void updatePathInfo(DropboxItemWrapper dropboxItemWrapper, AbstractDropboxItem item) {
+        item.setPath(dropboxItemWrapper.getFullPath());
+        item.setName(dropboxItemWrapper.getName());
         DropboxDirectory parent = findParentByPath(dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDir());
         if (parent != null) {
             item.setParentId(parent.getDropboxId());
         }
-        genericDao.saveOrUpdate(item);
-
     }
 
     private void sendEmail(String from, String[] to, String subject, String text) {
