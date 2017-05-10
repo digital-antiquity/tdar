@@ -75,7 +75,7 @@ public class DropboxItemWrapper {
             
             this.tag =(String) readValue.get(".tag");
             this.size = (Integer) readValue.get("size");
-            if (!StringUtils.equals(tag, DELETED) && StringUtils.equals("file", tag)) {
+            if (!StringUtils.equals(tag, DELETED) && !StringUtils.equals("file", tag)) {
                 this.dir = true;
             }
             this.id = (String) readValue.get("id");
