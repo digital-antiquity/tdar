@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class DropboxItemWrapper {
+    private static final String DELETED = "deleted";
+
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private DropboxClient client;
@@ -39,6 +41,8 @@ public class DropboxItemWrapper {
     private String extension;
 
     private String modifiedByName;
+
+    private String tag;
 
     /*
      * path_display -> /Client Data/Upload to tDAR/srp digital library/Batch 1/1985_Effland_SaltRiver_OCR_PDFA.pdf
@@ -69,8 +73,11 @@ public class DropboxItemWrapper {
                 });
             }
             
+            this.tag =(String) readValue.get(".tag");
             this.size = (Integer) readValue.get("size");
-            this.dir = !StringUtils.equals("file", (String) readValue.get(".tag"));
+            if (!StringUtils.equals(tag, DELETED) && StringUtils.equals("file", tag)) {
+                this.dir = true;
+            }
             this.id = (String) readValue.get("id");
             this.name = (String) readValue.get("name");
             fullPath = (String) readValue.get("path_display");
@@ -204,6 +211,21 @@ public class DropboxItemWrapper {
 
     public void setModifiedByName(String modifiedByName) {
         this.modifiedByName = modifiedByName;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+    
+    public boolean isDeleted() {
+        if (DELETED.equals(tag)) {
+            return true;
+        }
+        return false;
     }
 
 }

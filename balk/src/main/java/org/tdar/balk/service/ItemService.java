@@ -124,7 +124,12 @@ public class ItemService {
     @Transactional(readOnly = false)
     public void store(DropboxItemWrapper dropboxItemWrapper) {
         if (dropboxItemWrapper == null || dropboxItemWrapper.getId() == null) {
-            logger.warn("id is null for path: {}", dropboxItemWrapper.getFullPath());
+            logger.warn("id is null for path: {} (deleted: {})", dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDeleted());
+            DropboxFile file = itemDao.findByPath(dropboxItemWrapper.getFullPath());
+            if (file != null && dropboxItemWrapper.isDeleted()) {
+                file.setDropboxId("deleted:" + file.getDropboxId());
+                genericDao.saveOrUpdate(file);
+            }
             logger.debug("{}", dropboxItemWrapper.getMetadata());
             return;
         }
@@ -133,7 +138,9 @@ public class ItemService {
             logger.debug("move/delete {} | {}", dropboxItemWrapper.getPath(), item);
             logger.debug("{}", dropboxItemWrapper.getMetadata());
             // fixme: better handling of "move/delete"
-            item.setDropboxId("deleted:" + item.getDropboxId());
+            if (dropboxItemWrapper.isDeleted()) {
+                item.setDropboxId("deleted:" + item.getDropboxId());
+            }
             genericDao.saveOrUpdate(item);
             return;
         }

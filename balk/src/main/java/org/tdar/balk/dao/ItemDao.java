@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
@@ -129,6 +130,15 @@ public class ItemDao {
         paths.addAll(findTopLevelPaths(CONFIG.getInputPath()));
         paths.addAll(findTopLevelPaths(CONFIG.getOutputPath()));
         return paths;
+    }
+
+    public DropboxFile findByPath(String fullPath) {
+        Query query = getCurrentSession().createQuery("from DropboxFile where lower(path) like :path");
+        List<DropboxFile> list = query.list();
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        return list.get(0);
     }
 
 }
