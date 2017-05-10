@@ -134,6 +134,7 @@ public class ItemDao {
 
     public DropboxFile findByPath(String fullPath) {
         Query query = getCurrentSession().createQuery("from DropboxFile where lower(path) like :path");
+        query.setParameter("path",  fullPath);
         List<DropboxFile> list = query.list();
         if (CollectionUtils.isEmpty(list)) {
             return null;
