@@ -66,7 +66,7 @@ public class DropboxClient {
 
     public DropboxClient(DropboxUserMapping userMapping) throws FileNotFoundException, URISyntaxException, IOException {
         config = new DropboxConfig();
-        logger.trace(userMapping.getToken());
+//        logger.trace(userMapping.getToken());
         client = new DbxClientV2(config.buildRequest(), config.getDefaultToken());
     }
 
