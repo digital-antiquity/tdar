@@ -119,9 +119,9 @@ import com.opensymphony.xwork2.TextProvider;
          logger.trace("completed hibernate hydration ");
          String queryText = ftq.getQueryString();
          logger.debug(queryText);
-         Object searchMetadata[] = { resultHandler.getMode(), ftq.getLuceneTime(), ftq.getHydrationTime(), ftq.getTotalResults(), resultHandler.getStartRecord() };
+         Object searchMetadata[] = { resultHandler.getMode(), ftq.getLuceneTime(), ftq.getTotalResults(), resultHandler.getStartRecord(),ftq.getHydrationTime()  };
          logger.trace("query: {} ", queryText);
-         logger.debug("{}:: SOLR:{} HYDR:{} RSLT:{} START:{}", searchMetadata);
+         logger.debug("{}:: SOLR:{} #:{} @ {} H:{}", searchMetadata);
          resultHandler.setSearchTitle(q.getDescription(textProvider));
          if (resultHandler.getStartRecord() > ftq.getTotalResults()) {
              throw new SearchPaginationException(MessageHelper.getMessage("searchService.start_record_too_high", Arrays.asList(resultHandler.getStartRecord(),
