@@ -77,7 +77,7 @@ public class Activity implements Serializable {
 
     private String getSimpleAgent(String header) {
         if (isBot()) {
-            return "[bot]";
+            return "bot";
         } 
             return header;
     }
