@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.CustomizableCollection;
@@ -249,7 +250,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = false)
     public void normalizeAuthorizedUsers(final Collection<AuthorizedUser> authorizedUsers_) {
         Collection<AuthorizedUser> authorizedUsers = authorizedUsers_;
-        if (CollectionUtils.isEmpty(authorizedUsers_)){
+        if (CollectionUtils.isEmpty(authorizedUsers_)) {
             authorizedUsers = new ArrayList<>();
         }
         logger.trace("incoming " + authorizedUsers);
@@ -460,14 +461,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     }
 
-    private <C extends ResourceCollection> void removeResourceCollectionFromResource(Resource resource, Set<C> current, TdarUser authenticatedUser, C collection) {
+    private <C extends ResourceCollection> void removeResourceCollectionFromResource(Resource resource, Set<C> current, TdarUser authenticatedUser,
+            C collection) {
         if (!authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {
             String name = "Collection";
             if (collection instanceof VisibleCollection) {
                 name = ((VisibleCollection) collection).getName();
             }
             throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_remmove_error", Arrays.asList(name));
-            
+
         }
         current.remove(collection);
         if (collection instanceof RightsBasedResourceCollection) {
@@ -999,7 +1001,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (PersistableUtils.isNotTransient(persistable)) {
             type = RevisionLogType.EDIT;
         }
-        
+
         List<Resource> resourcesToRemove = getDao().findAll(Resource.class, cso.getToRemove());
         List<Resource> resourcesToAdd = getDao().findAll(Resource.class, cso.getToAdd());
         getLogger().debug("toAdd: {}", resourcesToAdd);
@@ -1017,10 +1019,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             reconcileIncomingResourcesForCollectionWithoutRights(list, authenticatedUser, resourcesToAdd, resourcesToRemove);
             saveAuthorizedUsersForResourceCollection(list, list, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
         }
-        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection<ListCollection>) persistable).getProperties(), cso.getFileProxy());
+        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection<ListCollection>) persistable).getProperties(),
+                cso.getFileProxy());
 
         if (!Objects.equals(cso.getParentId(), persistable.getParentId())) {
-            updateCollectionParentTo(authenticatedUser, persistable, (C)cso.getParent(), cls);
+            updateCollectionParentTo(authenticatedUser, persistable, (C) cso.getParent(), cls);
         }
 
         if (!Objects.equals(cso.getAlternateParentId(), persistable.getAlternateParentId())) {
@@ -1191,6 +1194,21 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = true)
+    public List<UserInvite> findUserInvites(Persistable resource) {
+        if (resource instanceof Resource) {
+            return getDao().findUserInvites((Resource) resource);
+        }
+        if (resource instanceof ResourceCollection) {
+            return getDao().findUserInvites((ResourceCollection) resource);
+        }
+        if (resource instanceof TdarUser) {
+            return getDao().findUserInvites((TdarUser) resource);
+        }
+        return null;
+
+    }
+
+    @Transactional(readOnly = true)
     public List<UserInvite> findUserInvites(Resource resource) {
         return getDao().findUserInvites(resource);
     }
@@ -1205,7 +1223,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findUserInvites(user);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void saveResourceRights(List<UserRightsProxy> proxies, TdarUser authenticatedUser, Resource resource) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         List<UserInvite> invites = new ArrayList<>();
@@ -1233,8 +1251,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
     }
 
-
-    
     private UserInvite toInvite(UserRightsProxy proxy, TdarUser user) {
         UserInvite invite = new UserInvite();
         invite.setAuthorizer(user);
@@ -1259,9 +1275,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return au;
     }
 
-
     @Transactional(readOnly = true)
-    public <C  extends HierarchicalCollection> List<C>  findAlternateChildren(List<Long> ids, TdarUser authenticatedUser, Class<C> cls) {
+    public <C extends HierarchicalCollection> List<C> findAlternateChildren(List<Long> ids, TdarUser authenticatedUser, Class<C> cls) {
         List<C> findAlternateChildren = getDao().findAlternateChildren(ids, cls);
         if (CollectionUtils.isNotEmpty(findAlternateChildren)) {
             findAlternateChildren.forEach(c -> {
