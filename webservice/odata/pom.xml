@@ -10,7 +10,7 @@
 
 	<properties>
 		<odata4j.version>0.7.0</odata4j.version>
-		<jersey.version>1.19.1</jersey.version>
+		<jersey.version>1.19.3</jersey.version>
         <skipJetty>false</skipJetty>
 	</properties>
 	<parent>

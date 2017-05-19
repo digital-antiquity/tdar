@@ -76,7 +76,7 @@
         <owlapi.version>5.0.4</owlapi.version>
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
-        <geotools.version>17.0</geotools.version>
+        <geotools.version>17.1</geotools.version>
         <tika.version>1.14</tika.version>
         <batik.version>1.7</batik.version>
         <rome.version>1.7.1</rome.version>
@@ -270,7 +270,7 @@
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>3.1.0</version>
+                <version>3.3.1</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
