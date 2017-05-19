@@ -45,22 +45,19 @@
         </#if>
 		<@list.displayWidget />
 
-        <#if false >
             <hr/>
-            <ul class="inline">
+        <ul class="media-list">
+        <#if false >
             <li class="media"><i class="icon-envelope pull-left"></i>
             <div class="media-body">
                     <a id="requestAccess" href="/collection/request/${id?c}">Request Access, Submit Correction, Comment
             </a>
             </div>
             </li>
-<!--            <li class="media"><i class="icon-share-alt pull-left"></i>
-            <div class="media-body">
-                    <a id="requestAccess" href="/collection/request/${id?c}">Share with...</a>
-            </div>
-            </li> -->
-        </ul>
         </#if>
+        <@nav.shareSection id=resourceCollection.id title=resourceCollection.name citation=resourceCollection.name />
+
+        </ul>
             <hr/>
 
             <ul class="unstyled-list">

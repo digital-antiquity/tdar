@@ -234,10 +234,39 @@ navigation freemarker macros
     </#macro>
 
 
-<#-- emit "delete" button for use with repeatable form field rows -->
+    <#-- emit "delete" button for use with repeatable form field rows -->
     <#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
     <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>><i class="icon-trash"></i></button>
     </#macro>
+    
+    <#-- emit the share sidebar components without the ul  -->
+    <#macro shareSection id=id title=resource.title citation=resourceCitation.fullCitation >
+        <#assign url="${((request.requestURL)!'')}" />
+
+        <li class="media"><img src="/images/tweet.png" class="pull-left" width=12 title="tweet" alt="tweet"/></i>
+            <div class="media-body">
+                <a href="https://twitter.com/intent/tweet?url=${url?url}&text=${((title)!'')?url}" target="_blank"
+                   onClick="TDAR.common.registerShare('twitter','${currentUrl?js_string}','${id?c}')">Tweet</a>
+             </div>
+        </li>
+    
+        <li class="media"><i class="icon-thumbs-up pull-left"></i>
+            <div class="media-body">
+                    <a  href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${title?url}" target="_blank"
+                        onClick="TDAR.common.registerShare('facebook','${currentUrl?js_string}','${id?c}')">Like</a>
+            </div>
+        </li>
+        <li class="media">
+        <i class="icon-envelope pull-left"></i>
+            <div class="media-body">
+                <a <#noescape>href="mailto:?subject=${title?url}&amp;body=${citation!''?trim?url}%0D%0A%0D%0A${url}"</#noescape>
+                    onClick="TDAR.common.registerShare('email','${currentUrl?js_string}','${id?c}')">Email</a>
+             </div>
+        </li>
+
+    </#macro>
+    
+    
 </#escape>
 
 

@@ -546,30 +546,8 @@
             </li>
              -->
         </#if>
-        <#assign url="${((request.requestURL)!'')}" />
 
-
-            <li class="media">
-            <li class="media"><img src="/images/tweet.png" class="pull-left" width=12 title="tweet" alt="tweet"/></i>
-                <div class="media-body">
-                    <a href="https://twitter.com/intent/tweet?url=${url?url}&text=${((resource.title)!'')?url}" target="_blank"
-                       onClick="TDAR.common.registerShare('twitter','${currentUrl?js_string}','${resource.id?c}')">Tweet this</a>
-                 </div>
-            </li>
-
-            <li class="media"><i class="icon-thumbs-up pull-left"></i>
-                <div class="media-body">
-                        <a  href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${resource.title?url}" target="_blank"
-                            onClick="TDAR.common.registerShare('facebook','${currentUrl?js_string}','${resource.id?c}')">Like on Facebook</a>
-                </div>
-            </li>
-            <li class="media">
-            <i class="icon-envelope pull-left"></i>
-                <div class="media-body">
-                    <a <#noescape>href="mailto:?subject=${resource.title?url}d&amp;body=${resourceCitation.fullCitation!''?trim?url}%0D%0A%0D%0A${url}"</#noescape>
-                        onClick="TDAR.common.registerShare('email','${currentUrl?js_string}','${resource.id?c}')">Email a link to a Friend</a>
-                 </div>
-            </li>
+            <@nav.shareSection />
         </ul>
     <h3>Basic Information</h3>
 
