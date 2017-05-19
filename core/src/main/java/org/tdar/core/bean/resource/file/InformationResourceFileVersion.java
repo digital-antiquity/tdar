@@ -117,6 +117,7 @@ public class InformationResourceFileVersion extends AbstractPersistable implemen
     @Column(name = "size")
     private Long fileLength;
 
+    // uncompressed size of file on DISK
     @Column(name = "effective_size")
     private Long uncompressedSizeOnDisk;
 

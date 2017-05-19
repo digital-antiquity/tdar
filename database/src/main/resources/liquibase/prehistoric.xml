@@ -245,4 +245,8 @@
          <dropView viewName="vw_collection_ancestry"/>
          <dropView viewName="vw_collection_progeny"/>
      </changeSet>
+     <changeSet id="prehistoric-default-23" author="abrin">
+        <dropColumn tableName="information_reosurce_file" columnName="confidential"/>
+        <dropColumn tableName="information_reosurce_file" columnName="download_count"/>
+     </changeSet>
 </databaseChangeLog>
