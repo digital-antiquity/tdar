@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <head>
     <title>Match column values to ontology nodes</title>

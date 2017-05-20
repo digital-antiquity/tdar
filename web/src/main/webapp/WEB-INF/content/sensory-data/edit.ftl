@@ -3,7 +3,7 @@
     <#global inheritanceEnabled=true />
     <#global multipleUpload=true />
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#assign customUploadPlacement=true>
 

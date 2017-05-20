@@ -2,7 +2,7 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "../collection/common-collection.ftl" as commonCollection>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
     <#if persistable.id == -1>

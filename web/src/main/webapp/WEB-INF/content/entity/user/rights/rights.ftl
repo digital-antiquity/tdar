@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html >
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 
 <title>Resources and Shares ${user.properName} Has Access to</title>
 

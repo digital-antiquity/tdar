@@ -3,7 +3,7 @@ $Id$
 navigation freemarker macros
 -->
 <#escape _untrusted as _untrusted?html>
-    <#import "list-macros.ftl" as list>
+    <#import "resource/list-macros.ftl" as list>
 
 
 <#-- emit a toolbar for use on a resource view page

@@ -7,7 +7,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#import "common.ftl" as common>
     <#import "/${themeDir}/local-helptext.ftl" as  helptext>
     <#import "/${themeDir}/settings.ftl" as settings>
-    <#import "navigation-macros.ftl" as nav>
+    <#import "../navigation-macros.ftl" as nav>
 
 	<#assign useSelect2=select2Enabled!true  />
 

@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 
 <div class="glide">

@@ -6,7 +6,7 @@ View freemarker macros
 -->
 <#-- include navigation menu in edit and view macros -->
     <#import "common.ftl" as common>
-    <#import "navigation-macros.ftl" as nav>
+    <#import "../navigation-macros.ftl" as nav>
     <#setting url_escaping_charset='UTF-8'>
 
 <#--Emit rel=canonical element.  The "canonical" url points to the preferred version of a set of pages with similar content -->
