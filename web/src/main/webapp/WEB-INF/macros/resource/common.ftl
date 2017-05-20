@@ -637,7 +637,6 @@ true for our registration page or our profile page).-->
 <input type="password" name="_cr42-2" value="" style="display:none">
 </#macro>
 
-
 <#-- Create a search-link for a keyword -->
     <#macro searchFor keyword=keyword asList=true showOccurrence=false>
         <#if asList><li class="bullet"></#if>

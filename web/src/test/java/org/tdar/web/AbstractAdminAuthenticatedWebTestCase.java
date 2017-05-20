@@ -13,6 +13,7 @@ import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Resource;
@@ -132,4 +133,14 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         return extractTdarIdFromCurrentURL();
     }
 
+
+    public void createUserFields(int i, Person user, GeneralPermissions perm, Long id) {
+        if (id == null) {
+            createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), ""); // leave the id blank
+        } else {
+            createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), id.toString()); 
+        }
+        createInput("text", String.format(FMT_AUTHUSERS_NAME, i), user.getFirstName() + " " + user.getLastName());
+        createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), perm.toString());
+    }
 }

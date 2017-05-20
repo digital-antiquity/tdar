@@ -54,8 +54,8 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             collectionUrl = getCurrentUrlPath();
         }
         clickLinkWithText(CollectionWebITCase.PERMISSIONS);
-        setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
-        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        setInput("proxies[0].id", CONFIG.getUserId());
+        setInput("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
         String shareUrl = getCurrentUrlPath() + "?type=1&orientation=" + DisplayOrientation.MAP.name();
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();

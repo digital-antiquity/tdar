@@ -277,11 +277,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         Person user = new Person("joe", "blow", "testAssignNonUserToCollection@tdar.net");
 
-        createInput("hidden", String.format(FMT_AUTHUSERS_ID, 1), ""); // leave the id blank
-        createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, 1), user.getLastName());
-        createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, 1), user.getFirstName());
-        createInput("text", String.format(FMT_AUTHUSERS_EMAIL, 1), user.getEmail());
-        createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, 1), GeneralPermissions.VIEW_ALL.toString());
+        createUserFields(1, user, GeneralPermissions.VIEW_ALL, null);
 
         submitFormWithoutErrorCheck();
 
@@ -290,6 +286,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 //        Person person = entityService.findByEmail(user.getEmail());
 //        assertNull("person from form should not be persisted", person);
     }
+
+
 
     @Test
     public void testAssignNonUserToCollection2() {
@@ -318,21 +316,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (StringUtils.containsIgnoreCase(person.getProperName(), "user")) {
                 continue;
             }
-            createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), person.getId());
-            createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), person.getLastName());
-            createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), person.getFirstName());
-            if (StringUtils.isNotBlank(person.getEmail())) {
-                createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), person.getEmail());
-            } else {
-                createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), "");
-            }
-            if (StringUtils.isNotBlank(person.getInstitutionName())) {
-                createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), person.getInstitutionName());
-
-            } else {
-                createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), "");
-            }
-            createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), GeneralPermissions.VIEW_ALL.toString());
+            createUserFields(i, person, GeneralPermissions.VIEW_ALL, person.getId());
             i++;
         }
 

@@ -113,8 +113,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         WebElementSelection addAnother = find(id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
-        waitFor(By.name("authorizedUsersFullNames[2]"));
-        addAuthuser("authorizedUsersFullNames[2]", "authorizedUsers[2].generalPermission", name, username, "person-" + userId, permissions);
+        waitFor(By.name("proxies[2].displayName"));
+        addAuthuser("proxies[2].displayName", "proxies[2].permission", name, username, "person-" + userId, permissions);
     }
 
     @SuppressWarnings("unused")
@@ -274,9 +274,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addAnother.click();
         addAnother.click();
 
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(),
+        addAuthuser("proxies[1].displayName", "proxies[1].permission", "editor user", config.getEditorUsername(),
                 "person-"+ config.getEditorUserId(), permission);
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission",
+        addAuthuser("proxies[0].displayName", "proxies[0].permission",
                 "michelle elliott",  "Michelle Elliott", "person-121", permission);
         submitForm();
         return url;
@@ -332,9 +332,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addAnother.click();
         addAnother.click();
 
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), 
+        addAuthuser("proxies[1].displayName", "proxies[1].permission", "editor user", config.getEditorUsername(), 
                 "person-"+ config.getEditorUserId(), permission);
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission",
+        addAuthuser("proxies[0].displayName", "proxies[0].permission",
                 "michelle elliott",  "Michelle Elliott", "person-121", permission);
         submitForm();
         return url;

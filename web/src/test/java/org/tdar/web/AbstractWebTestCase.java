@@ -78,12 +78,11 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
     public static final String RESTRICTED_ACCESS_TEXT = "This resource is restricted from general view";
 
     // formats for form element names
-    public static final String FMT_AUTHUSERS_ID = "authorizedUsers[%s].user.id";
-    public static final String FMT_AUTHUSERS_LASTNAME = "authorizedUsers[%s].user.lastName";
-    public static final String FMT_AUTHUSERS_FIRSTNAME = "authorizedUsers[%s].user.firstName";
-    public static final String FMT_AUTHUSERS_EMAIL = "authorizedUsers[%s].user.email";
-    public static final String FMT_AUTHUSERS_INSTITUTION = "authorizedUsers[%s].user.institution.name";
-    public static final String FMT_AUTHUSERS_PERMISSION = "authorizedUsers[%s].generalPermission";
+    public static final String FMT_AUTHUSERS_ID = "proxies[%s].id";
+    public static final String FMT_AUTHUSERS_NAME = "proxies[%s].displayName";
+//    public static final String FMT_AUTHUSERS_EMAIL = "proxies[%s].user.email";
+//    public static final String FMT_AUTHUSERS_INSTITUTION = "proxies[%s].user.institution.name";
+    public static final String FMT_AUTHUSERS_PERMISSION = "proxies[%s].permission";
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
     private static final String BEGIN_PAGE_HEADER = "<!-- BEGIN-PAGE-HEADER -->";
@@ -1024,14 +1023,14 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
     public void createUserWithPermissions(int i, Person user, GeneralPermissions viewAll) {
         logger.info("setiting user [{}] to {} {}", i, user, viewAll);
         createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), user.getId());
-        createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), user.getLastName());
-        createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
-        createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
+        createInput("text", String.format(FMT_AUTHUSERS_NAME, i), user.getFirstName() + " " + user.getLastName());
+//        createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
+//        createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
         String inst = user.getInstitutionName();
         if (inst == null) {
             inst = "";
         }
-        createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), inst);
+//        createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), inst);
         createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), viewAll.toString());
     }
 
