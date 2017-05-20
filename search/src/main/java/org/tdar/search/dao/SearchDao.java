@@ -35,6 +35,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.search.bean.SolrSearchObject;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
@@ -79,12 +80,13 @@ public class SearchDao<I extends Indexable> {
      * @throws SolrServerException
      */
     public SolrSearchObject<I> search(SolrSearchObject<I> query, LuceneSearchResultHandler<I> resultHandler,
-            TextProvider provider) throws ParseException, SolrServerException, IOException {
+            TextProvider provider) throws SearchException, IOException {
         query.markStartSearch();
         SolrParams solrParams = query.getSolrParams();
         if (logger.isTraceEnabled()) {
             logger.trace(solrParams.toQueryString());
         }
+        try {
         QueryResponse rsp = template.query(query.getCoreName(), solrParams);
         query.processResults(rsp);
         if (logger.isTraceEnabled()) {
@@ -95,6 +97,9 @@ public class SearchDao<I extends Indexable> {
         processFacets(rsp, resultHandler, provider);
         logger.trace("completed fulltextquery setup");
         query.markEndSearch();
+        } catch (SolrServerException e) {
+            throw new SearchException(e.getMessage(), e);
+        }
         return query;
     }
 

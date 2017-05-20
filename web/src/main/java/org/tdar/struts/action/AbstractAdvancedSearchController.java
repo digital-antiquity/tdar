@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -12,7 +11,6 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +27,6 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.DocumentType;
-import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
@@ -43,6 +40,7 @@ import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
@@ -223,7 +221,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             getLogger().debug("pagination issue: {}", spe.getMessage() );
             throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,
                     TdarActionSupport.NOT_FOUND);
-        } catch (TdarRecoverableRuntimeException | ParseException tdre) {
+        } catch (TdarRecoverableRuntimeException | SearchException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
         }

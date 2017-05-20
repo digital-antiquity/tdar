@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollableResults;
@@ -23,6 +22,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ActivityManager;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.activity.Activity;
 
@@ -161,7 +161,7 @@ public class BatchIndexer implements Serializable {
                 logger.trace("flushing search index");
                 try {
                     searchIndexService.commit(coreForClass);
-                } catch (SolrServerException | IOException e) {
+                } catch (SearchIndexException | IOException e) {
                     logger.error("error committing: {}", e);
                 }
                 genericDao.clearCurrentSession();
@@ -170,7 +170,7 @@ public class BatchIndexer implements Serializable {
         }
         try {
             searchIndexService.commit(coreForClass);
-        } catch (SolrServerException | IOException e) {
+        } catch (SearchIndexException | IOException e) {
             logger.error("error committing: {}", e);
         }
         scrollableResults.close();

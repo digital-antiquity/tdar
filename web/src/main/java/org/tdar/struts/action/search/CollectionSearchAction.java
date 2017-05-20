@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -18,6 +17,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.bean.CollectionSearchQueryObject;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.struts.action.AbstractLookupController;
@@ -65,7 +65,7 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
-        } catch (ParseException e) {
+        } catch (SearchException e) {
             getLogger().warn("search parse exception: {}", e.getMessage());
             addActionErrorWithException(getText("advancedSearchController.error_parsing_failed"), e);
         }

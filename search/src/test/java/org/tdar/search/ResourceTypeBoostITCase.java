@@ -14,6 +14,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.FacetWrapper;
@@ -23,7 +25,7 @@ public class ResourceTypeBoostITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testFacetPivotStats() throws SolrServerException, IOException, ParseException {
+    public void testFacetPivotStats() throws SolrServerException, IOException, ParseException , SearchException, SearchIndexException {
         SearchResult<Resource> result = new SearchResult<>();
         FacetWrapper facetWrapper = new FacetWrapper();
         facetWrapper.setMapFacet(true);

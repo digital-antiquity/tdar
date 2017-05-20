@@ -6,7 +6,6 @@
 
 package org.tdar.web.resource;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;

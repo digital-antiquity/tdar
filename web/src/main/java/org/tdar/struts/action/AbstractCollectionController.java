@@ -32,8 +32,6 @@ import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
-import com.google.common.base.Objects;
-
 public abstract class AbstractCollectionController<C extends HierarchicalCollection<C>> extends AbstractPersistableController<C> implements DataTableResourceDisplay {
 
     /**

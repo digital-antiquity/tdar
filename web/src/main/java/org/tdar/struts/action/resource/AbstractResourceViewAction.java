@@ -42,7 +42,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;

@@ -22,6 +22,8 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.utils.MessageHelper;
@@ -57,7 +59,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
     @Test
     @Rollback
-    public void testCustomStemming() throws ParseException, SolrServerException, IOException {
+    public void testCustomStemming() throws SearchException, SearchIndexException, IOException {
         init();
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.getAllFields().add("Australia");
@@ -70,7 +72,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
     @Test
     @Rollback
-    public void testBasicCollectionSearch() throws ParseException, SolrServerException, IOException {
+    public void testBasicCollectionSearch() throws SearchException, SearchIndexException, IOException {
         init();
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         SearchResult<ResourceCollection> result = runQuery(null, csqo);
@@ -82,7 +84,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
     @Test
     @Rollback
-    public void testParents() throws ParseException, SolrServerException, IOException {
+    public void testParents() throws SearchException, SearchIndexException, IOException {
         init();
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.setLimitToTopLevel(false);
@@ -116,7 +118,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
     @Test
     @Rollback
-    public void testHiddenBoolean() throws ParseException, SolrServerException, IOException {
+    public void testHiddenBoolean() throws SearchException, SearchIndexException, IOException {
         init();
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.setIncludeHidden(false);
@@ -134,7 +136,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
     @Test
     @Rollback
-    public void testBasicCollectionSearchTerms() throws ParseException, SolrServerException, IOException {
+    public void testBasicCollectionSearchTerms() throws SearchException, SearchIndexException, IOException {
         init();
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.getAllFields().add("Kintigh");
@@ -150,7 +152,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         }
     }
 
-    private SearchResult<ResourceCollection> runQuery(TdarUser user, CollectionSearchQueryObject csqo) throws ParseException, SolrServerException, IOException {
+    private SearchResult<ResourceCollection> runQuery(TdarUser user, CollectionSearchQueryObject csqo) throws SearchException, SearchIndexException, IOException {
         SearchResult<ResourceCollection> result = new SearchResult<>();
         result.setRecordsPerPage(100);
         collectionSearchService.buildResourceCollectionQuery(user, csqo, result, MessageHelper.getInstance());

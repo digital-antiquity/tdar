@@ -11,7 +11,6 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +44,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.index.SearchIndexService;
@@ -122,7 +122,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testResultCountsAsUnauthenticatedUser() throws SolrServerException, IOException {
+    public void testResultCountsAsUnauthenticatedUser() throws SearchIndexException, IOException {
         evictCache();
 
         setIgnoreActionErrors(true);
@@ -131,7 +131,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testResultCountsAsBasicUser() throws SolrServerException, IOException {
+    public void testResultCountsAsBasicUser() throws SearchIndexException, IOException {
         evictCache();
 
         // testing as a user who did not create their own stuff
@@ -145,7 +145,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     
     @Test
     @Rollback(true)
-    public void testResultCountsAsBasicContributor() throws SolrServerException, IOException {
+    public void testResultCountsAsBasicContributor() throws SearchIndexException, IOException {
         // testing as a user who did create their own stuff
         evictCache();
         setIgnoreActionErrors(true);
@@ -154,13 +154,13 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testResultCountsAdmin() throws SolrServerException, IOException {
+    public void testResultCountsAdmin() throws SearchIndexException, IOException {
         evictCache();
         testResourceCounts(getAdminUser());
     }
     
 
-    private void testResourceCounts(TdarUser user) throws SolrServerException, IOException {
+    private void testResourceCounts(TdarUser user) throws SearchIndexException, IOException {
         for (ResourceType type : ResourceType.values()) {
             Resource resource = createAndSaveNewResource(type.getResourceClass());
             for (Status status : Status.values()) {
@@ -241,7 +241,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     @Test
-    public void testResourceCaseSensitivity() throws SolrServerException, IOException {
+    public void testResourceCaseSensitivity() throws SearchIndexException, IOException {
         Document doc = createAndSaveNewResource(Document.class);
         SharedCollection titleCase = new SharedCollection(USAF_TITLE_CASE, "test",  getAdminUser());
         titleCase.markUpdated(getAdminUser());
@@ -337,7 +337,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertThat(((VisibleCollection)firstGroup().getCollections().get(0)).getTitle(), is(collectionTitle));
     }
 
-    private void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
+    private void updateAndIndex(Indexable doc) throws SearchIndexException, IOException {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
     }
@@ -361,7 +361,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testPersonSearchWithoutAutocomplete() throws SolrServerException, IOException {
+    public void testPersonSearchWithoutAutocomplete() throws SearchIndexException, IOException {
         String lastName = "Watts";
         Person person = new Person(null, lastName, null);
         controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
@@ -371,7 +371,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testInstitutionSearchWithoutAutocomplete() throws SolrServerException, IOException {
+    public void testInstitutionSearchWithoutAutocomplete() throws SearchIndexException, IOException {
         controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         String name = "Digital Antiquity";
         Institution institution = new Institution(name);
@@ -381,7 +381,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testCollectionSearchLabelText() throws SolrServerException, IOException, TdarActionException {
+    public void testCollectionSearchLabelText() throws SearchIndexException, IOException, TdarActionException {
         ResourceCollection collection = createAndSaveNewResourceCollection("abecd");
         controller.setCollectionId(collection.getId());
         controller.setQuery("ab");
@@ -438,7 +438,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
-    public void testSynonymPersonSearch() throws SolrServerException, IOException {
+    public void testSynonymPersonSearch() throws SearchIndexException, IOException {
         // setup test
         // create image
         Image image = new Image();

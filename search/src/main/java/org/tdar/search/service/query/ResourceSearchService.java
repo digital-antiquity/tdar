@@ -37,6 +37,7 @@ import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.MultiCoreQueryBuilder;
@@ -71,7 +72,7 @@ public class ResourceSearchService extends AbstractSearchService {
 
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> buildCollectionResourceSearch(LuceneSearchResultHandler<Resource> result, TextProvider provider)
-            throws ParseException, SolrServerException, IOException {
+            throws SearchException, IOException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.HIDDEN, Boolean.FALSE));
@@ -93,7 +94,7 @@ public class ResourceSearchService extends AbstractSearchService {
      */
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(Project indexable, String term, TdarUser user,
-            LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+            LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SearchException, IOException {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         qb.append(new FieldQueryPart<>(QueryFieldNames.PROJECT_ID, indexable.getId()));
         runContainedInQuery(term, user, result, provider, qb);
@@ -101,7 +102,7 @@ public class ResourceSearchService extends AbstractSearchService {
     }
 
     private void runContainedInQuery(String term, TdarUser user, LuceneSearchResultHandler<Resource> result, TextProvider provider, ResourceQueryBuilder qb)
-            throws ParseException, SolrServerException, IOException {
+            throws SearchException, IOException {
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
         initializeReservedSearchParameters(reservedSearchParameters, user);
         qb.setOperator(Operator.AND);
@@ -125,7 +126,7 @@ public class ResourceSearchService extends AbstractSearchService {
      */
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(VisibleCollection indexable, String term, TdarUser user,
-            LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+            LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SearchException, IOException {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         List<Long> ids = new ArrayList<>();
         ids.add(indexable.getId());
@@ -147,7 +148,7 @@ public class ResourceSearchService extends AbstractSearchService {
 
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> lookupResource(TdarUser user, ResourceLookupObject look, LuceneSearchResultHandler<Resource> result,
-            TextProvider support) throws ParseException, SolrServerException, IOException {
+            TextProvider support) throws SearchException, IOException {
         ResourceQueryBuilder q = new ResourceQueryBuilder();
         if (StringUtils.isNotBlank(look.getTerm()) || look.getCategoryId() != null) {
             q.append(new CategoryTermQueryPart(look.getTerm(), look.getCategoryId()));
@@ -195,7 +196,7 @@ public class ResourceSearchService extends AbstractSearchService {
 
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> buildKeywordQuery(Keyword keyword, KeywordType keywordType, ReservedSearchParameters rsp, LuceneSearchResultHandler<Resource> result,
-            TextProvider provider, TdarUser user) throws ParseException, SolrServerException, IOException {
+            TextProvider provider, TdarUser user) throws SearchException, IOException {
 
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
@@ -208,7 +209,7 @@ public class ResourceSearchService extends AbstractSearchService {
 
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> buildAdvancedSearch(AdvancedSearchQueryObject asqo, TdarUser authenticatedUser,
-            LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SolrServerException, IOException, ParseException {
+            LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SearchException, IOException {
         ResourceQueryBuilder queryBuilder = new ResourceQueryBuilder();
         if (asqo.isMultiCore()) {
             queryBuilder = new MultiCoreQueryBuilder();
@@ -227,9 +228,8 @@ public class ResourceSearchService extends AbstractSearchService {
             group.setExplore(asqo.isExplore());
             try {
                 searchService.updateResourceCreators(group, 20);
-            } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (SearchException e) {
+                logger.error("issue hydrating creators",e);
             }
             topLevelQueryPart.append(group.toQueryPartGroup(provider));
         }
@@ -296,7 +296,7 @@ public class ResourceSearchService extends AbstractSearchService {
      */
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> generateQueryForRelatedResources(Creator<?> creator, TdarUser user, FacetedResultHandler<Resource> result,
-            TextProvider provider) throws ParseException, SolrServerException, IOException {
+            TextProvider provider) throws SearchException, IOException {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         // result.setRecordsPerPage(MAX_FTQ_RESULTS);
         queryBuilder.setOperator(Operator.AND);

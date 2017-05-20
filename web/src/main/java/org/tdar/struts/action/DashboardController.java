@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -41,6 +40,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
@@ -118,7 +118,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         int count = 10;
         try {
             getFeaturedResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
-        } catch (ParseException pe) {
+        } catch (SearchException pe) {
             getLogger().debug("parse exception", pe);
         }
         // note, in rare occasions, a cache hit might mean that the resource's

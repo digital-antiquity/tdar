@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.search.service.query.KeywordSearchService;
@@ -64,7 +64,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
         setMode("keywordLookup");
         try {
             keywordSearchService.findKeyword(getTerm(), getKeywordType(), this, this, getMinLookupLength());
-        } catch (ParseException e) {
+        } catch (SearchException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }

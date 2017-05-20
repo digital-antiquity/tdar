@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.AuthorizedUser;

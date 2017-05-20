@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -18,6 +17,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 
@@ -28,7 +29,7 @@ public class ProjectAndInheritanceSearchITCase extends AbstractResourceSearchITC
 
     @Test
     @Rollback(true)
-    public void testForInheritedCulturalInformationFromProject() throws ParseException, SolrServerException, IOException {
+    public void testForInheritedCulturalInformationFromProject() throws ParseException, SearchException, SearchIndexException, IOException {
         searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setObjectTypes(Arrays.asList(ObjectType.DOCUMENT, ObjectType.IMAGE));
@@ -40,7 +41,7 @@ public class ProjectAndInheritanceSearchITCase extends AbstractResourceSearchITC
     
     @Test
     @Rollback(true)
-    public void testForProjectWithChild() throws ParseException, SolrServerException, IOException {
+    public void testForProjectWithChild() throws ParseException, SearchException, SearchIndexException, IOException {
         Project project = createAndSaveNewProject("test with child");
         Dataset dataset = createAndSaveNewDataset();
         dataset.setProject(project);

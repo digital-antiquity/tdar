@@ -37,7 +37,6 @@ import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;

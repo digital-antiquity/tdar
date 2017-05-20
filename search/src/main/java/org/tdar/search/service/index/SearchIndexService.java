@@ -65,6 +65,7 @@ import org.tdar.search.converter.IntegrationDocumentConverter;
 import org.tdar.search.converter.KeywordDocumentConverter;
 import org.tdar.search.converter.PersonDocumentConverter;
 import org.tdar.search.converter.ResourceDocumentConverter;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.CoreNames;
@@ -283,7 +284,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      */
     @Async
     public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex)
-            throws SolrServerException, IOException {
+            throws SearchIndexException, IOException {
         indexCollection(collectionToReindex);
     }
 
@@ -294,7 +295,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @throws SolrServerException
      */
     @SuppressWarnings("unchecked")
-    public <C extends Indexable> void index(C... indexable) throws SolrServerException, IOException {
+    public <C extends Indexable> void index(C... indexable) throws SearchIndexException, IOException {
         indexCollection(Arrays.asList(indexable));
     }
 
@@ -306,7 +307,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @throws SolrServerException
      */
     public <C extends Indexable> boolean indexCollection(Collection<C> indexable)
-            throws SolrServerException, IOException {
+            throws SearchIndexException, IOException {
         boolean exceptions = false;
 
         if (CollectionUtils.isNotEmpty(indexable)) {
@@ -352,9 +353,13 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         return exceptions;
     }
 
-    void commit(String core) throws SolrServerException, IOException {
+    void commit(String core) throws SearchIndexException, IOException {
+        try {
         UpdateResponse commit = template.commit(core);
         logger.trace("response: {}", commit.getResponseHeader());
+        } catch (Exception e) {
+            throw new SearchIndexException("issue committing", e);
+        }
     }
 
 
@@ -414,7 +419,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
             // in most cases this is *:*, but for the shared core (Resources/Collections) it is limited by type
             template.deleteByQuery(src.getCoreName(), src.getDeleteQuery());
             commit(src.getCoreName());
-        } catch (SolrServerException | IOException e) {
+        } catch (Exception e) {
             logger.error("error purging index: {}", src.getCoreName(), e);
         }
     }
@@ -443,7 +448,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @throws IOException
      * @throws SolrServerException
      */
-    public boolean indexProject(Project project) throws SolrServerException, IOException {
+    public boolean indexProject(Project project) throws SearchIndexException, IOException {
         index(project);
         logger.debug("reindexing project contents");
         ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
@@ -461,12 +466,12 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      */
     @Async
     @Transactional(readOnly = true)
-    public void indexProjectAsync(final Project project) throws SolrServerException, IOException {
+    public void indexProjectAsync(final Project project) throws SearchIndexException, IOException {
         indexProject(project);
     }
 
     @Transactional(readOnly = true)
-    public boolean indexProject(Long id) throws SolrServerException, IOException {
+    public boolean indexProject(Long id) throws SearchIndexException, IOException {
         return indexProject(genericDao.find(Project.class, id));
     }
 
@@ -577,7 +582,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
     private void commitAndClearSession(String coreName) {
         try {
             commit(coreName);
-        } catch (SolrServerException | IOException e) {
+        } catch (SearchIndexException | IOException e) {
             logger.error("error in partial index: {}", e);
         } finally {
             genericDao.clearCurrentSession();

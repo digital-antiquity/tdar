@@ -15,12 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +29,9 @@ import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author Adam Brin

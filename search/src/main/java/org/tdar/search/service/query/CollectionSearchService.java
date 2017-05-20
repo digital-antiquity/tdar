@@ -3,9 +3,7 @@ package org.tdar.search.service.query;
 import java.io.IOException;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +12,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.bean.CollectionSearchQueryObject;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
@@ -37,7 +36,7 @@ public class CollectionSearchService extends AbstractSearchService {
     private transient SearchService<ResourceCollection> searchService;
 
     public LuceneSearchResultHandler<ResourceCollection> buildResourceCollectionQuery(TdarUser authenticatedUser, CollectionSearchQueryObject query,
-            LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+            LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws SearchException, IOException {
         ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
 
@@ -87,7 +86,7 @@ public class CollectionSearchService extends AbstractSearchService {
     }
 
     public LuceneSearchResultHandler<ResourceCollection> lookupCollection(TdarUser authenticatedUser, CollectionSearchQueryObject csqo,
-            LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+            LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws SearchException, IOException {
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
         q.setOperator(Operator.AND);
         q.append(new AutocompleteTitleQueryPart(csqo.getTitles().get(0)));

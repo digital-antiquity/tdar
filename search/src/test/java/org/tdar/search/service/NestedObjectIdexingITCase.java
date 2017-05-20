@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.ResourceSearchService;
@@ -67,7 +68,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     @Test
     @Ignore
     @Rollback(true)
-    public void testIndexing() throws SolrServerException, IOException, ParseException {
+    public void testIndexing() throws SearchException, SearchIndexException, IOException, ParseException {
 //        sessionFactory.getCurrentSession().
         SharedCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Image image = createAndSaveNewInformationResource(Image.class);

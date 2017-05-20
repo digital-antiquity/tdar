@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -22,6 +21,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.utils.PersistableUtils;
@@ -29,7 +30,7 @@ import org.tdar.utils.PersistableUtils;
 public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
-    public void testTitleCaseSensitivity() throws SolrServerException, IOException, ParseException {
+    public void testTitleCaseSensitivity() throws SearchException, SearchIndexException, IOException, ParseException {
         Document doc = createAndSaveNewResource(Document.class);
         doc.setTitle("usaf");
         updateAndIndex(doc);
@@ -50,7 +51,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
-    public void testTitleSiteCodeMatching() throws SolrServerException, IOException, ParseException {
+    public void testTitleSiteCodeMatching() throws SearchException, SearchIndexException, IOException, ParseException {
         List<String> titles = Arrays
                 .asList("1. Pueblo Grande (AZ U:9:1(ASM)): Unit 12, Gateway and 44th Streets: SSI Kitchell Testing, Photography Log (PHOTO) Data (1997)",
                         "2. Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)",
@@ -95,7 +96,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testTitleSearch() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+    public void testTitleSearch() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException , SearchException, SearchIndexException{
         Document doc = createDocumentWithContributorAndSubmitter();
         String title = "the archaeology of class and war";
         doc.setTitle(title);
@@ -112,7 +113,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+    public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException, SearchException, SearchIndexException {
         Document doc = createDocumentWithContributorAndSubmitter();
         String title = "the archaeology of class ( AND ) war";
         doc.setTitle(title);
@@ -130,7 +131,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
-    public void testLookupByTitle() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+    public void testLookupByTitle() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
         String[] titles = new String[] { "CARP Fauna Side or Symmetry", "CARP Fauna Completeness (Condition)", "CARP Fauna Origin of Fragmentation",
                 "CARP Fauna Proximal-Distal", " CARP Fauna Dorsal-Ventral", "CARP Fauna Fusion", "CARP Fauna Burning", "CARP Fauna Bone Artifacts",
                 "CARP Fauna Gnawing", "CARP Fauna Natural Modification", "CARP Fauna Element", "CARP Fauna Butchering",
@@ -311,7 +312,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testTitle() throws ParseException, SolrServerException, IOException {
+    public void testTitle() throws ParseException, SearchException, SearchIndexException, IOException {
         // FIXME: magic numbers
         Long projectId = 139L;
         Project project = genericService.find(Project.class, projectId);
@@ -325,7 +326,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
     @SuppressWarnings("deprecation")
     @Test
     @Rollback
-    public void testTitleRelevancy() throws SolrServerException, IOException, ParseException {
+    public void testTitleRelevancy() throws SearchException, SearchIndexException, IOException, ParseException , SearchException, SearchIndexException{
         //(11R5)-1
         //1/4
         //4\"

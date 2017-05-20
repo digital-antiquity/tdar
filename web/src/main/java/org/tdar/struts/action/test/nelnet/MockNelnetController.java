@@ -44,8 +44,6 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
-import com.opensymphony.xwork2.Preparable;
-
 @Component
 @Scope("prototype")
 @ParentPackage("default")

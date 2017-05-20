@@ -16,7 +16,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -62,6 +61,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.bean.SearchFieldType;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
@@ -286,9 +286,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             } catch (TdarRecoverableRuntimeException tdre) {
                 getLogger().warn("search parse exception", tdre);
                 addActionError(tdre.getMessage());
-            } catch (ParseException e) {
-                getLogger().warn("search parse exception", e);
-            } catch (SolrServerException e) {
+            } catch (SearchException e) {
                 getLogger().warn("search parse exception", e);
             } catch (IOException e) {
                 getLogger().warn("search parse exception", e);

@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.service.EntityService;
 import org.tdar.search.QuietIndexReciever;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
@@ -46,7 +47,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList( LookupSource.INSTITUTION),getAdminUser());
     };
 
-    public List<Institution> setupInstitutionSearch() throws SolrServerException, IOException {
+    public List<Institution> setupInstitutionSearch() throws SearchException, SearchIndexException, IOException {
         ArrayList<Institution> insts = new ArrayList<>();
         String[] names = new String[] { "US Air Force", "Vandenberg Air Force Base", "Air Force Base" };
         for (String name : names) {
@@ -58,34 +59,34 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     }
 
     @Test
-    public void testNamePhrase() throws ParseException, SolrServerException, IOException {
+    public void testNamePhrase() throws ParseException, SearchException, SearchIndexException, IOException {
         LuceneSearchResultHandler<Institution> result = new SearchResult<>();
         creatorSearchService.searchInstitution("Arizona State Unive", result, MessageHelper.getInstance());
     }
     
     @Test
     @Rollback
-    public void testInstitutionMultiWordSearch() throws ParseException, SolrServerException, IOException {
+    public void testInstitutionMultiWordSearch() throws ParseException, SearchException, SearchIndexException, IOException {
         String term = "Arizona State";
         searchInstitution(term);
     }
 
     @Test
     @Rollback
-    public void testInstitutionSearch() throws ParseException, SolrServerException, IOException {
+    public void testInstitutionSearch() throws ParseException, SearchException, SearchIndexException, IOException {
         String term = "arizona";
         searchInstitution(term);
     }
 
-    private SearchResult<Institution> searchInstitution(String term) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Institution> searchInstitution(String term) throws ParseException, SearchException, SearchIndexException, IOException {
         return searchInstitution(term, MIN,true);
     }
 
-    private SearchResult<Institution> searchInstitution(String term,boolean testResults) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Institution> searchInstitution(String term,boolean testResults) throws ParseException, SearchException, SearchIndexException, IOException {
         return searchInstitution(term, MIN, testResults);
     }
 
-    private SearchResult<Institution> searchInstitution(String term, int min, boolean testResults) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Institution> searchInstitution(String term, int min, boolean testResults) throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<Institution> result = new SearchResult<>();
         creatorSearchService.findInstitution(term, result, MessageHelper.getInstance(), min);
         logger.debug("{}", result.getResults());
@@ -97,7 +98,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
     @Test
     @Rollback
-    public void testInstitutionSearchWordPlacement() throws SolrServerException, IOException, ParseException {
+    public void testInstitutionSearchWordPlacement() throws SearchException, SearchIndexException, IOException, ParseException {
         List<Institution> insts = setupInstitutionSearch();
         SearchResult<Institution> result = searchInstitution("Air Force");
         assertTrue(CollectionUtils.containsAll(result.getResults(), insts));
@@ -109,7 +110,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
     @Test
     @Rollback
-    public void testInstitutionSearchCaseInsensitive() throws SolrServerException, IOException, ParseException {
+    public void testInstitutionSearchCaseInsensitive() throws SearchException, SearchIndexException, IOException, ParseException {
         List<Institution> insts = setupInstitutionSearch();
         SearchResult<Institution> result = searchInstitution("air force");
         assertTrue(CollectionUtils.containsAll(result.getResults(), insts));
@@ -118,14 +119,14 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         assertTrue(CollectionUtils.containsAll(result.getResults(), insts));
     }
 
-    private void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
+    private void updateAndIndex(Indexable doc) throws SearchException, SearchIndexException, IOException {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
     }
 
     @Test
     @Rollback(true)
-    public void testInstitutionWithAcronym() throws SolrServerException, IOException, ParseException {
+    public void testInstitutionWithAcronym() throws SearchException, SearchIndexException, IOException, ParseException {
         Institution inst = new Institution("Arizona State University (ASU)");
         genericService.saveOrUpdate(inst);
         genericService.saveOrUpdate(inst);
@@ -138,12 +139,12 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
     @Test
     @Rollback(true)
-    public void testInstitutionLookupWithNoResults() throws SolrServerException, IOException, ParseException {
+    public void testInstitutionLookupWithNoResults() throws SearchException, SearchIndexException, IOException, ParseException {
         searchAssertEmpty("fdaksfddfde");
     }
 
     @Test
-    public void testInstitutionLookupWithOneResult() throws SolrServerException, IOException, ParseException {
+    public void testInstitutionLookupWithOneResult() throws SearchException, SearchIndexException, IOException, ParseException {
         SearchResult<Institution> result = searchInstitution("tfqa");
         List<Institution> institutions = result.getResults();
         assertTrue("only one result expected", institutions.size() == 1);
@@ -151,7 +152,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
     // given test script, searching 'digital' should return multiple results that start with 'Digital Antiquity'
     @Test
-    public void testInstitutionLookupWithMultiple() throws SolrServerException, IOException, ParseException {
+    public void testInstitutionLookupWithMultiple() throws SearchException, SearchIndexException, IOException, ParseException {
         SearchResult<Institution> result = searchInstitution("University");
         List<Institution> institutions = result.getResults();
         assertTrue("more than one result expected", institutions.size() > 1);
@@ -160,12 +161,12 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     // searching for string witn blanks should yield zero results.
     @Test
     @Rollback(true)
-    public void testInstitutionLookupWithBlanks() throws SolrServerException, IOException, ParseException {
+    public void testInstitutionLookupWithBlanks() throws SearchException, SearchIndexException, IOException, ParseException {
         String blanks = "    ";
         searchAssertEmpty(blanks);
     }
 
-    private void searchAssertEmpty(String blanks) throws ParseException, SolrServerException, IOException {
+    private void searchAssertEmpty(String blanks) throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<Institution> result = new SearchResult<>();
         creatorSearchService.findInstitution(blanks, result, MessageHelper.getInstance(), 1);
         List<Institution> results = result.getResults();
@@ -175,7 +176,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @SuppressWarnings("unused")
     @Test
     @Rollback(true)
-    public void testMultiWordInstitution() throws SolrServerException, IOException, ParseException {
+    public void testMultiWordInstitution() throws SearchException, SearchIndexException, IOException, ParseException {
         String name1 = "U.S. Department of the Interior";
         String term = "U.S. Department of";
 
@@ -190,7 +191,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @SuppressWarnings("unused")
     @Test
     @Rollback(true)
-    public void testPrefixUppercase() throws SolrServerException, IOException, ParseException {
+    public void testPrefixUppercase() throws SearchException, SearchIndexException, IOException, ParseException {
         List<Institution> insts = setupInstitutionsForLookup();
         String lookingFor = "U.S.";
         SearchResult<Institution> result = searchInstitution(lookingFor);
@@ -205,7 +206,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @SuppressWarnings("unused")
     @Test
     @Rollback(true)
-    public void testPrefixLowercase() throws SolrServerException, IOException, ParseException {
+    public void testPrefixLowercase() throws SearchException, SearchIndexException, IOException, ParseException {
         List<Institution> insts = setupInstitutionsForLookup();
         SearchResult<Institution> result = searchInstitution("u.s.");
         List<Institution> results = result.getResults();
@@ -217,7 +218,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
     @Test
     @Rollback(true)
-    public void testPrefixWithoutPunctuationMatchesPunctuation() throws SolrServerException, IOException, ParseException {
+    public void testPrefixWithoutPunctuationMatchesPunctuation() throws SearchException, SearchIndexException, IOException, ParseException {
         Institution in1 = new Institution("U.S. Depoartment of Agriculture");
         Institution in2 = new Institution("US Depoartment of Agriculture");
         genericService.save(in1);
@@ -240,7 +241,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
     }
 
-    private List<Institution> setupInstitutionsForLookup() throws SolrServerException, IOException {
+    private List<Institution> setupInstitutionsForLookup() throws SearchException, SearchIndexException, IOException {
         String name1 = "U.S. Department of the Interior";
         List<Institution> insts = Arrays.asList(new Institution(name1),
                 new Institution("National Geographic Society (U.S.)"), new Institution("Robertson Research (U.S.)"),

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
@@ -38,7 +39,7 @@ public class KeywordSearchService<I extends Keyword> extends AbstractSearchServi
     private SearchService<I> searchService;
 
     public LuceneSearchResultHandler<I> findKeyword(String term, String keywordType, LuceneSearchResultHandler<I> result, TextProvider provider, int min)
-            throws ParseException, SolrServerException, IOException {
+            throws SearchException, IOException {
         QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
         
         if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {

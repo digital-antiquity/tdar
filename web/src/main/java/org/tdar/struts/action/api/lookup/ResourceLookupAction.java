@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -24,6 +23,7 @@ import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.bean.ResourceLookupObject;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.query.ResourceSearchService;
@@ -104,7 +104,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             // includeComplete?
             resourceSearchService.lookupResource(getAuthenticatedUser(), look, this, this);
             getLogger().trace("jsonResults: {}", getResults());
-        } catch (ParseException e) {
+        } catch (SearchException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;
         }

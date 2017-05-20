@@ -18,7 +18,6 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.QuietIndexReciever;
 import org.tdar.search.bean.ObjectType;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
@@ -128,7 +129,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testYearSorting() throws ParseException, SolrServerException, IOException {
+    public void testYearSorting() throws ParseException, SearchException, SearchIndexException, IOException {
         Comparator<Resource> yearComparator = new Comparator<Resource>() {
             @Override
             public int compare(Resource arg0, Resource arg1) {
@@ -154,7 +155,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     @SuppressWarnings({ "unused", "rawtypes" })
     @Test
-    public void testDateSorting() throws ParseException, SolrServerException, IOException {
+    public void testDateSorting() throws ParseException, SearchException, SearchIndexException, IOException {
         DesignatedComparable<Resource> dateCreatedComparator = new DesignatedComparable<Resource>() {
             @Override
             public Comparable getComparableFor(Resource t) {
@@ -175,7 +176,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testResourceTypeSorting() throws ParseException, SolrServerException, IOException {
+    public void testResourceTypeSorting() throws ParseException, SearchException, SearchIndexException, IOException {
         DesignatedComparable<Resource> resourceTypeComparator = new DesignatedComparable<Resource>() {
             @SuppressWarnings("rawtypes")
             @Override
@@ -192,7 +193,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     // the sortInfo data structure has all the info on all the fields we sort by, which querybuilders to use, and what comparators to use
     // to assert that the searchService successfully sorted the results.
     @SuppressWarnings({ "rawtypes" })
-    public void testAllSortFields() throws ParseException, SolrServerException, IOException {
+    public void testAllSortFields() throws ParseException, SearchException, SearchIndexException, IOException {
 
         for (SortTestStruct sortTestInfo : sortTests) {
             
@@ -225,23 +226,23 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testTitleSort() throws ParseException, SolrServerException, IOException {
+    public void testTitleSort() throws ParseException, SearchException, SearchIndexException, IOException {
         assertSortOrder(SortOption.TITLE, titleComparator);
         assertSortOrder(SortOption.TITLE_REVERSE, titleComparator);
     }
 
     @Test
-    public void testIdSort() throws ParseException, SolrServerException, IOException {
+    public void testIdSort() throws ParseException, SearchException, SearchIndexException, IOException {
         assertSortOrder(SortOption.ID, idComparator);
         assertSortOrder(SortOption.ID_REVERSE, idComparator);
     }
 
     // @Test
-    public void testProjectSort() throws ParseException, SolrServerException, IOException {
+    public void testProjectSort() throws ParseException, SearchException, SearchIndexException, IOException {
         assertSortOrder(SortOption.PROJECT, projectComparator);
     }
 
-    private void assertSortOrder(SortOption sortOption, Comparator<Resource> comparator) throws ParseException, SolrServerException, IOException {
+    private void assertSortOrder(SortOption sortOption, Comparator<Resource> comparator) throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<Resource> result = new SearchResult<>();
         result.setSortField(sortOption);
         searchService.handleSearch(setupQueryBuilder(), result, MessageHelper.getInstance());

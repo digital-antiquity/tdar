@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +30,7 @@ import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.Facet;
@@ -71,7 +70,7 @@ public class HomepageService {
 
         try {
         resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, authenticatedUser, result, provider);
-        } catch (SolrServerException | IOException | ParseException e1) {
+        } catch (SearchException | IOException  e1) {
             logger.error("issue generating map search", e1);
         }
         return generateDetails(result);

@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.entity.Person;

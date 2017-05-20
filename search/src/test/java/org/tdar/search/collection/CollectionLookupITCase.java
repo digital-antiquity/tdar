@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
@@ -21,6 +19,8 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.SearchResult;
 import org.tdar.utils.MessageHelper;
 
@@ -29,7 +29,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
     @Test
     @Rollback(true)
-    public void testCollectionLookup() throws IOException, SolrServerException, ParseException {
+    public void testCollectionLookup() throws IOException, SearchException, SearchIndexException {
         setupCollections();
         SearchResult<ResourceCollection> results = search(null, null, "Kin");
         for (ResourceCollection collection : results.getResults()) {
@@ -49,7 +49,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     }
 
     private SearchResult<ResourceCollection> search(TdarUser user, GeneralPermissions permission, String title)
-            throws ParseException, SolrServerException, IOException {
+            throws SearchException, IOException {
         SearchResult<ResourceCollection> results = new SearchResult<>(100);
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.setPermission(permission);
@@ -60,7 +60,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
     @Test
     @Rollback(true)
-    public void testCollectionLookupUnauthenticated() throws SolrServerException, IOException, ParseException {
+    public void testCollectionLookupUnauthenticated() throws SearchException, SearchIndexException, IOException {
         setupCollections();
         SearchResult<ResourceCollection> result = search(null, null, "Kintigh - C");
         for (ResourceCollection collection : result.getResults()) {
@@ -72,7 +72,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
     }
 
-    private void setupCollections() throws SolrServerException, IOException {
+    private void setupCollections() throws SearchException, SearchIndexException, IOException {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         for (String collectionName : collectionNames) {
             ResourceCollection e = new SharedCollection(collectionName, collectionName, getBasicUser());
@@ -86,7 +86,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
     @Test
     @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicOwner() throws SolrServerException, IOException, ParseException {
+    public void testInvisibleCollectionLookupFoundByBasicOwner() throws SearchException, IOException, SearchIndexException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.LIST, null);
         SearchResult<ResourceCollection> result = search(null, null, "test");
         assertTrue(result.getResults().contains(e));
@@ -94,7 +94,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
     @Test
     @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicUser() throws SolrServerException, IOException, ParseException {
+    public void testInvisibleCollectionLookupFoundByBasicUser() throws SearchException, SearchIndexException, IOException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.LIST,  GeneralPermissions.ADD_TO_COLLECTION);
         SearchResult<ResourceCollection> result = search(getBasicUser(), null, "test");
         assertTrue(result.getResults().contains(e));
@@ -102,7 +102,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
     @Test
     @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicUserForModification() throws SolrServerException, IOException, ParseException {
+    public void testInvisibleCollectionLookupFoundByBasicUserForModification() throws SearchException, SearchIndexException, IOException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.LIST, GeneralPermissions.REMOVE_FROM_COLLECTION);
         SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP, "test");
         assertFalse(result.getResults().contains(e));
@@ -111,7 +111,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     
     @Test
     @Rollback(true)
-    public void testInvisibleShareLookupFoundByBasicOwner() throws SolrServerException, IOException, ParseException {
+    public void testInvisibleShareLookupFoundByBasicOwner() throws SearchException, SearchIndexException, IOException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.SHARED, GeneralPermissions.VIEW_ALL);
         SearchResult<ResourceCollection> result = search(null, null, "test");
         assertTrue(result.getResults().contains(e));
@@ -119,7 +119,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
     @Test
     @Rollback(true)
-    public void testInvisibleShareLookupFoundByBasicUser() throws SolrServerException, IOException, ParseException {
+    public void testInvisibleShareLookupFoundByBasicUser() throws SearchException, SearchIndexException, IOException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.SHARED,  GeneralPermissions.VIEW_ALL);
         SearchResult<ResourceCollection> result = search(getBasicUser(), null, "test");
         assertTrue(result.getResults().contains(e));
@@ -127,14 +127,14 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
     @Test
     @Rollback(true)
-    public void testInvisibleShareLookupFoundByBasicUserForModification() throws SolrServerException, IOException, ParseException {
+    public void testInvisibleShareLookupFoundByBasicUserForModification() throws SearchException, SearchIndexException, IOException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.SHARED, GeneralPermissions.VIEW_ALL);
         SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE, "test");
         assertFalse(result.getResults().contains(e));
     }
 
     private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, CollectionType type,GeneralPermissions permission)
-            throws SolrServerException, IOException {
+            throws SearchIndexException, IOException {
         assertFalse(getSessionUser().equals(getAdminUser()));
         ResourceCollection e = new SharedCollection("a test", "a Name",  owner);
         if (type == CollectionType.LIST) {

@@ -2,7 +2,6 @@ package org.tdar.struts.action.api.lookup;
 
 import java.io.IOException;
 
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -15,6 +14,7 @@ import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.search.service.query.CollectionSearchService;
@@ -58,7 +58,7 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
                 csqo.setPermission(getPermission());
                 csqo.getTitles().add(getTerm());
                 collectionSearchService.lookupCollection(getAuthenticatedUser(), csqo, this, this);
-            } catch (ParseException e) {
+            } catch (SearchException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }

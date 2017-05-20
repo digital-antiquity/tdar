@@ -9,7 +9,6 @@ import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -23,7 +22,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -35,6 +33,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
@@ -236,7 +235,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         }
     }
 
-    protected void indexPersistable() throws SolrServerException, IOException {
+    protected void indexPersistable() throws IOException, SearchIndexException {
         if (getPersistable() instanceof Indexable) {
             publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
         }

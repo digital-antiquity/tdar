@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -17,6 +16,8 @@ import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.service.processes.upgradeTasks.PartialReindexProjectTitleProcess;
 import org.tdar.search.service.processes.weekly.WeeklyResourcesAdded;
 
@@ -34,7 +35,7 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
 
     @Test
     @Rollback
-    public void testResourceReport() throws SolrServerException, IOException {
+    public void testResourceReport() throws SearchException, SearchIndexException, IOException {
         Dataset dataset = createAndSaveNewDataset();
         searchIndexService.index(dataset);
         scheduledProcessService.queue(WeeklyResourcesAdded.class);

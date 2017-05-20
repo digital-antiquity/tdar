@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.search.bean.ObjectType;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.index.SearchIndexService;
 
@@ -87,7 +88,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
 
     @Test
     @Rollback(true)
-    public void testDeletedMaterialsAreIndexedButYouCantSee() throws SolrServerException, IOException {
+    public void testDeletedMaterialsAreIndexedButYouCantSee() throws SearchIndexException, IOException {
         controller = generateNewInitializedController(AdvancedSearchController.class, getBasicUser());
         setIgnoreActionErrors(true);
         controller.setRecordsPerPage(50);

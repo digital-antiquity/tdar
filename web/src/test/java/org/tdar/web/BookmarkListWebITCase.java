@@ -17,7 +17,6 @@ import com.gargoylesoftware.htmlunit.FormEncodingType;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 
 public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {

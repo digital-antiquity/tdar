@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -24,6 +23,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
@@ -136,7 +136,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         return SUCCESS;
     }
     
-    public void indexPersistable() throws SolrServerException, IOException {
+    public void indexPersistable() throws SearchIndexException, IOException {
         if (getPersistable() instanceof Resource) {
             searchIndexService.index((Resource)getPersistable()); 
         } 
