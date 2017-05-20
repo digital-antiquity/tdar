@@ -22,6 +22,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
@@ -84,7 +85,7 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
         cc.prepare();
         cc.edit();
         cc.setServletRequest(getServletPostRequest());
-        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
+        cc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
         cc.setAsync(false);
         cc.save();
         cc = null;

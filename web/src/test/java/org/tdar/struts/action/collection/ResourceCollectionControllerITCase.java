@@ -123,7 +123,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         sc.prepare();
         sc.edit();
         sc.setServletRequest(getServletPostRequest());
-        sc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
+        sc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
         sc.setAsync(false);
         sc.save();
 
@@ -419,7 +419,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
         AuthorizedUser user1Modifier = new AuthorizedUser(getAdminUser(),user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
         AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_SHARE);
-        sc.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
+        sc.getProxies().addAll(Arrays.asList(new UserRightsProxy( user1Viewer), new UserRightsProxy( user1Modifier), new UserRightsProxy( user2)));
         sc.setServletRequest(getServletPostRequest());
         sc.save();
 
@@ -1063,8 +1063,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         scc.setId(rcid);
         scc.prepare();
         AuthorizedUser authUser = new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.MODIFY_RECORD);
-        List<AuthorizedUser> authList = new ArrayList<>(Arrays.asList(authUser));
-        scc.setAuthorizedUsers(authList);
+        List<UserRightsProxy> authList = new ArrayList<>(Arrays.asList(new UserRightsProxy( authUser)));
+        scc.setProxies(authList);
         scc.setServletRequest(getServletPostRequest());
         scc.setAsync(false);
         scc.save();

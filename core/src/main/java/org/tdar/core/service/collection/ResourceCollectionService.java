@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,10 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
@@ -1010,15 +1007,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (persistable instanceof SharedCollection) {
             SharedCollection shared = (SharedCollection) persistable;
             reconcileIncomingResourcesForCollection(shared, authenticatedUser, resourcesToAdd, resourcesToRemove);
-            saveAuthorizedUsersForResourceCollection(shared, shared, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
         }
 
         if (persistable instanceof ListCollection) {
             cls = (Class<C>) ListCollection.class;
             ListCollection list = (ListCollection) persistable;
             reconcileIncomingResourcesForCollectionWithoutRights(list, authenticatedUser, resourcesToAdd, resourcesToRemove);
-            saveAuthorizedUsersForResourceCollection(list, list, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
         }
+        saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
         simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection<ListCollection>) persistable).getProperties(),
                 cso.getFileProxy());
 
@@ -1029,7 +1025,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (!Objects.equals(cso.getAlternateParentId(), persistable.getAlternateParentId())) {
             persistable.setAlternateParent(cso.getAlternateParent());
         }
-        saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
 
         String msg = String.format("%s modified %s", authenticatedUser, persistable.getTitle());
         CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, type);
@@ -1155,18 +1150,23 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public <C extends ResourceCollection> void saveCollectionForRightsController(C persistable, TdarUser authenticatedUser,
-            List<AuthorizedUser> authorizedUsers,
+    public <C extends ResourceCollection> void saveCollectionForRightsController(C c, TdarUser authenticatedUser,
+            List<UserRightsProxy> proxies,
             Class<C> class1, Long startTime) {
-        saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, true, authenticatedUser);
+        List<AuthorizedUser> authorizedUsers = new ArrayList<>();
+        List<UserInvite> invites = new ArrayList<>();
 
-        if (persistable instanceof VisibleCollection) {
-            String msg = String.format("%s modified rights on %s", authenticatedUser, ((VisibleCollection) persistable).getTitle());
-            CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, RevisionLogType.EDIT);
+        convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
+        saveAuthorizedUsersForResourceCollection(c, c, authorizedUsers, true, authenticatedUser);
+
+        if (c instanceof VisibleCollection) {
+            String msg = String.format("%s modified rights on %s", authenticatedUser, ((VisibleCollection) c).getTitle());
+            CollectionRevisionLog revision = new CollectionRevisionLog(msg, c, authenticatedUser, RevisionLogType.EDIT);
             revision.setTimeBasedOnStart(startTime);
             getDao().saveOrUpdate(revision);
         }
-        publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
+        handleInvites(authenticatedUser, invites);
+        publisher.publishEvent(new TdarEvent(c, EventType.CREATE_OR_UPDATE));
 
     }
 
@@ -1227,6 +1227,24 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public void saveResourceRights(List<UserRightsProxy> proxies, TdarUser authenticatedUser, Resource resource) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         List<UserInvite> invites = new ArrayList<>();
+        convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
+        saveAuthorizedUsersForResource(resource, authorizedUsers, true, authenticatedUser);
+        handleInvites(authenticatedUser, invites);
+    }
+
+    private void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites) {
+        if (CollectionUtils.isNotEmpty(invites)) {
+            for (UserInvite invite : invites) {
+                if (PersistableUtils.isNotTransient(invite) || invite == null || invite.getUser().hasNoPersistableValues()) {
+                    continue;
+                }
+                getDao().saveOrUpdate(invite);
+                emailService.sendUserInviteEmail(invite, authenticatedUser);
+            }
+        }
+    }
+
+    private void convertProxyToItems(List<UserRightsProxy> proxies, TdarUser authenticatedUser, List<AuthorizedUser> authorizedUsers, List<UserInvite> invites) {
         for (UserRightsProxy proxy : proxies) {
             if (proxy == null || proxy.isEmpty()) {
 
@@ -1237,16 +1255,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 }
             } else if (proxy.getId() != null) {
                 authorizedUsers.add(toAuthorizedUser(proxy));
-            }
-        }
-        saveAuthorizedUsersForResource(resource, authorizedUsers, true, authenticatedUser);
-        if (CollectionUtils.isNotEmpty(invites)) {
-            for (UserInvite invite : invites) {
-                if (PersistableUtils.isNotTransient(invite) || invite == null || invite.getUser().hasNoPersistableValues()) {
-                    continue;
-                }
-                getDao().saveOrUpdate(invite);
-                emailService.sendUserInviteEmail(invite, authenticatedUser);
             }
         }
     }

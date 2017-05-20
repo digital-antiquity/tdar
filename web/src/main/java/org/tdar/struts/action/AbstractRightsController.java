@@ -1,9 +1,12 @@
 package org.tdar.struts.action;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -11,15 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -30,7 +38,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     private static final long serialVersionUID = 8551222659351457637L;
 
     private static final String RIGHTS = "{id}";
-
+    private boolean asyncSave;
     private static final String SUCCESS_INVITE = "invite";
     private static final String INVITE = "invite.ftl";
 
@@ -38,6 +46,8 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient SearchIndexService searchIndexService;
 
     private List<SharedCollection> shares = new ArrayList<>();
     private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
@@ -46,7 +56,22 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     private List<UserRightsProxy> proxies = new ArrayList<>();
 
     private Long id;
+    private String ownerProperName;
+    private TdarUser owner;
 
+    
+    @Override
+    public void prepare() throws Exception {
+        setupOwnerField();
+        if (PersistableUtils.isNotNullOrTransient(getOwner())) {
+            TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
+            if (getPersistable() instanceof ResourceCollection) {
+                ((ResourceCollection)getPersistable()).setOwner(uploader);
+            }
+        }
+        
+    }
+    
     public Long getId() {
         return id;
     }
@@ -84,7 +109,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
             @Result(name = INPUT, location = RIGHTS)
     })
     @PostOnly
-    public String save() {
+    public String save() throws TdarActionException {
         try {
             getLogger().debug("proxies:{}", proxies);
             loadEffectiveResourceCollectionsForSave();
@@ -101,12 +126,25 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
             }
 
             handleLocalSave();
+            indexPersistable();
         } catch (Exception e) {
+            addActionErrorWithException(getText("abstractPersistableController.unable_to_save", getPersistable()), e);
             getLogger().error("issue saving", e);
+
             return INPUT;
         }
         return SUCCESS;
     }
+    
+    public void indexPersistable() throws SolrServerException, IOException {
+        if (getPersistable() instanceof Resource) {
+            searchIndexService.index((Resource)getPersistable()); 
+        } 
+        if (getPersistable() instanceof ResourceCollection) {
+            searchIndexService.index((ResourceCollection)getPersistable()); 
+        } 
+    }
+
 
     public abstract Persistable getPersistable();
 
@@ -118,7 +156,15 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
 
 
     protected void setupEdit() {
-        RightsBasedResourceCollection internal = getLocalRightsCollection();
+        if (getPersistable() instanceof ResourceCollection) {
+            setOwner(((ResourceCollection) getPersistable()).getOwner());
+        }
+        if (getPersistable() instanceof Resource) {
+            setOwner(((Resource) getPersistable()).getSubmitter());
+        }
+        
+        setupOwnerField();
+        ResourceCollection internal = getLocalRightsCollection();
         loadEffectiveResourceCollectionsForEdit();
         getLogger().debug("internal:{}", internal);
         if (internal != null) {
@@ -140,9 +186,9 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         this.id = id;
     }
 
-    public abstract void loadEffectiveResourceCollectionsForEdit();
+    public void loadEffectiveResourceCollectionsForEdit() {}
 
-    public abstract void loadEffectiveResourceCollectionsForSave();
+    public void loadEffectiveResourceCollectionsForSave() {}
 
     public SharedCollection getBlankShare() {
         return new SharedCollection();
@@ -180,6 +226,44 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         return true;
     }
 
-    public abstract RightsBasedResourceCollection getLocalRightsCollection();
+    public abstract ResourceCollection getLocalRightsCollection();
+
+    
+
+    protected void setupOwnerField() {
+        if (PersistableUtils.isNotNullOrTransient(getOwner()) && StringUtils.isNotBlank(getOwner().getProperName())) {
+            if (getOwner().getFirstName() != null && getOwner().getLastName() != null)
+                setOwnerProperName(getOwner().getProperName());
+        } else {
+            setOwnerProperName(getAuthenticatedUser().getProperName());
+        }
+    }
+
+
+    public String getOwnerProperName() {
+        return ownerProperName;
+    }
+
+    public void setOwnerProperName(String ownerProperName) {
+        this.ownerProperName = ownerProperName;
+    }
+
+    public TdarUser getOwner() {
+        return owner;
+    }
+
+    public void setOwner(TdarUser owner) {
+        this.owner = owner;
+    }
+    
+    public void setAsync(boolean async) {
+        this.asyncSave = async;
+    }
+
+    public boolean isAsync() {
+        return asyncSave;
+    }
+
+
 
 }

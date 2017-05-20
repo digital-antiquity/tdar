@@ -42,6 +42,7 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.VersionType;
@@ -239,8 +240,10 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
             sc.setId(id);
             sc.prepare();
             sc.edit();
-            sc.getAuthorizedUsers().clear();
-            sc.getAuthorizedUsers().addAll(users);
+            sc.getProxies().clear();
+            for (AuthorizedUser au : users) {
+                sc.getProxies().add(new UserRightsProxy(au));
+            }
             assertTrue(sc.save().equals(Action.SUCCESS));
             genericService.synchronize();
        }
@@ -319,8 +322,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         controller.setId(id);
         controller.prepare();
         controller.edit();
-        // FileProxy newProxy = new FileProxy(uploadFile, VersionType.UPLOADED, FileAccessRestriction.PUBLIC);
-        // newProxy.setAction(FileAction.REPLACE);
         for (FileProxy proxy : controller.getFileProxies()) {
             if (proxy.getFilename().equals(replaceFile)) {
                 proxy.setFilename(uploadFile);

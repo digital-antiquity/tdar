@@ -11,7 +11,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
@@ -132,10 +132,11 @@ public class ResourceRightsController extends AbstractRightsController implement
     @Override
     public void prepare() throws Exception {
         prepareAndLoad(this, RequestType.EDIT);
+        super.prepare();
     }
 
     @Override
-    public RightsBasedResourceCollection getLocalRightsCollection() {
+    public ResourceCollection getLocalRightsCollection() {
         return getResource().getInternalResourceCollection();
     }
     
@@ -187,6 +188,5 @@ public class ResourceRightsController extends AbstractRightsController implement
     public boolean isRightsPage() {
         return true;
     }
-
 
 }

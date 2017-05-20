@@ -487,7 +487,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         try {
          cc.prepare();
         // controller.getResources().add(document);
-        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        cc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD)));
         assertWeFailedToSave(cc);
         
         } catch (Exception e) {
@@ -578,7 +578,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         cc.setId(rcid);
         cc.prepare();
         cc.edit();
-        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_SHARE));
+        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_SHARE)));
         cc.setServletRequest(getServletPostRequest());
         cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());
@@ -588,8 +588,8 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         cc.setId(rcid);
         cc.prepare();
         cc.edit();
-        cc.getAuthorizedUsers().clear();
-        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getEditorUser(), GeneralPermissions.ADMINISTER_SHARE));
+        cc.getProxies().clear();
+        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getEditorUser(), GeneralPermissions.ADMINISTER_SHARE)));
         cc.setServletRequest(getServletPostRequest());
         cc.setAsync(false);
         result = cc.save();
@@ -643,7 +643,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         cc.setId(rcid);
         cc.prepare();
         cc.edit();
-        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_SHARE));
+        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_SHARE)));
         cc.setServletRequest(getServletPostRequest());
         cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());
@@ -717,7 +717,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         cc.setId(rcid);
         cc.prepare();
         cc.edit();
-        cc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getUser(), GeneralPermissions.ADMINISTER_SHARE));
+        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getUser(), GeneralPermissions.ADMINISTER_SHARE)));
         cc.setServletRequest(getServletPostRequest());
         cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());
