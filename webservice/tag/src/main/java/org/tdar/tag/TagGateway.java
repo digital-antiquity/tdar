@@ -38,6 +38,7 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.query.ResourceSearchService;
@@ -120,7 +121,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             AdvancedSearchQueryObject asqo = buildSearchQuery(what, where, when, freetext);
             try {
                 resourceSearchService.buildAdvancedSearch(asqo,null, q, MessageHelper.getInstance());
-            } catch (ParseException e) {
+            } catch (SearchException e) {
                 logger.warn("Could not parse supplied query.", e);
             }
 
@@ -170,9 +171,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
                 SearchResult<Resource> q = new SearchResult<>();
                 resourceSearchService.buildAdvancedSearch(asqo, null, q, MessageHelper.getInstance());
                 projIds.addAll(PersistableUtils.extractIds(q.getResults()));
-            } catch (ParseException e) {
-                logger.warn("Could not parse supplied query.", e);
-            } catch (SolrServerException e) {
+            } catch (SearchException e) {
                 logger.warn("Could not parse supplied query.", e);
             } catch (IOException e) {
                 logger.warn("Could not parse supplied query.", e);
