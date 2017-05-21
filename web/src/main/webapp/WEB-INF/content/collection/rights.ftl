@@ -13,7 +13,7 @@
 <div id="titlebar" parse="true">
     <h1>Sharing: <span class="red">${persistable.name}</span></h1>
 </div>
-    <@s.form class="form-horizontal tdarvalidate" action="save" method="POST">
+    <@s.form class="form-horizontal tdarvalidate" action="rights-save" method="POST">
 <div class="row">
     <div class="span12">
     <p><b>This collection is shared with ${proxies?size} people.</b></p>
