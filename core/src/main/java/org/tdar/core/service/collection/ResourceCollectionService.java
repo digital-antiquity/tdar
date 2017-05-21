@@ -1284,7 +1284,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         getLogger().debug("{} ({})", au, proxy.getDisplayName());
         return au;
         } catch (WrongClassException e) {
-            throw new TdarRecoverableRuntimeException("User does not exist",e);
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
         }
     }
 
