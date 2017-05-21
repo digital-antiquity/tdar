@@ -321,7 +321,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
 
         submitFormWithoutErrorCheck();
-
+        logger.debug(getPageText());
         assertTrue(getPageText().contains("User does not exist"));
         assertTrue(getCurrentUrlPath().contains("rights-save"));
 

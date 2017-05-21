@@ -270,7 +270,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         assertPageViewable(titles);
         String url = getCurrentUrl();
         find(By.partialLinkText(RIGHTS)).click();
-        WebElementSelection addAnother = find(id("accessRightsRecordsAddAnotherButton"));
+        WebElementSelection addAnother = find(id("divAccessRightsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
 
@@ -328,7 +328,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         assertPageViewable(resourceTitles);
         String url = getCurrentUrl();
         find(By.partialLinkText(RIGHTS)).click();
-        WebElementSelection addAnother = find(id("accessRightsRecordsAddAnotherButton"));
+        WebElementSelection addAnother = find(id("divAccessRightsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
 

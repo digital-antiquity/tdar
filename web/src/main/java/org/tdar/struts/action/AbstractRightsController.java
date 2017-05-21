@@ -128,6 +128,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
             handleLocalSave();
             indexPersistable();
         } catch (Exception e) {
+            addActionErrorWithException(e.getMessage(), e);
             addActionErrorWithException(getText("abstractPersistableController.unable_to_save", getPersistable()), e);
             getLogger().error("issue saving", e);
 

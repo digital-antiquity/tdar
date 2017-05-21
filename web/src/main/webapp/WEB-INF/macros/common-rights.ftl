@@ -82,7 +82,9 @@
     </div>
             <#list proxies>
             <#items as proxy>
-                <@_proxy proxy_index proxy/>
+            	<#if proxy?? && proxy?has_content>
+                	<@_proxy proxy_index proxy/>
+                </#if>
             </#items>
             <#else>
                 <@_proxy 0 blankProxy />

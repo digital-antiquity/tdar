@@ -23,6 +23,7 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.WrongClassException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1275,12 +1276,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     private AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
+        try {
         AuthorizedUser au = new AuthorizedUser();
         au.setUser(getDao().find(TdarUser.class, proxy.getId()));
         au.setGeneralPermission(proxy.getPermission());
         au.setDateExpires(proxy.getUntilDate());
-        getLogger().debug("{}", au);
+        getLogger().debug("{} ({})", au, proxy.getDisplayName());
         return au;
+        } catch (WrongClassException e) {
+            throw new TdarRecoverableRuntimeException("User does not exist",e);
+        }
     }
 
     @Transactional(readOnly = true)
