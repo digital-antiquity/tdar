@@ -56,11 +56,8 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
         })
 @PropertySource(value = SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:" + SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
-@PropertySource(value = "file://${TDAR_CONFIG_PATH}/" + SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
 @PropertySource(value = SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:" + SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
-@PropertySource(value = "file://${TDAR_CONFIG_PATH}/" + SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
-
 @Configuration
 public abstract class SimpleAppConfiguration implements Serializable {
 

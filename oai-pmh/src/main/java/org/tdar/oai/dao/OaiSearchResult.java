@@ -4,13 +4,13 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.tdar.core.bean.OaiDcProvider;
+import org.tdar.oai.bean.Token;
 
 public class OaiSearchResult implements Serializable {
 
 	private static final long serialVersionUID = -2232337420440578402L;
     private int resultSize = 0;
-    private int totalRecords = 0;
-    private int startRecord = 0;
+    private Token cursor = new Token();
     private int recordsPerPage = 25;
     private List<OaiDcProvider> results;
 
@@ -20,22 +20,6 @@ public class OaiSearchResult implements Serializable {
 
     public void setResultSize(int resultSize) {
         this.resultSize = resultSize;
-    }
-
-    public int getTotalRecords() {
-        return totalRecords;
-    }
-
-    public void setTotalRecords(int totalRecords) {
-        this.totalRecords = totalRecords;
-    }
-
-    public int getStartRecord() {
-        return startRecord;
-    }
-
-    public void setStartRecord(int startRecord) {
-        this.startRecord = startRecord;
     }
 
     public int getRecordsPerPage() {
@@ -55,6 +39,14 @@ public class OaiSearchResult implements Serializable {
     }
 
     public int getNextPageStartRecord() {
-        return startRecord + recordsPerPage;
+        return  recordsPerPage;
+    }
+
+    public Token getCursor() {
+        return cursor;
+    }
+
+    public void setCursor(Token cursor) {
+        this.cursor = cursor;
     }
 }

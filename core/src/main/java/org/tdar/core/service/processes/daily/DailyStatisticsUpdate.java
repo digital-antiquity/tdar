@@ -56,6 +56,8 @@ public class DailyStatisticsUpdate extends AbstractScheduledProcess {
         sessionStatistics.clear();
         logger.info("adding statistics");
         statisticService.generateAggregateDailyResourceData(DateTime.now().minusDays(1).toDate());
+        // delete old stats
+        statisticService.cleanupOldDailyStats(DateTime.now().minusMonths(1).toDate());
         statisticService.generateAggregateDailyDownloadData(DateTime.now().minusDays(1).toDate());
         logger.info("done daily stats");
     }

@@ -29,7 +29,7 @@ import org.tdar.core.exception.ConfigurationFileException;
 public class ConfigurationAssistant implements Serializable {
 
     private static final long serialVersionUID = -9093022080387404606L;
-    public static final String DEFAULT_CONFIG_PATH = "TDAR_CONFIG_PATH";
+//    public static final String DEFAULT_CONFIG_PATH = "TDAR_CONFIG_PATH";
 
     private final Properties properties;
     private final transient static Logger logger = LoggerFactory.getLogger(ConfigurationAssistant.class);
@@ -75,28 +75,22 @@ public class ConfigurationAssistant implements Serializable {
             logger.warn("Unable to load properties normally, trying loadFromXML", e);
         }
     }
-
-    public static InputStream toInputStream(final String resource) {
+    @SuppressWarnings("resource")
+    public static InputStream toInputStream(String resource) {
         // first try to read it as a file
         InputStream stream = null;
-        String CONFIG_DIR = System.getenv(DEFAULT_CONFIG_PATH);
         try {
-            if (CONFIG_DIR != null) {
-                File file = new File(CONFIG_DIR, resource);
-                if (file.exists()) {
-                    return new FileInputStream(file);
-                }
-            }
-
             File file = new File(resource);
-            if (file.isFile() && file.exists()) {
+            if (file.isFile()) {
                 stream = new FileInputStream(file);
-            } else {
+            }
+            else {
                 stream = getResourceAsStream(resource);
             }
         } catch (AccessControlException e) {
             stream = getResourceAsStream(resource);
-        } catch (FileNotFoundException e) {
+            return stream;
+        } catch (Exception e) {
             stream = getResourceAsStream(resource);
         }
         return stream;
@@ -111,11 +105,11 @@ public class ConfigurationAssistant implements Serializable {
             stream = ClassLoader.getSystemResourceAsStream(path);
         }
         if (stream == null) {
-            throw new ConfigurationFileException("configurationFileException.not_found", Arrays.asList(path));
+            throw new RuntimeException("Couldn't load resource from system classpath or context classpath: " + path);
         }
         return stream;
     }
-
+    
     public String getProperty(String key) {
         return getStringProperty(key, "");
     }

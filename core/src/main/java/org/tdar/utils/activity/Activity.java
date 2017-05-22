@@ -65,14 +65,21 @@ public class Activity implements Serializable {
     public Activity(HttpServletRequest request, TdarUser user) {
         this();
         this.setShortName(String.format("%s:%s%s", request.getMethod(), request.getServletPath(), getQueryString(request)));
-        this.name = String.format("%s [%s]", getShortName(), request.getHeader(USER_AGENT));
-
         this.setBrowser(request.getHeader(USER_AGENT));
+        this.name = String.format("%s [%s]", getShortName(), getSimpleAgent(request.getHeader(USER_AGENT)));
+
         this.setHost(request.getRemoteHost());
         SessionData sessionData = (SessionData) request.getSession().getAttribute("scopedTarget.sessionData");
         if (sessionData != null) {
             setUser(user);
         }
+    }
+
+    private String getSimpleAgent(String header) {
+        if (isBot()) {
+            return "bot";
+        } 
+            return header;
     }
 
     public Date getStartDate() {
@@ -150,7 +157,7 @@ public class Activity implements Serializable {
 
     public String getEndString() {
         // total time = action time + render time
-        return String.format("e» %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
+        return String.format("e» %sms %s", getTotalTime(), getFreemarkerFormattedTime());
     }
 
     public String getStartString() {
@@ -164,7 +171,7 @@ public class Activity implements Serializable {
 
     private String getFreemarkerFormattedTime() {
         if (freemarkerHandoffDate != null && endDate != null) {
-            return String.format(" | a: %s ms; r: %s ms", getActionTime(), getResultTime());
+            return String.format(" | a:%sms; r:%sms", getActionTime(), getResultTime());
         }
         return "";
     }
