@@ -53,6 +53,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     private BillingAccountGroup accountGroup;
     private List<TdarUser> authorizedMembers = new ArrayList<>();
+    private List<String> authorizedUsersFullNames = new ArrayList<String>();
     private Long accountGroupId;
     private String name;
     private Date expires = new DateTime().plusYears(1).toDate();
@@ -297,6 +298,15 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     public void setExpires(Date expires) {
         this.expires = expires;
+    }
+
+
+    public List<String> getAuthorizedUsersFullNames() {
+        return authorizedUsersFullNames;
+    }
+
+    public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
+        this.authorizedUsersFullNames = authorizedUsersFullNames;
     }
 
 }
