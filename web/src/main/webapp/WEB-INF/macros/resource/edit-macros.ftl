@@ -8,6 +8,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#import "/${themeDir}/local-helptext.ftl" as  helptext>
     <#import "/${themeDir}/settings.ftl" as settings>
     <#import "../navigation-macros.ftl" as nav>
+    <#import "../common-rights.ftl" as rights>
 
 	<#assign useSelect2=select2Enabled!true  />
 
@@ -379,9 +380,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#nested>
 
         <#if persistable.resourceType??>
-            <@common.resourceCollectionsRights collections=effectiveResourceCollections owner=submitter >
             <#--Note: this does not reflect changes to resource collection you have made until you save.-->
-            </@common.resourceCollectionsRights>
+            <@rights.resourceCollectionsRights collections=effectiveResourceCollections owner=submitter  />
         </#if>
 
     </div>

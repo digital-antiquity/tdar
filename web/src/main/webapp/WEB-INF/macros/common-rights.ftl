@@ -149,4 +149,105 @@ $(function() {
 </div>
 
     </#macro>
+    
+    
+    <#--Render the "Access Permissions" section of a resource view page.  Specifically, this section shows
+  the collections associated with the resource and the users + permission assigned to the resource. -->
+<#-- @param collections:list? a list of resourceCollections -->
+<#-- @param owner:object? Person object representing the collection owner
+<#-- FIXME:  both of these parameters have invalid defaults. consider making them mandatory  -->
+    <#macro resourceCollectionsRights collections=[] owner="">
+        <#if collections?has_content>
+        <h3>Access Permissions</h3>
+            <#nested />
+        <table class="tableFormat table">
+            <thead>
+            <tr>
+                <th>Collection</th>
+                <th>User</th>
+                <#list availablePermissions as permission>
+                    <th>${permission.label}</th>
+                </#list>
+                <th>Expires</th>
+            </tr>
+                <#if owner?has_content>
+                <tr>
+                    <td>Local Resource</td>
+                    <td>${owner.properName} (Submitter)</td>
+                    <td><i class="icon-ok"></i></td>
+                    <td><i class="icon-ok"></i></td>
+                    <td><i class="icon-ok"></i></td>
+                    <td></td>
+                </tr>
+                </#if>
+                <@_colectionSection collections />
+                <#if invites?has_content>
+                    <@_invitesSection invites />
+                </#if>
+
+        </table>
+        </#if>
+    </#macro>
+    
+    <#--  print out authorized Users by collection for rights table -->
+    <#macro _collectionSection collections>
+        <#list collections as collection_ >
+            <#if collection_.authorizedUsers?has_content >
+                <#list collection_.authorizedUsers as user>
+                <tr>
+                    <td>
+                        <#if collection_.topCollection?has_content >
+                            <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
+                        <#else>
+                            Local Resource
+                        </#if>
+                    </td>
+                    <td>
+                    <a href="<@s.url value="${user.user.detailUrl}"/>">${user.user.properName}</a> <!-- ${user.user.properName}:${user.generalPermission} -->
+                    </td>
+                    <#list availablePermissions as permission>
+                        <td>
+                            <#if (user.generalPermission.effectivePermissions >= permission.effectivePermissions )>
+                                <i class="icon-ok"></i>
+                            <#else>
+                                <i class="icon-remove"></i>
+                            </#if>
+                        </td>
+                    </#list>
+                    <td>${(user.dateExpires?string("MM/dd/yyyy"))!''}</td>
+                </tr>
+                </#list>
+            <#else>
+                <#if collection_.type == 'SHARED'>
+                <tr>
+                    <td>
+                        <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
+                    </td>
+                    <td colspan=5>n/a</td>
+                </tr>                    
+                </#if>
+            </#if>
+        </#list>
+    </#macro>
+    <#--  print out user invites for rights table -->
+    <#macro _invitesSection invites>
+        <#list invites as invite >
+            <tr>
+                <td>Invite by <a href="<@s.url value="${invite.authorizer.detailUrl}"/>">${invite.authorizer.properName}</a></td>
+                <td>
+                <a href="<@s.url value="${invite.user.detailUrl}"/>">${invite.user.properName}</a> <!-- ${invite.user.properName}:${invite.permissions} -->
+                </td>
+                <#list availablePermissions as permission>
+                    <td>
+                        <#if (invite.permissions.effectivePermissions >= permission.effectivePermissions )>
+                            <i class="icon-ok"></i>
+                        <#else>
+                            <i class="icon-remove"></i>
+                        </#if>
+                    </td>
+                </#list>
+                <td>${(invite.dateExpires?string("MM/dd/yyyy"))!''}</td>
+            </tr>
+        </#list>
+    </#macro>
 </#escape>

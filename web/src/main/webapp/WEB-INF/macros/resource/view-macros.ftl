@@ -7,6 +7,7 @@ View freemarker macros
 <#-- include navigation menu in edit and view macros -->
     <#import "common.ftl" as common>
     <#import "../navigation-macros.ftl" as nav>
+    <#import "../common-rights.ftl" as rights>
     <#setting url_escaping_charset='UTF-8'>
 
 <#--Emit rel=canonical element.  The "canonical" url points to the preferred version of a set of pages with similar content -->
@@ -463,7 +464,7 @@ View freemarker macros
         </div>
 
             <#nested>
-            <@common.resourceCollectionsRights collections=effectiveShares owner=resource.submitter />
+            <@rights.resourceCollectionsRights collections=effectiveShares owner=resource.submitter />
         </#if>
     </#macro>
 

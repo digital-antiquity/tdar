@@ -3,6 +3,7 @@
     <#import "/WEB-INF/content/${resource.urlNamespace}/view.ftl" as local_ />
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/common-rights.ftl" as rights>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
 

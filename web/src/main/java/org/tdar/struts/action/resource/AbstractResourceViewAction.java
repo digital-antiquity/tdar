@@ -32,6 +32,7 @@ import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -127,6 +128,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     private Map<DataTableColumn, String> mappedData;
 
+    private List<UserInvite> invites;
+
     private void initializeResourceCreatorProxyLists() {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
         resourceCreators = getPersistable().getActiveResourceCreators();
@@ -208,6 +211,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
             }
         }
 
+        
+        setInvites(resourceCollectionService.findUserInvites(getPersistable()));
         return SUCCESS;
     }
 
@@ -535,5 +540,13 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     public void setEffectiveResourceCollections(List<ListCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
+    }
+
+    public List<UserInvite> getInvites() {
+        return invites;
+    }
+
+    public void setInvites(List<UserInvite> invites) {
+        this.invites = invites;
     }
 }

@@ -2,6 +2,7 @@
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/common-rights.ftl" as rights>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 
@@ -281,7 +282,7 @@
 
 
     <#macro _authorizedUsers collection >
-        <@common.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
+        <@rights.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
     </#macro>
 
 </#escape>

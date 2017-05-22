@@ -25,6 +25,7 @@ import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -83,6 +84,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     public static final String SUCCESS_WHITELABEL = "success_whitelabel";
     public static final String SUCCESS_SHARE = "success_share";
 
+    private List<UserInvite> invites;
     /**
      * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
      * refers to the combined count of authorized users +the count of resources associated with a collection. Big
@@ -217,6 +219,8 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         getLogger().trace("child collections: sort");
         Collections.sort(collections);
         getLogger().trace("child collections: end");
+
+        setInvites(resourceCollectionService.findUserInvites(getPersistable()));
 
         // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
         // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
@@ -619,6 +623,14 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
 
     public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
         this.schemaOrgJsonLD = schemaOrgJsonLD;
+    }
+
+    public List<UserInvite> getInvites() {
+        return invites;
+    }
+
+    public void setInvites(List<UserInvite> invites) {
+        this.invites = invites;
     }
 
 }
