@@ -461,18 +461,4 @@ bookmark indicator, etc..
     </#macro>
 
 
-    <#-- List UserInvite entries on the current viewStack -->
-    <#macro listUserInvites>
-        <#list userInvites>
-            <ul>
-                <#items as invite>
-                    <li>${(invite.emailAddress)!'n/a'}</li>
-                </#items>
-            </ul>
-
-        <#else>
-            No invites found.
-        </#list>
-    </#macro>
-
 </#escape>
