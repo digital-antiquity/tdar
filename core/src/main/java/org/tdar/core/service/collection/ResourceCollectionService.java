@@ -1166,7 +1166,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             revision.setTimeBasedOnStart(startTime);
             getDao().saveOrUpdate(revision);
         }
-        handleInvites(authenticatedUser, invites);
+        handleInvites(authenticatedUser, invites, c);
         publisher.publishEvent(new TdarEvent(c, EventType.CREATE_OR_UPDATE));
 
     }
@@ -1230,15 +1230,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<UserInvite> invites = new ArrayList<>();
         convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
         saveAuthorizedUsersForResource(resource, authorizedUsers, true, authenticatedUser);
-        handleInvites(authenticatedUser, invites);
+        if (resource.getInternalResourceCollection() == null) {
+            getDao().createInternalResourceCollectionForResource(resource.getSubmitter(), resource, true);
+        }
+        handleInvites(authenticatedUser, invites, resource.getInternalResourceCollection());
     }
 
-    private void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites) {
+    private <C extends ResourceCollection> void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites, C c) {
         if (CollectionUtils.isNotEmpty(invites)) {
             for (UserInvite invite : invites) {
                 if (PersistableUtils.isNotTransient(invite) || invite == null || invite.getUser().hasNoPersistableValues()) {
                     continue;
                 }
+                invite.setResourceCollection(c);
                 getDao().saveOrUpdate(invite);
                 emailService.sendUserInviteEmail(invite, authenticatedUser);
             }

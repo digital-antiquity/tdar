@@ -36,7 +36,7 @@ public class UserInvite extends AbstractPersistable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable=false)
-    private Date dateCreated;
+    private Date dateCreated = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_expires", nullable=true)

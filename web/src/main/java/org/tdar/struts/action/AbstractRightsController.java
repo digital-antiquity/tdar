@@ -54,7 +54,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
 
     private List<UserRightsProxy> proxies = new ArrayList<>();
-
+    private List<UserRightsProxy> invites = new ArrayList<>();
     private Long id;
     private String ownerProperName;
     private TdarUser owner;
@@ -69,7 +69,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
                 ((ResourceCollection)getPersistable()).setOwner(uploader);
             }
         }
-        
+        getProxies().addAll(getInvites());
     }
     
     public Long getId() {
@@ -263,6 +263,14 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
 
     public boolean isAsync() {
         return asyncSave;
+    }
+
+    public List<UserRightsProxy> getInvites() {
+        return invites;
+    }
+
+    public void setInvites(List<UserRightsProxy> invites) {
+        this.invites = invites;
     }
 
 

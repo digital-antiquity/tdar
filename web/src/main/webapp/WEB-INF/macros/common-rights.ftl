@@ -3,7 +3,6 @@
 
 	<#--  render user invite form for rights pages -->
 	<#macro invite>
-	<#local hackId=100/>
 	<h3>Invite New User</h3>
     <div id="divAccessRights">
 	    <p><i>Use this to share this resource with someone who's not currently a tDAR user</i></p>
@@ -13,28 +12,28 @@
 	                <div class="controls-row" >
 	                	<div class="span2"><b>First Name</b></div>
 	                    <div class="span4">
-	                        <@s.textfield name="proxies[${hackId}].firstName" cssClass="span4" />
+	                        <@s.textfield name="invites[0].firstName" cssClass="span4" />
 	                    </div>
 	                </div>
                     
 	                <div class="controls-row" >
 	                	<div class="span2"><b>Last Name</b></div>
     	                <div class="span4">
-        	                <@s.textfield name="proxies[${hackId}].lastName" cssClass="span4" />
+        	                <@s.textfield name="invites[0].lastName" cssClass="span4" />
             	        </div>
 	                </div>
                     
 	                <div class="controls-row" >
 	                	<div class="span2"><b>Email</b></div>
 	                    <div class="span4">
-	                        <@s.textfield name="proxies[${hackId}].email" cssClass="span4" />
+	                        <@s.textfield name="invites[0].email" cssClass="span4" />
 	                    </div>
 	                </div>
                     
 	                <div class="controls-row" >
 	                	<div class="span2"><b>Permission</b></div>
 	                    <div class="span4">
-	                        <@s.select theme="tdar" cssClass="controls creator-rights-select span4" name="proxies[${hackId}].permission" emptyOption='false'
+	                        <@s.select theme="tdar" cssClass="controls creator-rights-select span4" name="invites[0].permission" emptyOption='false'
 	                            listValue='label' list='%{availablePermissions}' disabled=isDisabled />
 	                    </div>
 	                </div>
@@ -43,7 +42,7 @@
 	                	<div class="span2"><b>Expires?</b></div>
 	                    <div class=" span4">
 	                        <div class="input-append">
-	                              <input class="controls datepicker" name="proxies[${hackId}].until" style="width:6em" 
+	                              <input class="controls datepicker" name="invites[0].until" style="width:6em" 
 	                                size="16" type="text" value="" data-date-format="mm-dd-yyyy" >
 	
 	                              <span class="add-on"><i class="icon-th"></i></span>
@@ -54,7 +53,7 @@
                 <div class="span6">
 	                <div class="controls-row" >
 	                <p><b>Add a Note</b></p>
-	                <@s.textarea name="proxies[${hackId}].note" cssClass="span4" rows=5 />
+	                <@s.textarea name="invites[0].note" cssClass="span4" rows=5 />
 	                </div>
                 </div>
             </div>
@@ -100,6 +99,7 @@
                             <div class="controls-row" >
                                 <div class="span6">
                                     <div id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
+                                    <#if proxy.id?has_content>
                                         <input type="hidden" name="proxies[${proxy_index}].id" value="${(proxy.id!-1)?c}" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
                                             <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''}" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
                                                  class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input"
@@ -107,6 +107,12 @@
                                                   data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."
                                                   autocomplete="off" placeholder="Username or Email Address" autocompletename="properName"
                                                    autocompleteidelement="#authorizedUsersId__id_${proxy_index}_p">
+                                   <#else>
+                                        <input type="hidden" name="proxies[${proxy_index}].inviteId" value="${(proxy.inviteId!-1)?c}">
+                                            <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''}" disabled=true
+                                                 class="span6 ">
+
+                                   </#if>
                                     </div>
                                 </div>
                                 <div class="span2">
@@ -157,7 +163,7 @@ $(function() {
 <#-- @param owner:object? Person object representing the collection owner
 <#-- FIXME:  both of these parameters have invalid defaults. consider making them mandatory  -->
     <#macro resourceCollectionsRights collections=[] owner="">
-        <#if collections?has_content>
+        <#if collections?has_content || invites?has_content >
         <h3>Access Permissions</h3>
             <#nested />
         <table class="tableFormat table">
@@ -180,7 +186,9 @@ $(function() {
                     <td></td>
                 </tr>
                 </#if>
+                <#if collections?has_content>
                 <@_colectionSection collections />
+                </#if>
                 <#if invites?has_content>
                     <@_invitesSection invites />
                 </#if>
@@ -233,7 +241,7 @@ $(function() {
     <#macro _invitesSection invites>
         <#list invites as invite >
             <tr>
-                <td>Invite by <a href="<@s.url value="${invite.authorizer.detailUrl}"/>">${invite.authorizer.properName}</a></td>
+                <td>Invite (<a href="<@s.url value="${invite.authorizer.detailUrl}"/>">${invite.authorizer.properName}</a>)</td>
                 <td>
                 <a href="<@s.url value="${invite.user.detailUrl}"/>">${invite.user.properName}</a> <!-- ${invite.user.properName}:${invite.permissions} -->
                 </td>
