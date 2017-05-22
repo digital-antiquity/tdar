@@ -506,7 +506,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = true)
     public void buildCollectionTreeForController(ResourceCollection collection, TdarUser authenticatedUser, CollectionType collectionType) {
         List<ResourceCollection> allChildren = getAllChildCollections(collection);
-
+        allChildren.addAll(addAlternateChildrenTrees(allChildren));
         // ensure no duplicates (theoretically unnecessary, unless database schema is misconfigured)
         Set<ResourceCollection> childrenSet = new HashSet<>(allChildren);
         if (!allChildren.isEmpty() && allChildren.size() != childrenSet.size()) {
@@ -521,6 +521,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             if (child.getParent() != null) {
                 child.getParent().getTransientChildren().add(child);
             }
+            if (child.getAlternateParent() != null) {
+                child.getAlternateParent().getTransientChildren().add(child);
+            }
         });
 
         // second pass - sort all children lists (we add root into "allchildren" so we can sort the top level)
@@ -529,6 +532,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             child.getTransientChildren().sort(ResourceCollection.TITLE_COMPARATOR);
             logger.trace("new list: {}", child.getTransientChildren());
         });
+    }
+
+    private Collection<ResourceCollection> addAlternateChildrenTrees(List<ResourceCollection> allChildren) {
+        Set<ResourceCollection> toReturn = new HashSet<>(getDao().getAlternateChildrenTrees(allChildren)); 
+        return toReturn;
     }
 
     /**
