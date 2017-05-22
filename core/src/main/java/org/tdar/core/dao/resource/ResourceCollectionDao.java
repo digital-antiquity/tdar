@@ -482,11 +482,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         if (CollectionUtils.isEmpty(resultList)) {
             return new ArrayList<>();
         }
-        logger.debug("userIds: {}",resultList);
+        logger.debug("# userIds: {}",resultList.size());
         List<Long> lst = new ArrayList<>();
         resultList.forEach(i -> {lst.add(i.longValue());});
         List<TdarUser> users = new ArrayList<>(findAll(TdarUser.class, lst));
-        logger.debug("users: {}",users);
+//        logger.debug("users: {}",users);
         return users;
     }
 

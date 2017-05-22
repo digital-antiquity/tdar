@@ -3,6 +3,7 @@ package org.tdar.functional;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.openqa.selenium.By.id;
@@ -31,7 +32,7 @@ import org.tdar.utils.TestConfiguration;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
-    private static final String RIGHTS = "PERMISSIONS";
+    private static final String DIV_ACCESS_RIGHTS_ADD_ANOTHER_BUTTON = "#divAccessRightsAddAnotherButton";
     private static final String SHARE = "/collection/";
     private static final String LISTCOLLECTION = "/listcollection/";
     TestConfiguration config = TestConfiguration.getInstance();
@@ -110,9 +111,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     }
 
     private void addUserWithRights(String name, String username, Long userId, GeneralPermissions permissions) {
-        WebElementSelection addAnother = find(id("accessRightsRecordsAddAnotherButton"));
-        addAnother.click();
-        addAnother.click();
+        WebElementSelection find = waitFor(DIV_ACCESS_RIGHTS_ADD_ANOTHER_BUTTON);
+        find.click();
+        find.click();
         waitFor(By.name("proxies[2].displayName"));
         addAuthuser("proxies[2].displayName", "proxies[2].permission", name, username, "person-" + userId, permissions);
     }
@@ -269,10 +270,17 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         assertPageViewable(titles);
         String url = getCurrentUrl();
-        find(By.partialLinkText(RIGHTS)).click();
-        WebElementSelection addAnother = find(id("divAccessRightsAddAnotherButton"));
-        addAnother.click();
-        addAnother.click();
+        WebElementSelection button = find(By.partialLinkText(RIGHTS));
+        try {
+            button.click();
+        } catch(Throwable t) {
+            logger.error("{}",t,t);
+        }
+//        waitForPageload();
+        logger.debug(getPageCode());
+        WebElementSelection find = waitFor(DIV_ACCESS_RIGHTS_ADD_ANOTHER_BUTTON);
+        find.click();
+        find.click();
 
         addAuthuser("proxies[1].displayName", "proxies[1].permission", "editor user", config.getEditorUsername(),
                 "person-"+ config.getEditorUserId(), permission);
@@ -327,10 +335,19 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         assertPageViewable(resourceTitles);
         String url = getCurrentUrl();
-        find(By.partialLinkText(RIGHTS)).click();
-        WebElementSelection addAnother = find(id("divAccessRightsAddAnotherButton"));
-        addAnother.click();
-        addAnother.click();
+        waitForPageload();
+        assertEquals("count of edit buttons", 1, find(By.partialLinkText(RIGHTS)).size());
+        WebElementSelection button = find(By.partialLinkText(RIGHTS));
+        try {
+            button.click();
+        } catch(Throwable t) {
+            logger.error("{}",t,t);
+        }
+//        waitForPageload();
+        logger.debug(getPageCode());
+        WebElementSelection find = waitFor(DIV_ACCESS_RIGHTS_ADD_ANOTHER_BUTTON);
+        find.click();
+        find.click();
 
         addAuthuser("proxies[1].displayName", "proxies[1].permission", "editor user", config.getEditorUsername(), 
                 "person-"+ config.getEditorUserId(), permission);

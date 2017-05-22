@@ -138,7 +138,6 @@
     <#macro javascript>
     <div id="customIncludes" parse="true">
     <!-- <script src="/js/tdar.manage.js"></script> -->
-</div>
 <script>
 $(function() {
     TDAR.repeatrow.registerRepeatable(".repeatLastRow");
@@ -147,6 +146,7 @@ $(function() {
             
 })
 </script>
+</div>
 
     </#macro>
 </#escape>

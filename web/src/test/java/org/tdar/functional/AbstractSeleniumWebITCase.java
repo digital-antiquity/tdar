@@ -99,6 +99,8 @@ import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 
 public abstract class AbstractSeleniumWebITCase {
 
+    public static final String RIGHTS = "PERMISSIONS";
+
     public static final String AUTO_DOWNLOAD_MIME_TYPES = "application/pdf, text/csv, image/tiff, image/tif";
     // , application/xls, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 
@@ -346,6 +348,7 @@ public abstract class AbstractSeleniumWebITCase {
                         "user-data-dir=" + browserProfileDir.getAbsolutePath(), // use specific profile path (random by default?)
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
+                        "--dns-prefetch-disable",
                         "noerrdialogs");
                 rawDriver = new ChromeDriver(service, copts);
 
