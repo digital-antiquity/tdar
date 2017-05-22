@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.sensoryData.SensoryDataController;
+import org.tdar.struts_base.action.TdarActionException;
 
 public class SensoryDataControllerITCase extends AbstractResourceControllerITCase {
 

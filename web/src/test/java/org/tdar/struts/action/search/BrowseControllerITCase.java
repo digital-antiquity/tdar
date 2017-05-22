@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -19,15 +18,15 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.browse.BrowseCreatorController;
+import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;
 
 public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
-    @Autowired
-    private BrowseCreatorController controller;
+    private BrowseCreatorController controller = null;
+    
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Before

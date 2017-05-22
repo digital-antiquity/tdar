@@ -21,7 +21,6 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.struts_base.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -30,7 +29,6 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Namespace("/admin")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-@HttpsOnly
 public class AdminEmailController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 7908324276339775315L;

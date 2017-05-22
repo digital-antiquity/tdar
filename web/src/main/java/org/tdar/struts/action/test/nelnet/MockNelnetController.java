@@ -55,7 +55,6 @@ public class MockNelnetController extends AbstractAuthenticatableAction implemen
     private Map<String, String[]> params;
     private Map<String, String[]> responseParams = new HashMap<String, String[]>();
 
-    
     @Autowired
     private transient NelNetPaymentDao nelnet;
 

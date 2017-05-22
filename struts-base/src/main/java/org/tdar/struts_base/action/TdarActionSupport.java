@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.interceptor.ServletResponseAware;
@@ -26,20 +25,16 @@ import org.springframework.context.annotation.Scope;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts_base.ErrorListener;
-import org.tdar.utils.ExceptionWrapper;
+import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.jaxb.ActionErrorWrapper;
 
@@ -712,11 +707,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
  
     public List<String> getBarColors() {
-    	return getTdarConfiguration().getBarColors();
+        return getTdarConfiguration().getBarColors();
     }
     
     public boolean isSelenium() {
-    	return getTdarConfiguration().isSelenium();
+        return getTdarConfiguration().isSelenium();
     }
     
     @Override
@@ -724,6 +719,24 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getActionErrors();
     }
 
+    /**
+     * Remove null items from the specified list(s).
+     * @param lists
+     */
+    public final void stripNulls(List<?> ...lists) {
+        Arrays.stream(lists)
+                //if list is null itself, skip it
+                .filter(list -> list != null)
+                //otherwise, remove all the null items
+                .forEach(list -> {
+                    list.removeIf(item -> item == null);
+                });
+    }
+
+    public final boolean isListCollectionsEnabled() {
+        return TdarConfiguration.getInstance().isListCollectionsEnabled();
+    }
+ 
     protected boolean isBot() {
         return Activity.testUserAgent(ServletActionContext.getRequest().getHeader("User-Agent"));
 

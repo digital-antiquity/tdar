@@ -8,13 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.Facet;
@@ -25,7 +26,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testFacetPivotStats() throws SolrServerException, IOException, ParseException {
+    public void testFacetPivotStats() throws SearchException, SearchIndexException, IOException, ParseException {
         SearchResult<Resource> result = new SearchResult<>();
         FacetWrapper facetWrapper = new FacetWrapper();
         facetWrapper.setMapFacet(true);
@@ -39,7 +40,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testHomepagePivotStats() throws SolrServerException, IOException, ParseException {
+    public void testHomepagePivotStats() throws SearchException, SearchIndexException, IOException, ParseException {
         SearchResult<Resource> result = new SearchResult<>();
         FacetWrapper facetWrapper = new FacetWrapper();
         facetWrapper.setMapFacet(true);
@@ -58,7 +59,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testFacetByEnum() throws SolrServerException, IOException, ParseException {
+    public void testFacetByEnum() throws SearchException, SearchIndexException, IOException, ParseException {
         SearchResult<Resource> result = new SearchResult<>();
         FacetWrapper facetWrapper = new FacetWrapper();
         facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
@@ -84,7 +85,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testFacetByEnumWithLimit() throws SolrServerException, IOException, ParseException {
+    public void testFacetByEnumWithLimit() throws SearchException, SearchIndexException, IOException, ParseException {
         SearchResult<Resource> result = new SearchResult<>();
         FacetWrapper facetWrapper = new FacetWrapper();
         ArrayList<ResourceType> lst = new ArrayList<>();
@@ -113,7 +114,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testFacetByPersistable() throws SolrServerException, IOException, ParseException {
+    public void testFacetByPersistable() throws SearchException, SearchIndexException, IOException, ParseException {
         SearchResult<Resource> result = new SearchResult<>();
         FacetWrapper facetWrapper = new FacetWrapper();
         facetWrapper.facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);

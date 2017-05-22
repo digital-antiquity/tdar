@@ -24,7 +24,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersionProxy;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;

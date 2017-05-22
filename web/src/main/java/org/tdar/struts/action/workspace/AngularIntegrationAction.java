@@ -15,14 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
@@ -32,9 +33,9 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.struts.WROProfile;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -169,7 +170,7 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
 
     private void prepareCollections() {
         // FIXME: Remove and replace with AJAX lookup / autocomplete
-        allResourceCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
+        allResourceCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(), SharedCollection.class));
     }
 
     public String getNgApplicationName() {
@@ -185,12 +186,12 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
     }
 
     public Boolean isEditable() {
-        return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
+        return authorizationService.canEditWorkflow( getAuthenticatedUser(),workflow);
     }
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(),workflow);
     }
 
     @Override

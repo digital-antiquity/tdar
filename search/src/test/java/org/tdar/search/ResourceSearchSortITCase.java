@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
@@ -17,6 +16,8 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.SearchResult;
 
 public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
@@ -25,7 +26,7 @@ public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
     // note: relevance sort broken out into SearchRelevancyITCase
     @Test
     @Rollback
-    public void testSortFieldTitle() throws ParseException, SolrServerException, IOException {
+    public void testSortFieldTitle() throws ParseException, SearchException, SearchIndexException, IOException {
         Long alphaId = -1L;
         Long omegaId = -1L;
         Project p = new Project();
@@ -56,7 +57,7 @@ public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testSortFieldProject() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+    public void testSortFieldProject() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException,SearchException, SearchIndexException {
         searchIndexService.purgeAll();
         Project project = createAndSaveNewProject("my project");
         Project project2 = createAndSaveNewProject("my project 2");
@@ -75,7 +76,7 @@ public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
         for (Resource r : results) {
             if (r instanceof InformationResource) {
                 InformationResource ir = (InformationResource)r;
-                logger.debug("{} {} {}", r.getId(), r.getName(), ir.getProjectId());
+                logger.debug("{} {} {}", r.getId(), ir.getProjectTitle() + r.getName(), ir.getProjectId());
             } else {
                 logger.debug("{} {}", r.getId(), r.getName());
             }
@@ -92,7 +93,7 @@ public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testSortFieldDate() throws ParseException, SolrServerException, IOException {
+    public void testSortFieldDate() throws ParseException, SearchException, SearchIndexException, IOException {
         Long alphaId = -1L;
         Long omegaId = -1L;
         Project p = new Project();

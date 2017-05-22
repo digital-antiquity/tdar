@@ -165,11 +165,11 @@ public class AbstractDownloadController extends AbstractAuthenticatableAction im
         this.recaptchaService = recaptchaService;
     }
 
-	public List<UserAffiliation> getAffiliations() {
-		return affiliations;
-	}
+    public List<UserAffiliation> getAffiliations() {
+        return affiliations;
+    }
 
-	public void setAffiliations(List<UserAffiliation> affiliations) {
-		this.affiliations = affiliations;
-	}
+    public void setAffiliations(List<UserAffiliation> affiliations) {
+        this.affiliations = affiliations;
+    }
 }

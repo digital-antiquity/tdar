@@ -181,7 +181,7 @@
         if(typeof invoiceid === "undefined") {
             throw "invoiceid not specified";
         }
-        var url= "/cart/" + invoiceid + "/polling-check";
+        var url= "/api/cart/" + invoiceid + "/polling-check";
 
         $.ajax({
             url: TDAR.uri(url),

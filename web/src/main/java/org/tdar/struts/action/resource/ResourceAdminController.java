@@ -14,12 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
@@ -38,12 +38,12 @@ import com.opensymphony.xwork2.Preparable;
 public class ResourceAdminController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
-	private static final long serialVersionUID = -2071449250711089300L;
+    private static final long serialVersionUID = -2071449250711089300L;
     public static final String ADMIN = "admin";
     private List<ResourceRevisionLog> resourceLogEntries;
 
     private List<ResourceRevisionLog> logEntries;
-    private Set<ResourceCollection> effectiveResourceCollections = new HashSet<>();
+    private Set<RightsBasedResourceCollection> effectiveShares = new HashSet<>();
     private List<File> xmlFiles = new ArrayList<>();
 
     private Resource resource;
@@ -70,7 +70,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
             addActionError(getText("resourceAdminController.valid_resource_required"));
         }
         setResourceLogEntries(resourceService.getLogsForResource(getResource()));
-        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
+        getEffectiveShares ().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
         getXmlFiles().addAll(FILESTORE.listXmlRecordFiles(FilestoreObjectType.RESOURCE, id));
     }
 
@@ -106,30 +106,25 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
         this.resource = resource;
     }
 
-    public Set<ResourceCollection> getEffectiveResourceCollections() {
-        return effectiveResourceCollections;
+    public Set<RightsBasedResourceCollection> getEffectiveShares() {
+        return effectiveShares;
     }
 
-    public void setEffectiveResourceCollections(Set<ResourceCollection> effectiveResourceCollections) {
-        this.effectiveResourceCollections = effectiveResourceCollections;
+    public void setEffectiveShares(Set<RightsBasedResourceCollection> effectiveResourceCollections) {
+        this.effectiveShares = effectiveResourceCollections;
     }
 
     public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
-        for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if ((permission.getContext() == null) || Resource.class.isAssignableFrom(permission.getContext())) {
-                permissions.add(permission);
-            }
-        }
+        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(Resource.class);
         return permissions;
     }
 
-	public List<File> getXmlFiles() {
-		return xmlFiles;
-	}
+    public List<File> getXmlFiles() {
+        return xmlFiles;
+    }
 
-	public void setXmlFiles(List<File> xmlFiles) {
-		this.xmlFiles = xmlFiles;
-	}
+    public void setXmlFiles(List<File> xmlFiles) {
+        this.xmlFiles = xmlFiles;
+    }
 
 }

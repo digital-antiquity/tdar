@@ -488,6 +488,15 @@ public class WebElementSelection implements Iterable<WebElement> {
         return this;
     }
 
+    /**
+     * Boolean wrapper for {@link #val(String)}. Usable for all fields, but helpful for checkboxes and 'boolean' radio buttons.
+     * @param val
+     * @return
+     */
+    public WebElementSelection val(boolean val) {
+        return this.val(val ? "true" : "false");
+    }
+
 
     /**
      * return first element of selection as Select object.

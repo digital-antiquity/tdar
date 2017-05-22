@@ -11,9 +11,6 @@
             background-image: none !important;
         }
 
-        li.media {
-            display: inline-block
-        }
     </style>
     </#macro>
 

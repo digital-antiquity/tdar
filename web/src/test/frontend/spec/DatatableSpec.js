@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.datatable methods", function() {  
+describe("DatatableSpec.js: tests for TDAR.datatable methods", function() {
 
 xit("should work when we call extendSorting", function() {
    var expectedVal = null;

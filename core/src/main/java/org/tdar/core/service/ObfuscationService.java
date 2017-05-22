@@ -1,11 +1,7 @@
 package org.tdar.core.service;
 
 import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.LazyInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
+import org.tdar.core.dao.base.ObfuscationDao;
 import org.tdar.core.service.external.AuthorizationService;
 
 /**
@@ -38,6 +33,9 @@ public class ObfuscationService {
     @Autowired
     private AuthorizationService authService;
 
+    @Autowired
+    private ObfuscationDao obfuscationDao;
+    
     private Boolean enabled = true;
 
     /**
@@ -80,84 +78,13 @@ public class ObfuscationService {
      */
     @Transactional(readOnly = true)
     public void obfuscate(Obfuscatable target, TdarUser user) {
-
-        if ((target == null) || target.isObfuscated()) {
-            logger.trace("target is already obfuscated or null: {} ({}}", target, user);
-            return;
-        }
-
-        if (authService.isEditor(user)) {
-            // logger.debug("user is editor: {} ({}}", target, user);
-            return;
-        }
-
-        // don't obfuscate someone for themself
-        if ((target instanceof Person) && Objects.equals(user, target)) {
-            logger.trace("not obfuscating person: {}", user);
-            return;
-        }
-
-        if (TdarConfiguration.getInstance().shouldShowExactLocationToThoseWhoCanEdit()) {
-            if (target instanceof Resource && authService.canViewConfidentialInformation(user, (Resource) target)) {
-                return;
-            }
-        }
-
-        genericDao.markReadOnly(target);
-        Set<Obfuscatable> obfuscateList = handleObfuscation(target);
-        if (CollectionUtils.isNotEmpty(obfuscateList)) {
-            for (Obfuscatable subTarget : obfuscateList) {
-                obfuscate(subTarget, user);
-            }
-        }
-    }
-
-    /**
-     * Ultimately, this should be replaced with a Vistor pattern for obfuscation, but right now, it handles the obfuscation by calling @link
-     * Obfuscatable.obfuscate()
-     * 
-     * @param target
-     * @return
-     */
-    @SuppressWarnings("deprecation")
-    private Set<Obfuscatable> handleObfuscation(Obfuscatable target) {
-        logger.trace("obfuscating: {} [{}]", target.getClass(), target.getId());
-        target.setObfuscated(true);
-        return target.obfuscate();
+        obfuscationDao.obfuscate(target,user, authService);
     }
 
     public void obfuscateObject(Object obj, TdarUser user) {
-        // because of generic type arguments, the following (duplicate) instance-of checks are necessary in cases where system
-        // returns type of List<I> but we can't figure out what
-        if (obj == null) {
-            return;
-        }
-
-        if (Iterable.class.isAssignableFrom(obj.getClass())) {
-            for (Object obj_ : (Iterable<?>) obj) {
-                if (obj_ instanceof Obfuscatable) {
-                    obfuscate((Obfuscatable) obj_, user);
-                } else {
-                    logger.trace("trying to obfsucate something we shouldn't {}", obj.getClass());
-                }
-            }
-        } else {
-            if (obj instanceof Obfuscatable) {
-                try {
-                    obfuscate((Obfuscatable) obj, user);
-                } catch (LazyInitializationException e) {
-                    if (isWritableSession()) {
-                        logger.warn("failed obfuscation of {} for user: {} ", obj, user);
-                    } else {
-                        logger.debug("failed obfuscation for non-writable sessions due to LazyInitException {}", obj);
-                    }
-                }
-            } else {
-                logger.trace("trying to obfsucate something we shouldn't {}", obj.getClass());
-            }
-        }
+        obfuscationDao.obfuscateObject(obj,user, authService);
     }
-
+    
     public boolean isWritableSession() {
         return genericDao.isSessionWritable();
     }
@@ -166,12 +93,12 @@ public class ObfuscationService {
     @Qualifier("obfuscationEnabled")
     public void setObfuscationEnabled(Boolean enabled) {
         this.enabled = enabled;
-        logger.debug("set enabled: {} ", enabled);
+        logger.trace("set enabled: {} ", enabled);
     }
 
     
     public boolean obfuscationInterceptorEnabled() {
-        logger.debug("get enabled: {} ", enabled);
+        logger.trace("get enabled: {} ", enabled);
         return enabled;
     }
 

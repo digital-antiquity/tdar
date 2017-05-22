@@ -132,7 +132,8 @@ TDAR.fileupload = (function (TDAR, $) {
                     file.context = $(this);
                     return file;
                 }).get();
-
+                $(".new-file input.datepicker").datepicker('hide');
+                
                 //translate property names and add extension
                 files = $.map(files, function (file) {
                     var ext = file.fileReplaceName.substring(file.fileReplaceName.indexOf(".") + 1).toLowerCase();
@@ -159,6 +160,8 @@ TDAR.fileupload = (function (TDAR, $) {
         $filesContainer.on("change", "select,textarea,input[type=text],input[type=date]", function (e) {
             _updateFileAction(this);
         });
+        
+        TDAR.datepicker.bind($("input.datepicker",$filesContainer));
 
         $(_options.fileuploadSelector).bind("fileuploadcompleted", function (e, data) {
             var $datefields = $(data.context).find(".date");

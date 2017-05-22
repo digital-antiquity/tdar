@@ -34,7 +34,8 @@
                 <!-- <Logger name="org.apache.solr" level="debug" /> -->
                 <Logger name="org.tdar" level="DEBUG"/>
                 <Logger name="uk.org" level="DEBUG" />
-
+<!--                 <Logger name="org.apache.solr" level="DEBUG" />
+ -->
                 <!--// log parameterized SQL statements -->
 
                 <!-- <Logger name="org.hibernate.SQL" level="debug" /> -->

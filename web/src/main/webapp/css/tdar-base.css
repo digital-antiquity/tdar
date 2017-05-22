@@ -57,7 +57,6 @@ hr.dbl {
     font-weight: 700;
     font-size: 20px;
     line-height: 24px;
-    margin: 1em 0 0 0;
 }
 
 a {
@@ -355,7 +354,6 @@ header .welcome-drop ul {
     font-size: 14px;
     line-height: 19px;
     color: #7d7a77;
-    margin: 23px 0 25px 0;
 }
 
 #slider p.title {
@@ -1419,4 +1417,23 @@ ul .header-auto {
 
 #divIntegrationHeader {
     padding-top: 2em
+}
+
+.disabled {
+    color:#ddd;
+}
+
+.collection-embed {
+    border:1px solid #DDD;
+    border-radius:5px;
+    /* color:#AAA; */
+    margin-left:5px;
+    margin-right:5px;
+    padding:2px;
+    font-size:90%;
+}
+
+
+#emptyProjects li {
+    line-height:22px;
 }

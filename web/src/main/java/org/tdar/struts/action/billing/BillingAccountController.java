@@ -28,10 +28,10 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
 
 @Component
@@ -68,10 +68,10 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     @Override
     public boolean authorize() {
-    	if (PersistableUtils.isNullOrTransient(getPersistable())) {
-    		return true;
-    	}
-    	return authorizationService.canEditAccount(getPersistable(), getAuthenticatedUser());
+        if (PersistableUtils.isNullOrTransient(getPersistable())) {
+            return true;
+        }
+        return authorizationService.canEditAccount(getAuthenticatedUser(), getPersistable());
     }
     
     public Invoice getInvoice() {

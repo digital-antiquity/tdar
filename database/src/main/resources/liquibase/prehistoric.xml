@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
+
+    <changeSet id="prehistoric-collections-1" author="abrin"
+        failOnError="true">
+        <!-- <addColumn tableName="collection"> <column name="properties_id" 
+            type="bigint" /> </addColumn> -->
+        <addColumn tableName="whitelabel_collection">
+            <column name="whitelabel" type="boolean"
+                defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <!-- <addForeignKeyConstraint constraintName="collection_properties_fkey" 
+            referencedTableName="whitelabel_collection" baseColumnNames="properties_id" 
+            baseTableName="collection" referencedColumnNames="id" /> <dropForeignKeyConstraint 
+            baseTableName="whitelabel_collection" constraintName="whitelabel_collection_id_collection_fkey"/> -->
+        <!-- <addAutoIncrement tableName="whitelabel_collection" columnName="id"/> -->
+        <!-- <renameTable newTableName="collection_display_properties" oldTableName="whitelabel_collection" 
+            /> -->
+    </changeSet>
+    <changeSet id="prehistoric-collections-2" author="abrin">
+        <!-- <dropForeignKeyConstraint baseTableName="whitelabel_featured_resource" 
+            constraintName="whitelabel_featured_resource_collection_id_collection_fk"/> 
+            <addForeignKeyConstraint constraintName="whitelabel_featured_resource_collection_id_collection_fk" 
+            referencedTableName="collection_display_properties" baseColumnNames="collection_id" 
+            baseTableName="whitelabel_featured_resource" referencedColumnNames="id"/> -->
+    </changeSet>
+    <changeSet id="prehistoric-collections-3" author="abrin">
+        <!-- <renameColumn tableName="whitelabel_featured_resource" oldColumnName="collection_id" 
+            newColumnName="properties_id" /> -->
+        <!-- <sql>update whitelabel_featured_resource wlf set properties_id=c.properties_id 
+            from collection c, whitelabel_featured_resource w where wlf.collection_id=c.id 
+            and wlf.collection_id=w.collection_id</sql> -->
+    </changeSet>
+
+    <changeSet id="prehistoric-collections-4" author="abrin">
+        <!-- <renameColumn tableName="whitelabel_featured_resource" oldColumnName="collection_id" 
+            newColumnName="properties_id" /> -->
+        <!-- <sql>update whitelabel_featured_resource wlf set properties_id=c.properties_id 
+            from collection c, whitelabel_featured_resource w where wlf.collection_id=c.id 
+            and wlf.collection_id=w.collection_id</sql> -->
+        <addColumn tableName="collection">
+            <column name="include_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="collection_include_fkey"
+            referencedTableName="collection" baseColumnNames="include_id"
+            baseTableName="collection" referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="prehistoric-collections-5" author="abrin">
+        <createTable tableName="user_invite">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="email" type="varchar(255)" />
+            <column name="permission" type="varchar(255)" />
+            <column name="date_created" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="collection_id" type='bigint'>
+                <constraints nullable="false" references="collection"
+                    foreignKeyName="fk_user_invite_collection" />
+            </column>
+            <column name="authorizer_id" type='bigint'>
+                <constraints nullable="false" references="tdar_user"
+                    foreignKeyName="fk_user_invite_authorizer" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="prehistoric-collections-6" author="abrin">
+        <!-- ADMINISTER_GROUP("Add/Remove Items from Collection", 80,ListCollection.class), 
+            ADMINISTER_SHARE("Add/Remove Items from Share", 5000,SharedCollection.class); -->
+        <sql>update authorized_user set general_permission_int=80 where
+            resource_collection_id in (select id from collection where
+            collection_type='LIST');
+        </sql>
+        <sql>update authorized_user set
+            general_permission='ADMINISTER_SHARE' where
+            resource_collection_id in (select id from collection where
+            collection_type='SHARED');
+        </sql>
+    </changeSet>
+    <changeSet id="prehistoric-collection-6" author="abrin">
+        <addColumn tableName="collection">
+            <column name="status" defaultValue="ACTIVE" type='varchar(50)' />
+        </addColumn>
+        <update tableName="collection">
+            <column name="status">ACTIVE</column>
+        </update>
+    </changeSet>
+
+
+    <changeSet id="prehistoric-collections-7" author="abrin">
+        <createTable tableName="timed_access">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="date_created" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="until" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="collection_id" type='bigint'>
+                <constraints nullable="false" references="collection"
+                    foreignKeyName="fk_timed_collection" />
+            </column>
+            <column name="user_id" type='bigint'>
+                <constraints nullable="false" references="tdar_user"
+                    foreignKeyName="fk_timed_user" />
+            </column>
+            <column name="invite_id" type='bigint'>
+                <constraints nullable="false" references="tdar_user"
+                    foreignKeyName="fk_timed_invite" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="prehistoric-collections-8" author="abrin">
+        <modifyDataType tableName="timed_access"
+            columnName="until" newDataType="date" />
+    </changeSet>
+
+    <changeSet id="prehistoric-collections-9" author="abrin">
+        <addColumn tableName="user_invite">
+            <column name="date_redeemed" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="user_invite">
+            <column name="user_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_user_invite_user_id"
+            referencedTableName="tdar_user" baseColumnNames="user_id"
+            baseTableName="user_invite" referencedColumnNames="id" />
+
+        <addColumn tableName="timed_access">
+            <column name="owner_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_timed_owner_id"
+            referencedTableName="tdar_user" baseColumnNames="owner_id"
+            baseTableName="timed_access" referencedColumnNames="id" />
+    </changeSet>
+    <!-- FIXME: migration script -->
+    <changeSet id="prehistoric-collections-10" author="abrin">
+        <dropNotNullConstraint tableName="user_invite"
+            columnName="date_redeemed" />
+        <dropNotNullConstraint tableName="timed_access"
+            columnName="invite_id" />
+    </changeSet>
+    <changeSet id="prehistoric-collections-11" author="abrin">
+        <createIndex tableName="collection" indexName="collection_type_status">
+            <column name="id" />
+            <column name="collection_type" />
+            <column name="status" />
+            <column name="owner_id" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="prehistoric-collections-12" author="abrin">
+        <addColumn tableName="data_table_column">
+            <column name="import_order" type="int" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="prehistoric-collections-13" author="abrin">
+        <dropColumn tableName="user_invite" columnName="email" />
+        <dropForeignKeyConstraint
+            baseTableName="user_invite" constraintName="fk_user_invite_user_id" />
+        <renameColumn tableName="user_invite"
+            oldColumnName="user_id" newColumnName="person_id" />
+        <addForeignKeyConstraint constraintName="fk_user_invite_user_id"
+            referencedTableName="person" baseColumnNames="person_id"
+            baseTableName="user_invite" referencedColumnNames="id" />
+
+    </changeSet>
+
+    <changeSet id="prehistoric-collections-14" author="abrin">
+        <addColumn tableName="authorized_user">
+            <column name="creator_id" type='bigint' />
+        </addColumn>
+        <addColumn tableName="authorized_user">
+            <column name="date_created" type='timestamp' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_authorized_user_creator"
+            referencedTableName="tdar_user" baseColumnNames="creator_id"
+            baseTableName="authorized_user" referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="prehistoric-collections-15" author="abrin">
+        <addColumn tableName="user_invite">
+            <column name="date_expires" type='timestamp' />
+        </addColumn>
+        <dropTable tableName="timed_access" />
+        <dropNotNullConstraint tableName="whitelabel_collection"
+            columnName="custom_header_enabled" />
+        <dropNotNullConstraint tableName="whitelabel_collection"
+            columnName="custom_doc_logo_enabled" />
+        <dropNotNullConstraint tableName="whitelabel_collection"
+            columnName="featured_resources_enabled" />
+        <dropNotNullConstraint tableName="whitelabel_collection"
+            columnName="search_enabled" />
+        <dropNotNullConstraint tableName="whitelabel_collection"
+            columnName="sub_collections_enabled" />
+    </changeSet>
+    <changeSet id="prehistoric-collections-16" author="abrin">
+        <sql>update authorized_user au set creator_id = (select owner_id
+            from collection where
+            collection.id=au.resource_collection_id);
+            update
+            authorized_user au set date_created = (select date_created
+            from
+            collection where
+            collection.id=au.resource_collection_id);
+        </sql>
+        <addNotNullConstraint tableName="authorized_user"
+            columnName="creator_id" />
+    </changeSet>
+    <changeSet id="prehistoric-collections-18" author="abrin">
+        <sql>update data_table_column set import_order =
+            sequence_number;
+        </sql>
+        <addNotNullConstraint tableName="authorized_user"
+            columnName="creator_id" />
+    </changeSet>
+    <changeSet id="prehistoric-collections-19" author="abrin">
+        <sql>update data_table_column set sequence_number = 0 where
+            sequence_number is null;
+        </sql>
+        <sql>update data_table_column set import_order = sequence_number
+            where import_order is null;
+        </sql>
+    </changeSet>
+
+    <changeSet id="prehistoric-default-20" author="jtdevos">
+        <!-- view of all permutations of a collection's progeny - self, children, 
+            grandchildren, and so on. (Hat tip: laelliso) -->
+        <createView replaceIfExists="false" viewName="vw_collection_progeny">
+            with recursive cc(id, parent_id) as (
+                select id, parent_id, id starting_id from collection
+                UNION
+                select cc2.id, cc2.parent_id, cc.starting_id from collection cc2 join cc on cc.id = cc2.parent_id)
+            select  * from cc
+        </createView>
+
+
+        <!-- view of all permutations of a collection's ancestors (self, 
+            parent, grandparent, and so on) -->
+        <createView replaceIfExists="false" viewName="vw_collection_ancestry">
+            with recursive cc(id, parent_id) as (
+                select id, parent_id, id starting_id from collection
+                UNION
+                select cc2.id,  cc2.parent_id, cc.starting_id from collection cc2 join cc on cc.parent_id = cc2.id)
+            select * from cc;
+        </createView>
+    </changeSet>
+
+    <changeSet id="prehistoric-default-21" author="jtdevos">
+
+        <!-- hidden collections that are visible to has access to via collection 
+            permissions -->
+        <createView replaceIfExists="false"
+            viewName="vw_hidden_collection_access">
+            select distinct
+                vca.starting_id collection_id,
+                au.user_id viewer_id
+            from
+                authorized_user au
+                    join vw_collection_ancestry vca on vca.starting_id = au.resource_collection_id
+                        join collection cc on cc.id = vca.id
+            where
+                cc.hidden
+        </createView>
+
+        <createView replaceIfExists="false"
+            viewName="vw_hidden_resource_access">
+            select
+                cr.resource_id,
+                au.user_id viewer_id
+            from
+                authorized_user au
+                    join vw_collection_ancestry vca on au.resource_collection_id = vca.starting_id
+                        join collection_resource cr on vca.id = cr.collection_id
+                            join resource r on r.id = cr.resource_id
+            where
+                r.status IN  ('FLAGGED', 'FLAGGED_ACCOUNT_BALANCE', 'DRAFT')
+        </createView>
+
+    </changeSet>
+
+    <changeSet id="prehistoric-default-22" author="abrin">
+        <!-- DROPPING VIEwS until we can make them work everywhere and we 
+            know we want them -->
+        <dropView viewName="vw_hidden_collection_access" />
+        <dropView viewName="vw_hidden_resource_access" />
+        <dropView viewName="vw_collection_ancestry" />
+        <dropView viewName="vw_collection_progeny" />
+    </changeSet>
+</databaseChangeLog>

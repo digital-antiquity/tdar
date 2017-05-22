@@ -27,16 +27,17 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.excel.ExcelWorkbookWriter;
+import org.tdar.struts.action.AbstractAdvancedSearchController;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 @Namespace("/search")
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchController {
 
     private static final String RESOURCETYPE = "resourcetype";
@@ -119,14 +120,23 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                             break;
                         }
                         Resource r = result;
+                        
+                        if (r == null) {
+                            continue;
+                        }
                         Integer dateCreated = null;
                         Integer numFiles = 0;
                         List<String> filenames = new ArrayList<>();
                         String location = "";
                         String projectName = "";
                         List<String> collections = new ArrayList<>();
-                        r.getResourceCollections().forEach(rc -> {
-                            if (rc.isShared() && getAuthorizationService().canView(getAuthenticatedUser(), rc)) {
+                        r.getSharedCollections().forEach(rc -> {
+                            if (getAuthorizationService().canView(getAuthenticatedUser(), rc)) {
+                                collections.add(rc.getName());
+                            }
+                        });
+                        r.getUnmanagedResourceCollections().forEach(rc -> {
+                            if (getAuthorizationService().canView(getAuthenticatedUser(), rc)) {
                                 collections.add(rc.getName());
                             }
                         });
@@ -143,7 +153,6 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
 
                         }
                         List<Creator<?>> authors = new ArrayList<>();
-
                         for (ResourceCreator creator : r.getPrimaryCreators()) {
                             authors.add(creator.getCreator());
                         }

@@ -7,7 +7,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#import "common.ftl" as common>
     <#import "/${themeDir}/local-helptext.ftl" as  helptext>
     <#import "/${themeDir}/settings.ftl" as settings>
-    <#import "navigation-macros.ftl" as nav>
+    <#import "../navigation-macros.ftl" as nav>
 
 	<#assign useSelect2=select2Enabled!true  />
 
@@ -18,26 +18,33 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- Emit the choose-a-collection section -->
-    <#macro resourceCollectionSection>
+    <#macro resourceCollectionSection prefix="resourceCollections" label="Collection" list=[] >
         <#local _resourceCollections = [blankResourceCollection] />
-        <#if (resourceCollections?? && !resourceCollections.empty)>
-            <#local _resourceCollections = resourceCollections />
+        <#local collectionType="LIST"/>
+        <#if prefix=='shares'>
+	        <#local collectionType="SHARED"/>
+            <#local _resourceCollections = [blankShare] />
+        </#if> 
+               
+        <#if (lst?has_content && (lst.size!0 > 0) )>
+            <#local _resourceCollections = lst />
         </#if>
         <@helptext.resourceCollection />
-    <div data-tiplabel="${siteAcronym} Collections" data-tooltipcontent="#divResourceCollectionListTips">
-    <#if (ableToUploadFiles?? && ableToUploadFiles) || resource.resourceType.project >
-        <div id="resourceCollectionTable" class="control-group repeatLastRow" addAnother="add another collection">
-            <label class="control-label">Collection Name(s)</label>
+    <div data-tiplabel="${siteAcronym} ${label}" data-tooltipcontent="#divResourceCollectionListTips">
+    <#if (ableToUploadFiles?? && ableToUploadFiles) || resource.resourceType.project || rightsPage!false >
+        <div id="${prefix}Table" class="control-group repeatLastRow" addAnother="add another ${label}">
+            <label class="control-label">${label} Name(s)</label>
 
             <div class="controls">
                 <#list _resourceCollections as resourceCollection>
                 <#-- emit a single row of the choose-a-collection section -->
-                    <div id="resourceCollectionRow_${resourceCollection_index}_" class="controls-row repeat-row">
-                        <@s.hidden name="resourceCollections[${resourceCollection_index}].id"  id="resourceCollectionRow_${resourceCollection_index}_id" />
-                <@s.textfield theme="simple" id="txtResourceCollectionRow_${resourceCollection_index}_id" name="resourceCollections[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
-                    autocompleteIdElement="#resourceCollectionRow_${resourceCollection_index}_id" maxlength=255
-                    autocompleteParentElement="#resourceCollectionRow_${resourceCollection_index}_" />
-                <@nav.clearDeleteButton id="resourceCollectionRow" />
+                    <div id="${prefix}Row_${resourceCollection_index}_" class="controls-row repeat-row">
+                        <@s.hidden name="${prefix}[${resourceCollection_index}].id"  id="${prefix}Row_${resourceCollection_index}_id" />
+                <@s.textfield theme="simple" id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
+                    autocompleteIdElement="#${prefix}Row_${resourceCollection_index}_id" maxlength=255
+                    collectionType="${collectionType}"
+                    autocompleteParentElement="#${prefix}Row_${resourceCollection_index}_" />
+                <@nav.clearDeleteButton id="${prefix}Row" />
                     </div>
 
                 </#list>
@@ -93,7 +100,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <label class="control-label">${title}</label>
         <div class="controls">
             <select class="keyword-autocomplete form-control select2-hidden-accessible input-xxlarge" multiple="multiple" tabindex="-1" aria-hidden="true"
-                name="${prefix}" data-ajax--url="/lookup/keyword?keywordType=${type?url}" id="${prefix}select2" style="width:100%">
+                name="${prefix}" data-ajax--url="/api/lookup/keyword?keywordType=${type?url}" id="${prefix}select2" style="width:100%">
                 <#list array![] as term>
                     <#if term?has_content><option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option></#if>
                 </#list>
@@ -329,14 +336,20 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- provides a fieldset just for full user access -->
-    <#macro fullAccessRights tipsSelector="#divAccessRightsTips" label="Users who can view or modify this resource">
+    <#macro fullAccessRights tipsSelector="#divAccessRightsTips" label="Users who can view or modify this resource" type="resource" header=true>
         <#local _authorizedUsers=authorizedUsers />
         <#local _isSubmitter = authenticatedUser.id == ((persistable.submitter.id)!-1)>
         <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
         <@helptext.accessRights />
 
+
     <div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="${tipsSelector}">
-        <h2><a name="accessRights"></a>Access Rights</h2>
+        <#if header>
+                <h2><a name="accessRights"></a>Access Rights</h2>
+        </#if>
+    <#--<#if type == 'resource'>-->
+        <#--<@resourceCollectionSection prefix="shares" label="Shares" list=shares />-->
+    <#--</#if>-->
 
         <h3>${label}</h3>
 
@@ -446,7 +459,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     @nested any additional html/freemarker content - will be injected in div#editFormActions prior to the save button
         element
 -->
-    <#macro submit label="Save" fileReminder=true buttonid="submitButton" span="span9">
+    <#macro submit label="Save" fileReminder=true buttonid="submitButton" span="span9" class="btn-primary submitButton">
     <div class="errorsection row">
         <div class="${span}">
             <#if fileReminder>
@@ -460,7 +473,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </div>
             <div class="form-actions" id="editFormActions">
                 <#nested>
-                <input type="submit" class='btn btn-primary submitButton' name="submitAction" value="${label}" id="${buttonid}">
+                <input type="submit" class='btn ${class}' name="submitAction" value="${label}" id="${buttonid}">
                 <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
             </div>
         </div>
@@ -819,7 +832,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <#if (fileProxies[0].fileCreatedDate)?has_content>
                     <#local val = fileProxies[0].fileCreatedDate?string("MM/dd/yyyy") />
                 </#if>
-                Date             <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
+                Date             
+                        <div class="input-append">
+   						  <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="datepicker input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
+                          <span class="add-on"><i class="icon-th"></i></span>
+                        </div>
                 Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
 
             </div>
@@ -975,7 +992,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <#if (proxy.fileCreatedDate)?has_content>
                         <#local val = proxy.fileCreatedDate?string("MM/dd/yyyy")>
                     </#if>
-                <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
+                <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                 <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" cols="80" />
 
             </td>
@@ -1020,11 +1037,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         as the first column in each row of the data table
 -->
 
-    <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="">
+    <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="" span="span8">
     <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> <#--you are in a span9, but assume span8 so we fit inside well -->
 
         <div class="row" >
-            <div class="span8" >
+            <div class="${span}" >
                 <@s.textfield theme="tdar" name="_tdar.query" id="query${idAddition}" cssClass='span8'
                     placeholder="Enter a full or partial title to filter results" />
                 <div>
@@ -1054,7 +1071,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <option value="" selected='selected'>All Editable Projects</option>
                         <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
                             <optgroup label="Projects">
-                                <#list allSubmittedProjects?sort_by("titleSort") as submittedProject>
+                                <#list allSubmittedProjects?sort_by("title") as submittedProject>
                                     <option value="${submittedProject.id?c}"
                                             title="${submittedProject.title!""?html}"><@common.truncate submittedProject.title 70 /> </option>
                                 </#list>
@@ -1063,7 +1080,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
                         <#if fullUserProjects??>
                             <optgroup label="Projects you have been given access to">
-                                <#list fullUserProjects?sort_by("titleSort") as editableProject>
+                                <#list fullUserProjects?sort_by("title") as editableProject>
                                     <option value="${editableProject.id?c}"
                                         title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
                                 </#list>
@@ -1127,7 +1144,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </div>
     <#nested />
     <div class="row">
-        <div class="span9">
+        <div class="${span}">
 
             <table class="display table table-striped table-bordered tableFormat" id="resource_datatable${idAddition}">
                 <colgroup>
@@ -1305,7 +1322,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <label class="control-label" for="">Date Created</label>
                     <div class="controls controls-row">
                          <div class="span5">
-                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}">
+	                         <div class="input-append">
+	                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="datepicker" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}" data-date-format="mm/dd/yy" >
+	                            <span class="add-on"><i class="icon-th"></i></span>
+	                        </div>
+	                         
                          </div>
                     </div>
 
@@ -1442,6 +1463,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 -->
     <#macro registeredUserRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix=""
     includeRepeatRow=false includeRights=false  hidden=false leadTitle="" textfieldCssClass="">
+    <#-- //fixme: this macro composes too many disparate concerns (Person vs. AuthorizedUser, two very different things) and should be refactored into two (or more) smaller macros -->
         <#local disabled =  isDisabled?string("disabled", "") />
         <#local readonly = isDisabled?string("readonly", "") />
         <#local lookupType="userAutoComplete notValidIfIdEmpty"/>
@@ -1476,6 +1498,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             dynamicAttributes={"data-msg-notValidIfIdEmpty":"Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."}
 
             />
+
+            <#if test>
+                <!-- ${(person.id!-1)?c}::${(person.properName)!}::${"(${strutsPrefix}.generalPermission)!'n/a'"?eval} -->
+            </#if>
 
             <#if includeRights>
                 <@s.select theme="tdar" cssClass="creator-rights-select span3" name="${strutsPrefix}.generalPermission" emptyOption='false'
@@ -1530,7 +1556,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#if date?has_content>
             <#local val = date?string(format)>
         </#if>
-        <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" />
+        <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" dynamicAttributes={"data-date-format":"${placeholder}"}/>
     </#macro>
 
 <#--emit x-tmpl template for use when rendering results menu for person autocomplete fields -->
@@ -1553,5 +1579,40 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     <#macro hiddenStartTime value=.now?long>
         <@s.hidden name="startTime" value="${value?c}" />
     </#macro>
+
+    <#macro shareSection formAction>
+    <form class="form-horizontal" method="POST" action="${formAction}">
+        <div class="well">
+            <div class="row">
+                <div class="span4">
+                    <@s.textfield name="adhocShare.email" id="txtShareEmail" label="Email" labelPosistion="left" />
+                </div>
+
+                <div class="span4">
+                    <@s.select name="adhocShare.generalPermissions" label="Permission" labelposition="left" listValue='label' list="%{availablePermissions}" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="span5">
+                    <div class="control-group">
+                        <label class="control-label" for="inputPassword">Until:</label>
+                        <div class="controls">
+                            <div class="input-append">
+                                <input class="span2 datepicker" size="16" type="text" value="12-02-2016" id="dp3" data-date-format="mm-dd-yyyy" >
+                                <span class="add-on"><i class="icon-th"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="span3">
+                    <input type="submit" class="btn tdar-button btn-primary" value="Submit">
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    </#macro>
+
 
 </#escape>

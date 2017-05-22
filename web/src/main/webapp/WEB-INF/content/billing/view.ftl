@@ -2,7 +2,7 @@
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
 
 <head>
@@ -138,7 +138,7 @@
             <div class="span4">
 	            <@s.hidden name="id" value="${account.id?c!-1}" />
                 <@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" cssClass="input-small"/>
-		        <@s.textfield name="expires" cssClass="date  input-small datepicker" label="Date Expires" />
+		        <@s.textfield name="expires" cssClass="date  input-small datepicker" label="Date Expires" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
             </div>
             <div class="span4">
                 <@s.textfield name="numberOfFiles" cssClass="integer couponFilesOrSpace" label="Number of Files"  value=""/>
@@ -231,9 +231,11 @@
     //FIXME: replace with declaritive implementation e.g <input type="text" name="expiration"  data-datepicker  data-dateformat="m/d/y">
     //FIXME: validation errors are ugly due to bootstrap layout issues in form.  Better than no validation, but need to fix.
     $(function() {
+        $('.datepicker').datepicker().on('changeDate', function(ev){
+            $(ev.target).datepicker('hide');
+        });
         //register datepickers and validation rules
         $("#create-code")
-            .find('.datepicker').datepicker({dateFormat: 'm/d/y'})
             .end().validate({
                     errorClass: "text-error",
                     rules: {

@@ -36,7 +36,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.dao.resource.DataTableColumnDao;

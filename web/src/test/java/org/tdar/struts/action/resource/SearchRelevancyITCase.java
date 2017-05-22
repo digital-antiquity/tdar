@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,10 +25,11 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.search.AdvancedSearchController;
+import org.tdar.struts_base.action.TdarActionException;
 
 public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
 
@@ -147,7 +147,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     // given resource1 and resource2, where both have same title/desc/keywords, assert resource1 is more relevant because it has an attachment
     @Test
     @Rollback
-    public void testInheritanceInSearching() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
+    public void testInheritanceInSearching() throws InstantiationException, IllegalAccessException, TdarActionException, SearchIndexException, IOException {
         AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class);
         controller.setRecordsPerPage(50);
         Project p = new Project();

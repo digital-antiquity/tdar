@@ -12,8 +12,8 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.project.ProjectController;
+import org.tdar.struts_base.action.TdarActionException;
 
 public class ProjectControllerResourceAnnotationITCase extends AbstractResourceControllerITCase {
 

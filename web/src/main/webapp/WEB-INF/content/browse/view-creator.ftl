@@ -2,7 +2,7 @@
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 
 <head>
@@ -12,9 +12,9 @@
     <link rel="alternate" href="/api/lod/creator/${id?c}" type="application/ld+json" />    
 
 	<#if creator.creatorType.person >
-    	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.person.id=${creator.id?c}&groups[0].creatorOwner.person.lastName=${creator.lastName}&groups[0].creatorOwner.person.firstName=${creator.firstName}">
+    	<#assign rssUrl = "/api/search/rss?groups[0].creatorOwner.person.id=${creator.id?c}&groups[0].creatorOwner.person.lastName=${creator.lastName}&groups[0].creatorOwner.person.firstName=${creator.firstName}">
 	<#else>
-    	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.institution.id=${creator.id?c}&groups[0].creatorOwner.institution.name=${creator.name}">
+    	<#assign rssUrl = "/api/search/rss?groups[0].creatorOwner.institution.id=${creator.id?c}&groups[0].creatorOwner.institution.name=${creator.name}">
 	</#if>
     <@search.rssUrlTag url=rssUrl />
 

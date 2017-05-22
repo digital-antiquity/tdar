@@ -1,8 +1,10 @@
 TDAR.d3tree = {};
 
 TDAR.d3tree = (function(console, $, ctx) {
+    "use strict";
 
     // basically a way to get the path to an object
+
     function searchTree(obj, search, path) {
         var found = [];
         allNodes.forEach(function(n) {
@@ -13,15 +15,32 @@ TDAR.d3tree = (function(console, $, ctx) {
         return found;
     }
 
-    var div, root, tree, svg;
+
+
+
+    /** "package private" variables - used by functions in this module but not publically accessible **/
+    // FIXME: Use of variables in package scope is good for default and "const" values, but avoid choices that limit extensibility.  See example comments below.
+    var div, root, tree, svg, diagonal;
+
+    // FIXME: Example:  "duration" is fine since it essentially serves same purpose as a constant.
     var duration = 750;
-    var diameter = 960;
-    var diagonal = d3.svg.diagonal().projection(function(d) {
-        return [ d.y, d.x ];
-    });
+
+    // FIXME: Example: "allNodes" is problematic because it implicitly assumes only one D3 graph on entire page.
     var allNodes = [];
 
+    // FIXME: instead of referencing DOM elements by ID (e.g. "#d3", "#ontId"), consider passing them in as arguments to the init() function.
     function _init() {
+        diagonal = d3.svg.diagonal().projection(function(d) {
+            return [ d.y, d.x ];
+        });
+
+        $("#searchclear").click(function() {
+            $("#search").val("");
+            _clearSearch();
+            $("#searchclear").hide();
+        });
+        $("#searchclear").hide();
+
         root = JSON.parse($("#ontId").text());
 
         if (!root || !root.children) {
@@ -279,8 +298,6 @@ TDAR.d3tree = (function(console, $, ctx) {
         });
     }
 
-
-
     function _clearSearch() {
         // unhighlight nodes and paths by removing the 'found' and 'foundLink' class
         $("path[class='foundLink']").attr("class", "link");
@@ -292,14 +309,7 @@ TDAR.d3tree = (function(console, $, ctx) {
         });
     }
 
-    $("#searchclear").click(function() {
-        $("#search").val("");
-        _clearSearch();
-        $("#searchclear").hide();
-    });
-    $("#searchclear").hide();
     // Define the zoom function for the zoomable tree
-
     // http://bl.ocks.org/phil-pedruco/7051552
     function _zoom() {
         svg.attr("transform", "translate(" + d3.event.translate + ")");

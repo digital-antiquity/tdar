@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.RequestCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
@@ -27,9 +27,9 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
     @Test()
     public void testSuccess() throws Exception {
         Document document = genericService.find(Document.class, Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
-        ResourceCollection test = createAndSaveNewResourceCollection("testing");
+        SharedCollection test = createAndSaveNewResourceCollection("testing");
         test.getResources().add(document);
-        document.getResourceCollections().add(test);
+        document.getSharedCollections().add(test);
         genericService.saveOrUpdate(test);
         genericService.saveOrUpdate(document);
         RequestCollection request = new RequestCollection();

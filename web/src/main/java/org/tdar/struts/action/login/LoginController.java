@@ -24,11 +24,11 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.interceptor.annotation.CacheControl;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
-import org.tdar.struts.interceptor.annotation.CacheControl;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Validateable;
 
@@ -85,14 +85,14 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
     @PostOnly
     @SkipValidation
     public String logout() {
-    	// manually handle SSO TOken
+        // manually handle SSO TOken
         String token = authenticationService.getSsoTokenFromRequest(ServletActionContext.getRequest());
         if (StringUtils.isNotBlank(token) && getTdarConfiguration().ssoEnabled()) {
             getLogger().debug("token:{}", token);
             @SuppressWarnings("unused")
             AuthenticationResult result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest());
         }
-    	getLogger().debug("is authenticated? {}", getSessionData().isAuthenticated());
+        getLogger().debug("is authenticated? {}", getSessionData().isAuthenticated());
         if (getSessionData().isAuthenticated()) {
             authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
         }

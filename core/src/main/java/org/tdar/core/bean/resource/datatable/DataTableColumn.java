@@ -35,6 +35,7 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.HasStatic;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarValidationException;
@@ -63,7 +64,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
-public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable {
+public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable, HasStatic {
 
     private static final long serialVersionUID = 430090539610139732L;
 
@@ -100,8 +101,25 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         public Long getId() {
             return -1L;
         }
+        
+        @Override
+        public Integer getImportOrder(){
+            return -1;
+        }
+        
+        @Override
+        public boolean isStatic() {
+            return true;
+        }
     };
 
+    @Override
+    @XmlTransient
+    @Transient
+    public boolean isStatic() {
+        return false;
+    }
+    
     @ManyToOne(optional = false)
     // , cascade = { CascadeType.PERSIST })
     @JoinColumn(name = "data_table_id",nullable=false)
@@ -157,6 +175,9 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
 
     @Transient
     private Map<Long, List<String>> ontologyNodeIdToValuesMap;
+
+    @Column(name="import_order")
+    private Integer importOrder;
 
     @Transient
     private Integer length = -1;
@@ -427,7 +448,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     public Set<String> getUnmappedDataValues() {
         Set<String> values = new HashSet<>();
         if (getDefaultCodingSheet() == null || CollectionUtils.isEmpty(getDefaultCodingSheet().getCodingRules())) {
-        	return values;
+            return values;
         }
         for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
             if (rule.getOntologyNode() == null) {
@@ -501,5 +522,13 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         String displayName = getDisplayName().replaceAll(" (?i)Ontology","");
         displayName = StringUtils.replace(displayName, "  ", " ");
         return displayName;
+    }
+
+    public Integer getImportOrder() {
+        return importOrder;
+    }
+
+    public void setImportOrder(Integer importOrder) {
+        this.importOrder = importOrder;
     }
 }

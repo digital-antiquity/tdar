@@ -63,6 +63,11 @@ public class I18nRuntimeException extends RuntimeException implements Localizabl
      */
     @Override
     public String getLocalizedMessage() {
+        logger.debug("{} {} {}" , message, locale, values);
+        if (message == null) {
+            logger.error("message is null");
+            return "messgae is null";
+        }
         if (CollectionUtils.isEmpty(values)) {
             return MessageHelper.getMessage(message, locale);
         }

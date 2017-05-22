@@ -5,39 +5,39 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Counter implements Serializable {
 
-	private static final long serialVersionUID = -5010809939738705044L;
-	private AtomicLong count = new AtomicLong(0);
-	private AtomicLong subCount = new AtomicLong(0);
-	private Long subTotal = 0L;
-	private Long total = 0L;
+    private static final long serialVersionUID = -5010809939738705044L;
+    private AtomicLong count = new AtomicLong(0);
+    private AtomicLong subCount = new AtomicLong(0);
+    private Long subTotal = 0L;
+    private Long total = 0L;
 
-	public AtomicLong getCount() {
-		return count;
-	}
+    public AtomicLong getCount() {
+        return count;
+    }
 
-	public void setCount(AtomicLong count) {
-		this.count = count;
-	}
+    public void setCount(AtomicLong count) {
+        this.count = count;
+    }
 
-	public Long getTotal() {
-		return total;
-	}
+    public Long getTotal() {
+        return total;
+    }
 
-	public void setTotal(Long total) {
-		this.total = total;
-	}
+    public void setTotal(Long total) {
+        this.total = total;
+    }
 
-	public Long getSubTotal() {
-		return subTotal;
-	}
+    public Long getSubTotal() {
+        return subTotal;
+    }
 
-	public void setSubTotal(Long subTotal) {
-		this.subTotal = subTotal;
-	}
+    public void setSubTotal(Long subTotal) {
+        this.subTotal = subTotal;
+    }
 
-	public float getPercent() {
-		return 100f * (count.floatValue() / total.floatValue());
-	}
+    public float getPercent() {
+        return 100f * (count.floatValue() / total.floatValue());
+    }
 
     /**
      * help's calcualate the percentage complete
@@ -60,16 +60,16 @@ public class Counter implements Serializable {
         }
         return divisor;
     }
-	public int getDivisor() {
-		return getDivisor(subTotal);
-	}
+    public int getDivisor() {
+        return getDivisor(subTotal);
+    }
 
-	public AtomicLong getSubCount() {
-		return subCount;
-	}
+    public AtomicLong getSubCount() {
+        return subCount;
+    }
 
-	public void setSubCount(AtomicLong subCount) {
-		this.subCount = subCount;
-	}
+    public void setSubCount(AtomicLong subCount) {
+        this.subCount = subCount;
+    }
 
 }

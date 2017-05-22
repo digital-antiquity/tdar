@@ -355,11 +355,10 @@ TDAR.validate = (function($, ctx) {
         "initForm" : _initForm,
         "initRegForm" : _initRegForm,
         "initBasicForm": _initBasicForm,
-        "prepareDateFields": _prepareDateFields
+        "prepareDateFields": _prepareDateFields,
+        main : function() {
+            TDAR.validate.init();
+        }
     }
 })(jQuery, window);
 
-//FIXME: inline onload binding complicates testing and makes it harder to discover the total number of initializers (and their sequence)
-$(function() {
-    TDAR.validate.init();
-});

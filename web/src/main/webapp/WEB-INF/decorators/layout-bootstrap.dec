@@ -12,7 +12,7 @@
 <#global jquery_version="1.11.3">
 <#global jquery_ui_version="1.11.4">
 <#global jquery_ui_css_version="1.11.4">
-<#global jquery_validate_version="1.13.1" >
+<#global jquery_validate_version="1.15.1" >
 <#assign pageType ="view">
 <#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
     <#assign pageType=actionName>
@@ -46,13 +46,14 @@
     <#if useCDN>
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/smoothness/jquery-ui.min.css">
     <#else>
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='${staticHost}/includes/jquery-ui-${jquery_ui_css_version}/jquery-ui.min.css'>
     </#if>
+
+        <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.min.css">
+        <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.theme.min.css">
 
     <link href="${staticHost}/css/tdar-base.css" rel="stylesheet">
     <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
@@ -63,11 +64,10 @@
     <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
     <#if useCDN>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
     <#else>
         <script src="${staticHost}/includes/jquery-${jquery_version}.min.js"></script>
-        <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}/jquery-ui.min.js"></script>
     </#if>
+    <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}.custom/jquery-ui.min.js"></script>
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
     <#include "/${themeDir}/head.dec" />
     <#if whiteLabelCollection??>  
@@ -97,9 +97,8 @@ ${head}
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${pageType} <#if !production>not-production</#if>"
 	 data-leaflet-api-key="${leafletApiKey}" data-leaflet-tile-provider="${leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${mapDefaultLat}" data-centerLong="${mapDefaultLng}"  data-useGeoLoc="${geoLocationToBeUsed?then('true', 'false')}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
-
-      <#if authenticatedUser?has_content>data-currentTime="1" </#if>
-      <#if ngApplicationName?has_content>ng-cloak</#if>
+     <#if authenticatedUser?has_content>data-userid="${authenticatedUser.id?c}" data-currentTime="1" </#if>
+     <#if ngApplicationName?has_content>ng-cloak</#if>
     >
     <#if hostName?contains("alpha") >
     <div class="ribbon-green">ALPHA</div>
@@ -283,6 +282,13 @@ ${head}
     <#import "/${themeDir}/settings.ftl" as settings />
 <script id="c3colors">
  [<#list barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
+</script>
+
+<#if page.properties["div.customIncludes"]?has_content>
+    ${page.properties["div.customIncludes"]}<#t>
+</#if>
+<script>
+    $(TDAR.main);
 </script>
 </body>
 </html>

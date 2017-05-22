@@ -15,7 +15,7 @@
     <#macro narrowAndSort>
     <h2>Narrow Your Search</h2>
 
-        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='allResourceTypes'  listValue='label' label="Resource Type"/>
+        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='objectTypes' list='allObjectTypes'  listValue='label' label="Object Type"/>
 
         <#if authenticated>
         <@s.checkboxlist theme="bootstrap" numColumns=3 spanClass="span2" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
@@ -106,7 +106,7 @@
     <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url></#macro>
 
     <#macro refineUrl actionName=actionName>
-        <#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution"}><#t>
+        <#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution","multi":"basic"}><#t>
         <#local _path = _actionmap[actionName]><#t>
         <@searchUrl _path/><#t>
     </#macro>
@@ -189,9 +189,13 @@
         </#if>
     </#macro>
 
-    <#macro totalRecordsSection tag="h2" helper=paginationHelper itemType="Resource">
+    <#macro totalRecordsSection tag="h2" helper=paginationHelper itemType="Resource" header="">
     <${tag} class="totalRecords">
-    ${helper.startRecord}-${helper.endRecord} (${helper.totalNumberOfItems} ${itemType}<#if (helper.totalNumberOfItems != 1)>s</#if>)
+    <#if header?has_content>
+	  ${itemType}<#if (helper.totalNumberOfItems != 1)>s</#if> ${header!''} <span class="small">(Viewing ${helper.startRecord}-${helper.endRecord} of ${helper.totalNumberOfItems})</span>
+    <#else>
+  	   ${helper.startRecord}-${helper.endRecord} (${helper.totalNumberOfItems} ${itemType}<#if (helper.totalNumberOfItems != 1)>s</#if>)
+  	</#if>
     </${tag}>
 
     </#macro>
@@ -212,6 +216,13 @@
                                     <@s.url action=action includeParams="get" >
                                             <@s.param name="${facetParam}">${facet.raw}</@s.param>
                                             <@s.param name="startRecord" value="0"/>
+                                            <#-- hack to get object type into the parameters list when passing from resourceType -->
+                                            <#if actionName == 'results'>
+                                                <#if (objectTypes?size > 0)>
+                                                    <@s.param name="objectTypes" value="objectTypes"/>
+                                                </#if>
+                                                <@s.param name="resourceTypes" value="" suppressEmptyParameters=true />
+                                            </#if>
                                         <#nested>
                                     </@s.url
                                 ></#local>
@@ -267,26 +278,36 @@
                 <#if facet.plural?has_content><#assign facetText=facet.plural/>
                     <#elseif facet.label?has_content><#assign facetText=facet.label/>
                 </#if>
-        
-        <ul class="media-list tools">
-                <li class="media">
-                    <span class="media-body">
-            <a rel="noindex" href="<@s.url includeParams="all">
-            <@s.param name="${facetParam}"value="" suppressEmptyParameters=true />
-            <@s.param name="startRecord" value="" suppressEmptyParameters=true />
-            <#--<#if facetParam != "documentType">-->
-                <#--<@s.param name="documentType" value=""/>-->
-            <#--</#if>-->
-            <#--<#if facetParam != "integratableOptions">-->
-                <#--<@s.param name="integratableOptions" value=""/>-->
-            <#--</#if>-->
-            <#nested>
-        </@s.url>">
-                        <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
-                        ${facetText}</a>
-                    </span>
-                </li>
-        </ul>
+
+                <ul class="media-list tools">
+                    <li class="media">
+                        <span class="media-body">
+                            <a rel="noindex" href="<@s.url includeParams="all">
+                                    <@s.param suppressEmptyParameters=true />
+                                    <@s.param name="${facetParam}" value="" suppressEmptyParameters=true  />
+                                    <@s.param name="startRecord" value=""  suppressEmptyParameters=true/>
+                                    <#--  for unified search, remove resourceTypes  -->
+                                    <#if actionName == 'results'>
+    									<@s.param name="resourceTypes" value="" suppressEmptyParameters=true />
+									</#if>
+                                    <#-- fixme: (TDAR-5574) commenting out the block below fixes at least some of the issues seen in TDAR-5574 - is there a scenario I'm overlooking?  -->
+                                    <#--
+                                    <#if facetParam != "documentType">
+                                        <@s.param name="documentType" value=""  suppressEmptyParameters=true/>
+                                    </#if>
+                                    <#if facetParam != "integratableOptions">
+                                        <@s.param name="integratableOptions" value=""  suppressEmptyParameters=true/>
+                                    </#if>
+                                    <#nested>
+                                    -->
+                                </@s.url>">
+                                <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
+                                ${facetText}
+                            </a>
+                        </span>
+                    </li>
+                </ul>
+
             </#if>
         </#if>
     </#macro>

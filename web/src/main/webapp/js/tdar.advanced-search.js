@@ -2,14 +2,38 @@ TDAR.advancedSearch = {}
 TDAR.advancedSearch = (function () {
     "use strict";
 
+    
+    function _disableCheckbox($box) {
+        $box.attr('disabled', true);
+        $box.parent().addClass("disabled");
+    }
+
+    function _enableCheckbox($box) {
+        $box.attr('disabled', false);
+        $box.parent().removeClass("disabled");
+    }
+
     /**
      * Initialize the "advanced search" page (including form validation,  autocompletes, term UI, backbutton safety)
      */
     function _initAdvancedSearch() {
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
+        var $groups = $("#searchGroups");
+        $groups.on("searchchange", function(e){
+            var $int = $("#includedResourceTypesINTEGRATION");
+            var $col = $("#includedResourceTypesSHARED_COLLECTION"); 
+            if ($("#searchGroups .term").not(".multiIndex").length > 0) {
+                _disableCheckbox($int);
+                _disableCheckbox($col);
+            } else { 
+                _enableCheckbox($int);
+                _enableCheckbox($col);
+                console.log('ok');
+            } 
+            });
 
         // when user changes searchType: swap out the term ui snippet
-        $('#searchGroups').on('change', '.searchType', function (evt) {
+        $groups.on('change', '.searchType', function (evt) {
             "use strict";
 
             //console.log("change event on %s", this.id);
@@ -54,6 +78,7 @@ TDAR.advancedSearch = (function () {
             }
 
             _initializeSection(row);
+            $(this).trigger("searchchange");
         });
 
         // after rows added, replace attribute values
@@ -77,6 +102,7 @@ TDAR.advancedSearch = (function () {
         $('#searchGroups').on('repeatrowdeleted', '.grouptable', function (evt) {
             var $groupDiv = $(this).closest('.searchgroup');
             _showGroupingSelectorIfNecessary($groupDiv);
+            $(this).trigger("searchchange");
         });
 
         // mimic combobox - show complete list when user clicks down-arrow
@@ -130,8 +156,9 @@ TDAR.advancedSearch = (function () {
             TDAR.autocomplete.applyInstitutionAutocomplete($institutionAutoFields, false);
         }
 
-        $('.datepicker', containerElem).datepicker({
-            dateFormat: 'm/d/y'
+        var picker = $('.datepicker', containerElem).datepicker();
+        picker.on('changeDate', function(ev){
+            $(ev.target).datepicker('hide');
         });
 
         // collection, project combo boxes

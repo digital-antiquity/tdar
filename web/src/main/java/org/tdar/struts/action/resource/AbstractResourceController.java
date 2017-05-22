@@ -25,12 +25,12 @@ import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -55,25 +55,26 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.base.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController;
+import org.tdar.struts.action.bulk.BulkUploadController;
+import org.tdar.struts.data.KeywordNode;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
-import org.tdar.struts.data.KeywordNode;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
@@ -97,13 +98,16 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
 
     private static final long serialVersionUID = 8620875853247755760L;
+
+    private static final String RIGHTS = "rights";
     private boolean select2Enabled = TdarConfiguration.getInstance().isSelect2Enabled();
     private boolean select2SingleEnabled = TdarConfiguration.getInstance().isSelect2SingleEnabled();
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
     private RevisionLogType revisionType = RevisionLogType.EDIT;
-
+    private String submit;
+    
     @Autowired
     private SerializationService serializationService;
 
@@ -130,9 +134,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
 
-    private List<ResourceCollection> resourceCollections = new ArrayList<>();
-    private List<ResourceCollection> retainedResourceCollections = new ArrayList<>();
-    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<ListCollection> resourceCollections = new ArrayList<>();
+    private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
+
+    private List<SharedCollection> shares = new ArrayList<>();
+    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
+    private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
+    private List<ListCollection> retainedListCollections = new ArrayList<>();
 
     private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
 
@@ -256,7 +264,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             results = {
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
-                    @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
+                    @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE),
+                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT,  location = "/resource/rights?id=${id}")
             })
     @WriteableSession
     @PostOnly
@@ -511,14 +520,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             getPersistable().setSubmitter(uploader);
         }
 
-        // only modify these permissions if the user has the right to
-        if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
-                GeneralPermissions.MODIFY_RECORD)) {
-            resourceCollectionService.saveAuthorizedUsersForResource(getResource(), getAuthorizedUsers(), shouldSaveResource(), getAuthenticatedUser());
-            getLogger().debug("collections: {}", getResource().getResourceCollections());
-        } else {
-            getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
-        }
 
         saveKeywords();
         saveTemporalContext();
@@ -535,14 +536,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getResourceAnnotations(),
                 getResource().getResourceAnnotations(), ResourceAnnotation.class);
 
+        loadEffectiveResourceCollectionsForSave();
+        getLogger().debug("retained collections:{}", retainedSharedCollections);
+        getLogger().debug("retained list collections:{}", retainedListCollections);
+        shares.addAll(retainedSharedCollections);
+        resourceCollections.addAll(retainedListCollections);
+        
         if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
-            loadEffectiveResourceCollectionsForSave();
-            getLogger().debug("retained collections:{}", retainedResourceCollections);
-            resourceCollections.addAll(retainedResourceCollections);
-            resourceCollectionService.saveSharedResourceCollections(getResource(), resourceCollections, getResource().getResourceCollections(),
-                    getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS);
-            
+            resourceCollectionService.saveResourceCollections(getResource(), shares, getResource().getSharedCollections(),
+                    getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+
             if (!authorizationService.canEdit(getAuthenticatedUser(), getResource())) {
 //                addActionError("abstractResourceController.cannot_remove_collection");
                 getLogger().error("user is trying to remove themselves from the collection that granted them rights");
@@ -551,6 +555,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         } else {
             getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }
+        resourceCollectionService.saveResourceCollections(getResource(), resourceCollections, getResource().getUnmanagedResourceCollections(),
+                getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, ListCollection.class);
 
     }
 
@@ -609,27 +615,28 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Collections.sort(getResourceNotes());
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
-        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
-        for (AuthorizedUser au : getAuthorizedUsers()) {
-            String name = null;
-            if (au != null && au.getUser() != null) {
-                name = au.getUser().getProperName();
-            }
-            getAuthorizedUsersFullNames().add(name);
-        }
         initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
         loadEffectiveResourceCollectionsForEdit();
     }
 
-
     private void loadEffectiveResourceCollectionsForEdit() {
+        getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
+
         getLogger().debug("loadEffective...");
-        for (ResourceCollection rc : getResource().getSharedResourceCollections()) {
-            if (authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
+        for (SharedCollection rc : getResource().getSharedResourceCollections()) {
+            if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+                getShares().add(rc);
+            } else {
+                retainedSharedCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
+            if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
                 getResourceCollections().add(rc);
             } else {
-                retainedResourceCollections.add(rc);
+                retainedListCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }
         }
@@ -639,9 +646,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     
     private void loadEffectiveResourceCollectionsForSave() {
         getLogger().debug("loadEffective...");
-        for (ResourceCollection rc : getResource().getSharedResourceCollections()) {
-            if (!authorizationService.canViewCollection(rc, getAuthenticatedUser())) {
-                retainedResourceCollections.add(rc);
+        for (SharedCollection rc : getResource().getSharedCollections()) {
+            if (!authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+                retainedSharedCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
+            if (!authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+                retainedListCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }
         }
@@ -953,8 +966,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return new ResourceAnnotation(new ResourceAnnotationKey(), "");
     }
 
-    public ResourceCollection getBlankResourceCollection() {
-        return new ResourceCollection(CollectionType.SHARED);
+    public ListCollection getBlankResourceCollection() {
+        return new ListCollection();
+    }
+
+    public SharedCollection getBlankShare() {
+        return new SharedCollection();
     }
 
     public SourceCollection getBlankSourceCollection() {
@@ -977,31 +994,32 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
+    public void setShares(List<SharedCollection> resourceCollections) {
+        this.shares = resourceCollections;
     }
 
     /**
      * @return the resourceCollections
      */
-    public List<ResourceCollection> getResourceCollections() {
-        return resourceCollections;
+    public List<SharedCollection> getShares() {
+        return shares;
     }
 
     /**
      * @return the effectiveResourceCollections
      */
-    public List<ResourceCollection> getEffectiveResourceCollections() {
-        return effectiveResourceCollections;
+    public List<RightsBasedResourceCollection> getEffectiveShares() {
+        return effectiveShares;
     }
 
     /**
      * @param effectiveResourceCollections
      *            the effectiveResourceCollections to set
      */
-    public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
-        this.effectiveResourceCollections = effectiveResourceCollections;
+    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveResourceCollections) {
+        this.effectiveShares = effectiveResourceCollections;
     }
+
 
     public Long getAccountId() {
         return accountId;
@@ -1123,4 +1141,27 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.select2SingleEnabled = select2SingleEnabled;
     }
 
+    public List<ListCollection> getEffectiveResourceCollections() {
+        return effectiveResourceCollections;
+    }
+
+    public void setEffectiveResourceCollections(List<ListCollection> effectiveResourceCollections) {
+        this.effectiveResourceCollections = effectiveResourceCollections;
+    }
+
+    public List<ListCollection> getResourceCollections() {
+        return resourceCollections;
+    }
+
+    public void setResourceCollections(List<ListCollection> resourceCollections) {
+        this.resourceCollections = resourceCollections;
+    }
+
+    public String getSubmit() {
+        return submit;
+    }
+
+    public void setSubmit(String submit) {
+        this.submit = submit;
+    }
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -14,14 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -57,9 +57,9 @@ public class ReindexApiAction extends AbstractAuthenticatableAction implements P
     })
     @PostOnly
     @HttpForbiddenErrorResponseOnly
-    public String execute() throws SolrServerException, IOException {
+    public String execute() throws SearchIndexException, IOException {
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-            ResourceCollection c = getGenericService().find(ResourceCollection.class, collectionId);
+            SharedCollection c = getGenericService().find(SharedCollection.class, collectionId);
             searchIndexService.index(c);
             searchIndexService.indexAllResourcesInCollectionSubTree(c);
         }

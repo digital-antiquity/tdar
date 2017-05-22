@@ -1,6 +1,6 @@
 <#macro searchHeader>
 <#if !searchHeaderEnabled><#return></#if>
-<#assign subtitle = (resourceCollection.subtitle!(resourceCollection.institution.name)!'')>
+<#assign subtitle = (resourceCollection.properties.subtitle!(resourceCollection.institution.name)!'')>
 <div class="searchheader whitelabel">
     <div class="container">
         <div class="row">

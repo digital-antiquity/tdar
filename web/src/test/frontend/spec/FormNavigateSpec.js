@@ -1,4 +1,4 @@
-describe("form navigate tests", function() {
+describe("FormNavigateSpec.js: form navigate tests", function() {
 
     function status() {
         var status = $('form').FormNavigate("status");

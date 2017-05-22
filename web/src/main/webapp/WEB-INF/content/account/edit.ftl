@@ -1,4 +1,4 @@
-<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
 <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 

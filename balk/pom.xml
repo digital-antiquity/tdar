@@ -9,8 +9,6 @@
     <name>tDAR (balk)</name>
 
     <properties>
-        <servlet.api.version>3.0.1</servlet.api.version>
-        <wro4j.version>1.8.0</wro4j.version>
         <display.port></display.port>
         <skipWebTests>false</skipWebTests>
         <skipSeleniumTests>false</skipSeleniumTests>
@@ -23,7 +21,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>web-base</artifactId>
-        <version>15.1.0-OBSIDIAN-DROPBOX-SNAPSHOT</version>
+        <version>16.0.1-PREHISTORIC-SNAPSHOT</version>
         <relativePath>../web-base/pom.xml</relativePath>
     </parent>
 
@@ -34,17 +32,6 @@
         <name>The Digital Archaeological Record</name>
         <url>http://www.tdar.org</url>
     </organization>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-bom</artifactId>
-                <version>${struts2.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
@@ -100,23 +87,10 @@
  		<dependency>
 		    <groupId>com.dropbox.core</groupId>
 		    <artifactId>dropbox-core-sdk</artifactId>
-		    <version>3.0.3</version>
+		    <version>3.0.1</version>
 		</dependency>
  
  
-         <dependency>
-            <!-- needed by spring for @Transactional calls -->
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>3.2.1</version>
-            <!-- LICENSE: APACHE 1.1 -->
-        </dependency>
-        <dependency>
-            <groupId>com.jgeppert.struts2.bootstrap</groupId>
-            <artifactId>struts2-bootstrap-plugin</artifactId>
-            <version>1.7.0</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
         <dependency>
             <groupId>net.tanesha.recaptcha4j</groupId>
             <artifactId>recaptcha4j</artifactId>
@@ -124,65 +98,6 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
 
-        <!-- ANDS PID Client -->
-        <dependency>
-            <groupId>net.sourceforge.andspidclient</groupId>
-            <artifactId>ands-pid-client</artifactId>
-            <version>1.0.30</version>
-            <!-- LICENSE: APACHE 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- /these are required for htmlunit 2.10 -->
-        <dependency>
-            <groupId>org.apache.struts</groupId>
-            <artifactId>struts2-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>javassist</artifactId>
-                    <groupId>javassist</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>asm</groupId>
-                    <artifactId>asm-commons</artifactId>
-                </exclusion>
-            </exclusions>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.struts</groupId>
-            <artifactId>struts2-sitemesh-plugin</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.struts</groupId>
-            <artifactId>struts2-spring-plugin</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.struts</groupId>
-            <artifactId>struts2-junit-plugin</artifactId>
-            <exclusions>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-            </exclusions>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.struts</groupId>
-            <artifactId>struts2-convention-plugin</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
         <dependency>
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>
@@ -211,21 +126,13 @@
                     <artifactId>httpclient</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>cglib-nodep</artifactId>
+                    <groupId>cglib</groupId>
+                </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <dependency>
-            <groupId>ro.isdc.wro4j</groupId>
-            <artifactId>wro4j-core</artifactId>
-            <version>${wro4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.yahoo.platform.yui</groupId>
-            <artifactId>yuicompressor</artifactId>
-            <version>2.4.8</version>
-        </dependency>
-        <!-- <dependency> <groupId>ro.isdc.wro4j</groupId> <artifactId>wro4j-extensions</artifactId> 
-            <version>${wro4j.version}</version> </dependency> -->
     </dependencies>
 
 
@@ -320,13 +227,6 @@
                             <directory>${project.build.directory}/generated/webapp</directory>
                             <targetPath>/</targetPath>
                             <filtering>false</filtering>
-                        </resource>
-                        <resource>
-                            <directory>src/main/resources/production/</directory>
-                            <targetPath>/WEB-INF/classes</targetPath>
-                            <includes>
-                                <include>struts-local-settings.xml</include>
-                            </includes>
                         </resource>
                     </webResources>
                 </configuration>

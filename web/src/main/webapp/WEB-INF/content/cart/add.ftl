@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/WEB-INF/content/cart/common-invoice.ftl" as invoicecommon >
@@ -441,7 +441,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
 
 <script>
     $(document).ready(function () {
-        TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/cart/api"/>");
+        TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/api/cart/quote"/>");
         TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete"), true, false);
     });
 </script>
