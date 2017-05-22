@@ -142,14 +142,14 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         transientAdmin.setId(getAdminUserId());
         TdarUser transientTest = new TdarUser();
         transientTest.setId(testPerson.getId());
-        List<AuthorizedUser> transientUsers = new ArrayList<>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),transientSelf, GeneralPermissions.ADMINISTER_SHARE),
-                new AuthorizedUser(getAdminUser(),transientAdmin, GeneralPermissions.MODIFY_RECORD),
-                new AuthorizedUser(getAdminUser(),transientTest, GeneralPermissions.MODIFY_RECORD)));
-        ShareCollectionController cc = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
+        List<UserRightsProxy> transientUsers = new ArrayList<>(Arrays.asList(
+                new UserRightsProxy(new AuthorizedUser(getAdminUser(),transientSelf, GeneralPermissions.ADMINISTER_SHARE)),
+                new UserRightsProxy(new AuthorizedUser(getAdminUser(),transientAdmin, GeneralPermissions.MODIFY_RECORD)),
+                new UserRightsProxy(new AuthorizedUser(getAdminUser(),transientTest, GeneralPermissions.MODIFY_RECORD))));
+        ShareCollectionRightsController cc = generateNewInitializedController(ShareCollectionRightsController.class, getBasicUser());
         cc.setId(collectionid);
         cc.prepare();
-        cc.setAuthorizedUsers(transientUsers);
+        cc.setProxies(transientUsers);
         cc.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS, cc.save());
 

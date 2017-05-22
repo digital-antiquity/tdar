@@ -21,8 +21,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
@@ -85,8 +83,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public final static String REDIRECT_HOME = "REDIRECT_HOME";
     public final static String REDIRECT_PROJECT_LIST = "PROJECT_LIST";
     private boolean asyncSave = true;
-    private List<AuthorizedUser> authorizedUsers;
-    private List<String> authorizedUsersFullNames = new ArrayList<String>();
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
@@ -442,20 +438,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     }
 
     /**
-     * @param authorizedUsers
-     *            the authorizedUsers to set
-     */
-    public void setAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
-        this.authorizedUsers = authorizedUsers;
-    }
-
-
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
-        return permissions;
-    }
-
-    /**
      * @return the startTime
      */
     public Long getStartTime() {
@@ -573,14 +555,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
     public void setH(AntiSpamHelper h) {
         this.h = h;
-    }
-
-    public List<String> getAuthorizedUsersFullNames() {
-        return authorizedUsersFullNames;
-    }
-
-    public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
-        this.authorizedUsersFullNames = authorizedUsersFullNames;
     }
 
     public String getSaveSuccessSuffix() {

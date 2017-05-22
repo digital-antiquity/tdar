@@ -886,7 +886,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         // Project proxy = new Project(project.getId(), project.getTitle());
         Long pid = project.getId();
         project = null;
-        controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
         controller.getToAdd().add(pid);
         controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         controller.getPersistable().setDescription("description");
@@ -1002,7 +1001,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         // project = null;
         // Long pid = project.getId();
         Project proxy = new Project(project.getId(), project.getTitle());
-        shareController.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
         shareController.getToAdd().add(proxy.getId());
         shareController.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         shareController.getPersistable().setDescription("description");
