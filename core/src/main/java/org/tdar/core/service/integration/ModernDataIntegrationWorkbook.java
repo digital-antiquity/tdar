@@ -270,7 +270,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             }
         }
 
-        workbookWriter.addDataRow(summarySheet, currentRow + 4, 1,Arrays.asList("JSON:",rawIntegration));
+        if (rawIntegration.length() < workbookWriter.getMaxTextLengthPerCell()) { 
+            workbookWriter.addDataRow(summarySheet, currentRow + 4, 1,Arrays.asList("JSON:",rawIntegration));
+        }
         // auto-sizing columns
         for (int i = 0; i < max; i++) {
             if (! (summarySheet instanceof SXSSFSheet)) {

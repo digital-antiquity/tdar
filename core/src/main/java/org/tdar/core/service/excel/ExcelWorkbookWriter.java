@@ -365,11 +365,11 @@ public class ExcelWorkbookWriter {
             if (StringUtils.isNumeric(value)) {
                 cell.setCellValue(Double.valueOf(value));
             } else {
-                if (value.length() > version.getMaxTextLength()) {
+                if (value.length() > getMaxTextLengthPerCell()) {
                     StringBuilder sb = new StringBuilder();
                     sb.append(TRUNCATED);
                     sb.append(" ");
-                    sb.append(StringUtils.substring(value, 0, version.getMaxTextLength() - TRUNCATED.length() - 2));
+                    sb.append(StringUtils.substring(value, 0, getMaxTextLengthPerCell() - TRUNCATED.length() - 2));
                     cell.setCellValue(sb.toString());
                     logger.error("truncated cell that was too long");
                 } else {
@@ -382,6 +382,10 @@ public class ExcelWorkbookWriter {
         }
 
         return cell;
+    }
+
+    public int getMaxTextLengthPerCell() {
+        return version.getMaxTextLength();
     }
 
     /**
