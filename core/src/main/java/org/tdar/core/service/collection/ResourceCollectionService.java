@@ -1281,11 +1281,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     private AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
         try {
-        AuthorizedUser au = new AuthorizedUser();
-        au.setUser(getDao().find(TdarUser.class, proxy.getId()));
-        au.setGeneralPermission(proxy.getPermission());
-        au.setDateExpires(proxy.getUntilDate());
-        getLogger().debug("{} ({})", au, proxy.getDisplayName());
+            AuthorizedUser au = new AuthorizedUser();
+            TdarUser user = getDao().find(TdarUser.class, proxy.getId());
+            if (user == null) {
+                throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
+            }
+            logger.debug("{} {}", user.getClass() , user);
+            au.setUser(user);
+            au.setGeneralPermission(proxy.getPermission());
+            au.setDateExpires(proxy.getUntilDate());
+            getLogger().debug("{} ({})", au, proxy.getDisplayName());
         return au;
         } catch (WrongClassException e) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
