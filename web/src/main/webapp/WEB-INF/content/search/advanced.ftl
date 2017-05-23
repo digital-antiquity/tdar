@@ -214,14 +214,14 @@
             <div class="term retain ${fieldType} controls-row">
                 <div class="span3">
                     <div class="input-append">
-	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"
+	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="mm/dd/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"
 	                    	 dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                           <span class="add-on"><i class="icon-th"></i></span>
                         </div>
                 </div>
                 <div class="span3">
                     <div class="input-append">
-	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"
+	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="mm/dd/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"
 	                    dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                           <span class="add-on"><i class="icon-th"></i></span>
                         </div>

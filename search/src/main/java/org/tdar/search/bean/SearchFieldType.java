@@ -50,7 +50,7 @@ public enum SearchFieldType implements HasLabel, Localizable {
     CREATION_DECADE("creationDecades", SearchFieldGroup.EXPLORE, "Creation Decade"),
 
     DATE_CREATED("createdDates", SearchFieldGroup.BASIC_FIELDS, "Year"),
-    DATE_REGISTERED("registeredDates", SearchFieldGroup.BASIC_FIELDS, "Date Registered"),
+    DATE_REGISTERED("registeredDates", SearchFieldGroup.BASIC_FIELDS, "Date Created"),
     DATE_UPDATED("updatedDates", SearchFieldGroup.BASIC_FIELDS, "Date Updated");
 
     private String label = "";
