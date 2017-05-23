@@ -186,8 +186,8 @@ $(function() {
                     <td></td>
                 </tr>
                 </#if>
-                <#if collections?has_content>
-                <@_colectionSection collections />
+                <#if collections?has_content >
+	                <@_collectionSection collections />
                 </#if>
                 <#if invites?has_content>
                     <@_invitesSection invites />

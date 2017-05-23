@@ -34,8 +34,6 @@ import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.bean.TdarReference;
 import org.tdar.balk.dao.ItemDao;
 import org.tdar.balk.dao.UserDao;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
