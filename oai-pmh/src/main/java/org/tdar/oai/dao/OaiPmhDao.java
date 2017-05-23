@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.oai.bean.OAIRecordType;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 public class OaiPmhDao {
@@ -39,6 +40,9 @@ public class OaiPmhDao {
 				break;
 			case RESOURCE:
 				qn = "query.oai.resources";
+				if (PersistableUtils.isNotNullOrTransient(collectionId)) {
+				    qn = "query.oai.resources_collections";
+				}
 				break;
 			default:
 				break;
@@ -49,11 +53,7 @@ public class OaiPmhDao {
 		if (search.getCursor().getAfter().after(effectiveFrom)) {
 		    effectiveFrom = search.getCursor().getAfter();
 		}
-//		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
-//        query.setParameter("id", search.getCursor().getIdFrom());
-//		search.setTotalRecords(((Long) query.uniqueResult()).intValue());
 
-//		query = genericDao.getNamedQuery(qn);
 		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
 		query.setParameter("id", search.getCursor().getIdFrom());
 
@@ -72,16 +72,14 @@ public class OaiPmhDao {
 			from = effectiveFrom;
 		}
 		if (effectiveUntil != null) {
-			effectiveUntil = to;
+			to = effectiveUntil;
 		}
 		query.setParameter("start", from);
 		query.setParameter("end", to);
-		Long id = -1L;
 		if (collectionId != null && collectionId > -1L) {
-			id = collectionId;
-		}
-		if (recordType == OAIRecordType.RESOURCE) {
-			query.setParameter("collectionId", id);
+    		if (recordType == OAIRecordType.RESOURCE) {
+    			query.setParameter("collectionId", collectionId);
+    		}
 		}
 
 	}
