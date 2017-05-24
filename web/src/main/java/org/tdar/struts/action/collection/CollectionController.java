@@ -160,6 +160,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             return INPUT;
         }
         getLogger().debug("parentId: {} parent: {}", parentId, parentCollection);
+        getLogger().debug("altParentId: {} altParent: {}", alternateParentId, alternateParentCollection);
         CollectionSaveObject cso = new CollectionSaveObject(getPersistable(), getAuthenticatedUser(), getStartTime(), getAuthorizedUsers());
         cso.setParent(parentCollection);
         cso.setParentId(parentId);
@@ -184,7 +185,9 @@ public class CollectionController extends AbstractPersistableController<Resource
         
         // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
         if (PersistableUtils.isNotNullOrTransient(_incomingParent) && PersistableUtils.isNotNullOrTransient(_currentParent)
-                && (_incomingParent.getParentIds().contains(_incomingParent.getId()) || _currentParent.getId().equals(_incomingParent.getId()))) {
+                && (_incomingParent.getParentIds().contains(_incomingParent.getId()) || getPersistable().getId().equals(_incomingParent.getId()))) {
+            getLogger().debug("parent: {} current: {}", _incomingParent, _currentParent );
+            getLogger().debug("grand-parent ids: {} current id: {} incoming id: {}", _incomingParent.getParentIds(), getPersistable().getId(), _incomingParent.getId());
             addActionError(getText("collectionController.cannot_set_self_parent"));
         }
         return _parentId;
@@ -251,6 +254,10 @@ public class CollectionController extends AbstractPersistableController<Resource
         setParentId(getPersistable().getParentId());
         if (PersistableUtils.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
+        }
+        setAlternateParentId(getPersistable().getAlternateParentId());
+        if (PersistableUtils.isNotNullOrTransient(getAlternateParentId())) {
+            alternateParentCollectionName = getPersistable().getAlternateParent().getName();
         }
         return SUCCESS;
     }

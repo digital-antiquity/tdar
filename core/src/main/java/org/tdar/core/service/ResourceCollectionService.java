@@ -865,6 +865,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
 
         if (!Objects.equals(cso.getAlternateParentId(), persistable.getAlternateParentId())) {
+            logger.debug("updating alternate parent for {} from {} to {}", persistable.getId(), persistable.getAlternateParent(), cso.getAlternateParent());
             persistable.setAlternateParent(cso.getAlternateParent());
         }
 

@@ -88,7 +88,6 @@
             
             <div id="altParentIdContainer" class="control-group">
                 <label class="control-label">Secondary Parent Collection (No rights)</label>
-
                 <div class="controls">
                     <@s.hidden name="alternateParentId"  id="hdnAltParentId" cssClass=""
                     autocompleteParentElement="#altParentIdContainer"  />
