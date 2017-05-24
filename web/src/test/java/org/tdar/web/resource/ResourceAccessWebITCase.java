@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -60,7 +61,9 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         
         // try and submit without comment
         assertTrue(getPageText().contains("New Philadelphia Archaeology"));
-        assertFalse(getPageText().contains("SAA"));
+        String txt = getPageText();
+        txt = StringUtils.substringAfter(txt, "Send a Message");
+        assertFalse(txt.contains("SAA"));
         assertCurrentUrlContains("/resource/request");
         submitFormWithoutErrorCheck("send");
         assertFalse(getPageText().contains("Message Sent"));
