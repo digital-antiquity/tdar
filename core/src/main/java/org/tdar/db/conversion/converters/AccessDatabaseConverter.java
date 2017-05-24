@@ -33,6 +33,8 @@ import com.healthmarketscience.jackcess.Index;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
+import com.healthmarketscience.jackcess.query.BaseSelectQuery;
+import com.healthmarketscience.jackcess.query.Query;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKBReader;
 
@@ -230,11 +232,20 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
 
         setRelationships(extractRelationships(dataTableNameMap, linked));
         getDatabase().getQueries().forEach(q -> {
-            logger.debug("{} {} {} ", q.getName(), q.getType(), q.getParameters());
+            try {
+            logger.debug("{} {} {} | {} {}", q.getName(), q.getType(), q.getParameters(), q.getClass(), q.getOwnerAccessType());
+            if (q instanceof BaseSelectQuery) {
+                BaseSelectQuery query = (BaseSelectQuery) q;
+                logger.debug("from:{}",query.getFromTables());
+                
+            }
             logger.debug("\t\t--> {} ", q.toSQLString());
+            } catch (Throwable t) {
+                logger.error("{}",t,t);
+            }
         });
     }
-
+    
     private Set<DataTableRelationship> extractRelationships(Map<String, DataTable> dataTableNameMap, Set<String> linked) throws IOException {
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (String tableName1 : getDatabase().getTableNames()) {

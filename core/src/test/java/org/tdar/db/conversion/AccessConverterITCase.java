@@ -42,9 +42,9 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    @Ignore
+//    @Ignore
     public void testDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File("c://Users/abrin/Desktop/rpms.mdb"), 1224L);
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(),"rpms_corrected.mdb"), 1224L);
         for (DataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
