@@ -86,7 +86,7 @@
         <http-components.version>4.4.6</http-components.version>
         <http-client.version>4.5.3</http-client.version>
         <guava.version>21.0</guava.version>
-        <jackcess.version>2.1.6</jackcess.version>
+        <jackcess.version>2.1.7</jackcess.version>
         <jt-utils.version>1.4.0</jt-utils.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-beanutils.version>1.9.3</commons-beanutils.version>
