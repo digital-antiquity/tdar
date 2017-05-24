@@ -1,7 +1,11 @@
 @org.hibernate.annotations.NamedQueries({
     @org.hibernate.annotations.NamedQuery(
             name = "query.oai.resources",
-            query = "select res from Resource res left join res.resourceCollections as rc left join rc.parentIds parentId where (res.dateUpdated between :start and :end) and res.status='ACTIVE' and res.id > :id and (:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) order by res.dateUpdated asc"
+            query = "select res from Resource res where (res.dateUpdated between :start and :end) and res.status='ACTIVE' and res.id > :id order by res.dateUpdated asc"
+            ),
+    @org.hibernate.annotations.NamedQuery(
+            name = "query.oai.resources_collections",
+            query = "select distinct res from Resource res left join res.resourceCollections as rc left join rc.parentIds parentId where (res.dateUpdated between :start and :end) and res.status='ACTIVE' and res.id > :id and (rc.id=:collectionId or parentId=:collectionId) order by res.dateUpdated asc"
             ),
     @org.hibernate.annotations.NamedQuery(
             name = "query.oai.collections",
