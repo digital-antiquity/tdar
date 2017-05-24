@@ -6,6 +6,8 @@
  */
 package org.tdar.core.service.collection;
 
+import static org.hamcrest.CoreMatchers.containsString;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,6 +72,9 @@ import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
 
 import com.opensymphony.xwork2.TextProvider;
+
+import ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider;
+import ucar.nc2.iosp.uamiv.UAMIVServiceProvider;
 
 /**
  * @author Adam Brin
@@ -1237,28 +1242,47 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     private <C extends ResourceCollection> void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites, C c) {
+        List<UserInvite> existing = getDao().findUserInvites(c);
+        Map<Long, UserInvite> createIdMap = PersistableUtils.createIdMap(existing);
+        
         if (CollectionUtils.isNotEmpty(invites)) {
             for (UserInvite invite : invites) {
                 if (PersistableUtils.isNotTransient(invite) || invite == null || invite.getUser().hasNoPersistableValues()) {
                     continue;
                 }
+
+                // existing one
+                if (PersistableUtils.isNotNullOrTransient(invite.getId() )) {
+                    UserInvite inv = createIdMap.get(invite.getId());
+                    inv.setDateExpires(invite.getDateExpires());
+                    inv.setPermissions(inv.getPermissions());
+                    getDao().saveOrUpdate(inv);
+                    createIdMap.remove(invite.getId());
+                    continue;
+                }
+
+                // new invite
                 invite.setResourceCollection(c);
                 getDao().saveOrUpdate(invite);
                 emailService.sendUserInviteEmail(invite, authenticatedUser);
             }
         }
+        
+        getDao().delete(createIdMap.values());
     }
 
     private void convertProxyToItems(List<UserRightsProxy> proxies, TdarUser authenticatedUser, List<AuthorizedUser> authorizedUsers, List<UserInvite> invites) {
         for (UserRightsProxy proxy : proxies) {
             if (proxy == null || proxy.isEmpty()) {
+                return;
+            } 
 
-            } else if (proxy.getEmail() != null) {
+            if (proxy.getEmail() != null || proxy.getInviteId() != null) {
                 UserInvite invite = toInvite(proxy, authenticatedUser);
                 if (invite != null) {
                     invites.add(invite);
                 }
-            } else if (proxy.getId() != null) {
+            } else if (PersistableUtils.isNotNullOrTransient(proxy.getId())) {
                 authorizedUsers.add(toAuthorizedUser(proxy));
             }
         }
@@ -1266,10 +1290,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     private UserInvite toInvite(UserRightsProxy proxy, TdarUser user) {
         UserInvite invite = new UserInvite();
-        invite.setAuthorizer(user);
         invite.setDateExpires(proxy.getUntilDate());
         invite.setId(proxy.getInviteId());
         invite.setPermissions(proxy.getPermission());
+        if (PersistableUtils.isNotNullOrTransient(proxy.getInviteId() )) {
+            invite = getDao().find(UserInvite.class, proxy.getInviteId());
+        }
+        invite.setAuthorizer(user);
         Person person = new Person(proxy.getFirstName(), proxy.getLastName(), proxy.getEmail());
         if (person.hasNoPersistableValues()) {
             return null;
@@ -1282,8 +1309,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
         try {
             AuthorizedUser au = new AuthorizedUser();
+            logger.debug("{} {} ", proxy, proxy.getId());
             TdarUser user = getDao().find(TdarUser.class, proxy.getId());
-            if (user == null) {
+            if (user == null && PersistableUtils.isNotNullOrTransient(proxy.getId() )) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
             }
             logger.debug("{} {}", user.getClass() , user);
