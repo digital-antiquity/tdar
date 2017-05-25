@@ -90,6 +90,9 @@ TDAR.validate = (function($, ctx) {
                 if (method == 'initBasicForm') {
                     _postValidateBasic($form, validator);
                 }
+                if (method == 'initRightsForm') {
+                    _postValidateRights($form, validator);
+                }
             } else {
                 console.log("validate method specified, but not a function");
                 $form.data("tdar-validate-status","failed-invalid-method");
@@ -268,14 +271,31 @@ TDAR.validate = (function($, ctx) {
 
     var _initRightsForm = function(form) {
         var opts = _initBasicForm(form);
-        $(startElem).rules("add", {
-            range: [ -99900, 2100 ],
-            lessThanEqual: [endElem, "Calender Start", "Calendar End"],
+        return opts;
+    }
+    var _postValidateRights = function(form) {
+        $("#firstName").rules("add", {
             required: function () {
-                return $(endElem).val() != "";
+                if ($("#lastName").val().trim() != '' || $("#email").val().trim() != '') {
+                    return true;
+                }
+                return false;
             }
         });
-        return opts;
+        $("#lastName").rules("add", {
+            required: function () {
+                if($("#firstName").val().trim() != '' || $("#email").val().trim() != '') {
+                    return true;
+                }
+                return false;
+            }
+        });
+        $("#email").rules("add", {
+            email:true,
+            required: function () {
+                return $("#lastName").val().trim() != '' || $("#firstName").val().trim() != '';
+            }
+        });
     }
     
     // called whenever date type changes
@@ -367,6 +387,7 @@ TDAR.validate = (function($, ctx) {
         "initForm" : _initForm,
         "initRegForm" : _initRegForm,
         "initBasicForm": _initBasicForm,
+        "initRightsForm": _initRightsForm,
         "prepareDateFields": _prepareDateFields,
         main : function() {
             TDAR.validate.init();

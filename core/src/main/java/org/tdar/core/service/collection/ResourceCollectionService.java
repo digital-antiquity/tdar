@@ -59,6 +59,7 @@ import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
@@ -1280,7 +1281,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             if (proxy.getEmail() != null || proxy.getInviteId() != null) {
                 UserInvite invite = toInvite(proxy, authenticatedUser);
                 if (invite != null) {
-                    invites.add(invite);
+                    if (invite.getUser().isValidForController()) {
+                        invites.add(invite);
+                    } else {
+                        throw new TdarValidationException("resourceCollectionService.invalid", Arrays.asList(invite.getUser()));
+                    }
                 }
             } else if (PersistableUtils.isNotNullOrTransient(proxy.getId())) {
                 authorizedUsers.add(toAuthorizedUser(proxy));
