@@ -70,9 +70,9 @@
     <div class="row">
         <div class="hero">
             <#include "/${themeDir}/homepage-banner.dec" />
-        <@common.loginMenu true/>
+        <@auth.loginMenu true/>
         </div>
-        <ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
+        <ul class="inline-menu hidden-desktop"><@auth.loginMenu false/></ul>
     </div>
 
 
@@ -103,7 +103,7 @@
                     </#if>
                 </ul>
                 <#if actionName!='login' && actionName!='register' && actionName!='download' && actionName!='review-unauthenticated'>
-                    <@common.loginMenu true />
+                    <@auth.loginMenu true />
                 </#if>
             </div>
         </div>

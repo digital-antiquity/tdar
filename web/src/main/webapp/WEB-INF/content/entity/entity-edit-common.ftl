@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+    <#import "/WEB-INF/macros/common.ftl" as common>
 
     <#macro uploadForm>
         <#if editor>
@@ -91,7 +92,7 @@
                     </#if>
         
             <h3>Address List</h3>
-                <@common.listAddresses person />
+                <@commonr.listAddresses person />
         </div>
 
     </#macro>

@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+<#import "/WEB-INF/macros/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/common-rights.ftl" as rights>
@@ -42,7 +43,7 @@
         </#if>
         <#if collections?has_content && !collections.empty > 
             <h3>Child <#if resourceCollection.type == 'LIST'>Collections<#else>Collections</#if></h3>
-            <@common.listCollections collections=collections showOnlyVisible=true />
+            <@commonr.listCollections collections=collections showOnlyVisible=true />
         </#if>
 		<@list.displayWidget />
 

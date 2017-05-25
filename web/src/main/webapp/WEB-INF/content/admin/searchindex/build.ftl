@@ -1,4 +1,4 @@
-<#import "/WEB-INF/content/admin/admin-common-resource.ftl" as admin>
+<#import "/WEB-INF/content/admin/admin-common.ftl" as admin>
 <head>
     <title>Build ${siteAcronym} Index</title>
     <script type="text/javascript">

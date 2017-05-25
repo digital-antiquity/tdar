@@ -3,8 +3,9 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
-    <#import "dashboard-common-resource.ftl" as dash >
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+    <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "dashboard-common.ftl" as dash >
     <#import "/${themeDir}/settings.ftl" as settings>
 
 <head>
@@ -219,14 +220,14 @@
                 <#list recentlyEditedResources as res>
                     <li id="li-recent-resource-${res.id?c}">
                    <span class="fixed">
-                       <@common.cartouche res true>
+                       <@commonr.cartouche res true>
                            <div class="btn-group pull-right recent-nav">
                         <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
                         <a class="btn btn-mini" href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
                     </div>
                             <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
                             <small>(ID: ${res.id?c})</small>
-                       </@common.cartouche>
+                       </@commonr.cartouche>
                    </span>
                     </li>
                 </#list>
@@ -269,7 +270,7 @@
 
 
     <#macro browseResourceSection>
-        <@common.reindexingNote />
+        <@search.reindexingNote />
     <div class="row" id="project-list">
     <div class="span10">
         <h2>Browse Resources</h2>

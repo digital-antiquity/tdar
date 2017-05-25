@@ -3,9 +3,10 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+    <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "/${themeDir}/settings.ftl" as settings>
-    <#import "dashboard-common-resource.ftl" as dash />
+    <#import "dashboard-common.ftl" as dash />
 
 <head>
     <title>Billing Accounts</title>

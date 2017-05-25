@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/${themeDir}/settings.ftl" as settings />
+    <#import "../common.ftl" as common />
 <#-- 
 $Id:Exp$
 Common macros used in multiple contexts
@@ -9,125 +10,21 @@ Common macros used in multiple contexts
 <#-- opting out of code formatting: end -->
 <#--@formatter:on-->
 
-
-<#-- emit specified number of bytes in human-readable form  -->
-<#-- @parm filesize:number? file size in bytes -->
-    <#macro convertFileSize filesize=0><#t>
-        <#compress>
-            <#local mb = 1048576 />
-            <#local kb = 1024 />
-            <#if (filesize > mb)>
-            ${(filesize / mb)?string(",##0.00")}mb
-            <#elseif (filesize > kb)>
-            ${(filesize / kb)?string(",##0.00")}kb
-            <#else>
-            ${filesize?string(",##0.00")}b
-            </#if>
-        </#compress><#t>
-    </#macro>
-<#-- string representing current tdar version/build number -->
-    <#assign tdarBuildId>
-        <#attempt><#include  "/version.txt" parse=false/><#recover></#attempt>
-    </#assign>
-    <#assign tdarBuildId = (tdarBuildId!'unknown')?trim?replace("+", ".001") />
-
-<#--
-//Emit Javascript intended for every page in tDAR (regardless of login status)
--->
-    <#macro globalJavascript>
-    <script type="text/javascript">
-    </script>
-    <@googleAnalyticsJavascript />
-    </#macro>
-
-<#-- emit the javascript necessary for google analytics -->
-<#-- FIXME: replace this embed and wrapper functions as part of upgrade to Universal Analytics (TDAR-3515) -->
-    <#macro googleAnalyticsJavascript>
-    <#noescape>
-    <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-        ga('create', '${googleAnalyticsId}', 'auto');
-        ga('set', 'transport', 'beacon');
-        ga('set', 'dimension1', '<#if administrator>administrator<#elseif editor>editor<#elseif authenticatedUser??>user<#else>anonymous</#if>');
-
-        ga('send', 'pageview');
-
-    </script>
-    </#noescape>
-    </#macro>
-
-<#--
-    Emit login button link.
-    If current page is home page, link has no querystring arguments.  Otherwise,  include the current url in the
-    querystring (in parameter named 'url).
--->
-    <#macro loginButton class="" returnUrl="">
-        <#noescape>
-        <#local _current = (currentUrl!'/') >
-        <#if returnUrl != ''><#local _current = returnUrl /></#if>
-        <#if _current == '/' || currentUrl?starts_with('/login')>
-        <a class="${class}" href="<@s.url value='/login'/>" rel="nofollow" id="loginButton">Log In</a>
-        <#else>
-        <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>" id="loginButton">Log In</a>
-        </#if>
-        </#noescape>
-    </#macro>
-
-
-
-<#--emit the specified string, truncating w/ ellipses if length exceeds specified max -->
-<#-- @param text:string the text to render -->
-<#-- @param len:number? maximum length of the string-->
-    <#macro truncate text len=80>
-        <#compress>
-            <#if text??>
-            <#-- if text if greater than length -->
-                <#if (text?length > len)>
-                <#-- set pointer to last space before length (len) -->
-                    <#local ptr=text?last_index_of(" ",len) />
-                <#-- if pointer to last space is greater than 1/2 of the max length, truncate at the pointer,
-                      otherwise truncate at 3 before length -->
-                    <#if (ptr > len / 2)>
-                    ${text?substring(0,ptr)}...
-                    <#else>
-                    ${text?substring(0,len -3)}...
-                    </#if>
-                <#else>
-                ${text}
-                </#if>
-            </#if>
-        </#compress>
-    </#macro>
-
-<#--function version of #truncate. -->
-    <#function fnTruncate text len=80>
-        <#if (text?length <= len)><#return text></#if>
-
-        <#local subtext = text?substring(0, len-3)?trim>
-        <#local words = subtext?split(' ')>
-        <#--if substring has several words,  cut on the last word -->
-        <#if (words?size > 3)>
-            <#local subtext = text?substring(0,text?last_index_of(' '))>
-        </#if>
-        <#return "${subtext}...">
-    </#function>
-
 <#-- Emit the container and script for a bar graph -->
     <#macro resourceBarGraph>
-		<div id="resourceBarGraph" style="height:400px" data-source="#homepageResourceCountCache" class="barChart"
-		data-x="label" data-values="count" data-click="resourceBarGraphClick" data-yaxis="log" data-colorcategories="true" >
-		</div>
-		<#noescape>
-		<script id="homepageResourceCountCache" type="application/json">
-		${homepageGraphs.resourceTypeJson}
-		</script>
-		</#noescape>
-	
+        <div id="resourceBarGraph" style="height:400px" data-source="#homepageResourceCountCache" class="barChart"
+        data-x="label" data-values="count" data-click="resourceBarGraphClick" data-yaxis="log" data-colorcategories="true" >
+        </div>
+        <#noescape>
+        <script id="homepageResourceCountCache" type="application/json">
+        ${homepageGraphs.resourceTypeJson}
+        </script>
+        </#noescape>
+    
     </#macro>
+    
+
+
 
 <#-- Emit container div and script for the worldmap control. The worldmap control shows the number of registeresd
  resources for a country as the user hovers their mouse over a country.  If the user clicks on a country,
@@ -198,48 +95,7 @@ Common macros used in multiple contexts
         </#if>
     </#macro>
 
-<#-- emit login menu list items -->
-<#-- @param showMenu:boolean if true,  wrap list items in UL tag, otherwise just emit LI's -->
-    <#macro loginMenu showMenu=false>
-        <#if showMenu>
-        <ul class="subnav-rht hidden-phone hidden-tablet">
-        </#if>
-        <#if !(authenticatedUser??) >
-            <li><a href="<@s.url value="/account/new" />" class="button" rel="nofollow">Sign Up</a></li>
-            <li><@loginButton class="button" /></li>
-        <#else>
-            <#--<li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>-->
-            <li>
-            <form class="form-unstyled seleniumIgnoreForm logoutForm" id="frmLogout" name="logoutForm" method="post" action="/logout">
-                    <input type="submit" class="tdar-button" name="logout" value="Logout" id="logout-button">
-            </form>
-            </li>
-        </#if>
-        <#if showMenu>
-        </ul>
-        </#if>
-    </#macro>
 
-<#-- Render the "Resourse Usage" section of a view page.   -->
-    <#macro resourceUsageInfo>
-        <#local _isProject =  ((persistable.resourceType)!'') == "PROJECT" >
-        <#if uploadedResourceAccessStatistic?has_content >
-        <table class="table tableFormat">
-            <tr>
-                <#if _isProject >
-                    <th>Total # of Resources</th></#if>
-                <th>Total # of Files</th>
-                <th>Total Space (Uploaded Only)</th>
-            </tr>
-            <tr>
-                <#if _isProject>
-                    <td>${uploadedResourceAccessStatistic.countResources!0}</td></#if>
-                <td>${uploadedResourceAccessStatistic.countFiles!0}</td>
-                <td><@convertFileSize uploadedResourceAccessStatistic.totalSpace!0 /></td>
-            </tr>
-        </table>
-        </#if>
-    </#macro>
 
 <#-- emit a div that lists the addresses for the specified person.-->
 <#-- @param entity:Person person object containing addresses to render -->
@@ -316,6 +172,16 @@ Common macros used in multiple contexts
         <#if arg1=arg2>${val}</#if><#t>
     </#macro>
 
+    <#macro featuredCollection featuredCollection>
+        <h3>Featured Collection</h3>
+        <p>
+    <#if logoAvailable>
+        <img class="pull-right collection-logo" src="/files/collection/sm/${featuredCollection.id?c}/logo"
+        alt="logo" title="logo" /> 
+    </#if>
+    <a href="${featuredCollection.detailUrl}"><b>${featuredCollection.name}</b></a>: ${featuredCollection.description}</p>
+    </#macro>
+    
 <#-- emit a "combobox" control.  A combobox is essentially text field element that features both autocomplete support as
  as the ability to view a list of all possible values (by clicking on a 'dropdown' button beside the text box)-->
     <#macro combobox name target autocompleteIdElement placeholder  cssClass value=false autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="" collectionType="">
@@ -355,61 +221,6 @@ Common macros used in multiple contexts
         </#if>
     </#macro>
 
-<#-- emit the actionmessage section.  If many action messages present,  then wrap them in a collapsed accordian div  -->
-    <#macro actionmessage>
-        <#if (actionMessages?size>5) >
-        <div class="alert alert-info">
-            <span class="badge badge-info">${actionMessages?size}</span>
-            <a href="#" data-toggle="collapse" data-target="#actionmessageContainer">System Notifications</a>
-        </div>
-        <div id="actionmessageContainer" class="collapse">
-            <@s.actionmessage />
-        </div>
-        <#else>
-            <@s.actionmessage  />
-        </#if>
-    </#macro>
-
-<#-- emit the billing account list section -->
-<#-- @param accountList:List<Account> list of accounts to render -->
-    <#macro billingAccountList accountList>
-        <#if (payPerIngestEnabled!false)>
-        <h2 id="billingSection">Billing Accounts</h2>
-        <ul>
-            <#list accountList as account>
-                <#if account.active>
-                <li>
-                    <a href="<@s.url value="/billing/${account.id?c}"  />">${account.name!"unamed"}</a>
-                </li>
-                </#if>
-            </#list>
-<#--
-            <#if billingManager>
-                <li><a href="<@s.url value="/billing/list" />">All Accounts</a></li>
-            </#if> -->
-            <li><a href="/cart/add">Create a new account or add more to an existing one</a></li>
-        </ul>
-        </#if>
-    </#macro>
-
-<#-- emit notice indicating that the system is currently reindexing the lucene database -->
-    <#macro reindexingNote>
-        <#if reindexing!false >
-        <div class="reindexing alert">
-            <p><@localText "notifications.fmt_system_is_reindexing", siteAcronym /></p>
-        </div>
-        </#if>
-    </#macro>
-
-<#-- Emit a resource description (replace crlf's with <p> tags-->
-    <#macro description description_="No description specified." >
-        <#assign description = description_!"No description specified."/>
-    <p>
-        <#noescape>
-    ${(description)?html?replace("[\r\n]++","</p><p>","r")}
-  </#noescape>
-    </p>
-    </#macro>
 
 <#-- emit html for single collection list item -->
     <#macro collectionListItem depth=0 collection=collection showOnlyVisible=false showBadge=false>
@@ -438,23 +249,6 @@ Common macros used in multiple contexts
         </#list>
   <#nested>
     </ul>
-    </#macro>
-
-    <#macro jsErrorLog>
-    <textarea style="display:none" name="javascriptErrorLog" id="javascriptErrorLog" class="devconsole oldschool input-block-level" rows="10" cols="20"
-              maxlength="${(160 * 80 * 2)?c}">${javascriptErrorLogDefault!'NOSCRIPT'}</textarea>
-    <script>document.getElementById('javascriptErrorLog').value = "";</script>
-    </#macro>
-
-
-<#-- a slightly more concise way to emit i18n strings.
-    name:String string key name
-    parms...?:varargs<String> (optional) any additional arguments are treated as MessageFormat parameters
-    
-    NOTE: DO NOT CHANGE THE NAME OF THIS MACRO -- IT'S USED IN TESTS TO GREP THROUGH THE CODE
--->
-    <#macro localText name parms...>
-        <@s.text name="${name}"><#list parms as parm><@s.param>${parm}</@s.param></#list></@s.text>
     </#macro>
 
 <#-- emit the coding rules section for the current coding-sheet resource. Used on view page and edit page -->
@@ -530,35 +324,6 @@ Common macros used in multiple contexts
         </#if>
     </#macro>
 
-
-<#-- remove chrome autofill hack when no longer necessary TDAR-4043 -->
-<#--starting w/ Chrome 34, chrome ignores the autocomplete=off directive in password fields.  This in itself is not so bad (really), but it leads to
-tdar usability issues when combined with Chrome's "login form detection".  Specifically, chrome always autofills the first password input it encounters (regardless
-if there are multiple password inputs, e.g. a confirm-password-change form),  and then assumes that the preceeding text field is a username field (which is not
-true for our registration page or our profile page).-->
-<#macro chromeAutofillWorkaround>
-<input type="text"  name="_cr42-1" value="" style="display:none">
-<input type="password" name="_cr42-2" value="" style="display:none">
-</#macro>
-
-<#-- Create a search-link for a keyword -->
-    <#macro searchFor keyword=keyword asList=true showOccurrence=false>
-        <#if asList><li class="bullet"></#if>
-            <a href="<@s.url value="${keyword.detailUrl}" />">${keyword.label}
-            <#if showOccurrence && keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
-            </a>
-        <#if asList></li></#if>
-    </#macro>
-
-    <#macro featuredCollection featuredCollection>
-        <h3>Featured Collection</h3>
-        <p>
-    <#if logoAvailable>
-        <img class="pull-right collection-logo" src="/files/collection/sm/${featuredCollection.id?c}/logo"
-        alt="logo" title="logo" /> 
-    </#if>
-    <a href="${featuredCollection.detailUrl}"><b>${featuredCollection.name}</b></a>: ${featuredCollection.description}</p>
-    </#macro>
 
 </#escape>
 

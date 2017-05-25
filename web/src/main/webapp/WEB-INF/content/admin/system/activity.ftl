@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html >
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
-    <#import "../admin-common-resource.ftl" as admin>
+    <#import "../admin-common.ftl" as admin>
 
 
 <head>

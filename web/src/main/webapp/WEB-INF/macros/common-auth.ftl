@@ -1,6 +1,6 @@
 <#-- common authentication/authorization macros and functions -->
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+<#import "/WEB-INF/macros/common.ftl" as common>
 
 <#--
  registrationForm:  render a user registration form
@@ -238,6 +238,48 @@
         <#if actual.h.reCaptchaText?has_content>
             ${actual.h.reCaptchaText}
         </#if>
+    </#macro>
+
+
+<#-- emit login menu list items -->
+<#-- @param showMenu:boolean if true,  wrap list items in UL tag, otherwise just emit LI's -->
+    <#macro loginMenu showMenu=false>
+        <#if showMenu>
+        <ul class="subnav-rht hidden-phone hidden-tablet">
+        </#if>
+        <#if !(authenticatedUser??) >
+            <li><a href="<@s.url value="/account/new" />" class="button" rel="nofollow">Sign Up</a></li>
+            <li><@loginButton class="button" /></li>
+        <#else>
+            <#--<li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>-->
+            <li>
+            <form class="form-unstyled seleniumIgnoreForm logoutForm" id="frmLogout" name="logoutForm" method="post" action="/logout">
+                    <input type="submit" class="tdar-button" name="logout" value="Logout" id="logout-button">
+            </form>
+            </li>
+        </#if>
+        <#if showMenu>
+        </ul>
+        </#if>
+    </#macro>
+
+
+
+<#--
+    Emit login button link.
+    If current page is home page, link has no querystring arguments.  Otherwise,  include the current url in the
+    querystring (in parameter named 'url).
+-->
+    <#macro loginButton class="" returnUrl="">
+        <#noescape>
+        <#local _current = (currentUrl!'/') >
+        <#if returnUrl != ''><#local _current = returnUrl /></#if>
+        <#if _current == '/' || currentUrl?starts_with('/login')>
+        <a class="${class}" href="<@s.url value='/login'/>" rel="nofollow" id="loginButton">Log In</a>
+        <#else>
+        <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>" id="loginButton">Log In</a>
+        </#if>
+        </#noescape>
     </#macro>
 
 

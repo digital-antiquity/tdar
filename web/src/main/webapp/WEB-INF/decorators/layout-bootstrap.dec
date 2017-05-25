@@ -23,7 +23,8 @@
 <#if !(protocol?has_content)>
     <#include "/500.html" />
 <#else>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common><#t>
+    <#import "/WEB-INF/macros/common.ftl" as common><#t>
+    <#import "/WEB-INF/macros/common-auth.ftl" as auth><#t>
     <#import "/WEB-INF/macros/header.ftl" as header>
     <#assign uri = request.requestURI />
     <#assign bodyid = 'alt' />

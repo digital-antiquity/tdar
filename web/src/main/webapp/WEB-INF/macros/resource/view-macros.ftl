@@ -5,7 +5,9 @@ $Id$
 View freemarker macros
 -->
 <#-- include navigation menu in edit and view macros -->
-    <#import "common-resource.ftl" as common>
+    <#import "common-resource.ftl" as commonr>
+    <#import "../common.ftl" as common>
+    <#import "../search/search-macros.ftl" as searchm>
     <#import "../navigation-macros.ftl" as nav>
     <#import "../common-rights.ftl" as rights>
     <#setting url_escaping_charset='UTF-8'>
@@ -396,7 +398,7 @@ View freemarker macros
     <#macro keywordSearch _keywords fieldName="query" quoted=true>
         <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
             <#if !_keyword.deleted>
-                <@common.searchFor keyword=_keyword asList=false showOccurrence=false />
+                <@searchm.searchFor keyword=_keyword asList=false showOccurrence=false />
                 <#sep>&bull;</#sep> 
             </#if>
         </#list>

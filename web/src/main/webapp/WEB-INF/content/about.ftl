@@ -2,7 +2,8 @@
 <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+<#import "/WEB-INF/macros/common.ftl" as common>
 <#import "/${themeDir}/settings.ftl" as settings>
 
 <head>
@@ -87,7 +88,7 @@
 <#if !archiveFileEnabled>
     
     <div class="row">
-            <@common.renderWorldMap />
+            <@commonr.renderWorldMap />
         <div class="span6 news">
     
             <h3><a href="${newsUrl}">What's New at ${siteAcronym}?</a></h3>
@@ -117,13 +118,13 @@
 <div class="row">
     <div class="span6">
 		<#if featuredCollection?has_content>
-            <@common.featuredCollection featuredCollection />
+            <@commonr.featuredCollection featuredCollection />
 		<#else>
             <#include "/${themeDir}/homepage-bottom-left.dec" />
 		</#if>
     </div>
     <div class="span6">
-        <@common.resourceBarGraph />
+        <@commonr.resourceBarGraph />
     </div>
 </div>
 </#escape>

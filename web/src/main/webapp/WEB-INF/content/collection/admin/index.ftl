@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+<#import "/WEB-INF/macros/common.ftl" as common>
 <#import "../common-collection.ftl" as commonCollection>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 

@@ -1,6 +1,8 @@
 <#escape _untrusted as _untrusted?html>
     <#import "view-macros.ftl" as view>
-    <#import "common-resource.ftl" as common>
+    <#import "../common.ftl" as common>
+    <#import "common-resource.ftl" as commonr>
+    <#import "../search/search-macros.ftl" as search>
     <#assign DEFAULT_SORT = 'RELEVANCE' />
     <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
 
@@ -29,7 +31,7 @@
         <#global isGridLayout = (orientation=="GRID") />
         <#global isMapLayout = (orientation=="MAP") />
 
-        <@common.reindexingNote />
+        <@search.reindexingNote />
 
     <#-- set default ; add map wrapper -->
         <#if orientation == "GRID">
@@ -229,7 +231,7 @@
                     <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
                         <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
                     </#if>
-                    <@common.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i></#if><@_listCreators resource/></@common.cartouche>
+                    <@commonr.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i></#if><@_listCreators resource/></@commonr.cartouche>
                     <#if resource.resourceType?has_content>
                         <@view.unapiLink resource  />
                     </#if>

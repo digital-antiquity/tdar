@@ -49,7 +49,7 @@
     <p><#list keyword.synonyms![] as synonym><#if synonym_index !=0>, </#if>${synonym.label} </#list></p>
     </#if>
     <#if keyword.parent?has_content>
-    <p><b>Parent:</b><@common.searchFor keyword.parent false /></p>
+    <p><b>Parent:</b><@search.searchFor keyword.parent false /></p>
     </#if>
     
     <p>${keyword.definition!''}</p>

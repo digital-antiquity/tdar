@@ -436,4 +436,47 @@
         </${tag}>
         </#if>
 </#macro>
+
+
+<#-- emit notice indicating that the system is currently reindexing the lucene database -->
+    <#macro reindexingNote>
+        <#if reindexing!false >
+        <div class="reindexing alert">
+            <p><@localText "notifications.fmt_system_is_reindexing", siteAcronym /></p>
+        </div>
+        </#if>
+    </#macro>
+
+<#-- Emit a resource description (replace crlf's with <p> tags-->
+    <#macro description description_="No description specified." >
+        <#assign description = description_!"No description specified."/>
+    <p>
+        <#noescape>
+    ${(description)?html?replace("[\r\n]++","</p><p>","r")}
+  </#noescape>
+    </p>
+    </#macro>
+    
+    
+    
+<#-- Create a search-link for a keyword -->
+    <#macro searchFor keyword=keyword asList=true showOccurrence=false>
+        <#if asList><li class="bullet"></#if>
+            <a href="<@s.url value="${keyword.detailUrl}" />">${keyword.label}
+            <#if showOccurrence && keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
+            </a>
+        <#if asList></li></#if>
+    </#macro>
+
+    <#macro featuredCollection featuredCollection>
+        <h3>Featured Collection</h3>
+        <p>
+    <#if logoAvailable>
+        <img class="pull-right collection-logo" src="/files/collection/sm/${featuredCollection.id?c}/logo"
+        alt="logo" title="logo" /> 
+    </#if>
+    <a href="${featuredCollection.detailUrl}"><b>${featuredCollection.name}</b></a>: ${featuredCollection.description}</p>
+    </#macro>
+
+
 </#escape>

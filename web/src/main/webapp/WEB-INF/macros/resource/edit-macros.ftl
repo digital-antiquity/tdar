@@ -4,7 +4,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 -->
 <#-- include navigation menu in edit and view macros -->
 <#escape _untrusted as _untrusted?html>
-    <#import "common-resource.ftl" as common>
+    <#import "common-resource.ftl" as commonr>
+    <#import "../common.ftl" as common>
     <#import "/${themeDir}/local-helptext.ftl" as  helptext>
     <#import "/${themeDir}/settings.ftl" as settings>
     <#import "../navigation-macros.ftl" as nav>

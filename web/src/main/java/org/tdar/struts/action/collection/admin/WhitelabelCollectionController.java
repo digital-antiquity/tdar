@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
@@ -28,13 +29,13 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Namespace("/collection/admin/whitelabel")
 @HttpsOnly
-public class WhitelabelCollectionController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<ListCollection> {
+public class WhitelabelCollectionController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<CustomizableCollection> {
 
     @Autowired
     private transient AuthorizationService authorizationService;
     
     private static final long serialVersionUID = 7148462451707301708L;
-    private ListCollection collection;
+    private CustomizableCollection collection;
     private Long id;
 
     @SkipValidation
@@ -76,8 +77,8 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
     }
 
     @Override
-    public Class<ListCollection> getPersistableClass() {
-        return ListCollection.class;
+    public Class<CustomizableCollection> getPersistableClass() {
+        return CustomizableCollection.class;
     }
     
     @Override
@@ -86,7 +87,7 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
     }
 
     @Override
-    public void setPersistable(ListCollection persistable) {
+    public void setPersistable(CustomizableCollection persistable) {
         this.setCollection(persistable);
     }
 
@@ -111,12 +112,12 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
     }
 
 
-    public ListCollection getCollection() {
+    public CustomizableCollection getCollection() {
         return collection;
     }
 
 
-    public void setCollection(ListCollection collection) {
+    public void setCollection(CustomizableCollection collection) {
         this.collection = collection;
     }
 
