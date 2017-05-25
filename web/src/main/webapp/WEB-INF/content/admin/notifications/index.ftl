@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html >
-<#import "/WEB-INF/content/admin/admin-common.ftl" as admin>
+<#import "/WEB-INF/content/admin/admin-common-resource.ftl" as admin>
 <head>
 <title>Administrator Dashboard: User Notifications</title>
 <meta name="lastModifiedDate" content="$Date$"/>

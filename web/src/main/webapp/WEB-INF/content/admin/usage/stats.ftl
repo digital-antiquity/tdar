@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html >
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-    <#import "../admin-common.ftl" as admin>
+    <#import "../admin-common-resource.ftl" as admin>
 <head>
     <title>Administrator Dashboard: Recent Activity</title>
     <meta name="lastModifiedDate" content="$Date$"/>

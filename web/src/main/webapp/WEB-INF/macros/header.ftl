@@ -1,4 +1,4 @@
-<#import "resource/common.ftl" as common>
+<#import "resource/common-resource.ftl" as common>
 <#macro scripts combine=false>
 
     <#if combine>

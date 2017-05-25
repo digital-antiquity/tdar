@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html >
 <#import "/${themeDir}/settings.ftl" as settings>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 <title>Admin Pages</title>
     <#setting url_escaping_charset="UTF-8">
     <#macro header>

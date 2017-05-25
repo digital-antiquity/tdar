@@ -530,34 +530,6 @@ Common macros used in multiple contexts
         </#if>
     </#macro>
 
-<#--FIXME:  there has to be a better way here -->
-    <#macro antiSpam>
-        <#if h.recaptcha_public_key??>
-        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${h.recaptcha_public_key}"></script>
-        </#if>
-    
-        <@s.hidden name="h.timeCheck"/>
-        <textarea name="h.comment" class="tdarCommentDescription" style="display:none"></textarea>
-
-        <#if h.reCaptchaText?has_content>
-            ${h.reCaptchaText}
-        </#if>
-    </#macro>
-
-    <#macro embeddedAntiSpam  bean="downloadRegistration">
-        <#local actual = bean?eval />
-        <#if actual.srecaptcha_public_key??>
-        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${actual.h.recaptcha_public_key}"></script>
-        </#if>
-    
-        <@s.hidden name="${bean}.h.timeCheck"/>
-        <textarea name="${bean}.h.comment" class="tdarCommentDescription" style="display:none"></textarea>
-
-        <#if actual.h.reCaptchaText?has_content>
-            ${actual.h.reCaptchaText}
-        </#if>
-    </#macro>
-
 
 <#-- remove chrome autofill hack when no longer necessary TDAR-4043 -->
 <#--starting w/ Chrome 34, chrome ignores the autocomplete=off directive in password fields.  This in itself is not so bad (really), but it leads to

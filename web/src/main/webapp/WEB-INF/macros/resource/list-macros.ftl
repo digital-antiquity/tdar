@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html>
     <#import "view-macros.ftl" as view>
-    <#import "common.ftl" as common>
+    <#import "common-resource.ftl" as common>
     <#assign DEFAULT_SORT = 'RELEVANCE' />
     <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
 

@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 
 <head>
     <title>${persistable.name!"Your Integration"}</title>

@@ -7,7 +7,7 @@
 -->
 
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
     <#import "/WEB-INF/content${namespace}/edit.ftl" as local_ />
 <#-- We define local_ as a reference to the actual template in question. It's going to define for us any functions/methods that get overriden 
 	 in the form. if local_.method?? && local_.method?is_macro ... then execute it...  -->

@@ -160,7 +160,7 @@
 
 
 </head>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 <#import "/WEB-INF/macros/header.ftl" as header>
 <#assign mode>horizontal</#assign>
     <div class=" <#if mode == 'vertical'>span7<#else>span6 map mapcontainer</#if>">

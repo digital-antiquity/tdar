@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/common-rights.ftl" as rights>

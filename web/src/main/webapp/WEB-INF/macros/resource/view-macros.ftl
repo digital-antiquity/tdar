@@ -5,7 +5,7 @@ $Id$
 View freemarker macros
 -->
 <#-- include navigation menu in edit and view macros -->
-    <#import "common.ftl" as common>
+    <#import "common-resource.ftl" as common>
     <#import "../navigation-macros.ftl" as nav>
     <#import "../common-rights.ftl" as rights>
     <#setting url_escaping_charset='UTF-8'>

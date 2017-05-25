@@ -2,7 +2,7 @@
 vim:sts=2:sw=2:filetype=jsp
 -->
 <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
 

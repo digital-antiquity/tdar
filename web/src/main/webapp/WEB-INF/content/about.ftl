@@ -2,7 +2,7 @@
 <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 <#import "/${themeDir}/settings.ftl" as settings>
 
 <head>

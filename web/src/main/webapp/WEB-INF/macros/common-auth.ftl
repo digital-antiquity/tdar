@@ -1,6 +1,6 @@
 <#-- common authentication/authorization macros and functions -->
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 
 <#--
  registrationForm:  render a user registration form
@@ -9,7 +9,7 @@
 -->
 <#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart">
     <@common.chromeAutofillWorkaround />
-    <@common.antiSpam  />
+    <@antiSpam  />
 
     <#local level = 1/>
     <#local showMinimal = true />
@@ -175,7 +175,7 @@
 -->
 <#macro login showLegend=false beanPrefix="userLogin">
 
-    <@common.antiSpam  />
+    <@antiSpam  />
     <#if showLegend>
         <legend>Login</legend>
     </#if>
@@ -210,5 +210,35 @@
 </#if>
 
 </#macro>
+
+
+<#--FIXME:  there has to be a better way here -->
+    <#macro antiSpam>
+        <#if h.recaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${h.recaptcha_public_key}"></script>
+        </#if>
+    
+        <@s.hidden name="h.timeCheck"/>
+        <textarea name="h.comment" class="tdarCommentDescription" style="display:none"></textarea>
+
+        <#if h.reCaptchaText?has_content>
+            ${h.reCaptchaText}
+        </#if>
+    </#macro>
+
+    <#macro embeddedAntiSpam  bean="downloadRegistration">
+        <#local actual = bean?eval />
+        <#if actual.srecaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${actual.h.recaptcha_public_key}"></script>
+        </#if>
+    
+        <@s.hidden name="${bean}.h.timeCheck"/>
+        <textarea name="${bean}.h.comment" class="tdarCommentDescription" style="display:none"></textarea>
+
+        <#if actual.h.reCaptchaText?has_content>
+            ${actual.h.reCaptchaText}
+        </#if>
+    </#macro>
+
 
 </#escape>

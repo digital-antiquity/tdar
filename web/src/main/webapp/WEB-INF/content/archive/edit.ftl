@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-	<#import "/WEB-INF/macros/resource/common.ftl" as common>
+	<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 	<#import "/${themeDir}/local-helptext.ftl" as  helptext>
 	<#global multipleUpload=multipleFileUploadEnabled!false />
     <#global itemPrefix="archive"/>

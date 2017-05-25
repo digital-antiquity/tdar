@@ -1,6 +1,6 @@
 <head>
     <title>Error Occurred</title>
-<#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common><#t>
 </head>
 
 <ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>

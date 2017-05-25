@@ -5,7 +5,7 @@
     <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/common-rights.ftl" as rights>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 
 <head>
     <title>${resource.title}</title>

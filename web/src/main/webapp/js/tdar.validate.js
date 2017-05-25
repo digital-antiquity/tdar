@@ -81,6 +81,7 @@ TDAR.validate = (function($, ctx) {
                 method_ = window[method];
             }               
             if (method_ != undefined) {
+                // add options based on method ... here's where we implicitly call initBasicForm
                 var options  = method_($form);
                 var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
                 validator = $form.validate(allValidateOptions);
@@ -265,6 +266,17 @@ TDAR.validate = (function($, ctx) {
     };
 
 
+    var _initRightsForm = function(form) {
+        var opts = _initBasicForm(form);
+        $(startElem).rules("add", {
+            range: [ -99900, 2100 ],
+            lessThanEqual: [endElem, "Calender Start", "Calendar End"],
+            required: function () {
+                return $(endElem).val() != "";
+            }
+        });
+        return opts;
+    }
     
     // called whenever date type changes
     //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be

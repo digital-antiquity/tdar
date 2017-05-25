@@ -12,21 +12,21 @@
 	                <div class="controls-row" >
 	                	<div class="span2"><b>First Name</b></div>
 	                    <div class="span4">
-	                        <@s.textfield name="invites[0].firstName" cssClass="span4" />
+	                        <@s.textfield name="invites[0].firstName" cssClass="span4 inviteForm" id="firstName" />
 	                    </div>
 	                </div>
                     
 	                <div class="controls-row" >
 	                	<div class="span2"><b>Last Name</b></div>
     	                <div class="span4">
-        	                <@s.textfield name="invites[0].lastName" cssClass="span4" />
+        	                <@s.textfield name="invites[0].lastName" cssClass="span4 inviteForm" id="lastName" />
             	        </div>
 	                </div>
                     
 	                <div class="controls-row" >
 	                	<div class="span2"><b>Email</b></div>
 	                    <div class="span4">
-	                        <@s.textfield name="invites[0].email" cssClass="span4" />
+	                        <@s.textfield name="invites[0].email" cssClass="span4 inviteForm" id="email" />
 	                    </div>
 	                </div>
                     
