@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.collection;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
@@ -11,6 +11,7 @@ import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.struts.action.AbstractRightsController;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
