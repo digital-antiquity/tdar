@@ -520,7 +520,20 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public <C extends HierarchicalCollection> List<C> findAlternateChildren(List<Long> ids, Class<C> cls) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.EMPTY_LIST;
+        }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS);
+        query.setParameterList("collectionIds", ids);
+        return query.list();
+    }
+
+    public <C extends HierarchicalCollection> List<C> getAlternateChildrenTrees(List<C> allChildren, Class<C> cls) {
+        if (CollectionUtils.isEmpty(allChildren)) {
+            return Collections.EMPTY_LIST;
+        }
+        List<Long> ids = PersistableUtils.extractIds(allChildren);
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE);
         query.setParameterList("collectionIds", ids);
         return query.list();
     }

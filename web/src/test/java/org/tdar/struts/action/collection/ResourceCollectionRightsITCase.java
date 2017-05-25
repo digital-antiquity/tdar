@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -673,7 +674,6 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         // confirm resource is viewable by author of collection
         logger.debug("--------- clearing parent ----------");
         controller = generateNewInitializedController(ShareCollectionController.class, registeredUser);
-
         controller.setId(rcid2);
         controller.prepare();
         controller.edit();

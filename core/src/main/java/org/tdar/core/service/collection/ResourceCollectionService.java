@@ -616,6 +616,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public <C extends HierarchicalCollection<C>> List<C> buildCollectionTreeForController(C collection, TdarUser authenticatedUser, Class<C> cls) {
         List<C> allChildren = new ArrayList<>();
         allChildren.addAll(getAllChildCollections(collection, cls));
+        allChildren.addAll(addAlternateChildrenTrees(allChildren, cls));
         // FIXME: iterate over all children to reconcile tree
         Iterator<C> iter = allChildren.iterator();
         while (iter.hasNext()) {
@@ -626,7 +627,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 parent.getTransientChildren().add(child);
                 iter.remove();
             }
-        }
+            if (child.getAlternateParent() != null) {
+                child.getAlternateParent().getTransientChildren().add(child);
+            }
+        };
+
         // second pass - sort all children lists (we add root into "allchildren" so we can sort the top level)
         allChildren.add(collection);
         allChildren.forEach(child -> {
@@ -636,6 +641,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
         });
         return allChildren;
+    }
+
+    private <C extends HierarchicalCollection<C>> Collection<C> addAlternateChildrenTrees(List<C> allChildren, Class<C> cls) {
+        Set<C> toReturn = new HashSet<>(getDao().getAlternateChildrenTrees(allChildren, cls)); 
+        return toReturn;
     }
 
     /**
@@ -1030,6 +1040,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
 
         if (!Objects.equals(cso.getAlternateParentId(), persistable.getAlternateParentId())) {
+            logger.debug("updating alternate parent for {} from {} to {}", persistable.getId(), persistable.getAlternateParent(), cso.getAlternateParent());
             persistable.setAlternateParent(cso.getAlternateParent());
         }
 

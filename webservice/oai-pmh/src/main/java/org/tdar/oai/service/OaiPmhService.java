@@ -567,7 +567,6 @@ public class OaiPmhService {
 		return response;
 	}
 
-
     private Token extractCursorFromResults(List<? extends OaiDcProvider> results) {
         Token token = new Token();
         OaiDcProvider lastRecord = results.get(results.size() - 1);

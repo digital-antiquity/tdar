@@ -67,7 +67,11 @@
                 </div>
             </div>
 
-                <#if editor>
+        <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
+            cssClass='resizable input-xxlarge trim' title="Please enter the description " />
+
+        <#if editor>
+            <h4>Admin Options</h4>
             <div class="control-group" id="divSubmitter">
                 <label class="control-label">Owner</label>
 
@@ -84,7 +88,6 @@
             
             <div id="altParentIdContainer" class="control-group">
                 <label class="control-label">Secondary Parent Collection (No rights)</label>
-
                 <div class="controls">
                     <@s.hidden name="alternateParentId"  id="hdnAltParentId" cssClass=""
                     autocompleteParentElement="#altParentIdContainer"  />
@@ -95,10 +98,25 @@
                 </div>
             </div>
 
-        </#if>
 
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
             cssClass='resizable input-xxlarge' title="Please enter the description " />
+
+            <#if administrator>
+                <@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
+                cssClass='resizable input-xxlarge' title="Please enter the description " />
+            </#if>
+
+            <div class="control-group">
+                <label class="control-label">Associate an Image/Logo with this Collection</label>
+                <div class="controls">
+                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField"
+                    labelposition='left' size='40' dynamicAttributes={
+                        "data-rule-extension":"jpg,tiff,jpeg,png"
+                    }/>
+                </div>
+            </div>
+        </#if>
 
         </div>
 
