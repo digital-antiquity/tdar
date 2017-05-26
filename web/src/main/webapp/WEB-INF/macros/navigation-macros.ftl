@@ -134,7 +134,7 @@ navigation freemarker macros
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
                 </#if>
                 <#if creatorType == 'user'>
-                	<@makeLink "browse" "creators" "rights" "rights" current true />
+                	<@makeLink "entity/user" "rights/${id?c}" "rights" "rights" current false />
 				</#if>
                 </ul>
             </div>

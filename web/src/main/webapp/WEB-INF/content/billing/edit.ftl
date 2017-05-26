@@ -3,7 +3,7 @@
     <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "common-account.ftl" as accountcommon>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+    <#import "/WEB-INF/macros/common.ftl" as common>
 
 <head>
     <title>${account.name!"Your account"}</title>

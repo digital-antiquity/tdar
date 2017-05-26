@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "../../common-collection.ftl" as commonCollection>
     <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
@@ -42,9 +43,9 @@
     
                     <div class="controls">
                         <label for="rdoheaderTrue" class="radio inline"><input type="radio" id="rdoheaderTrue" name="collection.properties.customHeaderEnabled"
-                                                                                value="true" <@common.checkedif collection.properties.customHeaderEnabled true /> />Yes</label>
+                                                                                value="true" <@commonr.checkedif collection.properties.customHeaderEnabled true /> />Yes</label>
                         <label for="rdoheaderFalse" class="radio inline"><input type="radio" id="rdoheaderFalse" name="collection.properties.customHeaderEnabled"
-                                                                                 value="false" <@common.checkedif collection.properties.customHeaderEnabled false /> />No</label>
+                                                                                 value="false" <@commonr.checkedif collection.properties.customHeaderEnabled false /> />No</label>
                     </div>
                 </div>
     
@@ -54,9 +55,9 @@
                     <i>Requires logo file in the filestore/collection/.../logo_lg.jpg</i>
                     <div class="controls">
                         <label for="rdodocTrue" class="radio inline"><input type="radio" id="rdodocTrue" name="collection.properties.customDocumentLogoEnabled"
-                                                                                value="true" <@common.checkedif collection.properties.customDocumentLogoEnabled true /> />Yes</label>
+                                                                                value="true" <@commonr.checkedif collection.properties.customDocumentLogoEnabled true /> />Yes</label>
                         <label for="rdodocFalse" class="radio inline"><input type="radio" id="rdodocFalse" name="collection.properties.customDocumentLogoEnabled"
-                                                                                 value="false" <@common.checkedif collection.properties.customDocumentLogoEnabled false /> />No</label>
+                                                                                 value="false" <@commonr.checkedif collection.properties.customDocumentLogoEnabled false /> />No</label>
                     </div>
                 </div>
     
@@ -67,9 +68,9 @@
     
                     <div class="controls">
                         <label for="rdofeatTrue" class="radio inline"><input type="radio" id="rdofeatTrue" name="collection.properties.featuredResourcesEnabled"
-                                                                                value="true" <@common.checkedif collection.properties.featuredResourcesEnabled true /> />Yes</label>
+                                                                                value="true" <@commonr.checkedif collection.properties.featuredResourcesEnabled true /> />Yes</label>
                         <label for="rdofeatFalse" class="radio inline"><input type="radio" id="rdofeatFalse" name="collection.properties.featuredResourcesEnabled"
-                                                                                 value="false" <@common.checkedif collection.properties.featuredResourcesEnabled false /> />No</label>
+                                                                                 value="false" <@commonr.checkedif collection.properties.featuredResourcesEnabled false /> />No</label>
                     </div>
                 </div>
 
@@ -81,9 +82,9 @@
     
                     <div class="controls">
                         <label for="rdosearchTrue" class="radio inline"><input type="radio" id="rdosearchTrue" name="collection.properties.searchEnabled"
-                                                                                value="true" <@common.checkedif collection.properties.searchEnabled true /> />Yes</label>
+                                                                                value="true" <@commonr.checkedif collection.properties.searchEnabled true /> />Yes</label>
                         <label for="rdosearchFalse" class="radio inline"><input type="radio" id="rdosearchFalse" name="collection.properties.searchEnabled"
-                                                                                 value="false" <@common.checkedif collection.properties.searchEnabled false /> />No</label>
+                                                                                 value="false" <@commonr.checkedif collection.properties.searchEnabled false /> />No</label>
                     </div>
                 </div>
     
@@ -92,9 +93,9 @@
     
                     <div class="controls">
                         <label for="rdosubcollTrue" class="radio inline"><input type="radio" id="rdosubcollTrue" name="collection.properties.subCollectionsEnabled"
-                                                                                value="true" <@common.checkedif collection.properties.subCollectionsEnabled true /> />Yes</label>
+                                                                                value="true" <@commonr.checkedif collection.properties.subCollectionsEnabled true /> />Yes</label>
                         <label for="rdosubcollFalse" class="radio inline"><input type="radio" id="rdosubcollFalse" name="collection.properties.subCollectionsEnabled"
-                                                                                 value="false" <@common.checkedif collection.properties.subCollectionsEnabled false /> />No</label>
+                                                                                 value="false" <@commonr.checkedif collection.properties.subCollectionsEnabled false /> />No</label>
                     </div>
                 </div>
             </div>

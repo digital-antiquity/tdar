@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+    <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "../collection/common-collection.ftl" as commonCollection>
     <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
@@ -107,9 +108,9 @@
 
                 <div class="controls">
                     <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"
-                                                                            value="true" <@common.checkedif resourceCollection.hidden true /> />Yes</label>
+                                                                            value="true" <@commonr.checkedif resourceCollection.hidden true /> />Yes</label>
                     <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
-                                                                             value="false" <@common.checkedif resourceCollection.hidden false /> />No</label>
+                                                                             value="false" <@commonr.checkedif resourceCollection.hidden false /> />No</label>
                 </div>
             </div>
     
