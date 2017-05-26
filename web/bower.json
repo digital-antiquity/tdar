@@ -17,7 +17,7 @@
     "leaflet-choropleth": "~1.0.3",
     "leaflet-cluster": "https://github.com/Leaflet/Leaflet.markercluster.git#v1.0.0",
     "leaflet-control-geocoder": "~1.5.3",
-    "leaflet-draw": "https://github.com/Leaflet/Leaflet.draw.git#0.4.0",
+    "leaflet-draw": "https://github.com/Leaflet/Leaflet.draw.git#0.4.9",
     "select2": "~4.0.3",
     "svgxuse": "~1.1.17"
   },
