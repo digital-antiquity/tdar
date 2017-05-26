@@ -1,6 +1,6 @@
 <#macro layout_header>
 
-<#include "/${themeDir}/header.dec" />
+<#include "/${config.themeDir}/header.dec" />
 <#if (authenticatedUser??) >
 
 <p id="welcome-menu" class="welcome  screen ">
@@ -45,7 +45,7 @@
 
 <nav>
     <ul class="hidden-phone-portrait">
-        <#include "/${themeDir}/nav-items.dec" />
+        <#include "/${config.themeDir}/nav-items.dec" />
 <!--        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> -->
         <#if ((authenticatedUser.contributor)!true)>
             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
@@ -69,14 +69,14 @@
 <#macro homepageHeader>
     <div class="row">
         <div class="hero">
-            <#include "/${themeDir}/homepage-banner.dec" />
+            <#include "/${config.themeDir}/homepage-banner.dec" />
         <@auth.loginMenu true/>
         </div>
         <ul class="inline-menu hidden-desktop"><@auth.loginMenu false/></ul>
     </div>
 
 
-    <#include "/${themeDir}/homepage-column-one.dec" />
+    <#include "/${config.themeDir}/homepage-column-one.dec" />
 
 </#macro>
 

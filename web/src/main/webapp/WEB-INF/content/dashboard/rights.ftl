@@ -6,7 +6,7 @@
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "dashboard-common.ftl" as dash />
-    <#import "/${themeDir}/settings.ftl" as settings>
+    <#import "/${config.themeDir}/settings.ftl" as settings>
 
 <head>
     <title>${authenticatedUser.properName}'s Dashboard</title>

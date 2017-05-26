@@ -61,7 +61,7 @@ public class DataTableBrowseController extends AbstractAuthenticatableAction {
             ResultMetadataWrapper selectAllFromDataTable = ResultMetadataWrapper.NULL;
             try {
                 selectAllFromDataTable = datasetService.selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true,
-                        isViewRowSupported());
+                        getTdarConfiguration().isViewRowSupported());
             } catch (BadSqlGrammarException ex) {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());
             }

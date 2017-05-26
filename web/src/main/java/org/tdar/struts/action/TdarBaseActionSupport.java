@@ -12,9 +12,11 @@ import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Slugable;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.struts.WROProfile;
@@ -25,6 +27,7 @@ import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.activity.Activity;
 import org.tdar.web.TdarServletConfiguration;
 import org.tdar.web.WebFileSystemResourceService;
 
@@ -226,6 +229,15 @@ public class TdarBaseActionSupport extends TdarActionSupport {
         getLogger().info(String.format("%s is %s %s (%s): %s - %s", name, type.getLabel(), pc.getClass().getSimpleName(), pc.getId(), status, title));
     }
 
+
+    public boolean isReindexing() {
+        Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
+        if ((indexingTask != null) && !indexingTask.hasEnded()) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Check that the request is valid. In general, this should be able to used as is, though, it's possible to either (a) override the entire method or (b)
      * implement authorize() differently.
@@ -268,4 +280,24 @@ public class TdarBaseActionSupport extends TdarActionSupport {
         abort(StatusCode.FORBIDDEN, FORBIDDEN, errorMessage);
     }
 
+    
+    private WebConfig config = new WebConfig();
+    
+    public WebConfig getConfig() {
+        return config;
+    }
+
+    
+    public boolean isProduction() {
+        return getTdarConfiguration().getServerEnvironmentStatus().equalsIgnoreCase(TdarConfiguration.PRODUCTION);
+    }
+
+    public boolean isSelenium() {
+        return getConfig().isSelenium();
+    }
+    
+    public Integer getMaxUploadFilesPerRecord() {
+        return getTdarConfiguration().getMaxUploadFilesPerRecord();
+    }
+ 
 }

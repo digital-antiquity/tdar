@@ -1,7 +1,7 @@
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
 <#import "/WEB-INF/macros/common.ftl" as common>
 <#import "/WEB-INF/macros/search-macros.ftl" as search>
-<#import "/${themeDir}/settings.ftl" as settings>
+<#import "/${config.themeDir}/settings.ftl" as settings>
 
 <title>Explore ${siteAcronym}</title>
 
@@ -84,7 +84,7 @@
      </#list>
 </ul>
 
-<h2>Browse by ${culturalTermsLabel!"Culture"}</h2>
+<h2>Browse by ${config.culturalTermsLabel!"Culture"}</h2>
 <ul class="inline">
     <#list cultureKeywords?sort as keyword>
         <@search.searchFor keyword=keyword asList=true showOccurrence=true />

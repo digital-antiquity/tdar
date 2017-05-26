@@ -12,7 +12,7 @@
 <#-- We define local_ as a reference to the actual template in question. It's going to define for us any functions/methods that get overriden 
 	 in the form. if local_.method?? && local_.method?is_macro ... then execute it...  -->
 
-    <#import "/${themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
 <#-- helptext can be overriden by the theme so we import it, it, in turn override the default helptext -->
 <head>
 <#-- expose pageTitle so edit pages can use it elsewhere -->
@@ -90,7 +90,7 @@
             <label class="control-label">Status</label>
 
             <div class="controls">
-                <#if guestUserId != -1 && guestUserId == authenticatedUser.id>
+                <#if config.guestUserId != -1 && config.guestUserId == authenticatedUser.id>
                     <select name="status">
                         <option value='DRAFT' selected>Draft</option>
                     </select>
@@ -352,7 +352,7 @@
             <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
             <br/>
         </div>
-            <#if licensesEnabled?? && licensesEnabled || resource.licenseType?has_content>
+            <#if config.licensesEnabled?? && config.licensesEnabled || resource.licenseType?has_content>
                 <@edit.license />
             </#if>
         </#if>

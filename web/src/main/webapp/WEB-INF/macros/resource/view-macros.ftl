@@ -748,7 +748,7 @@ View freemarker macros
                 </div>
             <div class="span4">
                 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-                    <img title="map" alt="map" class="" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, googleMapsApiKey)}"/>
+                    <img title="map" alt="map" class="" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, config.googleMapsApiKey)}"/>
                 <#else>
                     <a href="${url}" target="_top"><@firstThumbnail resource true /></a>
                 </#if>
@@ -766,7 +766,7 @@ View freemarker macros
         <#local height=235>
         <#local uri>geojson({"type":"Feature","properties":{"stroke-width":4,"stroke":"#7a1501","stroke-opacity":0.5,"fill-opacity":0.15},"geometry":{"type":"Polygon","coordinates":[${bbvals}]}})</#local>
 
-        <#return "//api.mapbox.com/v4/${mapId}/${uri?url}/auto/${width}x${height}.png?access_token=${leafletApiKey}">
+        <#return "//api.mapbox.com/v4/${mapId}/${uri?url}/auto/${width}x${height}.png?access_token=${config.leafletApiKey}">
     </#function>
 
 

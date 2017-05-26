@@ -83,7 +83,7 @@ public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
         llb.setEast(0.0002);
         llb.setNorth(0.0004);
         controller.setLatitudeLongitudeBoxes(Arrays.asList(llb));
-        assertFalse(controller.isSwitchableMapObfuscation());
+        assertFalse(controller.getConfig().isSwitchableMapObfuscation());
         String saveResult = controller.save();
         llb = controller.getResource().getFirstActiveLatitudeLongitudeBox();
         assertFalse(llb.getObfuscatedNorth().equals(Double.valueOf(0.0001)));
@@ -94,7 +94,7 @@ public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testIsSwitchableMapObfuscationOnForFaims() {
-        assertTrue(controller.isSwitchableMapObfuscation());
+        assertTrue(controller.getConfig().isSwitchableMapObfuscation());
     }
 
 }

@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-    <#import "/${themeDir}/settings.ftl" as settings />
+    <#import "/${config.themeDir}/settings.ftl" as settings />
     <#import "../common.ftl" as common />
 <#-- 
 $Id:Exp$

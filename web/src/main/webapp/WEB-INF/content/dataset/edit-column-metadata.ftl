@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+    <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
 <head>
     <title>Edit Table Metadata for ${dataset.title}</title>
 </head>
@@ -249,7 +250,7 @@
                         <#assign codingId=column.defaultCodingSheet.id?c />
                     </#if>
             <@s.hidden id="${column_index}_cid" name="dataTableColumns[${column_index}].defaultCodingSheet.id" cssClass="codingsheetidfield" value="${codingId}" />
-            <@common.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
+            <@commonr.combobox name="dataTableColumns[${column_index}].defaultCodingSheet.title"  target="#columnDiv_${column_index}"
                     label="Translate your data using a Coding Sheet:"
                     autocompleteParentElement="#divCodingSheet-${column_index}"
                     autocompleteIdElement="#${column_index}_cid"
@@ -263,7 +264,7 @@
                         <#assign ontologyId=column.defaultOntology.id?c />
                     </#if>
             <@s.hidden name="dataTableColumns[${column_index}].transientOntology.id" value="${ontologyId}" id="${column_index}_oid" />
-            <@common.combobox name="dataTableColumns[${column_index}].transientOntology.title" target="#columnDiv_${column_index}"
+            <@commonr.combobox name="dataTableColumns[${column_index}].transientOntology.title" target="#columnDiv_${column_index}"
                     label="Map it to an Ontology:"
                     placeholder="Enter the name of an Ontology"
                     autocompleteParentElement="#divOntology-${column_index}"

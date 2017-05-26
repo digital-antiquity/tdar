@@ -83,7 +83,7 @@
                 Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example.
             </div>
             <div class="span4">
-            <#if listCollectionsEnabled>
+            <#if config.listCollectionsEnabled>
                 <h3>
                 <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
                 <@link "collection" "Collection"/></h3>
@@ -101,7 +101,7 @@
 
         </div>
 
-        <#if videoEnabled>
+        <#if config.videoEnabled>
         <div class="row">
             <div class="span4">
                 <h3 class="video-mid-red"><@link "video" "Video" /></h3>
@@ -128,7 +128,7 @@
             </div>
         </div>
 
-        <#if archiveFileEnabled>
+        <#if config.archiveFileEnabled>
         <div class="row">
             <div class="span4">
             </div>

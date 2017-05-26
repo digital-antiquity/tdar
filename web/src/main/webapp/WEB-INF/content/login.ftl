@@ -37,7 +37,7 @@ vim:sts=2:sw=2:filetype=jsp
 </@s.form>
     <div id="error"></div>
 </div>
-<#include "/${themeDir}/notice.ftl">
+<#include "/${config.themeDir}/notice.ftl">
 
 </body>
 

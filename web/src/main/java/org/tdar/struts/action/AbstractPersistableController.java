@@ -22,6 +22,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.event.EventType;
@@ -391,7 +392,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         RequestType type = RequestType.EDIT;
 
         if (getId() == null && (getCurrentUrl().contains("/add") || 
-                (getTdarConfiguration().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
+                (TdarConfiguration.getInstance().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
             getLogger().debug("setting persistable");
             if (getPersistable() == null) {
                 setPersistable(createPersistable());

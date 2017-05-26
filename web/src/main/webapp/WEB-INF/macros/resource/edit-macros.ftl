@@ -6,8 +6,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#escape _untrusted as _untrusted?html>
     <#import "common-resource.ftl" as commonr>
     <#import "../common.ftl" as common>
-    <#import "/${themeDir}/local-helptext.ftl" as  helptext>
-    <#import "/${themeDir}/settings.ftl" as settings>
+    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/${config.themeDir}/settings.ftl" as settings>
     <#import "../navigation-macros.ftl" as nav>
     <#import "../common-rights.ftl" as rights>
 
@@ -168,7 +168,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <div class="mapdiv"></div>
                 <@helptext.manualGeo />
         </div>
-            <#if switchableMapObfuscation>
+            <#if config.switchableMapObfuscation>
                 <@helptext.showExactLocationTip />
                     <div class="" id="showExactLocation" data-tiplabel="Reveal location to public users?" data-tooltipcontent="#showExactLocationHelpDiv" >
                         <@s.checkbox id="is_okay_to_show_exact_location" name="latitudeLongitudeBoxes[0].okayToShowExactLocation" label='Reveal location to public users?' labelposition='right'  />
@@ -604,7 +604,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#-- emit account information section -->
     <#macro accountSection>
-        <#if payPerIngestEnabled>
+        <#if config.payPerIngestEnabled>
             <#if activeAccounts?size == 1>
             <div class="well-alt" id="accountsection">
                 <h2>Billing Account Information</h2>
@@ -1193,7 +1193,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
 <#-- emit the copyright holders section -->
     <#macro copyrightHolders sectionTitle copyrightHolderProxies >
-        <#if copyrightMandatory || resource.copyrightHolder?has_content>
+        <#if config.copyrightMandatory || resource.copyrightHolder?has_content>
             <@helptext.copyrightHoldersTip />
         <div class="" id="copyrightHoldersSection" data-tiplabel="Primary Copyright Holder" data-tooltipcontent="#divCopyrightHoldersTip">
             <h2>${sectionTitle}</h2>

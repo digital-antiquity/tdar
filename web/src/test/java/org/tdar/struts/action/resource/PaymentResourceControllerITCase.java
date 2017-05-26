@@ -160,7 +160,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         Assert.assertTrue(CollectionUtils.isEmpty(controller.getActiveAccounts()));
         initControllerFields();
-        Assert.assertTrue(controller.isPayPerIngestEnabled());
+        Assert.assertTrue(controller.getConfig().isPayPerIngestEnabled());
 
         getLogger().trace("controller:" + controller);
         getLogger().trace("controller.resource:" + controller.getResource());
@@ -210,7 +210,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         }
         if (enabled) {
             Assert.assertFalse(rc.isAllowedToCreateResource());
-            Assert.assertTrue(rc.isPayPerIngestEnabled());
+            Assert.assertTrue(rc.getConfig().isPayPerIngestEnabled());
         }
         Assert.assertNull(tdae);
         return result;

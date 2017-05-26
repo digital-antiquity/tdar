@@ -3,7 +3,7 @@
     <#global inheritanceEnabled=true />
     <#global multipleUpload=true />
     <#global hideRelatedCollections=true/>
-    <#import "/${themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
 
 
     <#macro basicInformation>
@@ -37,7 +37,7 @@
     </#macro>
 
     <#macro beforeUpload>
-        <#if payPerIngestEnabled>
+        <#if config.payPerIngestEnabled>
         <small>Shapefiles, and geo-rectified images often require more than one actual file to work properly. Pricing for these files works as follows: each
             image, or Shapefile is treated as a single file within tDAR. Thus, if a user uploaded "untitled.shp", "untitled.dbf", "untitled.prj", and
             "untitled.shp.xml" the combination of these four files would be treated as a single file for pricing.

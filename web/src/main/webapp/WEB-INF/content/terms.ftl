@@ -2,6 +2,6 @@
     <title>${siteName} Terms and Conditions of Use</title>
 </head>
 <body>
-<#include "/${themeDir}/terms.ftl">
-<#include "/${themeDir}/notice.ftl">
+<#include "/${config.themeDir}/terms.ftl">
+<#include "/${config.themeDir}/notice.ftl">
 </body>

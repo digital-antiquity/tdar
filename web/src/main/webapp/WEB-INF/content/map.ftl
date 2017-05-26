@@ -206,5 +206,5 @@
         <script type="text/javascript" src="${host}/js/maps/tdar.worldmap.js"></script>
   	    <script type="text/javascript"  src="${host}/components/leaflet-choropleth/dist/choropleth.js"></script>
 <script id="c3colors">
- [<#list barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
+ [<#list config.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
 </script>

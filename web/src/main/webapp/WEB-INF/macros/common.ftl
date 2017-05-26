@@ -43,7 +43,7 @@
                 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
         })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-        ga('create', '${googleAnalyticsId}', 'auto');
+        ga('create', '${config.googleAnalyticsId}', 'auto');
         ga('set', 'transport', 'beacon');
         ga('set', 'dimension1', '<#if administrator>administrator<#elseif editor>editor<#elseif authenticatedUser??>user<#else>anonymous</#if>');
 
@@ -121,7 +121,7 @@
 <#-- emit the billing account list section -->
 <#-- @param accountList:List<Account> list of accounts to render -->
     <#macro billingAccountList accountList>
-        <#if (payPerIngestEnabled!false)>
+        <#if (config.payPerIngestEnabled!false)>
         <h2 id="billingSection">Billing Accounts</h2>
         <ul>
             <#list accountList as account>

@@ -6,7 +6,7 @@
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "dashboard-common.ftl" as dash >
-    <#import "/${themeDir}/settings.ftl" as settings>
+    <#import "/${config.themeDir}/settings.ftl" as settings>
 
 <head>
     <title>${authenticatedUser.properName}'s Dashboard</title>
@@ -120,7 +120,7 @@
               <!-- Carousel items -->
               <div class="carousel-inner">
                 <div class="active item">
-                    <a href="${documentationUrl}">
+                    <a href="${config.documentationUrl}">
                         <img class="" src="<@s.url value="/images/dashboard/learn.png"/>" width=120 height=150 alt="Read the Manual"/>
                             Read the Manual
                     </a>

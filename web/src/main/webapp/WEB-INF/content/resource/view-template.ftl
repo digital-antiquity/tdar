@@ -83,7 +83,7 @@
         <@view.kvp key="Year" val=resource.date?c />
     </#if>
 
-    <#if copyrightMandatory && resource.copyrightHolder?? || resource.copyrightHolder?has_content >
+    <#if config.copyrightMandatory && resource.copyrightHolder?? || resource.copyrightHolder?has_content >
         <strong>Primary Copyright Holder:</strong>
         <@view.browse resource.copyrightHolder "copyrightHolder" />
     </p>
@@ -159,7 +159,7 @@
                            class="dataTable table tableFormat table-striped table-bordered"></table>
                 </div>
             </div>
-                <#if tdarConfiguration.xmlExportEnabled>
+                <#if config.xmlExportEnabled>
                 <p class="faims_xml_logo"><a href="<@s.url value="/dataset/xml?dataTableId=${dataTable.id?c}"/>" target="_blank">XML</a></p>
                 </#if>
             <#else>
@@ -290,7 +290,7 @@
         <@view.categoryVariables />
     </#if>
     <#if !resource.resourceType.project >
-        <#if licensesEnabled?? &&  licensesEnabled || resource.licenseType?has_content >
+        <#if config.licensesEnabled?? &&  config.licensesEnabled || resource.licenseType?has_content >
             <@view.license />
         </#if>
     </#if>

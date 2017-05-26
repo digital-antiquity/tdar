@@ -4,7 +4,7 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
 <#import "/WEB-INF/macros/common.ftl" as common>
-<#import "/${themeDir}/settings.ftl" as settings>
+<#import "/${config.themeDir}/settings.ftl" as settings>
 
 <head>
     <title>Welcome to ${siteName}</title>
@@ -48,7 +48,7 @@
             </a>
         </div>
         <div class="span4 center" style="margin-top: 10px;">
-            <#if payPerIngestEnabled >
+            <#if config.payPerIngestEnabled >
                 <a href="<@s.url value="/cart/add"/>" class="button">tDAR Pricing Information</a>
             </#if>
         </div>
@@ -84,14 +84,13 @@
 <#-- FAIMS want this row disabled as they are unhappy with the map quality 
      and the RSS feed is broken on their side. I'm sure that its just a temporary state of affairs
      until they find someone to bring it up to their standards, and they fix their RSS feed. -->
-<#-- But beware: archiveFileEnabled is in danger of becoming "is FAIMS" -->
-<#if !archiveFileEnabled>
+<#if !config.archiveFileEnabled>
     
     <div class="row">
             <@commonr.renderWorldMap />
         <div class="span6 news">
     
-            <h3><a href="${newsUrl}">What's New at ${siteAcronym}?</a></h3>
+            <h3><a href="${config.newsUrl}">What's New at ${siteAcronym}?</a></h3>
     
             <#if rssEntries?has_content>
                 <ul>
@@ -108,7 +107,7 @@
                         </li>
                     </#list>
                 </ul>
-                <p class="pull-right"><a href="${newsUrl}">Read More &raquo;</a></p>
+                <p class="pull-right"><a href="${config.newsUrl}">Read More &raquo;</a></p>
             </#if>
         </div>
     </div>
@@ -120,7 +119,7 @@
 		<#if featuredCollection?has_content>
             <@commonr.featuredCollection featuredCollection />
 		<#else>
-            <#include "/${themeDir}/homepage-bottom-left.dec" />
+            <#include "/${config.themeDir}/homepage-bottom-left.dec" />
 		</#if>
     </div>
     <div class="span6">

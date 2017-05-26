@@ -2,7 +2,7 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
     <#import "/WEB-INF/macros/common-rights.ftl" as rights>
-    <#import "/${themeDir}/settings.ftl" as settings>
+    <#import "/${config.themeDir}/settings.ftl" as settings>
 
 <head>
     <title>${authenticatedUser.properName}'s Dashboard</title>

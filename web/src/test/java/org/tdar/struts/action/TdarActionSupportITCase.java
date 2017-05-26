@@ -30,13 +30,13 @@ public class TdarActionSupportITCase extends AbstractDataIntegrationTestCase {
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testIsSwitchableMapObfuscationOnForFaims() {
-        assertTrue(controller.isSwitchableMapObfuscation());
+        assertTrue(controller.getConfig().isSwitchableMapObfuscation());
     }
 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR_DISABLED_OBFUSCATION })
     public void testIsSwitchableMapObfuscationOffForTdar() {
-        assertFalse(controller.isSwitchableMapObfuscation());
+        assertFalse(controller.getConfig().isSwitchableMapObfuscation());
     }
 
 }

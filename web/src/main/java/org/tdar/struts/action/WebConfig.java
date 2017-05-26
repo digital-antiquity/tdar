@@ -1,0 +1,209 @@
+package org.tdar.struts.action;
+
+import java.text.DecimalFormat;
+import java.util.List;
+
+import org.tdar.core.configuration.TdarConfiguration;
+
+public class WebConfig {
+
+    private TdarConfiguration config = TdarConfiguration.getInstance();
+    
+    
+    public String getThemeDir() {
+        return config.getThemeDir();
+    }
+
+    public String getCulturalTermsHelpUrl() {
+        return config.getCulturalTermsHelpURL();
+    }
+
+    public String getInvestigationTypesHelpUrl() {
+        return config.getInvestigationTypesHelpURL();
+    }
+
+    public String getMaterialTypesHelpUrl() {
+        return config.getMaterialTypesHelpURL();
+    }
+
+    public String getSiteTypesHelpUrl() {
+        return config.getSiteTypesHelpURL();
+    }
+
+    public String getGoogleMapsApiKey() {
+        return config.getGoogleMapsApiKey();
+    }
+
+    public String getGoogleAnalyticsId() {
+        return config.getGoogleAnalyticsId();
+    }
+
+    public boolean getPrivacyControlsEnabled() {
+        return config.getPrivacyControlsEnabled();
+    }
+
+    public boolean isCopyrightMandatory() {
+        return config.getCopyrightMandatory();
+    }
+
+    public boolean isArchiveFileEnabled() {
+        return config.isArchiveFileEnabled();
+    }
+
+    public boolean isVideoEnabled() {
+        return config.isVideoEnabled();
+    }
+
+    public boolean isLicensesEnabled() {
+        return config.getLicenseEnabled();
+    }
+
+
+    public String getBugReportUrl() {
+        return config.getBugReportUrl();
+    }
+
+    public String getDocumentationUrl() {
+        return config.getDocumentationUrl();
+    }
+
+    public String getIntegrationDocumentationUrl() {
+        return config.getIntegrationDocumentationUrl();
+    }
+    public boolean isProduction() {
+        return config.getServerEnvironmentStatus().equalsIgnoreCase(TdarConfiguration.PRODUCTION);
+    }
+
+    public String getHelpUrl() {
+        return config.getHelpUrl();
+    }
+
+    public String getAboutUrl() {
+        return config.getAboutUrl();
+    }
+
+    public String getCommentsUrl() {
+        return config.getAboutUrl();
+    }
+
+    public Boolean isRPAEnabled() {
+        return config.isRPAEnabled();
+    }
+
+    public String getMapDefaultLat() {
+        DecimalFormat latlong = new DecimalFormat("0.00");
+        latlong.setGroupingUsed(false);
+        return latlong.format(config.getMapDefaultLat());
+    }
+
+    public String getMapDefaultLng() {
+        DecimalFormat latlong = new DecimalFormat("0.00");
+        latlong.setGroupingUsed(false);
+        return latlong.format(config.getMapDefaultLng());
+    }
+
+    public boolean isGeoLocationToBeUsed() {
+        return config.isGeoLocationToBeUsed();
+    }
+
+    public String getNewsUrl() {
+        return config.getNewsUrl();
+    }
+
+    public boolean isPayPerIngestEnabled() {
+        return config.isPayPerIngestEnabled();
+    }
+
+    public boolean getShowJiraLink() {
+        return config.getShowJiraLink();
+    }
+
+    public String getJiraScriptLink() {
+        return config.getJiraScriptLink();
+    }
+
+    public boolean isViewRowSupported() {
+        return config.isViewRowSupported();
+    }
+
+    public Long getGuestUserId() {
+        return config.getGuestUserId();
+    }
+
+    public String getCulturalTermsLabel() {
+        return config.getCulturalTermsLabel();
+    }
+
+    /**
+     * @see TdarConfiguration#isSwitchableMapObfuscation()
+     * @return whatever value the tdar configuration isSwitchableMapObfuscation returns.
+     */
+    public boolean isSwitchableMapObfuscation() {
+        return config.isSwitchableMapObfuscation();
+    }
+
+
+    public boolean isShouldAutoDownload() {
+        return config.shouldAutoDownload();
+    }
+
+    public String getTosUrl() {
+        return config.getTosUrl();
+    }
+
+    public String getContributorAgreementUrl() {
+        return config.getContributorAgreementUrl();
+    }
+
+    public boolean isAuthenticationAllowed() {
+        return config.allowAuthentication();
+    }
+
+ 
+    public String getResourceCreatorRoleDocumentationUrl() {
+        return config.getResourceCreatorRoleDocumentationUrl();
+    }
+ 
+    public String getLeafletApiKey() {
+        return config.getLeafletMapsApiKey();
+    }
+    
+
+    public List<String> getBarColors() {
+        return config.getBarColors();
+    }
+    
+    public boolean isSelenium() {
+        return config.isSelenium();
+    }
+    
+    public String getContactEmail() {
+        return config.getContactEmail();
+    }
+
+
+    public String getCommentUrl() {
+        return config.getCommentUrl();
+    }
+
+    public String getCommentUrlEscaped() {
+        String input = config.getCommentUrl();
+        int length = input.length();
+        StringBuffer output = new StringBuffer(length * 6);
+        for (int i = 0; i < input.length(); i++) {
+            output.append("&#");
+            output.append((int) input.charAt(i));
+            output.append(";");
+        }
+        return output.toString();
+    }
+
+    public boolean isListCollectionsEnabled() {
+        return config.isListCollectionsEnabled();
+    }
+ 
+    public boolean isXmlExportEnabled() {
+        return config.isXmlExportEnabled();
+    }
+
+}

@@ -1,5 +1,5 @@
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
-<#import "/${themeDir}/settings.ftl" as settings>
+<#import "/${config.themeDir}/settings.ftl" as settings>
 
 <title>Explore ${siteAcronym}</title>
 

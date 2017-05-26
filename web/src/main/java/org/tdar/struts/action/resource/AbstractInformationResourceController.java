@@ -305,7 +305,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // load resource provider institution and publishers
         setResourceProviderInstitution(getResource().getResourceProviderInstitution());
         setPublisherName(getResource().getPublisherName());
-        if (isCopyrightMandatory() && PersistableUtils.isNotNullOrTransient(getResource().getCopyrightHolder())) {
+        if (getTdarConfiguration().getCopyrightMandatory() && PersistableUtils.isNotNullOrTransient(getResource().getCopyrightHolder())) {
             copyrightHolderProxies = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
         }
     }
@@ -325,7 +325,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getResource().setPublisher(null);
         }
 
-        if (isCopyrightMandatory() && copyrightHolderProxies != null) {
+        if (getTdarConfiguration().getCopyrightMandatory() && copyrightHolderProxies != null) {
             ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
             getLogger().debug("setting copyright holder to:  {} ", transientCreator);
             getResource().setCopyrightHolder(entityService.findOrSaveCreator(transientCreator.getCreator()));
@@ -709,7 +709,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             String resourceTypeLabel = getText(getPersistable().getResourceType().name());
             addActionError("Please enter a valid creation year for " + resourceTypeLabel);
         }
-        if (isCopyrightMandatory()) {
+        if (getTdarConfiguration().getCopyrightMandatory()) {
             // first check to see if the form has copyright holders specified
             if (copyrightHolderProxies != null && copyrightHolderProxies.getActualCreatorType() != null) {
                 ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();

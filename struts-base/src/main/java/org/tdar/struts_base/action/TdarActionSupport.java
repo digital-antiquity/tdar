@@ -151,7 +151,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     private ErrorListener errorListener;
 
-    public TdarConfiguration getTdarConfiguration() {
+    protected TdarConfiguration getTdarConfiguration() {
         return TdarConfiguration.getInstance();
     }
 
@@ -179,53 +179,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         this.sessionData = sessionData;
     }
 
-    public String getThemeDir() {
-        return getTdarConfiguration().getThemeDir();
-    }
 
-    public String getCulturalTermsHelpUrl() {
-        return getTdarConfiguration().getCulturalTermsHelpURL();
-    }
-
-    public String getInvestigationTypesHelpUrl() {
-        return getTdarConfiguration().getInvestigationTypesHelpURL();
-    }
-
-    public String getMaterialTypesHelpUrl() {
-        return getTdarConfiguration().getMaterialTypesHelpURL();
-    }
-
-    public String getSiteTypesHelpUrl() {
-        return getTdarConfiguration().getSiteTypesHelpURL();
-    }
-
-    public String getGoogleMapsApiKey() {
-        return getTdarConfiguration().getGoogleMapsApiKey();
-    }
-
-    public String getGoogleAnalyticsId() {
-        return getTdarConfiguration().getGoogleAnalyticsId();
-    }
-
-    public boolean getPrivacyControlsEnabled() {
-        return getTdarConfiguration().getPrivacyControlsEnabled();
-    }
-
-    public boolean isCopyrightMandatory() {
-        return getTdarConfiguration().getCopyrightMandatory();
-    }
-
-    public boolean isArchiveFileEnabled() {
-        return getTdarConfiguration().isArchiveFileEnabled();
-    }
-
-    public boolean isVideoEnabled() {
-        return getTdarConfiguration().isVideoEnabled();
-    }
-
-    public boolean isLicensesEnabled() {
-        return getTdarConfiguration().getLicenseEnabled();
-    }
 
     public String getServerEnvironmentStatus() {
         return getTdarConfiguration().getServerEnvironmentStatus();
@@ -275,52 +229,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return output.toString();
     }
 
-    public String getBugReportUrl() {
-        return getTdarConfiguration().getBugReportUrl();
-    }
-
-    public String getDocumentationUrl() {
-        return getTdarConfiguration().getDocumentationUrl();
-    }
-
-    public String getIntegrationDocumentationUrl() {
-        return getTdarConfiguration().getIntegrationDocumentationUrl();
-    }
-    public boolean isProduction() {
-        return getTdarConfiguration().getServerEnvironmentStatus().equalsIgnoreCase(TdarConfiguration.PRODUCTION);
-    }
-
-    public String getHelpUrl() {
-        return getTdarConfiguration().getHelpUrl();
-    }
-
-    public String getAboutUrl() {
-        return getTdarConfiguration().getAboutUrl();
-    }
-
-    public String getCommentsUrl() {
-        return getTdarConfiguration().getAboutUrl();
-    }
-
-    public Boolean isRPAEnabled() {
-        return getTdarConfiguration().isRPAEnabled();
-    }
-
-    public String getMapDefaultLat() {
-        DecimalFormat latlong = new DecimalFormat("0.00");
-        latlong.setGroupingUsed(false);
-        return latlong.format(getTdarConfiguration().getMapDefaultLat());
-    }
-
-    public String getMapDefaultLng() {
-        DecimalFormat latlong = new DecimalFormat("0.00");
-        latlong.setGroupingUsed(false);
-        return latlong.format(getTdarConfiguration().getMapDefaultLng());
-    }
-
-    public boolean isGeoLocationToBeUsed() {
-        return getTdarConfiguration().isGeoLocationToBeUsed();
-    }
 
     protected Logger getLogger() {
         return logger;
@@ -427,17 +335,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().getHttpsPort();
     }
 
-    public String getNewsUrl() {
-        return getTdarConfiguration().getNewsUrl();
-    }
-
-    public boolean isPayPerIngestEnabled() {
-        return getTdarConfiguration().isPayPerIngestEnabled();
-    }
-
-    public Integer getMaxUploadFilesPerRecord() {
-        return getTdarConfiguration().getMaxUploadFilesPerRecord();
-    }
 
     public boolean isSecure() {
         return servletRequest.isSecure();
@@ -473,37 +370,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
 
-    public boolean getShowJiraLink() {
-        return getTdarConfiguration().getShowJiraLink();
-    }
-
-    public String getJiraScriptLink() {
-        return getTdarConfiguration().getJiraScriptLink();
-    }
-
-    public boolean isReindexing() {
-        Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
-        if ((indexingTask != null) && !indexingTask.hasEnded()) {
-            return true;
-        }
-        return false;
-    }
-
     public String getCurrentUrl() {
         return UrlService.getOriginalUrlPath(servletRequest);
     }
 
-    public boolean isViewRowSupported() {
-        return getTdarConfiguration().isViewRowSupported();
-    }
-
-    public Long getGuestUserId() {
-        return getTdarConfiguration().getGuestUserId();
-    }
-
-    public String getCulturalTermsLabel() {
-        return getTdarConfiguration().getCulturalTermsLabel();
-    }
 
     public String getJavascriptErrorLogDefault() {
         return JS_ERRORLOG_NOSCRIPT;
@@ -546,14 +416,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return javascriptErrorLog;
     }
 
-    /**
-     * @see TdarConfiguration#isSwitchableMapObfuscation()
-     * @return whatever value the tdar configuration isSwitchableMapObfuscation returns.
-     */
-    public boolean isSwitchableMapObfuscation() {
-        return getTdarConfiguration().isSwitchableMapObfuscation();
-    }
-
     public Map<String, String> getClientValidationInfo() {
         return clientValidationInfo;
     }
@@ -589,10 +451,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getTdarConfiguration().shouldUseCDN();
     }
 
-    public boolean isShouldAutoDownload() {
-        return getTdarConfiguration().shouldAutoDownload();
-    }
-
     public void registerErrorListener(ErrorListener listener) {
         this.errorListener = listener;
     }
@@ -603,18 +461,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     public void setFreemarkerProcessingTime(Date freemarkerProcessingTime) {
         this.freemarkerProcessingTime = freemarkerProcessingTime;
-    }
-
-    public String getTosUrl() {
-        return getTdarConfiguration().getTosUrl();
-    }
-
-    public String getContributorAgreementUrl() {
-        return getTdarConfiguration().getContributorAgreementUrl();
-    }
-
-    public boolean isAuthenticationAllowed() {
-        return getTdarConfiguration().allowAuthentication();
     }
 
     public FileProxy generateFileProxy(String filename, File file) {
@@ -679,15 +525,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isNavSearchBoxVisible() {
         return true;
     }
- 
-    public String getResourceCreatorRoleDocumentationUrl() {
-        return getTdarConfiguration().getResourceCreatorRoleDocumentationUrl();
-    }
- 
-    public String getLeafletApiKey() {
-        return getTdarConfiguration().getLeafletMapsApiKey();
-    }
     
+
     /**
      * show the left sidebar in the future should override page.properties
      * 
@@ -706,14 +545,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return false;
     }
  
-    public List<String> getBarColors() {
-        return getTdarConfiguration().getBarColors();
-    }
-    
-    public boolean isSelenium() {
-        return getTdarConfiguration().isSelenium();
-    }
-    
     @Override
     public Collection<String> getErrorMessages() {
         return getActionErrors();
@@ -733,10 +564,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                 });
     }
 
-    public final boolean isListCollectionsEnabled() {
-        return TdarConfiguration.getInstance().isListCollectionsEnabled();
-    }
- 
     protected boolean isBot() {
         return Activity.testUserAgent(ServletActionContext.getRequest().getHeader("User-Agent"));
 

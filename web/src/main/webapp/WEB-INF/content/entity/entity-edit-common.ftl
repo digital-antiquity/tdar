@@ -48,7 +48,7 @@
             <div class="span5">
                 <@s.textfield cssClass="input-xlarge ${(person.registered??)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
     
-                <#if privacyControlsEnabled>
+                <#if config.privacyControlsEnabled>
                     <@s.checkbox label='Make email public?' name="person.emailPublic" id="email-public"  />
                     <p class="field"><em><b>NOTE:</b> Making your email address public will display it to anyone who visits ${siteAcronym}, this includes search
                         engines, spammers, and visitors who are not logged in.</em></p>
@@ -85,7 +85,7 @@
                 <h2 id="contact">Contact</h2>
                     <@s.textfield  label="Phone" cssClass="phoneUS input-xlarge" name="person.phone"  maxlength=255 />
         
-                    <#if privacyControlsEnabled>
+                    <#if config.privacyControlsEnabled>
                         <@s.checkbox label='Make phone public?' name="person.phonePublic" id="phone-public" />
                         <p class="field"><em><b>NOTE:</b> Making your phone # public will display it to anyone who visits ${siteAcronym}, this includes search engines,
                             and visitors who are not logged in.</em></p>
