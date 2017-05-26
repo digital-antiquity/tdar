@@ -9,6 +9,6 @@
 <#else>
 <#-- authenticated users that see this page do not have sufficient access, otherwise they are routed to the view page -->
     Note that deleted resources remain archived in ${siteAcronym}. If you feel this deletion was in error, or if you wish to request
-    access to the deleted content, please <a href="${commentUrl}">contact us</a>.
+    access to the deleted content, please <a href="${config.commentUrl}">contact us</a>.
 </#if>
 </p>

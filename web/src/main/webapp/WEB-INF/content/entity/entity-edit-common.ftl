@@ -68,7 +68,7 @@
                     <a href="http://orcid.org/about/what-is-orcid">About ORCID</a>                
                 </div>
                 <div class="span5">
-                    <#if RPAEnabled>
+                    <#if config.RPAEnabled>
                     <@s.textfield  cssClass="input-xlarge" label="RPA Number" name="person.rpaNumber"  maxlength=255 />
                     <a href="http://rpanet.org/">About RPA</a>                
                     </#if>
