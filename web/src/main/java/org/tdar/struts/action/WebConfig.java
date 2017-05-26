@@ -58,7 +58,6 @@ public class WebConfig {
         return config.getLicenseEnabled();
     }
 
-
     public String getBugReportUrl() {
         return config.getBugReportUrl();
     }
@@ -84,6 +83,10 @@ public class WebConfig {
 
     public String getCommentsUrl() {
         return config.getAboutUrl();
+    }
+
+    public Boolean getRPAEnabled() {
+        return config.isRPAEnabled();
     }
 
     public Boolean isRPAEnabled() {
