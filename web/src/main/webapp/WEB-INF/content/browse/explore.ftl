@@ -1,6 +1,6 @@
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
 <#import "/WEB-INF/macros/common.ftl" as common>
-<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/search-macros.ftl" as search>
 <#import "/${themeDir}/settings.ftl" as settings>
 
 <title>Explore ${siteAcronym}</title>

@@ -6,7 +6,7 @@
 <html class="no-js" lang="en" <#if ngApplicationName?has_content>ng-app="${ngApplicationName}"</#if>> <!--<![endif]-->
 <#import "decorator-macros.ftl" as dec>
 <#import "whitelabel-decorator-macros.ftl" as wdec>
-<#import "/WEB-INF/macros/resource/bootstrap-macros.ftl" as bs>
+<#import "/WEB-INF/macros/bootstrap-macros.ftl" as bs>
 
 <!-- README - UPDATE BOWER.JSON in lockstep -->
 <#global jquery_version="1.11.3">

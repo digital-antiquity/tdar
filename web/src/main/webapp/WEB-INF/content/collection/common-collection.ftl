@@ -5,7 +5,7 @@
 <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/common-rights.ftl" as rights>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/search-macros.ftl" as search>
 
 
 <#macro head>

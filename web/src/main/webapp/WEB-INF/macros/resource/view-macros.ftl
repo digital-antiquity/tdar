@@ -7,7 +7,7 @@ View freemarker macros
 <#-- include navigation menu in edit and view macros -->
     <#import "common-resource.ftl" as commonr>
     <#import "../common.ftl" as common>
-    <#import "../search/search-macros.ftl" as searchm>
+    <#import "../search-macros.ftl" as searchm>
     <#import "../navigation-macros.ftl" as nav>
     <#import "../common-rights.ftl" as rights>
     <#setting url_escaping_charset='UTF-8'>

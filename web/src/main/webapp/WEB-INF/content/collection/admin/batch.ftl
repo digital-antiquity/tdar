@@ -2,7 +2,7 @@
 <#import "/WEB-INF/macros/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "../common-collection.ftl" as commonCollection>
-<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/search-macros.ftl" as search>
 
 <head>
 <title>Admin: ${collection.name}</title>

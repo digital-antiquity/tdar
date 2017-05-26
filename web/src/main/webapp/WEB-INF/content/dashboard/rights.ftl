@@ -2,7 +2,7 @@
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-    <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+    <#import "/WEB-INF/macros/search-macros.ftl" as search>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "dashboard-common.ftl" as dash />
