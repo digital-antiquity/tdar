@@ -12,7 +12,6 @@ import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts.action.AbstractCollectionController;
 import org.tdar.struts.action.DataTableResourceDisplay;
 
 @Component

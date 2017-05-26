@@ -52,6 +52,8 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.api.resource.BookmarkApiController;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.collection.AbstractCollectionController;
+import org.tdar.struts.action.collection.AbstractCollectionRightsController;
 import org.tdar.struts.action.collection.ListCollectionController;
 import org.tdar.struts.action.collection.ListCollectionRightsController;
 import org.tdar.struts.action.collection.ShareCollectionController;

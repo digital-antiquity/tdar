@@ -618,9 +618,6 @@
                 name=TdarNamedQueries.FIND_ALTERNATE_CHILDRENS,
                 query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds"),
         @org.hibernate.annotations.NamedQuery(
-                name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_CHILDRENS,
-                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds"),
-        @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE,
                 query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )")
         })
