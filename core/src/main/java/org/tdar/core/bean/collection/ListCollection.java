@@ -49,11 +49,6 @@ public class ListCollection extends CustomizableCollection<ListCollection> imple
         this.parent = parent;
     }
 
-    @ManyToOne
-    @JoinColumn(name="include_id")
-    private SharedCollection includedCollection;
-
-    
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "unmanagedResourceCollections", targetEntity = Resource.class)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -122,22 +117,12 @@ public class ListCollection extends CustomizableCollection<ListCollection> imple
     @Override
     public boolean isValid() {
         if (isValidForController()) {
-            if ((getType() == CollectionType.SHARED) && (getSortBy() == null)) {
+            if ((getType() == CollectionType.LIST) && (getSortBy() == null)) {
                 return false;
             }
             return super.isValid();
         }
         return false;
-    }
-
-    @XmlAttribute(name = "includedIdRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public SharedCollection getIncludedCollection() {
-        return includedCollection;
-    }
-
-    public void setIncludedCollection(SharedCollection includedCollection) {
-        this.includedCollection = includedCollection;
     }
 
     public ListCollection getAlternateParent() {

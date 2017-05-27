@@ -29,7 +29,7 @@
             </#if>
             <#if results?has_content>
             <hr class="light"/>
-            <@common.renderWorldMap mode="mini" />
+            <@commonr.renderWorldMap mode="mini" />
             <hr class="light"/>
                 <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
     <i class="icon-document-red"></i>

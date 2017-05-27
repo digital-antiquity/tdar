@@ -104,7 +104,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         super.prepare();
 
         parentCollection = prepareParent(parentId, parentCollectionName);
-        setAlternateParentCollection(prepareParent(getAlternateParentId(), getAlternateParentCollectionName()));
+        alternateParentCollection = prepareParent(getAlternateParentId(), getAlternateParentCollectionName());
         
         setupOwnerField();
         if (PersistableUtils.isNotNullOrTransient(getOwner())) {
@@ -116,7 +116,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
             parentId = getParentCollection().getId();
         }
         if(getAlternateParentCollection() != null) {
-            setAlternateParentId(getAlternateParentCollection().getId());
+            alternateParentId =  getAlternateParentCollection().getId();
         }
 
         if (PersistableUtils.isNotNullOrTransient(parentId) && PersistableUtils.isNullOrTransient((Persistable)getParentCollection())) {
@@ -145,7 +145,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     public void validate() {
         super.validate();
         parentId = evaluteParent(parentId, getPersistable().getParent(), parentCollection);
-        setAlternateParentId(evaluteParent(getAlternateParentId(), getPersistable().getAlternateParent(), getAlternateParentCollection()));
+        alternateParentId = evaluteParent(getAlternateParentId(), getPersistable().getAlternateParent(), alternateParentCollection);
 
     }
 
@@ -200,15 +200,6 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     public String loadEditMetadata() throws TdarActionException {
         setOwner(getPersistable().getOwner());
         setupOwnerField();
-//        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
-//        for (AuthorizedUser au : getAuthorizedUsers()) {
-//            String name = null;
-//            if (au != null && au.getUser() != null) {
-//                name = au.getUser().getProperName();
-//            }
-//            getAuthorizedUsersFullNames().add(name);
-//        }
-
         prepareDataTableSection();
         setParentId(getPersistable().getParentId());
         if (PersistableUtils.isNotNullOrTransient(getParentId())) {
