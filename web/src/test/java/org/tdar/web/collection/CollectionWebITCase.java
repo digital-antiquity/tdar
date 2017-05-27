@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.entity.Person;
@@ -22,6 +23,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
+@Ignore
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public static final String PERMISSIONS = "permissions";
