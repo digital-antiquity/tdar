@@ -133,10 +133,10 @@ public class ResourceSearchService extends AbstractSearchService {
         QueryPartGroup idGroup = new QueryPartGroup(Operator.OR);
         if (indexable instanceof ListCollection) {
             ListCollection listCollection = (ListCollection) indexable;
-            if (PersistableUtils.isNotNullOrTransient(listCollection.getIncludedCollection())) {
-                ids.add(listCollection.getIncludedCollection().getId());
-//                idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, Operator.OR, ids));
-            }
+//            if (PersistableUtils.isNotNullOrTransient(listCollection.getIncludedCollection())) {
+//                ids.add(listCollection.getIncludedCollection().getId());
+////                idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, Operator.OR, ids));
+//            }
             idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, Operator.OR, ids));
             qb.append(idGroup);
         } else {
