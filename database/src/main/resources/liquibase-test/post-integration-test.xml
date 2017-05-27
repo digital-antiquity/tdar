@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="post-integration-test-dummy" author="jtdevos">
+        <comment>this changeset is just a sanity check to confirm that maven executed it.  It creates a dummy view w/ zero dependencies.</comment>
+        <sql>create or replace view vw_temporary_view_delete_me as select 'x'::text  as dummy;</sql>
+    </changeSet>
+
+</databaseChangeLog>
