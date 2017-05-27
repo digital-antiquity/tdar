@@ -51,7 +51,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
             first = false;
             logger.debug("{} {} {}", collection.getId(), collection.getTitle(), collection.isHidden());
         }
-        ListCollection find = genericService.find(ListCollection.class, 1003L);
+        SharedCollection find = genericService.find(SharedCollection.class, 1003L);
         find.setHidden(false);
         genericService.saveOrUpdate(find);
         reindex();
