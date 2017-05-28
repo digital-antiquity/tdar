@@ -16,7 +16,7 @@
                     <input type="hidden" name="_tdar.searchType" value="simple">
                     <input type="hidden" name="collectionId" value="${resourceCollection.id}">
                 </form>
-                <ul class="subnav-rht hidden-phone hidden-tablet"><@common.loginMenu false/></ul>
+                <ul class="subnav-rht hidden-phone hidden-tablet"><@auth.loginMenu false/></ul>
             </div>
         </div>
     </div>

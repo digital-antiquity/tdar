@@ -30,7 +30,6 @@
 </head>
 <body>
     <@commonCollection.header />
-
     <#if !searchHeaderEnabled><h1>${resourceCollection.name!"untitled collection"}</h1></#if>
 
 <#-- FIXME: have the controller handle isVisible via separate result name -->
