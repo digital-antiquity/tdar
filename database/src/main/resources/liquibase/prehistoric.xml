@@ -303,7 +303,7 @@
         <dropView viewName="vw_collection_ancestry" />
         <dropView viewName="vw_collection_progeny" />
     </changeSet>
-    <changeSet id="prehistoric-default-23" author="abrin">
+<!--   <changeSet id="prehistoric-default-23" author="abrin">
         <sql>update collection set collection_type='SHARED' where collection_type='LIST'</sql>
-    </changeSet>
+    </changeSet> -->
 </databaseChangeLog>
