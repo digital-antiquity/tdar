@@ -278,9 +278,15 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         SharedCollection collection = new SharedCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
-        CollectionSaveObject<SharedCollection> cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, users, SharedCollection.class);
+
+        CollectionSaveObject<SharedCollection> cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L,
+                new ArrayList<>(), SharedCollection.class);
         cso.setToAdd(PersistableUtils.extractIds(resources));
         resourceCollectionService.saveCollectionForController(cso);
+        users.addAll(collection.getAuthorizedUsers());
+        cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, users, SharedCollection.class);
+        resourceCollectionService.saveCollectionForController(cso);
+
         genericService.synchronize();
 
         final Long id = collection.getId();

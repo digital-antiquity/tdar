@@ -262,10 +262,6 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
      * @see org.tdar.struts.action.AbstractPersistableController#save()
      */
     public String save() throws TdarActionException {
-        if (PersistableUtils.isNullOrTransient(getId())) {
-            getPersistable().getAuthorizedUsers().add(new AuthorizedUser(getAuthenticatedUser(), getAuthenticatedUser(), GeneralPermissions.ADMINISTER_SHARE));
-        }
-    
         return super.save();
     }
 

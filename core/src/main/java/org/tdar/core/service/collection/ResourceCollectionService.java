@@ -292,10 +292,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param resourceCollection
      * @param incomingUsers
      * @param shouldSaveResource
+     * @param type 
      */
     @Transactional(readOnly = false)
     public void saveAuthorizedUsersForResourceCollection(HasAuthorizedUsers source, ResourceCollection resourceCollection, Collection<AuthorizedUser> incomingUsers,
-            boolean shouldSaveResource, TdarUser actor) {
+            boolean shouldSaveResource, TdarUser actor, RevisionLogType type) {
         if (resourceCollection == null) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_save");
         }
@@ -313,7 +314,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
 
             for (AuthorizedUser user : comparator.getAdditions()) {
-                addUserToCollection(shouldSaveResource, resourceCollection.getAuthorizedUsers(), user, actor, resourceCollection, source);
+                addUserToCollection(shouldSaveResource, resourceCollection.getAuthorizedUsers(), user, actor, resourceCollection, source, type);
             }
 
             resourceCollection.getAuthorizedUsers().removeAll(comparator.getDeletions());
@@ -348,7 +349,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param resourceCollection
      */
     private void addUserToCollection(boolean shouldSaveResource, Set<AuthorizedUser> currentUsers, AuthorizedUser incomingUser, TdarUser actor,
-            ResourceCollection resourceCollection, HasAuthorizedUsers source) {
+            ResourceCollection resourceCollection, HasAuthorizedUsers source, RevisionLogType type) {
         TdarUser transientUser = incomingUser.getUser();
         if (PersistableUtils.isNotNullOrTransient(transientUser)) {
             TdarUser user = null;
@@ -368,8 +369,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             if (!incomingUser.isValid()) {
                 return;
             }
-
-            checkSelfEscalation(actor, user, source, incomingUser.getGeneralPermission());
+            if (PersistableUtils.isNotNullOrTransient(source) && RevisionLogType.EDIT == type) {
+                checkSelfEscalation(actor, user, source, incomingUser.getGeneralPermission());
+            }
             currentUsers.add(incomingUser);
             if (shouldSaveResource) {
                 incomingUser.setCreatedBy(actor);
@@ -986,7 +988,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (persistable == null) {
             throw new TdarRecoverableRuntimeException();
         }
-
+        if (PersistableUtils.isTransient(persistable)) {
+            GeneralPermissions perm = GeneralPermissions.ADMINISTER_SHARE;
+            if (persistable instanceof ListCollection) {
+                cls = (Class<C>) ListCollection.class;
+                perm = GeneralPermissions.ADMINISTER_GROUP;
+            }
+            cso.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser,authenticatedUser, perm));
+        }
         RevisionLogType type = RevisionLogType.CREATE;
         if (PersistableUtils.isNotTransient(persistable)) {
             type = RevisionLogType.EDIT;
@@ -1003,11 +1012,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
 
         if (persistable instanceof ListCollection) {
-            cls = (Class<C>) ListCollection.class;
             ListCollection list = (ListCollection) persistable;
             reconcileIncomingResourcesForCollectionWithoutRights(list, authenticatedUser, resourcesToAdd, resourcesToRemove);
         }
-        saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
+        saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser,type);
         simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection<ListCollection>) persistable).getProperties(),
                 cso.getFileProxy());
 
@@ -1146,11 +1154,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<UserInvite> invites = new ArrayList<>();
 
         convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
-        saveAuthorizedUsersForResourceCollection(c, c, authorizedUsers, true, authenticatedUser);
+        RevisionLogType edit = RevisionLogType.EDIT;
+        saveAuthorizedUsersForResourceCollection(c, c, authorizedUsers, true, authenticatedUser, edit);
 
         if (c instanceof VisibleCollection) {
             String msg = String.format("%s modified rights on %s", authenticatedUser, ((VisibleCollection) c).getTitle());
-            CollectionRevisionLog revision = new CollectionRevisionLog(msg, c, authenticatedUser, RevisionLogType.EDIT);
+            CollectionRevisionLog revision = new CollectionRevisionLog(msg, c, authenticatedUser, edit);
             revision.setTimeBasedOnStart(startTime);
             getDao().saveOrUpdate(revision);
         }
