@@ -130,7 +130,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         Query<C> query = getCurrentSession().createNamedQuery(q, cls);
         query.setParameter("name", name);
         List<C> list = query.getResultList();
-        logger.trace("found: {} -- {}", list, list.get(0).getAuthorizedUsers());
+        logger.trace("found: {} ", list);
         for (C coll : list) {
             if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, base)) {
                 return coll;

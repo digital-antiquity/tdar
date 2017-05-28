@@ -197,8 +197,16 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(Action.SUCCESS, dc.save());
         setIgnoreActionErrors(true);
 
-        // try to edit as basic user -- should fail
+        
+        // try to edit as basic user -- should work
+        doc = null;
         dc = generateNewInitializedController(DocumentController.class, getBasicUser());
+        dc.setId(id);
+        dc.prepare();
+        assertEquals(Action.SUCCESS, dc.edit());
+
+        // try to edit as new user, should not work
+        dc = generateNewInitializedController(DocumentController.class, newUser);
         dc.setId(id);
         int statusCode = -1;
         try {
@@ -208,13 +216,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
             statusCode = e.getStatusCode();
         }
         assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), statusCode);
-
-        // try to edit as new user, should work
-        doc = null;
-        dc = generateNewInitializedController(DocumentController.class, newUser);
-        dc.setId(id);
-        dc.prepare();
-        assertEquals(Action.SUCCESS, dc.edit());
 
     }
 
@@ -747,7 +748,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         doc.setDateCreated(date1);
         doc.setDateUpdated(date3);
         genericService.saveOrUpdate(doc);
-
+        doc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), getUser(), GeneralPermissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(doc);
         long docId = doc.getId();
         assertThat(docId, is(not(-1L)));
 
