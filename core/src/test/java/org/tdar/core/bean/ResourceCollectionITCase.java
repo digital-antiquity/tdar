@@ -29,6 +29,7 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.CollectionSaveObject;
@@ -293,10 +294,13 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         String slug = collection.getSlug();
         collection = null;
         collection = genericService.find(SharedCollection.class, id);
-        List<AuthorizedUser> aus = new ArrayList<>(users);
-        aus.add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
-        CollectionSaveObject<SharedCollection> cso2 = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, aus, SharedCollection.class);
-        resourceCollectionService.saveCollectionForController(cso2);
+        List<UserRightsProxy> aus = new ArrayList<>();
+        aus.add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
+        for (AuthorizedUser user : users) {
+            aus.add(new UserRightsProxy(user));
+        }
+//        CollectionSaveObject<SharedCollection> cso2 = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, aus, SharedCollection.class);
+        resourceCollectionService.saveCollectionForRightsController(collection, getBasicUser(), aus, SharedCollection.class, -1L);
         genericService.synchronize();
         logger.debug("au: {}", collection.getAuthorizedUsers());
         logger.debug("no: {}", normal.getSharedCollections());
