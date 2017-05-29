@@ -329,11 +329,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     public String loadEditMetadata() throws TdarActionException {
         loadAddMetadata();
-        getLogger().debug("get basic metadata");
         loadBasicMetadata();
-        getLogger().debug("get custom metadata");
         loadCustomMetadata();
-        getLogger().debug("done");
         return SUCCESS;
     }
 
@@ -637,7 +634,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 getLogger().debug("adding: {} to retained collections", rc);
             }
         }
-        getLogger().debug("  done shares...");
         for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
             if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
                 getResourceCollections().add(rc);
@@ -646,9 +642,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 getLogger().debug("adding: {} to retained collections", rc);
             }
         }
-        getLogger().debug("  done lists...");
         getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
-        getLogger().debug("done");
     }
 
     

@@ -525,7 +525,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      */
     @DoNotObfuscate(reason = "always called by edit pages, so it shouldn't matter, also bad if called when user is anonymous")
     public List<Resource> getPotentialParents() {
-        getLogger().trace("get potential parents");
+        getLogger().debug("get potential parents");
         if (potentialParents == null) {
             TdarUser submitter = getAuthenticatedUser();
             potentialParents = new LinkedList<>();
@@ -539,7 +539,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getGenericService().markReadOnly(project);
             potentialParents.add(0, noAssociatedProject);
         }
-        getLogger().trace("Returning all editable projects: {}", potentialParents);
+        getLogger().debug("Returning all editable projects: {}", potentialParents);
         return potentialParents;
     }
 
