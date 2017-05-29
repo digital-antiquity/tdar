@@ -397,9 +397,9 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
     @Rollback
     public void testInvalidRightsAssignment() throws Exception {
         Document document = generateDocumentWithUser();
-        document.setSubmitter(getAdminUser());
+        document.getAuthorizedUsers().iterator().next().setUser(getAdminUser());
         genericService.save(document);
-        // try and assign access to aa document that user should not have rights
+        // try and assign access to a document that user should not have rights
         // to add, assert that this document cannot be added
 
         ShareCollectionController controller = generateNewController(ShareCollectionController.class);
@@ -739,8 +739,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         Long rcid2 = controller.getPersistable().getId();
 
         /*
-         * This test is expected to fail in-that hierarchical collection "owners" have no rights implicitly.
-         * Change this test when we figure out what "should" change in package-info
+         * This test is not expected to fail in-that hierarchical collection "owners" have rights explicitly.
          */
         controller = generateNewInitializedController(ShareCollectionController.class, registeredUser);
         controller.setId(rcid2);
@@ -753,7 +752,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
             seen = true;
             logger.warn("error", e);
         }
-        assertTrue(seen);
+        assertFalse(seen);
     }
 
 }

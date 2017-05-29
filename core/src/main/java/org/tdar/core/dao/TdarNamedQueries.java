@@ -228,7 +228,7 @@ public interface TdarNamedQueries {
     String QUERY_HQL_COUNT_MANY_TO_MANY_REFERENCES_MAP = "select new map(ck.id as id, count(*) as referenceCount) from %1$s r2 inner join r2.%2$s ck where ck.id in (:idlist) group by ck.id";
     String QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES_MAP = "select new map(%2$s.id as id, count(*) as referenceCount) from %1$s r1 where %2$s.id in (:idlist) group by %2$s.id";
 
-    String HQL_EDITABLE_RESOURCE_SUFFIX = " FROM Resource as res  where "
+    String HQL_EDITABLE_RESOURCE_SUFFIX = " FROM Resource as res left join res.authorizedUsers rau  where "
             +
             " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) "
             + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND "
@@ -238,8 +238,8 @@ public interface TdarNamedQueries {
             +
             " (TRUE=:admin or exists ( "
             + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
-            + ")"
-            + ")  ";
+            + ") ) "
+            + " OR (TRUE=:admin or rau.user.id=:userId and rau.effectiveGeneralPermission > :effectivePermission) ";
 
     String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
             + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "

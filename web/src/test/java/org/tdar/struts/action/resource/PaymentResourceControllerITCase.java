@@ -241,7 +241,8 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         // Account account = createAccount(getBasicUser());
         // d.setAccount(account);
         genericService.saveOrUpdate(d);
-
+        d.getAuthorizedUsers().add(new AuthorizedUser(d.getSubmitter(),d.getSubmitter(),GeneralPermissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(d);
         logger.info("account: {}", d.getAccount());
         setIgnoreActionErrors(true);
         Pair<String, Exception> tdae = setupResource(d);

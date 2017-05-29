@@ -215,6 +215,10 @@ public class AuthorizationService implements Accessible {
             logger.trace("checking if person can edit any resource");
             return true;
         }
+        
+        if (CollectionUtils.isEmpty(resource.getAuthorizedUsers())) {
+            return false;
+        }
 
         // finally, check if user has been granted permission
         // FIXME: technically the dao layer is doing some stuff that we should be, but I don't want to mess w/ it right now.

@@ -111,7 +111,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         logger.debug("current users (start): {}", resource.getAuthorizedUsers());
         logger.debug("incoming authorized users (start): {}", authorizedUsers);
 
-        normalizeAuthorizedUsers(authorizedUsers);
         CollectionRightsComparator comparator = new CollectionRightsComparator(resource.getAuthorizedUsers(), authorizedUsers);
         if (comparator.rightsDifferent()) {
             logger.debug("{} ", actor, resource.getSubmitter());
@@ -120,11 +119,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
             }
 
+            for (AuthorizedUser user : comparator.getDeletions()) {
+                resource.getAuthorizedUsers().remove(user);
+            }
+
             for (AuthorizedUser user : comparator.getAdditions()) {
                 resource.getAuthorizedUsers().add(user);
             }
 
-            resource.getAuthorizedUsers().removeAll(comparator.getDeletions());
 
             handleDifferences(resource, actor, comparator);
         }
@@ -248,43 +250,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         getDao().delete(resourceCollection);
     }
 
-    /**
-     * Remove entries from provided list of AuthorizedUsers that contain duplicate User values. Retained
-     * AuthorizedUsers will always have equal or greater permissions relative to the removed duplicate items.
-     * 
-     * @param authorizedUsers
-     */
-    @Transactional(readOnly = false)
-    public void normalizeAuthorizedUsers(final Collection<AuthorizedUser> authorizedUsers_) {
-        Collection<AuthorizedUser> authorizedUsers = authorizedUsers_;
-        if (CollectionUtils.isEmpty(authorizedUsers_)) {
-            authorizedUsers = new ArrayList<>();
-        }
-        logger.trace("incoming " + authorizedUsers);
-        Map<Long, AuthorizedUser> bestMap = new HashMap<>();
-        Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
-        while (iterator.hasNext()) {
-            AuthorizedUser incoming = iterator.next();
-            if ((incoming == null) || (incoming.getUser() == null)) {
-                continue;
-            }
-            Long user = incoming.getUser().getId();
-
-            AuthorizedUser existing = bestMap.get(user);
-            logger.trace(incoming + " <==>" + existing);
-            if (existing != null) {
-                if (existing.getGeneralPermission().getEffectivePermissions() >= incoming.getGeneralPermission().getEffectivePermissions()) {
-                    continue;
-                }
-            }
-            bestMap.put(user, incoming);
-        }
-
-        authorizedUsers.clear();
-        authorizedUsers.addAll(bestMap.values());
-        logger.trace("outgoing" + authorizedUsers);
-
-    }
 
     /**
      * Save the incoming @link AuthorizedUser entries for the @link ResourceCollection resolving as needed, avoiding duplicates
@@ -304,7 +269,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         logger.debug("current users (start): {}", resourceCollection.getAuthorizedUsers());
         logger.debug("incoming authorized users (start): {}", incomingUsers);
 
-        normalizeAuthorizedUsers(incomingUsers);
+        
         CollectionRightsComparator comparator = new CollectionRightsComparator(getDao().getUsersFromDb(resourceCollection), incomingUsers);
         if (comparator.rightsDifferent()) {
             logger.debug("{} - {}", actor, resourceCollection.getOwner());
@@ -330,10 +295,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         logger.trace("------------------------------------------------------");
     }
 
-    private void checkSelfEscalation(TdarUser actor, TdarUser transientUser, HasAuthorizedUsers source, GeneralPermissions generalPermission) {
+    private void checkSelfEscalation(TdarUser actor, TdarUser userToAdd, HasAuthorizedUsers source, GeneralPermissions generalPermission) {
         // specifically checking for rights escalation
+        logger.debug("actor: {}, sourceRights:{} , transientUser:{}", actor, source.getAuthorizedUsers(), userToAdd);
             if (!authorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, generalPermission)) {
-                throw new TdarAuthorizationException("resourceCollectionService.could_not_add_user", Arrays.asList(transientUser,
+                throw new TdarAuthorizationException("resourceCollectionService.could_not_add_user", Arrays.asList(userToAdd,
                         generalPermission));
             }
             // find highest permission for actor
@@ -988,13 +954,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (persistable == null) {
             throw new TdarRecoverableRuntimeException();
         }
+        logger.debug("{} - {}" , persistable, persistable.getId());
         if (PersistableUtils.isTransient(persistable)) {
             GeneralPermissions perm = GeneralPermissions.ADMINISTER_SHARE;
             if (persistable instanceof ListCollection) {
                 cls = (Class<C>) ListCollection.class;
                 perm = GeneralPermissions.ADMINISTER_GROUP;
             }
-            cso.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser,authenticatedUser, perm));
+            persistable.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser,authenticatedUser, perm));
         }
         RevisionLogType type = RevisionLogType.CREATE;
         if (PersistableUtils.isNotTransient(persistable)) {
@@ -1015,7 +982,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             ListCollection list = (ListCollection) persistable;
             reconcileIncomingResourcesForCollectionWithoutRights(list, authenticatedUser, resourcesToAdd, resourcesToRemove);
         }
-        saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser,type);
+//        saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser,type);
         simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection<ListCollection>) persistable).getProperties(),
                 cso.getFileProxy());
 
@@ -1230,7 +1197,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 //        if (resource.getInternalResourceCollection() == null) {
 //            getDao().createInternalResourceCollectionForResource(resource.getSubmitter(), resource, true);
 //        }
-        resource.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, GeneralPermissions.ADMINISTER_SHARE));
+//        resource.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, GeneralPermissions.ADMINISTER_SHARE));
         if (CollectionUtils.isNotEmpty(invites)) {
             throw new NotImplementedException();
         }

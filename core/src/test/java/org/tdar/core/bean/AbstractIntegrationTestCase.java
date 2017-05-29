@@ -427,7 +427,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             iResource.setCopyrightHolder(persistentPerson);
         }
+//        iResource.getAuthorizedUsers().add(new AuthorizedUser(persistentPerson, persistentPerson, GeneralPermissions.MODIFY_RECORD));
         informationResourceService.saveOrUpdate(iResource);
+        genericService.saveOrUpdate(iResource.getAuthorizedUsers());
         return iResource;
     }
 
@@ -437,6 +439,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         dataset.setDescription("Test dataset description");
         dataset.setDate(1999);
         datasetService.saveOrUpdate(dataset);
+        informationResourceService.saveOrUpdate(dataset);
+        genericService.saveOrUpdate(dataset.getAuthorizedUsers());
         return dataset;
     }
 
@@ -454,7 +458,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             if (resource instanceof InformationResource) {
                 ((InformationResource) resource).setDate(2012);
             }
+            resource.getAuthorizedUsers().add(new AuthorizedUser(persistentPerson, persistentPerson, GeneralPermissions.MODIFY_RECORD));
             genericService.save(resource);
+            genericService.save(resource.getAuthorizedUsers());
         } catch (Exception e) {
             logger.error("failed: ", e);
             Assert.fail("failed to create/save test" + cls.getSimpleName() + " record: " + e.getMessage() + " \n " + ExceptionUtils.getFullStackTrace(e));

@@ -142,15 +142,16 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     @Rollback
     public void testProjectRightsInheritance() throws InstantiationException, IllegalAccessException {
         // create a project w/ one user who has the ability to update it.
-        AuthorizedUser user = new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD);
         Project project = new Project();
         project.setTitle("test");
         project.setDescription("test");
         project.markUpdated(getBasicUser());
         genericService.save(project);
+        project.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
-        users.add(user);
-        resourceCollectionService.saveAuthorizedUsersForResource(project, users, true, getBasicUser());
+        users.add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(project);
+//        resourceCollectionService.saveAuthorizedUsersForResource(project, users, true, getBasicUser());
         project.setSubmitter(getAdminUser());
         genericService.saveOrUpdate(project);
         // ensure that basicUser can edit the project
@@ -217,8 +218,9 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertEquals(getText("project.no_associated_project"), potentialParents.get(0).getTitle());
 
         int originalParentCount = potentialParents.size();
-        createAndSaveNewProject("potential parent project one");
-        createAndSaveNewProject("potential paernt project two");
+        createAndSaveNewResource(Project.class, getBasicUser(), "potential parent project one");
+        createAndSaveNewResource(Project.class, getBasicUser(), "potential parent project two");
+        evictCache();
         controller = generateNewController(SensoryDataController.class);
         init(controller, getBasicUser());
         potentialParents = controller.getPotentialParents();

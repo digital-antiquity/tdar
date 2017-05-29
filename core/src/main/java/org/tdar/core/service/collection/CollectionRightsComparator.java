@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -13,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.utils.PersistableUtils;
 
@@ -39,10 +41,47 @@ public class CollectionRightsComparator {
             this.currentUsers.addAll(currentUsers);
         }
         if (CollectionUtils.isNotEmpty(incomingUsers)) {
-            this.incomingUsers.addAll(incomingUsers);
+            this.incomingUsers.addAll(normalizeAuthorizedUsers(incomingUsers));
         }
     }
 
+
+    /**
+     * Remove entries from provided list of AuthorizedUsers that contain duplicate User values. Retained
+     * AuthorizedUsers will always have equal or greater permissions relative to the removed duplicate items.
+     * 
+     * @param authorizedUsers
+     */
+    public Set<AuthorizedUser> normalizeAuthorizedUsers(final Collection<AuthorizedUser> authorizedUsers_) {
+        logger.debug("normalizing authorized Users:{}", authorizedUsers_);
+        Set<AuthorizedUser> authorizedUsers = new HashSet<>();
+        if (CollectionUtils.isEmpty(authorizedUsers_)) {
+            return authorizedUsers;
+        }
+        logger.trace("incoming " + authorizedUsers);
+        Map<Long, AuthorizedUser> bestMap = new HashMap<>();
+        Iterator<AuthorizedUser> iterator = authorizedUsers_.iterator();
+        while (iterator.hasNext()) {
+            AuthorizedUser incoming = iterator.next();
+            if ((incoming == null) || (incoming.getUser() == null)) {
+                continue;
+            }
+            Long user = incoming.getUser().getId();
+
+            AuthorizedUser existing = bestMap.get(user);
+            logger.trace(incoming + " <==>" + existing);
+            if (existing != null) {
+                if (existing.getGeneralPermission().getEffectivePermissions() >= incoming.getGeneralPermission().getEffectivePermissions()) {
+                    continue;
+                }
+            }
+            bestMap.put(user, incoming);
+        }
+
+        authorizedUsers.addAll(bestMap.values());
+        logger.debug("outgoing" + authorizedUsers);
+        return authorizedUsers;
+    }
     public boolean rightsDifferent() {
         Map<Long, String> userIdMap = new HashMap<>();
         // iterate through current users, add them to the map

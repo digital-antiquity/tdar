@@ -108,7 +108,7 @@ public class ResourceRightsController extends AbstractRightsController implement
     @PostOnly
     public String save() {
         try {
-            getLogger().debug("proxies:{}", getProxies());
+            getLogger().debug("save proxies:{}", getProxies());
             loadEffectiveResourceCollectionsForSave();
             getLogger().debug("retained collections:{}", getRetainedSharedCollections());
             getShares().addAll(getRetainedSharedCollections());

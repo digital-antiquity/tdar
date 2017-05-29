@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -70,6 +71,7 @@ import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 
+import com.google.common.base.Objects;
 import com.opensymphony.xwork2.Action;
 
 public abstract class AbstractControllerITCase extends AbstractIntegrationControllerTestCase {
@@ -200,7 +202,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         controller.setAsync(false);
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
-        if (resources != null) {
+        if (CollectionUtils.isNotEmpty(resources)) {
             if (controller instanceof ShareCollectionController) {
                 ((ShareCollectionController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
             }
@@ -231,18 +233,24 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         assertTrue(save.equals(Action.SUCCESS));
         genericService.synchronize();
         Long id = resourceCollection.getId();
+        logger.debug("{}", resourceCollection.getAuthorizedUsers());
         genericService.evictFromCache(resourceCollection);
         
-        
         if (users != null) {
-        AbstractCollectionRightsController sc = generateNewInitializedController(ShareCollectionRightsController.class, controller.getAuthenticatedUser());
+        AbstractCollectionRightsController sc = generateNewInitializedController(ShareCollectionRightsController.class, owner);
             if (controller instanceof ListCollectionController) {
-                sc = generateNewInitializedController(ListCollectionRightsController.class, controller.getAuthenticatedUser());
+                sc = generateNewInitializedController(ListCollectionRightsController.class, owner);
             }
             sc.setId(id);
             sc.prepare();
             sc.edit();
-            sc.getProxies().clear();
+            Iterator<UserRightsProxy> iterator = sc.getProxies().iterator();
+            while (iterator.hasNext()) {
+                UserRightsProxy proxy = iterator.next();
+                if (!Objects.equal(proxy.getId(), owner.getId())) {
+                    iterator.remove();
+                }
+            }
             for (AuthorizedUser au : users) {
                 sc.getProxies().add(new UserRightsProxy(au));
             }
