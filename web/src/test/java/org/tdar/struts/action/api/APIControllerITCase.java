@@ -123,7 +123,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         genericService.markReadOnly(old);
         old.getRelatedComparativeCollections().add(new RelatedComparativeCollection("text"));
         // final String oldDocXml = serializationService.convertToXML(old);
-        assertEquals(1, old.getAuthorizedUsers().size());
+        assertEquals(2, old.getAuthorizedUsers().size());
         genericService.detachFromSession(old);
         final Person oldSubmitter = old.getSubmitter();
         logger.info("DATES: {} ", old.getCoverageDates());

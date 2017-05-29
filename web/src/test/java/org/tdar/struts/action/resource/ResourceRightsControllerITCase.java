@@ -87,8 +87,9 @@ public class ResourceRightsControllerITCase extends AbstractResourceControllerIT
         try {
             imageController.prepare();
             imageController.edit();
-        } catch (TdarActionException e) {
             seen = true;
+        } catch (TdarActionException e) {
+            logger.error("{}",e,e);
         }
         assertTrue(seen);
     }

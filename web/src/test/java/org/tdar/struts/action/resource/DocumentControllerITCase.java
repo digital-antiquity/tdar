@@ -693,7 +693,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         doc = genericService.find(Document.class, id);
         assertFalse(authenticationAndAuthorizationService.canDo(newUser, doc,
                 InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.ADMINISTER_SHARE));
-        assertEquals(1, doc.getAuthorizedUsers().size());
+        assertEquals(2, doc.getAuthorizedUsers().size());
         // try to edit as basic user -- should fail
         doc = null;
         dc = generateNewInitializedController(DocumentController.class, newUser);

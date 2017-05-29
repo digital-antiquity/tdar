@@ -175,15 +175,8 @@ $(function() {
                 </#list>
                 <th>Expires</th>
             </tr>
-                <#if owner?has_content>
-                <tr>
-                    <td>Local Resource</td>
-                    <td>${owner.properName} (Submitter)</td>
-                    <td><i class="icon-ok"></i></td>
-                    <td><i class="icon-ok"></i></td>
-                    <td><i class="icon-ok"></i></td>
-                    <td></td>
-                </tr>
+            	<#if persistable.authorizedUsers?has_content>
+	            	<@_authorizedUsers />
                 </#if>
                 <#if collections?has_content >
 	                <@_collectionSection collections />
@@ -195,7 +188,30 @@ $(function() {
         </table>
         </#if>
     </#macro>
-    
+
+   	<#macro _authorizedUsers>
+            <#list persistable.authorizedUsers as user>
+                <tr>
+                    <td>
+                        Local
+                    </td>
+                    <td>
+                    <a href="<@s.url value="${user.user.detailUrl}"/>">${user.user.properName}</a> <!-- ${user.user.properName}:${user.generalPermission} -->
+                    </td>
+                    <#list availablePermissions as permission>
+                        <td>
+                            <#if (user.generalPermission.effectivePermissions >= permission.effectivePermissions )>
+                                <i class="icon-ok"></i>
+                            <#else>
+                                <i class="icon-remove"></i>
+                            </#if>
+                        </td>
+                    </#list>
+                    <td>${(user.dateExpires?string("MM/dd/yyyy"))!''}</td>
+                </tr>
+            </#list>
+   	</#macro>
+            
     <#--  print out authorized Users by collection for rights table -->
     <#macro _collectionSection collections>
         <#list collections as collection_ >

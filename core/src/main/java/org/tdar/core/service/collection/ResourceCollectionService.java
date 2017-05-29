@@ -124,6 +124,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
 
             for (AuthorizedUser user : comparator.getAdditions()) {
+                if (PersistableUtils.isNullOrTransient(user.getCreatedBy())) {
+                    user.setCreatedBy(actor);
+                }
                 resource.getAuthorizedUsers().add(user);
             }
 
