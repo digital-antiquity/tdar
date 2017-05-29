@@ -281,10 +281,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         WebElementSelection find = waitFor(DIV_ACCESS_RIGHTS_ADD_ANOTHER_BUTTON);
         find.click();
         find.click();
+        find.click();
 
-        addAuthuser("proxies[1].displayName", "proxies[1].permission", "editor user", config.getEditorUsername(),
+        addAuthuser("proxies[2].displayName", "proxies[2].permission", "editor user", config.getEditorUsername(),
                 "person-"+ config.getEditorUserId(), permission);
-        addAuthuser("proxies[0].displayName", "proxies[0].permission",
+        addAuthuser("proxies[1].displayName", "proxies[1].permission",
                 "michelle elliott",  "Michelle Elliott", "person-121", permission);
         submitForm();
         return url;
@@ -349,9 +350,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         find.click();
         find.click();
 
-        addAuthuser("proxies[1].displayName", "proxies[1].permission", "editor user", config.getEditorUsername(), 
+        addAuthuser("proxies[2].displayName", "proxies[2].permission", "editor user", config.getEditorUsername(), 
                 "person-"+ config.getEditorUserId(), permission);
-        addAuthuser("proxies[0].displayName", "proxies[0].permission",
+        addAuthuser("proxies[1].displayName", "proxies[1].permission",
                 "michelle elliott",  "Michelle Elliott", "person-121", permission);
         submitForm();
         return url;

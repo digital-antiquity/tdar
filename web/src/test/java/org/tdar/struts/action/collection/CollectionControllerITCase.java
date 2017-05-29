@@ -16,6 +16,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -72,7 +73,7 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
         genericService.saveOrUpdate(draft);
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(
                 new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.ADD_TO_COLLECTION)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ListCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null, 
                 ListCollectionController.class, ListCollection.class);
@@ -110,24 +111,24 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
                 new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
-        ListCollection collection = 
-                generateResourceCollection(name, description, true, users, getUser(), resources, null, ListCollectionController.class, ListCollection.class);
+        SharedCollection collection = 
+                generateResourceCollection(name, description, true, users, getUser(), resources, null, ShareCollectionController.class, SharedCollection.class);
         Long collectionid = collection.getId();
-        logger.info("{}", collection.getUnmanagedResources());
+        logger.info("{}", collection.getResources());
         assertFalse(collectionid.equals(-1L));
         collection = null;
-        ListCollection foundCollection = genericService.find(ListCollection.class, collectionid);
+        SharedCollection foundCollection = genericService.find(SharedCollection.class, collectionid);
         assertNotNull(foundCollection);
         assertEquals(3, foundCollection.getAuthorizedUsers().size());
-        assertEquals(2, foundCollection.getUnmanagedResources().size());
+        assertEquals(2, foundCollection.getResources().size());
 
         assertEquals(name, foundCollection.getName());
         assertEquals(description, foundCollection.getDescription());
-        assertEquals(CollectionType.LIST, foundCollection.getType());
+        assertEquals(CollectionType.SHARED, foundCollection.getType());
         assertEquals(SortOption.RESOURCE_TYPE, foundCollection.getSortBy());
 
-        assertTrue(foundCollection.getUnmanagedResources().contains(generateInformationResourceWithFile2));
-        assertTrue(foundCollection.getUnmanagedResources().contains(generateInformationResourceWithFile));
+        assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile2));
+        assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile));
 
         int count = 0;
         for (AuthorizedUser user : foundCollection.getAuthorizedUsers()) {

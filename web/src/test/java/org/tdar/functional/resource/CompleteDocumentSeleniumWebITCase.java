@@ -189,10 +189,11 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         WebElementSelection find = waitFor("#divAccessRightsAddAnotherButton");
         find.click();
         find.click();
-        addAuthuser("proxies[0].displayName", "proxies[0].permission", "Michelle Elliott", "michelle elliott , arizona state",
+        find.click();
+        addAuthuser("proxies[1].displayName", "proxies[1].permission", "Michelle Elliott", "michelle elliott , arizona state",
                 "person-121",
                 MODIFY_RECORD);
-        addAuthuser("proxies[1].displayName", "proxies[1].permission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
+        addAuthuser("proxies[2].displayName", "proxies[2].permission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
                 VIEW_ALL);
         submitForm();
     }

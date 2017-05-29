@@ -162,7 +162,7 @@ $(function() {
 <#-- @param owner:object? Person object representing the collection owner
 <#-- FIXME:  both of these parameters have invalid defaults. consider making them mandatory  -->
     <#macro resourceCollectionsRights collections=[] owner="">
-        <#if collections?has_content || invites?has_content >
+        <#if collections?has_content || invites?has_content || ((persistable.authorizedUsers)![])?has_content >
         <h3>Access Permissions</h3>
             <#nested />
         <table class="tableFormat table">

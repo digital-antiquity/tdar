@@ -158,7 +158,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(resourceNotesSize, importedRecord.getResourceNotes().size());
         assertEquals(oldId, importedRecord.getId());
 
-        assertEquals(1, importedRecord.getAuthorizedUsers().size());
+        assertEquals(2, importedRecord.getAuthorizedUsers().size());
         resourceService.updateTransientAccessCount(importedRecord);
         assertEquals(viewCount, importedRecord.getTransientAccessCount());
         assertEquals(creationDate, importedRecord.getDateCreated());
