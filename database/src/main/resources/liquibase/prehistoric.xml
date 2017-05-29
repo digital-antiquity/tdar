@@ -303,7 +303,44 @@
         <dropView viewName="vw_collection_ancestry" />
         <dropView viewName="vw_collection_progeny" />
     </changeSet>
-<!--   <changeSet id="prehistoric-default-23" author="abrin">
+<!--    <changeSet id="prehistoric-default-23" author="abrin">
         <sql>update collection set collection_type='SHARED' where collection_type='LIST'</sql>
     </changeSet> -->
+    <changeSet id="prehistoric-rights-1" author="abrin">
+        <addColumn tableName="authorized_user">
+            <column name="resource_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_user_resource" referencedTableName="resource" baseColumnNames="resource_id" baseTableName="authorized_user  " 
+        referencedColumnNames="id"/>
+        <dropNotNullConstraint tableName="authorized_user" columnName="resource_collection_id"/>
+            <comment>create a temp table for all of the intenral collections</comment>
+            <comment>move authorized_user references to resource pointer</comment>
+        <sql>
+            create temp table autest (resource_id bigint, collection_id bigint); insert into autest select resource_id, collection_id from collection_resource where collection_id in (select id from collection where collection_type='INTERNAL');
+            update authorized_user set resource_id = a.resource_id, resource_collection_id=null from autest a where resource_collection_id=collection_id;
+        </sql>
+            <comment>add "submitter" right for resource</comment>
+        <sql>
+            insert into authorized_user (user_id, creator_id, general_permission_int, date_created, resource_id) select submitter_id, submitter_id, 5000, now(), id from resource;
+        </sql>
+            <comment>add "owner" for collections</comment>
+        <sql>
+            insert into authorized_user (user_id, creator_id, general_permission_int, date_created, resource_collection_id) select owner_id, owner_id, 5000, now(), id from collection c where collection_type !='INTERNAL';
+        </sql>
+        <comment>delete from collection_resource for internal</comment>
+     </changeSet>
+     <changeSet id="prehistoric-rights-2" author="abrin">
+        <sql>delete from authorized_user where resource_collection_id in (select id from collection where collection_type='INTERNAL')</sql>
+        <comment>delete from collection_resource for internal</comment>
+       <sql>
+            delete from collection_resource where collection_id in (select id from collection where collection_type='INTERNAL');
+        </sql>
+        <comment>delete from collection for internal</comment>
+        <sql>
+            delete from collection where collection_type='INTERNAL';            
+        </sql>
+     </changeSet>
+     <changeSet id="prehistoric-rights-3" author="abrin">
+         <sql>update authorized_user set general_permission='ADMINISTER_SHARE' where general_permission_int=5000</sql>
+     </changeSet>
 </databaseChangeLog>
