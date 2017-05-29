@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+    <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "common-collection.ftl" as commonCollection>
     <#import "/WEB-INF/macros/whitelabel-macros.ftl" as whitelabel>
 
@@ -30,7 +30,6 @@
 </head>
 <body>
     <@commonCollection.header />
-
     <#if !searchHeaderEnabled><h1>${resourceCollection.name!"untitled collection"}</h1></#if>
 
 <#-- FIXME: have the controller handle isVisible via separate result name -->

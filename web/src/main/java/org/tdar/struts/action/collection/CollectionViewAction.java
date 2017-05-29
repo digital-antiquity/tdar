@@ -20,11 +20,13 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
+import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -536,12 +538,10 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
      * @return
      */
     public boolean isSearchHeaderEnabled() {
-        if (getResourceCollection() instanceof ListCollection) {
-            ListCollection lc = (ListCollection) getResourceCollection();
-            if (lc.getProperties() != null && lc.getProperties().getSearchEnabled()) {
+            CollectionDisplayProperties properties = ((CustomizableCollection)(getResourceCollection())).getProperties();
+            if (properties != null && properties.getSearchEnabled()) {
                 return true;
             }
-        }
         return false;
     }
 

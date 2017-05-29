@@ -113,7 +113,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         super.prepare();
 
         parentCollection = prepareParent(parentId, parentCollectionName);
-        alternateParentCollection = prepareParent(getAlternateParentId(), getAlternateParentCollectionName());
+        alternateParentCollection = prepareParent(alternateParentId, alternateParentCollectionName);
         
         setupOwnerField();
         if (PersistableUtils.isNotNullOrTransient(getOwner())) {
@@ -213,6 +213,10 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         setParentId(getPersistable().getParentId());
         if (PersistableUtils.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
+        }
+        setAlternateParentId(getPersistable().getAlternateParentId());
+        if (PersistableUtils.isNotNullOrTransient(getAlternateParentId())) {
+            alternateParentCollectionName = getPersistable().getAlternateParent().getName();
         }
         return SUCCESS;
     }

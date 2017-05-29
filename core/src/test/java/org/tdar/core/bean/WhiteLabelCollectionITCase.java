@@ -101,8 +101,16 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         wlc.getUnmanagedResources().add(document1);
         wlc.getUnmanagedResources().add(document2);
         genericService.saveOrUpdate(wlc);
-
-        Document featuredDocument = genericService.find(Document.class, document2.getId());
+        document1.getUnmanagedResourceCollections().add(wlc);
+        document2.getUnmanagedResourceCollections().add(wlc);
+        genericService.saveOrUpdate(document2);
+        genericService.saveOrUpdate(document1);
+        Long i1 = document1.getId();
+        Long i2 = document2.getId();
+        document1 = null;
+        document2 = null;
+        genericService.synchronize();
+        Document featuredDocument = genericService.find(Document.class, i2);
         wlc = genericService.find(ListCollection.class, wlcId);
         logger.debug("wlcid:{},  resources:{}", wlcId, wlc.getUnmanagedResources());
         assertThat(wlc.getUnmanagedResources().size(), greaterThan(0));
