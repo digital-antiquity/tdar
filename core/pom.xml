@@ -161,7 +161,7 @@
         <dependency>
             <groupId>com.atlassian.crowd</groupId>
             <artifactId>crowd-integration-client-rest</artifactId>
-            <version>2.10.1</version>
+            <version>2.12.0</version>
             <!-- LICENSE: APACHE 2.0 -->
             <exclusions>
                 <exclusion>
