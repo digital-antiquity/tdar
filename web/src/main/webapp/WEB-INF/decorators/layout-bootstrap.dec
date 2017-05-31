@@ -235,7 +235,7 @@ ${head}
 
 
     </div>
-    <!-- BEGIN-TDAR-FOOTER -->
+    
     <footer>
         <div class="container">
             <#include "/${themeDir}/footer.dec" />
@@ -284,5 +284,10 @@ ${head}
 <script id="c3colors">
  [<#list barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
 </script>
+
+    <!-- BEGIN-TDAR-FOOTER -->
+    
+    <#include "/${themeDir}/sub-footer.dec" />
+
 </body>
 </html>
