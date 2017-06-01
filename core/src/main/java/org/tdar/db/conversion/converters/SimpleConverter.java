@@ -78,7 +78,7 @@ public abstract class SimpleConverter extends DatasetConverter.Base {
     @Override
     public void dumpData() throws Exception {
 
-        DataTable dataTable = createDataTable(getTableName());
+        DataTable dataTable = createDataTable(getTableName(), 0);
 
         for (int i = 0; i < getHeaderLine().length; i++) {
             createDataTableColumn(getHeaderLine()[i], DataTableColumnType.TEXT, dataTable, i);

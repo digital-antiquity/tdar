@@ -132,7 +132,7 @@ public class ExcelConverter extends DatasetConverter.Base {
                 if ((numberOfActualSheets == 1) && sheetName.equals(DEFAULT_SHEET_NAME)) {
                     sheetName = FilenameUtils.getBaseName(informationResourceFileVersion.getTransientFile().getName());
                 }
-                processSheet(currentSheet, sheetName);
+                processSheet(currentSheet, sheetName, numberOfActualSheets - 1);
             } catch (Exception e) {
                 exceptions.add(e);
             }
@@ -156,7 +156,7 @@ public class ExcelConverter extends DatasetConverter.Base {
      * 3) After all inserts have been made, check final statistics to see if we can safely convert the table columns to a
      * more specific datatype.
      */
-    private void processSheet(Sheet currentSheet, String sheetName) throws Exception {
+    private void processSheet(Sheet currentSheet, String sheetName, int order) throws Exception {
         logger.info("processing Worksheet: {}", sheetName);
         // evaluate schema from the current sheet.
         SheetEvaluator sheetEvaluator = new SheetEvaluator(currentSheet);
@@ -168,7 +168,7 @@ public class ExcelConverter extends DatasetConverter.Base {
             return;
         }
         // create the data table + columns based on the SheetEvaluator's reported headers.
-        DataTable dataTable = createDataTable(sheetName);
+        DataTable dataTable = createDataTable(sheetName, order);
         int count = 0;
         for (String columnName : sheetEvaluator.getHeaderColumnNames()) {
             createDataTableColumn(columnName, DataTableColumnType.TEXT, dataTable, count);

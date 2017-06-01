@@ -132,9 +132,10 @@ public interface DatasetConverter {
             return dataTables;
         }
 
-        public DataTable createDataTable(String name) {
+        public DataTable createDataTable(String name, int order) {
             DataTable dataTable = new DataTable();
             dataTable.setDisplayName(name);
+            dataTable.setImportOrder(order);
             String name_ = generateDataTableName(name);
             logger.info(name_);
 

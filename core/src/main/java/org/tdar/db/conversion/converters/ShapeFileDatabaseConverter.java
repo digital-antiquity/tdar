@@ -106,7 +106,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         setIndexedContentsFile(new File(TdarConfiguration.getInstance().getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
         FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
         BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
-        DataTable dataTable = createDataTable(getFilename());
+        DataTable dataTable = createDataTable(getFilename(), 0);
         // drop the table if it has been there
         targetDatabase.dropTable(dataTable);
 
