@@ -28,7 +28,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
-import org.tdar.filestore.Filestore.BaseFilestore;
+import org.tdar.filestore.BaseFilestore;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;

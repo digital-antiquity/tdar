@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.workflow.workflows.Workflow.BaseWorkflow;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
 import org.tdar.filestore.tasks.ListArchiveTask;
 import org.tdar.filestore.tasks.PrepareArchiveForKettleTask;

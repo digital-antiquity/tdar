@@ -20,7 +20,7 @@ import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
  * @version $Rev$
  */
 @Component
-public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
+public class DataTableColumnDao extends HibernateBase<DataTableColumn> {
 
     public DataTableColumnDao() {
         super(DataTableColumn.class);

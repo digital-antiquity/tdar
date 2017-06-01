@@ -24,7 +24,6 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 //import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 

@@ -32,7 +32,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 
 /**
  * $Id$
@@ -45,7 +45,7 @@ import org.tdar.core.dao.base.Dao;
  * @version $Revision$
  */
 @Component
-public class PersonDao extends Dao.HibernateBase<Person> {
+public class PersonDao extends HibernateBase<Person> {
 
     private static final Long TDAR_USER_PRIOR_TO_ASKING_AFFILIATION = 5215L;
     private final Logger logger = LoggerFactory.getLogger(getClass());

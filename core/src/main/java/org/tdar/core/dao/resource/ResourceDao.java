@@ -44,7 +44,7 @@ import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.external.AuthorizationService;
@@ -62,7 +62,7 @@ import org.tdar.utils.PersistableUtils;
  * @version $Rev: 494$
  * @param <E>
  */
-public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<E> {
+public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
 
     @Autowired
     private AuthorizationService authenticationService;

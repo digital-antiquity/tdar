@@ -49,7 +49,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.utils.PersistableUtils;
 
@@ -58,7 +58,7 @@ import org.tdar.utils.PersistableUtils;
  * 
  */
 @Component
-public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection> {
+public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

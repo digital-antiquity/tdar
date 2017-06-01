@@ -13,7 +13,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 
 /**
  * $Id$
@@ -25,7 +25,7 @@ import org.tdar.core.dao.base.Dao;
  * @version $Revision$
  */
 @Component
-public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource> {
+public class BookmarkedResourceDao extends HibernateBase<BookmarkedResource> {
 
     public BookmarkedResourceDao() {
         super(BookmarkedResource.class);

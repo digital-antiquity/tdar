@@ -21,13 +21,13 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.service.billing.PricingOption;
 import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.utils.MathUtils;
 
 @Component
-public class InvoiceDao extends Dao.HibernateBase<Invoice>{
+public class InvoiceDao extends HibernateBase<Invoice>{
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

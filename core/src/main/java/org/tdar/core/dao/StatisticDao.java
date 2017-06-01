@@ -16,11 +16,11 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.utils.Pair;
 
 @Component
-public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
+public class StatisticDao extends HibernateBase<AggregateStatistic> {
 
     public StatisticDao() {
         super(AggregateStatistic.class);

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 
 /**
  * $Id$
@@ -21,7 +21,7 @@ import org.tdar.core.dao.base.Dao;
  * @version $Rev$
  */
 @Component
-public class OntologyNodeDao extends Dao.HibernateBase<OntologyNode> {
+public class OntologyNodeDao extends HibernateBase<OntologyNode> {
 
     public OntologyNodeDao() {
         super(OntologyNode.class);

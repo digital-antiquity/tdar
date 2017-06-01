@@ -87,7 +87,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.UserRegistration;
-import org.tdar.filestore.Filestore;
+import org.tdar.filestore.BaseFilestore;
 import org.tdar.functional.util.TdarExpectedConditions;
 import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.ProcessList;
@@ -558,7 +558,7 @@ public abstract class AbstractSeleniumWebITCase {
             name = filename;
         }
 
-        String fullname = String.format("%03d-%s.%s", screenidx, Filestore.BaseFilestore.sanitizeFilename(name), ext);
+        String fullname = String.format("%03d-%s.%s", screenidx, BaseFilestore.sanitizeFilename(name), ext);
         return fullname;
     }
 

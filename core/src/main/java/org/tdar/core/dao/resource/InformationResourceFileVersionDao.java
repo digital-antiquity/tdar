@@ -10,7 +10,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.base.Dao.HibernateBase;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;

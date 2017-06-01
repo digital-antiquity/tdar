@@ -12,7 +12,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 
 /**
  * $Id$
@@ -23,7 +23,7 @@ import org.tdar.core.dao.base.Dao;
  * @version $Revision$
  */
 @Component
-public class InstitutionDao extends Dao.HibernateBase<Institution> {
+public class InstitutionDao extends HibernateBase<Institution> {
     public InstitutionDao() {
         super(Institution.class);
     }

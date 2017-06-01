@@ -1,7 +1,5 @@
 package org.tdar.filestore.tasks;
 
-import org.tdar.filestore.tasks.Task.AbstractTask;
-
 public class CreateArchivalImage extends AbstractTask {
 
     private static final long serialVersionUID = 4941593661971235863L;

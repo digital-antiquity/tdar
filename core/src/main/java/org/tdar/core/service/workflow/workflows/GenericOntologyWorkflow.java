@@ -3,7 +3,6 @@ package org.tdar.core.service.workflow.workflows;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
-import org.tdar.core.service.workflow.workflows.Workflow.BaseWorkflow;
 
 /**
  * $Id$

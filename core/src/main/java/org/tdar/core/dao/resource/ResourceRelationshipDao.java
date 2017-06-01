@@ -9,10 +9,10 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 
 @Component
-public class ResourceRelationshipDao extends Dao.HibernateBase<ResourceRelationship> {
+public class ResourceRelationshipDao extends HibernateBase<ResourceRelationship> {
 
     public ResourceRelationshipDao() {
         super(ResourceRelationship.class);

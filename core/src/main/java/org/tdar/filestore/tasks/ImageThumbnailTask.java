@@ -26,7 +26,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.filestore.tasks.Task.AbstractTask;
 
 import ij.IJ;
 import ij.ImagePlus;

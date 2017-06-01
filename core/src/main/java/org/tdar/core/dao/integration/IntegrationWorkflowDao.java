@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.dao.TdarNamedQueries;
-import org.tdar.core.dao.base.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 
 @Component
-public class IntegrationWorkflowDao extends Dao.HibernateBase<DataIntegrationWorkflow> {
+public class IntegrationWorkflowDao extends HibernateBase<DataIntegrationWorkflow> {
 
     public IntegrationWorkflowDao() {
         super(DataIntegrationWorkflow.class);

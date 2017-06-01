@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.InformationResource;
 
 @Component("doiDao")
-public class DoiDao extends Dao.HibernateBase<InformationResource> {
+public class DoiDao extends HibernateBase<InformationResource> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
