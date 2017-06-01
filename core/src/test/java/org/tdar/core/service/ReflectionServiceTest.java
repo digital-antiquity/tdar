@@ -3,7 +3,6 @@ package org.tdar.core.service;
 import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Field;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -16,9 +15,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.service.bulk.CellMetadata;
 
 public class ReflectionServiceTest {
 
@@ -56,13 +53,6 @@ public class ReflectionServiceTest {
     // }
     // }
 
-    @Test
-    public void testBulkUpload() {
-        LinkedHashSet<CellMetadata> fields = reflectionService.findBulkAnnotationsOnClass(Document.class);
-        for (CellMetadata field : fields) {
-            logger.info(field.getName() + "|" + field.getDisplayName() + "|" + field.getMappedClass());
-        }
-    }
 
     @Test
     public void testCultureKeywordReferences() {

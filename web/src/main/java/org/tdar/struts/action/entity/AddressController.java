@@ -152,7 +152,7 @@ public class AddressController extends AbstractAuthenticatableAction implements 
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return getAuthorizationService().canEditCreator(getPersistable(), getAuthenticatedUser());
+        return getAuthorizationService().canEditCreator(getAuthenticatedUser(), getPersistable());
     }
 
     @Override

@@ -21,8 +21,10 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElem
 import static org.tdar.functional.util.TdarExpectedConditions.bootstrapModalGone;
 import static org.tdar.functional.util.TdarExpectedConditions.locatedElementCountEquals;
 import static org.tdar.functional.util.TdarExpectedConditions.locatedElementCountGreaterThan;
+import static org.tdar.functional.util.TdarExpectedConditions.stabilityOfElement;
 import static org.tdar.functional.util.TdarExpectedConditions.textToBePresentInElementsLocated;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Assert;
@@ -49,7 +51,8 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     By sheep = id("cbont_62580");
 
     @Before
-    public void setupIntegration() {
+    public void setupIntegration() throws IOException {
+        super.beforeTest();
         login();
         find(By.partialLinkText("Integrate")).click();
         waitForPageload();
@@ -287,6 +290,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     }
 
     private void removeDatasetByPartialName(String name) {
+        waitFor(stabilityOfElement(By.cssSelector("table.selected-datasets tbody tr"), 500));
         find("table.selected-datasets tbody tr ").stream()
                 .filter( elem -> elem.getText().contains(name))
                 .findFirst()

@@ -42,7 +42,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Rollback
     public void testAccountControllerChoicesNoAccount() throws TdarActionException {
         // test fence for Invoice
-    	BillingAccountSelectionAction controller = generateNewInitializedController(BillingAccountSelectionAction.class);
+        BillingAccountSelectionAction controller = generateNewInitializedController(BillingAccountSelectionAction.class);
         controller.prepare();
         String msg = null;
         try {
@@ -73,7 +73,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAccountControllerChoicesNoRightsToAssign() throws TdarActionException {
-    	BillingAccountSelectionAction controller = generateNewController(BillingAccountSelectionAction.class);
+        BillingAccountSelectionAction controller = generateNewController(BillingAccountSelectionAction.class);
         Invoice invoice = createTrivialInvoice();
         String msg = null;
         init(controller, createAndSaveNewPerson());

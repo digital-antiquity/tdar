@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("C3GraphSpec", function() {  
+describe("C3GraphSpec.js: C3GraphSpec", function() {
 
     it("should work when we call initC3Graph", function() {
        var options = null;

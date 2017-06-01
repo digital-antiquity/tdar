@@ -3,6 +3,7 @@
 <groups xmlns="http://www.isdc.ro/wro">
     <group name='default'>
         <css>/css/tdar-bootstrap.css</css>
+        <css>/css/tdar.dashboard.css</css>
         <css>/css/famfamfam.css</css>
         <css>/components/jquery.treeview/jquery.treeview.css</css>
         <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
@@ -28,6 +29,9 @@
         <!-- LICENSE: MIT /GPL 2.0 -->
         <css>/components/jquery-file-upload/css/jquery.fileupload-ui.css</css>
         <js>/components/blueimp-tmpl/js/tmpl.js</js>
+        <css>/components/bootstrap-datepicker-eyecon/css/datepicker.css</css>
+        <js>/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js</js>
+        
         <!--<js>/components/jquery-file-upload/js/vendor/jquery.ui.widget.js</js>-->
         <js>/components/jquery-file-upload/js/jquery.iframe-transport.js</js>
         <js>/components/jquery-file-upload/js/jquery.fileupload.js</js>
@@ -59,6 +63,7 @@
         <js>/components/leaflet-control-geocoder/dist/Control.Geocoder.js</js>
         <css>/components/leaflet-control-geocoder/dist/Control.Geocoder.css</css>
         <js>/js/tdar.core.js</js>
+        <js>/js/tdar.datepicker.js</js>
         <js>/js/tdar.upload.js</js>
         <js>/js/tdar.jquery-upload-validation.js</js>
         <js>/js/tdar.common.js</js>
@@ -99,6 +104,7 @@
         <js>/js/tdar.formValidateExtensions.js</js>
         <js>/includes/bindWithDelay.js</js>
         <js>/js/maps/tdar.worldmap.js</js>
+        <js>/js/tdar.bookmark.js</js>
         <js>/js/maps/tdar.leaflet.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/js-emca-5.1-polyfill.js</js>
@@ -116,7 +122,7 @@
         <!-- <js>/js/data-integration/ng-IntegrationLegacyFormController.js</js> -->
         <js>/js/data-integration/ng-IntegrationModalDialogController.js</js>
         <js>/js/data-integration/ng-IntegrationDataService.js</js>
-        <js>/js/data-integration/ng-RawDataDirective.js</js>
+        <js>/js/data-integration/ng-custom-directives.js</js>
         <js>/js/data-integration/ng-IntegrationCustomFilters.js</js>
         <js>/js/data-integration/ng-IntegrationValidationService.js</js>
         <js>/js/data-integration/ng-DatatableDirective.js</js>

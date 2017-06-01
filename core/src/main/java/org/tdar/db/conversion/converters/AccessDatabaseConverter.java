@@ -33,6 +33,8 @@ import com.healthmarketscience.jackcess.Index;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
+import com.healthmarketscience.jackcess.query.BaseSelectQuery;
+import com.healthmarketscience.jackcess.query.Query;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKBReader;
 
@@ -44,7 +46,7 @@ import com.vividsolutions.jts.io.WKBReader;
  * @version $Revision$
  * @latest $Date$
  */
-public class AccessDatabaseConverter extends DatasetConverter.Base {
+public class AccessDatabaseConverter extends AbstractDatabaseConverter {
     private static final String DB_PREFIX = "d";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -92,6 +94,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             notLinked.add(table.getName());
         }
 
+        int tableOrder = 0;
         for (String tableName : getDatabase().getTableNames()) {
 
             if (!notLinked.contains(tableName)) {
@@ -100,7 +103,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 continue;
             }
             // generate and sanitize new table name
-            DataTable dataTable = createDataTable(tableName);
+            DataTable dataTable = createDataTable(tableName, tableOrder);
+            tableOrder++;
             dataTableNameMap.put(tableName, dataTable);
             // drop the table if it has been there
             targetDatabase.dropTable(dataTable);
@@ -108,6 +112,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             Table currentTable = getDatabase().getTable(tableName);
 
             List<? extends Column> columnList = currentTable.getColumns();
+            int count = 0;
             for (Column currentColumn : columnList) {
                 DataTableColumnType dataType = DataTableColumnType.VARCHAR;
                 logger.info("INCOMING COLUMN: '{}'  ({})", currentColumn.getName(), currentColumn.getType());
@@ -145,7 +150,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                         dataType = DataTableColumnType.VARCHAR;
                 }
 
-                DataTableColumn dataTableColumn = createDataTableColumn(currentColumn.getName(), dataType, dataTable);
+                DataTableColumn dataTableColumn = createDataTableColumn(currentColumn.getName(), dataType, dataTable, count);
+                count++;
                 currentColumn.getProperties();
 
                 Object description_ = currentColumn.getProperties().getValue(PropertyMap.DESCRIPTION_PROP);
@@ -226,18 +232,21 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             getMessages().add(String.format("Database had the following linked tables that were NOT imported: %s", linked));
         }
 
-
+        setRelationships(extractRelationships(dataTableNameMap, linked));
+    }
+    
+    private Set<DataTableRelationship> extractRelationships(Map<String, DataTable> dataTableNameMap, Set<String> linked) throws IOException {
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (String tableName1 : getDatabase().getTableNames()) {
             for (String tableName2 : getDatabase().getTableNames()) {
                 if (tableName1.equals(tableName2)) {
                     continue;
                 }
-                
+
                 if (linked.contains(tableName1) || linked.contains(tableName2)) {
                     continue;
                 }
-                
+
                 for (Relationship relationship : getDatabase().getRelationships(getDatabase().getTable(tableName1), getDatabase().getTable(tableName2))) {
                     if (!tableName1.equals(relationship.getFromTable().getName())) {
                         continue;
@@ -283,9 +292,9 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                     logger.info("{}", relationshipToPersist);
                     relationships.add(relationshipToPersist);
                 }
-                setRelationships(relationships);
             }
         }
+        return relationships;
     }
 
     /**

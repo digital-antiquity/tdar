@@ -8,6 +8,7 @@ import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.KeywordType;
@@ -83,7 +84,7 @@ public class LODActionITCase extends AbstractControllerITCase {
     @Test
     public void testLodCollectionAPI() throws Exception {
         CollectionLinkedOpenDataAction controller = generateNewInitializedController(CollectionLinkedOpenDataAction.class);
-        ResourceCollection gk = genericService.findRandom(ResourceCollection.class, 1).get(0);
+        ResourceCollection gk = genericService.findRandom(SharedCollection.class, 1).get(0);
         controller.setId(gk.getId());
         prepareAndValid(controller, "/collection/");
 

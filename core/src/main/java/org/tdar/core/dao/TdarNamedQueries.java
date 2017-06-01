@@ -57,13 +57,16 @@ public interface TdarNamedQueries {
     String QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER = "dashboard.resourceByPerson";
     String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO = "rescol.accessible";
     String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
+    String QUERY_LIST_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.listAccessibleName";
     String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
     String QUERY_EDITABLE_RESOURCES = "resource.editable";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse";
-    String QUERY_COLLECTION_BY_PARENT = "collection.parent";
+    String QUERY_SHARED_COLLECTION_BY_PARENT = "sharedcollection.parent";
+    String QUERY_LIST_COLLECTION_BY_PARENT = "listcollection.parent";
     String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
-    String QUERY_COLLECTION_BY_AUTH_OWNER = "collection.authOwnerId_name";
+    String QUERY_SHARED_COLLECTION_BY_AUTH_OWNER = "sharedCollection.authOwnerId_name";
+    String QUERY_LIST_COLLECTION_BY_AUTH_OWNER = "listCollection.authOwnerId_name";
     String QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT = "collection.hiddenParent";
     String QUERY_EXTERNAL_ID_SYNC = "resource.externalId";
     String QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED = "adminStats.cultureKeywordControlled";
@@ -88,7 +91,8 @@ public interface TdarNamedQueries {
     String QUERY_DASHBOARD = "dashboard.sql";
     String QUERY_RESOURCES_BY_DECADE = "resources.byDecade";
     String QUERY_SPARSE_RESOURCE_LOOKUP = "resource.sparseLookup";
-    String QUERY_SPARSE_COLLECTION_LOOKUP = "resourceCollection.sparseLookup";
+    String QUERY_SPARSE_SHARED_COLLECTION_LOOKUP = "sharedCollection.sparseLookup";
+    String QUERY_SPARSE_LIST_COLLECTION_LOOKUP = "listCollection.sparseLookup";
     String SPACE_BY_PROJECT = "admin.size.project";
     String SPACE_BY_RESOURCE = "admin.size.resource";
     String SPACE_BY_COLLECTION = "admin.size.collection";
@@ -119,14 +123,16 @@ public interface TdarNamedQueries {
     String QUERY_RESOURCE_FIND_OLD_LIST = "resource.old";
     String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
     String DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY = "irfv.delete";
-    String COLLECTION_LIST_WITH_AUTHUSER = "collection.idlest.with.authuser";
+    String SHARED_COLLECTION_LIST_WITH_AUTHUSER = "sharedcollection.idlest.with.authuser";
+    String LIST_COLLECTION_LIST_WITH_AUTHUSER = "listcollection.idlest.with.authuser";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted";
     String QUERY_SPARSE_COLLECTION_RESOURCES = "query.sparse.collection.resources";
     String COLLECTION_VIEW = "collection.views";
     String CREATOR_VIEW = "creator.views";
     String QUERY_COLLECTION_CHILDREN = "resourceCollection.allChildren";
-    String QUERY_COLLECTION_CHILDREN_RESOURCES = "resourceCollection.allChildrenResources";
+    String QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES = "sharedCollection.allChildrenResources";
+    String QUERY_LIST_COLLECTION_CHILDREN_RESOURCES = "listCollection.allChildrenResources";
     String QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT = "resourceCollection.allChildrenResources_count";
     String QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION = "versions.verify";
     String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
@@ -158,8 +164,21 @@ public interface TdarNamedQueries {
     String MAPPED_RESOURCES = "query.mapped_resources";
     String COUNT_MAPPED_RESOURCES = "query.count_mapped_resources";
     String ALL_RESOURCES_IN_COLLECTION = "query.non_deleted_in_collection";
+    String CHECK_INVITES = "check.invites";
+    String ALL_INTERNAL_COLLECTIONS = "all.internalCollections";
     String FIND_DOWNLOAD_AUTHORIZATION = "delete.downloadAuthorization";
-    // raw SQL/HQL queries
+    String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
+    String FIND_RESOURCES_SHARED_WITH = "query.resources_shared_with";
+    String FIND_COLLECTIONS_SHARED_WITH = "query.collections_shared_with";
+    String FIND_RESOURCES_SHARED_WITH_USERS = "query.resources_shared_with_users";
+    String FIND_COLLECTIONS_SHARED_WITH_USERS = "query.collections_shared_with_users";
+
+    String  FIND_USERINVITES_BY_COLLECTION = "query.user_invites_by_collection";
+    String  FIND_USERINVITES_BY_USER = "query.user_invites_by_user";
+    String  FIND_USERINVITES_BY_RESOURCE = "query.find_user_invites_by_resource";
+    String FIND_ALTERNATE_CHILDRENS = "query.alternate_children";
+    String FIND_ALTERNATE_CHILDRENS_TREE = "query.alternate_children_tree";
+            // raw SQL/HQL queries
 
     /**
      * Static HQL and SQL queries that cannot be represented as annotations because they are either pure SQL or use String replacement.
@@ -167,7 +186,7 @@ public interface TdarNamedQueries {
     String QUERY_SQL_DASHBOARD = "select id, status, resource_type from resource " +
             "where id in " +
             "(select resource_id from collection_resource,collection, authorized_user " +
-            "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id " +
+            "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id and collection.status='ACTIVE'  " +
             "and user_id=:submitterId and general_permission_int > :effectivePermissions " +
             "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
 
@@ -185,8 +204,8 @@ public interface TdarNamedQueries {
             + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE' and irf.restriction = 'CONFIDENTIAL') as with_conf "
             + "from (select distinct resource_type from resource) as rt";
 
-    String QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION = "delete from whitelabel_collection where id = :id";
-    String QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL = "insert into whitelabel_collection(id) values(:id)";
+    String QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION = "update collection set collection_type= :type where id = :id";
+    String QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL = "update collection set collection_type='WHITELABEL' where id in (:id)";
 
     // generated HQL formats
     String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from creator where id=%1$s";
@@ -196,7 +215,7 @@ public interface TdarNamedQueries {
     // e.g."from Resource r1 where exists (from Resource r2 inner join r2.cultureKeywords ck where r2.id = r1.id and ck.id in (:idlist))"
     String QUERY_HQL_MANY_TO_MANY_REFERENCES = "from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
     // e.g. "from Resource r1 where submitter_id in (:idlist)"
-    String QUERY_HQL_MANY_TO_ONE_REFERENCES = "from %1$s r1 where %2$s.id in (:idlist)";
+    String QUERY_HQL_MANY_TO_ONE_REFERENCES = "from %1$s r1 where r1.%2$s.id in (:idlist)";
 
     String QUERY_HQL_COUNT_MANY_TO_MANY_REFERENCES = "select count(*) as referenceCount from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
     String QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES = "select count(*) as referenceCount from %1$s r1 where %2$s.id in (:idlist)";
@@ -210,7 +229,7 @@ public interface TdarNamedQueries {
             + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND "
             +
             " (res.submitter.id=:userId or exists "
-            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and "
+            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and rescol.status='ACTIVE' and "
             +
             " (TRUE=:admin or rescol.owner.id=:userId or exists ( "
             + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
@@ -220,7 +239,7 @@ public interface TdarNamedQueries {
     String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
             + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
             + " lower(ds.title) like :titleLookup and "
-            + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
+            + "(:collectionId=-1L or ds.id in (select distinct r.id from SharedCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.status='ACTIVE' and (rc.id=:collectionId or parentId=:collectionId))) and "
             + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
             + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
             + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
@@ -267,7 +286,6 @@ public interface TdarNamedQueries {
     String COUNT_ACTIVE_PERSISTABLE_BY_ID = "select count(id) from %s where status in ('ACTIVE')";
     String FIND_ACTIVE_PERSON_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
     String FIND_ACTIVE_INSTITUTION_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
-    String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
 
     String RESOURCE_ACCESS_COUNT_SQL = "select coalesce((select count(ras.id)  from resource_access_statistics ras where ras.resource_id='%1$s' and date_trunc('day',ras.date_accessed) >= '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(rad.count) from resource_access_day_agg rad where rad.resource_id='%1$s'),0)";
     String DOWNLOAD_COUNT_SQL = "select coalesce((select count(irfds.id)  from information_resource_file_download_statistics irfds where irfds.information_resource_file_id='%1$s' and irfds.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(fda.count) from file_download_day_agg fda where fda.information_resource_file_id='%1$s'),0)";
@@ -294,7 +312,18 @@ public interface TdarNamedQueries {
     String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id=project_id and information_resource.id in :resourceIds";
 
     String HOMEPAGE_GEOGRAPHIC = "select code, resource_type, sum(count), id from ( ( select code, count(*), r.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource r on r.id = rgk.resource_id left join information_resource ir on (ir.id = r.id and ir.inheriting_spatial_information = false) where (code !='') and r.status = 'ACTIVE' group by code, r.resource_type, gk.id ) union all select code, count(*), irr.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource p on p.id = rgk.resource_id join information_resource ir on (ir.project_id = p.id and ir.inheriting_spatial_information = true) join resource irr on (irr.id = ir.id) where (code !='') and irr.status = 'ACTIVE' group by code, irr.resource_type, gk.id ) as allrecs group by code, resource_type, id order by 1, 2";
+
     String DAILY_RESOURCE_STATS_CLEANUP = "delete from resource_access_statistics where date_trunc('day',date_accessed) < '%1$tY-%1$tm-%1$td' ";
-    
+
+    String QUERY_USERS_SHARED_WITH = "select id from tdar_user where id in " +
+            "    (select user_id from authorized_user where resource_collection_id  in " +
+            "    /* find direct collections where the owner is the person, or the authorized_user matches */" +
+            "        (select c.id from collection c left join authorized_user au on au.resource_collection_id=c.id where" +
+            "             c.status='ACTIVE' and (au.user_id=:userId and au.general_permission_int > :permission ) or c.owner_id=:userId " +
+            "     /* find child collections where the owner is the person, or the authorized_user matches */" +
+            "        union select collection_id from collection_parents where collection_id in (select c.id from collection c left join authorized_user au on au.resource_collection_id=c.id where " +
+            "            c.status='ACTIVE' and (au.user_id=:userId and au.general_permission_int > :permission ) or c.owner_id=:userId )" +
+            "    /*  find collections (likely internal) where the resource's submitter matches */" +
+            "     union select collection_id from collection_resource left join resource r on r.id=collection_resource.resource_id and r.status in ('ACTIVE','DRAFT') and r.submitter_id=:userId ))";
 
 }

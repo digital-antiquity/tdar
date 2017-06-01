@@ -16,6 +16,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
@@ -40,7 +41,7 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
     private SearchService<Person> searchService;
 
 
-    public LuceneSearchResultHandler<I> searchInstitution(String name, LuceneSearchResultHandler<I> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<I> searchInstitution(String name, LuceneSearchResultHandler<I> result, TextProvider provider) throws SearchException, IOException {
         InstitutionQueryBuilder iqb = new InstitutionQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
@@ -59,7 +60,7 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
         return StringUtils.equals(StringUtils.trim(query), "*");
     }
 
-    public LuceneSearchResultHandler<I> findPerson(String name, LuceneSearchResultHandler<I> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<I> findPerson(String name, LuceneSearchResultHandler<I> result, TextProvider provider) throws SearchException, IOException {
         PersonQueryBuilder pqb = new PersonQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
@@ -72,7 +73,7 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
         return result;
     }
 
-    public LuceneSearchResultHandler<I> findInstitution(String institution, LuceneSearchResultHandler<I> result, TextProvider provider, int min) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<I> findInstitution(String institution, LuceneSearchResultHandler<I> result, TextProvider provider, int min) throws SearchException, IOException {
         InstitutionQueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
         InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
         Institution testInstitution = new Institution(institution);
@@ -88,7 +89,7 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
         return result;
     }
 
-    public LuceneSearchResultHandler<I> findPerson(Person person_, String term, Boolean registered, LuceneSearchResultHandler<I> result, TextProvider provider, int min) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<I> findPerson(Person person_, String term, Boolean registered, LuceneSearchResultHandler<I> result, TextProvider provider, int min) throws SearchException, IOException {
         Person person = person_;
         if (person == null) {
             person = new Person();

@@ -18,8 +18,8 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.OntologyService;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
+import org.tdar.struts_base.action.TdarActionException;
 
 /**
  * $Id$

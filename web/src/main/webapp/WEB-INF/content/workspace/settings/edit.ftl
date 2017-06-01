@@ -1,8 +1,8 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
-
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+	<#import "/WEB-INF/macros/common.ftl" as common>
 <head>
     <title>${persistable.name!"Your Integration"}</title>
 </head>
@@ -25,9 +25,9 @@
     
             <div class="controls">
                 <label for="rdoheaderTrue" class="radio inline"><input type="radio" id="rdoheaderTrue" name="collection.customHeaderEnabled"
-                                                                        value="true" <@common.checkedif persistable.hidden false /> />Yes</label>
+                                                                        value="true" <@commonr.checkedif persistable.hidden false /> />Yes</label>
                 <label for="rdoheaderFalse" class="radio inline"><input type="radio" id="rdoheaderFalse" name="collection.customHeaderEnabled"
-                                                                         value="false" <@common.checkedif persistable.hidden true /> />No</label>
+                                                                         value="false" <@commonr.checkedif persistable.hidden true /> />No</label>
             </div>
         </div>
         

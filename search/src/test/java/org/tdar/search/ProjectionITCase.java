@@ -13,6 +13,8 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
@@ -23,7 +25,7 @@ public class ProjectionITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testExpermientalProjectionModel() throws SolrServerException, IOException, ParseException {
+    public void testExpermientalProjectionModel() throws SearchException, SearchIndexException, IOException, ParseException {
         SearchResult<Resource> result = new SearchResult<>(10000);
         result.setProjectionModel(ProjectionModel.LUCENE_EXPERIMENTAL);
         FacetWrapper facetWrapper = new FacetWrapper();
@@ -35,16 +37,16 @@ public class ProjectionITCase extends AbstractResourceSearchITCase {
         resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
         boolean seenCreator = false;
         for (Resource r : result.getResults()) {
-        	logger.debug("{} {}", r, r.isViewable());
-        	if (r instanceof InformationResource) {
-        		InformationResource ir = (InformationResource)r;
-        		logger.debug("\t{}", ir.getProject());
-        	}
-        	if (CollectionUtils.isNotEmpty(r.getPrimaryCreators())) {
-        	    seenCreator = true;
-        	}
-        	logger.debug("\t{}",r.getActiveLatitudeLongitudeBoxes());
-        	logger.debug("\t{}",r.getPrimaryCreators());
+            logger.debug("{} {}", r, r.isViewable());
+            if (r instanceof InformationResource) {
+                InformationResource ir = (InformationResource)r;
+                logger.debug("\t{}", ir.getProject());
+            }
+            if (CollectionUtils.isNotEmpty(r.getPrimaryCreators())) {
+                seenCreator = true;
+            }
+            logger.debug("\t{}",r.getActiveLatitudeLongitudeBoxes());
+            logger.debug("\t{}",r.getPrimaryCreators());
         }
         assertTrue(seenCreator);
     }

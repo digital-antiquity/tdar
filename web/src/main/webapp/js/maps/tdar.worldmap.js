@@ -35,7 +35,10 @@ TDAR.worldmap = (function(console, $, ctx) {
             for (var i = 0; i < data.length; i++) {
                 geodata[data[i].value] = data[i].count;
                 if (data[i].value.length < 4) {
-                    max += parseInt(data[i].count);
+                    var cnt = parseInt(data[i].count);
+                    if (cnt > max) {
+                        max = cnt;
+                    }
                 }
             }
         }

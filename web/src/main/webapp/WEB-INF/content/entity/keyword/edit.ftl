@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 
 <h3><@s.text name="${keywordType.localeKey}"/><span class="red">:${keyword.label}</span></h3>
 

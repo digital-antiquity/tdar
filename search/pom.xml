@@ -9,13 +9,12 @@
     <name>tDAR (search)</name>
 
     <properties>
-        <lucene.version>6.1.0</lucene.version>
         <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>15.1.0-OBSIDIAN-DROPBOX-SNAPSHOT</version>
+        <version>16.0.1-PREHISTORIC-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <!-- 3rd party dependencies and libraries -->
@@ -51,11 +50,6 @@
                     <groupId>com.fasterxml.jackson.dataformat</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
@@ -111,6 +105,9 @@
                         <configuration>
                             <!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
                             <outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                            <excludes>
+                                <exclude>**/hibernate-ehcache.xml</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
@@ -121,6 +118,9 @@
                         <configuration>
                             <finalName>tdar-search-test</finalName>
                             <outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                            <excludes>
+                                <exclude>**/hibernate-ehcache.xml</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -211,7 +211,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.9</version>
+                <version>${maven-eclipse-version}</version>
                 <configuration>
                     <downloadSources>true</downloadSources>
                     <downloadJavadocs>true</downloadJavadocs>

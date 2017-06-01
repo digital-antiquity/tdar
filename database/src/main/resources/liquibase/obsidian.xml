@@ -238,7 +238,6 @@
             <column name="bot" type="bigint" />
         </addColumn>
     </changeSet>
-    
     <changeSet id="obsidian-23" author="abrin">
         <addColumn tableName="collection">
             <column name="alternate_parent_id" type='bigint' />
@@ -259,5 +258,4 @@
             <column name="day" type='int' />
         </addColumn>
     </changeSet>
-
 </databaseChangeLog>

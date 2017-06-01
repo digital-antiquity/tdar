@@ -15,7 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.commons.lang3.StringUtils;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -33,16 +33,16 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.external.session.SessionData;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.struts.action.api.search.RSSSearchAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 @Transactional
 public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
-
-    @Autowired
-    private RSSSearchAction controller;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -92,7 +92,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRssDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
+    public void testRssDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException, SearchIndexException, IOException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
         RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
@@ -105,7 +105,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRss404() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
+    public void testRss404() throws InstantiationException, IllegalAccessException, TdarActionException, SearchIndexException, IOException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
         RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
@@ -120,7 +120,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testGeoRSS() throws InstantiationException, IllegalAccessException, TdarActionException, IOException, SolrServerException {
+    public void testGeoRSS() throws InstantiationException, IllegalAccessException, TdarActionException, IOException, SearchIndexException {
         InformationResource document = generateDocumentWithUser();
         document.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(84.37156598282918, 57.89149735271034, -131.484375, 27.0703125));
         genericService.saveOrUpdate(document);
@@ -145,7 +145,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertNotEmpty(controller.getResults());
         String xml = IOUtils.toString(controller.getInputStream());
         logger.debug(xml);
-        assertTrue(xml.contains("link rel=\"enclosure\" type=\"application/vnd.ms-excel"));
+        StringUtils.containsAny(xml, "<link rel=\"enclosure\" type=\"application/pdf\"", "<link rel=\"enclosure\" type=\"application/vnd.ms-excel");
     }
 
     private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {
@@ -162,7 +162,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback(true)
     public void testRssInvalidCharacters()
-            throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException, ParserConfigurationException {
+            throws InstantiationException, IllegalAccessException, TdarActionException, SearchIndexException, IOException, ParserConfigurationException {
         InformationResource document = generateDocumentWithUser();
         document.setDescription("a\u0001a\u000B");
         genericService.saveOrUpdate(document);
@@ -193,7 +193,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testFindResourceBuildRss() throws XpathException, SAXException, IOException, InterruptedException, TdarActionException, SolrServerException {
+    public void testFindResourceBuildRss() throws XpathException, SAXException, IOException, InterruptedException, TdarActionException, SearchIndexException {
         ActivityManager.getInstance().getActivityQueueClone().clear();
         Resource r = genericService.find(Resource.class, 3074L);
         r.setStatus(Status.ACTIVE);

@@ -26,6 +26,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Cache;
@@ -332,16 +333,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         this.modifiedBy = modifiedBy;
     }
 
-    @Override
-    public boolean isDeleted() {
-        return status == Status.DELETED;
-    }
-
-    @Override
-    public boolean isActive() {
-        return status == Status.ACTIVE;
-    }
-
     /**
      * @return the status
      */
@@ -426,21 +417,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         return lastModified;
     }
 
-    @Override
-    public boolean isDraft() {
-        return status == Status.DRAFT;
-    }
-
-    @Override
-    public boolean isFlagged() {
-        return status == Status.FLAGGED;
-    }
-
-    @Override
-    public boolean isDuplicate() {
-        return status == Status.DUPLICATE;
-    }
-
     public Set<Coupon> getCoupons() {
         return coupons;
     }
@@ -481,4 +457,39 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     public String availableString() {
         return String.format("f: %s s: %s", totalFiles - filesUsed, totalSpaceInBytes - spaceUsedInBytes);
     }
+
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isDeleted() {
+        return status == Status.DELETED;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isDraft() {
+        return status == Status.DRAFT;
+    }
+
+    @Override
+    public boolean isDuplicate() {
+        return status == Status.DUPLICATE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isFlagged() {
+        return status == Status.FLAGGED;
+    }
+
 }

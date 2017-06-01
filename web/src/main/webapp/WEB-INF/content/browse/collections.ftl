@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
-    <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+    <#import "/WEB-INF/macros/search-macros.ftl" as search>
 <#-- @search.initResultPagination/ -->
     <#global searchResultsLayout=true>
 <head>

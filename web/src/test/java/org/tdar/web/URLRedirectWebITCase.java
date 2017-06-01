@@ -1,8 +1,10 @@
 package org.tdar.web;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.utils.TestConfiguration;
 
+@Ignore("these tests are no longer valid because we're not redirecting to insecure pages")
 public class URLRedirectWebITCase extends AbstractWebTestCase {
 
     public String getSecureUrl(String path) {

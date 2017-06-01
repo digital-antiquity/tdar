@@ -27,7 +27,11 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -229,8 +233,10 @@ public class AuthorizationService implements Accessible {
     public boolean isAllowedToEditInherited(TdarUser person, Resource resource) {
         GeneralPermissions permission = GeneralPermissions.MODIFY_METADATA;
         List<Long> ids = new ArrayList<>();
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-            ids.addAll(collection.getParentIds());
+        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+            if (collection instanceof SharedCollection) {
+                ids.addAll(((SharedCollection)collection).getParentIds());
+            }
             ids.add(collection.getId());
         }
         return authorizedUserDao.isAllowedTo(person, permission, ids);
@@ -256,7 +262,10 @@ public class AuthorizationService implements Accessible {
             return true;
         }
 
-        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADMINISTER_GROUP);
+        if (persistable instanceof ListCollection) {
+            return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADMINISTER_GROUP);
+        }
+        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADMINISTER_SHARE);
     }
 
     /**
@@ -280,7 +289,12 @@ public class AuthorizationService implements Accessible {
             return true;
         }
 
-        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADMINISTER_GROUP);
+        GeneralPermissions permission = GeneralPermissions.ADMINISTER_SHARE;
+        if (persistable instanceof ListCollection) {
+            permission = GeneralPermissions.ADMINISTER_GROUP;
+        }
+
+        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, permission);
     }
 
     /**
@@ -341,6 +355,8 @@ public class AuthorizationService implements Accessible {
             return canEditCollection(authenticatedUser, (ResourceCollection) item);
         } else if (item instanceof Institution) {
             return canEditInstitution(authenticatedUser, (Institution) item);
+        } else if (item instanceof DataIntegrationWorkflow){
+            return canEditWorkflow(authenticatedUser,(DataIntegrationWorkflow) item);
         } else {
             return can(InternalTdarRights.EDIT_ANYTHING, authenticatedUser);
         }
@@ -378,8 +394,10 @@ public class AuthorizationService implements Accessible {
     public boolean canView(TdarUser authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
-        } else if (item instanceof ResourceCollection) {
-            return canViewCollection((ResourceCollection) item, authenticatedUser);
+        } else if (item instanceof VisibleCollection) {
+            return canViewCollection( authenticatedUser, (VisibleCollection) item);
+        } else if (item instanceof DataIntegrationWorkflow) {
+            return canViewWorkflow(authenticatedUser,(DataIntegrationWorkflow) item);
         } else {
             return can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser);
         }
@@ -465,18 +483,18 @@ public class AuthorizationService implements Accessible {
      * Checks whether a @link Person has rights to download a given @link InformationResourceFileVersion
      */
     @Transactional(readOnly = true)
-    public boolean canDownload(InformationResourceFileVersion irFileVersion, TdarUser person) {
+    public boolean canDownload( TdarUser person, InformationResourceFileVersion irFileVersion) {
         if (irFileVersion == null) {
             return false;
         }
-        return canDownload(irFileVersion.getInformationResourceFile(), person);
+        return canDownload(person, irFileVersion.getInformationResourceFile());
     }
 
     /*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFile
      */
     @Transactional(readOnly = true)
-    public boolean canDownload(InformationResourceFile irFile, TdarUser person) {
+    public boolean canDownload(TdarUser person, InformationResourceFile irFile) {
         if (irFile == null) {
             return false;
         }
@@ -494,12 +512,12 @@ public class AuthorizationService implements Accessible {
      * Visible collections
      */
     @Transactional(readOnly = true)
-    public boolean canViewCollection(ResourceCollection collection, TdarUser person) {
+    public boolean canViewCollection(TdarUser person, VisibleCollection collection) {
         if (collection == null) {
             return false;
         }
 
-        if (collection.isShared() && !collection.isHidden()) {
+        if (!collection.isHidden() && collection.getStatus() == Status.ACTIVE) {
             return true;
         }
 
@@ -535,7 +553,7 @@ public class AuthorizationService implements Accessible {
             boolean viewable = setupViewable(authenticatedUser, item);
             if (item instanceof ResourceCollection) {
                 logger.trace("item is resource collection: {}", p);
-                if (((ResourceCollection) item).isShared() && !((ResourceCollection) item).isHidden()) {
+                if (item instanceof VisibleCollection  && !((VisibleCollection) item).isHidden()) {
                     viewable = true;
                 }
             }
@@ -588,7 +606,7 @@ public class AuthorizationService implements Accessible {
         Boolean viewable = null;
         for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
             // if (viewable == null) {
-            viewable = canDownload(irf, p);
+            viewable = canDownload(p, irf);
             // }
 
             irf.setViewable(viewable);
@@ -640,7 +658,7 @@ public class AuthorizationService implements Accessible {
             return;
         }
         InformationResourceFile irFile = informationResourceFileVersion.getInformationResourceFile();
-        if (irFile.isPublic() || canDownload(irFile, authenticatedUser)) {
+        if (irFile.isPublic() || canDownload( authenticatedUser,irFile)) {
             visible = true;
         }
         for (InformationResourceFileVersion vers : irFile.getLatestVersions()) {
@@ -682,7 +700,7 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canEditWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
+    public boolean canEditWorkflow(TdarUser authenticatedUser, DataIntegrationWorkflow workflow) {
         if (PersistableUtils.isNullOrTransient(workflow)) {
             return true;
         }
@@ -699,17 +717,17 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canViewWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
+    public boolean canViewWorkflow(TdarUser authenticatedUser, DataIntegrationWorkflow workflow) {
 
         if (!workflow.isHidden()) {
             return true;
         }
-        return canEditWorkflow(workflow, authenticatedUser);
+        return canEditWorkflow(authenticatedUser, workflow);
 
     }
 
     @Transactional(readOnly = true)
-    public boolean canEditAccount(BillingAccount account, TdarUser authenticatedUser) {
+    public boolean canEditAccount(TdarUser authenticatedUser, BillingAccount account) {
         if (can(InternalTdarRights.EDIT_BILLING_INFO, authenticatedUser)) {
             return true;
         }
@@ -722,8 +740,8 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canAdministerAccount(BillingAccount account, TdarUser authenticatedUser) {
-        return canEditAccount(account, authenticatedUser);
+    public boolean canAdministerAccount(TdarUser authenticatedUser, BillingAccount account) {
+        return canEditAccount(authenticatedUser,account);
     }
 
     @Transactional(readOnly = true)
@@ -801,7 +819,7 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canViewBillingAccount(BillingAccount account, TdarUser authenticatedUser) {
+    public boolean canViewBillingAccount(TdarUser authenticatedUser,BillingAccount account) {
         if (PersistableUtils.isNullOrTransient(authenticatedUser)) {
             return false;
         }
@@ -818,7 +836,7 @@ public class AuthorizationService implements Accessible {
     }
 
     @Transactional(readOnly = true)
-    public boolean canEditCreator(Creator<?> persistable, TdarUser tdarUser) {
+    public boolean canEditCreator(TdarUser tdarUser, Creator<?> persistable) {
         if (PersistableUtils.isNullOrTransient(tdarUser)) {
             return false;
         }
@@ -831,6 +849,30 @@ public class AuthorizationService implements Accessible {
             return true;
         }
         return false;
+    }
+
+    public boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd) {
+        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user) || user.equals(collectionToAdd.getOwner())) {
+            return true;
+        }
+        GeneralPermissions permission = GeneralPermissions.ADD_TO_COLLECTION;
+        if (collectionToAdd instanceof SharedCollection) {
+            permission = GeneralPermissions.ADD_TO_SHARE;
+        }
+        return authorizedUserDao.isAllowedTo(user, collectionToAdd, permission);
+    }
+
+    public boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user) {
+        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user) || user.equals(collection.getOwner())) {
+            return true;
+        }
+
+        
+        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
+        if (collection instanceof SharedCollection) {
+            permission = GeneralPermissions.REMOVE_FROM_SHARE;
+        }
+        return authorizedUserDao.isAllowedTo(user, collection, permission);
     }
 
 }

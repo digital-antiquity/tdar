@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.repeatrow methods", function() {
+describe("RepeatrowSpec.js: tests for TDAR.repeatrow methods", function() {
     var $container = null;
 
     beforeEach(function(){

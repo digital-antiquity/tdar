@@ -7,6 +7,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
@@ -24,7 +25,7 @@ public class ResourceAnnotationKeySearchService extends AbstractSearchService {
     private SearchService<ResourceAnnotationKey> searchService;
 
     public SearchResultHandler<ResourceAnnotationKey> buildAnnotationSearch(String term, LuceneSearchResultHandler<ResourceAnnotationKey> result, int min,
-            TextProvider provider) throws ParseException, SolrServerException, IOException {
+            TextProvider provider) throws SearchException, IOException {
         ResourceAnnotationKeyQueryBuilder q = new ResourceAnnotationKeyQueryBuilder();
 
         // only return results if query length has enough characters

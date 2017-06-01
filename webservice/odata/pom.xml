@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>odata</artifactId>
+	<packaging>war</packaging>
+	<name>tDAR (OData)</name>
+
+	<properties>
+		<odata4j.version>0.7.0</odata4j.version>
+		<jersey.version>1.19.3</jersey.version>
+        <skipJetty>false</skipJetty>
+	</properties>
+	<parent>
+		<groupId>org.tdar</groupId>
+		<artifactId>web-base</artifactId>
+		<version>16.0.1-PREHISTORIC-SNAPSHOT</version>
+		<relativePath>../../web-base/pom.xml</relativePath>
+	</parent>
+
+	<prerequisites>
+		<maven>3.1.0</maven>
+	</prerequisites>
+	<organization>
+		<name>The Digital Archaeological Record</name>
+		<url>http://www.tdar.org</url>
+	</organization>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-core</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-client</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-server</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<!-- 3rd party dependencies and libraries -->
+	<dependencies>
+		<dependency>
+			<groupId>org.tdar</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.tdar</groupId>
+			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-junit4</artifactId>
+			<version>2.5.1</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>junit</artifactId>
+					<groupId>junit</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.jmock</groupId>
+			<artifactId>jmock-legacy</artifactId>
+			<version>2.5.1</version>
+			<scope>test</scope>
+			<!-- LICENSE: MIT/BSD VARIENT -->
+		</dependency>
+		<!-- OData (odata4j) Stuff: Begin -->
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-core</artifactId>
+			<version>${odata4j.version}</version>
+			<!-- LICENSE: APACHE 2.0 -->
+			<exclusions>
+				<exclusion>
+					<artifactId>javax.persistence</artifactId>
+					<groupId>org.eclipse.persistence</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>eclipselink</artifactId>
+					<groupId>org.eclipse.persistence</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>joda-time</artifactId>
+					<groupId>joda-time</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-jersey</artifactId>
+			<version>${odata4j.version}</version>
+			<!-- LICENSE: APACHE 2.0 -->
+		</dependency>
+		<dependency>
+			<groupId>org.odata4j</groupId>
+			<artifactId>odata4j-fit</artifactId>
+			<version>${odata4j.version}</version>
+			<!-- LICENSE: APACHE 2.0 -->
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${jersey.version}</version>
+			<!-- LICENSE: CDDL / GPL 2.0 -->
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-spring</artifactId>
+			<version>${jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-context</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-aop</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>tdar-odata</finalName>
+		<resources>
+			<!-- We only want a small set of files to be filtered. NOTE: These files 
+				are NOT read into maven properties for interpolation, they are just the set 
+				of files where any interpolated variables will be rewritten according to 
+				the currently loaded set of maven properties. To define interpolated variables, 
+				the file or variable has to be added to <filters></filters> XXX: only files 
+				that need to be rewritten should be included here -->
+			<resource>
+				<!-- switch filtering off for all but the desired set -->
+				<filtering>false</filtering>
+				<directory>${basedir}/src/main/resources</directory>
+				<excludes>
+					<exclude>tdar.properties</exclude>
+					<exclude>crowd.properties</exclude>
+					<exclude>hibernate.properties</exclude>
+					<exclude>common.json</exclude>
+					<exclude>liquibase.properties</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<!-- And on for the set of files -->
+				<!-- Having to do it as mutually exclusive but that's how Maven works -->
+				<!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+				<filtering>true</filtering>
+				<directory>${basedir}/src/main/resources</directory>
+				<includes>
+					<include>tdar.properties</include>
+					<include>crowd.properties</include>
+					<include>hibernate.properties</include>
+					<include>common.json</include>
+					<include>liquibase.properties</include>
+				</includes>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>${basedir}/src/main/webapp</directory>
+			</testResource>
+			<!-- <testResource> <directory>src/main/resources</directory> <filtering>true</filtering> 
+				</testResource> -->
+			<testResource>
+				<directory>${basedir}/src/test/resources</directory>
+			</testResource>
+		</testResources>
+		<plugins>
+	        <plugin>
+	          <artifactId>maven-remote-resources-plugin</artifactId>
+	          <version>1.5</version>
+	          <executions>
+	              <execution>
+	                <id>process-database-resources</id>
+	                <goals>
+	                  <goal>process</goal>
+	                </goals>
+	                <configuration>
+	   				 <attachToMain>false</attachToMain>
+		  			  <attachToTest>false</attachToTest>
+					  <outputDirectory>target/</outputDirectory>
+	                  <resourceBundles>
+	                    <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
+	                  </resourceBundles>
+	                </configuration>
+	              </execution>
+	          </executions>
+	        </plugin>
+			<plugin>
+				<groupId>org.glassfish</groupId>
+				<artifactId>maven-embedded-glassfish-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<goalPrefix>glassfish</goalPrefix>
+					<app>target/ROOT</app>
+					<name>tDAR</name>
+					<port>8080</port>
+					<contextRoot>/</contextRoot>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>${maven-war-version}</version>
+				<configuration>
+					<!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
+                    <!-- <outputDirectory>${webapp.deploy.dir}</outputDirectory> -->
+					<webResources>
+						<resource>
+							<directory>target/generated/webapp</directory>
+							<targetPath>/</targetPath>
+							<filtering>false</filtering>
+						</resource>
+					</webResources>
+					<!--<webXml>${webXmlPath}</webXml> -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire-failsafe.version}</version>
+				<configuration>
+					<excludes>
+						<exclude>**/experimental/*.java</exclude>
+					</excludes>
+					<skip>${maven.test.skip}</skip>
+					<runOrder>alphabetical</runOrder>
+					<systemProperties>
+						<property>
+							<name>maven.version</name>
+							<value>${maven.version}</value>
+						</property>
+						<property>
+							<name>maven.home</name>
+							<value>${preparedMavenHome}</value>
+						</property>
+						<property>
+							<name>maven.it.global-settings.dir</name>
+							<value>${project.build.testOutputDirectory}</value>
+						</property>
+					</systemProperties>
+					<!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
+						</includes> -->
+					<argLine>${jvm.args}
+						-DenableContextSwitchingConfig=true</argLine>
+					<junitArtifactName>junit:junit-dep</junitArtifactName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${surefire-failsafe.version}</version>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+							<reportsDirectory>target/failsafe-reports/web</reportsDirectory>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<runOrder>alphabetical</runOrder>
+					<systemPropertyVariables>
+						<display.port>${display.port}</display.port>
+					</systemPropertyVariables>
+					<argLine>${jvm.args}
+						-DenableContextSwitchingConfig=true</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
+				<!-- with this plugin we can do the following to push our war file out 
+					to the test server -->
+				<!-- mvn clean package tomcat7:redeploy -P faims_test,default -Dserver="FAIMS 
+					Test Server" -->
+				<!-- note we are using the appropropriate properties declared in the 
+					property file in the profile dir: -->
+				<!-- /src/main/release/profiles/ -->
+				<!-- there is a nice write up here: http://www.javathinking.com/2013/05/deploying-to-tomcat-7-with-maven.html -->
+				<!-- a point to remember is that the latest version of tomcat doesn't 
+					allow a role to use both manager gui and manager scripts -->
+				<!-- so we are reduced to a manger scripts role for this deployment -->
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<server>${tomcat.server.id}</server>
+					<url>${tomcat.server.url}</url>
+					<path>/</path>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>test</id>
+			<build>
+				<defaultGoal>surefire:test</defaultGoal>
+				<filters>
+					<filter>src/test/resources/hibernate.properties</filter>
+					<filter>src/main/resources/liquibase.properties</filter>
+				</filters>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>properties-maven-plugin</artifactId>
+						<version>1.0-alpha-2</version>
+						<executions>
+							<execution>
+								<phase>initialize</phase>
+								<goals>
+									<goal>read-project-properties</goal>
+								</goals>
+								<configuration>
+									<files>
+										<file>src/test/resources/hibernate.properties</file>
+									</files>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<properties>
+				<jetty.port>8180</jetty.port>
+				<jetty.ssl.port>8143</jetty.ssl.port>
+				<jetty.stop.port>12920</jetty.stop.port>
+			</properties>
+		</profile>
+
+        <profile>
+            <id>setup-new-instance</id>
+            <build>
+				<defaultGoal>process-resources</defaultGoal>
+                <plugins>
+		            <plugin>
+		                <artifactId>maven-remote-resources-plugin</artifactId>
+		                <version>1.5</version>
+		                <executions>
+		                    <execution>
+		                        <id>process-resources</id>
+		                        <goals>
+		                            <goal>process</goal>
+		                        </goals>
+		                        <configuration>
+		                            <attachToTest>true</attachToTest>
+		                            <attachToMain>true</attachToMain>
+									<outputDirectory>${project.build.directory}/templates</outputDirectory>
+		                            <resourceBundles>
+		                                <resourceBundle>org.tdar:templates:${project.version}</resourceBundle>
+		                            </resourceBundles>
+		                        </configuration>
+		                    </execution>
+		                </executions>
+		            </plugin>
+					
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy
+                                            failOnError="false"
+                                            file="target/templates/crowd.properties.template"
+                                            tofile="src/main/resources/crowd.properties" />
+                                        <copy
+                                            failOnError="false"
+                                            file="target/templates/ldap.properties.template"
+                                            tofile="src/main/resources/ldap.properties" />
+                                        <copy
+                                            file="target/templates/hibernate.properties.template"
+                                            tofile="src/main/resources/hibernate.properties" />
+                                        <copy
+                                            file="target/templates/log4j2.xml.template"
+                                            tofile="src/main/resources/log4j2.xml" />
+                                        <copy
+                                            failOnError="false"
+                                            file="target/templates/tdar.properties.template"
+                                            tofile="src/main/resources/tdar.properties" />
+                                        <copy
+                                            file="target/templates/spring-local-settings.xml.template"
+                                            tofile="src/main/resources/spring-local-settings.xml" />
+                                        <copy
+                                            failOnError="false"
+                                            file="target/templates/hibernate-ehcache.xml.template"
+                                            tofile="src/main/resources/hibernate-ehcache.xml" />
+                                        <echo
+                                            message="the following can be used to grab all of the config files into a tar from an existing repo" />
+                                        <echo
+                                            message=" hg status --all | grep 'I ' | grep -v 'I target/' | awk '{print substr($0, index($0, $2))}' | tar -cvzf ../backup.tgz -T -" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+	</profiles>
+</project>

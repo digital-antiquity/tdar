@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.EmailMessageType;
 
 import com.opensymphony.xwork2.Preparable;

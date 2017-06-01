@@ -30,8 +30,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -41,8 +40,8 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
@@ -199,6 +198,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
 
         context.setValueStack(stack);
         ActionContext.setContext(context);
+        
         return controller;
     }
 
@@ -235,6 +235,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         if (controller != null) {
             TdarUser user_ = null;
             controller.setSessionData(getSessionData());
+            
             if ((user != null) && PersistableUtils.isTransient(user)) {
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {
@@ -309,13 +310,13 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
     }
 
     public void addAuthorizedUser(Resource resource, TdarUser person, GeneralPermissions permission) {
-        AuthorizedUser authorizedUser = new AuthorizedUser(person, permission);
-        ResourceCollection internalResourceCollection = resource.getInternalResourceCollection();
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(),person, permission);
+        InternalCollection internalResourceCollection = resource.getInternalResourceCollection();
         if (internalResourceCollection == null) {
-            internalResourceCollection = new ResourceCollection(CollectionType.INTERNAL);
+            internalResourceCollection = new InternalCollection();
             internalResourceCollection.setOwner(person);
             internalResourceCollection.markUpdated(person);
-            resource.getResourceCollections().add(internalResourceCollection);
+            resource.getInternalCollections().add(internalResourceCollection);
             genericService.save(internalResourceCollection);
         }
         internalResourceCollection.getAuthorizedUsers().add(authorizedUser);

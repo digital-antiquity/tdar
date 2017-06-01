@@ -36,7 +36,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.ExcelWorkbookWriter;
+import org.tdar.core.service.excel.ExcelWorkbookWriter;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.utils.PersistableUtils;
@@ -270,7 +270,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             }
         }
 
-        workbookWriter.addDataRow(summarySheet, currentRow + 4, 1,Arrays.asList("JSON:",rawIntegration));
+        if (rawIntegration.length() < workbookWriter.getMaxTextLengthPerCell()) { 
+            workbookWriter.addDataRow(summarySheet, currentRow + 4, 1,Arrays.asList("JSON:",rawIntegration));
+        }
         // auto-sizing columns
         for (int i = 0; i < max; i++) {
             if (! (summarySheet instanceof SXSSFSheet)) {

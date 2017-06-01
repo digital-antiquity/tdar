@@ -31,8 +31,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.BillingAccountDao;
-import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.InvoiceDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
@@ -492,8 +492,8 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Invoice, Invoi
 
     @Transactional(readOnly = false)
     public void completeInvoice(Invoice invoice) {
-    	logger.debug("completing invoice");
-    	getDao().completeInvoice(invoice);
+        logger.debug("completing invoice");
+        getDao().completeInvoice(invoice);
 
     }
 

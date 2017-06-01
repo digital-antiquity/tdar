@@ -25,7 +25,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.struts.action.cart.CartApiController;
+import org.tdar.struts.action.api.cart.CartApiController;
 import org.tdar.struts.action.cart.CartBillingAccountController;
 import org.tdar.struts.action.cart.CartController;
 import org.tdar.struts.action.cart.InvoiceController;
@@ -309,9 +309,9 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         doc =  genericService.find(Document.class, docId);
         AuthorizedUser user = null;
         for (AuthorizedUser au : doc.getInternalResourceCollection().getAuthorizedUsers()) {
-        	if (au.getUser().getId().equals(getUserId())) {
-        		user = au;
-        	}
+            if (au.getUser().getId().equals(getUserId())) {
+                user = au;
+            }
         }
         assertNotNull(user);
         assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());

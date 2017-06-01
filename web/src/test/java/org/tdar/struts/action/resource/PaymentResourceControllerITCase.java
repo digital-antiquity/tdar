@@ -21,8 +21,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -32,10 +31,10 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
@@ -88,10 +87,10 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.saveOrUpdate(account);
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
-        ResourceCollection rCollection = generateResourceCollection("test", "test", CollectionType.SHARED, true,
-                Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
+        SharedCollection rCollection = generateResourceCollection("test", "test", true,
+                Arrays.asList(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
                 getAdminUser(), Arrays.asList(dataset), null);
-        dataset.getResourceCollections().add(rCollection);
+        dataset.getSharedCollections().add(rCollection);
         dataset.setSubmitter(getBasicUser());
         genericService.saveOrUpdate(rCollection);
 
@@ -102,7 +101,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.refresh(ds);
         accountService.updateTransientAccountInfo(ds);
         logger.debug("accnt:{}", ds.getAccount());
-        assertNotEmpty(ds.getResourceCollections());
+        assertNotEmpty(ds.getSharedCollections());
         ds = null;
         DatasetController dc = generateNewInitializedController(DatasetController.class, getBasicUser());
         dc.setId(id);
@@ -161,7 +160,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         Assert.assertTrue(CollectionUtils.isEmpty(controller.getActiveAccounts()));
         initControllerFields();
-        Assert.assertTrue(controller.isPayPerIngestEnabled());
+        Assert.assertTrue(controller.getConfig().isPayPerIngestEnabled());
 
         getLogger().trace("controller:" + controller);
         getLogger().trace("controller.resource:" + controller.getResource());
@@ -211,7 +210,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         }
         if (enabled) {
             Assert.assertFalse(rc.isAllowedToCreateResource());
-            Assert.assertTrue(rc.isPayPerIngestEnabled());
+            Assert.assertTrue(rc.getConfig().isPayPerIngestEnabled());
         }
         Assert.assertNull(tdae);
         return result;

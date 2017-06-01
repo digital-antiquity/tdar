@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 
@@ -12,11 +12,13 @@ public class ResourceExportProxy implements Serializable {
     private static final long serialVersionUID = -1788611236953747372L;
 
     private BillingAccount account;
-    private ResourceCollection collection;
+    private SharedCollection collection;
     private List<Resource> resources;
 
     private TdarUser requestor;
 
+    public ResourceExportProxy() {}
+    
     public ResourceExportProxy(TdarUser requestor) {
         this.setRequestor(requestor);
     }
@@ -29,11 +31,11 @@ public class ResourceExportProxy implements Serializable {
         this.account = account;
     }
 
-    public ResourceCollection getCollection() {
+    public SharedCollection getCollection() {
         return collection;
     }
 
-    public void setCollection(ResourceCollection collection) {
+    public void setCollection(SharedCollection collection) {
         this.collection = collection;
     }
 

@@ -24,12 +24,12 @@ import org.slf4j.LoggerFactory;
  * 
  * <code>
  * <filter>
- * 	<filter-name>bypass-filters-filter</filter-name>
+ *     <filter-name>bypass-filters-filter</filter-name>
  *  <filter-class>org.tdar.web.BypassFiltersFilter</filter-class>
  * </filter>
  * <filter-mapping>
- * 	<filter-name>bypass-filters-filter</filter-name>
- * 	<url-pattern>/services/*</url-pattern>
+ *     <filter-name>bypass-filters-filter</filter-name>
+ *     <url-pattern>/services/*</url-pattern>
  * </filter-mapping>
  * </code>
  * 

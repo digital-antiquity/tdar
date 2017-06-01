@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -32,9 +34,33 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         logger.info(getPageText());
         assertThat(getPageText(), containsString("has been granted"));
         logger.info("we are now on page: {}", getWebClient().getCurrentWindow().getEnclosedPage().getUrl());
+        logout();
     }
 
+
+    
     @Test
+    public void testShareAccessExpiresSuccess() {
+        gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
+        setInput("permission", GeneralPermissions.MODIFY_METADATA.name());
+        String untilString = DateTime.now().plusDays(1).toString("yyyy-MM-dd");
+        setInput("expiresString", untilString);
+        submitForm("submit");
+        logger.info(getCurrentUrlPath());
+        logger.info(getPageText());
+        String hasBeenGrantedString = "granted until " + untilString;
+        String text = getPageText();
+        text = text.replaceAll("[\r\n]", " ");
+        text = text.replaceAll("\\s+", " ");
+        assertThat(text.toLowerCase(), containsString(hasBeenGrantedString));
+        logger.info("we are now on page: {}", getWebClient().getCurrentWindow().getEnclosedPage().getUrl());
+        logout();
+        loginAdmin();
+        gotoPage("/admin/email");
+        assertThat(getPageText(), containsString(hasBeenGrantedString));
+    }
+
+@Test
     public void testShareAccessDenied() {
         gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
         setInput("permission", GeneralPermissions.MODIFY_METADATA.name());
@@ -60,7 +86,9 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         
         // try and submit without comment
         assertTrue(getPageText().contains("New Philadelphia Archaeology"));
-        assertFalse(getPageText().contains("SAA"));
+        String txt = getPageText();
+        txt = StringUtils.substringAfter(txt, "Send a Message");
+        assertFalse(txt.contains("SAA"));
         assertCurrentUrlContains("/resource/request");
         submitFormWithoutErrorCheck("send");
         assertFalse(getPageText().contains("Message Sent"));

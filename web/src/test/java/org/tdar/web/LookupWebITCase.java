@@ -38,35 +38,35 @@ public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     // TODO: These tests should assert more than just valid json and result counts.
     public void testValidPersonLookup() {
-        assertJsonResult("/lookup/person?minLookupLength=0", "people");
+        assertJsonResult("/api/lookup/person?minLookupLength=0", "people");
     }
 
     @Test
     public void testValidInstitutionLookup() {
-        assertJsonResult("/lookup/institution?minLookupLength=0", "institutions");
+        assertJsonResult("/api/lookup/institution?minLookupLength=0", "institutions");
         logger.debug(getPageCode());
     }
 
     @Test
     public void testValidResourceLookup() {
-        assertJsonResult("/lookup/resource?minLookupLength=0", "resources");
+        assertJsonResult("/api/lookup/resource?minLookupLength=0", "resources");
     }
 
     @Test
     public void testValidKeywordLookup() {
-        assertJsonResult("/lookup/keyword?minLookupLength=0&keywordType=TemporalKeyword", "items");
+        assertJsonResult("/api/lookup/keyword?minLookupLength=0&keywordType=TemporalKeyword", "items");
     }
 
     @Test
     public void testValidCollectionLookup() {
         // TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-        assertJsonResult("/lookup/collection?minLookupLength=0", "collections", 0);
+        assertJsonResult("/api/lookup/collection?minLookupLength=0", "collections", 0);
     }
 
     @Test
     public void testValidAnnotationKeyLookup() {
         // TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-        assertJsonResult("/lookup/annotationkey?minLookupLength=0", "items", 0);
+        assertJsonResult("/api/lookup/annotationkey?minLookupLength=0", "items", 0);
 
     }
 

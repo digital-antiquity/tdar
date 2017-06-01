@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
@@ -95,7 +96,11 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
 
-            logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
+            String title = "no title";
+            if (loadedRecord instanceof VisibleCollection) {
+                title = ((VisibleCollection) loadedRecord).getTitle();
+            }
+            logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), title);
 
             getXmlResultObject().setStatusCode(statuscode);
             getXmlResultObject().setStatus(getStatus().toString());

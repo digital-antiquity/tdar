@@ -69,6 +69,9 @@ public class DataTable extends AbstractPersistable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTable")
     private List<DataTableColumn> dataTableColumns = new ArrayList<DataTableColumn>();
 
+    @Column(name="import_order")
+    private Integer importOrder;
+    
     private transient Map<String, DataTableColumn> nameToColumnMap;
     private transient Map<Long, DataTableColumn> idToColumnMap;
     private transient Map<String, DataTableColumn> displayNameToColumnMap;
@@ -331,6 +334,14 @@ public class DataTable extends AbstractPersistable {
             }
         }
         return columns;
+    }
+
+    public Integer getImportOrder() {
+        return importOrder;
+    }
+
+    public void setImportOrder(Integer importOrder) {
+        this.importOrder = importOrder;
     }
 
 }

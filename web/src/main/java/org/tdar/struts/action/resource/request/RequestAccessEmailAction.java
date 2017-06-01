@@ -1,6 +1,5 @@
 package org.tdar.struts.action.resource.request;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,15 +15,13 @@ import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
-import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 

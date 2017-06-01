@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/common-auth.ftl" as common>
 
 
 <h1>Send a Message</h1>
@@ -45,7 +45,7 @@
                 <@s.hidden name="fromId" value="${authenticatedUser.id?c}" /> 
                 <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span5 required" cols="80" />
 
-                <p><b>Note:</b> Your message will be sent to the owner (designated contact?) of this digital resource in tDAR. 
+                <p><b>Note:</b> Your message will be sent to the designated contact of this digital resource in tDAR. 
                 Please use "<i>suggest correction</i>" if you would like to recommend changes to the metadata.  
                 <#if emailTypes?seq_contains("SAA") >Please use "<i>SAA Abstract project</i>" if you are an author of this resource and would like to upload a copy of your presentation, paper, poster, or supporting data.</#if>  
                 <#if emailTypes?seq_contains("REQUEST_ACCESS")>Please use "<i>request access</i>" to request access to confidential or embargoed materials.</#if> 

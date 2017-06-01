@@ -18,33 +18,32 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
     /*
      * See solr/configsets/default/conf/dataMappings-schema.xml
      */
+    public static List<SolrInputDocument> convert(InformationResource ir, ResourceService resourceService) {
+        List<SolrInputDocument> docs = new ArrayList<>();
+        Map<DataTableColumn, String> data = resourceService.getMappedDataForInformationResource(ir, TdarConfiguration.getInstance().isProductionEnvironment());
+        if (data != null) {
+            for (DataTableColumn key : data.keySet()) {
+                if (key == null) {
+                    continue;
+                }
+                SolrInputDocument doc = new SolrInputDocument();
+                doc.setField(QueryFieldNames.ID, ir.getId());
+                doc.setField(QueryFieldNames.CLASS, ir.getClass().getName());
+                doc.setField(QueryFieldNames._ID, SearchUtils.createKey(ir) + "-" + key.getId());
+                String keyName = key.getName();
+                doc.setField(QueryFieldNames.NAME, keyName);
+                doc.setField(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
+                doc.setField(QueryFieldNames.COLUMN_ID, key.getId());
+                String mapValue = data.get(key);
+                if (keyName == null || StringUtils.isBlank(mapValue)) {
+                    continue;
+                }
+                doc.setField(QueryFieldNames.VALUE, mapValue);
+                docs.add(doc);
+            }
 
-	public static List<SolrInputDocument> convert(InformationResource ir, ResourceService resourceService) {
-		List<SolrInputDocument> docs = new ArrayList<>();
-		Map<DataTableColumn, String> data = resourceService.getMappedDataForInformationResource(ir, TdarConfiguration.getInstance().isProductionEnvironment());
-		if (data != null) {
-			for (DataTableColumn key : data.keySet()) {
-				if (key == null) {
-					continue;
-				}
-				SolrInputDocument doc = new SolrInputDocument();
-				doc.setField(QueryFieldNames.ID, ir.getId());
-				doc.setField(QueryFieldNames.CLASS, ir.getClass().getName());
-				doc.setField(QueryFieldNames._ID, SearchUtils.createKey(ir) + "-" + key.getId());
-				String keyName = key.getName();
-				doc.setField(QueryFieldNames.NAME, keyName);
-				doc.setField(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
-				doc.setField(QueryFieldNames.COLUMN_ID, key.getId());
-				String mapValue = data.get(key);
-				if (keyName == null || StringUtils.isBlank(mapValue)) {
-					continue;
-				}
-				doc.setField(QueryFieldNames.VALUE, mapValue);
-				docs.add(doc);
-			}
+        }
+        return docs;
 
-		}
-		return docs;
-
-	}
+    }
 }

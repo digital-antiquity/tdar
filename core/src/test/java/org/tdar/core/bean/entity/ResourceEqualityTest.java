@@ -1,16 +1,26 @@
 package org.tdar.core.bean.entity;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 
+import org.apache.commons.lang.ClassUtils;
 import org.junit.Test;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Resource;
 
 public class ResourceEqualityTest {
 
+    @Test
+    public void testIsAssignable() {
+        assertFalse(ClassUtils.isAssignable(ResourceCollection.class, SharedCollection.class));
+        assertTrue(ClassUtils.isAssignable(SharedCollection.class, ResourceCollection.class));
+    }
+    
     @Test
     // pick a class that doesn't overRide the base Persistable.Base implementation of equalityFields. We are trying to assert that it's behavior
     // w.r.t equality is the same as Object.equals() and Object.hashCode()

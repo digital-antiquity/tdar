@@ -81,6 +81,7 @@ TDAR.validate = (function($, ctx) {
                 method_ = window[method];
             }               
             if (method_ != undefined) {
+                // add options based on method ... here's where we implicitly call initBasicForm
                 var options  = method_($form);
                 var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
                 validator = $form.validate(allValidateOptions);
@@ -88,6 +89,9 @@ TDAR.validate = (function($, ctx) {
                 $form.data("tdar-validate-status","valid-custom");
                 if (method == 'initBasicForm') {
                     _postValidateBasic($form, validator);
+                }
+                if (method == 'initRightsForm') {
+                    _postValidateRights($form, validator);
                 }
             } else {
                 console.log("validate method specified, but not a function");
@@ -265,6 +269,34 @@ TDAR.validate = (function($, ctx) {
     };
 
 
+    var _initRightsForm = function(form) {
+        var opts = _initBasicForm(form);
+        return opts;
+    }
+    var _postValidateRights = function(form) {
+        $("#firstName").rules("add", {
+            required: function () {
+                if ($("#lastName").val().trim() != '' || $("#email").val().trim() != '') {
+                    return true;
+                }
+                return false;
+            }
+        });
+        $("#lastName").rules("add", {
+            required: function () {
+                if($("#firstName").val().trim() != '' || $("#email").val().trim() != '') {
+                    return true;
+                }
+                return false;
+            }
+        });
+        $("#email").rules("add", {
+            email:true,
+            required: function () {
+                return $("#lastName").val().trim() != '' || $("#firstName").val().trim() != '';
+            }
+        });
+    }
     
     // called whenever date type changes
     //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be
@@ -355,11 +387,11 @@ TDAR.validate = (function($, ctx) {
         "initForm" : _initForm,
         "initRegForm" : _initRegForm,
         "initBasicForm": _initBasicForm,
-        "prepareDateFields": _prepareDateFields
+        "initRightsForm": _initRightsForm,
+        "prepareDateFields": _prepareDateFields,
+        main : function() {
+            TDAR.validate.init();
+        }
     }
 })(jQuery, window);
 
-//FIXME: inline onload binding complicates testing and makes it harder to discover the total number of initializers (and their sequence)
-$(function() {
-    TDAR.validate.init();
-});

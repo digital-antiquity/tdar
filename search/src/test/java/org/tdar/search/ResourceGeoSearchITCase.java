@@ -22,6 +22,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
@@ -45,7 +47,7 @@ public class ResourceGeoSearchITCase extends AbstractResourceSearchITCase {
     @Rollback(true)
     // FIXME: This test tests too many pointless things, but it's the only thing that covers processManagedKeywords. Remove this
     // once we have a proper test for processManagedKeywords.
-    public void testPersistedManagedKeyword() throws SolrServerException, IOException, ParseException {
+    public void testPersistedManagedKeyword() throws IOException,SearchException, SearchIndexException {
         Project project = genericService.find(Project.class, 3738L);
         Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = project.getLatitudeLongitudeBoxes();
         project.getManagedGeographicKeywords().clear();

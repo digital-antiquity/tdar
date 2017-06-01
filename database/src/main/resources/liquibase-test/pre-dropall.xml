@@ -50,6 +50,9 @@ drop sequence if exists pos_item_id_seq cascade;
 drop sequence if exists data_table_column_relationship_id_seq cascade;
 drop sequence if exists data_table_relationship_id_seq cascade;
 drop sequence if exists resource_access_statistics_id_seq cascade;
-</sql>
+
+drop view if exists vw_collection_ancestry cascade;
+drop view if exists vw_collection_progeny cascade;
+	</sql>
 	</changeSet>
 </databaseChangeLog>

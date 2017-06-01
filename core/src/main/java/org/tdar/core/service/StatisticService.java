@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
@@ -166,14 +166,14 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     }
 
     @Transactional(readOnly = true)
-    public StatsResultObject getStatsForCollection(ResourceCollection collection, TextProvider provider, DateGranularity granularity) {
+    public StatsResultObject getStatsForCollection(SharedCollection collection, TextProvider provider, DateGranularity granularity) {
         Set<Long> ids = new HashSet<>();
         if (collection != null) {
             if (CollectionUtils.isNotEmpty(collection.getResources())) {
                 ids.addAll(PersistableUtils.extractIds(collection.getResources()));
             }
-            for (ResourceCollection child : resourceCollectionDao.getAllChildCollections(collection)) {
-                if (child != null && CollectionUtils.isNotEmpty(child.getResources())) {
+            for (SharedCollection child : resourceCollectionDao.getAllChildCollections(collection, SharedCollection.class)) {
+                if (child != null && CollectionUtils.isNotEmpty(((SharedCollection)child).getResources())) {
                     ids.addAll(PersistableUtils.extractIds(child.getResources()));
                 }
             }

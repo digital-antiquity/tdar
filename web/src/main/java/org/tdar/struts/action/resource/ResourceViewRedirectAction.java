@@ -35,7 +35,7 @@ public class ResourceViewRedirectAction extends AbstractAuthenticatableAction {
      * 
      * @return
      */
-    @Action(value = "{resourceId}",
+    @Action(value = "view",
             results = {
                     @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "${resource.detailUrl}"),
                     @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.FREEMARKERHTTP,
@@ -43,7 +43,7 @@ public class ResourceViewRedirectAction extends AbstractAuthenticatableAction {
                     params = { "status", "400" })
             })
     public String view() {
-        setResource(getGenericService().find(Resource.class, getResourceId()));
+        setResource(getGenericService().find(Resource.class, getId()));
         if (getResource() == null) {
             getLogger().error("trying to view information resource but it was null.");
             addActionError(getText("resourceController.not_found"));
@@ -60,11 +60,11 @@ public class ResourceViewRedirectAction extends AbstractAuthenticatableAction {
         this.resource = resource;
     }
 
-    public Long getResourceId() {
+    public Long getId() {
         return resourceId;
     }
 
-    public void setResourceId(Long resourceId) {
+    public void setId(Long resourceId) {
         this.resourceId = resourceId;
     }
 

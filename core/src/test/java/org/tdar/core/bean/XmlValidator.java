@@ -35,7 +35,7 @@ public class XmlValidator {
     private final static XmlValidator INSTANCE = new XmlValidator();
 
     public XmlValidator() {
-    	setupValidator(true);
+        setupValidator(true);
     }
     
     /**
@@ -170,8 +170,8 @@ public class XmlValidator {
         addSchemaToValidatorWithLocalFallback(setupValidator, null, tempFile);
     }
 
-	public static XmlValidator getInstance() {
-		return INSTANCE;
-	}
+    public static XmlValidator getInstance() {
+        return INSTANCE;
+    }
 
 }

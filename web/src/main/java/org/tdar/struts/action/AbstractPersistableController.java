@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -23,10 +21,8 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.event.EventType;
@@ -36,6 +32,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
@@ -87,8 +84,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public final static String REDIRECT_HOME = "REDIRECT_HOME";
     public final static String REDIRECT_PROJECT_LIST = "PROJECT_LIST";
     private boolean asyncSave = true;
-    private List<AuthorizedUser> authorizedUsers;
-    private List<String> authorizedUsersFullNames = new ArrayList<String>();
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
@@ -237,10 +232,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         }
     }
 
-    protected void indexPersistable() throws SolrServerException, IOException {
-    	if (getPersistable() instanceof Indexable) {
-    		publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
-    	}
+    protected void indexPersistable() throws IOException, SearchIndexException {
+        if (getPersistable() instanceof Indexable) {
+            publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
+        }
     }
 
     private void logAction(String action_) {
@@ -397,10 +392,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         RequestType type = RequestType.EDIT;
 
         if (getId() == null && (getCurrentUrl().contains("/add") || 
-        		(getTdarConfiguration().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
+                (TdarConfiguration.getInstance().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
             getLogger().debug("setting persistable");
             if (getPersistable() == null) {
-            	setPersistable(createPersistable());
+                setPersistable(createPersistable());
             }
             type = RequestType.CREATE;
         }
@@ -441,40 +436,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
     public boolean isAsync() {
         return asyncSave;
-    }
-
-    /**
-     * @param authorizedUsers
-     *            the authorizedUsers to set
-     */
-    public void setAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
-        this.authorizedUsers = authorizedUsers;
-    }
-
-    /**
-     * @return the authorizedUsers
-     */
-    public List<AuthorizedUser> getAuthorizedUsers() {
-        if (authorizedUsers == null) {
-            authorizedUsers = new ArrayList<AuthorizedUser>();
-        }
-        return authorizedUsers;
-    }
-
-    public AuthorizedUser getBlankAuthorizedUser() {
-        AuthorizedUser user = new AuthorizedUser();
-        user.setUser(new TdarUser());
-        return user;
-    }
-
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
-        for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if ((permission.getContext() == null) ||  ClassUtils.isAssignable(permission.getContext(), getPersistableClass())) {
-                permissions.add(permission);
-            }
-        }
-        return permissions;
     }
 
     /**
@@ -595,14 +556,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
     public void setH(AntiSpamHelper h) {
         this.h = h;
-    }
-
-    public List<String> getAuthorizedUsersFullNames() {
-        return authorizedUsersFullNames;
-    }
-
-    public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
-        this.authorizedUsersFullNames = authorizedUsersFullNames;
     }
 
     public String getSaveSuccessSuffix() {

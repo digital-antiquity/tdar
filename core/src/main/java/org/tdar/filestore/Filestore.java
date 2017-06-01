@@ -6,12 +6,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -31,8 +33,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 public interface Filestore {
 
@@ -228,7 +228,7 @@ public interface Filestore {
                 version.setChecksum(formatDigest(digest));
                 if (version.getVersionType().isArchival() || version.getVersionType().isUploaded()) {
                     File checksum = new File(file.getParentFile(), String.format("%s.%s", file.getName(), digest.getAlgorithm()));
-                    FileUtils.write(checksum, version.getChecksum());
+                    FileUtils.write(checksum, version.getChecksum(),Charset.defaultCharset());
                 }
             }
             if (version.getDateCreated() == null) {
@@ -254,7 +254,7 @@ public interface Filestore {
             }
             File logFile = new File(logdir, filename);
             try {
-                FileUtils.writeStringToFile(logFile, message);
+                FileUtils.writeStringToFile(logFile, message,Charset.defaultCharset());
             } catch (IOException e) {
                 logger.error("Unable to write logfile", e);
             }

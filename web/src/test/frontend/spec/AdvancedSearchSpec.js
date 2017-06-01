@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("advanced search form", function() {
+describe("AdvancedSearchSpec.js: advanced search form", function() {
     "use strict";
     var submitCallback, $map, $form, $autosave;
 

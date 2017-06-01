@@ -15,13 +15,13 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.service.SerializationService;
 import org.tdar.search.geosearch.GeoSearchService;
-import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts.action.TdarBaseActionSupport;
 
 @Component
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/geolocation")
-public class GeoLocationController extends TdarActionSupport {
+public class GeoLocationController extends TdarBaseActionSupport {
 
     private static final long serialVersionUID = -7316298111150245236L;
 

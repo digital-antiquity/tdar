@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.core.CoreContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class SolrConfig {
     
     private static final String TARGET_CLASSES_SOLR = "target/classes/solr/";
 
-	public static final String SEARCH_PROPERTIES = "search.properties";
+    public static final String SEARCH_PROPERTIES = "search.properties";
     
     @Resource
     private Environment environment;
@@ -90,12 +91,12 @@ public class SolrConfig {
         File defaultTestPath = new File(TARGET_CLASSES_SOLR);
         Path path = defaultTestPath.toPath();
         //fixme: brittle
-        List<String> paths = Arrays.asList("","web/","tag/");
+        List<String> paths = Arrays.asList("","web/","tag/","webservice/tag/");
         for (String path_ : paths) {
-        	File globalTestPath = new File(path_ + TARGET_CLASSES_SOLR);
-	        if (globalTestPath.exists()) {
-	            path = globalTestPath.toPath();
-	        }
+            File globalTestPath = new File(path_ + TARGET_CLASSES_SOLR);
+            if (globalTestPath.exists()) {
+                path = globalTestPath.toPath();
+            }
         }
         if (StringUtils.isNotBlank(solrServerPath)) {
             File dir = new File(solrServerPath);
@@ -104,7 +105,12 @@ public class SolrConfig {
             }
         }
         logger.debug("solr server path: {}", path);
-        solrServer = new EmbeddedSolrServer(path, "resources");
+        
+        CoreContainer container = CoreContainer.createAndLoad(path);
+        
+        logger.debug("core names: {}", container.getAllCoreNames());
+        solrServer = new EmbeddedSolrServer( container, "resources");
+        
         logger.debug("initializing embedded Solr:{}", solrServer);
         return solrServer;
     }

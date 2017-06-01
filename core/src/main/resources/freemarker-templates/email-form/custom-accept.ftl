@@ -5,7 +5,7 @@ to the requested tDAR record.
 
  ${resource.title} (${resource.id?c}).  
  
-${descriptionResponse!"To upload your abstract please visit the following URL"}:
+${descriptionResponse!"To edit your abstract and upload your paper, poster, or presentation please visit the following URL"}:
 
 ${baseUrl}/${resource.urlNamespace}/${resource.id?c}/edit
 

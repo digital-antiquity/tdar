@@ -8,16 +8,17 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
+
+import com.opensymphony.xwork2.Preparable;
+
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.service.ItemService;
 import org.tdar.balk.service.Phases;
 import org.tdar.balk.service.UserService;
-import org.tdar.struts_base.interceptor.annotation.PostOnly;
-import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.dropbox.DropboxConstants;
-
-import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
 @Namespace("/startWorkflow")

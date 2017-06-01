@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.media.jai.registry.RIFRegistry;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -37,7 +39,6 @@ import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.ResourceNoteType;
@@ -89,12 +90,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         docValMap.put("authorshipProxies[1].person.id", "");
         docValMap.put("document.description", "A resource description");
         docValMap.put("document.date", "1923");
-        // docValMap.put("authorizedUsers[0].user.id", "121");
-        // docValMap.put("authorizedUsers[1].user.id", "5349");
-        // docValMap.put("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-        // docValMap.put("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
-        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
-        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
         docValMap.put("document.doi", "10.1016/j.iheduc.2003.11.004");
         docValMap.put("document.isbn", "9780385483995");
         alternateTextLookup.add(Language.SPANISH.getLabel());
@@ -179,13 +174,25 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         assertTrue(getText().contains("Conference Location"));
         setFieldByName("document.date", "1923");
         setFieldByName("projectId", "-1");
-        WebElementSelection find = find("#accessRightsRecordsAddAnotherButton");
+        
+        submitForm();
+        
+        assertEquals("count of edit buttons", 1, find(By.partialLinkText(RIGHTS)).size());
+        WebElementSelection button = find(By.partialLinkText(RIGHTS));
+        try {
+            button.click();
+        } catch(Throwable t) {
+            logger.error("{}",t,t);
+        }
+//        waitForPageload();
+        logger.debug(getPageCode());
+        WebElementSelection find = waitFor("#divAccessRightsAddAnotherButton");
         find.click();
         find.click();
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle elliott , arizona state",
+        addAuthuser("proxies[0].displayName", "proxies[0].permission", "Michelle Elliott", "michelle elliott , arizona state",
                 "person-121",
                 MODIFY_RECORD);
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
+        addAuthuser("proxies[1].displayName", "proxies[1].permission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
                 VIEW_ALL);
         submitForm();
     }
@@ -323,19 +330,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         accessRightsAddAnother.click();
         accessRightsAddAnother.click();
 
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "Michelle Elliott", "michelle elliott , arizona state",
-                "person-121",
-                MODIFY_RECORD);
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "Joshua Watts", "joshua watts , asu - shesc", "person-5349",
-                VIEW_ALL);
-
-        docUnorderdValMap.put("authorizedUsers[0].user.id", "121");
-        docUnorderdValMap.put("authorizedUsers[1].user.id", "5349");
-        docUnorderdValMap.put("authorizedUsers[0].generalPermission", MODIFY_RECORD.name());
-        docUnorderdValMap.put("authorizedUsers[1].generalPermission", VIEW_ALL.name());
-        docUnorderdValMap.put("authorizedUsersFullNames[0]", "Michelle Elliott");
-        docUnorderdValMap.put("authorizedUsersFullNames[1]", "Joshua Watts");
-
         // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person(LOBLAW, ROBERT, "bobloblaw@netflix.com"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
 
@@ -404,15 +398,6 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
                 assertTrue(String.format("key:%s  expected val:%s", key, val), find(By.name(key)).vals().contains(val));
             }
         }
-
-        // specific checks for auth users we added earlier
-        String sectionText = find("#divAccessRights").getText().toLowerCase();
-        logger.debug("\n\n------ access rights text ---- \n" + sectionText);
-
-        assertThat(sectionText, containsString("joshua watts"));
-        assertThat(sectionText, containsString("michelle elliott"));
-        assertThat(sectionText, containsString(VIEW_ALL.getLabel().toLowerCase()));
-        assertThat(sectionText, containsString(MODIFY_RECORD.getLabel().toLowerCase()));
 
         // make sure our 'async' file was added to the resource
         assertThat(getSource(), containsString(TEST_DOCUMENT_NAME));

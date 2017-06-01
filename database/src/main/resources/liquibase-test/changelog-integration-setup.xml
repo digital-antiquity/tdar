@@ -29398,7 +29398,7 @@
 			<column name="orientation" value="LIST"/>
 			<column name="secondary_sort_order"/>
 			<column name="sort_order" value="TITLE"/>
-			<column name="collection_type" value="SHARED"/>
+			<column name="collection_type" value="LIST"/>
 			<column name="visible" valueBoolean="true"/>
 			<column name="owner_id" valueNumeric="8344"/>
 			<column name="parent_id"/>

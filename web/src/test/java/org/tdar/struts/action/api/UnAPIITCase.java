@@ -10,8 +10,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts.action.UnapiController;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 /**
  * @author Adam Brin

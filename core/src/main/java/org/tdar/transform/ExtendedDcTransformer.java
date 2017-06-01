@@ -12,7 +12,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -58,7 +58,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
     protected Set<String> contributors = new HashSet<>();
     protected Set<String> creators = new HashSet<>();
     private XmlEscapeHelper x;
-    
+
     @Override
     public QualifiedDublinCoreDocument transform(R source) {
         QualifiedDublinCoreDocument dc = new QualifiedDublinCoreDocument();
@@ -143,7 +143,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             }
         }
         
-        for (ResourceCollection coll : toSortedList(source.getSharedVisibleResourceCollections())) {
+        for (SharedCollection coll : toSortedList(source.getVisibleSharedResourceCollections())) {
             dc.addIsPartOf(getX().stripNonValidXMLCharacters(coll.getName()));
         }
 

@@ -10,14 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.dropbox.core.DbxException;
+
 import org.tdar.balk.bean.DropboxState;
 import org.tdar.balk.bean.PollType;
 import org.tdar.balk.dao.CursorDao;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.utils.dropbox.DropboxClient;
 import org.tdar.utils.dropbox.MetadataListener;
-
-import com.dropbox.core.DbxException;
 
 @Component
 public class CursorService {

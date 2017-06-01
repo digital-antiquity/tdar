@@ -804,3 +804,33 @@ kbd {
     border-radius: 5px;
     vertical-align: middle;
 }
+
+
+/**
+JIM'S LIBRARY HACKS GO HERE
+**/
+
+
+.organize-bookmarks-container ol li h3 a{
+    font-size: 10pt !important;
+    line-height: normal;
+}
+
+.organize-bookmarks-container {
+
+}
+
+
+.organize-bookmarks-container ol {
+    margin: 0;
+}
+.organize-bookmarks-container ol li {
+    list-style-type: none;
+}
+
+tr .moremenu {
+    visibility: hidden;
+}
+tr:hover .moremenu {
+    visibility: visible;
+}

@@ -13,34 +13,22 @@ import org.tdar.core.bean.Indexable;
  */
 public class DataTableRow implements Indexable {
 
-	private static final long serialVersionUID = 1890861649805565275L;
-	private Long id;
+    private static final long serialVersionUID = 1890861649805565275L;
+    private Long id;
 
-	@Override
-	public void setId(Long number) {
-		this.id = number;
-	}
+    @Override
+    public void setId(Long number) {
+        this.id = number;
+    }
 
-	@Override
-	public List<?> getEqualityFields() {
-		return Collections.emptyList();
-	}
+    @Override
+    public List<?> getEqualityFields() {
+        return Collections.emptyList();
+    }
 
-	@Override
-	public void setScore(Float score) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Float getScore() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Long getId() {
-		return id;
-	}
+    @Override
+    public Long getId() {
+        return id;
+    }
 
 }

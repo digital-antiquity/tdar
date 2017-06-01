@@ -16,6 +16,8 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
@@ -42,7 +44,7 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
     
     
     @Test
-    public void testMultiWordKeyword() throws ParseException, SolrServerException, IOException {
+    public void testMultiWordKeyword() throws SearchException, SearchIndexException, IOException {
         GeographicKeyword kwd = new GeographicKeyword();
         kwd.setLabel("Pima County");
         kwd.setStatus(Status.ACTIVE);
@@ -67,7 +69,7 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
     }
 
     @Test
-    public void testKeywordLookup() throws SolrServerException, IOException, ParseException {
+    public void testKeywordLookup() throws SearchException, SearchIndexException, IOException {
         
         SearchResult<Keyword> result = processSearch("Folsom","CultureKeyword",2);
         List<Keyword> resources = result.getResults();
@@ -75,14 +77,14 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
     }
 
 
-    private SearchResult<Keyword> processSearch(String term, String type, int min) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Keyword> processSearch(String term, String type, int min) throws SearchException, SearchIndexException, IOException {
         SearchResult<Keyword> result = new SearchResult<>();
         keywordSearchService.findKeyword(term, type,result, MessageHelper.getInstance(), min);
         return result;
     }
 
     @Test
-    public void testSiteNameKeywordLookup() throws SolrServerException, IOException, ParseException {
+    public void testSiteNameKeywordLookup() throws SearchException, SearchIndexException, IOException {
         SiteNameKeyword keyword = new SiteNameKeyword();
         keyword.setLabel("18-ST-389");
         genericService.saveOrUpdate(keyword);

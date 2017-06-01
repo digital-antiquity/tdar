@@ -1,5 +1,5 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
-describe("TDAR.common: edit page tests", function () {
+describe("CommonSpec.js: edit page tests", function () {
     "use strict";
 
     var formProps = {
@@ -74,26 +74,6 @@ describe("TDAR.common: edit page tests", function () {
 
             expect($subCategoryIdSelect.val()).toBe('123');
             expect($subCategoryIdSelect.find('option').text()).toBe('bar');
-        });
-
-        it("updates the server when you add/remove a bookmark", function () {
-            var $elem = $('<span resource-id="12345" bookmark-state="bookmark">click me</span>');
-            var $elem2 = $('<span resource-id="12345" bookmark-state="bookmarked">click me</span>');
-            setFixtures($elem);
-
-            TDAR.common.applyBookmarks.call($elem);
-            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/bookmarkAjax?resourceId=12345');            
-
-            TDAR.common.applyBookmarks.call($elem2);
-            jasmine.Ajax.requests.mostRecent().respondWith({
-                status:200,
-                contentType: 'text/json',
-                responseText: '{"success": true}'    
-            });
-            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/removeBookmarkAjax?resourceId=12345');
-
-
-
         });
 
         it("registers the global ajax status indicator", function () {
@@ -215,13 +195,14 @@ describe("TDAR.common: edit page tests", function () {
             expect($j(".treeview")).toHaveLength(1);
         });
     
-        it("initializes a the search box on view page", function () {
+        it("should display the 'search within this collectin' checkbox when user focuses on the search textbox on a collection view page", function () {
             loadFixtures('searchheader.html');
             var result = TDAR.common.initializeView();
-            $expect('.active').not.toBeInDOM();
+            $expect('#divSearchContext.active').not.toBeInDOM();
     
             $(".searchbox").focus(); //workaround for ff issue. test fails unless focus event triggered twice
             $(".searchbox").focus();
+            $expect('#divSearchContext.active').toBeInDOM();
             expect($j('#divSearchContext')).toHaveClass('active');
         });
     

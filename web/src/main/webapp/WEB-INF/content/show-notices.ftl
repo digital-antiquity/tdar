@@ -8,14 +8,14 @@
     <#if tosAcceptanceRequired>
     <label class="checkbox">
         <input type="checkbox" name="acceptedAuthNotices" id="cbta" value="TOS_AGREEMENT">
-        I have read and accept the ${siteAcronym} <@s.a href="${tosUrl}" target="_blank" >Terms Of Service</@s.a>
+        I have read and accept the ${siteAcronym} <@s.a href="${config.tosUrl}" target="_blank" >Terms Of Service</@s.a>
     </label>
     </#if>
 
     <#if contributorAgreementAcceptanceRequired>
     <label class="checkbox">
         <input type="checkbox" name="acceptedAuthNotices" id="cbca" value="CONTRIBUTOR_AGREEMENT">
-        I have read and accept the ${siteAcronym} <@s.a href="${contributorAgreementUrl}" target="_blank" >Contributor Agreement</@s.a>
+        I have read and accept the ${siteAcronym} <@s.a href="${config.contributorAgreementUrl}" target="_blank" >Contributor Agreement</@s.a>
     </label>
     </#if>
 

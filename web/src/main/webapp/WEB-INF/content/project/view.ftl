@@ -3,7 +3,7 @@
     <#global includeRssAndSearchLinks=true>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
-    <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+    <#import "/WEB-INF/macros/search-macros.ftl" as search>
 
     <#macro head>
     <style>
@@ -11,9 +11,6 @@
             background-image: none !important;
         }
 
-        li.media {
-            display: inline-block
-        }
     </style>
     </#macro>
 

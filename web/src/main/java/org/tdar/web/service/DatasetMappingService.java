@@ -3,7 +3,6 @@ package org.tdar.web.service;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.service.index.SearchIndexService;
 
 @Service
@@ -43,7 +43,7 @@ public class DatasetMappingService {
         datasetDao.remapColumns(columns, project);
         try {
             searchIndexService.indexProject(project);
-        } catch (SolrServerException | IOException e) {
+        } catch (SearchIndexException | IOException e) {
             logger.error("error in reindexing",e);
         }
         

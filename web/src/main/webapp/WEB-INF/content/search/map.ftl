@@ -1,7 +1,7 @@
-<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/search-macros.ftl" as search>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
-<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+<#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 
 <#--FIXME: this method for determining active tab won't work if (for example) controller returns INPUT for collection/institution/person search -->
 
@@ -15,7 +15,7 @@
 <#escape _untrusted as _untrusted?html >
 <h1>Search ${siteAcronym}</h1>
 
- <div id="map" style="width:100%;height:500px" class="leaflet-map-results" data-infinite-url="/search/json?"></div>
+ <div id="map" style="width:100%;height:500px" class="leaflet-map-results" data-infinite-url="/api/search/json?"></div>
     <script type="text/javascript">
     var map;
     var layer;
@@ -39,7 +39,7 @@
 	        latLong += "&groups[0].latitudeLongitudeBoxes[0].north=";
 	        latLong += b.getNorth();
 	        latLong += "&";
-	        var baseUrl = "/search/json?orientation=MAP&recordsPerPage=100&projectionModel=LUCENE_EXPERIMENTAL&latScaleUsed=true&" + latLong;
+	        var baseUrl = "/api/search/json?orientation=MAP&recordsPerPage=100&projectionModel=LUCENE_EXPERIMENTAL&latScaleUsed=true&" + latLong;
 	        TDAR.leaflet.dynamicUpdateMap($("#map"),baseUrl,0);    
 	    }
     }

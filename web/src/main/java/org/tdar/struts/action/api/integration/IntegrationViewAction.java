@@ -87,7 +87,7 @@ public class IntegrationViewAction extends AbstractJsonApiAction implements Pers
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canViewWorkflow(workflow, getAuthenticatedUser());
+        return authorizationService.canViewWorkflow( getAuthenticatedUser(),workflow);
     }
 
     @Override

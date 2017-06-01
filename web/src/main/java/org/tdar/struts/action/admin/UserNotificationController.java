@@ -25,7 +25,6 @@ import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
-import org.tdar.struts_base.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.Preparable;
@@ -43,7 +42,6 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Namespace("/admin/notifications")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
-@HttpsOnly
 public class UserNotificationController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 5844268857719107949L;

@@ -1,5 +1,5 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
-describe("worldmap tests (tdar.worldmap.js)", function() {
+describe("WorldMapSpec.js: worldmap tests (tdar.worldmap.js)", function() {
     var mapdata = {
             "geographic.ISO,resourceType": [
                 {

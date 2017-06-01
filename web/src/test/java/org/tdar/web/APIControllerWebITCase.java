@@ -139,8 +139,10 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         statusCode = viewCollection.getStatusLine().getStatusCode();
         logger.debug("status:{}", statusCode);
         logger.debug(viewCollection.getBody());
-
-        assertTrue(StringUtils.contains(viewCollection.getBody(), "tdar:collectionResult hidden=\"true\" "));
+        String decl = viewCollection.getBody();
+        decl = StringUtils.substringBetween(decl, "<tdar:collectionResult", ">");
+        logger.debug(decl);
+        assertTrue(StringUtils.contains(decl, " hidden=\"true\""));
 
     }
 

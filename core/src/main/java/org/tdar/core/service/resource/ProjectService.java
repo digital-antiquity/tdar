@@ -13,7 +13,7 @@ import org.hibernate.ScrollableResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -157,7 +157,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     @Transactional(readOnly = true)
     public List<Resource> findSparseTitleIdProjectListByPerson(TdarUser person, boolean isAdmin) {
         // get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
-        Set<ResourceCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA);
+        Set<SharedCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA, SharedCollection.class);
 
         // find all of the editable projects for the user (either directly assigned or via the specified collections)
         List<Long> collectionIds = PersistableUtils.extractIds(collections);
@@ -195,11 +195,11 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
         try {
             if (PersistableUtils.isNotNullOrTransient(project)) {
-            	getDao().markReadOnly(project);
-            	List<ResourceCreator> rc = new ArrayList<>(project.getResourceCreators());
-            	project.getResourceCreators().clear();
-            	Collections.sort(rc);
-            	project.getResourceCreators().addAll(rc);
+                getDao().markReadOnly(project);
+                List<ResourceCreator> rc = new ArrayList<>(project.getResourceCreators());
+                project.getResourceCreators().clear();
+                Collections.sort(rc);
+                project.getResourceCreators().addAll(rc);
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
                 // obfuscationService.obfuscate(project, user);
                 result = project;

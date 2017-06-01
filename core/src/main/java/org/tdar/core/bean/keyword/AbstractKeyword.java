@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
@@ -76,8 +77,6 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
         return UrlUtils.slugify(getLabel());
     }
 
-    private transient Float score = -1f;
-
     @Override
     public int compareTo(T o) {
         return this.getLabel().compareTo(o.getLabel());
@@ -90,7 +89,7 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
 
     @Override
     public void setLabel(String label) {
-        this.label = label;
+        this.label = StringUtils.trimToEmpty(label);
     }
 
     @XmlTransient
@@ -101,24 +100,12 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
 
     @Override
     public void setDefinition(String definition) {
-        this.definition = definition;
+        this.definition = StringUtils.trimToEmpty(definition);
     }
 
     @Override
     public String toString() {
         return getLabel();
-    }
-
-    @Transient
-    @Override
-    @XmlTransient
-    public Float getScore() {
-        return score;
-    }
-
-    @Override
-    public void setScore(Float score) {
-        this.score = score;
     }
 
     @Override
@@ -137,30 +124,6 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
         this.status = status;
     }
 
-    @Override
-    public boolean isActive() {
-        return this.status == Status.ACTIVE;
-    }
-
-    @Override
-    public boolean isDeleted() {
-        return this.status == Status.DELETED;
-    }
-
-    @Override
-    public boolean isDraft() {
-        return status == Status.DRAFT;
-    }
-
-    @Override
-    public boolean isFlagged() {
-        return status == Status.FLAGGED;
-    }
-
-    @Override
-    public boolean isDuplicate() {
-        return status == Status.DUPLICATE;
-    }
 
     @JsonView(JsonLookupFilter.class)
     public Long getOccurrence() {
@@ -197,6 +160,40 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
 
     public String getSynonymFormattedName() {
         return getLabel();
+    }
+
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isDeleted() {
+        return status == Status.DELETED;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isDraft() {
+        return status == Status.DRAFT;
+    }
+
+    @Override
+    public boolean isDuplicate() {
+        return status == Status.DUPLICATE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isFlagged() {
+        return status == Status.FLAGGED;
     }
 
 }

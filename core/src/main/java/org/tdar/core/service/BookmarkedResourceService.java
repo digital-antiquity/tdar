@@ -24,10 +24,13 @@ import org.tdar.core.dao.resource.BookmarkedResourceDao;
 public class BookmarkedResourceService extends ServiceInterface.TypedDaoBase<BookmarkedResource, BookmarkedResourceDao> {
 
     @Transactional(readOnly = true)
-    public <R extends Resource> void applyTransientBookmarked(Collection<R> resources, TdarUser person) {
-        for (Resource resource : resources) {
-            if (isAlreadyBookmarked(resource, person)) {
-                resource.setBookmarked(true);
+    public <R> void applyTransientBookmarked(Collection<R> resources, TdarUser person) {
+        for (R resource_ : resources) {
+            if (resource_ instanceof Resource) {
+                Resource resource = (Resource)resource_;
+                if (isAlreadyBookmarked(resource, person)) {
+                    resource.setBookmarked(true);
+                }
             }
         }
     }

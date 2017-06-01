@@ -9,9 +9,9 @@ public class ResourceCreatorProxyTestCase {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Test
-	public void testRCP() {
-		ResourceCreatorProxy rcp = new ResourceCreatorProxy();
-		logger.debug("{}",rcp);
-	}
+    @Test
+    public void testRCP() {
+        ResourceCreatorProxy rcp = new ResourceCreatorProxy();
+        logger.debug("{}",rcp);
+    }
 }

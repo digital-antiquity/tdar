@@ -22,7 +22,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.base.GenericDao.FindOptions;
 
 public class GenericServiceITCase extends AbstractIntegrationTestCase {
 

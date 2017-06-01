@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -36,9 +36,9 @@ import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -48,14 +48,14 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/collection/admin/report")
 @HttpsOnly
 public class CollectionReportViewAction extends AbstractAuthenticatableAction
-        implements FacetedResultHandler<Resource>, PersistableLoadingAction<ResourceCollection>, Preparable {
+        implements FacetedResultHandler<Resource>, PersistableLoadingAction<SharedCollection>, Preparable {
 
     private static final long serialVersionUID = 5515399574166871914L;
     @Autowired
     ResourceSearchService resourceSearchService;
 
     private FacetWrapper facetWrapper = new FacetWrapper();
-    private ResourceCollection resourceCollection;
+    private SharedCollection resourceCollection;
     private Long id;
     private List<Resource> results;
 
@@ -64,7 +64,7 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
     public String execute() throws Exception {
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         getAuthenticatedUser();
-        asqo.getReservedParams().getCollections().add(getResourceCollection());
+        asqo.getReservedParams().getShares().add((SharedCollection)getResourceCollection());
         getFacetWrapper().facetBy("status", Status.class);
         getFacetWrapper().facetBy("resourceType", ResourceType.class);
         getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
@@ -94,8 +94,8 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
     }
 
     @Override
-    public Class<ResourceCollection> getPersistableClass() {
-        return ResourceCollection.class;
+    public Class<SharedCollection> getPersistableClass() {
+        return SharedCollection.class;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
     }
 
     @Override
-    public void setPersistable(ResourceCollection persistable) {
+    public void setPersistable(SharedCollection persistable) {
         this.setResourceCollection(persistable);
     }
 
@@ -245,11 +245,11 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
         this.id = id;
     }
 
-    public ResourceCollection getResourceCollection() {
+    public SharedCollection getResourceCollection() {
         return resourceCollection;
     }
 
-    public void setResourceCollection(ResourceCollection resourceCollection) {
+    public void setResourceCollection(SharedCollection resourceCollection) {
         this.resourceCollection = resourceCollection;
     }
 

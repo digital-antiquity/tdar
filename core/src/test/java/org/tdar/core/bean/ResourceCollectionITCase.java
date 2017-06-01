@@ -1,31 +1,36 @@
 package org.tdar.core.bean;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.utils.PersistableUtils;
 
@@ -37,80 +42,78 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
     private static final String TEST_TITLE = "Brookville Reservoir Survey 1991-1992";
 
-
     @Test
-    @Rollback
+    @Rollback(true)
     public void testSetupCorrect() {
         ResourceCollection collection = resourceCollectionService.find(1575l);
-        assertFalse(collection.isHidden());
+        assertFalse(((VisibleCollection) collection).isHidden());
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testSparseResource() throws Exception {
-        ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getAdminUser());
+        SharedCollection collection = new SharedCollection("test", "test", getAdminUser());
         collection.markUpdated(getAdminUser());
         collection.setResources(new HashSet<>(genericService.findRandom(Resource.class, 20)));
         genericService.saveOrUpdate(collection);
         Long collectionId = collection.getId();
         collection = null;
-        collection = genericService.find(ResourceCollection.class, collectionId);
+
+        collection = genericService.findAll(SharedCollection.class, Arrays.asList(collectionId)).get(0);
+
         for (Resource resource : collection.getResources()) {
             logger.info("{} {} ", resource, resource.getSubmitter());
         }
 
     }
 
-    
     @Test
     @Rollback
     public void testMakeActive() throws Exception {
-        ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getAdminUser());
+        SharedCollection collection = new SharedCollection("test", "test", getAdminUser());
         collection.markUpdated(getAdminUser());
         boolean seen = false;
         genericService.saveOrUpdate(collection);
-        for (Resource r  : genericService.findRandom(Resource.class, 20)) {
+        for (Resource r : genericService.findRandom(Resource.class, 20)) {
             r.setStatus(Status.ACTIVE);
             if (seen == false) {
                 r.setStatus(Status.DRAFT);
             }
-            r.getResourceCollections().add(collection);
+            r.getSharedCollections().add(collection);
             genericService.saveOrUpdate(r);
             collection.getResources().add(r);
         }
         Long collectionId = collection.getId();
         collection = null;
-        collection = genericService.find(ResourceCollection.class, collectionId);
+        collection = genericService.find(SharedCollection.class, collectionId);
         resourceCollectionService.makeResourcesInCollectionActive(collection, getAdminUser());
         for (Resource r : collection.getResources()) {
-            assertEquals(Status.ACTIVE,r.getStatus());
+            assertEquals(Status.ACTIVE, r.getStatus());
         }
     }
 
-    
     /**
      * Make sure that case in-sensitive queries return the same thing
      */
     @SuppressWarnings("unused")
     @Test
-    @Rollback
+    @Rollback(true)
     public void testUniqueFind() {
-        ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection test = new SharedCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.setSortBy(SortOption.COLLECTION_TITLE);
         genericService.saveOrUpdate(test);
 
-        ResourceCollection c1 = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection c1 = new SharedCollection();
         c1.setName(" TEST ");
         boolean isAdmin = authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, getAdminUser());
-        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), true, c1);
+        SharedCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), true, c1.getName(), SharedCollection.class);
         assertEquals(withName, test);
     }
 
     @SuppressWarnings("deprecation")
     @Test
-    @Rollback
+    @Rollback(true)
     public void testFindInSaveForResource() {
         Image image = new Image();
         image.setStatus(Status.ACTIVE);
@@ -120,70 +123,195 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         image.markUpdated(getBasicUser());
         genericService.saveOrUpdate(image);
 
-        ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection test = new SharedCollection();
         test.setName(TEST_TITLE);
         test.markUpdated(getAdminUser());
-        test.setSortBy(SortOption.COLLECTION_TITLE);
         genericService.saveOrUpdate(test);
         genericService.synchronize();
-        List<ResourceCollection> list = new ArrayList<>();
-        ResourceCollection trns = new ResourceCollection();
+        List<SharedCollection> list = new ArrayList<>();
+        SharedCollection trns = new SharedCollection();
         trns.setName(TEST_TITLE);
         trns.setId(-1L);
         list.add(trns);
-        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getBasicUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS);
-        logger.debug("collections: {}", image.getResourceCollections());
+        resourceCollectionService.saveResourceCollections(image, list, image.getSharedCollections(), getBasicUser(), true,
+                ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+        logger.debug("collections: {}", image.getSharedCollections());
 
         List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
         assertFalse(extractIds.contains(test.getId()));
-        image.getResourceCollections().clear();
-        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getEditorUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS);
-        logger.debug("collections: {}", image.getResourceCollections());
+        image.getSharedCollections().clear();
+        resourceCollectionService.saveResourceCollections(image, list, image.getSharedCollections(), getEditorUser(), true,
+                ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+        logger.debug("collections: {}", image.getSharedCollections());
         extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
+        logger.debug("{} -> {}", test.getId(), extractIds);
         assertTrue(extractIds.contains(test.getId()));
     }
 
     @Test
     @Rollback
-    public void testFindWithRights() {
-        ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
+    public void testFindShareWithRights() {
+        SharedCollection test = new SharedCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), GeneralPermissions.ADMINISTER_GROUP));
-        test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
-        test.setSortBy(SortOption.COLLECTION_TITLE);
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(test);
 
-        ResourceCollection c1 = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection c1 = new SharedCollection();
         c1.setName(" TEST ");
-        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, c1);
+        SharedCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, c1.getName(), SharedCollection.class);
         assertEquals(withName, test);
 
-        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1);
+        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1.getName(), SharedCollection.class);
         assertNotEquals(withName, test);
     }
 
     @Test
     @Rollback
-    public void testConvertToWhitelabelCollection() {
-        ResourceCollection resourceCollection = createAndSaveNewResourceCollection("normal collection");
-        WhiteLabelCollection whitelabelCollection = resourceCollectionDao.convertToWhitelabelCollection(resourceCollection);
+    public void testFindCollectionWithRights() {
+        ListCollection test = new ListCollection();
+        test.setName("test");
+        test.markUpdated(getAdminUser());
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
+        genericService.saveOrUpdate(test);
 
-        assertThat(whitelabelCollection, is( not( nullValue())));
-        assertThat(resourceCollection.getId(), is(whitelabelCollection.getId()));
-        assertThat(resourceCollection.getTitle(), is(whitelabelCollection.getTitle()));
+        ListCollection c1 = new ListCollection();
+        c1.setName(" TEST ");
+        ListCollection withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1.getName(), ListCollection.class);
+        assertEquals(withName, test);
     }
 
     @Test
-    @Rollback
-    public void testConvertToResourceCollection() {
-        WhiteLabelCollection wlc = createAndSaveNewWhiteLabelCollection("fancy collection");
-        ResourceCollection rc = resourceCollectionDao.convertToResourceCollection(wlc);
+    @Rollback(true)
+    public void testDashboardQueries() {
+        SharedCollection parent = new SharedCollection("parent", "parent", getBasicUser());
+        SharedCollection parent2 = new SharedCollection("parent2", "parent", getAdminUser());
+        SharedCollection parent3 = new SharedCollection("parent3", "parent", getAdminUser());
+        SharedCollection child1 = new SharedCollection("child", "child", getBasicUser());
+        SharedCollection child11 = new SharedCollection("child1", "child1", getBasicUser());
+        SharedCollection access = new SharedCollection("access", "access", getAdminUser());
+        SharedCollection child2 = new SharedCollection("child2", "child2",  getBasicUser());
+        SharedCollection child22 = new SharedCollection("child22", "child2", getBasicUser());
+        ListCollection list = new ListCollection("child22", "child2", SortOption.TITLE, false, getBasicUser());
 
-        assertThat(rc, is( not( nullValue())));
-        assertThat(rc, hasProperty("title", is("fancy collection")));
+        parent.markUpdated(getAdminUser());
+        parent2.markUpdated(getAdminUser());
+        parent3.markUpdated(getAdminUser());
+        child1.markUpdated(getAdminUser());
+        child11.markUpdated(getAdminUser());
+        access.markUpdated(getAdminUser());
+        child2.markUpdated(getAdminUser());
+        child22.markUpdated(getAdminUser());
+        list.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(parent, child1, child2, child11, child22, parent2, parent3, list, access);
+        access.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        resourceCollectionService.updateCollectionParentTo(getAdminUser(), child1, parent, SharedCollection.class);
+        resourceCollectionService.updateCollectionParentTo(getAdminUser(), child2, parent, SharedCollection.class);
+        resourceCollectionService.updateCollectionParentTo(getAdminUser(), child11, child1, SharedCollection.class);
+        resourceCollectionService.updateCollectionParentTo(getAdminUser(), child22, parent2, SharedCollection.class);
+//        genericService.saveOrUpdate(parent, child1, child2, child11, child22, parent2, parent3, access);
+        genericService.synchronize();
+        List<SharedCollection> parentCollections = resourceCollectionService.findParentOwnerCollections(getBasicUser(), SharedCollection.class);
+        logger.debug("parents:{}", parentCollections);
+        assertFalse("should not contain admin owner collection", parentCollections.contains(parent3));
+        assertFalse("should not contain hidden collection", parentCollections.contains(parent2));
+        assertFalse("should not contain admin owned collection", parentCollections.contains(access));
+        assertTrue("should contain visbile child", parentCollections.contains(child2));
+        assertTrue("should contain normal child", parentCollections.contains(child1));
+        assertTrue("should contain visbile child ofhidden parent", parentCollections.contains(child22));
+        assertFalse(parentCollections.contains(list));
+        getLogger().trace("accessible collections");
+        List<ResourceCollection> accessibleResourceCollections = entityService.findAccessibleResourceCollections(getBasicUser());
+        logger.debug("accessible:{}", accessibleResourceCollections);
+        assertTrue("should contain accesible collection", accessibleResourceCollections.contains(access));
+        
+        List<Long> collectionIds = PersistableUtils.extractIds(parentCollections);
+        collectionIds.addAll(PersistableUtils.extractIds(accessibleResourceCollections));
+        resourceCollectionService.reconcileCollectionTree(parentCollections, getBasicUser(), collectionIds, SharedCollection.class);
+        parentCollections.forEach(c -> {
+            logger.debug("{}", c);
+            logger.debug(" {}", c.getTransientChildren());
+        });
+        assertTrue("parent has child1", parent.getTransientChildren().contains(child1));
+        assertTrue("parent has child2", parent.getTransientChildren().contains(child2));
+        assertTrue("child1 has subchild", child1.getTransientChildren().contains(child11));
+        assertFalse("child2 has subchild", child2.getTransientChildren().size() > 0);
     }
 
+    @SuppressWarnings("unused")
+    @Test
+    @Rollback(true)
+    public void testDraftResourceIssue() throws Exception {
+        String email = "a243@basda.com";
+        entityService.delete(entityService.findByEmail(email));
+
+        final TdarUser testPerson = createAndSaveNewPerson(email, "1234");
+        String name = "test collection";
+        String description = "test description";
+
+        InformationResource normal = generateDocumentWithUser();
+        InformationResource draft = generateDocumentWithUser();
+        final Long normalId = normal.getId();
+        final Long draftId = draft.getId();
+        draft.setStatus(Status.DRAFT);
+        genericService.saveOrUpdate(draft);
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+        List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
+        SharedCollection collection = new SharedCollection(name, description, getBasicUser());
+        collection.markUpdated(getBasicUser());
+        CollectionSaveObject<SharedCollection> cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, users, SharedCollection.class);
+        cso.setToAdd(PersistableUtils.extractIds(resources));
+        resourceCollectionService.saveCollectionForController(cso);
+        genericService.synchronize();
+
+        final Long id = collection.getId();
+        String slug = collection.getSlug();
+        collection = null;
+        collection = genericService.find(SharedCollection.class, id);
+        List<AuthorizedUser> aus = new ArrayList<>(users);
+        aus.add(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD));
+        CollectionSaveObject<SharedCollection> cso2 = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, aus, SharedCollection.class);
+        resourceCollectionService.saveCollectionForController(cso2);
+        genericService.synchronize();
+        logger.debug("au: {}", collection.getAuthorizedUsers());
+        logger.debug("no: {}", normal.getSharedCollections());
+        logger.debug("df: {}", draft.getSharedCollections());
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, GeneralPermissions.MODIFY_METADATA));
+
+        assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), draft));
+        assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), normal));
+
+    }
+
+    @Test
+    @Rollback(true)
+    //make a collection w/ three authusers, and confirm those users found via findUsersSharedWith()
+    public void testFindUsersSharedWith() {
+        final String collectionName = "the best collection ever";
+        List<TdarUser> users = new ArrayList<>(Arrays.asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
+
+        SharedCollection collection = createAndSaveNewResourceCollection(collectionName, SharedCollection.class);
+        users.remove(collection.getOwner());
+
+        // sanity checks
+        assertThat("collection should have no authusers", collection.getAuthorizedUsers(), is( empty()));
+        assertThat("test requires at least one user that is not the same as the current user", users, not( empty()));
+
+        // now add some authusers
+        collection.getAuthorizedUsers().addAll(
+                users.stream().map(user -> new AuthorizedUser(getAdminUser(), user, GeneralPermissions.MODIFY_RECORD)).collect(Collectors.toList()));
+
+        genericService.saveOrUpdate(collection);
+        genericService.saveOrUpdate(collection.getAuthorizedUsers());
+        genericService.synchronize();
+        List<TdarUser> grantees = resourceCollectionDao.findUsersSharedWith(collection.getOwner());
+        for (TdarUser grantee : users) {
+            assertTrue(String.format("grantees should contain: %s", grantee),grantees.contains(grantee));
+        }
+    }
 }

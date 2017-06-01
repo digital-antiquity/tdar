@@ -39,7 +39,7 @@ public class SimpleKeywordViewAction extends AbstractKeywordController implement
     private String mode = "KeywordBrowse";
     private PaginationHelper paginationHelper;
 
-	private DisplayOrientation orientation = DisplayOrientation.LIST;
+    private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Action(value = "view", interceptorRefs = { @InterceptorRef("unauthenticatedStack") })
     public String view() {
@@ -167,8 +167,8 @@ public class SimpleKeywordViewAction extends AbstractKeywordController implement
 
 
 
-	@Override
-	public DisplayOrientation getOrientation() {
-		return orientation ;
-	}
+    @Override
+    public DisplayOrientation getOrientation() {
+        return orientation ;
+    }
 }

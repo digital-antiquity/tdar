@@ -8,6 +8,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.Range;
 import org.hibernate.annotations.Cache;
@@ -20,6 +21,7 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.json.JsonLookupFilter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -122,6 +124,8 @@ public class CoverageDate extends AbstractPersistable implements HasResource<Res
         this.dateType = dateType;
     }
 
+    @JsonIgnore
+    @XmlTransient
     public void setDateType(String dateType) {
         this.dateType = CoverageType.valueOf(dateType);
     }

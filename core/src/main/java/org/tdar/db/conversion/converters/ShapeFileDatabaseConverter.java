@@ -56,7 +56,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @version $Revision$
  * @latest $Date$
  */
-public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
+public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
     private static final String DB_PREFIX = "s";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private File databaseFile;
@@ -106,7 +106,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         setIndexedContentsFile(new File(TdarConfiguration.getInstance().getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
         FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
         BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
-        DataTable dataTable = createDataTable(getFilename());
+        DataTable dataTable = createDataTable(getFilename(), 0);
         // drop the table if it has been there
         targetDatabase.dropTable(dataTable);
 
@@ -132,6 +132,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         // Filter filter = CQL.toFilter(text.getText());
         // SimpleFeatureCollection features = source.getFeatures(filter);
         // FeatureCollectionTableModel model = new FeatureCollectionTableModel(features);
+        int count = 0;
         for (PropertyDescriptor descriptors : collection.getSchema().getDescriptors()) {
             PropertyType type = descriptors.getType();
             DataTableColumnType columnType = DataTableColumnType.BLOB;
@@ -150,7 +151,8 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
             } else {
                 logger.error("unknown binding: {} ", type.getBinding());
             }
-            createDataTableColumn(descriptors.getName().getLocalPart(), columnType, dataTable);
+            createDataTableColumn(descriptors.getName().getLocalPart(), columnType, dataTable, count);
+            count++;
         }
 
         targetDatabase.createTable(dataTable);
@@ -194,6 +196,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void dumpToGeoJson(final FeatureCollection<?, ?> collection_) {
         FeatureJSON fjson = new FeatureJSON();
         FeatureCollection<?, ?> collection = collection_;
