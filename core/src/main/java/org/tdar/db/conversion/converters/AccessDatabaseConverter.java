@@ -46,7 +46,7 @@ import com.vividsolutions.jts.io.WKBReader;
  * @version $Revision$
  * @latest $Date$
  */
-public class AccessDatabaseConverter extends DatasetConverter.Base {
+public class AccessDatabaseConverter extends AbstractDatabaseConverter {
     private static final String DB_PREFIX = "d";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -94,6 +94,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             notLinked.add(table.getName());
         }
 
+        int tableOrder = 0;
         for (String tableName : getDatabase().getTableNames()) {
 
             if (!notLinked.contains(tableName)) {
@@ -102,7 +103,8 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 continue;
             }
             // generate and sanitize new table name
-            DataTable dataTable = createDataTable(tableName);
+            DataTable dataTable = createDataTable(tableName, tableOrder);
+            tableOrder++;
             dataTableNameMap.put(tableName, dataTable);
             // drop the table if it has been there
             targetDatabase.dropTable(dataTable);

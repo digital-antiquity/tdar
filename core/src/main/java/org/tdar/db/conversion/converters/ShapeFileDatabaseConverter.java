@@ -56,7 +56,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @version $Revision$
  * @latest $Date$
  */
-public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
+public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
     private static final String DB_PREFIX = "s";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private File databaseFile;
@@ -106,7 +106,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         setIndexedContentsFile(new File(TdarConfiguration.getInstance().getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
         FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
         BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
-        DataTable dataTable = createDataTable(getFilename());
+        DataTable dataTable = createDataTable(getFilename(), 0);
         // drop the table if it has been there
         targetDatabase.dropTable(dataTable);
 

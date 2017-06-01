@@ -205,7 +205,7 @@ public class ItemService {
                 upload(file);
                 TdarReference ref = file.getTdarReference();
                 if (ref != null && PersistableUtils.isNotNullOrTransient(ref.getTdarId())) {
-                    msg.append(String.format(" - %s (%s, args)\n",file.getName(), ref.getTdarId()));
+                    msg.append(String.format(" - %s (%s)\n",file.getName(), ref.getTdarId()));
                 }
             } catch (Exception e) {
                 logger.error("{}", e, e);

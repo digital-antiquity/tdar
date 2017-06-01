@@ -235,7 +235,7 @@ ${head}
 
 
     </div>
-    <!-- BEGIN-TDAR-FOOTER -->
+    
     <footer>
         <div class="container">
             <#include "/${config.themeDir}/footer.dec" />
@@ -291,5 +291,10 @@ ${head}
 <script>
     $(TDAR.main);
 </script>
+
+    <!-- BEGIN-TDAR-FOOTER -->
+    
+    <#include "/${themeDir}/sub-footer.dec" />
+
 </body>
 </html>
