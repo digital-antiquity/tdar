@@ -16,6 +16,7 @@ import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Resource;
 
 /**
  * Bean for inviting a person to tDAR -- grants them implicit access to the collection(s)
@@ -47,8 +48,12 @@ public class UserInvite extends AbstractPersistable {
     private Date dateRedeemed;
 
     @ManyToOne
-    @JoinColumn(nullable = false, name = "collection_id")
+    @JoinColumn(nullable = true, name = "collection_id")
     private ResourceCollection resourceCollection;
+
+    @ManyToOne
+    @JoinColumn(nullable = true, name = "resource_id")
+    private Resource resource;
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "authorizer_id")
@@ -117,6 +122,14 @@ public class UserInvite extends AbstractPersistable {
 
     public void setDateExpires(Date dateExpires) {
         this.dateExpires = dateExpires;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 
 }

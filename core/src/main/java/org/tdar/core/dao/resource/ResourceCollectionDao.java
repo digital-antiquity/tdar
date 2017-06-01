@@ -40,6 +40,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -475,6 +476,16 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return users;
     }
 
+    public List<UserInvite> findUserInvites(HasAuthorizedUsers c) {
+        if (c instanceof ResourceCollection) {
+            return findUserInvites((ResourceCollection) c);
+        }
+        if (c instanceof Resource) {
+            return findUserInvites((Resource) c);
+        }
+        return null;
+    }
+    
     public List<UserInvite> findUserInvites(ResourceCollection resourceCollection) {
         return getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_USERINVITES_BY_COLLECTION, UserInvite.class)
                 .setParameter("collection", resourceCollection)

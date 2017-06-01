@@ -1201,13 +1201,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 //            getDao().createInternalResourceCollectionForResource(resource.getSubmitter(), resource, true);
 //        }
 //        resource.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, GeneralPermissions.ADMINISTER_SHARE));
-        if (CollectionUtils.isNotEmpty(invites)) {
-            throw new NotImplementedException();
-        }
-        //handleInvites(authenticatedUser, invites, resource.getInternalResourceCollection());
+        handleInvites(authenticatedUser, invites, resource);
     }
 
-    private <C extends ResourceCollection> void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites, C c) {
+    private void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites, HasAuthorizedUsers c) {
         List<UserInvite> existing = getDao().findUserInvites(c);
         Map<Long, UserInvite> createIdMap = PersistableUtils.createIdMap(existing);
         
@@ -1228,7 +1225,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 }
 
                 // new invite
-                invite.setResourceCollection(c);
+                if (c instanceof ResourceCollection) {
+                    invite.setResourceCollection((ResourceCollection) c);
+                }
+                if (c instanceof Resource) {
+                    invite.setResource((Resource) c);
+                }
                 getDao().saveOrUpdate(invite);
                 emailService.sendUserInviteEmail(invite, authenticatedUser);
             }

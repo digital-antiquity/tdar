@@ -65,7 +65,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
         Workbook workbook = WorkbookFactory.create(new FileInputStream(tempFile));
         Sheet sheet = workbook.getSheet("results");
-        Assert.assertEquals(TdarConfiguration.getInstance().getSearchExcelExportRecordMax(), sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT);
+        Assert.assertTrue(sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT >  4);
     }
 
     @Test

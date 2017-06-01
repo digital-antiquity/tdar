@@ -598,15 +598,13 @@
                 query = "select distinct au.user from SharedCollection s inner join s.authorizedUsers au where  (s.id in ("
                         + "select s_.id from SharedCollection s_  left join s_.parentIds parentId where s_.id in (:collectionIds) or parentId in (:collectionIds) "
                         + "))"),
-        //TODO: extract constants
         @NamedQuery(
                 name=TdarNamedQueries.FIND_USERINVITES_BY_COLLECTION,
                 query="from UserInvite u where u.resourceCollection = :collection"),
 
         @NamedQuery(
                 name=TdarNamedQueries.FIND_USERINVITES_BY_RESOURCE,
-                //fixme:
-                query="select ui from UserInvite ui where exists (from SharedCollection ic join ic.resources res where ui.resourceCollection = ic and res = :resource ) "
+                query="select ui from UserInvite ui where ui.resource = :resource "
         ),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_USERINVITES_BY_USER,
@@ -626,5 +624,3 @@ package org.tdar.core.dao;
 
 import org.hibernate.annotations.NamedQueries;
 import org.hibernate.annotations.NamedQuery;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
