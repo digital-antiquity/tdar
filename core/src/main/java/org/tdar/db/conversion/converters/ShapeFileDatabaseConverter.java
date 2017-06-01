@@ -56,7 +56,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @version $Revision$
  * @latest $Date$
  */
-public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
+public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
     private static final String DB_PREFIX = "s";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private File databaseFile;

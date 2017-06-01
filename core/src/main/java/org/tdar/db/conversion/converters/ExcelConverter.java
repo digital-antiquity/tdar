@@ -39,7 +39,7 @@ import org.tdar.utils.MessageHelper;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public class ExcelConverter extends DatasetConverter.Base {
+public class ExcelConverter extends AbstractDatabaseConverter {
 
     private static final String ERROR_CORRUPT_FILE_TRY_RESAVING = "excelConverter.error_corrupt_file_try_resaving";
     private static final String ERROR_POI_MISSING_ROWS = "excelConverter.poi_error_missing_rows";

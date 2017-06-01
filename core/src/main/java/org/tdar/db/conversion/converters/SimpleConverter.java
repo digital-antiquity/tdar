@@ -26,7 +26,7 @@ import au.com.bytecode.opencsv.CSVReader;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public abstract class SimpleConverter extends DatasetConverter.Base {
+public abstract class SimpleConverter extends AbstractDatabaseConverter {
 
     protected CSVReader reader;
     protected String[] headerLine;
