@@ -310,7 +310,7 @@
         <addColumn tableName="authorized_user">
             <column name="resource_id" type='bigint' />
         </addColumn>
-        <addForeignKeyConstraint constraintName="fk_user_resource" referencedTableName="resource" baseColumnNames="resource_id" baseTableName="authorized_user  " 
+        <addForeignKeyConstraint constraintName="fk_user_resource" referencedTableName="resource" baseColumnNames="resource_id" baseTableName="authorized_user" 
         referencedColumnNames="id"/>
         <dropNotNullConstraint tableName="authorized_user" columnName="resource_collection_id"/>
             <comment>create a temp table for all of the intenral collections</comment>
@@ -342,5 +342,13 @@
      </changeSet>
      <changeSet id="prehistoric-rights-3" author="abrin">
          <sql>update authorized_user set general_permission='ADMINISTER_SHARE' where general_permission_int=5000</sql>
+     </changeSet>
+     <changeSet id="prehistoric-rights-4" author="abrin">
+        <addColumn tableName="user_invite">
+            <column name="resource_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_user_invite_resource" referencedTableName="resource" baseColumnNames="resource_id" baseTableName="authorized_user" 
+        referencedColumnNames="id"/>
+        <dropNotNullConstraint tableName="user_invite" columnName="collection_id"/>
      </changeSet>
 </databaseChangeLog>
