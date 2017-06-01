@@ -55,7 +55,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
 
     @Override
     public String getDisplayName() {
-        return "Timed Access Revoking Porcess";
+        return "Timed Access Revoking Process";
 
     }
 
