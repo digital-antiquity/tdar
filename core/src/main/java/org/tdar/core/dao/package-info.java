@@ -617,6 +617,12 @@
                 name=TdarNamedQueries.AUTHORIZED_USERS_FOR_RESOURCE,
                 query = "select au from Resource r join r.authorizedUsers au where r.id=:id"),
         @NamedQuery(
+                name=TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION,
+                query = "select r from ResourceCollection r join r.authorizedUsers au where r.id=:id and au.dateExpires > :date"),
+        @NamedQuery(
+                name=TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE,
+                query = "select r from Resource r join r.authorizedUsers au where r.id=:id and au.dateExpires > :date"),
+        @NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE,
                 query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )")
         })

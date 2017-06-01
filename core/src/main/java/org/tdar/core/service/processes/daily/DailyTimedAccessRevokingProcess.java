@@ -1,6 +1,7 @@
 package org.tdar.core.service.processes.daily;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,12 +23,15 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.base.GenericDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.service.external.EmailService;
-import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
+import org.tdar.core.service.processes.AbstractScheduledProcess;
 
 /**
  * $Id$
@@ -41,7 +45,7 @@ import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 
 @Component
 @Scope("prototype")
-public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProcess<ResourceCollection> {
+public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 7534566757094920406L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
@@ -52,6 +56,12 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
+
+    @Autowired
+    private GenericDao genericDao;
 
     @Override
     public String getDisplayName() {
@@ -86,28 +96,32 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     Map<TdarUser, List<String>> userNotes = new HashMap<>();
 
     @Override
-    public void process(ResourceCollection persistable) throws Exception {
+    public void execute() {
         DateTime now = DateTime.now();
-        String name = getCollectionName(persistable);
-        List<AuthorizedUser> toRemove = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        evaluateAuthorizedUsersForCollection(persistable, now, name, toRemove, sb);
+        Collection<HasAuthorizedUsers> toProcess = resourceCollectionDao.findExpiringUsers(now.toDate());
+        for (HasAuthorizedUsers persistable : toProcess) {
+            String name = getCollectionName(persistable);
+            List<AuthorizedUser> toRemove = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            evaluateAuthorizedUsersForCollection(persistable, now, name, toRemove, sb);
 
-        if (CollectionUtils.isNotEmpty(toRemove)) {
-            persistable.getAuthorizedUsers().removeAll(toRemove);
+            if (CollectionUtils.isNotEmpty(toRemove)) {
+                persistable.getAuthorizedUsers().removeAll(toRemove);
 
-            genericDao.saveOrUpdate(persistable);
-            genericDao.delete(persistable);
-            TdarUser user = genericDao.find(TdarUser.class, TdarConfiguration.getInstance().getAdminUserId());
-            CollectionRevisionLog crl = new CollectionRevisionLog(sb.toString(), (ResourceCollection)persistable, user, RevisionLogType.EDIT);
-            crl.setResourceCollection((ResourceCollection)persistable);
-            genericDao.saveOrUpdate(crl);
-            logger.debug("result: {}", persistable.getAuthorizedUsers());
-            publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
+                genericDao.saveOrUpdate(persistable);
+                genericDao.delete(persistable);
+                TdarUser user = genericDao.find(TdarUser.class, TdarConfiguration.getInstance().getAdminUserId());
+                CollectionRevisionLog crl = new CollectionRevisionLog(sb.toString(), (ResourceCollection) persistable, user, RevisionLogType.EDIT);
+                crl.setResourceCollection((ResourceCollection) persistable);
+                genericDao.saveOrUpdate(crl);
+                logger.debug("result: {}", persistable.getAuthorizedUsers());
+                publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
+            }
         }
     }
 
-    private void evaluateAuthorizedUsersForCollection(ResourceCollection persistable, DateTime now, String name, List<AuthorizedUser> toRemove, StringBuilder sb) {
+    private void evaluateAuthorizedUsersForCollection(HasAuthorizedUsers persistable, DateTime now, String name, List<AuthorizedUser> toRemove,
+            StringBuilder sb) {
         for (AuthorizedUser au : persistable.getAuthorizedUsers()) {
 
             Date dateExpires = au.getDateExpires();
@@ -125,22 +139,15 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
         }
     }
 
-    private String getCollectionName(ResourceCollection persistable) {
-        String name = "";
+    private String getCollectionName(HasAuthorizedUsers persistable) {
+        String name = "No name";
         if (persistable instanceof HasName) {
             name = String.format("%s (%s)", ((HasName) persistable).getName(), persistable.getId());
-//        } else if ( persistable instanceof InternalCollection) {
-//            InternalCollection ic = (InternalCollection)persistable;
-//            if (CollectionUtils.isNotEmpty(ic.getResources())) {
-//            Resource next = ic.getResources().iterator().next();
-//            name = String.format("%s (%s)", next.getName(), next.getId());
-//            }
         }
         return name;
     }
 
-    @Override
-    protected void batchCleanup() {
+    protected void sendNotifications() {
 
         Set<String> adminNotes = new HashSet<>();
         for (TdarUser owner : ownerNotes.keySet()) {
@@ -179,11 +186,6 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
             logger.debug("admin notes: {}", adminNotes);
             emailService.queueWithFreemarkerTemplate("expire/expire_admin.ftl", map, email);
         }
-    }
-
-    @Override
-    public Class<ResourceCollection> getPersistentClass() {
-        return ResourceCollection.class;
     }
 
 }

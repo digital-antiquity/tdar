@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -532,6 +533,18 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE);
         query.setParameterList("collectionIds", ids);
         return query.list();
+    }
+
+    public Collection<HasAuthorizedUsers> findExpiringUsers(Date date) {
+        ArrayList<HasAuthorizedUsers> toReturn = new ArrayList<>();
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION);
+        query.setParameter("date", date);
+        toReturn.addAll(query.list());
+        query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE);
+        query.setParameter("date", date);
+        toReturn.addAll(query.list());
+        
+        return toReturn;
     }
     
 }
