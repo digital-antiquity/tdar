@@ -44,10 +44,14 @@
 </div>
 <div class="row  screen" id="copyright">
     <p class="copyright-notice span12">
-
-        tDAR is the digital repository of <a
-
-            href="http://www.digitalantiquity.org" target='_blank'>Digital Antiquity</a>, a collaborative organization dedicated to enhancing preservation and
+<!--
+        tDAR is the digital repository of <a href="http://www.digitalantiquity.org/">Digital Antiquity</a>, a collaborative organization hosted by 
+        <a href="http://www.asu.edu">Arizona State University</a>.  Digital Antiquity extends our knowledge of the human past and improves the management
+        of our cultural heritage by permanently preserving digital archaeological data and supporting their discovery, access, and reuse. tDAR is and has 
+        been supported by a number of organizations.  <a href="http://www.tdar.org/about">Full acknowledgements are provided here</a>. 
+        Copyright &copy; 2017 Digital Antiquity. <a href="/credit">Design Info</a>
+-->
+        tDAR is the digital repository of <a href="http://www.digitalantiquity.org" target='_blank'>Digital Antiquity</a>, a collaborative organization dedicated to enhancing preservation and
         access to the digital records
         of archaeological investigations. Hosted by <a href="http://www.asu.edu" target='_blank'>Arizona State University</a>, <a href="http://www.tdar.org"
                                                                                                                                   target='_blank'>tDAR</a> is
