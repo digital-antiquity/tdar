@@ -65,6 +65,6 @@
 <#macro _extraFields>
     <@s.hidden name="id" />
     <@s.hidden name="type" />
-    <@s.hidden name="messageBody" value="${messageBody?url}" />
+    <@s.hidden name="messageBody" value="${(messageBody!'')?url}" />
 </#macro>
 </#escape>
