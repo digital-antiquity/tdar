@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +33,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -456,15 +458,17 @@ public class AuthorizationService implements Accessible {
         if (isAdminOrOwner(person, resource, equivalentAdminRight)) {
             return true;
         }
-        if (authorizedUserDao.isAllowedTo(person, resource, permission)) {
-            logger.trace("person is an authorized user");
-            return true;
-        }
 
         // ab added:12/11/12
         if (PersistableUtils.isTransient(resource)) {
             logger.trace("resource is transient");
             return true;
+        }
+
+        if (authorizedUserDao.isAllowedTo(person, resource, permission)) {
+            logger.trace("person is an authorized user");
+            return true;
+
         }
 
         logger.trace("returning false... access denied");
@@ -862,6 +866,35 @@ public class AuthorizationService implements Accessible {
             permission = GeneralPermissions.REMOVE_FROM_SHARE;
         }
         return authorizedUserDao.isAllowedTo(user, collection, permission);
+    }
+
+    public boolean checkSelfEscalation(TdarUser actor, HasAuthorizedUsers source, InternalTdarRights editAnything, AuthorizedUser user) {
+        logger.debug("{} {} {}", actor, source, user);
+        List<AuthorizedUser> checkSelfEscalation = authorizedUserDao.checkSelfEscalation(actor, source, editAnything, user.getGeneralPermission());
+        logger.debug("{}", checkSelfEscalation);
+        Date latest = null;
+        if (CollectionUtils.isNotEmpty(checkSelfEscalation)) {
+            for (AuthorizedUser act : checkSelfEscalation) {
+                if (act.getDateExpires() != null) {
+                    if (latest != null && act.getDateExpires().before(latest)) {
+                        continue;
+                    }
+                }
+                latest = act.getDateExpires();
+            }
+            
+            // we have a date of expiry
+            if (latest != null) {
+                if (user.getDateExpires() == null || latest.before(user.getDateExpires())) {
+                    return false;
+                }
+                
+            }
+            // we have the rights
+            return true;
+        }
+        // no users found
+        return false;
     }
 
 }

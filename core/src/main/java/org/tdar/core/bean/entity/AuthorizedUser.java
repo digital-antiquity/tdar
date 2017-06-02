@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
 import org.hibernate.validator.internal.util.privilegedactions.GetDeclaredConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +82,12 @@ public class AuthorizedUser extends AbstractPersistable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "creator_id")
     private TdarUser createdBy;
+
+    @Column(name="resource_collection_id", insertable=false, updatable=false)
+    private Long collectionId;
+
+    @Column(name="resource_id", insertable=false, updatable=false)
+    private Long resourceId;
 
     private transient boolean enabled = false;
 
@@ -155,7 +162,7 @@ public class AuthorizedUser extends AbstractPersistable {
         if (getDateExpires() != null) {
             ex = dateExpires.toString();
         }
-        return String.format("%s[%s] (%s - %s%s)", properName, userid, generalPermission, getId(), ex);
+        return String.format("%s[%s] (%s - %s %s)", properName, userid, generalPermission, getId(), ex);
     }
 
     /**
@@ -214,6 +221,22 @@ public class AuthorizedUser extends AbstractPersistable {
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public Long getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
     }
 
 }

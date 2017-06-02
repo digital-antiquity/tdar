@@ -180,6 +180,8 @@ public interface TdarNamedQueries {
     String FIND_ALTERNATE_CHILDRENS_TREE = "query.alternate_children_tree";
     String FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE = "query.expiring_auth_users_resource";
     String FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION = "query.expiring_auth_users_collection";
+    String QUERY_RIGHTS_EXPIRY_RESOURCE = "query.expiry_authuser";
+    String QUERY_RIGHTS_EXPIRY_COLLECTION = "query.expiry_authuser_collection";
             // raw SQL/HQL queries
 
     /**

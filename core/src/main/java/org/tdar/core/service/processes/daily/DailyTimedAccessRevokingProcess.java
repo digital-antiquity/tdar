@@ -99,6 +99,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
     public void execute() {
         DateTime now = DateTime.now();
         Collection<HasAuthorizedUsers> toProcess = resourceCollectionDao.findExpiringUsers(now.toDate());
+        logger.debug("{}", toProcess);
         for (HasAuthorizedUsers persistable : toProcess) {
             String name = getCollectionName(persistable);
             List<AuthorizedUser> toRemove = new ArrayList<>();

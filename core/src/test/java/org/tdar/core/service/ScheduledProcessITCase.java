@@ -317,6 +317,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
                 logger.debug("{}",rce);
                 logger.debug("au: {}",rce.getAuthorizedUsers());
                 assertEquals(aus -1 , rce.getAuthorizedUsers().size());
+                rce.setStatus(Status.DELETED);
+                rcn.setStatus(Status.DELETED);
+                genericService.saveOrUpdate(rcn);
+                genericService.saveOrUpdate(rce);
                 return null;
             }
         });

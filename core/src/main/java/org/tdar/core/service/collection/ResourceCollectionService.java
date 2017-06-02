@@ -163,7 +163,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     actual = idMap2.get(user.getUser().getId());
                     logger.debug("actual was null, now: {}", actual);
                 }
-                checkSelfEscalation(actor, user.getUser(), resource, user.getGeneralPermission());
+                checkSelfEscalation(actor, user, resource);
                 actual.setGeneralPermission(user.getGeneralPermission());
                 actual.setDateExpires(user.getDateExpires());
             }
@@ -298,12 +298,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         logger.trace("------------------------------------------------------");
     }
 
-    private void checkSelfEscalation(TdarUser actor, TdarUser userToAdd, HasAuthorizedUsers source, GeneralPermissions generalPermission) {
+    private void checkSelfEscalation(TdarUser actor, AuthorizedUser userToAdd, HasAuthorizedUsers source) {
         // specifically checking for rights escalation
         logger.debug("actor: {}, sourceRights:{} , transientUser:{}", actor, source.getAuthorizedUsers(), userToAdd);
-            if (!authorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, generalPermission)) {
+            if (!authorizationService.checkSelfEscalation(actor, source, InternalTdarRights.EDIT_ANYTHING, userToAdd)) {
                 throw new TdarAuthorizationException("resourceCollectionService.could_not_add_user", Arrays.asList(userToAdd,
-                        generalPermission));
+                        userToAdd.getGeneralPermission()));
             }
             // find highest permission for actor
             // check that permission is valid for actor to assign
@@ -339,7 +339,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 return;
             }
             if (PersistableUtils.isNotNullOrTransient(source) && RevisionLogType.EDIT == type) {
-                checkSelfEscalation(actor, user, source, incomingUser.getGeneralPermission());
+                checkSelfEscalation(actor, incomingUser, source);
             }
             currentUsers.add(incomingUser);
             if (shouldSaveResource) {

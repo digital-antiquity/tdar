@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.dao.entity.UserPermissionCacheKey.CacheResult;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -272,6 +274,18 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         query.setParameter("userId", user.getId());
         query.setParameter("perm", null);
         return (List<ResourceCollection>) query.getResultList();
+    }
+
+    public List<AuthorizedUser> checkSelfEscalation(TdarUser actor, HasAuthorizedUsers source, InternalTdarRights editAnything, GeneralPermissions generalPermission) {
+        String q = QUERY_RIGHTS_EXPIRY_COLLECTION;
+        if (source instanceof Resource) {
+            q = QUERY_RIGHTS_EXPIRY_RESOURCE;
+        }
+        Query<AuthorizedUser> query = getCurrentSession().createNamedQuery(q, AuthorizedUser.class);// QUERY_PROJECT_EDITABLE
+        query.setParameter("userId", actor.getId());
+        query.setParameter("perm", generalPermission.getEffectivePermissions() - 1);
+        query.setParameter("id", source.getId());
+        return query.list();
     }
 
 }

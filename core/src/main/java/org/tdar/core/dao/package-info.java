@@ -35,6 +35,17 @@
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, 
                 query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId) and resCol.status='ACTIVE' and (:perm is null or authUser.effectiveGeneralPermission > :perm )"),
         @NamedQuery(
+                name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_RESOURCE, 
+                query = "SELECT au from AuthorizedUser au LEFT JOIN ResourceCollection c on au.collectionId=c.id "
+                        + "left join c.resources r left join c.parentIds parentId "
+                        + "left join ResourceCollection p on parentId=p.id left join p.resources r2 "
+                        + "where au.user.id=:userId and au.effectiveGeneralPermission > :perm and ( au.resourceId =:id or (c.status='ACTIVE' and r.id=:id) or (p.status='ACTIVE' and r2.id=:id))"),
+        @NamedQuery(
+                name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_COLLECTION, 
+                query = "SELECT au from AuthorizedUser au LEFT JOIN ResourceCollection c on au.collectionId=c.id "
+                        + "left join c.parentIds parentId "
+                        + "where au.user.id=:userId and au.effectiveGeneralPermission > :perm and ( au.collectionId =:id or parentId=:id)"),
+        @NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
                 query = "SELECT distinct 1 from " +
                         " ResourceCollection as rescol inner join rescol.authorizedUsers " +
@@ -618,10 +629,10 @@
                 query = "select au from Resource r join r.authorizedUsers au where r.id=:id"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION,
-                query = "select r from ResourceCollection r join r.authorizedUsers au where r.id=:id and au.dateExpires > :date"),
+                query = "select r from ResourceCollection r join r.authorizedUsers au where au.dateExpires < :date and status='ACTIVE'"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE,
-                query = "select r from Resource r join r.authorizedUsers au where r.id=:id and au.dateExpires > :date"),
+                query = "select r from Resource r join r.authorizedUsers au where au.dateExpires < :date and status in ('ACTIVE', 'DRAFT')"),
         @NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE,
                 query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )")
