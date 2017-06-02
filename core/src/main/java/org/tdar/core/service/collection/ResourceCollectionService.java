@@ -970,7 +970,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (PersistableUtils.isNotTransient(persistable)) {
             type = RevisionLogType.EDIT;
         }
-
+        saveOrUpdate(persistable);
         List<Resource> resourcesToRemove = getDao().findAll(Resource.class, cso.getToRemove());
         List<Resource> resourcesToAdd = getDao().findAll(Resource.class, cso.getToAdd());
         getLogger().debug("toAdd: {}", resourcesToAdd);
