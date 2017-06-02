@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasStatus;
-import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
@@ -265,7 +264,7 @@ public class AuthorizationService implements Accessible {
             return false;
         }
 
-        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser) || authenticatedUser.equals(persistable.getOwner())) {
+        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser)) {
             return true;
         }
 
@@ -292,7 +291,7 @@ public class AuthorizationService implements Accessible {
             return false;
         }
 
-        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser) || authenticatedUser.equals(persistable.getOwner())) {
+        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser)) {
             return true;
         }
 
@@ -845,7 +844,7 @@ public class AuthorizationService implements Accessible {
     }
 
     public boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd) {
-        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user) || user.equals(collectionToAdd.getOwner())) {
+        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }
         GeneralPermissions permission = GeneralPermissions.ADD_TO_COLLECTION;
@@ -856,7 +855,7 @@ public class AuthorizationService implements Accessible {
     }
 
     public boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user) {
-        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user) || user.equals(collection.getOwner())) {
+        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }
 
@@ -870,6 +869,10 @@ public class AuthorizationService implements Accessible {
 
     public boolean checkSelfEscalation(TdarUser actor, HasAuthorizedUsers source, InternalTdarRights editAnything, AuthorizedUser user) {
         logger.debug("{} {} {}", actor, source, user);
+        if (can(editAnything, actor)) {
+            return true;
+        }
+
         List<AuthorizedUser> checkSelfEscalation = authorizedUserDao.checkSelfEscalation(actor, source, editAnything, user.getGeneralPermission());
         logger.debug("{}", checkSelfEscalation);
         Date latest = null;
