@@ -294,7 +294,7 @@ ${head}
 
     <!-- BEGIN-TDAR-FOOTER -->
     
-    <#include "/${themeDir}/sub-footer.dec" />
+    <#include "/${config.themeDir}/sub-footer.dec" />
 
 </body>
 </html>
