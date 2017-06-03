@@ -1,29 +1,5 @@
-<!--
-
 <div class="container"  style="margin-top:10px;margin-bottom:10px">
 <div class="row">
-<style>
-#foothumb .ht {max-height:75px ; min-height:75px; padding-left:20px;padding-right:20px }
-
-#foothumb {   
-
-     text-align: justify;
-    -ms-text-justify: distribute-all-lines;
-    text-justify: distribute-all-lines;
-}
-#foothumb a {
-    vertical-align: top;
-    display: inline-block;
-    *display: inline;
-    zoom: 1;
-}
-foothumb .stretch {
-    width: 100%;
-    display: inline-block;
-    font-size: 0;
-    line-height: 0
-}
-</style>
     <div class="span12" id="foothumb">
         <a href="http://www.asu.edu"><img src="/images/logos/asu_veritcal.png" class="image ht"  title="Arizona State University" alt="Arizona State University" /></a>
         <a href="http://www.mellon.org"><img src="/images/logos/Mellon.png" class="image ht" title="The Andrew W. Mellon Foundation" alt="The Andrew W. Mellon Foundation" /></a>
@@ -35,6 +11,3 @@ foothumb .stretch {
     </div>
 </div>
 </div>
-
-
--->
