@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;

@@ -8,9 +8,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;

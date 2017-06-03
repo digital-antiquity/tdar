@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 

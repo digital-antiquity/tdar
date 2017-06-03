@@ -3,7 +3,6 @@ package org.tdar.core.service.batch.actions;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.batch.AbstractBatchAction;

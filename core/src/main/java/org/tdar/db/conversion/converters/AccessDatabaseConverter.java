@@ -33,8 +33,6 @@ import com.healthmarketscience.jackcess.Index;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
-import com.healthmarketscience.jackcess.query.BaseSelectQuery;
-import com.healthmarketscience.jackcess.query.Query;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKBReader;
 

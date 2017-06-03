@@ -867,8 +867,11 @@ public class AuthorizationService implements Accessible {
         return authorizedUserDao.isAllowedTo(user, collection, permission);
     }
 
+    /*
+     * check whether the user has the rights to assign another user permissions.  This takes into account permissions and extending dates
+     */
+    @Transactional(readOnly=true)
     public boolean checkSelfEscalation(TdarUser actor, HasAuthorizedUsers source, InternalTdarRights editAnything, AuthorizedUser user) {
-        logger.debug("{} {} {}", actor, source, user);
         if (can(editAnything, actor)) {
             return true;
         }

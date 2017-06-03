@@ -20,15 +20,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
-import org.hibernate.validator.internal.util.privilegedactions.GetDeclaredConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
@@ -36,8 +32,6 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * @author Adam Brin

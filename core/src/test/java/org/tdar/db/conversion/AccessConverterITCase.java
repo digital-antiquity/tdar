@@ -19,7 +19,6 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

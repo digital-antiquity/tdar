@@ -32,8 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.filestore.Filestore.LogType;
-import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.utils.MessageHelper;
 
 public abstract class BaseFilestore implements Filestore {

@@ -21,7 +21,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.WrongClassException;
 import org.slf4j.Logger;

@@ -23,7 +23,6 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.StatisticService;
-import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 import org.tdar.core.service.resource.ResourceService;
 

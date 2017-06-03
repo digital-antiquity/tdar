@@ -4,10 +4,7 @@ import java.util.HashSet;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.Sortable;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
