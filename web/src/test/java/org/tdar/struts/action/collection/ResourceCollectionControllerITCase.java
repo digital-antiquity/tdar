@@ -81,13 +81,11 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
-    ShareCollectionController controller;
 
     static int indexCount = 0;
 
     @Before
     public void setup() {
-        controller = generateNewInitializedController(ShareCollectionController.class);
         if (indexCount < 1) {
             reindex();
         }
@@ -205,12 +203,12 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
-        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net");
+        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net","bobloblaw123" );
         owner.setContributor(true);
 
         genericService.saveOrUpdate(owner);
         resourceCollection.setOwner(owner);
-        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, GeneralPermissions.ADD_TO_SHARE));
+        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, GeneralPermissions.ADMINISTER_SHARE));
         resourceCollection.markUpdated(owner);
         genericService.saveOrUpdate(resourceCollection);
 
@@ -221,15 +219,16 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
             genericService.saveOrUpdate(doc);
         }
         genericService.saveOrUpdate(resourceCollection);
-
+        Long rcid = resourceCollection.getId();
+        resourceCollection = null;
         evictCache();
 
         // okay, now let's try to remove the resources from the collection via the
         // controller.
-        Long rcid = resourceCollection.getId();
-        controller.setId(rcid);
-        resourceCollection = null;
+        logger.debug("{}", owner);
+        ShareCollectionController controller = generateNewController(ShareCollectionController.class);
         init(controller, owner);
+        controller.setId(rcid);
         controller.prepare();
         controller.edit();
         for (Document doc : docList) {
@@ -266,12 +265,15 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         docList.add(createAndSaveNewInformationResource(Document.class));
         resourceCollection.getResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
-        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net");
+        TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net","bobloblaw1234");
         owner.setContributor(true);
         genericService.saveOrUpdate(owner);
         resourceCollection.markUpdated(owner);
         resourceCollectionParent.markUpdated(owner);
         resourceCollectionChild.markUpdated(owner);
+        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(owner, resourceCollection.getOwner(), GeneralPermissions.ADMINISTER_SHARE));
+        resourceCollectionParent.getAuthorizedUsers().add(new AuthorizedUser(owner, resourceCollectionParent.getOwner(), GeneralPermissions.ADMINISTER_SHARE));
+        resourceCollectionChild.getAuthorizedUsers().add(new AuthorizedUser(owner, resourceCollectionChild.getOwner(), GeneralPermissions.ADMINISTER_SHARE));
         genericService.saveOrUpdate(resourceCollection);
         genericService.saveOrUpdate(resourceCollectionParent);
         genericService.saveOrUpdate(resourceCollectionChild);
@@ -355,6 +357,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         genericService.saveOrUpdate(owner);
         resourceCollection.markUpdated(owner);
         AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(),owner, GeneralPermissions.MODIFY_RECORD);
+        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(owner, resourceCollection.getOwner(), GeneralPermissions.ADMINISTER_SHARE));
+
         resourceCollection.getAuthorizedUsers().addAll(Arrays.asList(authorizedUser));
         genericService.saveOrUpdate(resourceCollection);
         // evictCache();
@@ -400,6 +404,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback
     public void testSaveAndDeleteWithRedundantAccessRights() throws TdarActionException {
+        ShareCollectionController controller = generateNewInitializedController(ShareCollectionController.class,getUser());
+
         controller.prepare();
         controller.add();
 
@@ -638,7 +644,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         evictCache();
 
-        controller = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
+        ShareCollectionController controller = generateNewInitializedController(ShareCollectionController.class, getBasicUser());
         controller.prepare();
         controller.add();
         logger.info("{}", controller.getCandidateParentResourceCollections());
@@ -905,7 +911,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback(true)
     public void testControllerWithActiveResourceThatBecomesDeleted() throws Exception {
-        controller = generateNewInitializedController(ShareCollectionController.class, getUser());
+        ShareCollectionController controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.prepare();
         SharedCollection rc = controller.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
@@ -1006,7 +1012,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(vc.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page
-        controller = generateNewInitializedController(ShareCollectionController.class);
+        ShareCollectionController controller = generateNewInitializedController(ShareCollectionController.class);
         controller.setId(rcid);
         controller.prepare();
         controller.edit();
@@ -1062,7 +1068,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
             vc.setSlug(slug);
             vc.prepare();
             vc.view();
-            assertEquals(controller.getAuthenticatedUser(), registeredUser);
+            assertEquals(vc.getAuthenticatedUser(), registeredUser);
             assertTrue("resource should not be viewable", vc.getResults().isEmpty());
             // assertFalse("resource should not be viewable", controller.getResults().get(0).isViewable());
         } catch (TdarActionException tae) {
@@ -1075,7 +1081,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         
         
         
-        controller = generateNewInitializedController(ShareCollectionController.class);
+        ShareCollectionController controller = generateNewInitializedController(ShareCollectionController.class);
         controller.setId(rcid);
         controller.prepare();
         controller.getToAdd().add(proxy.getId());

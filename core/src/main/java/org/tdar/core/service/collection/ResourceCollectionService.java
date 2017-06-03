@@ -837,7 +837,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         if (CollectionUtils.isNotEmpty(resourcesToRemove)) {
             if (!authorizationService.canRemoveFromCollection((ResourceCollection) persistable, authenticatedUser)) {
-                throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_error",
+                throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_remmove_error",
                         Arrays.asList(getName((ResourceCollection) persistable)));
             }
         }
