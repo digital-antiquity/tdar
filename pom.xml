@@ -29,7 +29,6 @@
         <module>web</module>
         <module>webservice/tag</module>
         <module>webservice/dataone</module>
-        <module>webservice/odata</module>
         <module>webservice/oai-pmh</module>
         <module>utils</module>
     </modules>
