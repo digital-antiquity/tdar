@@ -567,6 +567,10 @@
                     extension: ["tif", "tiff"],
                     when: _hasFileWithExtension("tfw")
                 }, "A tiff file must accompany a tfw file");
+        validator.addRule("required", {
+            extension: ["tif", "tiff","jpg","jpeg",'accdb','mdb'],
+            when: _hasFileWithExtension("mxd")
+                }, "An image file or geodatabase must accompany a map file");
 
         //aux and aux.xml files can apply to either jpg or tiff
         validator.addRule("required", {
