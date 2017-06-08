@@ -1,6 +1,7 @@
 package org.tdar.core.dao.entity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.AgreementTypes;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -73,6 +75,21 @@ public class PersonDao extends HibernateBase<Person> {
         query.setParameter("initial", initial);
         query.setParameter("initial2", initial + ".");
         people.addAll(query.getResultList());
+        return people;
+    }
+    
+    @SuppressWarnings("unchecked")
+    /**
+     * Searches for all the people for a given institution, and returns a list sorted by last name, first name
+     * @param institution
+     * @return
+     */
+    public List<Person> findPeopleByInstituion(Institution institution) {
+        List<Person> people = new ArrayList<>();
+        Query<Person> query = getCurrentSession().getNamedQuery(QUERY_INSTITUTION_PEOPLE);
+        query.setParameter("id", institution.getId());
+        people.addAll(query.getResultList());
+        Collections.sort(people, (person1, person2)-> person1.getLastName().concat(person1.getFirstName()).compareTo(person2.getLastName().concat(person2.getFirstName())));
         return people;
     }
 

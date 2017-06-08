@@ -271,10 +271,21 @@
 
                     </#if>
                 </#if>
+                
+                <#else>
+                <h2>Institution Members</h2>
+                <div id="institutionPeople" class="row bottom-margin-20">
+	                <#list people as person>
+	                   <div class="span2">
+	                	<a href="${person.detailUrl}">${person.properName}</a>
+	                   </div>
+	                </#list>
+                </div>
+                
 </#if>
 
     <#if ( results?? && results?size > 0) >
-    <div id="divResultsSortControl">
+    <div id="divResultsSortControl">  
         <div class="row">
             <div class="span4">
                 <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
@@ -299,7 +310,7 @@
         <@search.basicPagination "Results"/>
     <#else>
         <#if (creator.properName)?has_content>
-        No Resources associated with ${creator.properName}
+            No Resources associated with ${creator.properName}
         </#if>
     </#if>
     <#if editor>

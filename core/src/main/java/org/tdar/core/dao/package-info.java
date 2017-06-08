@@ -625,6 +625,9 @@
                 name=TdarNamedQueries.FIND_ALTERNATE_CHILDRENS,
                 query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds"),
         @NamedQuery(
+        		name=TdarNamedQueries.QUERY_INSTITUTION_PEOPLE,
+        		query = "from Person p where p.status in ('ACTIVE','DUPLICATE') and p.institution.id in :id"),
+        @NamedQuery(
                 name=TdarNamedQueries.AUTHORIZED_USERS_FOR_RESOURCE,
                 query = "select au from Resource r join r.authorizedUsers au where r.id=:id"),
         @NamedQuery(

@@ -1463,3 +1463,7 @@ ul .header-auto {
     font-size: 0;
     line-height: 0
 }
+
+.bottom-margin-20 {
+	margin-bottom:20px;
+}

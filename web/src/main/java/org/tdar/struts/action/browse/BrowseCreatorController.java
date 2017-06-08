@@ -3,6 +3,7 @@ package org.tdar.struts.action.browse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,7 +74,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
-
+import org.tdar.core.bean.entity.Person;
 import com.opensymphony.xwork2.Preparable;
 
 /**
@@ -197,6 +198,10 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         if (isLogoAvailable()) {
             setLogoUrl(UrlService.creatorLogoUrl(creator));
         }
+        
+        if(creator instanceof Institution){
+        	people.addAll(entityService.findPersonsByInstitution((Institution) creator));
+        }
     }
 
     @Actions(value = {
@@ -243,6 +248,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
+    
+    private List<Person> people = new ArrayList<Person>();
 
     @SuppressWarnings("unchecked")
     private void prepareLuceneQuery() throws TdarActionException {
@@ -288,7 +295,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                 addActionError(tdre.getMessage());
             } catch (SearchException e) {
                 getLogger().warn("search parse exception", e);
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 getLogger().warn("search parse exception", e);
             }
 
@@ -488,6 +495,14 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     public void setKeywordFacetMap(Map<String, Facet> keywordFacetMap) {
         this.keywordFacetMap = keywordFacetMap;
+    }
+    
+    public List<Person> getPeople(){
+    	return people;
+    }
+  
+    public void setPeople(List<Person> peopleList ){
+    	people = peopleList;
     }
 
 }

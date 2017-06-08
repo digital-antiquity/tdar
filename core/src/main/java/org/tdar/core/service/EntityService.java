@@ -122,6 +122,24 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
         return institutionDao.findByName(name.trim());
     }
+    
+    /**
+     * Find an @link Institution by exact name
+     * 
+     * @param institution
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Person> findPersonsByInstitution(Institution institution) {
+        if (PersistableUtils.isNullOrTransient(institution)) {
+            return null;
+        }
+        return getDao().findPeopleByInstituion(institution);
+    }
+    
+    
+    
+    
 
     /**
      * Find a @link Institution by ID
@@ -143,7 +161,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @Transactional(readOnly = true)
     public List<Institution> findInstitutionLike(String name) {
         return institutionDao.withNameLike(name);
-    }
+    }  
 
     /**
      * Find a @link Person by their email
