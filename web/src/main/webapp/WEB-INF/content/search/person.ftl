@@ -19,15 +19,17 @@
 	<@search.toolbar />
         <div id="person" class="tab-pane active">
             <div class="glide">
-                <h3>Search For Person By Name</h3>
+                <h3>Search For Person</h3>
+
                 <@s.form action="people" method="GET" id='searchForm4'>
-                    <@search.queryField freeTextLabel="Person Name" showLimits=false showAdvancedLink=false />
+                    <@search.queryField freeTextLabel="Person Name" showLimits=false showPersonField=true showAdvancedLink=false />
                 </@s.form>
             </div>
             <div id="collection-spacer" style="height:850px"></div>
         </div>
 
     </div>
+   
 
 </div>
 

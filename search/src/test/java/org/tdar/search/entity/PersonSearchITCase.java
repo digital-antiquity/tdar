@@ -21,18 +21,19 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.EntityService;
+import org.tdar.search.bean.PersonSearchOption;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.search.service.query.CreatorSearchService;
+import org.tdar.search.service.query.CreatorSearchInterface;
 import org.tdar.utils.MessageHelper;
 
 public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Autowired
-    CreatorSearchService<Person> creatorSearchService;
+    CreatorSearchInterface<Person> creatorSearchService;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -87,7 +88,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     private SearchResult<Person> searchPerson(String term) throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<Person> result = new SearchResult<>();
-        creatorSearchService.findPerson(term, result, MessageHelper.getInstance());
+        PersonSearchOption personSearchOption = PersonSearchOption.ALL_FIELDS;
+        creatorSearchService.findPerson(term, personSearchOption, result, MessageHelper.getInstance());
         assertResultsOkay(term, result);
         return result;
     }

@@ -16,7 +16,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.query.CreatorSearchService;
+import org.tdar.search.service.query.CreatorSearchInterface;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
@@ -35,7 +35,7 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
     private String query;
 
     @Autowired
-    private CreatorSearchService<Institution> creatorSearchService;
+    private CreatorSearchInterface<Institution> creatorSearchService;
 
     @Action(value = "institutions", results = {
             @Result(name = SUCCESS, location = "institutions.ftl"),

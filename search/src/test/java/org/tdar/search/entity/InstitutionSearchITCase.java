@@ -24,7 +24,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.search.service.query.CreatorSearchService;
+import org.tdar.search.service.query.CreatorSearchInterface;
 import org.tdar.utils.MessageHelper;
 
 public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCase {
@@ -37,7 +37,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
 
     @Autowired
-    CreatorSearchService<Institution> creatorSearchService;
+    CreatorSearchInterface<Institution> creatorSearchService;
 
     private final int MIN = 2;
 

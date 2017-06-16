@@ -38,7 +38,7 @@ import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.SearchUtils;
-import org.tdar.search.service.query.CreatorSearchService;
+import org.tdar.search.service.query.CreatorSearchInterface;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -80,7 +80,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     @SuppressWarnings("rawtypes")
     @Autowired
-    private CreatorSearchService creatorSearchService;
+    private CreatorSearchInterface creatorSearchService;
 
     @Autowired
     ObfuscationService obfuscationService;

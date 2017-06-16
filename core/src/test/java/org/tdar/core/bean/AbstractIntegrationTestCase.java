@@ -130,7 +130,7 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
 import org.xml.sax.SAXException;
-
+// 
 @ContextConfiguration(classes = TdarAppConfiguration.class)
 @SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests {
@@ -141,6 +141,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected HttpServletRequest httpServletPostRequest = new MockHttpServletRequest("POST", "/");
     protected HttpServletResponse httpServletResponse = new MockHttpServletResponse();
 
+    
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
     protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
@@ -150,7 +151,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public static final String SPITAL_DB_NAME = TestConstants.SPITAL_DB_NAME;
     protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
-
+    
     @Autowired
     protected SessionFactory sessionFactory;
     @Autowired

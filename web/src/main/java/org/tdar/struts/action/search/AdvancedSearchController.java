@@ -42,6 +42,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.bean.ObjectType;
+import org.tdar.search.bean.PersonSearchOption;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
@@ -94,6 +95,8 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     private List<SearchFieldType> allSearchFieldTypes = SearchFieldType.getSearchFieldTypesByGroup();
 
     private boolean showLeftSidebar = true;
+    
+    private List<PersonSearchOption> personSearchOptions = Arrays.asList(PersonSearchOption.values());
 
     @Override
     public boolean isLeftSidebar() {
@@ -181,7 +184,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         searchBoxVisible = false;
         return SUCCESS;
     }
-
+  
     @Action(value = "advanced")
     public String advanced() {
         getLogger().trace("greetings from advanced search");
@@ -456,5 +459,13 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     
     public Keyword getExploreKeyword() {
         return exploreKeyword;
+    }
+    
+    public List<PersonSearchOption> getPersonSearchOptions(){
+    	return this.personSearchOptions;
+    }
+    
+    public void setPersonSearchOptions(List<PersonSearchOption> options){
+    	this.personSearchOptions = options;
     }
 }
