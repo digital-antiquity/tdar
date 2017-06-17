@@ -510,7 +510,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // ensure no duplicates (theoretically unnecessary, unless database schema is misconfigured)
         Set<ResourceCollection> childrenSet = new HashSet<>(allChildren);
         if (!allChildren.isEmpty() && allChildren.size() != childrenSet.size()) {
-            logger.error("The following collection contains duplicate children items:{}. ", collection);
+            logger.warn("The following collection ({}) contains duplicate children items:{}. ", collection, CollectionUtils.disjunction(allChildren, childrenSet));
         }
 
         // first pass - build the node hierarchy
