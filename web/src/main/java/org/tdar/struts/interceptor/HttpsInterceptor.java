@@ -83,7 +83,7 @@ public class HttpsInterceptor implements Interceptor {
             return invocation.invoke();
         }
         logger.debug(" :: isSecure : {}", request.isSecure());
-        logger.debug(" :: url : {}", request.getRequestURI());
+        logger.debug(" :: url : {}", HttpServletRequest.getQueryString());
         
         if (request.getMethod().equalsIgnoreCase("get") || request.getMethod().equalsIgnoreCase("head")) {
             response.sendRedirect(changeUrlProtocol("https", request));
