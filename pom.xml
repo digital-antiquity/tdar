@@ -27,7 +27,6 @@
         <module>struts-base</module>
         <module>balk</module>
         <module>web</module>
-        <module>webservice/tag</module>
         <module>webservice/dataone</module>
         <module>webservice/oai-pmh</module>
         <module>utils</module>
@@ -37,7 +36,7 @@
     <properties>
         <lucene.version>6.5.1</lucene.version>
         <hibernate.version>5.2.10.Final</hibernate.version>
-        <spring.framework.version>4.3.8.RELEASE</spring.framework.version>
+        <spring.framework.version>4.3.9.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>9.4.1212</postgresql.jdbc.version>
         <servlet.api.version>3.1.0</servlet.api.version>
         <wro4j.version>1.8.0</wro4j.version>
