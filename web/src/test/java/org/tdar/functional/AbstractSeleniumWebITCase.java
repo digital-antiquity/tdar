@@ -349,6 +349,8 @@ public abstract class AbstractSeleniumWebITCase {
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
                         "--dns-prefetch-disable",
+                        "--headless",
+                        "--disable-gpu",
                         "noerrdialogs");
                 rawDriver = new ChromeDriver(service, copts);
 

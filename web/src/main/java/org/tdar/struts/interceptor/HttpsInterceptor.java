@@ -44,7 +44,8 @@ public class HttpsInterceptor implements Interceptor {
          * If we're not secured or user is authenticated, just go on as usual, otherwise, force unauthenticated users to HTTP
          * this means you google.
          */
-        if (request.isSecure() && (invocation.getAction() instanceof AuthenticationAware) && !((AuthenticationAware) invocation.getAction()).isAuthenticated()) {
+        if (request.isSecure() && (invocation.getAction() instanceof AuthenticationAware) &&
+                !((AuthenticationAware) invocation.getAction()).isAuthenticated()) {
             String baseUrl = changeUrlProtocol("http", request);
             response.sendRedirect(baseUrl);
             return null;
@@ -81,7 +82,9 @@ public class HttpsInterceptor implements Interceptor {
         if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled()) {
             return invocation.invoke();
         }
-
+        logger.debug(" :: isSecure : {}", request.isSecure());
+        logger.debug(" :: url : {}", request.getRequestURI());
+        
         if (request.getMethod().equalsIgnoreCase("get") || request.getMethod().equalsIgnoreCase("head")) {
             response.sendRedirect(changeUrlProtocol("https", request));
             return null;
