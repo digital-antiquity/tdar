@@ -162,7 +162,7 @@ public abstract class AbstractSeleniumWebITCase {
     };
     private KillSeleniumAfter someTask;
 
-    private ScreenshotHelper helper;
+    private ScreenshotHelper helper = new ScreenshotHelper();
 
     public AbstractSeleniumWebITCase() {
     }
@@ -248,7 +248,6 @@ public abstract class AbstractSeleniumWebITCase {
         someTask = new KillSeleniumAfter();
         long timeDelay = 10; // You can specify 3 what
         someScheduler.schedule(someTask, timeDelay, TimeUnit.MINUTES);
-        helper = new ScreenshotHelper(testName , driver);
 
     }
 
@@ -386,7 +385,9 @@ public abstract class AbstractSeleniumWebITCase {
     public void after() {
         report();
         //disable navigation warning
-        executeJavascript("$(window).off('beforeunload');");
+        if (CollectionUtils.isNotEmpty(driver.getWindowHandles())) {
+            executeJavascript("$(window).off('beforeunload');");
+        }
         try {
             logout();
             driver.get("about://");
@@ -505,7 +506,7 @@ public abstract class AbstractSeleniumWebITCase {
                 !screenshotsAllowed) {
             return;
         }
-        helper.takeScreenshot(filename);
+        helper.takeScreenshot(driver, testName, filename);
     }
 
     /**
@@ -794,28 +795,30 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void logout() {
-        WebElementSelection find = find("#logout-button");
-        // driver.manage().deleteAllCookies();
-        logger.debug("LOGOUT: {} ", find);
-
-        if (find.size() > 0) {
-            // handle modal dialogs
-            try {
-                find.click();
+        if (CollectionUtils.isNotEmpty(getDriver().getWindowHandles())){ 
+            WebElementSelection find = find("#logout-button");
+            // driver.manage().deleteAllCookies();
+            logger.debug("LOGOUT: {} ", find);
+    
+            if (find.size() > 0) {
+                // handle modal dialogs
                 try {
-                    Thread.sleep(TimeUnit.SECONDS.toMillis(2));
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    find.click();
+                    try {
+                        Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    return;
+                } catch (WebDriverException se) {
+                    logger.error("error trying to logout {}", se);
                 }
-                return;
-            } catch (WebDriverException se) {
-                logger.error("error trying to logout {}", se);
             }
         }
-
+        
         gotoPage("/login");
-        find = find("#logout-button");
+        WebElementSelection find = find("#logout-button");
         if (find.size() > 0) {
             find.click();
         }
