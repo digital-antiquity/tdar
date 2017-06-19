@@ -80,7 +80,7 @@ public class HttpsInterceptor implements Interceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
         HttpServletResponse response = ServletActionContext.getResponse();
         response.setHeader("Frame-Options:", "DENY");
-        if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled() && StringUtils.startsWithIgnoreCase(request.getRequestURL().toString(), "https:")) {
+        if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled() && !StringUtils.startsWithIgnoreCase(request.getRequestURL().toString(), "https:")) {
             return invocation.invoke();
         }
         
