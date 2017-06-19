@@ -337,7 +337,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
 
     public boolean isSecure() {
-        return servletRequest.isSecure();
+        if (servletRequest.isSecure() || StringUtils.startsWithIgnoreCase(servletRequest.getRequestURL().toString(), "https:")) {
+            return true;
+        }
+        return false;
     }
 
     public String getProtocol() {

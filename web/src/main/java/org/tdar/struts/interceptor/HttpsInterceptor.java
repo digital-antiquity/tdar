@@ -3,6 +3,7 @@ package org.tdar.struts.interceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,11 +80,9 @@ public class HttpsInterceptor implements Interceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
         HttpServletResponse response = ServletActionContext.getResponse();
         response.setHeader("Frame-Options:", "DENY");
-        if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled()) {
+        if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled() && StringUtils.startsWithIgnoreCase(request.getRequestURL().toString(), "https:")) {
             return invocation.invoke();
         }
-        logger.debug(" :: isSecure : {}", request.isSecure());
-        logger.debug(" :: url : {}", request.getRequestURL());
         
         if (request.getMethod().equalsIgnoreCase("get") || request.getMethod().equalsIgnoreCase("head")) {
             response.sendRedirect(changeUrlProtocol("https", request));
