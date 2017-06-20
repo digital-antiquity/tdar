@@ -124,12 +124,14 @@ public class ImageThumbnailTask extends AbstractTask {
                 // we get -1 if it's not a geotiff, so ignore
                 if (StringUtils.equals(dse.getMessage(),"-1")) {
                     //ignore, probably not a GeoTiff
+                } else if (StringUtils.contains(dse.getMessage(), "Raster to Model Transformation is not available")) {
+                    // this is likely something like a Greyscale Image
                 } else {
-                    getLogger().error("issue with GeoTiff attempt to process" + sourceFile, dse);
+                    getLogger().warn("issue with GeoTiff attempt to process" + sourceFile, dse);
                     msg = dse.getMessage();
                 }
             } catch (IOException e) {
-                getLogger().error("issue with GeoTiff attempt to process" + sourceFile, e);
+                getLogger().warn("issue with GeoTiff attempt to process" + sourceFile, e);
                 msg = e.getMessage();
             }
         }
