@@ -17,6 +17,7 @@ import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -255,10 +256,14 @@ public class OaiPmhServer {
         }
 
         if (StringUtils.isNotBlank(from_)) {
-            from = new DateTime(from_).toDate();
+            String local = StringUtils.replace(from_, " ", "+"); // fix 2016-12-21T18:10:37.445 00:00 from DataOne to 2016-12-21T18:10:37.445+00:00 
+            DateTime dt = new DateTime(local,DateTimeZone.UTC);
+            from = dt.toDateTime(DateTimeZone.getDefault()).toDate();
         }
         if (StringUtils.isNotBlank(until_)) {
-            until = new DateTime(until_).toDate();
+            String local = StringUtils.replace(until_, " ", "+"); // fix 2016-12-21T18:10:37.445 00:00 from DataOne to 2016-12-21T18:10:37.445+00:00 
+            DateTime dt = new DateTime(local,DateTimeZone.UTC);
+            until = dt.toDateTime(DateTimeZone.getDefault()).toDate();
         }
 
     }
