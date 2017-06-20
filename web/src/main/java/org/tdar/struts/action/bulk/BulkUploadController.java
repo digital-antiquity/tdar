@@ -97,13 +97,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS_ASYNC;
     }
 
-    @Action(value = "template-prepare")
-    @SkipValidation
-    public String templateView() {
-        return SUCCESS;
-    }
-
-
     private void addAsyncHtmlErrors(List<String> htmlAsyncErrors) {
         if (CollectionUtils.isNotEmpty(htmlAsyncErrors)) {
             for (String error : htmlAsyncErrors) {
