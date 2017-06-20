@@ -15,9 +15,9 @@ View freemarker macros
 <#--Emit rel=canonical element.  The "canonical" url points to the preferred version of a set of pages with similar content -->
     <#macro canonical object>
     <#if object.detailUrl?has_content>
-        <link rel="canonical" href="http://${hostName}${object.detailUrl}"/>
+        <link rel="canonical" href="https://${hostName}${object.detailUrl}"/>
     <#else>
-        <link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}"/>
+        <link rel="canonical" href="https://${hostName}/${object.urlNamespace}/${object.id?c}"/>
     </#if>
     </#macro>
 
