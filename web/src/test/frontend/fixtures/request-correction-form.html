@@ -1,0 +1,67 @@
+<div>
+    <div id="email-form" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+
+        <form id="followup">
+            <div class="modal-header">
+                <h3>Send Email</h3>
+            </div>
+            <div class="modal-body">
+                <p>Select the type of message you'd like to send to another tDAR user.</p>
+                <br/>
+                <div class="control-group ">
+                    <label class="control-label" for="type">Email Type</label>
+                    <div class="controls">
+                        <select name="type" id="type">
+                            <option value="CONTACT">Contact</option>
+                            <option value="SUGGEST_CORRECTION">Suggest Correction</option>
+                        </select>
+                    </div>
+                </div>
+                <input type="hidden" name="toId" value="135028" id="toId" />
+                <input type="hidden" name="resourceId" value="63547" id="resourceId" />
+                <input type="hidden" name="fromId" value="8344" id="fromId" />
+                <div class="control-group ">
+                    <label class="control-label" for="messageBody">Message</label>
+                    <div class="controls">
+                        <textarea name="messageBody" cols="" rows="4" id="messageBody" class="span5"></textarea>
+                    </div>
+                </div>
+                <p><b>Note:</b> Please include sufficient information to fulfill your request (e.g. why you are requesting access
+                    to a file, or specific comments or corrections). Your contact information and a link to this resource
+                    will automatically be included in your message.</p>
+
+                <input type="hidden" name="h.timeCheck" value="1444088897355" id="h_timeCheck" />
+                <textarea name="h.comment" class="tdarCommentDescription" style="display:none"></textarea>
+
+            </div>
+            <div class="modal-footer">
+                <button name="send" data-dismiss="modal" aria-hidden="true" id="followup-send" class="button btn btn-primary">send</button>
+                <button name="cancel" data-dismiss="modal" aria-hidden="true" id="followup-cancel" class="button btn btn-cancel">cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="emailStatusModal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-header">
+            <h3 class="success">Success</h3>
+            <h3 class="error">Error</h3>
+        </div>
+        <div class="modal-body">
+            <span class="success">
+                    <p>Your message has been sent</p>
+                </span>
+            <span class="error">
+                    <p>An error occurred:
+                    <ul id="emailErrorContainer">
+                    </ul></p>
+                </span>
+        </div>
+        <div class="modal-footer">
+            <a href="#" data-dismiss="modal" aria-hidden="true" id="email-close-button" class="btn">Close</a>
+        </div>
+    </div>
+
+    <div class="media-body">
+        <a href="#" id="emailButton" class=""> Submit Correction, Comment</a>
+    </div>
+</div>
