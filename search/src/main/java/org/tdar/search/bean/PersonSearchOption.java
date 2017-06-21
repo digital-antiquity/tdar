@@ -6,33 +6,29 @@ import org.tdar.utils.MessageHelper;
 
 public enum PersonSearchOption implements HasLabel, Localizable {
     
-    ALL_FIELDS("allFields", "All Fields"),
-    FIRST_NAME("firstName",  "First Name"),
-    LAST_NAME("lastName",  "Last Name"),
-    USERNAME("username",  "Username"),
-    INSTITUTION("institution", "Institution"),
-    EMAIL("email", "Email");
-	//ID("descriptions", "ID");
-
+    ALL_FIELDS("allFields"),
+    FIRST_NAME("firstName"),
+    LAST_NAME("lastName"),
+    USERNAME("username"),
+    INSTITUTION("institution"),
+    EMAIL("email");
 	
-    private String label = "";
     private String fieldName = "";
 
     private PersonSearchOption() {
 
     }
 
-    private PersonSearchOption(String fieldName,  String label) {
-        this.label = label;
+    private PersonSearchOption(String fieldName) {
         this.fieldName = fieldName;
     }
 
 
     @Override
     public String getLabel() {
-        return this.label;
+        return MessageHelper.getMessage(getLocaleKey());
     }
-
+    
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);

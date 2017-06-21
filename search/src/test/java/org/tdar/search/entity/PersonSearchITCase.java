@@ -88,8 +88,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     private SearchResult<Person> searchPerson(String term) throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<Person> result = new SearchResult<>();
-        PersonSearchOption personSearchOption = PersonSearchOption.ALL_FIELDS;
-        creatorSearchService.findPerson(term, personSearchOption, result, MessageHelper.getInstance());
+        creatorSearchService.findPerson(term, result, MessageHelper.getInstance());
         assertResultsOkay(term, result);
         return result;
     }

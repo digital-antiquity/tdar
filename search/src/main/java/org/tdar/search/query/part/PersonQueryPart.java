@@ -8,6 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.search.query.QueryFieldNames;
 
 public class PersonQueryPart extends FieldQueryPart<Person> {
@@ -17,7 +18,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
     }
 
     private boolean registered = false;
-    private boolean includeEmail = false;
+    private boolean includeEmail   = false;
 
     @Override
     public String generateQueryString() {
@@ -26,7 +27,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         Set<String> ems = new HashSet<>();
         Set<String> insts = new HashSet<>();
         Set<String> wildcards = new HashSet<>();
-        QueryPartGroup group = new QueryPartGroup();
+        QueryPartGroup group = new QueryPartGroup(getOperator());
         for (Person pers : getFieldValues()) {
             boolean hasName = false;
             if (StringUtils.isNotBlank(pers.getFirstName())) {
@@ -64,6 +65,13 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 setOperator(Operator.OR);
             }
 
+            if(pers instanceof TdarUser && StringUtils.isNotBlank(((TdarUser)pers).getUsername())){
+            		FieldQueryPart<String> username = new FieldQueryPart<>(QueryFieldNames.USERNAME, ((TdarUser)pers).getUsername());
+            		username.setBoost(4f);
+                group.append(username);
+            }
+            
+            
             if (StringUtils.isNotBlank(pers.getEmail())) {
                 if (isIncludeEmail()) {
                     ems.add(StringUtils.trim(pers.getEmail()));
@@ -91,7 +99,6 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             group.append(emls);
         }
         if (CollectionUtils.isNotEmpty(insts)) {
-            QueryPartGroup group1 = new QueryPartGroup(Operator.OR);
             Set<String> formatted = new HashSet<>();
             for (String inst : insts) {
                 String institution = PhraseFormatter.ESCAPED.format(inst);
@@ -102,9 +109,8 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             }
             FieldQueryPart<String> inst = new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME, formatted);
 //            inst.setPhraseFormatters(PhraseFormatter.ESCAPED);
-            group1.append(inst);
+            group.append(inst);
             // group1.append(new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME_AUTO, insts));
-            group.append(group1);
         }
 
         if (registered) {

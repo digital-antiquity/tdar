@@ -7,6 +7,8 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.search.bean.PersonSearchOption;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
+import org.tdar.search.query.SearchResult;
+import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -23,5 +25,7 @@ public interface CreatorSearchInterface<I extends Creator<?>> {
 
 	LuceneSearchResultHandler<I> findPerson(Person person_, String term, Boolean registered,
 			LuceneSearchResultHandler<I> result, TextProvider provider, int min) throws SearchException, IOException;
+
+   LuceneSearchResultHandler<I> findPerson(String query, LuceneSearchResultHandler<I> result, TextProvider provider) throws SearchException, IOException;
 
 }

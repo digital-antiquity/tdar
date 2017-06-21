@@ -74,36 +74,52 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
         if (!isFindAll(query)) {
 
-        	Person person = new Person();
+        	TdarUser person = new TdarUser();
         	//The person search option will only be populated if the search was submitted by an editor.
-        	if(personSearchOption == null || personSearchOption == PersonSearchOption.ALL_FIELDS){
-        		person = Person.fromName(query);
+        	if(personSearchOption==null){
+        		return findPerson(query, result, provider);
         	}
 
         	//If the person search option is not null, then search by one or more of the other fields.
-        	if(personSearchOption!=null){
+        		PersonQueryPart personQueryPart = new PersonQueryPart();
+        		
         		boolean searchAllFields = personSearchOption == PersonSearchOption.ALL_FIELDS;
-
+        		if(personSearchOption == PersonSearchOption.ALL_FIELDS){
+        			Person p_ = Person.fromName(query);
+           		person.setFirstName(p_.getFirstName()); 
+           		person.setLastName(p_.getLastName()); 
+        		}
+        		
         		if(personSearchOption == PersonSearchOption.EMAIL || searchAllFields){
         			person.setEmail(query);
+        			personQueryPart.setIncludeEmail(true);
         		}
         		
         		if(personSearchOption == PersonSearchOption.USERNAME || searchAllFields){
-        			person.setWildcardName(query);
+        			person.setUsername(query);
         		}
         		
         		if(personSearchOption == PersonSearchOption.INSTITUTION || searchAllFields){
         			person.setInstitution(new Institution(query));
         		}
         		
-        		//if(personSearchOption == PersonSearchOption.ID || searchAllFields){
-        		//	}
-        		PersonQueryPart personQueryPart = new PersonQueryPart();
         		personQueryPart.add(person);
+        		personQueryPart.setOperator(Operator.OR);
         		group.append(personQueryPart);
         		pqb.append(group);        		
-        		
-        	}
+        }
+        searchService.handleSearch(pqb, result, provider);
+        return result;
+    }
+    
+    public LuceneSearchResultHandler<I> findPerson(String name, LuceneSearchResultHandler<I> result, TextProvider provider) throws SearchException, IOException {
+        PersonQueryBuilder pqb = new PersonQueryBuilder();
+        QueryPartGroup group = new QueryPartGroup(Operator.AND);
+        group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
+        if (!isFindAll(name)) {
+            Person person = Person.fromName(name);
+            group.append(new GeneralCreatorQueryPart(person));
+            pqb.append(group);
         }
         searchService.handleSearch(pqb, result, provider);
         return result;
