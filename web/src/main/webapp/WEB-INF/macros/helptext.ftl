@@ -242,7 +242,7 @@
 
     <#macro coverageDates>
     <div class="hidden" id="coverageDatesTip">
-        Select the approriate type of date (Gregorian calendar date or radiocarbon date). To enter a date range, enter the <em>earliest date</em> in the <em>Start
+        Select the appropriate type of date (Gregorian calendar date or radiocarbon date). To enter a date range, enter the <em>earliest date</em> in the <em>Start
         Year field</em>
         and the latest date in the End Year Field. <em>Dates containing "AD" or "BC" are not valid</em>. Use positive numbers for AD dates (500, 1200), and use
         negative numbers for BC dates (-500, -1200). Examples:
