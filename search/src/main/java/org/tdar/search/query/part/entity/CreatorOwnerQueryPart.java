@@ -1,4 +1,4 @@
-package org.tdar.search.query.part;
+package org.tdar.search.query.part.entity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,9 +14,17 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.QueryPartGroup;
 
 import com.opensymphony.xwork2.TextProvider;
 
+/**
+ * A special query part for the "creator" or "owner" of a resource used for feeding the RSS feed for a creator page
+ * @author abrin
+ *
+ * @param <C>
+ */
 public class CreatorOwnerQueryPart<C extends Creator<?>> extends FieldQueryPart<C> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

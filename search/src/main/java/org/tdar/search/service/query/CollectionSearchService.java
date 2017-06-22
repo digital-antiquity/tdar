@@ -16,11 +16,11 @@ import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.part.AutocompleteTitleQueryPart;
 import org.tdar.search.query.part.CollectionAccessQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.query.part.resource.AutocompleteTitleQueryPart;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;

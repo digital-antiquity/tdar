@@ -7,6 +7,11 @@ import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 
+/**
+ * Search the full-text of a resource by Joining to the "contents" index and looking at the indexed full-text of a resource.
+ * @author abrin
+ *
+ */
 public class ContentQueryPart extends FieldQueryPart<String> {
 
     

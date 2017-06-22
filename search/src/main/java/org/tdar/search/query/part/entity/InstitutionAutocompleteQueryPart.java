@@ -1,4 +1,4 @@
-package org.tdar.search.query.part;
+package org.tdar.search.query.part.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.PhraseFormatter;
+import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.query.part.StringAutocompletePart;
 
+/**
+ * Search for an Institution using an autocomplete (e.g. left match everything)
+ * @author abrin
+ *
+ */
 public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution> {
 
     public InstitutionAutocompleteQueryPart() {

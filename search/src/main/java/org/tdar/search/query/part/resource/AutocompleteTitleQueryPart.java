@@ -1,4 +1,4 @@
-package org.tdar.search.query.part;
+package org.tdar.search.query.part.resource;
 
 import java.util.Arrays;
 import java.util.regex.Pattern;
@@ -9,6 +9,11 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.PhraseFormatter;
+import org.tdar.search.query.part.QueryPart;
+import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.query.part.StringAutocompletePart;
 
 import com.opensymphony.xwork2.TextProvider;
 

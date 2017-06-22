@@ -22,10 +22,10 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.GeneralCreatorQueryPart;
-import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
-import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.query.part.entity.GeneralCreatorQueryPart;
+import org.tdar.search.query.part.entity.InstitutionAutocompleteQueryPart;
+import org.tdar.search.query.part.entity.PersonQueryPart;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.utils.PersistableUtils;
 

@@ -13,6 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 
+/**
+ * Formulate a general keyword search for a resource
+ * 
+ * @author abrin
+ *
+ */
 public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

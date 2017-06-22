@@ -1,4 +1,4 @@
-package org.tdar.search.query.part;
+package org.tdar.search.query.part.resource;
 
 import java.util.Arrays;
 
@@ -6,10 +6,17 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
+/**
+ * Query for a coding sheet or ontology that's associated with a category term or id 
+ * @author abrin
+ *
+ */
 public class CategoryTermQueryPart extends FieldQueryPart<String> {
 
     private Long sortCategoryId;

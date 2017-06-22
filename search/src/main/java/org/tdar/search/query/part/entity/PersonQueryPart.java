@@ -1,4 +1,4 @@
-package org.tdar.search.query.part;
+package org.tdar.search.query.part.entity;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -10,7 +10,16 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.PhraseFormatter;
+import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.query.part.StringAutocompletePart;
 
+/**
+ * Search for a Person either with a specific person as an example, or with a wildcard entry that searches across everything
+ * @author abrin
+ *
+ */
 public class PersonQueryPart extends FieldQueryPart<Person> {
 
     public PersonQueryPart() {

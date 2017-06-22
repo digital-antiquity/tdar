@@ -5,22 +5,27 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
-public class CollectionAccessQueryPart implements QueryPart<Person> {
+/**
+ * Query if the "user" has access to collection
+ * @author abrin
+ *
+ */
+public class CollectionAccessQueryPart implements QueryPart<TdarUser> {
     @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Person user;
+    private TdarUser user;
     private GeneralPermissions permissions;
     private boolean admin;
 
-    public CollectionAccessQueryPart(Person person, boolean admin, GeneralPermissions generalPermissions) {
+    public CollectionAccessQueryPart(TdarUser person, boolean admin, GeneralPermissions generalPermissions) {
         this.user = person;
         this.permissions = generalPermissions;
         this.admin = admin;
@@ -31,7 +36,7 @@ public class CollectionAccessQueryPart implements QueryPart<Person> {
         return (PersistableUtils.isNullOrTransient(user) || (permissions == null));
     }
 
-    protected QueryPart<?> getQueryPart(Person value, GeneralPermissions permissions) {
+    protected QueryPart<?> getQueryPart(TdarUser value, GeneralPermissions permissions) {
         if (isEmpty()) {
             return null;
         }

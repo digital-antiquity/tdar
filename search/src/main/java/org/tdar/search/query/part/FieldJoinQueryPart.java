@@ -6,6 +6,12 @@ import org.slf4j.LoggerFactory;
 
 import com.opensymphony.xwork2.TextProvider;
 
+/**
+ * Abstract the joining of two fields within the same index
+ * @author abrin
+ *
+ * @param <T>
+ */
 public class FieldJoinQueryPart<T extends QueryPart<?>> implements QueryPart<T> {
 
     //http://comments.gmane.org/gmane.comp.jakarta.lucene.solr.user/95646

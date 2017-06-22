@@ -7,6 +7,12 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Formatting text in a lucene query to help handle escaping and other issues like quoting.  
+ * These phrases can be stacked and order of operations is managed.
+ * @author abrin
+ *
+ */
 public enum PhraseFormatter {
 
     WILDCARD,

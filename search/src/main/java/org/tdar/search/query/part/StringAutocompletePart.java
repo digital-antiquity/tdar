@@ -5,6 +5,12 @@ import java.util.Collection;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
+/**
+ * Abstracting out special work that needs to be done for autocomplete queries 
+ * 
+ * @author abrin
+ *
+ */
 public class StringAutocompletePart extends FieldQueryPart<String> {
 
     public StringAutocompletePart(String name, Collection<String> list) {

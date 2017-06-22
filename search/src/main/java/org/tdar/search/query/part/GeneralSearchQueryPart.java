@@ -15,6 +15,11 @@ import org.tdar.search.query.QueryFieldNames;
 
 import com.opensymphony.xwork2.TextProvider;
 
+/**
+ * Format a general search query for a resource or collection
+ * @author abrin
+ *
+ */
 public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float TITLE_BOOST = 8f;
     protected static final float CREATOR_BOOST = 5f;

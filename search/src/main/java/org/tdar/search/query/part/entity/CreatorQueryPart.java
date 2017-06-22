@@ -1,4 +1,4 @@
-package org.tdar.search.query.part;
+package org.tdar.search.query.part.entity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,10 +16,24 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.AbstractHydrateableQueryPart;
+import org.tdar.search.query.part.FieldJoinQueryPart;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.PhraseFormatter;
+import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
+/**
+ * Search for a ResourceCreator... this handles the complexity of the fact that there may be DUPLICATE creators, and searches for them, and utilizes the
+ * "special" query format for ResourceCreators in the index (see ResourceCreator.getCreatorRoleIdentifier). It also manages extra copies of the creators that
+ * the user entered for display and hydrates skeleton versions that just have "ids."
+ * 
+ * @author abrin
+ *
+ * @param <C>
+ */
 public class CreatorQueryPart<C extends Creator<?>> extends AbstractHydrateableQueryPart<C> {
 
     private List<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();

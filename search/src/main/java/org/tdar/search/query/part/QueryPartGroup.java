@@ -14,6 +14,7 @@ import com.opensymphony.xwork2.TextProvider;
 /**
  * $Id$
  * 
+ * A group of QueryParts. 
  * 
  * @author Adam Brin
  * @version $Rev$
@@ -113,6 +114,12 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
         return builder.toString();
     }
 
+    /**
+     * Append all of the contents, but test before you just add the values.  This is beacuse we should ignore the part if it's empty.
+     * Also, amke sure that there are spaces around each phrase.
+     *  
+     * @return
+     */
     protected StringBuilder generateContents() {
         StringBuilder builder = new StringBuilder();
         for (QueryPart<?> part : getParts()) {

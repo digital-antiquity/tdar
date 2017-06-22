@@ -1,4 +1,4 @@
-package org.tdar.search.query.part;
+package org.tdar.search.query.part.resource;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,12 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.FieldQueryPart;
 
 import com.opensymphony.xwork2.TextProvider;
 
 /**
  * 
  * $Id$
+ * Search for a date range.  E.g. a matching Coverage Date
  * 
  * @author <a href="mailto:matt.cordial@asu.edu">Matt Cordial</a>
  * @version $Rev$

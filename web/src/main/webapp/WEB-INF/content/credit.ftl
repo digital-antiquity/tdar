@@ -105,5 +105,9 @@ Graph by Arthur Shlain</b> from the Noun Project</p>
 <p><b><a href="https://thenounproject.com/term/table/1061423">https://thenounproject.com/term/table/1061423</a><br>
 Table by AfterGrind</b> from the Noun Project</p>
 
+<p><b><a href="https://thenounproject.com/term/people/1044418">https://thenounproject.com/term/people/1044418</a><br>
+people group by AliWijaya</b> from the Noun Project</p>
 
-</p>
+<p><b><a href="https://thenounproject.com/term/gear/976414">https://thenounproject.com/term/gear/976414</a><br>
+Gear by Gregor Cresnar</b> from the Noun Project</p>
+
