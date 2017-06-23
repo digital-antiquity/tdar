@@ -1273,11 +1273,17 @@ public class Resource implements Persistable,
 //        return resourceCollections;
 //    }
     
-    @XmlElementWrapper(name = "listCollections")
-    @XmlElementRefs({
-        @XmlElementRef(name = "listCollection", type = ListCollection.class, required = false),
-        @XmlElementRef(name = "listCollectionRef", type = JAXBPersistableRef.class, required = false)
-    })
+    
+    /**
+     * Marking these as comments due to list collections not being currently implemented.
+     * @return
+     */
+    //@XmlElementWrapper(name = "listCollections")
+    //@XmlElementRefs({
+    //    @XmlElementRef(name = "listCollection", type = ListCollection.class, required = false),
+   //     @XmlElementRef(name = "listCollectionRef", type = JAXBPersistableRef.class, required = false)
+   // })
+    @XmlTransient
     public Set<ListCollection> getUnmanagedResourceCollections() {
         return unmanagedResourceCollections;
     }
