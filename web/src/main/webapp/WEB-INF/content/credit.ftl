@@ -77,7 +77,7 @@ Digital Antiquity worked with <a href="http://fervorcreative.com/">Fervor
     United States 2004</p>
 
 <p><b><a href="http://thenounproject.com/term/caution/7526/">http://thenounproject.com/term/caution/7526/</a><br/>
-    <b>Designed By</b> Benni<br/>
+    <b>Designed by</b> Benni<br/>
     DE 2012</p>
 
 <p><b><a href="https://thenounproject.com/term/gears/50757">https://thenounproject.com/term/gears/50757</a><br>
@@ -95,7 +95,7 @@ Heart</b> from the Noun Project</p>
 <p><b><a href="https://thenounproject.com/term/lock/5427">https://thenounproject.com/term/lock/5427</a><br>
 Lock by Andy Fuchs</b> from the Noun Project</p>
 <p><b><a href="https://thenounproject.com/term/institution/33851">https://thenounproject.com/term/institution/33851</a><br>
-City By Berkay Sargın, TR</b> from the Noun Project</p>
+City by Berkay Sargın, TR</b> from the Noun Project</p>
 
 <p><b><a href="https://thenounproject.com/term/cart/129827">https://thenounproject.com/term/cart/129827</a><br>
 cart by James Wilson</b> from the Noun Project</p>
@@ -105,9 +105,24 @@ Graph by Arthur Shlain</b> from the Noun Project</p>
 <p><b><a href="https://thenounproject.com/term/table/1061423">https://thenounproject.com/term/table/1061423</a><br>
 Table by AfterGrind</b> from the Noun Project</p>
 
-<p><b><a href="https://thenounproject.com/term/people/1044418">https://thenounproject.com/term/people/1044418</a><br>
-people group by AliWijaya</b> from the Noun Project</p>
+<p><b><a href="https://thenounproject.com/term/grop/737657">https://thenounproject.com/term/group/737657</a><br>
+people group by mikicon</b> from the Noun Project</p>
+
 
 <p><b><a href="https://thenounproject.com/term/gear/976414">https://thenounproject.com/term/gear/976414</a><br>
 Gear by Gregor Cresnar</b> from the Noun Project</p>
 
+<p><b><a href="https://thenounproject.com/term/download/792278">https://thenounproject.com/term/download/792278</a><br>
+Upload file by ProSymbols</b> from the Noun Project</p>
+
+<p><b><a href="https://thenounproject.com/term/transfer/850006">https://thenounproject.com/term/transfer/850006</a><br>
+Tranfer by Hector</b> from the Noun Project</p>
+
+<p><b><a href="https://thenounproject.com/term/group+of+files/393233">https://thenounproject.com/term/group+of+files/393233</a><br>
+Add Collection by iconsphere</b> from the Noun Project</p>
+
+<p><b><a href="https://thenounproject.com/term/stack/756517">https://thenounproject.com/term/stack/756517</a><br>
+Layers by Shastry</b> from the Noun Project</p>
+
+<p><b><a href="https://thenounproject.com/term/compare/934163">https://thenounproject.com/term/compare/934163</a><br>
+Venn Diagram by Hector</b> from the Noun Project</p>

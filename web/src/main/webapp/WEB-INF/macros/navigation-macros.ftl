@@ -231,6 +231,8 @@ navigation freemarker macros
         <#local _name = name />
         <#if name == 'mapping'><#local _name = "icon-ontology"></#if>
         <#if name == 'duplicate'><#local _name = "duplicate_mono"></#if>
+        <#if name == 'stats'><#local _name = "usage"></#if>
+        <#if name == 'rights'><#local _name = "permissions"></#if>
         <svg class="svgicon toolbaricon"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${_name}"></use></svg>
 
 <#--        <#else>
