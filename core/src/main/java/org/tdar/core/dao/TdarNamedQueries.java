@@ -325,15 +325,14 @@ public interface TdarNamedQueries {
 
     String DAILY_RESOURCE_STATS_CLEANUP = "delete from resource_access_statistics where date_trunc('day',date_accessed) < '%1$tY-%1$tm-%1$td' ";
 
-    String QUERY_USERS_SHARED_WITH = "select id from tdar_user where id in " +
-            "    (select user_id from authorized_user where resource_collection_id  in " +
-            "    /* find direct collections where the owner is the person, or the authorized_user matches */" +
-            "        (select c.id from collection c left join authorized_user au on au.resource_collection_id=c.id where" +
-            "             c.status='ACTIVE' and (au.user_id=:userId and au.general_permission_int > :permission ) " +
-            "     /* find child collections where the owner is the person, or the authorized_user matches */" +
-            "        union select collection_id from collection_parents where collection_id in (select c.id from collection c left join authorized_user au on au.resource_collection_id=c.id where " +
-            "            c.status='ACTIVE' and (au.user_id=:userId and au.general_permission_int > :permission ) ) or resource_id in " +
-            "           ( select resource_id from authorized_user where user_id=:userId and general_permission_int > :permission )" +
-            "   ))";
+    
+    
+    String QUERY_USERS_SHARED_WITH = "select distinct au.user_id from authorized_user au "
+            + "left join collection c on au.resource_collection_id=c.id left join authorized_user au2 on au2.resource_collection_id=c.id "
+            + "left join collection_parents cp on c.id=cp.collection_id left join collection parent on cp.parent_id=parent.id left join authorized_user au3 on parent.id=au3.resource_collection_id "
+            + "left join resource r on au.resource_id=r.id  where "
+            + " ((au.resource_id=r.id and r.status='ACTIVE') or (au.resource_collection_id=c.id and c.status='ACTIVE') )"
+            + "  and ((au2.user_id=:userId and au2.general_permission_int > :permission ) "
+            + "or (parent.status='ACTIVE' and (au3.user_id=:userId and au3.general_permission_int > :permission )))";
 
 }
