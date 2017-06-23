@@ -197,4 +197,38 @@ true for our registration page or our profile page).-->
         </#if>
     </#macro>
 
+<#macro listUsers users=[] span=10 baseUrl="/entity/user/rights" well=true>
+        <div class="<#if well>row</#if>" id="sharedPeople">
+            <div class="<#if well>well</#if> ${span}">
+                <div class="row">
+                    <#assign showMore=false />
+                    <#assign listGroups = [users]>
+                    <#if (users?size > (span/2-1))><#assign listGroups =  users?chunk(users?size /(span/2-1) )> </#if>
+                    <#list listGroups as row>
+                        <div  class="span2">
+                            <#list row>
+                            <ul class="unstyled">
+                            <#items as item>
+                                <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>">
+	                           <#if authenticatedUser?has_content>
+    	                            <a href="${baseUrl}/${item.id?c}">${item.properName}</a>
+                                <#else>
+	                                ${item.properName}
+                                </#if>
+                                </li>
+                            </#items>
+                            </ul>
+                            </#list>
+                        </div>
+                    </#list>
+                    </div>
+                    <#if showMore>
+                        <div span="${span}">
+                            <p class="text-center"><a href="#"  onClick="$('#sharedPeople .hidden').removeClass('hidden');$(this).hide()">show more</a></p>
+                        </div>
+                    </#if>
+                </div>
+            </div>
+</#macro>
+
 </#escape>

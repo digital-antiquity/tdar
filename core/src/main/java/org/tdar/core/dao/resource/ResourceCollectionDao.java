@@ -340,36 +340,6 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return query.getResultList();
     }
 
-//    public void addToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission) {
-//        addToInternalCollection(resource, authenticatedUser, user, permission, null);
-//    }
-//    public void addToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission, Date expires) {
-//        ResourceCollection internal = resource.getInternalResourceCollection();
-//        if (internal == null) {
-//            internal = createInternalResourceCollectionForResource(resource.getSubmitter(), resource, true);
-//        }
-//        AuthorizedUser authorizedUser = new AuthorizedUser(authenticatedUser, user, permission,expires);
-//        internal.getAuthorizedUsers().add(authorizedUser);
-//        saveOrUpdate(internal);
-//    }
-
-//    public ResourceCollection createInternalResourceCollectionForResource(TdarUser owner, Resource resource, boolean shouldSave) {
-//        InternalCollection internalCollection;
-//        internalCollection = new InternalCollection();
-//        internalCollection.setOwner(owner);
-//        internalCollection.markUpdated(owner);
-//
-//        if (shouldSave) {
-//            saveOrUpdate(internalCollection);
-//            refresh(internalCollection);
-//        }
-//        if (resource != null) {
-//            resource.getInternalCollections().add(internalCollection);
-//        }
-//        internalCollection.getResources().add(resource);
-//        return internalCollection;
-//    }
-
     /**
      * Convert a resource collection into a white-label collection.
      * 
@@ -446,7 +416,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         }
 
         Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH, SharedCollection.class);
-        query.setParameter("owner", authenticatedUser);
+//        query.setParameter("owner", authenticatedUser);
         query.setParameter("user", user);
         query.setParameter("admin", admin);
         query.setParameter("collectionIds", ids);

@@ -273,16 +273,9 @@
                 </#if>
                 
                 <#else>
-                <h2>Institution Members</h2>
-                <div id="institutionPeople" class="row bottom-margin-20">
-	                <#list people as person>
-	                   <div class="span2">
-	                	<a href="${person.detailUrl}">${person.properName}</a>
-	                   </div>
-	                </#list>
-                </div>
-                
-</#if>
+	                <h2>Institution Members</h2>
+	                <@common.listUsers users=people span=10 baseUrl="/browse/creators" well=false />
+				</#if>
 
     <#if ( results?? && results?size > 0) >
     <div id="divResultsSortControl">  
