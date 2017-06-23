@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.struts.action.TdarBaseActionSupport;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -22,15 +23,18 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/geographic")
 @Results(value = {
         @Result(name=TdarActionSupport.SUCCESS, type=TdarActionSupport.REDIRECT, location="/browse/geographic-keyword/${keyword.id}/${keyword.slug}"),
+        @Result(name=GeographicRedirectAction.SUCCESS_TYPE, type=TdarActionSupport.REDIRECT, location="/browse/geographic-keyword/${keyword.id}/${keyword.slug}?resourceTypes=${resourceTypes}"),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.REDIRECT, location = "/not-found", params = { "status", "404" })
 })
 public class GeographicRedirectAction extends TdarBaseActionSupport implements Preparable {
 
+    public static final String SUCCESS_TYPE = "success_type";
     private static final long serialVersionUID = 5689969933025476573L;
     @Autowired
     private transient GenericKeywordService genericKeywordService;
     private String code;
     private GeographicKeyword keyword;
+    private ResourceType resourceTypes;
     
     @Override
     public void prepare() throws Exception {
@@ -46,7 +50,10 @@ public class GeographicRedirectAction extends TdarBaseActionSupport implements P
         if (keyword == null) {
             return INPUT;
         }
-        return super.execute();
+        if (resourceTypes != null) {
+            return GeographicRedirectAction.SUCCESS_TYPE;
+        }
+        return TdarActionSupport.SUCCESS;
     }
     
     public String getCode() {
@@ -63,6 +70,14 @@ public class GeographicRedirectAction extends TdarBaseActionSupport implements P
 
     public void setKeyword(GeographicKeyword keyword) {
         this.keyword = keyword;
+    }
+
+    public ResourceType getResourceTypes() {
+        return resourceTypes;
+    }
+
+    public void setResourceTypes(ResourceType resourceTypes) {
+        this.resourceTypes = resourceTypes;
     }
 
 }

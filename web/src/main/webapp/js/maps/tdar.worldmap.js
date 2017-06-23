@@ -298,7 +298,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         var $zoomout = $("#mapGraphZoomOut");
         var $search = $("#mapGraphSearch");
         var name = event.target.feature.properties.name;
-        if (id) {
+        if (id != undefined) {
             if (id != 'RUS') {
                 $zoomout.show();
             }
@@ -329,12 +329,15 @@ TDAR.worldmap = (function(console, $, ctx) {
             map.fitBounds(event.target.getBounds());
             overlay = true;
         }
+        event.stopPropagation();
+        return false;
     }
 
     /**
      * Draw the pie chart for the state or country
      */
     function _drawDataGraph(name, id) {
+//        console.log("draw data graph: " + name + " ("+ id+ ")");
         var $div = $("#mapgraphdata");
         var $header = $("#mapGraphHeader");
         // style='height:"+($mapDiv.height() - 50)+"px'
@@ -480,6 +483,11 @@ TDAR.worldmap = (function(console, $, ctx) {
     function _constructUri(resourceType, id, name) {
         
         var uri = "/geographic/" + id +"?";
+        
+        if (id == undefined) {
+            uri = "/search/results?";
+        }
+        
         if (resourceType) {
             uri += "resourceTypes=" + resourceType;
         }
@@ -489,6 +497,7 @@ TDAR.worldmap = (function(console, $, ctx) {
      * Zoom out
      */
     function _resetView() {
+//        console.log("reset called");
         map.setView( _DEFAULT_CENTER, _DEFAULT_ZOOM_LEVEL);
         overlay = false;
         var $zoomout = $("#mapGraphZoomOut");
