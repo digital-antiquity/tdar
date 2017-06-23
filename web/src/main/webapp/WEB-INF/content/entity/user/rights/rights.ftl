@@ -13,6 +13,7 @@
         <li class="nav-header">Items</li>
         <li><a href="#resources">Resources (${findResourcesSharedWith?size})</a></li>
         <li><a href="#collections">Collections (${findCollectionsSharedWith?size})</a></li>
+        <li><a href="#integrations">Integrations (${integrations?size})</a></li>
         <li><a href="#accounts">Billing Accounts (${(accounts![])?size})</a></li>
 </ul>
 </div>
@@ -36,6 +37,7 @@
     </ul>
 </#list>
 
+
 <#list accounts![]>
 <h5 id="accounts">${accounts?size} Billing Accounts:</h5>
     <ul>
@@ -44,6 +46,16 @@
     </#items>
     </ul>
 </#list>
+
+<#list integrations>
+<h5 id="integrations">${integrations?size} Data Integrations:</h5>
+    <ul>
+    <#items as item>
+        <li><a href="${item.detailUrl}">${item.title}</a> (${item.id?c})</li>
+    </#items>
+    </ul>
+</#list>
+
 </div>
 </div>
 </body>

@@ -13,11 +13,15 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.core.service.integration.DataIntegrationService;
+import org.tdar.core.service.integration.IntegrationContext;
+import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 import com.opensymphony.xwork2.Preparable;
@@ -37,9 +41,12 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     private ResourceCollectionService resourceCollectionService;
     @Autowired
     private GenericService genericService;
+    @Autowired
+    private IntegrationWorkflowService integrationService;
+    
     private List<Resource> findResourcesSharedWith = new ArrayList<>();
     private List<SharedCollection> findCollectionsSharedWith = new ArrayList<>();
-
+    private List<DataIntegrationWorkflow> integrations = new ArrayList<>();
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
 
     @Autowired
@@ -57,6 +64,7 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         getLogger().debug("find resources");
         setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), getFindCollectionsSharedWith(), user));
         getLogger().debug("find accounts");
+        integrations.addAll(integrationService.getWorkflowsForUser(user));
         getAccounts().addAll(accountService.listAvailableAccountsForUser(user, Status.ACTIVE));
         getLogger().debug("done");
     }
@@ -128,6 +136,14 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
 
     public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
+    }
+
+    public List<DataIntegrationWorkflow> getIntegrations() {
+        return integrations;
+    }
+
+    public void setIntegrations(List<DataIntegrationWorkflow> integrations) {
+        this.integrations = integrations;
     }
 
 }
