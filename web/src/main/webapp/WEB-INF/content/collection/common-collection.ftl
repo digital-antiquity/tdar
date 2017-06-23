@@ -83,7 +83,7 @@
             namespace="${path}"
             action="add?parentId=${id?c}"
             label="create child collection"
-            name="columns"
+            name="child_collection"
             current=current
             includeResourceId=false
             disabled=disabled
