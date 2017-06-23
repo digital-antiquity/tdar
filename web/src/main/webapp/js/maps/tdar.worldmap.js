@@ -219,7 +219,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             var topRight = L.DomUtil.create('div', 'topright');
             var zoomout = L.DomUtil.create('div', 'mapGraphZoomOut');
             zoomout.id="mapGraphZoomOut";
-            $(zoomout).append("<i class='icon-zoom-out'></i> Zoom Out");
+            var $zoomout = $(zoomout).append("<i class='icon-zoom-out'></i> Zoom Out");
             var search = L.DomUtil.create('div', 'mapGraphSearch');
             search.id="mapGraphSearch";
             var $search = $(search);
@@ -227,6 +227,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             $search.click(function() {
                 window.location.href = TDAR.c3graphsupport.getClickPath(searchUri);
             });
+            $zoomout.click(function() {_resetView();});
             topRight.appendChild(zoomout);
             topRight.appendChild(search);
             return topRight;
@@ -264,6 +265,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
 
         var layer = L.choropleth(data, props);
+        L.DomEvent.on(layer, 'click', L.DomEvent.stopPropagation);
         layer.addTo(map);
         return layer;
     }
@@ -293,6 +295,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             return;
         }
         var ly = event.target.feature.geometry.coordinates[0];
+        
         var id = event.target.feature.id;
         console.log(event.target.feature);
         var $zoomout = $("#mapGraphZoomOut");
@@ -329,7 +332,10 @@ TDAR.worldmap = (function(console, $, ctx) {
             map.fitBounds(event.target.getBounds());
             overlay = true;
         }
-        event.stopPropagation();
+        if (event) {
+            L.DomEvent.preventDefault(event);
+        }
+
         return false;
     }
 
@@ -612,6 +618,7 @@ TDAR.worldmap = (function(console, $, ctx) {
     }
 
     return {
-        initWorldMap : _initWorldMap
+        initWorldMap : _initWorldMap,
+        resetView : _resetView
     }
 })(console, jQuery, window);
