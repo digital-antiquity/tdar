@@ -21,6 +21,7 @@ public class FacetWrapper implements Serializable {
     private Map<String, String> filters = new HashMap<>();
     private String facetPivotJson = null;
     private boolean mapFacet = false;
+    private Integer maxFacetLimit;
     public void facetBy(String facetField, Class<?> facetClass) {
         facetMap.put(facetField, facetClass);
     }
@@ -74,6 +75,14 @@ public class FacetWrapper implements Serializable {
 
     public void setFacetPivotJson(String facetPivotJson) {
         this.facetPivotJson = facetPivotJson;
+    }
+
+    public Integer getMaxFacetLimit() {
+        return maxFacetLimit;
+    }
+
+    public void setMaxFacetLimit(Integer maxFacetLimit) {
+        this.maxFacetLimit = maxFacetLimit;
     }
 
 

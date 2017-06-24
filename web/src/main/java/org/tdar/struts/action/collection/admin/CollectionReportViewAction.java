@@ -77,7 +77,9 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
         getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, SiteNameKeyword.class);
         for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
             getFacetWrapper().facetBy(role.name(), Creator.class);
+
         }
+        getFacetWrapper().setMaxFacetLimit(100);
         asqo.getReservedParams().setStatuses(Arrays.asList(Status.ACTIVE, Status.DRAFT));
         resourceSearchService.buildAdvancedSearch(asqo, getAuthenticatedUser(), this, this);
         return SUCCESS;
