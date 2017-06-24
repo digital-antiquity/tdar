@@ -19,8 +19,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
-import org.tdar.core.service.integration.DataIntegrationService;
-import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 

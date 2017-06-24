@@ -45,6 +45,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
+import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.external.auth.UserLogin;
@@ -264,7 +265,12 @@ public class AuthenticationService {
             return TdarGroup.UNAUTHORIZED;
         }
         TdarGroup greatestPermissionGroup = TdarGroup.UNAUTHORIZED;
-        List<TdarGroup> groups = findGroupMemberships(person);
+        List<TdarGroup> groups = new ArrayList<>();
+        try {
+            groups.addAll(findGroupMemberships(person));
+        } catch (TdarAuthorizationException ae) {
+            logger.error("issue with crowd", ae);
+        }
         logger.trace("Found {} memberships for {}", Arrays.asList(groups), login);
         for (TdarGroup group : groups) {
             if (group.hasGreaterPermissions(greatestPermissionGroup)) {

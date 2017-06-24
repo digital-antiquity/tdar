@@ -188,17 +188,17 @@ public interface TdarNamedQueries {
     /**
      * Static HQL and SQL queries that cannot be represented as annotations because they are either pure SQL or use String replacement.
      */
-    String QUERY_SQL_DASHBOARD = "select r.id, r.status, resource_type from resource r "
-            + "left join collection_resource cr on r.id=cr.resource_id "
-            + "left join collection c on cr.collection_id = c.id "
-            + "left join collection_parents cp on cp.collection_id=c.id "
-            + "left join authorized_user au on c.id=au.resource_collection_id "
-            + "left join authorized_user au2 on r.id=au2.resource_id where "
-            + "     (c.status='ACTIVE' and au.user_id=:submitterId and au.general_permission_int > :effectivePermissions or cp.parent_id in"
-            + "          (select c_.id from collection c_ left join authorized_user on c_.id=authorized_user.resource_collection_id "
-            + "             where user_id=:submitterId and general_permission_int > :effectivePermissions)"
-            + ")"
-            + "      or  (au2.user_id=:submitterId and au2.general_permission_int > :effectivePermissions )";            
+    String QUERY_SQL_DASHBOARD = "select r.status, resource_type , count(*) from resource r where exists ( select 1 from resource r " +
+            "left join collection_resource cr on r.id=cr.resource_id " +
+            "left join collection c on cr.collection_id = c.id " +
+            "left join authorized_user au on c.id=au.resource_collection_id " +
+            "left join collection_parents cp on c.id= cp.collection_id " +
+            "left join collection c2 on cp.parent_id = c2.id " +
+            "left join authorized_user au3 on c2.id=au3.resource_collection_id " +
+            "left join authorized_user au2 on r.id = au2.resource_id where " +
+            "(au2.user_id=:submitterId and au2.general_permission_int > :effectivePermissions ) or " +
+            "(c.status='ACTIVE' and au.user_id=:submitterId and au.general_permission_int > :effectivePermissions) or " +
+            "(c2.status='ACTIVE' and au3.user_id=:submitterId and au3.general_permission_int > :effectivePermissions)) group by 1,2";
 
     String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
     String QUERY_FIND_ALL = "FROM %s";

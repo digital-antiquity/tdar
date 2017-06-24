@@ -18,7 +18,8 @@ public class ResourceTypeStatusInfo implements Serializable {
     private Map<Status, Integer> statusMap = new HashMap<>();
     private Map<ResourceType, Integer> resourceMap = new HashMap<>();
 
-    private int total = 0;
+    private Integer total = 0;
+
 
     public Map<ResourceType, Integer> getResourceMap() {
         return resourceMap;
@@ -28,25 +29,24 @@ public class ResourceTypeStatusInfo implements Serializable {
         return statusMap;
     }
 
-    public void increment(Status status, ResourceType type) {
-        increment(type, resourceMap);
-        increment(status, statusMap);
-        total ++;
+    public void increment(Status status, ResourceType type, int count) {
+        increment(type, resourceMap, count);
+        increment(status, statusMap, count);
+        total += count;
     }
 
-    private <C> void increment(C type, Map<C, Integer> map) {
+    private <C> void increment(C type, Map<C, Integer> map, int count_) {
         Integer count = map.get(type);
         if (count == null) {
             count = 0;
         }
-        count++;
-        map.put(type, count);
+        map.put(type, count + count_);
 
     }
 
 
     public Integer getTotal() {
-        return total;
+        return total ;
     }
 
     public List<List<Object>> getStatusData() {

@@ -74,12 +74,12 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
 
     @SuppressWarnings("Duplicates")
     private void setupResourceCollectionTreesForDashboard() {
-        getLogger().trace("parent/ owner collections");
+        getLogger().debug("parent/ owner collections");
         for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
                 SharedCollection.class)) {
             getAllResourceCollections().add((SharedCollection) rc);
         }
-        getLogger().trace("accessible collections");
+        getLogger().debug("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
             if (rc instanceof SharedCollection) {
                 getSharedResourceCollections().add((SharedCollection) rc);
@@ -87,19 +87,19 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         }
         List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
         collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
-        getLogger().trace("reconcile tree1");
+        getLogger().debug("reconcile tree1");
         resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
                 collectionIds, SharedCollection.class);
-        getLogger().trace("reconcile tree2");
+        getLogger().debug("reconcile tree2");
         resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
                 collectionIds, SharedCollection.class);
 
-        getLogger().trace("removing duplicates");
+        getLogger().debug("removing duplicates");
         getSharedResourceCollections().removeAll(getAllResourceCollections());
-        getLogger().trace("sorting");
+        getLogger().debug("sorting");
         Collections.sort(allResourceCollections);
         Collections.sort(sharedResourceCollections);
-        getLogger().trace("done sort");
+        getLogger().debug("done sort");
     }
 
     private List<TdarUser> findUsersSharedWith = new ArrayList<>();

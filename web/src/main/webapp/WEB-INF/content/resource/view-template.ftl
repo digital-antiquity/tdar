@@ -531,13 +531,6 @@
                 </a>
                 </div>
             </li>
-            <#if (authenticatedUser.id)?has_content && editable>
-            <li class="media"><i class="icon-share-alt pull-left"></i>
-                <div class="media-body">
-                        <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Share</a>
-                </div>
-            </li>
-            </#if>
         <#if (authenticatedUser.id)?has_content && editable>
             <@list.bookmarkMediaLink resource />
             <#-- 

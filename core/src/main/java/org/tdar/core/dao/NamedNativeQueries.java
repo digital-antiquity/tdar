@@ -74,10 +74,6 @@ public final class NamedNativeQueries {
     }
 
     public static NativeQuery generateDashboardGraphQuery(Session currentSession) {
-        return currentSession
-                .createNativeQuery(TdarNamedQueries.QUERY_SQL_DASHBOARD);
-//                .addScalar("id", StandardBasicTypes.LONG)
-//                .addScalar("status", StandardBasicTypes.STRING)
-//                .addScalar("resource_type", StandardBasicTypes.STRING);
+        return currentSession.createNativeQuery(TdarNamedQueries.QUERY_SQL_DASHBOARD);
     }
 }

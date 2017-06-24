@@ -275,8 +275,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         editableProjects = new TreeSet<Resource>(
                 projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
 
-        fullUserProjects = new ArrayList<Resource>(
-                projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+        fullUserProjects = new ArrayList<Resource>(editableProjects);
         Collections.sort(fullUserProjects);
         allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
         Collections.sort(allSubmittedProjects);

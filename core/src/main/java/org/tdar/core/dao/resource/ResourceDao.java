@@ -261,23 +261,16 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
 
     @SuppressWarnings("rawtypes")
     public ResourceTypeStatusInfo getResourceCountAndStatusForUser(Person p, List<ResourceType> types) {
-        // Query sqlQuery =
-        // getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_DASHBOARD);
         NativeQuery sqlQuery = NamedNativeQueries.generateDashboardGraphQuery(getCurrentSession());
         sqlQuery.setParameter("submitterId", p.getId());
         sqlQuery.setParameter("effectivePermissions", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
-        Set<Long> ids = new HashSet<Long>();
         ResourceTypeStatusInfo info = new ResourceTypeStatusInfo();
         for (Object obj_ : sqlQuery.getResultList()) {
             Object[] objs = (Object[]) obj_;
-            Long id_ = ((Number) objs[0]).longValue();
-            boolean newId = ids.add(id_);
-            if (!newId) {
-                continue;
-            }
-            Status status = Status.valueOf((String) objs[1]);
-            ResourceType type = ResourceType.valueOf((String) objs[2]);
-            info.increment(status, type);
+            Status status = Status.valueOf((String) objs[0]);
+            ResourceType type = ResourceType.valueOf((String) objs[1]);
+            Integer count = ((Number) objs[2]).intValue();
+            info.increment(status, type, count);
         }
 
         return info;

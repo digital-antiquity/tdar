@@ -1,4 +1,6 @@
 <#escape _untrusted as _untrusted?html>
+    <#import "/WEB-INF/macros/common.ftl" as common>
+
     <#macro queryField freeTextLabel="Search" showAdvancedLink=true showLimits=false showPersonField=false submitLabel="Search">
 
         <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge" maxlength="512" />
@@ -449,7 +451,7 @@
     <#macro reindexingNote>
         <#if reindexing!false >
         <div class="reindexing alert">
-            <p><@localText "notifications.fmt_system_is_reindexing", siteAcronym /></p>
+            <p><@common.localText "notifications.fmt_system_is_reindexing", siteAcronym /></p>
         </div>
         </#if>
     </#macro>

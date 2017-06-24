@@ -193,6 +193,7 @@ $(function() {
             <#list persistable.authorizedUsers as user>
                 <tr>
                     <td>
+                    <!-- id:${user.id?c}--> 
                         Local
                     </td>
                     <td>
