@@ -1,5 +1,7 @@
 package org.tdar.oai;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -109,7 +111,11 @@ public class OAIWebITCase extends AbstractWebTest {
             Document response = getPageDOM();
             // count the number of records returned in this page
             int recordCount = Integer.valueOf(xpathEngine.evaluate("count(oai:OAI-PMH/oai:" + verb + "/*)", response));
-            identifiers.add(xpathEngine.evaluate("//oai:identifier", response));
+            String identifier = xpathEngine.evaluate("//oai:identifier", response);
+            if (identifiers.contains(identifier)) {
+                fail("we've already seen this identifier: "+ identifier + " "+ identifiers);
+            }
+            identifiers.add(identifier);
             // must be > 0 (otherwise, repository is empty, or else the repository issued us with an unnecessary resumptionToken
             Assert.assertTrue(requestURI + " response returned > 0 records", (recordCount > 0));
             pageCount++;

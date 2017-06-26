@@ -253,7 +253,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             if (!authorizationService.canAdminiserUsersOn(source, actor)) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");
             }
-                
+
             for (AuthorizedUser user : comparator.getAdditions()) {
                 addUserToCollection(shouldSaveResource, resourceCollection.getAuthorizedUsers(), user, actor, resourceCollection, source);
             }
@@ -506,11 +506,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = true)
     public void buildCollectionTreeForController(ResourceCollection collection, TdarUser authenticatedUser, CollectionType collectionType) {
         List<ResourceCollection> allChildren = getAllChildCollections(collection);
-
+        allChildren.addAll(addAlternateChildrenTrees(allChildren));
         // ensure no duplicates (theoretically unnecessary, unless database schema is misconfigured)
-        Set<ResourceCollection>  childrenSet = new HashSet<>(allChildren);
-        if(!allChildren.isEmpty() && allChildren.size() != childrenSet.size()) {
-            logger.error("The following collection contains duplicate children items:{}. ", collection);
+        Set<ResourceCollection> childrenSet = new HashSet<>(allChildren);
+        if (!allChildren.isEmpty() && allChildren.size() != childrenSet.size()) {
+            logger.warn("The following collection ({}) contains duplicate children items:{}. ", collection, CollectionUtils.disjunction(allChildren, childrenSet));
         }
 
         // first pass - build the node hierarchy
@@ -518,8 +518,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         allChildren.forEach(child -> child.getTransientChildren().clear());
         allChildren.forEach(child -> {
             authorizationService.applyTransientViewableFlag(child, authenticatedUser);
-            if(child.getParent() != null) {
+            if (child.getParent() != null) {
                 child.getParent().getTransientChildren().add(child);
+            }
+            if (child.getAlternateParent() != null) {
+                child.getAlternateParent().getTransientChildren().add(child);
             }
         });
 
@@ -529,6 +532,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             child.getTransientChildren().sort(ResourceCollection.TITLE_COMPARATOR);
             logger.trace("new list: {}", child.getTransientChildren());
         });
+    }
+
+    private Collection<ResourceCollection> addAlternateChildrenTrees(List<ResourceCollection> allChildren) {
+        Set<ResourceCollection> toReturn = new HashSet<>(getDao().getAlternateChildrenTrees(allChildren)); 
+        return toReturn;
     }
 
     /**
@@ -830,10 +838,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void saveCollectionForController(ResourceCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
-            List<AuthorizedUser> authorizedUsers, List<Long> toAdd, List<Long> toRemove, List<Long> publicToAdd,
-            List<Long> publicToRemove, boolean shouldSaveResource,
-            FileProxy fileProxy, Long startTime) {
+    public void saveCollectionForController(CollectionSaveObject cso) {
+        ResourceCollection persistable = cso.getCollection();
+        TdarUser authenticatedUser = cso.getUser();
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
@@ -843,27 +850,32 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             type = RevisionLogType.EDIT;
         }
 
-        List<Resource> resourcesToRemove = getDao().findAll(Resource.class, toRemove);
-        List<Resource> resourcesToAdd = getDao().findAll(Resource.class, toAdd);
+        List<Resource> resourcesToRemove = getDao().findAll(Resource.class, cso.getToRemove());
+        List<Resource> resourcesToAdd = getDao().findAll(Resource.class, cso.getToAdd());
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
 
-        List<Resource> publicResourcesToRemove = getDao().findAll(Resource.class, publicToRemove);
-        List<Resource> publicResourcesToAdd = getDao().findAll(Resource.class, publicToAdd);
+        List<Resource> publicResourcesToRemove = getDao().findAll(Resource.class, cso.getPublicToRemove());
+        List<Resource> publicResourcesToAdd = getDao().findAll(Resource.class, cso.getPublicToAdd());
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
 
-        if (!Objects.equals(parentId, persistable.getParentId())) {
-            updateCollectionParentTo(authenticatedUser, persistable, parent);
+        if (!Objects.equals(cso.getParentId(), persistable.getParentId())) {
+            updateCollectionParentTo(authenticatedUser, persistable, cso.getParent());
+        }
+
+        if (!Objects.equals(cso.getAlternateParentId(), persistable.getAlternateParentId())) {
+            logger.debug("updating alternate parent for {} from {} to {}", persistable.getId(), persistable.getAlternateParent(), cso.getAlternateParent());
+            persistable.setAlternateParent(cso.getAlternateParent());
         }
 
         reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);
         reconcileIncomingResourcesForCollectionWithoutRights(persistable, authenticatedUser, publicResourcesToAdd, publicResourcesToRemove);
-        saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, shouldSaveResource, authenticatedUser);
-        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
+        saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser);
+        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, cso.getFileProxy());
         String msg = String.format("%s modified %s", authenticatedUser, persistable.getTitle());
         CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, type);
-        revision.setTimeBasedOnStart(startTime);
+        revision.setTimeBasedOnStart(cso.getStartTime());
         getDao().saveOrUpdate(revision);
         publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
     }
@@ -932,15 +944,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().convertToResourceCollection(wlc);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser) {
         getDao().changeSubmitter(collection, submitter, authenticatedUser);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void moveResource(Resource resource, ResourceCollection fromCollection, ResourceCollection toCollection, TdarUser tdarUser) {
-        if (!authorizationService.canEdit(tdarUser, resource) || !authorizationService.canEdit(tdarUser, fromCollection) || !authorizationService.canEdit(tdarUser, toCollection)) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");            
+        if (!authorizationService.canEdit(tdarUser, resource) || !authorizationService.canEdit(tdarUser, fromCollection)
+                || !authorizationService.canEdit(tdarUser, toCollection)) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");
         }
         resource.getResourceCollections().remove(fromCollection);
         fromCollection.getResources().remove(resource);
@@ -949,24 +962,34 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         getDao().saveOrUpdate(resource);
         saveOrUpdate(fromCollection);
         saveOrUpdate(toCollection);
-        
+
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void removeResourceFromCollection(TdarUser authenticatedUser, Resource resource, ResourceCollection collection) {
         if (!authorizationService.canEdit(authenticatedUser, resource) || !authorizationService.canEdit(authenticatedUser, collection)) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");            
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");
         }
         resource.getResourceCollections().remove(collection);
         collection.getResources().remove(resource);
         saveOrUpdate(collection);
-        
+
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public String getSchemaOrgJsonLD(ResourceCollection resource) throws IOException {
         SchemaOrgCollectionTransformer transformer = new SchemaOrgCollectionTransformer();
         return transformer.convert(serializationService, resource);
     }
 
+    @Transactional(readOnly = true)
+    public List<ResourceCollection> findAlternateChildren(List<Long> ids, TdarUser authenticatedUser) {
+        List<ResourceCollection> findAlternateChildren = getDao().findAlternateChildren(ids);
+        if (CollectionUtils.isNotEmpty(findAlternateChildren)) {
+            findAlternateChildren.forEach(c -> {
+                authorizationService.applyTransientViewableFlag(c, authenticatedUser);
+            });
+        }
+        return findAlternateChildren;
+    }
 }

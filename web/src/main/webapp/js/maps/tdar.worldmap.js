@@ -35,7 +35,10 @@ TDAR.worldmap = (function(console, $, ctx) {
             for (var i = 0; i < data.length; i++) {
                 geodata[data[i].value] = data[i].count;
                 if (data[i].value.length < 4) {
-                    max += parseInt(data[i].count);
+                    var cnt = parseInt(data[i].count);
+                    if (cnt > max) {
+                        max = cnt;
+                    }
                 }
             }
         }
@@ -216,7 +219,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             var topRight = L.DomUtil.create('div', 'topright');
             var zoomout = L.DomUtil.create('div', 'mapGraphZoomOut');
             zoomout.id="mapGraphZoomOut";
-            $(zoomout).append("<i class='icon-zoom-out'></i> Zoom Out");
+            var $zoomout = $(zoomout).append("<i class='icon-zoom-out'></i> Zoom Out");
             var search = L.DomUtil.create('div', 'mapGraphSearch');
             search.id="mapGraphSearch";
             var $search = $(search);
@@ -224,6 +227,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             $search.click(function() {
                 window.location.href = TDAR.c3graphsupport.getClickPath(searchUri);
             });
+            $zoomout.click(function() {_resetView();});
             topRight.appendChild(zoomout);
             topRight.appendChild(search);
             return topRight;
@@ -261,6 +265,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
 
         var layer = L.choropleth(data, props);
+        L.DomEvent.on(layer, 'click', L.DomEvent.stopPropagation);
         layer.addTo(map);
         return layer;
     }
@@ -290,12 +295,13 @@ TDAR.worldmap = (function(console, $, ctx) {
             return;
         }
         var ly = event.target.feature.geometry.coordinates[0];
+        
         var id = event.target.feature.id;
         console.log(event.target.feature);
         var $zoomout = $("#mapGraphZoomOut");
         var $search = $("#mapGraphSearch");
         var name = event.target.feature.properties.name;
-        if (id) {
+        if (id != undefined) {
             if (id != 'RUS') {
                 $zoomout.show();
             }
@@ -326,12 +332,18 @@ TDAR.worldmap = (function(console, $, ctx) {
             map.fitBounds(event.target.getBounds());
             overlay = true;
         }
+        if (event) {
+            L.DomEvent.preventDefault(event);
+        }
+
+        return false;
     }
 
     /**
      * Draw the pie chart for the state or country
      */
     function _drawDataGraph(name, id) {
+//        console.log("draw data graph: " + name + " ("+ id+ ")");
         var $div = $("#mapgraphdata");
         var $header = $("#mapGraphHeader");
         // style='height:"+($mapDiv.height() - 50)+"px'
@@ -477,6 +489,11 @@ TDAR.worldmap = (function(console, $, ctx) {
     function _constructUri(resourceType, id, name) {
         
         var uri = "/geographic/" + id +"?";
+        
+        if (id == undefined) {
+            uri = "/search/results?";
+        }
+        
         if (resourceType) {
             uri += "resourceTypes=" + resourceType;
         }
@@ -486,6 +503,7 @@ TDAR.worldmap = (function(console, $, ctx) {
      * Zoom out
      */
     function _resetView() {
+//        console.log("reset called");
         map.setView( _DEFAULT_CENTER, _DEFAULT_ZOOM_LEVEL);
         overlay = false;
         var $zoomout = $("#mapGraphZoomOut");
@@ -600,6 +618,7 @@ TDAR.worldmap = (function(console, $, ctx) {
     }
 
     return {
-        initWorldMap : _initWorldMap
+        initWorldMap : _initWorldMap,
+        resetView : _resetView
     }
 })(console, jQuery, window);

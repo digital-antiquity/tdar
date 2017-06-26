@@ -66,6 +66,7 @@ import org.tdar.utils.PersistableUtils;
 @Namespace("/batch")
 public class BulkUploadController extends AbstractInformationResourceController<Image> {
 
+    private static final String TEMPLATE_PREPARE = "template-prepare";
     private static final String VALIDATE_ERROR = "validate-error";
     private static final long serialVersionUID = -6419692259588266839L;
 
@@ -159,7 +160,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return SUCCESS_ASYNC;
     }
 
-    @Action(value = "template-prepare")
+    @Action(value = TEMPLATE_PREPARE)
     @SkipValidation
     public String templateView() {
         return SUCCESS;
@@ -168,8 +169,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Action(value = "validate-template",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = INPUT, type = TDAR_REDIRECT, location = "template-prepare"),
-                    @Result(name = VALIDATE_ERROR, type = TDAR_REDIRECT, location = "template-prepare"),
+                    @Result(name = INPUT, type = TDAR_REDIRECT, location = TEMPLATE_PREPARE),
+                    @Result(name = VALIDATE_ERROR, type = TDAR_REDIRECT, location = TEMPLATE_PREPARE),
                     @Result(name = SUCCESS, type = TDAR_REDIRECT,
                             location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}&projectId=${projectId}") })
     @SkipValidation

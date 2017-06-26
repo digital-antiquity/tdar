@@ -67,7 +67,11 @@
                 </div>
             </div>
 
+        <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
+            cssClass='resizable input-xxlarge trim' title="Please enter the description " />
+
         <#if editor>
+            <h4>Admin Options</h4>
             <div class="control-group" id="divSubmitter">
                 <label class="control-label">Owner</label>
 
@@ -81,10 +85,20 @@
                     </#if>
                 </div>
             </div>
-        </#if>
+            
+            <div id="altParentIdContainer" class="control-group">
+                <label class="control-label">Secondary Parent Collection (No rights)</label>
+                <div class="controls">
+                    <@s.hidden name="alternateParentId"  id="hdnAltParentId" cssClass=""
+                    autocompleteParentElement="#altParentIdContainer"  />
+            <@s.textfield theme="simple" name="alternateParentCollectionName" cssClass="input-xxlarge collectionAutoComplete"  autocomplete="off"
+                autocompleteIdElement="#hdnAltParentId" maxlength=255 autocompleteParentElement="#altParentIdContainer" autocompleteName="name"
+                placeholder="parent collection name" id="txtAltParentCollectionName"
+                />
+                </div>
+            </div>
 
-            <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
-            cssClass='resizable input-xxlarge trim' title="Please enter the description " />
+
 
 
             <#if administrator>
@@ -92,7 +106,6 @@
                 cssClass='resizable input-xxlarge' title="Please enter the description " />
             </#if>
 
-        <#if editor>
             <div class="control-group">
                 <label class="control-label">Associate an Image/Logo with this Collection</label>
                 <div class="controls">
@@ -231,6 +244,7 @@
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
+                TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
         });

@@ -1,9 +1,6 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -580,6 +577,8 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         assertEquals(Action.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
 
+        
+        logger.debug("--------- creating child ----------");
         controller = generateNewInitializedController(CollectionController.class, getUser());
         controller.setParentId(rcid);
 
@@ -587,6 +586,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         ResourceCollection rcChild = controller.getPersistable();
         // project = null;
         // Long pid = project.getId();
+        controller.setParentId(rcid);
         controller.getPersistable().setName("test child");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -596,6 +596,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         Long rcid2 = controller.getPersistable().getId();
 
         // confirm resource is viewable by author of collection
+        logger.debug("--------- clearing parent ----------");
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid2);
         controller.prepare();
@@ -606,7 +607,9 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.setAsync(false);
         result = controller.save();
 
-        // make sure it draft resource can't be seen by registered user (but not an authuser)
+        genericService.synchronize();
+
+        // make sure it collection can't be edited by registered user (but not an authuser)
         controller = generateNewInitializedController(CollectionController.class, registeredUser);
         controller.setId(rcid2);
         boolean seen = false;

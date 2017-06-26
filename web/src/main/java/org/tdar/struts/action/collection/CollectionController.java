@@ -26,6 +26,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
@@ -83,8 +84,11 @@ public class CollectionController extends AbstractPersistableController<Resource
     private TdarUser owner;
 
     private String parentCollectionName;
+    private String alternateParentCollectionName;
     private Long parentId;
+    private Long alternateParentId;
     private ResourceCollection parentCollection;
+    private ResourceCollection alternateParentCollection;
 
 
     @Override
@@ -110,26 +114,32 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-
         // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
-        if(PersistableUtils.isNotNullOrTransient(parentId)) {
-            parentCollection = resourceCollectionService.find(parentId);
-            getLogger().debug("lookup parent collection by id:{}  result:{}", parentId, parentCollection);
+        parentCollection = prepareParent(parentId, parentCollectionName);
+        alternateParentCollection = prepareParent(alternateParentId, alternateParentCollectionName);
+    }
+
+    private ResourceCollection prepareParent(Long pid, String parentName) {
+        ResourceCollection parentC = null;
+        if(PersistableUtils.isNotNullOrTransient(pid)) {
+            parentC = resourceCollectionService.find(pid);
+            getLogger().debug("lookup parent collection by id:{}  result:{}", pid, parentC);
 
         }
-        else if(StringUtils.isNotBlank(parentCollectionName)) {
+        else if(StringUtils.isNotBlank(parentName)) {
             List<ResourceCollection> results = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(),
-                    parentCollectionName);
-            getLogger().debug("lookup parent collection by name:{}  results:{}", parentCollectionName, results.size());
+                    parentName);
+            getLogger().debug("lookup parent collection by name:{}  results:{}", parentName, results.size());
 
             if(results.size() != 1) {
                 addActionError(getText("collectionController.ambiguous_parent_name"));
                 // Clear the name field or the INPUT form will be primed to fail in the same way upon submit.
                 //parentCollectionName = "";
             } else {
-                parentCollection = results.get(0);
+                parentC = results.get(0);
             }
         }
+        return parentC;
     }
 
     @Override
@@ -142,26 +152,45 @@ public class CollectionController extends AbstractPersistableController<Resource
             TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
             getPersistable().setOwner(uploader);
         }
-
-//        lookupParent();
-        if(parentCollection != null) {
-            parentId = parentCollection.getId();
-        }
-
-        // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
-        if (PersistableUtils.isNotNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(parentCollection)
-                && (parentCollection.getParentIds().contains(persistable.getId()) || parentCollection.getId().equals(persistable.getId()))) {
-            addActionError(getText("collectionController.cannot_set_self_parent"));
-        }
+        parentId = evaluteParent(parentId, persistable.getParent(), parentCollection);
+        alternateParentId = evaluteParent(alternateParentId, persistable.getAlternateParent(), alternateParentCollection);
 
         //FIXME: this section is necessary because our prepare code is here, but we can't put it in prepare() because dozens of our tests will break because they do not correctly mock their controllers and assume that prepare() is never called.
         if(hasActionErrors()) {
             return INPUT;
         }
-        resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parentCollection, getAuthenticatedUser(), getAuthorizedUsers(), toAdd,
-                toRemove, publicToAdd, publicToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), getStartTime());
+        getLogger().debug("parentId: {} parent: {}", parentId, parentCollection);
+        getLogger().debug("altParentId: {} altParent: {}", alternateParentId, alternateParentCollection);
+        CollectionSaveObject cso = new CollectionSaveObject(getPersistable(), getAuthenticatedUser(), getStartTime(), getAuthorizedUsers());
+        cso.setParent(parentCollection);
+        cso.setParentId(parentId);
+        cso.setAlternateParent(alternateParentCollection);
+        cso.setAlternateParentId(alternateParentId);
+        cso.setToAdd(toAdd);
+        cso.setToRemove(toRemove);
+        cso.setPublicToAdd(publicToAdd);
+        cso.setPublicToRemove(publicToRemove);
+        cso.setFileProxy(generateFileProxy(getFileFileName(), getFile()));
+        cso.setShouldSave(shouldSaveResource());
+        resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
+    }
+
+    private Long evaluteParent(Long _pid, ResourceCollection _currentParent, ResourceCollection _incomingParent) {
+        Long _parentId = _pid;
+        if(PersistableUtils.isNotNullOrTransient(_incomingParent)) {
+            _parentId = _incomingParent.getId();
+        }
+        
+        // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
+        if (PersistableUtils.isNotNullOrTransient(_incomingParent) && PersistableUtils.isNotNullOrTransient(_currentParent)
+                && (_incomingParent.getParentIds().contains(_incomingParent.getId()) || getPersistable().getId().equals(_incomingParent.getId()))) {
+            getLogger().debug("parent: {} current: {}", _incomingParent, _currentParent );
+            getLogger().debug("grand-parent ids: {} current id: {} incoming id: {}", _incomingParent.getParentIds(), getPersistable().getId(), _incomingParent.getId());
+            addActionError(getText("collectionController.cannot_set_self_parent"));
+        }
+        return _parentId;
     }
 
     @Override
@@ -225,6 +254,10 @@ public class CollectionController extends AbstractPersistableController<Resource
         setParentId(getPersistable().getParentId());
         if (PersistableUtils.isNotNullOrTransient(getParentId())) {
             parentCollectionName = getPersistable().getParent().getName();
+        }
+        setAlternateParentId(getPersistable().getAlternateParentId());
+        if (PersistableUtils.isNotNullOrTransient(getAlternateParentId())) {
+            alternateParentCollectionName = getPersistable().getAlternateParent().getName();
         }
         return SUCCESS;
     }
@@ -444,6 +477,30 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public void setPublicToRemove(List<Long> publicToRemove) {
         this.publicToRemove = publicToRemove;
+    }
+
+    public String getAlternateParentCollectionName() {
+        return alternateParentCollectionName;
+    }
+
+    public void setAlternateParentCollectionName(String alternateParentCollectionName) {
+        this.alternateParentCollectionName = alternateParentCollectionName;
+    }
+
+    public Long getAlternateParentId() {
+        return alternateParentId;
+    }
+
+    public void setAlternateParentId(Long alternateParentId) {
+        this.alternateParentId = alternateParentId;
+    }
+
+    public ResourceCollection getAlternateParentCollection() {
+        return alternateParentCollection;
+    }
+
+    public void setAlternateParentCollection(ResourceCollection alternateParentCollection) {
+        this.alternateParentCollection = alternateParentCollection;
     }
 
 }

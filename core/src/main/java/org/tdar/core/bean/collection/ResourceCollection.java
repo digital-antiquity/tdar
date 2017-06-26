@@ -216,6 +216,10 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @JoinColumn(name = "parent_id")
     private ResourceCollection parent;
 
+    @ManyToOne
+    @JoinColumn(name = "alternate_parent_id")
+    private ResourceCollection alternateParent;
+
     @ElementCollection()
     @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id") )
     @Column(name = "parent_id")
@@ -425,6 +429,14 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
             return null;
         }
         return getParent().getId();
+    }
+
+    @Transient
+    public Long getAlternateParentId() {
+        if (getAlternateParent() == null) {
+            return null;
+        }
+        return getAlternateParent().getId();
     }
 
 
@@ -771,5 +783,13 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     public void setSystemManaged(Boolean systemManaged) {
         this.systemManaged = systemManaged;
+    }
+
+    public ResourceCollection getAlternateParent() {
+        return alternateParent;
+    }
+
+    public void setAlternateParent(ResourceCollection alternateParent) {
+        this.alternateParent = alternateParent;
     }
 }

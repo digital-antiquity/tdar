@@ -27,7 +27,8 @@
                         <div class="authpane">
                             <div class="authfields">
                                 <@auth.registrationFormFields detail="minimal" cols=9 showSubmit=false beanPrefix="requestUserRegistration"/>
-							    <@s.hidden name="id" />
+                                <@_extraFields />
+
                             </div>
                             <div class="form-actions">
                                 <input type="submit" class='submitButton tdar-button' name="submitAction" value="Register and Continue">
@@ -46,9 +47,7 @@
                 <div class="authpane">
                     <div class="authfields">
                         <@auth.login showLegend=false>
-                        <@s.hidden name="id" />
-                        <@s.hidden name="type" />
-                        <@s.hidden name="messageBody" />
+                        <@_extraFields />
 
                     </div>
                     <div class="form-actions">
@@ -62,4 +61,10 @@
     </div>
 
 </body>
+
+<#macro _extraFields>
+    <@s.hidden name="id" />
+    <@s.hidden name="type" />
+    <@s.hidden name="messageBody" value="${(messageBody!'')?url}" />
+</#macro>
 </#escape>

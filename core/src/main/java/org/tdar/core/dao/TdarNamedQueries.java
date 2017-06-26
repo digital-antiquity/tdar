@@ -159,7 +159,9 @@ public interface TdarNamedQueries {
     String COUNT_MAPPED_RESOURCES = "query.count_mapped_resources";
     String ALL_RESOURCES_IN_COLLECTION = "query.non_deleted_in_collection";
     String FIND_DOWNLOAD_AUTHORIZATION = "delete.downloadAuthorization";
-    // raw SQL/HQL queries
+    String FIND_ALTERNATE_CHILDRENS = "query.alternate_children";
+    String FIND_ALTERNATE_CHILDRENS_TREE = "query.alternate_children_tree";
+            // raw SQL/HQL queries
 
     /**
      * Static HQL and SQL queries that cannot be represented as annotations because they are either pure SQL or use String replacement.
@@ -260,7 +262,7 @@ public interface TdarNamedQueries {
     String CONVERT_PERSON_TO_USER = "INSERT INTO tdar_user (id, username) VALUES(%s, '%s')";
     
    
-    String DAILY_RESOURCE_UPDATE = "INSERT INTO resource_access_day_agg (resource_id, year, month, date_accessed, bot, count) select resource_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day',date_accessed), (select count(id) from resource_access_statistics  where resource_id=s.resource_id and date_trunc('day',date_accessed)='%1$tF' and bot is true),(select count(id) from resource_access_statistics where resource_id=s.resource_id and date_trunc('day',date_accessed)='%1$tF' and bot is false) from resource_access_statistics s where date_trunc('day',date_accessed)='%1$tF' group by resource_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day', date_accessed)";
+    String DAILY_RESOURCE_UPDATE = "INSERT INTO resource_access_day_agg (resource_id, year, month, day, date_accessed, bot, count) select resource_id, date_part('year', date_accessed), date_part('month', date_accessed), date_part('day',date_accessed),  date_trunc('day', date_accessed), (select count(id) from resource_access_statistics  where resource_id=s.resource_id and date_trunc('day',date_accessed)='%1$tF' and bot is true),(select count(id) from resource_access_statistics where resource_id=s.resource_id and date_trunc('day',date_accessed)='%1$tF' and bot is false) from resource_access_statistics s where date_trunc('day',date_accessed)='%1$tF' group by resource_id, date_part('year', date_accessed), date_part('month', date_accessed),date_part('day', date_accessed), date_trunc('day', date_accessed)";
     String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, month, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day', date_accessed)";
 
     String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
@@ -294,6 +296,7 @@ public interface TdarNamedQueries {
     String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id=project_id and information_resource.id in :resourceIds";
 
     String HOMEPAGE_GEOGRAPHIC = "select code, resource_type, sum(count), id from ( ( select code, count(*), r.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource r on r.id = rgk.resource_id left join information_resource ir on (ir.id = r.id and ir.inheriting_spatial_information = false) where (code !='') and r.status = 'ACTIVE' group by code, r.resource_type, gk.id ) union all select code, count(*), irr.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource p on p.id = rgk.resource_id join information_resource ir on (ir.project_id = p.id and ir.inheriting_spatial_information = true) join resource irr on (irr.id = ir.id) where (code !='') and irr.status = 'ACTIVE' group by code, irr.resource_type, gk.id ) as allrecs group by code, resource_type, id order by 1, 2";
+
     String DAILY_RESOURCE_STATS_CLEANUP = "delete from resource_access_statistics where date_trunc('day',date_accessed) < '%1$tY-%1$tm-%1$td' ";
     
     String AGG_RESOURCE_INSERT_MONTH = "update resource_access_year_agg agg set d%s=valcount inner join (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "

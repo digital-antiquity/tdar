@@ -197,6 +197,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             findAllChildCollections = new ArrayList<>(resourceCollectionService.findDirectChildCollections(getId(), false,
                     CollectionType.SHARED));
         }
+        findAllChildCollections.addAll(resourceCollectionService.findAlternateChildren(Arrays.asList(getId()), getAuthenticatedUser()));
         setCollections(new ArrayList<>(findAllChildCollections));
         getLogger().trace("child collections: sort");
         Collections.sort(collections);

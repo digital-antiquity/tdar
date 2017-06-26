@@ -553,8 +553,13 @@
                 query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_DOWNLOAD_AUTHORIZATION,
-                query = "from DownloadAuthorization da where da.resourceCollection.id=:collectionId")
-        
-})
+                query = "from DownloadAuthorization da where da.resourceCollection.id=:collectionId"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_CHILDRENS,
+                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE,
+                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )")
+                })
 package org.tdar.core.dao;
 

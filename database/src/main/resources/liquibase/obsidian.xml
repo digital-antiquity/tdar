@@ -238,7 +238,6 @@
             <column name="bot" type="bigint" />
         </addColumn>
     </changeSet>
-    
     <changeSet id="obsidian-23" author="abrin">
         <addColumn tableName="collection">
             <column name="alternate_parent_id" type='bigint' />
@@ -254,6 +253,7 @@
             <column name="id"/>
         </createIndex>
     </changeSet>
+<<<<<<< mine
     <changeSet id="obsidian-stats-1" author="abrin">
         <sql>create table resource_access_day_agg_2 (id bigserial, resource_id bigint, date_accessed date, year int, month int, day int, count bigint, bot int);</sql>
         <sql>create index resource_access_day_agg_idx1 on resource_access_day_agg_2  (resource_id, year,month,day);</sql>
@@ -409,4 +409,14 @@ select resource_id, year, month,
      from tmp a  group by resource_id, year, month;
         </sql>
     </changeSet>
+
+    <changeSet id="obsidian-25" author="abrin">
+        <addColumn tableName="resource_access_day_agg">
+            <column name="day" type='int' />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-26" author="abrin">
+        <dropUniqueConstraint tableName="institution" constraintName="uk_9grdn54hea5ns8ahq4yogpb7u"/>
+    </changeSet>
+    
 </databaseChangeLog>
