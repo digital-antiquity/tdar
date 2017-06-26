@@ -20,6 +20,7 @@
     <@s.hidden name="id" />
     
     <#if editor>
+    <#--  
 	    <div class="control-group" id="divSubmitter">
 	        <label class="control-label">Owner</label>
 	            <div class="controls controls-row">
@@ -32,6 +33,7 @@
                 </#if>
             </div>
         </div>
+     -->
     </#if>
 
     

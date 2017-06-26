@@ -15,10 +15,11 @@
     <@s.form class="form-horizontal tdarvalidate" action="save" method="POST" dynamicAttributes={"data-validate-method":"initRightsForm"}>
 <div class="row">
     <div class="span12">
-    <p><b>This resource is shared with ${proxies?size} people and is in ${persistable.sharedCollections?size} collections.</b></p>
+    <p><i>This resource is shared with ${proxies?size} people<#if (persistable.sharedCollections?size > 0)>, and is in ${persistable.sharedCollections?size} collections</#if>.</i><br></p>
     <@s.hidden name="id" />
     
     <#if editor>
+    <#-- 
 	    <div class="control-group" id="divSubmitter">
 	        <label class="control-label">Submitter</label>
 	            <div class="controls controls-row">
@@ -31,6 +32,7 @@
                 </#if>
             </div>
         </div>
+     -->
     </#if>
 
 
