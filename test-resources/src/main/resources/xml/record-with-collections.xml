@@ -41,7 +41,7 @@
     <tdar:statusChanged>false</tdar:statusChanged>
     <tdar:temporalKeywords/>
     <tdar:title>abcd</tdar:title>
-    <tdar:listCollections>
+<!--    <tdar:listCollections>
         <tdar:listCollection hidden="false">
             <tdar:resources>
                 <tdar:resourceId>4232</tdar:resourceId>
@@ -58,6 +58,6 @@
 		    </tdar:properties>
             <tdar:sortBy>TITLE</tdar:sortBy>
         </tdar:listCollection>
-    </tdar:listCollections>
+    </tdar:listCollections>-->
     <tdar:url></tdar:url>
 </tdar:project>
