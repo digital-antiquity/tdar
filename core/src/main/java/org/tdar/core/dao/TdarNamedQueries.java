@@ -296,10 +296,8 @@ public interface TdarNamedQueries {
     String HOMEPAGE_GEOGRAPHIC = "select code, resource_type, sum(count), id from ( ( select code, count(*), r.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource r on r.id = rgk.resource_id left join information_resource ir on (ir.id = r.id and ir.inheriting_spatial_information = false) where (code !='') and r.status = 'ACTIVE' group by code, r.resource_type, gk.id ) union all select code, count(*), irr.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource p on p.id = rgk.resource_id join information_resource ir on (ir.project_id = p.id and ir.inheriting_spatial_information = true) join resource irr on (irr.id = ir.id) where (code !='') and irr.status = 'ACTIVE' group by code, irr.resource_type, gk.id ) as allrecs group by code, resource_type, id order by 1, 2";
     String DAILY_RESOURCE_STATS_CLEANUP = "delete from resource_access_statistics where date_trunc('day',date_accessed) < '%1$tY-%1$tm-%1$td' ";
     
-    String AGG_RESOURCE_INSERT_MONTH = "select resource_id, (select count(id) from resource_access_statistics where s.resource_id=resource_id and bot is false), "
-            + "                                            (select count(id) from resource_access_statistics where s.resource_id=resource_id and bot is true) "
-            + "                                             from resource_access_statistics s "
-            + "     where date_part('month',date_accessed)=:month and date_part('year',date_accessed)=:year group by resource_id, date_part('year', date_accessed), date_part('month', date_accessed)";
+    String AGG_RESOURCE_INSERT_MONTH = "update resource_access_year_agg agg set d%s=valcount inner join (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
+            + "where ras.date_accessed > :date and ras.date_accessed < :date2 and bot is :bot group by 1) where ras.resource_id= agg.resource_id";
     String AGG_RESOURCE_SETUP_MONTH = "insert into resource_access_year_agg(resource_id, year) select id, :year from resource where date_created >= :date";
 
 }

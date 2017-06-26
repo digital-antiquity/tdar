@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -211,9 +212,14 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
 
 
     @Transactional(readOnly=false)
-    public void generateMonthlyResourceStats(Date date) {
-        aggregateStatisticsDao.createNewAggregateEntries(date);
+    public void generateMonthlyResourceStats(DateTime date) {
         aggregateStatisticsDao.updateMonthly(date);
+        
+    }
+
+    @Transactional(readOnly=false)
+    public void initializeNewAggregateEntries(DateTime date) {
+        aggregateStatisticsDao.createNewAggregateEntries(date);
         
     }
 

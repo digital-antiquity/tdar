@@ -255,162 +255,158 @@
         </createIndex>
     </changeSet>
     <changeSet id="obsidian-stats-1" author="abrin">
-        <createTable tableName="resource_access_year_agg">
+        <sql>create table resource_access_day_agg_2 (id bigserial, resource_id bigint, date_accessed date, year int, month int, day int, count bigint, bot int);</sql>
+        <sql>create index resource_access_day_agg_idx1 on resource_access_day_agg_2  (resource_id, year,month,day);</sql>
+        <sql>insert into resource_access_day_agg_2 (resource_id, date_accessed, year,month,day, "count" , bot)  select resource_id, date_accessed, year, month, date_part('day',date_accessed), "count", bot from resource_access_day_agg;</sql>
+
+        <sql>create temporary table tmp (id bigserial, total bigint, total_bot bigint, resource_id bigint, day int, month int, year int);</sql>
+        <sql>create index resource_access_day_agg_idx12 on tmp  (resource_id, year,month,day);</sql>
+        <sql>insert into tmp (total,  total_bot, resource_id, day, month, year)  select
+    (select sum(count) from resource_access_day_agg_2 where resource_id=a.resource_id  and a.month=month and a.year=year and a.day=day  ),
+    (select sum(bot) from resource_access_day_agg_2 where resource_id=a.resource_id  and a.month=month and a.year=year and a.day=day  ),
+     resource_id,  day, month, year from resource_access_day_agg_2 a group by resource_id, year, month, day;</sql>
+        
+        
+        <createTable tableName="resource_access_month_agg">
             <column name="id" type="bigserial" />
             <column name="resource_id" type="bigint" />
             <column name="year" type="int" />
-            <column name="jan" type="int" />
-            <column name="feb" type="int" />
-            <column name="mar" type="int" />
-            <column name="apr" type="int" />
-            <column name="may" type="int" />
-            <column name="jun" type="int" />
-            <column name="jul" type="int" />
-            <column name="aug" type="int" />
-            <column name="sep" type="int" />
-            <column name="oct" type="int" />
-            <column name="nov" type="int" />
-            <column name="dec" type="int" />
-            <column name="jan_bot" type="int" />
-            <column name="feb_bot" type="int" />
-            <column name="mar_bot" type="int" />
-            <column name="apr_bot" type="int" />
-            <column name="may_bot" type="int" />
-            <column name="jun_bot" type="int" />
-            <column name="jul_bot" type="int" />
-            <column name="aug_bot" type="int" />
-            <column name="sep_bot" type="int" />
-            <column name="oct_bot" type="int" />
-            <column name="nov_bot" type="int" />
-            <column name="dec_bot" type="int" />
+            <column name="month" type="int" />
+            <column name="d1" type="int" />
+            <column name="d1_bot" type="int" />
+
+            <column name="d2" type="int" />
+            <column name="d2_bot" type="int" />
+            <column name="d3" type="int" />
+            <column name="d3_bot" type="int" />
+            <column name="d4" type="int" />
+            <column name="d4_bot" type="int" />
+            <column name="d5" type="int" />
+            <column name="d5_bot" type="int" />
+            <column name="d6" type="int" />
+            <column name="d6_bot" type="int" />
+            <column name="d7" type="int" />
+            <column name="d7_bot" type="int" />
+            <column name="d8" type="int" />
+            <column name="d8_bot" type="int" />
+            <column name="d9" type="int" />
+            <column name="d9_bot" type="int" />
+            <column name="d10" type="int" />
+            <column name="d10_bot" type="int" />
+            <column name="d11" type="int" />
+            <column name="d11_bot" type="int" />
+            <column name="d12" type="int" />
+            <column name="d12_bot" type="int" />
+            <column name="d13" type="int" />
+            <column name="d13_bot" type="int" />
+            <column name="d14" type="int" />
+            <column name="d14_bot" type="int" />
+            <column name="d15" type="int" />
+            <column name="d15_bot" type="int" />
+            <column name="d16" type="int" />
+            <column name="d16_bot" type="int" />
+            <column name="d17" type="int" />
+            <column name="d17_bot" type="int" />
+            <column name="d18" type="int" />
+            <column name="d18_bot" type="int" />
+            <column name="d19" type="int" />
+            <column name="d19_bot" type="int" />
+            <column name="d20" type="int" />
+            <column name="d20_bot" type="int" />
+            <column name="d21" type="int" />
+            <column name="d21_bot" type="int" />
+            <column name="d22" type="int" />
+            <column name="d22_bot" type="int" />
+            <column name="d23" type="int" />
+            <column name="d23_bot" type="int" />
+            <column name="d24" type="int" />
+            <column name="d24_bot" type="int" />
+            <column name="d25" type="int" />
+            <column name="d25_bot" type="int" />
+            <column name="d26" type="int" />
+            <column name="d26_bot" type="int" />
+            <column name="d27" type="int" />
+            <column name="d27_bot" type="int" />
+            <column name="d28" type="int" />
+            <column name="d28_bot" type="int" />
+            <column name="d29" type="int" />
+            <column name="d29_bot" type="int" />
+            <column name="d30" type="int" />
+            <column name="d30_bot" type="int" />
+            <column name="d31" type="int" />
+            <column name="d31_bot" type="int" />
         </createTable>
-        <createIndex tableName="resource_access_year_agg" indexName="resource_access_year_agg_idx">
+        <createIndex tableName="resource_access_month_agg" indexName="resource_access_month_agg_idx">
             <column name="resource_id"/>
             <column name="year"/>
+            <column name="month"/>
         </createIndex>
+        <sql>
+        insert into resource_access_agg_month (resource_id, year, month, d1 , d2 , d3 , d4 , d5 , d6 , d7 , d8 , d9 , d10 , d11 , d12 , d13 , d14 , d15 , d16 , d17 , d18 , d19 , d20 , d21 , d22 , d23 , d24 , d25 , d26 , d27 , d28 , d29 , d30 , d31, d1_bot,  d2_bot,  d3_bot,  d4_bot,  d5_bot,  d6_bot,  d7_bot,  d8_bot,  d9_bot,  d10_bot,  d11_bot,  d12_bot,  d13_bot,  d14_bot,  d15_bot,  d16_bot,  d17_bot,  d18_bot,  d19_bot,  d20_bot,  d21_bot,  d22_bot,  d23_bot,  d24_bot,  d25_bot,  d26_bot,  d27_bot,  d28_bot,  d29_bot,  d30_bot,  d31_bot )
+select resource_id, year, month, 
+     (select total from tmp where resource_id=a.resource_id and day=1 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=2 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=3 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=4 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=5 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=6 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=7 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=8 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=9 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=10 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=11 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=12 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=13 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=14 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=15 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=16 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=17 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=18 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=19 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=20 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=21 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=22 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=23 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=24 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=25 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=26 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=27 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=28 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=29 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=30 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=31 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=1 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=2 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=3 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=4 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=5 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=6 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=7 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=8 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=9 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=10 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=11 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=12 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=13 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=14 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=15 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=16 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=17 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=18 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=19 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=20 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=21 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=22 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=23 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=24 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=25 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=26 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=27 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=28 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=29 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=30 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=31 and a.month=month and a.year=year )
+     from tmp a  group by resource_id, year, month;
+        </sql>
     </changeSet>
-    <!-- 
-insert into resource_access_year_agg(resource_id, year, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)
-select resource_id, year, 
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=1),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=2),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=3),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=4),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=5),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=6),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=7),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=8),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=9),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=10),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=11),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=12)
-     from resource_access_month_agg a where  year=2010 group by 1,2;
-
-insert into resource_access_year_agg(resource_id, year, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)
-select resource_id, year, 
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=1),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=2),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=3),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=4),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=5),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=6),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=7),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=8),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=9),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=10),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=11),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=12)
-     from resource_access_month_agg a where  year=2011 group by 1,2;
-insert into resource_access_year_agg(resource_id, year, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)
-select resource_id, year, 
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=1),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=2),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=3),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=4),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=5),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=6),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=7),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=8),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=9),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=10),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=11),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=12)
-     from resource_access_month_agg a where  year=2012 group by 1,2;
-insert into resource_access_year_agg(resource_id, year, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)
-select resource_id, year, 
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=1),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=2),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=3),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=4),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=5),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=6),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=7),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=8),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=9),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=10),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=11),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=12)
-     from resource_access_month_agg a where  year=2013 group by 1,2;
-insert into resource_access_year_agg(resource_id, year, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)
-select resource_id, year, 
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=1),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=2),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=3),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=4),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=5),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=6),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=7),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=8),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=9),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=10),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=11),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=12)
-     from resource_access_month_agg a where  year=2014 group by 1,2;
-insert into resource_access_year_agg(resource_id, year, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)
-select resource_id, year, 
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=1),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=2),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=3),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=4),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=5),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=6),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=7),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=8),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=9),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=10),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=11),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=12)
-     from resource_access_month_agg a where  year=2015 group by 1,2;
-insert into resource_access_year_agg(resource_id, year, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)
-select resource_id, year, 
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=1),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=2),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=3),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=4),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=5),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=6),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=7),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=8),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=9),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=10),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=11),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=12)
-     from resource_access_month_agg a where  year=2016 group by 1,2;
-     
-insert into resource_access_year_agg(resource_id, year, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec)
-select resource_id, year, 
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=1),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=2),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=3),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=4),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=5),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=6),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=7),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=8),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=9),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=10),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=11),
-    (select sum(total) from resource_access_month_agg where a.resource_id=resource_id and a.year=year and month=12)
-     from resource_access_month_agg a where  year=2017 group by 1,2;
-     -->
 </databaseChangeLog>

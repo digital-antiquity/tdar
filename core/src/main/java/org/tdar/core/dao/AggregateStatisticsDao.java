@@ -252,11 +252,11 @@ public class AggregateStatisticsDao extends GenericDao {
      * Creates the entries in the year aggregate table so that all other tasks can be update statements
      * @param date
      */
-    public void createNewAggregateEntries(Date date) {
+    public void createNewAggregateEntries(DateTime date) {
         Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.AGG_RESOURCE_SETUP_MONTH);
-        query.setParameter("month", date.getMonth() + 1);
+        query.setParameter("month", date.getMonthOfYear());
         query.setParameter("date", date);
-        if (date.getMonth() == 0) {
+        if (date.getMonthOfYear() == 1) {
             query.setParameter("date", DateTime.now().minusYears(100));
         }
         query.executeUpdate();
@@ -266,11 +266,27 @@ public class AggregateStatisticsDao extends GenericDao {
      * inserts into the aggregate table the actual values for the last month
      * @param date
      */
-    public void updateMonthly(Date date) {
-        Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH);
-        query.setParameter("month", date.getMonth() + 1);
+    public void updateMonthly(DateTime date) {
+        
+        
+        String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth());
+        Query query = getCurrentSession().createSQLQuery(sql);
+        query.setParameter("month", date.getMonthOfYear());
         query.setParameter("year", date.getYear() + 1900);
+        query.setParameter("date", date.toDate());
+        query.setParameter("date2", date.plusDays(1).toDate());
+        query.setParameter("bot", false);
         query.executeUpdate();
+        
+        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth() + "_bot");
+        query = getCurrentSession().createSQLQuery(sql);
+        query.setParameter("month", date.getMonthOfYear());
+        query.setParameter("date", date.toDate());
+        query.setParameter("date2", date.plusDays(1).toDate());
+        query.setParameter("year", date.getYear() + 1900);
+        query.setParameter("bot", true);
+        query.executeUpdate();
+
     }
 
 }
