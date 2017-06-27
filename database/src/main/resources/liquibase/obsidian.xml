@@ -253,7 +253,6 @@
             <column name="id"/>
         </createIndex>
     </changeSet>
-<<<<<<< mine
     <changeSet id="obsidian-stats-1" author="abrin">
         <sql>create table resource_access_day_agg_2 (id bigserial, resource_id bigint, date_accessed date, year int, month int, day int, count bigint, bot int);</sql>
         <sql>create index resource_access_day_agg_idx1 on resource_access_day_agg_2  (resource_id, year,month,day);</sql>
@@ -342,7 +341,7 @@
             <column name="month"/>
         </createIndex>
         <sql>
-        insert into resource_access_agg_month (resource_id, year, month, d1 , d2 , d3 , d4 , d5 , d6 , d7 , d8 , d9 , d10 , d11 , d12 , d13 , d14 , d15 , d16 , d17 , d18 , d19 , d20 , d21 , d22 , d23 , d24 , d25 , d26 , d27 , d28 , d29 , d30 , d31, d1_bot,  d2_bot,  d3_bot,  d4_bot,  d5_bot,  d6_bot,  d7_bot,  d8_bot,  d9_bot,  d10_bot,  d11_bot,  d12_bot,  d13_bot,  d14_bot,  d15_bot,  d16_bot,  d17_bot,  d18_bot,  d19_bot,  d20_bot,  d21_bot,  d22_bot,  d23_bot,  d24_bot,  d25_bot,  d26_bot,  d27_bot,  d28_bot,  d29_bot,  d30_bot,  d31_bot )
+        insert into resource_access_month_agg (resource_id, year, month, d1 , d2 , d3 , d4 , d5 , d6 , d7 , d8 , d9 , d10 , d11 , d12 , d13 , d14 , d15 , d16 , d17 , d18 , d19 , d20 , d21 , d22 , d23 , d24 , d25 , d26 , d27 , d28 , d29 , d30 , d31, d1_bot,  d2_bot,  d3_bot,  d4_bot,  d5_bot,  d6_bot,  d7_bot,  d8_bot,  d9_bot,  d10_bot,  d11_bot,  d12_bot,  d13_bot,  d14_bot,  d15_bot,  d16_bot,  d17_bot,  d18_bot,  d19_bot,  d20_bot,  d21_bot,  d22_bot,  d23_bot,  d24_bot,  d25_bot,  d26_bot,  d27_bot,  d28_bot,  d29_bot,  d30_bot,  d31_bot )
 select resource_id, year, month, 
      (select total from tmp where resource_id=a.resource_id and day=1 and a.month=month and a.year=year ),
      (select total from tmp where resource_id=a.resource_id and day=2 and a.month=month and a.year=year ),
