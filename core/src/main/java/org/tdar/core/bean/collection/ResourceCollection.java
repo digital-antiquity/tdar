@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
@@ -232,7 +233,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CollectionRevisionLog> collectionRevisionLog = new HashSet<>();
 
-    private transient List<ResourceCollection> transientChildren = new ArrayList<>();
+    private transient TreeSet<ResourceCollection> transientChildren = new TreeSet<>(ResourceCollection.TITLE_COMPARATOR);
 
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
@@ -589,11 +590,11 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     @XmlTransient
     @Transient
-    public List<ResourceCollection> getTransientChildren() {
+    public TreeSet<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }
 
-    public void setTransientChildren(List<ResourceCollection> transientChildren) {
+    public void setTransientChildren(TreeSet<ResourceCollection> transientChildren) {
         this.transientChildren = transientChildren;
     }
 

@@ -95,6 +95,7 @@ public class ResourceRightsExtractor {
                 directCollectionIds.add(collection.getId());
                 directCollectionNames.add(collection.getName());
                 collectionIds.addAll(collection.getParentIds());
+                appendAlternateParents(collection);
                 collectionNames.addAll(collection.getParentNameList());
             } else if (collection.isInternal()) {
                 allCollectionIds.add(collection.getId());
@@ -102,6 +103,16 @@ public class ResourceRightsExtractor {
         }
         collectionIds.addAll(directCollectionIds);
         allCollectionIds.addAll(collectionIds);
+    }
+
+    private void appendAlternateParents(ResourceCollection collection) {
+        // handle alternate parents in search
+        ResourceCollection alt = collection.getAlternateParent(); 
+        while (alt != null) {
+            collectionIds.add(alt.getId());
+            collectionNames.add(alt.getName());
+            alt = alt.getParent();
+        }
     }
 
     public HashSet<Long> getDirectCollectionIds() {

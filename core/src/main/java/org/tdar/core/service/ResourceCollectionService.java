@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -29,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.CollectionType;
@@ -505,7 +505,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     @Transactional(readOnly = true)
     public void buildCollectionTreeForController(ResourceCollection collection, TdarUser authenticatedUser, CollectionType collectionType) {
-        List<ResourceCollection> allChildren = getAllChildCollections(collection);
+        TreeSet<ResourceCollection> allChildren = new TreeSet<ResourceCollection>(ResourceCollection.TITLE_COMPARATOR);
+        allChildren.addAll(getAllChildCollections(collection));
         allChildren.addAll(addAlternateChildrenTrees(allChildren));
         // ensure no duplicates (theoretically unnecessary, unless database schema is misconfigured)
         Set<ResourceCollection> childrenSet = new HashSet<>(allChildren);
@@ -528,13 +529,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         // second pass - sort all children lists (we add root into "allchildren" so we can sort the top level)
         allChildren.add(collection);
-        allChildren.forEach(child -> {
-            child.getTransientChildren().sort(ResourceCollection.TITLE_COMPARATOR);
-            logger.trace("new list: {}", child.getTransientChildren());
-        });
     }
 
-    private Collection<ResourceCollection> addAlternateChildrenTrees(List<ResourceCollection> allChildren) {
+    private Collection<ResourceCollection> addAlternateChildrenTrees(Collection<ResourceCollection> allChildren) {
         Set<ResourceCollection> toReturn = new HashSet<>(getDao().getAlternateChildrenTrees(allChildren)); 
         return toReturn;
     }
