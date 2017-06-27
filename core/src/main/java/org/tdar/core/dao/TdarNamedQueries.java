@@ -299,8 +299,8 @@ public interface TdarNamedQueries {
 
     String DAILY_RESOURCE_STATS_CLEANUP = "delete from resource_access_statistics where date_trunc('day',date_accessed) < '%1$tY-%1$tm-%1$td' ";
     
-    String AGG_RESOURCE_INSERT_MONTH = "update resource_access_year_agg agg set d%s=valcount inner join (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
-            + "where ras.date_accessed > :date and ras.date_accessed < :date2 and bot is :bot group by 1) where ras.resource_id= agg.resource_id";
-    String AGG_RESOURCE_SETUP_MONTH = "insert into resource_access_year_agg(resource_id, year) select id, :year from resource where date_created >= :date";
+    String AGG_RESOURCE_INSERT_MONTH = "update resource_access_month_agg agg set d%s=valcount, total%s=coalesce(total,0) + coalesce(valcount,0) from (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
+            + "where ras.date_accessed >= '%s' and ras.date_accessed < '%s' and bot = :bot group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
+    String AGG_RESOURCE_SETUP_MONTH = "insert into resource_access_month_agg(resource_id, year, month) select id, date_part('year', date_created), date_part('month', date_created) from resource where date_created >=  :date";
 
 }

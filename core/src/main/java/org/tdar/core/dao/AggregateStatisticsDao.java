@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
@@ -254,8 +255,8 @@ public class AggregateStatisticsDao extends GenericDao {
      */
     public void createNewAggregateEntries(DateTime date) {
         Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.AGG_RESOURCE_SETUP_MONTH);
-        query.setParameter("month", date.getMonthOfYear());
-        query.setParameter("date", date);
+//        query.setParameter("month", date.getMonthOfYear());
+        query.setParameter("date", date.toDateMidnight().toDate());
         if (date.getMonthOfYear() == 1) {
             query.setParameter("date", DateTime.now().minusYears(100));
         }
@@ -269,22 +270,19 @@ public class AggregateStatisticsDao extends GenericDao {
     public void updateMonthly(DateTime date) {
         
         
-        String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth());
+        DateMidnight midnight = date.toDateMidnight();
+        String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth(),"", midnight.toString("yyyy-MM-dd"), midnight.plusDays(1).toString("yyyy-MM-dd"));
         Query query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
-        query.setParameter("year", date.getYear() + 1900);
-        query.setParameter("date", date.toDate());
-        query.setParameter("date2", date.plusDays(1).toDate());
-        query.setParameter("bot", false);
+        query.setParameter("year", date.getYear());
+        query.setParameter("bot", Boolean.FALSE);
         query.executeUpdate();
         
-        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth() + "_bot");
+        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth() + "_bot", "_bot", midnight.toString("yyyy-MM-dd"), midnight.plusDays(1).toString("yyyy-MM-dd"));
         query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
-        query.setParameter("date", date.toDate());
-        query.setParameter("date2", date.plusDays(1).toDate());
         query.setParameter("year", date.getYear() + 1900);
-        query.setParameter("bot", true);
+        query.setParameter("bot", Boolean.TRUE);
         query.executeUpdate();
 
     }
