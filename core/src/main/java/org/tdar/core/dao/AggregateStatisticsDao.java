@@ -1,10 +1,7 @@
 package org.tdar.core.dao;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -265,11 +261,11 @@ public class AggregateStatisticsDao extends GenericDao {
      * @param date
      */
     public void createNewAggregateEntries(DateTime date) {
-        Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.AGG_RESOURCE_SETUP_MONTH);
+        Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.AGG_RESOURCE_SETUP_MONTH, date.getYear(), date.getMonthOfYear()));
         query.setParameter("date", date.withTimeAtStartOfDay().toDate());
         // if we're on the 1st of the month, than we need to generate entries for everything
-        if (date.getMonthOfYear() == 1) {
-            query.setParameter("date", DateTime.now().minusYears(100));
+        if (date.getDayOfMonth() == 1) {
+            query.setParameter("date", DateTime.now().minusYears(100).toDate());
         }
         query.executeUpdate();
     }

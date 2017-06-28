@@ -289,7 +289,7 @@ public interface TdarNamedQueries {
             + "where ras.date_accessed >= '%2$s' and ras.date_accessed < '%3$s' group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
     String AGG_RESOURCE_INSERT_MONTH_BOT = "update resource_access_month_agg agg set d%1$s_bot=valcount, total=coalesce(total,0) + coalesce(valcount,0), total_bot=coalesce(total_bot,0) + coalesce(valcount,0) from (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
             + "where ras.date_accessed >= '%2$s' and ras.date_accessed < '%3$s' and bot is true group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
-    String AGG_RESOURCE_SETUP_MONTH = "insert into resource_access_month_agg(resource_id, year, month) select id, date_part('year', date_created), date_part('month', date_created) from resource where date_created >=  :date";
+    String AGG_RESOURCE_SETUP_MONTH = "insert into resource_access_month_agg(resource_id, year, month) select id, %s, %s from resource where date_created >=  :date";
     String WEEKLY_POPULAR = "select count(ras.id), resource_id  from resource_access_statistics ras, resource r where  r.id=ras.resource_id and r.status='ACTIVE' and date_accessed > '%s' and date_accessed < '%s' group by 2 order by 1 desc limit %s";
 
 }

@@ -1,7 +1,5 @@
 package org.tdar.core.service.processes.daily;
 
-import java.util.Date;
-
 import org.hibernate.stat.Statistics;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;

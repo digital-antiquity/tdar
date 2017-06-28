@@ -33,6 +33,7 @@ import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
+import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.processes.daily.DailyStatisticsUpdate;
@@ -54,6 +55,8 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     private EntityService entityService;
     @Autowired
     private StatisticService statisticService;
+    @Autowired
+    private AggregateStatisticsDao aggregateStatisticsDao;
 
     
     @Test
@@ -91,6 +94,22 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         logger.debug("{} {}", StringUtils.join(usageStatsForResource));
         assertEquals(3L, usageStatsForResource.get(0).getTotal().longValue());
 
+    }
+
+    
+    @SuppressWarnings("deprecation")
+    @Test
+    @Rollback(true)
+    public void testMonthlyInitialization() {
+        DateTime withDayOfMonth = DateTime.now().plusMonths(1).withDayOfMonth(1).withHourOfDay(4);
+        Document document = setupDacumentWithStats();
+        genericService.saveOrUpdate(new ResourceAccessStatistic(withDayOfMonth.toDate(), document, false));
+        genericService.synchronize();
+        aggregateStatisticsDao.createNewAggregateEntries(withDayOfMonth);
+        statisticService.generateMonthlyResourceStats(withDayOfMonth);
+        List<AggregateDayViewStatistic> usageStatsForResource = statisticService.getUsageStatsForResource(document);
+        logger.debug("{} {}", StringUtils.join(usageStatsForResource));
+        assertEquals(1L, usageStatsForResource.get(0).getTotal().longValue());
     }
 
     
