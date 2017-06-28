@@ -84,16 +84,14 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 stream = new FileInputStream(file);
                 try { 
                     // if we're a PDF and we're really big... then we should use PDFBox to extract the text to protect memory
-                    if ("pdf".equals(extension) && file.getTotalSpace() > ONE_GB) {
+                    if ("pdf".equals(extension) && file.length() > ONE_GB) {
+                        getLogger().debug("using fallback PDF model");
                         try {
-                            PDFTextStripper pdfStripper = null;
                             PDDocument pdDoc = PDDocument.load(stream, MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L));
-                            pdfStripper = new PDFTextStripper();
-                            pdfStripper.setStartPage(1);
-                            pdfStripper.setEndPage(pdDoc.getNumberOfPages());
+                            PDFTextStripper  pdfStripper = new PDFTextStripper();
                             pdfStripper.writeText(pdDoc, new OutputStreamWriter(indexedFileOutputStream));
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            getLogger().debug("NPE from PDF issue", e);
                         }
                     } else {
                         parser.parse(stream, handler, metadata, parseContext);
