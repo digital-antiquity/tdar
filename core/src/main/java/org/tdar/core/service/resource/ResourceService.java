@@ -19,7 +19,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.ScrollableResults;
-import org.hibernate.dialect.DataDirectOracle9Dialect;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +49,8 @@ import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
-import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.cache.Caches;
 import org.tdar.core.cache.HomepageGeographicCache;
@@ -60,7 +59,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.WeeklyViewStatistic;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -83,7 +81,6 @@ import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.activity.Activity;
 
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
@@ -625,7 +622,7 @@ public class ResourceService {
 //     * @return
 //     */
 //    @Transactional(readOnly=true)
-//    public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
+//    public List<AggregateDayViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
 //        return datasetDao.getAggregateUsageStats(granularity, start, end, minCount);
 //    }
 //
@@ -639,7 +636,7 @@ public class ResourceService {
 //     * @return
 //     */
 //    @Transactional(readOnly=true)
-//    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
+//    public List<AggregateDayViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
 //        return datasetDao.getOverallUsageStats(start, end, max);
 //    }
 //
@@ -674,8 +671,8 @@ public class ResourceService {
      * @return
      */
     @Transactional(readOnly=true)
-    public List<WeeklyViewStatistic> getUsageStatsForResources(DateGranularity granularity, Date start, Date end, Long minCount, List<Long> resourceIds) {
-        return aggregateStatisticsDao.getUsageStatsForResource(start, end, minCount, resourceIds);
+    public List<AggregateDayViewStatistic> getUsageStatsForResource(Long resourceId) {
+        return aggregateStatisticsDao.getUsageStatsForResource(resourceId);
     }
 
     /**

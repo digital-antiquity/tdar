@@ -26,9 +26,10 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
-import org.tdar.core.bean.statistics.AggregateViewStatistic;
-import org.tdar.core.dao.WeeklyViewStatistic;
+import org.tdar.core.bean.statistics.DailyTotal;
+import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.SerializationService;
@@ -48,7 +49,7 @@ import com.opensymphony.xwork2.Preparable;
 public class ResourceUsageAction extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = 97924349900255693L;
-    private List<WeeklyViewStatistic> usageStatsForResources = new ArrayList<>();
+    private List<AggregateDayViewStatistic> usageStatsForResources = new ArrayList<>();
     private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<>();
 
     private Resource resource;
@@ -93,7 +94,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
 
         setupLabels(byMonth, byDay, lastYear, lastWeek);
 
-//        incrementViewStatistics(byYear, byMonth, byDay, viewsText, lastYear, lastWeek, map);
+        incrementViewStatistics(byYear, byMonth, byDay, viewsText, lastYear, lastWeek, map);
         incrementDownloadStatistics(byYear, byMonth, byDay, lastYear, lastWeek, map);
 
         try {
@@ -162,26 +163,28 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
 
     private void incrementViewStatistics(Map<Integer, Map<String, Long>> byYear, Map<String, Map<String, Long>> byMonth, Map<String, Map<String, Long>> byDay,
             String viewsText, DateTime lastYear, DateTime lastWeek, Map<Date, Map<String, Object>> map) {
-//        for (AggregateViewStatistic stat : getUsageStatsForResources()) {
-//            incrementKey(byYear, stat.getYear(), stat.getCount(), viewsText);
-//
-//            Date date = stat.getAggregateDate();
-//            if (!map.containsKey(date)) {
-//                map.put(date, new HashMap<String, Object>());
-//            }
-//            Map<String, Object> submap = map.get(date);
-//            submap.put(viewsText, stat.getCount());
-//            submap.put("date", date);
-//
-//            if (lastYear.isBefore(date.getTime())) {
-//                
-//                incrementKey(byMonth, formatMonth(stat.getYear(), stat.getMonth()), stat.getCount(), viewsText);
-//            }
-//            if (lastWeek.isBefore(date.getTime())) {
-//                incrementKey(byDay, format.format(date), stat.getCount(), viewsText);
-//            }
-//            keys.add(viewsText);
-//        }
+        for (AggregateDayViewStatistic s : getUsageStatsForResources()) {
+          incrementKey(byYear, s.getYear(), s.getTotal(), viewsText);
+          for (DailyTotal t : s.getDailyTotals()) {
+              DateTime date = DateTime.parse(t.getDate());
+              Date date2 = date.toDate();
+            if (!map.containsKey(date2)) {
+                  map.put(date2, new HashMap<String, Object>());
+              }
+              Map<String, Object> submap = map.get(date2);
+              submap.put(viewsText, t.getTotal());
+              submap.put("date", date);
+
+              if (lastYear.isBefore(date)) {
+                  incrementKey(byMonth, formatMonth(s.getYear(), s.getMonth()), s.getTotal(), viewsText);
+              }
+              if (lastWeek.isBefore(date)) {
+                  incrementKey(byDay, format.format(date), t.getTotal().longValue(), viewsText);
+              }
+              keys.add(viewsText);
+          }
+
+        }
     }
 
     private void setupLabels(Map<String, Map<String, Long>> byMonth, Map<String, Map<String, Long>> byDay, DateTime lastYear, DateTime lastWeek) {
@@ -247,8 +250,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
     @Override
     public void prepare() throws Exception {
         prepareAndLoad(this, RequestType.EDIT);
-        setUsageStatsForResources(resourceService.getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
-                Arrays.asList(getResource().getId())));
+        setUsageStatsForResources(resourceService.getUsageStatsForResource(getResource().getId()));
         if (getResource() instanceof InformationResource) {
             for (InformationResourceFile file : ((InformationResource) getResource()).getInformationResourceFiles()) {
                 getDownloadStats().put(file.getFilename(),
@@ -262,12 +264,12 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
         return StringUtils.join(keys, ",");
     }
 
-    public List<WeeklyViewStatistic> getUsageStatsForResources() {
+    public List<AggregateDayViewStatistic> getUsageStatsForResources() {
         return usageStatsForResources;
     }
 
-    public void setUsageStatsForResources(List<WeeklyViewStatistic> usageStatsForResources) {
-        this.usageStatsForResources = usageStatsForResources;
+    public void setUsageStatsForResources(List<AggregateDayViewStatistic> list) {
+        this.usageStatsForResources = list;
     }
 
     public Map<String, List<AggregateDownloadStatistic>> getDownloadStats() {

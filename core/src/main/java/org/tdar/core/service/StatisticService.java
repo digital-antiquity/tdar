@@ -2,18 +2,16 @@ package org.tdar.core.service;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.ResourceType;
@@ -26,7 +24,6 @@ import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.utils.Pair;
-import org.tdar.utils.PersistableUtils;
 
 import com.ibm.icu.util.GregorianCalendar;
 import com.opensymphony.xwork2.TextProvider;
@@ -163,43 +160,28 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
 
     @Transactional(readOnly = true)
     public StatsResultObject getStatsForCollection(ResourceCollection collection, TextProvider provider, DateGranularity granularity) {
-        Set<Long> ids = new HashSet<>();
         if (collection != null) {
-            if (CollectionUtils.isNotEmpty(collection.getResources())) {
-                ids.addAll(PersistableUtils.extractIds(collection.getResources()));
-            }
-            for (ResourceCollection child : resourceCollectionDao.getAllChildCollections(collection)) {
-                if (child != null && CollectionUtils.isNotEmpty(child.getResources())) {
-                    ids.addAll(PersistableUtils.extractIds(child.getResources()));
-                }
-            }
-        }
-        if (CollectionUtils.isNotEmpty(ids)) {
-            return getStats(ids, provider, granularity);
+            return getStats(collection, provider, granularity);
         }
         return null;
     }
 
     @Transactional(readOnly = true)
     public StatsResultObject getStatsForAccount(BillingAccount account, TextProvider provider, DateGranularity granularity) {
-        Set<Long> ids = new HashSet<>();
         if (account != null && CollectionUtils.isNotEmpty(account.getResources())) {
-            ids.addAll(PersistableUtils.extractIds(account.getResources()));
-        }
-        if (CollectionUtils.isNotEmpty(ids)) {
-            return getStats(ids, provider, granularity);
+            return getStats(account, provider, granularity);
         }
         return null;
     }
 
-    private StatsResultObject getStats(Collection<Long> ids, TextProvider provider, DateGranularity granularity) {
+    private StatsResultObject getStats(Persistable p, TextProvider provider, DateGranularity granularity) {
         switch (granularity) {
             case DAY:
-                return aggregateStatisticsDao.getDailyStats(ids, provider);
+                return aggregateStatisticsDao.getDailyStats(p, provider);
             case MONTH:
-                return aggregateStatisticsDao.getMonthlyStats(ids, provider);
+                return aggregateStatisticsDao.getMonthlyStats(p, provider);
             case YEAR:
-                return aggregateStatisticsDao.getAnnualStats(ids, provider);
+                return aggregateStatisticsDao.getAnnualStats(p, provider);
             default:
                 return null;
         }

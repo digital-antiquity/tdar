@@ -272,27 +272,14 @@ public interface TdarNamedQueries {
 
     String RESOURCE_ACCESS_COUNT_SQL = "select coalesce((select count(ras.id)  from resource_access_statistics ras where ras.resource_id='%1$s' and date_trunc('day',ras.date_accessed) >= '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(rad.total) from resource_access_month_agg rad where rad.resource_id='%1$s'),0)";
     String DOWNLOAD_COUNT_SQL = "select coalesce((select count(irfds.id)  from information_resource_file_download_statistics irfds where irfds.information_resource_file_id='%1$s' and irfds.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(fda.count) from file_download_day_agg fda where fda.information_resource_file_id='%1$s'),0)";
-    String ANNUAL_ACCESS_SKELETON = "select id, title, resource_type, status, %s %s from resource where id in (:ids)";
+    String ANNUAL_ACCESS_SKELETON = "select res.id, res.title, res.resource_type, res.status, %s %s from resource res ";
 
-    String ANNUAL_VIEW_PART = "(select sum(total) from resource_access_month_agg r where resource.id=r.resource_id and r.year=%1$s) as \"%1$s Views\"";
-    String MONTH_VIEW_PART = "(select sum(total) from resource_access_month_agg r where resource.id=r.resource_id and r.year=%2$s and r.month=%1$s) as \"%2$s-%1$02d Views\"";
-    String DAY_VIEW_PART = "(select sum(coalesce(r.d%2$s,0) + coalesce(r.d%2$s_bot,0) ) from resource_access_month_agg r where r.resource_id=resource.id and r.year=%3$s and r.month=%4$s) as \"%1$s Views\"";
-    String ANNUAL_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%1$s') as \"%1$s Downloads\"";
-    String MONTH_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%2$s' and month='%1$s') as \"%2$s-%1$02d Downloads\"";
-    String DAY_DOWNLAOD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and date_accessed = '%1$s') as \"%1$s Downloads\"";
-    String CREATOR_ANALYSIS_CREATE_TEMP = "CREATE TEMPORARY TABLE temp_ccounts (id bigserial, creator_id bigint);";
-    String CREATOR_ANALYSIS_RESOURCE_CREATOR_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id in :resourceIds";
-    String CREATOR_ANALYSIS_SUBMITTER_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT submitter_id from resource where id in :resourceIds";
-    String CREATOR_ANALYSIS_PUBLISHER_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT publisher_id from information_resource where id in :resourceIds";
-    String CREATOR_ANALYSIS_INHERITED_CREATORS_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator,information_resource where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id=project_id and information_resource.id in :resourceIds";
-    String CREATOR_ANALYSIS__SLECT_COUNTS = "select count(id), creator_id from temp_ccounts where creator_id is not null group by creator_id";
-    String CREATOR_DROP_TEMP = "DROP TABLE IF EXISTS temp_ccounts;";
-    String CREATOR_ANALYSIS_KWD_DROP_TEMP = "DROP TABLE IF EXISTS temp_kwd;";
-    String CREATOR_ANALYSIS_KWD_CREATE_TEMP = "CREATE TEMPORARY TABLE temp_kwd (id bigserial, kwd_id bigint);";
-    String CREATOR_ANALYSIS_TRUNCATE_TEMP = "truncate table temp_kwd";
-    String CREATOR_ANALYSIS_KWD_SELECT_COUNTS = "select count(id), kwd_id from temp_kwd where kwd_id is not null group by kwd_id";
-    String CREATOR_ANALYSIS_KWD_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id in :resourceIds";
-    String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id=project_id and information_resource.id in :resourceIds";
+    String ANNUAL_VIEW_PART = "(select sum(total) from resource_access_month_agg r where res.id=r.resource_id and r.year=%1$s) as \"%1$s Views\"";
+    String MONTH_VIEW_PART = "(select sum(total) from resource_access_month_agg r where res.id=r.resource_id and r.year=%2$s and r.month=%1$s) as \"%2$s-%1$02d Views\"";
+    String DAY_VIEW_PART = "(select sum(coalesce(r.d%2$s,0) + coalesce(r.d%2$s_bot,0) ) from resource_access_month_agg r where r.resource_id=res.id and r.year=%3$s and r.month=%4$s) as \"%1$s Views\"";
+    String ANNUAL_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=res.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%1$s') as \"%1$s Downloads\"";
+    String MONTH_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=res.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%2$s' and month='%1$s') as \"%2$s-%1$02d Downloads\"";
+    String DAY_DOWNLAOD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=res.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and date_accessed = '%1$s') as \"%1$s Downloads\"";
 
     String HOMEPAGE_GEOGRAPHIC = "select code, resource_type, sum(count), id from ( ( select code, count(*), r.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource r on r.id = rgk.resource_id left join information_resource ir on (ir.id = r.id and ir.inheriting_spatial_information = false) where (code !='') and r.status = 'ACTIVE' group by code, r.resource_type, gk.id ) union all select code, count(*), irr.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource p on p.id = rgk.resource_id join information_resource ir on (ir.project_id = p.id and ir.inheriting_spatial_information = true) join resource irr on (irr.id = ir.id) where (code !='') and irr.status = 'ACTIVE' group by code, irr.resource_type, gk.id ) as allrecs group by code, resource_type, id order by 1, 2";
 

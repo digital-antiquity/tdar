@@ -35,11 +35,13 @@ ${graphJson!'[]'}
     </tr>
 	<#assign total = 0/>
     <#list usageStatsForResources as stats>
-        <tr>
-            <td>${stats.count}</td>
-            <td>${stats.aggregateDate?date}</td>
+        <#list stats.dailyTotals as stat>
+         <tr>
+            <td>${stat.total}</td>
+            <td>${stat.date}</td>
         </tr>
-        	<#assign total = total + stats.count />
+        </#list>
+       	<#assign total = total + stats.total />
     </#list>
 </table>
 

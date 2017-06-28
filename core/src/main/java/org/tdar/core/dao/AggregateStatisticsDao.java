@@ -1,5 +1,7 @@
 package org.tdar.core.dao;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,13 +9,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.statistics.AggregateViewStatistic;
+import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -45,12 +49,13 @@ public class AggregateStatisticsDao extends GenericDao {
      * @param provider
      * @return
      */
-    public StatsResultObject getAnnualStats(Collection<Long> resourceIds, TextProvider provider) {
+    public StatsResultObject getAnnualStats(Persistable p, TextProvider provider) {
         int start = 2010;
         int end = DateTime.now().getYear();
         List<String> labelKeys = new ArrayList<>();
-        String sql = buildAnnualQueryAndLabels(provider, start, end, labelKeys);
-        StatsResultObject results = populateResultsObject(resourceIds, labelKeys, sql);
+        String sql = buildAnnualQueryAndLabels(p, provider, start, end, labelKeys);
+        getLogger().trace(sql);
+        StatsResultObject results = populateResultsObject(p, labelKeys, sql);
         return results;
     }
 
@@ -62,11 +67,11 @@ public class AggregateStatisticsDao extends GenericDao {
      * @param provider
      * @return
      */
-    public StatsResultObject getMonthlyStats(Collection<Long> resourceIds, TextProvider provider) {
+    public StatsResultObject getMonthlyStats(Persistable p, TextProvider provider) {
         DateTime lastYear = DateTime.now().minusYears(1);
         List<String> labelKeys = new ArrayList<>();
-        String sql = buildMonthQueryAndLabels(provider, lastYear.toDate(), labelKeys);
-        StatsResultObject results = populateResultsObject(resourceIds, labelKeys, sql);
+        String sql = buildMonthQueryAndLabels(p, provider, lastYear.toDate(), labelKeys);
+        StatsResultObject results = populateResultsObject(p, labelKeys, sql);
         return results;
     }
 
@@ -78,11 +83,11 @@ public class AggregateStatisticsDao extends GenericDao {
      * @param provider
      * @return
      */
-    public StatsResultObject getDailyStats(Collection<Long> ids, TextProvider provider) {
+    public StatsResultObject getDailyStats(Persistable p, TextProvider provider) {
         DateTime lastYear = DateTime.now().minusDays(8);
         List<String> labelKeys = new ArrayList<>();
-        String sql = buildDayQueryAndLabels(provider, lastYear.toDate(), labelKeys);
-        StatsResultObject results = populateResultsObject(ids, labelKeys, sql);
+        String sql = buildDayQueryAndLabels(provider, lastYear.toDate(), labelKeys, p);
+        StatsResultObject results = populateResultsObject(p, labelKeys, sql);
         return results;
     }
 
@@ -106,23 +111,24 @@ public class AggregateStatisticsDao extends GenericDao {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private StatsResultObject populateResultsObject(Collection<Long> resourceIds, List<String> labelKeys, String sql) {
+    private StatsResultObject populateResultsObject(Persistable p, List<String> labelKeys, String sql) {
+        getLogger().debug("run sql");
+        getLogger().debug(sql);
         Query query = getCurrentSession().createSQLQuery(sql);
-        query.setParameterList("ids", resourceIds);
+        query.setParameter("id", p.getId());
         StatsResultObject results = new StatsResultObject();
-        for (Object[] row : (List<Object[]>) query.list()) {
+        List<Object[]> list = (List<Object[]>) query.list();
+        getLogger().debug("done sql");
+        for (Object[] row : list) {
             List<Number> numbers = new ArrayList<>();
             Resource resource = new Resource(((Number) row[0]).longValue(), (String) row[1], ResourceType.valueOf((String) row[2]), "",
                     Status.valueOf((String) row[3]));
-            ResourceStatWrapper rowData = new ResourceStatWrapper();
-            rowData.setResource(resource);
-            rowData.setData(numbers);
-
             for (int j = 4; j < row.length; j++) {
                 numbers.add((Number) row[j]);
             }
-            results.addRowData(rowData);
+            results.addRowData(new ResourceStatWrapper(resource, numbers));
         }
+        getLogger().debug("return");
         results.setRowLabels(labelKeys);
         return results;
     }
@@ -137,7 +143,7 @@ public class AggregateStatisticsDao extends GenericDao {
      * @param labelKeys
      * @return
      */
-    private String buildDayQueryAndLabels(TextProvider provider, Date start_, List<String> labelKeys) {
+    private String buildDayQueryAndLabels(TextProvider provider, Date start_, List<String> labelKeys, Persistable p) {
         StringBuilder viewSubQuerypart = new StringBuilder();
         StringBuilder downloadSubQuerypart = new StringBuilder();
         List<String> labelDownloadKeys = new ArrayList<>();
@@ -158,8 +164,19 @@ public class AggregateStatisticsDao extends GenericDao {
 
         labelKeys.addAll(labelDownloadKeys);
 
-        String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
+        String sql = constructAggregateQuery(p, viewSubQuerypart, downloadSubQuerypart);
         getLogger().trace(sql);
+        return sql;
+    }
+
+    private String constructAggregateQuery(Persistable p, StringBuilder viewSubQuerypart, StringBuilder downloadSubQuerypart) {
+        String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
+        if (p instanceof BillingAccount) {
+            sql += " where res.account_id=:id";
+        }
+        if (p instanceof ResourceCollection) {
+            sql += String.format(" left join collection_resource cr on cr.resource_id=res.id left join collection_parents cp on cr.collection_id=cp.collection_id where (cr.collection_id=:id or cp.parent_id=:id)");
+        }
         return sql;
     }
 
@@ -172,7 +189,7 @@ public class AggregateStatisticsDao extends GenericDao {
      * @param labelKeys
      * @return
      */
-    private String buildMonthQueryAndLabels(TextProvider provider, Date start_, List<String> labelKeys) {
+    private String buildMonthQueryAndLabels(Persistable p, TextProvider provider, Date start_, List<String> labelKeys) {
         StringBuilder viewSubQuerypart = new StringBuilder();
         StringBuilder downloadSubQuerypart = new StringBuilder();
         List<String> labelDownloadKeys = new ArrayList<>();
@@ -201,6 +218,7 @@ public class AggregateStatisticsDao extends GenericDao {
 
     /**
      * Generate annual, aggregate usage stats for the range of specified years.
+     * @param p 
      * 
      * @param provider
      * @param start
@@ -208,7 +226,7 @@ public class AggregateStatisticsDao extends GenericDao {
      * @param labelKeys
      * @return
      */
-    private String buildAnnualQueryAndLabels(TextProvider provider, int start, int end, List<String> labelKeys) {
+    private String buildAnnualQueryAndLabels(Persistable p, TextProvider provider, int start, int end, List<String> labelKeys) {
         int i = start;
         StringBuilder viewSubQuerypart = new StringBuilder();
         StringBuilder downloadSubQuerypart = new StringBuilder();
@@ -226,7 +244,7 @@ public class AggregateStatisticsDao extends GenericDao {
         }
         labelKeys.addAll(labelDownloadKeys);
 
-        String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
+        String sql = constructAggregateQuery(p, viewSubQuerypart, downloadSubQuerypart);
         getLogger().trace(sql);
         return sql;
     }
@@ -294,57 +312,11 @@ public class AggregateStatisticsDao extends GenericDao {
         return resources;
     }
 
-    public List<WeeklyViewStatistic> getUsageStatsForResource(Date start_, Date end_, Long minCount, List<Long> resourceIds) {
-        DateTime start = new DateTime(start_);
-        DateTime end = new DateTime(end_);
-
-        String sql = "select r.id, r.title, r.status, r.resource_type  ";
-        if (start.getMonthOfYear() != end.getMonthOfYear()) {
-            for (int d = start.getDayOfMonth(); d <= 31; d++) {
-                sql += String.format(", coalesce( s1.d%s,0) + coalesce( s1.d%s_bot,0) ", d);
-            }
-
-            for (int d = 1; d <= end.getDayOfMonth(); d++) {
-                sql += String.format(", coalesce( s2.d%s,0) + coalesce( s2.d%s_bot,0) ", d);
-            }
-        } else {
-            for (int d = start.getDayOfMonth(); d <= end.getDayOfMonth(); d++) {
-                sql += String.format(", coalesce( s1.d%s,0) + coalesce( s1.d%s_bot,0) ", d);
-            }
-        }
-        sql += " from resource left join  resource_access_month_agg s1 on r.id=s1.resource_id ";
-
-        if (start.getMonthOfYear() != end.getMonthOfYear()) {
-            sql += "left join resource_access_month_agg s2 on r.id=s2.resource_id ";
-        }
-        sql += " where r.id in (:ids)";
-        sql += String.format(" and s1.year=%s and s1.month=%s", start.getYear(), start.getMonthOfYear());
-
-        if (start.getMonthOfYear() != end.getMonthOfYear()) {
-            sql += String.format(" and s2.year=%s and s2.month=%s", end.getYear(), end.getMonthOfYear());
-        }
-        
-        Query query = getCurrentSession().createSQLQuery(sql);
-        List<WeeklyViewStatistic> results = new ArrayList<>();
-        List list = query.list();
-        for (Object o : list) {
-            Object[] obj = (Object[])o;
-            Long id = ((Number)obj[0]).longValue();
-            String title = (String) obj[1];
-            ResourceType rt = ResourceType.valueOf((String) obj[2]);
-            Status stat = Status.valueOf((String) obj[3]);
-            Integer d1 = ((Number)obj[4]).intValue();
-            Integer d2 = ((Number)obj[5]).intValue();
-            Integer d3 = ((Number)obj[6]).intValue();
-            Integer d4 = ((Number)obj[7]).intValue();
-            Integer d5 = ((Number)obj[8]).intValue();
-            Integer d6 = ((Number)obj[9]).intValue();
-            Integer d7 = ((Number)obj[10]).intValue();
-            WeeklyViewStatistic wvs = new WeeklyViewStatistic(new Resource(id, title, rt, stat, -1L), d1, d2,d3,d4,d5,d6,d7, start, end);
-            results.add(wvs);
-        }
-
-        return results;
+    public List<AggregateDayViewStatistic> getUsageStatsForResource(Long resourceId) {
+        String sql = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId ";
+        Query query = getCurrentSession().createQuery(sql);
+        query.setParameter("resourceId", resourceId);
+        return query.list();
     }
 
 }
