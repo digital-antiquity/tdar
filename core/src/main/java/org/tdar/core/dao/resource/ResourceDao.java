@@ -314,32 +314,6 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return (List<E>) findAll(ids);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end,
-			Long minCount) {
-		Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
-		logger.debug(query.getQueryString());
-		return query.list();
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
-		Query query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
-		query.setMaxResults(max.intValue());
-		return query.list();
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<AggregateViewStatistic> getUsageStatsForResource(DateGranularity granularity, Date start, Date end,
-			Long minCount, List<Long> resourceIds) {
-		Query query = getCurrentSession().getNamedQuery(RESOURCE_ACCESS_HISTORY);
-		query.setParameter("start", start);
-		query.setParameter("end", end);
-		query.setParameter("minCount", minCount);
-		query.setParameterList("resourceIds", resourceIds);
-		return query.list();
-	}
-
 	public enum StatisticsQueryMode {
 		ACCESS_DAY, ACCESS_OVERALL, DOWNLOAD_DAY;
 	}
@@ -355,32 +329,32 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return query.list();
 	}
 
-	private Query setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
-		Query query = getCurrentSession().getNamedQuery(ACCESS_BY);
-		switch (mode) {
-		case ACCESS_DAY:
-			break;
-		case ACCESS_OVERALL:
-			query = getCurrentSession().getNamedQuery(ACCESS_BY_OVERALL);
-			break;
-		case DOWNLOAD_DAY:
-			query = getCurrentSession().getNamedQuery(DOWNLOAD_BY);
-			break;
-		}
-		// query.setParameter("part", granularity.name().toLowerCase());
-		query.setParameter("start", start);
-		query.setParameter("end", end);
-		query.setParameter("minCount", minCount);
-		return query;
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end,
-			Long minCount) {
-		Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
-		logger.trace("s:{} e: {} min:{}", start, end, minCount);
-		return query.list();
-	}
+//	private Query setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
+//		Query query = getCurrentSession().getNamedQuery(ACCESS_BY);
+//		switch (mode) {
+//		case ACCESS_DAY:
+//			break;
+//		case ACCESS_OVERALL:
+//			query = getCurrentSession().getNamedQuery(ACCESS_BY_OVERALL);
+//			break;
+//		case DOWNLOAD_DAY:
+//			query = getCurrentSession().getNamedQuery(DOWNLOAD_BY);
+//			break;
+//		}
+//		// query.setParameter("part", granularity.name().toLowerCase());
+//		query.setParameter("start", start);
+//		query.setParameter("end", end);
+//		query.setParameter("minCount", minCount);
+//		return query;
+//	}
+//
+//	@SuppressWarnings("unchecked")
+//	public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end,
+//			Long minCount) {
+//		Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
+//		logger.trace("s:{} e: {} min:{}", start, end, minCount);
+//		return query.list();
+//	}
 
 	public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
 		List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));

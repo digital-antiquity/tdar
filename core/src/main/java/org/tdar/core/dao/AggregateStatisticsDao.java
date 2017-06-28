@@ -7,12 +7,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
+import org.hibernate.SQLQuery;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.statistics.AggregateViewStatistic;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -159,7 +162,7 @@ public class AggregateStatisticsDao extends GenericDao {
 
             start = start.plusDays(1);
             String date = start.toString("YYYY-MM-dd");
-            viewSubQuerypart.append(String.format(TdarNamedQueries.DAY_VIEW_PART, date));
+            viewSubQuerypart.append(String.format(TdarNamedQueries.DAY_VIEW_PART, date, start.getDayOfMonth(), start.getYear(), start.getMonthOfYear()));
             downloadSubQuerypart.append(String.format(TdarNamedQueries.DAY_DOWNLAOD_PART, date));
             labelKeys.add(provider.getText("statisticsService.view_count_day", Arrays.asList(date)));
             labelDownloadKeys.add(provider.getText("statisticsService.download_count_day", Arrays.asList(date)));
@@ -244,18 +247,17 @@ public class AggregateStatisticsDao extends GenericDao {
         String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_STATS_CLEANUP, date);
         getLogger().trace(sql);
         getCurrentSession().createSQLQuery(sql).executeUpdate();
-        
+
     }
-
-
 
     /**
      * Creates the entries in the year aggregate table so that all other tasks can be update statements
+     * 
      * @param date
      */
     public void createNewAggregateEntries(DateTime date) {
         Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.AGG_RESOURCE_SETUP_MONTH);
-//        query.setParameter("month", date.getMonthOfYear());
+        // query.setParameter("month", date.getMonthOfYear());
         query.setParameter("date", date.toDateMidnight().toDate());
         if (date.getMonthOfYear() == 1) {
             query.setParameter("date", DateTime.now().minusYears(100));
@@ -265,26 +267,98 @@ public class AggregateStatisticsDao extends GenericDao {
 
     /**
      * inserts into the aggregate table the actual values for the last month
+     * 
      * @param date
      */
     public void updateMonthly(DateTime date) {
-        
-        
+
         DateMidnight midnight = date.toDateMidnight();
-        String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth(),"", midnight.toString("yyyy-MM-dd"), midnight.plusDays(1).toString("yyyy-MM-dd"));
+        String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth(), "", midnight.toString("yyyy-MM-dd"),
+                midnight.plusDays(1).toString("yyyy-MM-dd"));
         Query query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
         query.setParameter("year", date.getYear());
         query.setParameter("bot", Boolean.FALSE);
         query.executeUpdate();
-        
-        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth() + "_bot", "_bot", midnight.toString("yyyy-MM-dd"), midnight.plusDays(1).toString("yyyy-MM-dd"));
+
+        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth() + "_bot", "_bot", midnight.toString("yyyy-MM-dd"),
+                midnight.plusDays(1).toString("yyyy-MM-dd"));
         query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
         query.setParameter("year", date.getYear() + 1900);
         query.setParameter("bot", Boolean.TRUE);
         query.executeUpdate();
 
+    }
+
+    public List<Resource> getWeeklyPopularResources(int count) {
+        List<Resource> resources = new ArrayList<>();
+        DateTime end = new DateTime();
+        DateTime start = end.minusDays(7);
+        String sql = String.format(TdarNamedQueries.WEEKLY_POPULAR, start.toString("yyyy-MM-dd"), end.toString("yyyy-MM-dd"), count);
+        Query query = getCurrentSession().createSQLQuery(sql);
+        List list = query.list();
+        for (Object o : list) {
+            Object[] obj = (Object[])o;
+            Resource resource = find(Resource.class, ((Number) obj[0]).longValue());
+            if (PersistableUtils.isNotNullOrTransient(resource)) {
+                resources.add(resource);
+            }
+        }
+        return resources;
+    }
+
+    public List<WeeklyViewStatistic> getUsageStatsForResource(Date start_, Date end_, Long minCount, List<Long> resourceIds) {
+        DateTime start = new DateTime(start_);
+        DateTime end = new DateTime(end_);
+
+        String sql = "select r.id, r.title, r.status, r.resource_type  ";
+        if (start.getMonthOfYear() != end.getMonthOfYear()) {
+            for (int d = start.getDayOfMonth(); d <= 31; d++) {
+                sql += String.format(", coalesce( s1.d%s,0) ", d);
+            }
+
+            for (int d = 1; d <= end.getDayOfMonth(); d++) {
+                sql += String.format(", coalesce( s2.d%s,0) ", d);
+            }
+        } else {
+            for (int d = start.getDayOfMonth(); d <= end.getDayOfMonth(); d++) {
+                sql += String.format(", coalesce( s1.d%s,0) ", d);
+            }
+        }
+        sql += " from resource left join  resource_access_month_agg s1 on r.id=s1.resource_id ";
+
+        if (start.getMonthOfYear() != end.getMonthOfYear()) {
+            sql += "left join resource_access_month_agg s2 on r.id=s2.resource_id ";
+        }
+        sql += " where r.id in (:ids)";
+        sql += String.format(" and s1.year=%s and s1.month=%s", start.getYear(), start.getMonthOfYear());
+
+        if (start.getMonthOfYear() != end.getMonthOfYear()) {
+            sql += String.format(" and s2.year=%s and s2.month=%s", end.getYear(), end.getMonthOfYear());
+        }
+        
+        Query query = getCurrentSession().createSQLQuery(sql);
+        List<WeeklyViewStatistic> results = new ArrayList<>();
+        List list = query.list();
+        for (Object o : list) {
+            Object[] obj = (Object[])o;
+            Long id = ((Number)obj[0]).longValue();
+            String title = (String) obj[1];
+            ResourceType rt = ResourceType.valueOf((String) obj[2]);
+            Status stat = Status.valueOf((String) obj[3]);
+            Integer d1 = ((Number)obj[4]).intValue();
+            Integer d2 = ((Number)obj[5]).intValue();
+            Integer d3 = ((Number)obj[6]).intValue();
+            Integer d4 = ((Number)obj[7]).intValue();
+            Integer d5 = ((Number)obj[8]).intValue();
+            Integer d6 = ((Number)obj[9]).intValue();
+            Integer d7 = ((Number)obj[10]).intValue();
+            WeeklyViewStatistic wvs = new WeeklyViewStatistic(new Resource(id, title, rt, stat, -1L), d1, d2,d3,d4,d5,d6,d7, start, end);
+            results.add(wvs);
+        }
+
+        return results;
     }
 
 }

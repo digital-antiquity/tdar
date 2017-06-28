@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.ScrollableResults;
+import org.hibernate.dialect.DataDirectOracle9Dialect;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +57,10 @@ import org.tdar.core.cache.Caches;
 import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.WeeklyViewStatistic;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -104,6 +107,8 @@ public class ResourceService {
 
     @Autowired
     private GenericDao genericDao;
+    @Autowired
+    private AggregateStatisticsDao aggregateStatisticsDao;
     @Autowired
     private DatasetDao datasetDao;
     @Autowired
@@ -609,39 +614,39 @@ public class ResourceService {
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForUser(List<Long> accountId, List<Status> status) {
         return datasetDao.getResourceSpaceUsageStatisticsForUser(accountId, status);
     }
-
-    /**
-     * Find the count of views for all resources for a given date range, limited by the minimum occurrence count.
-     * 
-     * @param granularity
-     * @param start
-     * @param end
-     * @param minCount
-     * @return
-     */
-    @Transactional(readOnly=true)
-    public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
-        return datasetDao.getAggregateUsageStats(granularity, start, end, minCount);
-    }
-
-    /**
-     * Find the count of downloads for all InformationResourceFiles for a given date range, limited by the minimum occurrence count.
-     * 
-     * @param granularity
-     * @param start
-     * @param end
-     * @param minCount
-     * @return
-     */
-    @Transactional(readOnly=true)
-    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
-        return datasetDao.getOverallUsageStats(start, end, max);
-    }
-
-    @Transactional(readOnly=true)
-    public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
-        return datasetDao.getAggregateDownloadStats(granularity, start, end, minCount);
-    }
+//
+//    /**
+//     * Find the count of views for all resources for a given date range, limited by the minimum occurrence count.
+//     * 
+//     * @param granularity
+//     * @param start
+//     * @param end
+//     * @param minCount
+//     * @return
+//     */
+//    @Transactional(readOnly=true)
+//    public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
+//        return datasetDao.getAggregateUsageStats(granularity, start, end, minCount);
+//    }
+//
+//    /**
+//     * Find the count of downloads for all InformationResourceFiles for a given date range, limited by the minimum occurrence count.
+//     * 
+//     * @param granularity
+//     * @param start
+//     * @param end
+//     * @param minCount
+//     * @return
+//     */
+//    @Transactional(readOnly=true)
+//    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
+//        return datasetDao.getOverallUsageStats(start, end, max);
+//    }
+//
+//    @Transactional(readOnly=true)
+//    public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
+//        return datasetDao.getAggregateDownloadStats(granularity, start, end, minCount);
+//    }
 
     /**
      * Find the count of downloads for a specified @link InformationResourceFile for a given date range, limited by the minimum occurrence count.
@@ -669,8 +674,8 @@ public class ResourceService {
      * @return
      */
     @Transactional(readOnly=true)
-    public List<AggregateViewStatistic> getUsageStatsForResources(DateGranularity granularity, Date start, Date end, Long minCount, List<Long> resourceIds) {
-        return datasetDao.getUsageStatsForResource(granularity, start, end, minCount, resourceIds);
+    public List<WeeklyViewStatistic> getUsageStatsForResources(DateGranularity granularity, Date start, Date end, Long minCount, List<Long> resourceIds) {
+        return aggregateStatisticsDao.getUsageStatsForResource(start, end, minCount, resourceIds);
     }
 
     /**
@@ -738,30 +743,7 @@ public class ResourceService {
         int max = count;
         DateTime end = new DateTime();
         DateTime start = end.minusDays(7);
-        List<Resource> popular = new ArrayList<>();
-        List<AggregateViewStatistic> aggregateUsageStats = getOverallUsageStats(start.toDate(), end.toDate(), 40L);
-        if (CollectionUtils.isNotEmpty(aggregateUsageStats)) {
-            Set<Long> seen = new HashSet<>();
-            for (AggregateViewStatistic avs : aggregateUsageStats) {
-                Long resourceId = avs.getResource().getId();
-                // handling unique resource ids across the timeperiod
-                if (seen.contains(resourceId)) {
-                    continue;
-                }
-
-                if (max == 0) {
-                    break;
-                }
-                max--;
-
-                seen.add(resourceId);
-                Resource resource = find(resourceId);
-                if ((resource != null) && resource.isActive()) {
-                    popular.add(resource);
-                }
-            }
-        }
-
+        List<Resource> popular = aggregateStatisticsDao.getWeeklyPopularResources(count);
         return popular;
     }
 

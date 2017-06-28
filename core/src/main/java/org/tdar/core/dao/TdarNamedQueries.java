@@ -168,7 +168,7 @@ public interface TdarNamedQueries {
      */
     String QUERY_SQL_DASHBOARD = "select id, status, resource_type from resource " +
             "where id in " +
-            "(select resource_id from collection_resource,collection, authorized_user " +
+            "(select collection_resource.resource_id from collection_resource,collection, authorized_user " +
             "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id " +
             "and user_id=:submitterId and general_permission_int > :effectivePermissions " +
             "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
@@ -271,15 +271,15 @@ public interface TdarNamedQueries {
     String FIND_ACTIVE_INSTITUTION_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
     String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
 
-    String RESOURCE_ACCESS_COUNT_SQL = "select coalesce((select count(ras.id)  from resource_access_statistics ras where ras.resource_id='%1$s' and date_trunc('day',ras.date_accessed) >= '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(rad.count) from resource_access_day_agg rad where rad.resource_id='%1$s'),0)";
+    String RESOURCE_ACCESS_COUNT_SQL = "select coalesce((select count(ras.id)  from resource_access_statistics ras where ras.resource_id='%1$s' and date_trunc('day',ras.date_accessed) >= '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(rad.total) from resource_access_month_agg rad where rad.resource_id='%1$s'),0)";
     String DOWNLOAD_COUNT_SQL = "select coalesce((select count(irfds.id)  from information_resource_file_download_statistics irfds where irfds.information_resource_file_id='%1$s' and irfds.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(fda.count) from file_download_day_agg fda where fda.information_resource_file_id='%1$s'),0)";
     String ANNUAL_ACCESS_SKELETON = "select id, title, resource_type, status, %s %s from resource where id in (:ids)";
 
-    String ANNUAL_VIEW_PART = "(select sum(count) from resource_access_day_agg where resource_id=resource.id and year='%1$s') as \"%1$s Views\"";
+    String ANNUAL_VIEW_PART = "(select sum(r.total) from resource_access_month_agg r where resource.id=r.resource_id and r.year=%1$s) as \"%1$s Views\"";
+    String MONTH_VIEW_PART = "(select sum(r.total) from resource_access_month_agg r where resource.id=r.resource_id and r.year=%2$s and r.month=%1$s) as \"%2$s-%1$02d Views\"";
+    String DAY_VIEW_PART = "(select sum(r.d%2$s) from resource_access_month_agg r where r.resource_id=resource.id and r.year=%3$s and r.month=%4$s) as \"%1$s Views\"";
     String ANNUAL_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%1$s') as \"%1$s Downloads\"";
-    String MONTH_VIEW_PART = "(select sum(count) from resource_access_day_agg where resource_id=resource.id and year='%2$s' and month='%1$s') as \"%2$s-%1$02d Views\"";
     String MONTH_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%2$s' and month='%1$s') as \"%2$s-%1$02d Downloads\"";
-    String DAY_VIEW_PART = "(select sum(count) from resource_access_day_agg where resource_id=resource.id and date_accessed = '%1$s') as \"%1$s Views\"";
     String DAY_DOWNLAOD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and date_accessed = '%1$s') as \"%1$s Downloads\"";
     String CREATOR_ANALYSIS_CREATE_TEMP = "CREATE TEMPORARY TABLE temp_ccounts (id bigserial, creator_id bigint);";
     String CREATOR_ANALYSIS_RESOURCE_CREATOR_INSERT = "INSERT INTO temp_ccounts (creator_id) SELECT creator_id from resource_creator, creator where creator.id=resource_creator.id and creator.status in ('ACTIVE', 'DUPLICATE') and resource_id in :resourceIds";
@@ -302,5 +302,6 @@ public interface TdarNamedQueries {
     String AGG_RESOURCE_INSERT_MONTH = "update resource_access_month_agg agg set d%s=valcount, total%s=coalesce(total,0) + coalesce(valcount,0) from (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
             + "where ras.date_accessed >= '%s' and ras.date_accessed < '%s' and bot = :bot group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
     String AGG_RESOURCE_SETUP_MONTH = "insert into resource_access_month_agg(resource_id, year, month) select id, date_part('year', date_created), date_part('month', date_created) from resource where date_created >=  :date";
+    String WEEKLY_POPULAR = "select count(ras.id), resource_id  from resource_access_statistics ras, resource r where  r.id=ras.resource_id and r.status='ACTIVE' and date_accessed > '%s' and date_accessed < '%s' group by 2 order by 1 desc limit %s";;
 
 }

@@ -12,12 +12,12 @@ import org.hibernate.annotations.Immutable;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.resource.Resource;
 
-@Entity
-@Table(name = "resource_access_month_agg")
+//@Entity
+//@Table(name = "resource_access_month_agg")
 @Immutable
 public class AggregateDayViewStatistic extends AbstractPersistable implements Serializable {
 
-    private static final long serialVersionUID = -7546251456761049085L;
+    private static final long serialVersionUID = 7530215229487182439L;
 
     @ManyToOne(optional = true)
     @JoinColumn(nullable = false, name = "resource_id")
@@ -25,8 +25,8 @@ public class AggregateDayViewStatistic extends AbstractPersistable implements Se
 
     private Integer year;
     private Integer month;
-    private Integer total;
-    private Integer total_bot;
+    private Long total;
+    private Long total_bot;
     private Integer d1;
     private Integer d2;
     private Integer d3;
@@ -121,19 +121,19 @@ public class AggregateDayViewStatistic extends AbstractPersistable implements Se
         this.year = year;
     }
 
-    public Integer getTotal() {
+    public Long getTotal() {
         return total;
     }
 
-    public void setTotal(Integer total) {
+    public void setTotal(Long total) {
         this.total = total;
     }
 
-    public Integer getTotal_bot() {
+    public Long getTotal_bot() {
         return total_bot;
     }
 
-    public void setTotal_bot(Integer total_bot) {
+    public void setTotal_bot(Long total_bot) {
         this.total_bot = total_bot;
     }
 

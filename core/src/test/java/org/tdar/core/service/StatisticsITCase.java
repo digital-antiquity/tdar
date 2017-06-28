@@ -75,9 +75,6 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         count = datasetService.getDao().getAccessCount(document);
         assertEquals(2l, count.longValue());
         // should only have 1 for the aggregates
-        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, DateTime.now().minusDays(5).toDate(),
-                DateTime.now().plusDays(1).toDate(), 0L);
-        assertEquals(1, aggregateUsageStats.size());
 
     }
 

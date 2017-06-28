@@ -425,4 +425,9 @@ select resource_id, year, month,
         <sql>update resource_access_month_agg set total= coalesce(d1,0) + coalesce(d2,0) + coalesce(d3,0) + coalesce(d4,0) + coalesce(d5,0) + coalesce(d6,0) + coalesce(d7,0) + coalesce(d8,0) + coalesce(d9,0) + coalesce(d10,0) + coalesce(d11,0) + coalesce(d12,0) + coalesce(d13,0) + coalesce(d14,0) + coalesce(d15,0) + coalesce(d16,0) + coalesce(d17,0) + coalesce(d18,0) + coalesce(d19,0) + coalesce(d20,0) + coalesce(d21,0) + coalesce(d22,0) + coalesce(d23,0) + coalesce(d24,0) + coalesce(d25,0) + coalesce(d26,0) + coalesce(d27,0) + coalesce(d28,0) + coalesce(d29,0) + coalesce(d30,0) + coalesce(d31,0);</sql>
         <sql>update resource_access_month_agg set total_bot= coalesce(d1_bot,0) + coalesce(d2_bot,0) + coalesce(d3_bot,0) + coalesce(d4_bot,0) + coalesce(d5_bot,0) + coalesce(d6_bot,0) + coalesce(d7_bot,0) + coalesce(d8_bot,0) + coalesce(d9_bot,0) + coalesce(d10_bot,0) + coalesce(d11_bot,0) + coalesce(d12_bot,0) + coalesce(d13_bot,0) + coalesce(d14_bot,0) + coalesce(d15_bot,0) + coalesce(d16_bot,0) + coalesce(d17_bot,0) + coalesce(d18_bot,0) + coalesce(d19_bot,0) + coalesce(d20_bot,0) + coalesce(d21_bot,0) + coalesce(d22_bot,0) + coalesce(d23_bot,0) + coalesce(d24_bot,0) + coalesce(d25_bot,0) + coalesce(d26_bot,0) + coalesce(d27_bot,0) + coalesce(d28_bot,0) + coalesce(d29_bot,0) + coalesce(d30_bot,0) + coalesce(d31_bot,0);</sql>
     </changeSet>
+    <changeSet id="obsidian-stats-3" author="abrin">
+        <createIndex tableName="resource_access_month_agg" indexName="resource_access_month_agg_idx_rid">
+            <column name="resource_id"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
