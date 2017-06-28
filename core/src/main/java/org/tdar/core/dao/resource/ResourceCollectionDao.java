@@ -8,6 +8,7 @@ package org.tdar.core.dao.resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -418,7 +419,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return query.list();
     }
 
-    public List<ResourceCollection> getAlternateChildrenTrees(List<ResourceCollection> allChildren) {
+    public List<ResourceCollection> getAlternateChildrenTrees(Collection<ResourceCollection> allChildren) {
         if (CollectionUtils.isEmpty(allChildren)) {
             return Collections.EMPTY_LIST;
         }

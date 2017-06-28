@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -188,14 +189,14 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             return;
         }
         getLogger().trace("child collections: begin");
-        List<ResourceCollection> findAllChildCollections;
+        TreeSet<ResourceCollection> findAllChildCollections;
 
         if (isAuthenticated()) {
             resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
             findAllChildCollections = getPersistable().getTransientChildren();
         } else {
-            findAllChildCollections = new ArrayList<>(resourceCollectionService.findDirectChildCollections(getId(), false,
-                    CollectionType.SHARED));
+            findAllChildCollections = new TreeSet<>(ResourceCollection.TITLE_COMPARATOR);
+            findAllChildCollections.addAll(resourceCollectionService.findDirectChildCollections(getId(), false, CollectionType.SHARED));
         }
         findAllChildCollections.addAll(resourceCollectionService.findAlternateChildren(Arrays.asList(getId()), getAuthenticatedUser()));
         setCollections(new ArrayList<>(findAllChildCollections));
