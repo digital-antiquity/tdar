@@ -14,8 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
+import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.AggregateStatisticsDao;
@@ -200,5 +204,36 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
         
     }
 
+
+
+    /**
+     * Find the count of downloads for a specified @link InformationResourceFile for a given date range, limited by the minimum occurrence count.
+     * 
+     * @param granularity
+     * @param start
+     * @param end
+     * @param minCount
+     * @param iRFileId
+     * @return
+     */
+    @Transactional(readOnly=true)
+    public List<AggregateDownloadStatistic> getAggregateDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long iRFileId) {
+        return aggregateStatisticsDao.getDownloadStatsForFile(granularity, start, end, minCount, iRFileId);
+    }
+
+    /**
+     * Find the count of views for the specified resources for a given date range, limited by the minimum occurrence count.
+     * 
+     * @param granularity
+     * @param start
+     * @param end
+     * @param minCount
+     * @param resourceIds
+     * @return
+     */
+    @Transactional(readOnly=true)
+    public List<AggregateDayViewStatistic> getUsageStatsForResource(Resource resource) {
+        return aggregateStatisticsDao.getUsageStatsForResource(resource);
+    }
 
 }

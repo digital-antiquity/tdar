@@ -14,10 +14,13 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
+import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
+import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -68,7 +71,7 @@ public class AggregateStatisticsDao extends GenericDao {
      * @return
      */
     public StatsResultObject getMonthlyStats(Persistable p, TextProvider provider) {
-        DateTime lastYear = DateTime.now().minusYears(1);
+        DateTime lastYear = DateTime.now().minusYears(1).plusMonths(1);
         List<String> labelKeys = new ArrayList<>();
         String sql = buildMonthQueryAndLabels(p, provider, lastYear.toDate(), labelKeys);
         StatsResultObject results = populateResultsObject(p, labelKeys, sql);
@@ -211,7 +214,7 @@ public class AggregateStatisticsDao extends GenericDao {
         }
         labelKeys.addAll(labelDownloadKeys);
 
-        String sql = String.format(TdarNamedQueries.ANNUAL_ACCESS_SKELETON, viewSubQuerypart.toString(), downloadSubQuerypart.toString());
+        String sql = constructAggregateQuery(p, viewSubQuerypart, downloadSubQuerypart);
         getLogger().trace(sql);
         return sql;
     }
@@ -263,8 +266,8 @@ public class AggregateStatisticsDao extends GenericDao {
      */
     public void createNewAggregateEntries(DateTime date) {
         Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.AGG_RESOURCE_SETUP_MONTH);
-        // query.setParameter("month", date.getMonthOfYear());
         query.setParameter("date", date.withTimeAtStartOfDay().toDate());
+        // if we're on the 1st of the month, than we need to generate entries for everything
         if (date.getMonthOfYear() == 1) {
             query.setParameter("date", DateTime.now().minusYears(100));
         }
@@ -284,9 +287,10 @@ public class AggregateStatisticsDao extends GenericDao {
         Query query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
         query.setParameter("year", date.getYear());
+        getLogger().debug(sql);
         query.executeUpdate();
 
-        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH_BOT, date.getDayOfMonth() + "_bot", midnight.toString("yyyy-MM-dd"),
+        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH_BOT, date.getDayOfMonth(), midnight.toString("yyyy-MM-dd"),
                 midnight.plusDays(1).toString("yyyy-MM-dd"));
         query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
@@ -312,10 +316,22 @@ public class AggregateStatisticsDao extends GenericDao {
         return resources;
     }
 
-    public List<AggregateDayViewStatistic> getUsageStatsForResource(Long resourceId) {
+    public List<AggregateDayViewStatistic> getUsageStatsForResource(Resource resource) {
         String sql = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId ";
         Query query = getCurrentSession().createQuery(sql);
-        query.setParameter("resourceId", resourceId);
+        query.setParameter("resourceId", resource.getId());
+        return query.list();
+    }
+
+
+    @SuppressWarnings("unchecked")
+    public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end,
+            Long minCount, Long... irFileIds) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FILE_DOWNLOAD_HISTORY);
+        query.setParameter("start", start);
+        query.setParameter("end", end);
+        query.setParameter("minCount", minCount);
+        query.setParameterList("fileIds", Arrays.asList(irFileIds));
         return query.list();
     }
 

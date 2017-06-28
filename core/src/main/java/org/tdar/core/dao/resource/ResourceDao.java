@@ -34,8 +34,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
-import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.dao.Dao;
@@ -316,17 +314,6 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
 	public enum StatisticsQueryMode {
 		ACCESS_DAY, ACCESS_OVERALL, DOWNLOAD_DAY;
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end,
-			Long minCount, Long... irFileIds) {
-		Query query = getCurrentSession().getNamedQuery(FILE_DOWNLOAD_HISTORY);
-		query.setParameter("start", start);
-		query.setParameter("end", end);
-		query.setParameter("minCount", minCount);
-		query.setParameterList("fileIds", Arrays.asList(irFileIds));
-		return query.list();
 	}
 
 //	private Query setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {

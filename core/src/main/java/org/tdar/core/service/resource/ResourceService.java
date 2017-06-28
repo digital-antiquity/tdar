@@ -611,69 +611,6 @@ public class ResourceService {
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForUser(List<Long> accountId, List<Status> status) {
         return datasetDao.getResourceSpaceUsageStatisticsForUser(accountId, status);
     }
-//
-//    /**
-//     * Find the count of views for all resources for a given date range, limited by the minimum occurrence count.
-//     * 
-//     * @param granularity
-//     * @param start
-//     * @param end
-//     * @param minCount
-//     * @return
-//     */
-//    @Transactional(readOnly=true)
-//    public List<AggregateDayViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
-//        return datasetDao.getAggregateUsageStats(granularity, start, end, minCount);
-//    }
-//
-//    /**
-//     * Find the count of downloads for all InformationResourceFiles for a given date range, limited by the minimum occurrence count.
-//     * 
-//     * @param granularity
-//     * @param start
-//     * @param end
-//     * @param minCount
-//     * @return
-//     */
-//    @Transactional(readOnly=true)
-//    public List<AggregateDayViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
-//        return datasetDao.getOverallUsageStats(start, end, max);
-//    }
-//
-//    @Transactional(readOnly=true)
-//    public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
-//        return datasetDao.getAggregateDownloadStats(granularity, start, end, minCount);
-//    }
-
-    /**
-     * Find the count of downloads for a specified @link InformationResourceFile for a given date range, limited by the minimum occurrence count.
-     * 
-     * @param granularity
-     * @param start
-     * @param end
-     * @param minCount
-     * @param iRFileId
-     * @return
-     */
-    @Transactional(readOnly=true)
-    public List<AggregateDownloadStatistic> getAggregateDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long iRFileId) {
-        return datasetDao.getDownloadStatsForFile(granularity, start, end, minCount, iRFileId);
-    }
-
-    /**
-     * Find the count of views for the specified resources for a given date range, limited by the minimum occurrence count.
-     * 
-     * @param granularity
-     * @param start
-     * @param end
-     * @param minCount
-     * @param resourceIds
-     * @return
-     */
-    @Transactional(readOnly=true)
-    public List<AggregateDayViewStatistic> getUsageStatsForResource(Long resourceId) {
-        return aggregateStatisticsDao.getUsageStatsForResource(resourceId);
-    }
 
     /**
      * Return all resource revision log entries for a specified @link Resource.
