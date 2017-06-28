@@ -1,6 +1,8 @@
 package org.tdar.core.dao;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.tdar.core.bean.resource.Resource;
@@ -31,9 +33,19 @@ public class WeeklyViewStatistic implements Serializable {
         this.d7 = d7;
         this.start = start;
         this.end = end;
-
     }
 
+    public List<String> getLabels() {
+        List<String> toReturn = new ArrayList<>();
+        DateTime date = new DateTime(start);
+        toReturn.add(date.toString("yyyy-MM-dd"));
+        while (date.isBefore(end)) {
+            date.plusDays(1);
+            toReturn.add(date.toString("yyyy-MM-dd"));
+        }
+        return toReturn;
+    }
+    
     public DateTime getEnd() {
         return end;
     }

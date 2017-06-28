@@ -262,7 +262,6 @@ public interface TdarNamedQueries {
     String CONVERT_PERSON_TO_USER = "INSERT INTO tdar_user (id, username) VALUES(%s, '%s')";
     
    
-    String DAILY_RESOURCE_UPDATE = "INSERT INTO resource_access_day_agg (resource_id, year, month, day, date_accessed, bot, count) select resource_id, date_part('year', date_accessed), date_part('month', date_accessed), date_part('day',date_accessed),  date_trunc('day', date_accessed), (select count(id) from resource_access_statistics  where resource_id=s.resource_id and date_trunc('day',date_accessed)='%1$tF' and bot is true),(select count(id) from resource_access_statistics where resource_id=s.resource_id and date_trunc('day',date_accessed)='%1$tF' and bot is false) from resource_access_statistics s where date_trunc('day',date_accessed)='%1$tF' group by resource_id, date_part('year', date_accessed), date_part('month', date_accessed),date_part('day', date_accessed), date_trunc('day', date_accessed)";
     String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, month, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day', date_accessed)";
 
     String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
@@ -275,9 +274,9 @@ public interface TdarNamedQueries {
     String DOWNLOAD_COUNT_SQL = "select coalesce((select count(irfds.id)  from information_resource_file_download_statistics irfds where irfds.information_resource_file_id='%1$s' and irfds.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(fda.count) from file_download_day_agg fda where fda.information_resource_file_id='%1$s'),0)";
     String ANNUAL_ACCESS_SKELETON = "select id, title, resource_type, status, %s %s from resource where id in (:ids)";
 
-    String ANNUAL_VIEW_PART = "(select sum(r.total) from resource_access_month_agg r where resource.id=r.resource_id and r.year=%1$s) as \"%1$s Views\"";
-    String MONTH_VIEW_PART = "(select sum(r.total) from resource_access_month_agg r where resource.id=r.resource_id and r.year=%2$s and r.month=%1$s) as \"%2$s-%1$02d Views\"";
-    String DAY_VIEW_PART = "(select sum(r.d%2$s) from resource_access_month_agg r where r.resource_id=resource.id and r.year=%3$s and r.month=%4$s) as \"%1$s Views\"";
+    String ANNUAL_VIEW_PART = "(select sum(total) from resource_access_month_agg r where resource.id=r.resource_id and r.year=%1$s) as \"%1$s Views\"";
+    String MONTH_VIEW_PART = "(select sum(total) from resource_access_month_agg r where resource.id=r.resource_id and r.year=%2$s and r.month=%1$s) as \"%2$s-%1$02d Views\"";
+    String DAY_VIEW_PART = "(select sum(coalesce(r.d%2$s,0) + coalesce(r.d%2$s_bot,0) ) from resource_access_month_agg r where r.resource_id=resource.id and r.year=%3$s and r.month=%4$s) as \"%1$s Views\"";
     String ANNUAL_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%1$s') as \"%1$s Downloads\"";
     String MONTH_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%2$s' and month='%1$s') as \"%2$s-%1$02d Downloads\"";
     String DAY_DOWNLAOD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=resource.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and date_accessed = '%1$s') as \"%1$s Downloads\"";
@@ -299,9 +298,11 @@ public interface TdarNamedQueries {
 
     String DAILY_RESOURCE_STATS_CLEANUP = "delete from resource_access_statistics where date_trunc('day',date_accessed) < '%1$tY-%1$tm-%1$td' ";
     
-    String AGG_RESOURCE_INSERT_MONTH = "update resource_access_month_agg agg set d%s=valcount, total%s=coalesce(total,0) + coalesce(valcount,0) from (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
-            + "where ras.date_accessed >= '%s' and ras.date_accessed < '%s' and bot = :bot group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
+    String AGG_RESOURCE_INSERT_MONTH = "update resource_access_month_agg agg set d%1$s=valcount, total=coalesce(total,0) + coalesce(valcount,0) from (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
+            + "where ras.date_accessed >= '%s' and ras.date_accessed < '%s' group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
+    String AGG_RESOURCE_INSERT_MONTH_BOT = "update resource_access_month_agg agg set d%1_bot=valcount, total=coalesce(total,0) + coalesce(valcount,0), total_bot=coalesce(total_bot,0) + coalesce(valcount,0) from (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
+            + "where ras.date_accessed >= '%s' and ras.date_accessed < '%s' and bot is true group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
     String AGG_RESOURCE_SETUP_MONTH = "insert into resource_access_month_agg(resource_id, year, month) select id, date_part('year', date_created), date_part('month', date_created) from resource where date_created >=  :date";
-    String WEEKLY_POPULAR = "select count(ras.id), resource_id  from resource_access_statistics ras, resource r where  r.id=ras.resource_id and r.status='ACTIVE' and date_accessed > '%s' and date_accessed < '%s' group by 2 order by 1 desc limit %s";;
+    String WEEKLY_POPULAR = "select count(ras.id), resource_id  from resource_access_statistics ras, resource r where  r.id=ras.resource_id and r.status='ACTIVE' and date_accessed > '%s' and date_accessed < '%s' group by 2 order by 1 desc limit %s";
 
 }

@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
@@ -96,17 +95,6 @@ public class AggregateStatisticsDao extends GenericDao {
         String sql = String.format(TdarNamedQueries.DAILY_DOWNLOAD_UPDATE, date);
         getCurrentSession().createSQLQuery(sql).executeUpdate();
 
-    }
-
-    /**
-     * Migrate daily view stats into aggregate tables
-     * 
-     * @param date
-     */
-    public void generateAggregateDailyResourceData(Date date) {
-        String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_UPDATE, date);
-        getLogger().trace(sql);
-        getCurrentSession().createSQLQuery(sql).executeUpdate();
     }
 
     /**
@@ -258,7 +246,7 @@ public class AggregateStatisticsDao extends GenericDao {
     public void createNewAggregateEntries(DateTime date) {
         Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.AGG_RESOURCE_SETUP_MONTH);
         // query.setParameter("month", date.getMonthOfYear());
-        query.setParameter("date", date.toDateMidnight().toDate());
+        query.setParameter("date", date.withTimeAtStartOfDay().toDate());
         if (date.getMonthOfYear() == 1) {
             query.setParameter("date", DateTime.now().minusYears(100));
         }
@@ -272,21 +260,19 @@ public class AggregateStatisticsDao extends GenericDao {
      */
     public void updateMonthly(DateTime date) {
 
-        DateMidnight midnight = date.toDateMidnight();
-        String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth(), "", midnight.toString("yyyy-MM-dd"),
+        DateTime midnight = date.withTimeAtStartOfDay();
+        String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth(), midnight.toString("yyyy-MM-dd"),
                 midnight.plusDays(1).toString("yyyy-MM-dd"));
         Query query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
         query.setParameter("year", date.getYear());
-        query.setParameter("bot", Boolean.FALSE);
         query.executeUpdate();
 
-        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth() + "_bot", "_bot", midnight.toString("yyyy-MM-dd"),
+        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH_BOT, date.getDayOfMonth() + "_bot", midnight.toString("yyyy-MM-dd"),
                 midnight.plusDays(1).toString("yyyy-MM-dd"));
         query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
-        query.setParameter("year", date.getYear() + 1900);
-        query.setParameter("bot", Boolean.TRUE);
+        query.setParameter("year", date.getYear());
         query.executeUpdate();
 
     }
@@ -315,15 +301,15 @@ public class AggregateStatisticsDao extends GenericDao {
         String sql = "select r.id, r.title, r.status, r.resource_type  ";
         if (start.getMonthOfYear() != end.getMonthOfYear()) {
             for (int d = start.getDayOfMonth(); d <= 31; d++) {
-                sql += String.format(", coalesce( s1.d%s,0) ", d);
+                sql += String.format(", coalesce( s1.d%s,0) + coalesce( s1.d%s_bot,0) ", d);
             }
 
             for (int d = 1; d <= end.getDayOfMonth(); d++) {
-                sql += String.format(", coalesce( s2.d%s,0) ", d);
+                sql += String.format(", coalesce( s2.d%s,0) + coalesce( s2.d%s_bot,0) ", d);
             }
         } else {
             for (int d = start.getDayOfMonth(); d <= end.getDayOfMonth(); d++) {
-                sql += String.format(", coalesce( s1.d%s,0) ", d);
+                sql += String.format(", coalesce( s1.d%s,0) + coalesce( s1.d%s_bot,0) ", d);
             }
         }
         sql += " from resource left join  resource_access_month_agg s1 on r.id=s1.resource_id ";
