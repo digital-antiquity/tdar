@@ -87,9 +87,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                     if ("pdf".equals(extension) && file.length() > ONE_GB) {
                         getLogger().debug("using fallback PDF model");
                         try {
-                            PDDocument pdDoc = PDDocument.load(stream, MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L));
-                            PDFTextStripper  pdfStripper = new PDFTextStripper();
-                            pdfStripper.writeText(pdDoc, new OutputStreamWriter(indexedFileOutputStream));
+                            fallbackWriteFile(stream, indexedFileOutputStream);
                         } catch (IOException e) {
                             getLogger().debug("NPE from PDF issue", e);
                         }
@@ -142,6 +140,14 @@ public class IndexableTextExtractionTask extends AbstractTask {
             addDerivativeFile(version, metadataFile, VersionType.METADATA);
 
         }
+    }
+
+    public void fallbackWriteFile(InputStream stream, BufferedOutputStream indexedFileOutputStream) throws IOException {
+        PDDocument pdDoc = PDDocument.load(stream, MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L));
+        PDFTextStripper  pdfStripper = new PDFTextStripper();
+        OutputStreamWriter writer = new OutputStreamWriter(indexedFileOutputStream);
+        pdfStripper.writeText(pdDoc, writer);
+        IOUtils.closeQuietly(writer);
     }
 
     @Override
