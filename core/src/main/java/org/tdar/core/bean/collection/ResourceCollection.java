@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
@@ -172,7 +173,6 @@ public abstract class ResourceCollection extends AbstractPersistable
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CollectionRevisionLog> collectionRevisionLog = new HashSet<>();
-
 
     /**
      * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -559,8 +560,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *         collection.
      */
     @Transactional(readOnly = true)
-    public <C extends HierarchicalCollection<C>> List<C> buildCollectionTreeForController(C collection, TdarUser authenticatedUser, Class<C> cls) {
-        List<C> allChildren = new ArrayList<>();
+    public <C extends HierarchicalCollection<C>> TreeSet<C> buildCollectionTreeForController(C collection, TdarUser authenticatedUser, Class<C> cls) {
+        TreeSet<C> allChildren = new TreeSet<C>(new TitleSortComparator());
         allChildren.addAll(getAllChildCollections(collection, cls));
         allChildren.addAll(addAlternateChildrenTrees(allChildren, cls));
         // FIXME: iterate over all children to reconcile tree
@@ -580,16 +581,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         // second pass - sort all children lists (we add root into "allchildren" so we can sort the top level)
         allChildren.add(collection);
-        allChildren.forEach(child -> {
-            if (child != null && CollectionUtils.isNotEmpty(child.getTransientChildren())) {
-                child.getTransientChildren().sort(new TitleSortComparator());
-                logger.trace("new list: {}", child.getTransientChildren());
-            }
-        });
         return allChildren;
     }
 
-    private <C extends HierarchicalCollection<C>> Collection<C> addAlternateChildrenTrees(List<C> allChildren, Class<C> cls) {
+    private <C extends HierarchicalCollection<C>> Collection<C> addAlternateChildrenTrees(Collection<C> allChildren, Class<C> cls) {
         Set<C> toReturn = new HashSet<>(getDao().getAlternateChildrenTrees(allChildren, cls)); 
         return toReturn;
     }

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -17,6 +18,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.tdar.utils.TitleSortComparator;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @XmlType(name = "hierCollBase")
@@ -48,7 +50,7 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
         this.parentIds = parentIds;
     }
 
-    private transient List<C> transientChildren = new ArrayList<>();
+    private transient TreeSet<C> transientChildren = new TreeSet<>(new TitleSortComparator());
 
     @XmlAttribute(name = "parentIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
@@ -67,11 +69,11 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
 
     @XmlTransient
     @Transient
-    public List<C> getTransientChildren() {
+    public TreeSet<C> getTransientChildren() {
         return transientChildren;
     }
 
-    public void setTransientChildren(List<C> transientChildren) {
+    public void setTransientChildren(TreeSet<C> transientChildren) {
         this.transientChildren = transientChildren;
     }
 

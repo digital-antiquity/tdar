@@ -493,7 +493,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return query.list();
     }
 
-    public <C extends HierarchicalCollection> List<C> getAlternateChildrenTrees(List<C> allChildren, Class<C> cls) {
+    public <C extends HierarchicalCollection> List<C> getAlternateChildrenTrees(Collection<C> allChildren, Class<C> cls) {
         if (CollectionUtils.isEmpty(allChildren)) {
             return Collections.EMPTY_LIST;
         }

@@ -100,11 +100,22 @@ public class ResourceRightsExtractor {
                 SharedCollection shared = (SharedCollection)collection;
                 collectionNames.addAll(shared.getParentNameList());
                 collectionIds.addAll(shared.getParentIds());
+                appendAlternateParents(shared);
                 }
             }
         }
         collectionIds.addAll(directCollectionIds);
         allCollectionIds.addAll(collectionIds);
+    }
+
+    private void appendAlternateParents(SharedCollection collection) {
+        // handle alternate parents in search
+        SharedCollection alt = collection.getAlternateParent(); 
+        while (alt != null) {
+            collectionIds.add(alt.getId());
+            collectionNames.add(alt.getName());
+            alt = alt.getParent();
+        }
     }
 
     public HashSet<Long> getDirectCollectionIds() {

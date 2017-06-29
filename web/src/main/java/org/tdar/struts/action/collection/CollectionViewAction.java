@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -61,6 +62,7 @@ import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.TitleSortComparator;
 import org.tdar.web.service.HomepageDetails;
 import org.tdar.web.service.HomepageService;
 
@@ -205,7 +207,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
             return;
         }
         getLogger().trace("child collections: begin");
-        List<HierarchicalCollection> findAllChildCollections = new ArrayList<>();
+        TreeSet<HierarchicalCollection> findAllChildCollections = new TreeSet<>(new TitleSortComparator());
 
         if (isAuthenticated()) {
             resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), getActualClass());

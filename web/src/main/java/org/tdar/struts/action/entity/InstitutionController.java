@@ -49,14 +49,6 @@ public class InstitutionController extends AbstractCreatorController<Institution
                 addActionError(getText("institutionController.cannot_rename", Arrays.asList(name)));
             }
         }
-
-        //if email changed, make sure it's not already taken
-        if(StringUtils.isNotBlank(getEmail()) && !StringUtils.equalsIgnoreCase(email, getInstitution().getEmail())) {
-            Institution inst = getGenericService().findByProperty(Institution.class, "email", email);
-            if(inst != null) {
-                addActionError("institutionController.email_taken");
-            }
-        }
     }
 
     @Override

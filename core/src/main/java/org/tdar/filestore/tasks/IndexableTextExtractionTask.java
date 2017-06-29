@@ -7,7 +7,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
@@ -39,6 +46,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
     private static final String INDEX_TXT = ".index.txt";
     private static final String METADATA2 = ".metadata";
     private static final long serialVersionUID = -5207578211297342261L;
+    private static final long ONE_GB = 1073741824;
 
     @Override
     public void run() throws Exception {
@@ -65,15 +73,25 @@ public class IndexableTextExtractionTask extends AbstractTask {
 
             metadataFile = new File(getWorkflowContext().getWorkingDirectory(), filename + METADATA2);
             metadataOutputStream = new FileOutputStream(metadataFile);
-            if (!FileArchiveWorkflow.ARCHIVE_EXTENSIONS_SUPPORTED.contains(FilenameUtils.getExtension(filename).toLowerCase())) {
+            String extension = FilenameUtils.getExtension(filename).toLowerCase();
+            if (!FileArchiveWorkflow.ARCHIVE_EXTENSIONS_SUPPORTED.contains(extension)) {
                 File indexFile = new File(getWorkflowContext().getWorkingDirectory(), filename + INDEX_TXT);
                 FileOutputStream indexOutputStream = new FileOutputStream(indexFile);
                 BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(indexOutputStream);
                 BodyContentHandler handler = new BodyContentHandler(indexedFileOutputStream);
                 // If we're dealing with a zip, read only the beginning of the file
                 stream = new FileInputStream(file);
-                try { // FIXME: Remove when PDFBox is upgraded to 1.8.4
-                    parser.parse(stream, handler, metadata, parseContext);
+                try { 
+                    // if we're a PDF and we're really big... then we should use PDFBox to extract the text to protect memory
+                    if ("pdf".equals(extension) && file.getTotalSpace() > ONE_GB) {
+                        try {
+                            fallbackWriteFile(stream, indexedFileOutputStream);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        parser.parse(stream, handler, metadata, parseContext);
+                    }
                     IOUtils.closeQuietly(indexedFileOutputStream);
                     if (indexFile.length() > 0) {
                         addDerivativeFile(version, indexFile, VersionType.INDEXABLE_TEXT);
@@ -120,6 +138,14 @@ public class IndexableTextExtractionTask extends AbstractTask {
             addDerivativeFile(version, metadataFile, VersionType.METADATA);
 
         }
+    }
+
+    public void fallbackWriteFile(InputStream stream, BufferedOutputStream indexedFileOutputStream) throws IOException {
+        PDDocument pdDoc = PDDocument.load(stream, MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L));
+        PDFTextStripper  pdfStripper = new PDFTextStripper();
+        OutputStreamWriter writer = new OutputStreamWriter(indexedFileOutputStream);
+        pdfStripper.writeText(pdDoc, writer);
+        IOUtils.closeQuietly(writer);
     }
 
     @Override

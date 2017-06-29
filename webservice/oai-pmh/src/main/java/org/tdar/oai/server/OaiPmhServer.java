@@ -106,8 +106,8 @@ public class OaiPmhServer {
             prepare(verb_, identifier_, metadataPrefix_, from_, until_, resumptionToken_);
             execute(set, from_, until_, response);
         } catch (OAIException oaie) {
-            if (oaie.getCode() == OAIPMHerrorcodeType.NO_RECORDS_MATCH) {
-            logger.warn("OaiException", oaie);
+            if (oaie.getCode() == OAIPMHerrorcodeType.NO_RECORDS_MATCH || oaie.getCode() == OAIPMHerrorcodeType.BAD_ARGUMENT) {
+                logger.warn("OaiException", oaie);
             } else {
                 logger.error("OaiException", oaie);
             }

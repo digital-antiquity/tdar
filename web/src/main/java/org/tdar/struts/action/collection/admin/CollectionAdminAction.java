@@ -3,6 +3,7 @@ package org.tdar.struts.action.collection.admin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -37,6 +38,7 @@ import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.TitleSortComparator;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -63,7 +65,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private AuthorizationService authorizationService;
 
     private String term;
-    private List<HierarchicalCollection> allChildCollections = new ArrayList<>();
+    private TreeSet<HierarchicalCollection> allChildCollections = new TreeSet<>(new TitleSortComparator());
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private PaginationHelper paginationHelper;
     private FacetWrapper facetWrapper = new FacetWrapper();
@@ -251,12 +253,12 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         return paginationHelper;
     }
 
-    public List<HierarchicalCollection> getAllChildCollections() {
+    public TreeSet<HierarchicalCollection> getAllChildCollections() {
         return allChildCollections;
     }
 
-    public void setAllChildCollections(List<HierarchicalCollection> allChildCollections) {
-        this.allChildCollections = new ArrayList<>(allChildCollections);
+    public void setAllChildCollections(TreeSet<HierarchicalCollection> allChildCollections) {
+        this.allChildCollections = new TreeSet<>(allChildCollections);
     }
 
     public List<Facet> getResourceTypeFacets() {

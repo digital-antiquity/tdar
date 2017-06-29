@@ -258,4 +258,8 @@
             <column name="day" type='int' />
         </addColumn>
     </changeSet>
+    <changeSet id="obsidian-26" author="abrin">
+        <dropUniqueConstraint tableName="institution" constraintName="uk_9grdn54hea5ns8ahq4yogpb7u"/>
+    </changeSet>
+    
 </databaseChangeLog>
