@@ -200,7 +200,7 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     @Transactional(readOnly=false)
     public void initializeNewAggregateEntries(DateTime date) {
         aggregateStatisticsDao.createNewAggregateEntries(date);
-        
+        aggregateStatisticsDao.resetAnnualTable(date);
     }
 
 

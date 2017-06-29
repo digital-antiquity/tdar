@@ -433,4 +433,14 @@ select resource_id, year, month,
     <changeSet id="obsidian-stats-4" author="abrin">
         <sql>update resource_access_month_agg set total=coalesce(total,0) + coalesce(total_bot,0)</sql>
     </changeSet>
+    <changeSet id="obsidian-stats-5" author="abrin">
+        <createTable tableName="resource_access_year_agg">
+            <column name="id" type="bigserial" />
+            <column name="resource_id" type="bigint" />
+            <column name="year" type="int" />
+            <column name="total" type="bigint" />
+            <column name="total_bot" type="bigint" />        
+        </createTable>
+    </changeSet>
+    
 </databaseChangeLog>

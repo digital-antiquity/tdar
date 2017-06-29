@@ -41,6 +41,11 @@ import com.opensymphony.xwork2.TextProvider;
 @Component
 public class AggregateStatisticsDao extends GenericDao {
 
+
+
+    private static final String YYYY_MM_DD = "yyyy-MM-dd";
+
+
     /**
      * Returns access and download statistics for the set of resources for every year since 2010. Downloads are aggregated to the Resource Id.
      * 
@@ -270,6 +275,17 @@ public class AggregateStatisticsDao extends GenericDao {
         query.executeUpdate();
     }
 
+    
+    public void resetAnnualTable(DateTime date) {
+        Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.ANNUAL_RESOURCE_CLEANUP);
+        query.setParameter("year", date.getYear());
+        query.executeUpdate();
+        query = getCurrentSession().createSQLQuery(TdarNamedQueries.ANNUAL_RESOURCE_UPDATE );
+        query.setParameter("year", date.getYear());
+        query.executeUpdate();
+        
+    }
+    
     /**
      * inserts into the aggregate table the actual values for the last month
      * 
@@ -278,16 +294,16 @@ public class AggregateStatisticsDao extends GenericDao {
     public void updateMonthly(DateTime date) {
 
         DateTime midnight = date.withTimeAtStartOfDay();
-        String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth(), midnight.toString("yyyy-MM-dd"),
-                midnight.plusDays(1).toString("yyyy-MM-dd"));
+        String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth(), midnight.toString(YYYY_MM_DD),
+                midnight.plusDays(1).toString(YYYY_MM_DD));
         Query query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
         query.setParameter("year", date.getYear());
         getLogger().debug(sql);
         query.executeUpdate();
 
-        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH_BOT, date.getDayOfMonth(), midnight.toString("yyyy-MM-dd"),
-                midnight.plusDays(1).toString("yyyy-MM-dd"));
+        sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH_BOT, date.getDayOfMonth(), midnight.toString(YYYY_MM_DD),
+                midnight.plusDays(1).toString(YYYY_MM_DD));
         query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
         query.setParameter("year", date.getYear());
@@ -299,7 +315,7 @@ public class AggregateStatisticsDao extends GenericDao {
         List<Resource> resources = new ArrayList<>();
         DateTime end = new DateTime();
         DateTime start = end.minusDays(7);
-        String sql = String.format(TdarNamedQueries.WEEKLY_POPULAR, start.toString("yyyy-MM-dd"), end.toString("yyyy-MM-dd"), count);
+        String sql = String.format(TdarNamedQueries.WEEKLY_POPULAR, start.toString(YYYY_MM_DD), end.toString(YYYY_MM_DD), count);
         Query query = getCurrentSession().createSQLQuery(sql);
         List list = query.list();
         for (Object o : list) {
@@ -313,8 +329,7 @@ public class AggregateStatisticsDao extends GenericDao {
     }
 
     public List<AggregateDayViewStatistic> getUsageStatsForResource(Resource resource) {
-        String sql = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId ";
-        Query query = getCurrentSession().createQuery(sql);
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.MONTHLY_USAGE_FOR_RESOURCE);
         query.setParameter("resourceId", resource.getId());
         return query.list();
     }

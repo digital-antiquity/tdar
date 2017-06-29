@@ -291,5 +291,8 @@ public interface TdarNamedQueries {
             + "where ras.date_accessed >= '%2$s' and ras.date_accessed < '%3$s' and bot is true group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
     String AGG_RESOURCE_SETUP_MONTH = "insert into resource_access_month_agg(resource_id, year, month) select id, %s, %s from resource where date_created >=  :date";
     String WEEKLY_POPULAR = "select count(ras.id), resource_id  from resource_access_statistics ras, resource r where  r.id=ras.resource_id and r.status='ACTIVE' and date_accessed > '%s' and date_accessed < '%s' group by 2 order by 1 desc limit %s";
+    String ANNUAL_RESOURCE_UPDATE  = "insert into resource_access_year_agg (resource_id, year, total, total_bot) select resource_id, year, sum(total), sum(total_bot) from resource_access_month_agg where year=:year group by 1,2";
+    String ANNUAL_RESOURCE_CLEANUP = "delete from resource_access_year_agg where year=:year";
+    String MONTHLY_USAGE_FOR_RESOURCE = "query.monthly_for_resource";
 
 }
