@@ -1,18 +1,39 @@
 package org.tdar.core.parser;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 
 import javax.activation.FileDataSource;
 
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.tomcat.logging.Logger;
+import org.hibernate.annotations.Immutable;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
+import org.tdar.filestore.tasks.IndexableTextExtractionTask;
+
+import info.aduna.io.IOUtil;
 
 public class PdfaTest {
+
+    protected final org.slf4j.Logger logger = LoggerFactory.getLogger(getClass());
 
 	
 //	@Test
@@ -20,6 +41,22 @@ public class PdfaTest {
 		File file = new File(TestConstants.TEST_DOCUMENT_DIR, "1-01.PDF");
 		testFile(file);
 	}
+	
+	@Test
+	// was a test for making sure we get to the end of the file
+	public void testReadForBigFile() throws IOException {
+        File file = new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
+        IndexableTextExtractionTask task = new IndexableTextExtractionTask();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        BufferedOutputStream outputStream = new BufferedOutputStream(out);
+        task.fallbackWriteFile(new FileInputStream(file), outputStream);
+        String text = out.toString();
+        logger.debug(text);
+        assertTrue(text.contains("Grand Canyon Adjacent Lands Project"));
+
+
+	}
+	
 	
 	public void testFile(File file) throws IOException {
 		ValidationResult result = null;

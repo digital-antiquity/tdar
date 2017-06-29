@@ -86,12 +86,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                     // if we're a PDF and we're really big... then we should use PDFBox to extract the text to protect memory
                     if ("pdf".equals(extension) && file.getTotalSpace() > ONE_GB) {
                         try {
-                            PDFTextStripper pdfStripper = null;
-                            PDDocument pdDoc = PDDocument.load(stream, MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L));
-                            pdfStripper = new PDFTextStripper();
-                            pdfStripper.setStartPage(1);
-                            pdfStripper.setEndPage(pdDoc.getNumberOfPages());
-                            pdfStripper.writeText(pdDoc, new OutputStreamWriter(indexedFileOutputStream));
+                            fallbackWriteFile(stream, indexedFileOutputStream);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -144,6 +139,14 @@ public class IndexableTextExtractionTask extends AbstractTask {
             addDerivativeFile(version, metadataFile, VersionType.METADATA);
 
         }
+    }
+
+    public void fallbackWriteFile(InputStream stream, BufferedOutputStream indexedFileOutputStream) throws IOException {
+        PDDocument pdDoc = PDDocument.load(stream, MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L));
+        PDFTextStripper  pdfStripper = new PDFTextStripper();
+        OutputStreamWriter writer = new OutputStreamWriter(indexedFileOutputStream);
+        pdfStripper.writeText(pdDoc, writer);
+        IOUtils.closeQuietly(writer);
     }
 
     @Override
