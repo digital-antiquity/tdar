@@ -114,6 +114,7 @@
                     labelposition='left' size='40' dynamicAttributes={
                         "data-rule-extension":"jpg,tiff,jpeg,png"
                     }/>
+                    <button name="clear" type="button" id="clearButton" class="button btn btn-mini">clear</button>
                 </div>
             </div>
         </#if>
@@ -230,7 +231,8 @@
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
-        });
+				$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
+                });
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />

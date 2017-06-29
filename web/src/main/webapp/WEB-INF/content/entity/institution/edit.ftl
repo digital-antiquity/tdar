@@ -57,6 +57,7 @@
     <script type="text/javascript">
         $(function () {
             TDAR.common.initEditPage($('#frmInstitution')[0]);
+            $("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
         });
     </script>
 </body>

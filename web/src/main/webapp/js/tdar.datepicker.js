@@ -10,27 +10,24 @@
     };
 
     var _bind = function(el) {
-        $(el).datepicker({autoclose:true}).on('changeDate', function(ev){
-            $(ev.target).datepicker('hide');
-        });
+        $(el).datepicker({autoclose:true}).on('changeDate', _handleEvent);
     }
 
     var _apply = function(el) {
-        el.datepicker(_defaults).on('changeDate', function(ev){
-            var $t = $(ev.target);
-            $t.datepicker('hide');
-            
-        });
+        el.datepicker(_defaults).on('changeDate',_handleEvent);
     }
 
+    var _handleEvent = function(ev) {
+        var $t = $(ev.target);
+        if ($t.val() != '') {
+            $t.attr('placeholder',"");
+        }
+        $t.datepicker('hide');
+        $t.trigger("datechanged");
+    }
+    
     var _applyHidden = function(el) {
-        el.datepicker(_defaults).on('changeDate', function(ev){
-            var $t = $(ev.target);
-            if ($t.val() != '') {
-                $t.attr('placeholder',"");
-            }
-            $t.datepicker('hide');
-        }).datepicker("hide");
+        el.datepicker(_defaults).on('changeDate', _handleEvent).datepicker("hide");
     }
 
     

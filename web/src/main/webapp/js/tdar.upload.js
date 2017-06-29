@@ -133,8 +133,10 @@ TDAR.fileupload = (function (TDAR, $) {
                     return file;
                 }).get();
                 TDAR.datepicker.applyHidden($(".new-file input.datepicker"));
-                $(".new-file input.datepicker").change(function(){
-                    _updateFileAction(this);
+                $(".new-file").on("datechanged",function(e){
+                    console.log(this);
+                    console.log(e.target);
+                    _updateFileAction(e.target);
                 });
                 //translate property names and add extension
                 files = $.map(files, function (file) {
@@ -163,6 +165,13 @@ TDAR.fileupload = (function (TDAR, $) {
             console.log("update file action fired");
             _updateFileAction(this);
         });
+        
+        $filesContainer.on("datechanged",function(e){
+            console.log(this);
+            console.log(e.target);
+            _updateFileAction(e.target);
+        });
+
         
         TDAR.datepicker.bind($("input.datepicker",$filesContainer));
 

@@ -215,6 +215,7 @@
             TDAR.autocomplete.applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
             TDAR.common.initEditPage($('#frmPerson')[0]);
             //tack on the confirm-password rules
+            $("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
         });
     </script>
 
