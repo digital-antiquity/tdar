@@ -7,7 +7,7 @@ TDAR.inheritance = (function () {
     var indexExclusions = [ 'investigationTypeIds', 'approvedSiteTypeKeywordIds', 'approvedMaterialKeywordIds', 'approvedCultureKeywordIds' ];
     var TYPE_PERSON = "PERSON";
     var TYPE_INSTITUTION = "INSTITUTION";
-
+    var select2 = false;
     /**
      * convenience function for $.populate()
      *
@@ -227,9 +227,12 @@ TDAR.inheritance = (function () {
             }
         });
         
-        var $select2 = $(rootElementSelector);
-        if ($select2.length > 0) {
-        	repeatRowValues = $select2.val();
+        // if select2 is enabled...
+        if (select2) {
+            var $select2 = $(rootElementSelector);
+            if ($select2.length > 0) {
+            	repeatRowValues = $select2.val();
+            }
         }
         if (repeatRowValues == undefined) {
             repeatRowValues = new Array();
@@ -398,16 +401,17 @@ TDAR.inheritance = (function () {
 
 
     function _populateSelect2Keywords($section, array) {
-        var $gk = $(".keyword-autocomplete", $section);
-        $gk.empty();
-        $.each(array, function (i, item) {
-            $gk.append($('<option>', { 
-                value: item,
-                text : item
-            }));
-        });
-        $gk.val(array).trigger("change");
-    	
+        if (select2) {
+            var $gk = $(".keyword-autocomplete", $section);
+            $gk.empty();
+            $.each(array, function (i, item) {
+                $gk.append($('<option>', { 
+                    value: item,
+                    text : item
+                }));
+            });
+            $gk.val(array).trigger("change");
+        }
     }
     
     function _inheritSpatialInformation(formId, json) {
@@ -766,7 +770,8 @@ TDAR.inheritance = (function () {
                 divSelector: '#divSpatialInformation',
                 mappedData: "collectionInformation", // curently not used 
                 isSafeCallback: function () {
-                    return _inheritingMapIsSafe(TDAR.inheritance.json.spatialInformation) && _inheritingRepeatRowsIsSafe('#geographicKeywordsRepeatable', TDAR.inheritance.json.spatialInformation.geographicKeywords);
+                    return _inheritingMapIsSafe(TDAR.inheritance.json.spatialInformation) && 
+                    _inheritingRepeatRowsIsSafe('#geographicKeywordsRepeatable', TDAR.inheritance.json.spatialInformation.geographicKeywords);
                 },
                 inheritSectionCallback: function () {
                     _inheritSpatialInformation("#divSpatialInformation", TDAR.inheritance.json);
