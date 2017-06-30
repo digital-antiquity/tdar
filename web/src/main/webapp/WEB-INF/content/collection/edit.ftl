@@ -176,6 +176,7 @@
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && (resourceCollection.resources?size > 0)>
             <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
+
             </@edit.resourceDataTable>
 
             <div id="divNoticeContainer" style="display:none">
@@ -201,7 +202,6 @@
             </div>
         </div>
 
-
             <@edit.submit fileReminder=false />
         </@s.form>
 
@@ -212,7 +212,7 @@
             $(function () {
                 TDAR.datatable.setupDashboardDataTable({
                     isAdministrator: ${(editor!false)?string},
-                    limitContext: ${(editor!false)?string},
+                    limitContext: ${((!editor)!true)?string},
                     isSelectable: true,
                     showDescription: false,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()

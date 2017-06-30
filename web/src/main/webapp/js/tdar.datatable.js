@@ -341,50 +341,52 @@ TDAR.datatable = function() {
             }
         });
 
-        $("#resource_datatable").on("click", "#lnkResetFilters", function(){_resetAllFilters()});
+        var $cs = $("#collection-selector");
+        var $ps = $("#project-selector");
+        var $rdt = $("#resource_datatable");
+        $rdt.on("click", "#lnkResetFilters", function(){_resetAllFilters()});
 
         //if the user modifies any of the filter controls, execute a new search and update the results
         //fixme: refactor these event bindings. lots of duplication here
-        $("#project-selector").change(function() {
+        $ps.change(function() {
             var projId = $(this).val();
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
-
-        $("#collection-selector").change(function() {
+        $cs.change(function() {
             var colId = $(this).val();
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#resourceTypes").change(function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#statuses").change(function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#sortBy").change(function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#query").change(function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#query").bindWithDelay("keyup", function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         }, 500);
 
         $("#parentCollectionsIncluded").change(function(){
             var $elem = $(this);
             var collectionId = $("#metadataForm_id").val();
             if($elem.prop("checked")) {
-                $("#collection-selector").val(collectionId);
+                $cs.val(collectionId);
             } else {
                 //select the first option (all collections)
-                $("#collection-selector").val("");
+                $cs.val("");
             }
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         _scrollOnPagination();
