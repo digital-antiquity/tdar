@@ -1402,8 +1402,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <li class="hidden-phone"><a href="#siteSection">Site</a></li>
                     </#if>
                     <li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
-                    <li><a href="#divAccessRights"><span class="visible-phone visible-tablet" title="Permissions">Permis.</span><span
-                            class="hidden-phone hidden-tablet">Permissions</span></a></li>
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
                     <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
