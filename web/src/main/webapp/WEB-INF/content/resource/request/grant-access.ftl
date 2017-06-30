@@ -50,5 +50,18 @@
         <@s.textarea name="comment" id="messageBody" rows="4" label="Message" cssClass="span5" cols="80" />
         
     <@s.submit name="submit" cssClass="button btn btn-primary"/>
+    <script>
+	    $(function () {
+    	    'use strict';
+    	     $('input[type=radio][name=reject]').change(function() {
+	        if (this.value == 'true') {
+	        	$("#permission").attr("disabled","true");
+	        }
+	        else if (this.value == 'false') {
+	        	$("#permission").removeAttr("disabled");
+	        }
+    });
+		});
+    </script>
 </@s.form>
 </#escape>
