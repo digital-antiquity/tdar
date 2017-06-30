@@ -261,7 +261,7 @@
         <#if !resource.resourceType.project && showProjects>
 
             <h2>${siteAcronym} Collections &amp; Project</h2>
-            <h4>Add to a Collection</h4>
+            <!-- <h4>Add to a Collection</h4> -->
             <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
             <#assign _projectId = 'project.id' />
             <#if resource.id == -1 >
