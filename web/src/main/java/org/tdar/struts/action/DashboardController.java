@@ -134,30 +134,30 @@ public class DashboardController extends AbstractAuthenticatableAction implement
             @Action(value = "dashboard/", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") }),
             @Action(value = "dashboard/resources", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") })})
     public String execute() throws SolrServerException, IOException {
-        getLogger().debug("recent resources");
+        getLogger().trace("recent resources");
         setupRecentResources();
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
-        getLogger().debug("find recently edited resources");
+        getLogger().trace("find recently edited resources");
         setRecentlyEditedResources(
                 projectService.findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
-        getLogger().debug("find empty projects");
+        getLogger().trace("find empty projects");
         setEmptyProjects(projectService.findEmptyProjects(getAuthenticatedUser()));
-//        getLogger().debug("trees");
+//        getLogger().trace("trees");
 //        setupResourceCollectionTreesForDashboard();
-        getLogger().debug("errors");
+        getLogger().trace("errors");
         setResourcesWithErrors(informationResourceFileService.findInformationResourcesWithFileStatus(
                 getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT),
                 Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
-        getLogger().debug("billing accounts");
+        getLogger().trace("billing accounts");
         for (BillingAccount account : accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE)) {
             if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                 overdrawnAccounts.add(account);
             }
         }
 
-        getLogger().debug("projects");
+        getLogger().trace("projects");
         prepareProjectStuff();
-        getLogger().debug("counts for graphs");
+        getLogger().trace("counts for graphs");
         initCounts();
 
         return SUCCESS;

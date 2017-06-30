@@ -68,18 +68,18 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
     @Override
     @Action(value = "rights", results = { @Result(name = SUCCESS, location = "rights.ftl") })
     public String execute() throws SolrServerException, IOException {
-        getLogger().debug("done");
+        getLogger().trace("done");
         return SUCCESS;
     }
 
     @SuppressWarnings("Duplicates")
     private void setupResourceCollectionTreesForDashboard() {
-        getLogger().debug("parent/ owner collections");
+        getLogger().trace("parent/ owner collections");
         for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
                 SharedCollection.class)) {
             getAllResourceCollections().add((SharedCollection) rc);
         }
-        getLogger().debug("accessible collections");
+        getLogger().trace("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
             if (rc instanceof SharedCollection) {
                 getSharedResourceCollections().add((SharedCollection) rc);
@@ -87,28 +87,28 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         }
         List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
         collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
-        getLogger().debug("reconcile tree1");
+        getLogger().trace("reconcile tree1");
         resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
                 collectionIds, SharedCollection.class);
-        getLogger().debug("reconcile tree2");
+        getLogger().trace("reconcile tree2");
         resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
                 collectionIds, SharedCollection.class);
 
-        getLogger().debug("removing duplicates");
+        getLogger().trace("removing duplicates");
         getSharedResourceCollections().removeAll(getAllResourceCollections());
-        getLogger().debug("sorting");
+        getLogger().trace("sorting");
         Collections.sort(allResourceCollections);
         Collections.sort(sharedResourceCollections);
-        getLogger().debug("done sort");
+        getLogger().trace("done sort");
     }
 
     private List<TdarUser> findUsersSharedWith = new ArrayList<>();
 
     public void prepare() {
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
-        getLogger().debug("begin collection tree");
+        getLogger().trace("begin collection tree");
         setupResourceCollectionTreesForDashboard();
-        getLogger().debug("begin find shared with");
+        getLogger().trace("begin find shared with");
         setFindUsersSharedWith(resourceCollectionService.findUsersSharedWith(getAuthenticatedUser()));
 //        prepareProjectStuff();
 //        internalCollections = resourceCollectionService.findAllInternalCollections(getAuthenticatedUser());

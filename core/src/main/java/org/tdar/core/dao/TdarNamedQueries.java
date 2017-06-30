@@ -327,12 +327,13 @@ public interface TdarNamedQueries {
 
     
     
-    String QUERY_USERS_SHARED_WITH = "select distinct au.user_id from authorized_user au "
-            + "left join collection c on au.resource_collection_id=c.id left join authorized_user au2 on au2.resource_collection_id=c.id "
-            + "left join collection_parents cp on c.id=cp.collection_id left join collection parent on cp.parent_id=parent.id left join authorized_user au3 on parent.id=au3.resource_collection_id "
-            + "left join resource r on au.resource_id=r.id  where "
-            + " ((au.resource_id=r.id and r.status='ACTIVE') or (au.resource_collection_id=c.id and c.status='ACTIVE') )"
-            + "  and ((au2.user_id=:userId and au2.general_permission_int > :permission ) "
-            + "or (parent.status='ACTIVE' and (au3.user_id=:userId and au3.general_permission_int > :permission )))";
+    String QUERY_USERS_SHARED_WITH = "select id from person where id in "
+            + " (select  au.user_id from authorized_user au left join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') "
+            + "left join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:userId "
+            + "left join collection c on au.resource_collection_id=c.id and c.status='ACTIVE' "
+            + "left join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:userId "
+            + "left join collection_parents cp on c.id=cp.collection_id "
+            + "left join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
+            + "left join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:userId)";
 
 }

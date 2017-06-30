@@ -211,7 +211,7 @@ true for our registration page or our profile page).-->
                             <#items as item>
                                 <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>">
 	                           <#if authenticatedUser?has_content>
-    	                            <a href="${baseUrl}/${item.id?c}">${item.properName}</a>
+    	                            <a id="p${item.id?c}" href="${baseUrl}/${item.id?c}">${item.properName}</a>
                                 <#else>
 	                                ${item.properName}
                                 </#if>

@@ -24,7 +24,7 @@
     <div class="span10">
 	    <#if ((findUsersSharedWith?size!0) > 0)>
 	        <h5>Users you've shared with</h5>
-	        <@common.listUsers users=findUsersSharedWith span=10 baseUrl="/entity/user/rights" well=true />
+	        <@common.listUsers users=findUsersSharedWith span=10 baseUrl="/entity/user/rights" well=true  />
 	
 	    </#if>
 	    <@collectionsSection />
