@@ -91,6 +91,7 @@ public class ResourceRightsExtractor {
         Set<ResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
         collections.addAll(resource.getUnmanagedResourceCollections());
         for (ResourceCollection collection : collections) {
+//            logger.debug("{}", collection);
             if (collection.isShared()) {
                 directCollectionIds.add(collection.getId());
                 directCollectionNames.add(collection.getName());
@@ -109,6 +110,7 @@ public class ResourceRightsExtractor {
         // handle alternate parents in search
         ResourceCollection alt = collection.getAlternateParent(); 
         while (alt != null) {
+//            logger.debug("adding alt:{}", alt);
             collectionIds.add(alt.getId());
             collectionNames.add(alt.getName());
             alt = alt.getParent();
