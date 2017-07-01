@@ -705,6 +705,32 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         saveOrUpdate(persistable);
 
     }
+    
+    @Transactional(readOnly = false)
+    public void updateAlternateCollectionParentTo(TdarUser authorizedUser, ResourceCollection persistable, ResourceCollection altParent) {
+
+        List<ResourceCollection> children = getAllChildCollections(persistable);
+        List<Long> oldParentIds = new ArrayList<>(persistable.getAlternateParentIds());
+        logger.debug("updating parent for {} from {} to {}", persistable.getId(), persistable.getAlternateParent(), altParent);
+        persistable.setAlternateParent(altParent);
+        List<Long> parentIds = new ArrayList<>();
+        if (PersistableUtils.isNotNullOrTransient(altParent)) {
+            if (CollectionUtils.isNotEmpty(altParent.getAlternateParentIds())) {
+                parentIds.addAll(altParent.getAlternateParentIds());
+                parentIds.addAll(altParent.getParentIds());
+            }
+            parentIds.add(altParent.getId());
+        }
+        persistable.getAlternateParentIds().clear();
+        persistable.getAlternateParentIds().addAll(parentIds);
+        for (ResourceCollection child : children) {
+            child.getAlternateParentIds().removeAll(oldParentIds);
+            child.getAlternateParentIds().addAll(parentIds);
+            saveOrUpdate(child);
+        }
+        saveOrUpdate(persistable);
+
+    }
 
     @Transactional(readOnly = true)
     public List<ResourceCollection> getAllChildCollections(ResourceCollection persistable) {
@@ -863,7 +889,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         if (!Objects.equals(cso.getAlternateParentId(), persistable.getAlternateParentId())) {
             logger.debug("updating alternate parent for {} from {} to {}", persistable.getId(), persistable.getAlternateParent(), cso.getAlternateParent());
-            persistable.setAlternateParent(cso.getAlternateParent());
+            updateAlternateCollectionParentTo(authenticatedUser, persistable, cso.getAlternateParent());
         }
 
         reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);

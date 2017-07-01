@@ -261,5 +261,13 @@
     <changeSet id="obsidian-26" author="abrin">
         <dropUniqueConstraint tableName="institution" constraintName="uk_9grdn54hea5ns8ahq4yogpb7u"/>
     </changeSet>
+    <changeSet id="obsidian-27" author="abrin">
+            <createTable tableName="collection_alternate_parents">
+            <column name="collection_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type="INT8" />
+        </createTable>
     
+    </changeSet>
 </databaseChangeLog>

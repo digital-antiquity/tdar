@@ -7,13 +7,16 @@
 package org.tdar.core.bean.collection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
@@ -46,6 +49,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -80,6 +84,7 @@ import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.util.UrlUtils;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -225,6 +230,11 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id") )
     @Column(name = "parent_id")
     private Set<Long> parentIds = new HashSet<>();
+
+    @ElementCollection()
+    @CollectionTable(name = "collection_alternate_parents", joinColumns = @JoinColumn(name = "collection_id") )
+    @Column(name = "parent_id")
+    private Set<Long> alternateParentIds = new HashSet<>();
 
     
     @OneToMany()
@@ -792,5 +802,28 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     public void setAlternateParent(ResourceCollection alternateParent) {
         this.alternateParent = alternateParent;
+    }
+
+    @Transient
+    @ElementCollection
+    public Set<Long> getAlternateParentIds() {
+        return alternateParentIds;
+    }
+
+    public void setAlternateParentIds(Set<Long> alternateParentIds) {
+        this.alternateParentIds = alternateParentIds;
+    }
+
+    public Collection<String> getAlternateParentNameList() {
+        HashSet<String> names = new HashSet<>();
+        if (PersistableUtils.isNotNullOrTransient(getAlternateParent())) {
+            if (PersistableUtils.isNotNullOrTransient(getAlternateParent().getParent())) {
+                names.addAll(getAlternateParent().getParentNameList());
+            }
+            if (PersistableUtils.isNotNullOrTransient(getAlternateParent().getAlternateParent())) {
+                names.addAll(getAlternateParent().getAlternateParentNameList());
+            }
+        }
+        return names;
     }
 }

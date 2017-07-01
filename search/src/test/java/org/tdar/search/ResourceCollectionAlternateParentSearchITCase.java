@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -14,13 +15,15 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.SearchResult;
 
 public class ResourceCollectionAlternateParentSearchITCase extends AbstractResourceSearchITCase {
 
-
+    @Autowired
+    private ResourceCollectionService resourceCollectionService;
 
     @Test
     @Rollback(true)
@@ -35,17 +38,15 @@ public class ResourceCollectionAlternateParentSearchITCase extends AbstractResou
         grantChild.getResources().add(d);
         d.getResourceCollections().add(grantChild);
         genericService.saveOrUpdate(d);
+        genericService.saveOrUpdate(grantChild);
         genericService.synchronize();
         d= null;
         // set alternate parent
+        resourceCollectionService.updateCollectionParentTo(getAdminUser(), grantChild, child);
+        resourceCollectionService.updateCollectionParentTo(getAdminUser(), child, parent);
+        resourceCollectionService.updateAlternateCollectionParentTo(getAdminUser(), child, alternate);
         genericService.saveOrUpdate(grantChild);
-        grantChild.setParent(child);
-        child.setParent(parent);
-        child.setAlternateParent(alternate);
-        child.getParentIds().add(parent.getId());
-        grantChild.getParentIds().add(parent.getId());
-        grantChild.getParentIds().add(child.getId());
-        genericService.saveOrUpdate(grantChild);
+        genericService.saveOrUpdate(alternate);
         genericService.saveOrUpdate(child);
         genericService.synchronize();
         
