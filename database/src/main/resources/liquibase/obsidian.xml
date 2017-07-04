@@ -519,5 +519,13 @@ select resource_id, year, month,
             <column name="total_bot" type="bigint" />        
         </createTable>
     </changeSet>
+    <changeSet id="obsidian-27" author="abrin">
+            <createTable tableName="collection_alternate_parents">
+            <column name="collection_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type="INT8" />
+        </createTable>
     
+    </changeSet>
 </databaseChangeLog>

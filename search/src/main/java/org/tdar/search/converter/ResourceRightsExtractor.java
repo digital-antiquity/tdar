@@ -26,7 +26,7 @@ public class ResourceRightsExtractor {
 
     public ResourceRightsExtractor(Resource resource) {
         this.resource = resource;
-        extract();
+        extractCollectionHierarchy();
     }
 
     private HashSet<Long> directCollectionIds = new HashSet<>();;
@@ -87,32 +87,24 @@ public class ResourceRightsExtractor {
         return users;
     }
 
-    public void extract() {
+    public void extractCollectionHierarchy() {
         Set<ResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
         collections.addAll(resource.getUnmanagedResourceCollections());
         for (ResourceCollection collection : collections) {
+//            logger.debug("{}", collection);
             if (collection.isShared()) {
                 directCollectionIds.add(collection.getId());
                 directCollectionNames.add(collection.getName());
                 collectionIds.addAll(collection.getParentIds());
-                appendAlternateParents(collection);
+                collectionIds.addAll(collection.getAlternateParentIds());
                 collectionNames.addAll(collection.getParentNameList());
+                collectionNames.addAll(collection.getAlternateParentNameList());
             } else if (collection.isInternal()) {
                 allCollectionIds.add(collection.getId());
             }
         }
         collectionIds.addAll(directCollectionIds);
         allCollectionIds.addAll(collectionIds);
-    }
-
-    private void appendAlternateParents(ResourceCollection collection) {
-        // handle alternate parents in search
-        ResourceCollection alt = collection.getAlternateParent(); 
-        while (alt != null) {
-            collectionIds.add(alt.getId());
-            collectionNames.add(alt.getName());
-            alt = alt.getParent();
-        }
     }
 
     public HashSet<Long> getDirectCollectionIds() {
