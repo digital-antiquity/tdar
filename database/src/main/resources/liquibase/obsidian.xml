@@ -341,6 +341,83 @@
             <column name="month"/>
         </createIndex>
         <sql>
+        create table _2018_resource_access_month_agg (check (year=2018)) INHERITS (resource_access_month_agg);
+        create table _2017_resource_access_month_agg (check (year=2017)) INHERITS (resource_access_month_agg);
+        create table _2016_resource_access_month_agg (check (year=2016)) INHERITS (resource_access_month_agg);
+        create table _2015_resource_access_month_agg (check (year=2015)) INHERITS (resource_access_month_agg);
+        create table _2014_resource_access_month_agg (check (year=2014)) INHERITS (resource_access_month_agg);
+        create table _2013_resource_access_month_agg (check (year=2013)) INHERITS (resource_access_month_agg);
+        create table _2012_resource_access_month_agg (check (year=2012)) INHERITS (resource_access_month_agg);
+        create table _2011_resource_access_month_agg (check (year=2011)) INHERITS (resource_access_month_agg);
+        create table _2010_resource_access_month_agg (check (year=2010)) INHERITS (resource_access_month_agg);
+        
+        create index resource_access_month_agg_2010_id on _2010_resource_access_month_agg (id);
+        create index resource_access_month_agg_2010_rid on _2010_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2010_month on _2010_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2011_id on _2011_resource_access_month_agg (id);
+        create index resource_access_month_agg_2011_rid on _2011_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2011_month on _2011_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2012_id on _2012_resource_access_month_agg (id);
+        create index resource_access_month_agg_2012_rid on _2012_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2012_month on _2012_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2013_id on _2013_resource_access_month_agg (id);
+        create index resource_access_month_agg_2013_rid on _2013_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2013_month on _2013_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2014_id on _2014_resource_access_month_agg (id);
+        create index resource_access_month_agg_2014_rid on _2014_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2014_month on _2014_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2015_id on _2015_resource_access_month_agg (id);
+        create index resource_access_month_agg_2015_rid on _2015_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2015_month on _2015_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2016_id on _2016_resource_access_month_agg (id);
+        create index resource_access_month_agg_2016_rid on _2016_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2016_month on _2016_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2017_id on _2017_resource_access_month_agg (id);
+        create index resource_access_month_agg_2017_rid on _2017_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2017_month on _2017_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2018_id on _2018_resource_access_month_agg (id);
+        create index resource_access_month_agg_2018_rid on _2018_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2018_month on _2018_resource_access_month_agg (month);
+        </sql>
+        <sql splitStatements="false">
+        CREATE OR REPLACE FUNCTION  resource_access_month_agg_insert_trigger()
+        RETURNS TRIGGER AS $body$
+        BEGIN
+            IF ( NEW.year=2018 ) THEN
+                INSERT INTO _2018_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2017 ) THEN
+                INSERT INTO _2017_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2016) THEN
+                INSERT INTO _2016_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2015) THEN
+                INSERT INTO _2015_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2014) THEN
+                INSERT INTO _2014_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2013) THEN
+                INSERT INTO _2013_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2012) THEN
+                INSERT INTO _2012_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2011) THEN
+                INSERT INTO _2011_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2010) THEN
+                INSERT INTO _2010_resource_access_month_agg VALUES (NEW.*);
+            ELSE
+                RAISE EXCEPTION 'Date out of range.  Fix the resource_access_month_agg_insert_trigger() function!';
+            END IF;
+            RETURN NULL;
+        END;
+        $body$
+        LANGUAGE plpgsql;
+        </sql>
+        <sql>
         insert into resource_access_month_agg (resource_id, year, month, d1 , d2 , d3 , d4 , d5 , d6 , d7 , d8 , d9 , d10 , d11 , d12 , d13 , d14 , d15 , d16 , d17 , d18 , d19 , d20 , d21 , d22 , d23 , d24 , d25 , d26 , d27 , d28 , d29 , d30 , d31, d1_bot,  d2_bot,  d3_bot,  d4_bot,  d5_bot,  d6_bot,  d7_bot,  d8_bot,  d9_bot,  d10_bot,  d11_bot,  d12_bot,  d13_bot,  d14_bot,  d15_bot,  d16_bot,  d17_bot,  d18_bot,  d19_bot,  d20_bot,  d21_bot,  d22_bot,  d23_bot,  d24_bot,  d25_bot,  d26_bot,  d27_bot,  d28_bot,  d29_bot,  d30_bot,  d31_bot )
 select resource_id, year, month, 
      (select total from tmp where resource_id=a.resource_id and day=1 and a.month=month and a.year=year ),
