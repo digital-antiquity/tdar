@@ -159,7 +159,7 @@ public class AggregateStatisticsDao extends GenericDao {
             downloadSubQuerypart.append(", ");
 
             start = start.plusDays(1);
-            String date = start.toString("YYYY-MM-dd");
+            String date = start.toString(YYYY_MM_DD);
             viewSubQuerypart.append(String.format(TdarNamedQueries.DAY_VIEW_PART, date, start.getDayOfMonth(), start.getYear(), start.getMonthOfYear()));
             downloadSubQuerypart.append(String.format(TdarNamedQueries.DAY_DOWNLAOD_PART, date));
             labelKeys.add(provider.getText("statisticsService.view_count_day", Arrays.asList(date)));
@@ -276,6 +276,10 @@ public class AggregateStatisticsDao extends GenericDao {
     }
 
     
+    /**
+     * not enabled ... the monthly currently works nicely
+     * @param date
+     */
     public void resetAnnualTable(DateTime date) {
         Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.ANNUAL_RESOURCE_CLEANUP);
         query.setParameter("year", date.getYear());
