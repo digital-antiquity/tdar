@@ -529,8 +529,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro _sourceCollectionRow sourceCollection prefix index=0>
         <#local plural = "${prefix}s" />
     <div class="controls controls-row repeat-row" id="${prefix}Row_${index}_">
-    <#-- <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" /> -->
-        <@s.textarea rows="4" cols="80" theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
+        <div class="span6">
+        <#-- <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" /> -->
+            <div class="controls-row">
+                <@s.textarea rows="4" cols="80" theme="tdar" name='${plural}[${index}].text' cssClass="span6 resizable resize-vertical" />
+            </div>
+        </div>
         <div class="span1">
             <@nav.clearDeleteButton id="${prefix}Row${index}" />
         </div>
