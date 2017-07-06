@@ -322,8 +322,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     }
 
     public List<SortOption> getSortOptions() {
-        sortOptions.remove(SortOption.RESOURCE_TYPE);
-        sortOptions.remove(SortOption.RESOURCE_TYPE_REVERSE);
         return sortOptions;
     }
 

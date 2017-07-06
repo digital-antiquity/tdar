@@ -9,7 +9,7 @@ TDAR.advancedSearch = (function () {
     }
 
     function _enableCheckbox($box) {
-        $box.attr('disabled', false);
+        $box.removeAttr('disabled');
         $box.parent().removeClass("disabled");
     }
 
@@ -25,9 +25,11 @@ TDAR.advancedSearch = (function () {
             if ($("#searchGroups .term").not(".multiIndex").length > 0) {
                 _disableCheckbox($int);
                 _disableCheckbox($col);
+                $("#sortField .resource").attr('disabled', true);
             } else { 
                 _enableCheckbox($int);
                 _enableCheckbox($col);
+                $("#sortField .resource").removeAttr('disabled');
                 console.log('ok');
             } 
             });

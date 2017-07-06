@@ -111,6 +111,15 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse(controller.getRelevantPersonRoles().contains(ResourceCreatorRole.RESOURCE_PROVIDER));
     }
 
+    
+    @Test
+    @Rollback
+    public void testSorting() {
+        controller.execute();
+        logger.debug("sort:{}", controller.getSortOptions());
+        assertNotEmpty(controller.getSortOptions());
+    }
+
     @Test
     @Rollback
     public void testInstitutionRoles() {

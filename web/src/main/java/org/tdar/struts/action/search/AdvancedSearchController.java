@@ -439,18 +439,10 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
 
     private List<String> getGeneralTypes() {
         List<String> keys = new ArrayList<>();
-        getTypeFacets().forEach(facet -> keys.add(facet.getRaw()));
-        return keys;
-    }
-
-    @Override
-    public List<SortOption> getSortOptions() {
-        List<String> keys = getGeneralTypes();
-        List<SortOption> sortOptions = super.getSortOptions();
-        if (keys.size() == 1 && keys.contains(LookupSource.COLLECTION.name())) {
-            sortOptions.remove(SortOption.PROJECT);
+        if (CollectionUtils.isNotEmpty(getTypeFacets())) {
+            getTypeFacets().forEach(facet -> keys.add(facet.getRaw()));
         }
-        return sortOptions;
+        return keys;
     }
 
     public List<SearchFieldType> getAllSearchFieldTypes() {
