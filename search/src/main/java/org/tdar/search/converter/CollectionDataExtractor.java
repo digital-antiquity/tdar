@@ -108,6 +108,8 @@ public class CollectionDataExtractor {
                 collectionNames.addAll(shared.getParentNameList());
                 collectionIds.addAll(shared.getParentIds());
                 collectionIds.add(shared.getId());
+                collectionIds.addAll(shared.getAlternateParentIds());
+                collectionNames.addAll(shared.getAlternateParentNameList());
             }
         }
         allCollectionIds.addAll(collectionIds);
