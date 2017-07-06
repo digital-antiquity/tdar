@@ -612,12 +612,13 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return proxy;
     }
 
-    private String getUniqueTableName(Set<String> tableNames, String tableName) {
+    public String getUniqueTableName(Set<String> tableNames, String originalTableName) {
+        String tableName = originalTableName;
         if (tableNames.contains(tableName)) {
             String tablename_ = tableName;
             int count = 1;
             while (tableNames.contains(tablename_)) {
-                tablename_ = String.format("%s (%s", tableName, count); 
+                tablename_ = String.format("%s (%s)", tableName, count); 
                 count++;
             }
             tableName = tablename_;
