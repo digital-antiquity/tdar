@@ -528,4 +528,7 @@ select resource_id, year, month,
         </createTable>
     
     </changeSet>
+    <changeSet id="obsidian-stats-6" author="abrin">
+        <dropTable tableName="resource_access_day_agg"/>
+    </changeSet>
 </databaseChangeLog>
