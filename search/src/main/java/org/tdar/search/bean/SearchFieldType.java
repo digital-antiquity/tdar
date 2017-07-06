@@ -109,6 +109,8 @@ public enum SearchFieldType implements HasLabel, Localizable {
             case ALL_FIELDS:
             case DESCRIPTION:
             case TITLE:
+            case CONTENTS:
+            case FILENAME:
             case FFK_GEOGRAPHIC:
             case FFK_SITE:
             case FFK_SITE_TYPE:
