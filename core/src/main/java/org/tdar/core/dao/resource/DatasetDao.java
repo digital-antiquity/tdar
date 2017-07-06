@@ -15,11 +15,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.persistence.Table;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.dbutils.ResultSetIterator;
@@ -574,12 +577,15 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if ((dataTables == null) || dataTables.isEmpty()) {
             return null;
         }
+        Set<String> tableNames = new HashSet<>();
         final SheetProxy proxy = new SheetProxy(SpreadsheetVersion.EXCEL2007, true);
         for (final DataTable dataTable : dataTables) {
             // each table becomes a sheet.
             String tableName = dataTable.getDisplayName();
             getLogger().debug("{} ({})",dataTable.getName(), dataTable.getId());
+            tableName = getUniqueTableName(tableNames, tableName);
             proxy.setName(tableName);
+            tableNames.add(tableName);
             ResultSetExtractor<Boolean> excelExtractor = new ResultSetExtractor<Boolean>() {
                 @Override
                 public Boolean extractData(ResultSet resultSet) throws SQLException {
@@ -604,6 +610,19 @@ public class DatasetDao extends ResourceDao<Dataset> {
         IOUtils.closeQuietly(stream);
         
         return proxy;
+    }
+
+    private String getUniqueTableName(Set<String> tableNames, String tableName) {
+        if (tableNames.contains(tableName)) {
+            String tablename_ = tableName;
+            int count = 1;
+            while (tableNames.contains(tablename_)) {
+                tablename_ = String.format("%s (%s", tableName, count); 
+                count++;
+            }
+            tableName = tablename_;
+        }
+        return tableName;
     }
 
     /*
