@@ -322,18 +322,6 @@
                         + " where coll.id in (:collectionIds)) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
-                name = TdarNamedQueries.ACCESS_BY,
-                query = "select ras FROM AggregateViewStatistic ras inner join ras.resource as ref where ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
-        ),
-        @org.hibernate.annotations.NamedQuery(
-                name = TdarNamedQueries.ACCESS_BY_OVERALL,
-                query = "select ras FROM AggregateViewStatistic ras inner join ras.resource as ref where ras.aggregateDate between :start and :end and ras.count > :minCount order by ras.count desc"
-        ),
-        @org.hibernate.annotations.NamedQuery(
-                name = TdarNamedQueries.RESOURCE_ACCESS_HISTORY,
-                query = "select ras FROM AggregateViewStatistic ras inner join ras.resource as ref where ref.id in (:resourceIds) and ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
-        ),
-        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FILE_DOWNLOAD_HISTORY,
                 query = "select ras FROM AggregateDownloadStatistic ras inner join ras.file as ref where ref.id in (:fileIds) and ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
         ),

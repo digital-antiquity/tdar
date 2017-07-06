@@ -93,12 +93,9 @@ public interface TdarNamedQueries {
     String SPACE_BY_RESOURCE = "admin.size.resource";
     String SPACE_BY_COLLECTION = "admin.size.collection";
     String SPACE_BY_SUBMITTER = "admin.size.submitter";
-    String ACCESS_BY = "admin.access";
-    String ACCESS_BY_OVERALL = "admin.access.overall";
     String DOWNLOAD_BY = "admin.download";
     String LOGS_FOR_RESOURCE = "admin.logsforResource";
     String FIND_ACTIVE_COUPON = "coupon.active";
-    String RESOURCE_ACCESS_HISTORY = "admin.accessHistory";
     String FILE_DOWNLOAD_HISTORY = "admin.fileFileHistory";
     String RESOURCES_WITH_NULL_ACCOUNT_ID = "account.resourceNull";
     String ACCOUNT_QUOTA_INIT = "account.quota.init";
