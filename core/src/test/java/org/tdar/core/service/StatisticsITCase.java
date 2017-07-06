@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -27,6 +28,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
@@ -159,6 +161,22 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         statsForAccount = statisticService.getStatsForCollection(col, MessageHelper.getInstance(), DateGranularity.MONTH);
         logger.debug("{} {}", StringUtils.join(statsForAccount.getTotals()), StringUtils.join(statsForAccount.getRowLabels()));
         assertTrue(statsForAccount.getTotals().contains(3L));
+    }
+
+
+    
+
+    @SuppressWarnings("deprecation")
+    @Test
+    @Rollback(true)
+    public void testWeeklyPopular() {
+        Document document = setupDacumentWithStats();
+        dailyTask.execute();
+        genericService.synchronize();
+        List<Resource> resources = resourceService.getWeeklyPopularResources(10);
+        logger.debug("{}", resources);
+        assertFalse(CollectionUtils.isEmpty(resources));
+//        assertTrue(statsForAccount.getTotals().contains(3L));
     }
 
 

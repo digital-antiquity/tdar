@@ -116,13 +116,13 @@ public class AggregateStatisticsDao extends GenericDao {
      */
     @SuppressWarnings("unchecked")
     private StatsResultObject populateResultsObject(Persistable p, List<String> labelKeys, String sql) {
-        getLogger().debug("run sql");
-        getLogger().debug(sql);
+        getLogger().trace("run sql");
+        getLogger().trace(sql);
         Query query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("id", p.getId());
         StatsResultObject results = new StatsResultObject();
         List<Object[]> list = (List<Object[]>) query.list();
-        getLogger().debug("done sql");
+        getLogger().trace("done sql");
         for (Object[] row : list) {
             List<Number> numbers = new ArrayList<>();
             Resource resource = new Resource(((Number) row[0]).longValue(), (String) row[1], ResourceType.valueOf((String) row[2]), "",
@@ -132,7 +132,7 @@ public class AggregateStatisticsDao extends GenericDao {
             }
             results.addRowData(new ResourceStatWrapper(resource, numbers));
         }
-        getLogger().debug("return");
+        getLogger().trace("return");
         results.setRowLabels(labelKeys);
         return results;
     }
@@ -303,7 +303,7 @@ public class AggregateStatisticsDao extends GenericDao {
         Query query = getCurrentSession().createSQLQuery(sql);
         query.setParameter("month", date.getMonthOfYear());
         query.setParameter("year", date.getYear());
-        getLogger().debug(sql);
+        getLogger().trace(sql);
         query.executeUpdate();
 
         sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH_BOT, date.getDayOfMonth(), midnight.toString(YYYY_MM_DD),
@@ -320,11 +320,13 @@ public class AggregateStatisticsDao extends GenericDao {
         DateTime end = new DateTime();
         DateTime start = end.minusDays(7);
         String sql = String.format(TdarNamedQueries.WEEKLY_POPULAR, start.toString(YYYY_MM_DD), end.toString(YYYY_MM_DD), count);
+        getLogger().trace(sql);
         Query query = getCurrentSession().createSQLQuery(sql);
         List list = query.list();
+        getLogger().trace("{}", list);
         for (Object o : list) {
             Object[] obj = (Object[])o;
-            Resource resource = find(Resource.class, ((Number) obj[0]).longValue());
+            Resource resource = find(Resource.class, ((Number) obj[1]).longValue());
             if (PersistableUtils.isNotNullOrTransient(resource)) {
                 resources.add(resource);
             }
