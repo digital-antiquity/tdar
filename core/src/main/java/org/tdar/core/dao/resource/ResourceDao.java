@@ -39,7 +39,6 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
-import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.dao.NamedNativeQueries;
@@ -320,29 +319,6 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
         return (List<E>) findAll(ids);
     }
 
-    public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end,
-            Long minCount) {
-        Query<AggregateViewStatistic> query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
-        return query.getResultList();
-    }
-
-    public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
-        Query<AggregateViewStatistic> query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
-        query.setMaxResults(max.intValue());
-        return query.getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<AggregateViewStatistic> getUsageStatsForResource(DateGranularity granularity, Date start, Date end,
-            Long minCount, List<Long> resourceIds) {
-        Query<AggregateViewStatistic> query = getCurrentSession().getNamedQuery(RESOURCE_ACCESS_HISTORY);
-        query.setParameter("start", start);
-        query.setParameter("end", end);
-        query.setParameter("minCount", minCount);
-        query.setParameter("resourceIds", resourceIds);
-        return query.getResultList();
-    }
-
     public enum StatisticsQueryMode {
         ACCESS_DAY, ACCESS_OVERALL, DOWNLOAD_DAY;
     }
@@ -355,33 +331,6 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
         query.setParameter("end", end);
         query.setParameter("minCount", minCount);
         query.setParameter("fileIds", Arrays.asList(irFileIds));
-        return query.getResultList();
-    }
-
-    @SuppressWarnings("unchecked")
-    private <D> Query<D> setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
-        Query<D> query = getCurrentSession().getNamedQuery(ACCESS_BY);
-        switch (mode) {
-        case ACCESS_DAY:
-            break;
-        case ACCESS_OVERALL:
-            query = getCurrentSession().getNamedQuery(ACCESS_BY_OVERALL);
-            break;
-        case DOWNLOAD_DAY:
-            query = getCurrentSession().getNamedQuery(DOWNLOAD_BY);
-            break;
-        }
-        // query.setParameter("part", granularity.name().toLowerCase());
-        query.setParameter("start", start);
-        query.setParameter("end", end);
-        query.setParameter("minCount", minCount);
-        return query;
-    }
-
-    public <D> List<D> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end,
-            Long minCount) {
-        Query<D> query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
-        logger.trace("s:{} e: {} min:{}", start, end, minCount);
         return query.getResultList();
     }
 
@@ -555,4 +504,5 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
         
         
     }
+
 }

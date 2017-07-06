@@ -2,21 +2,24 @@ package org.tdar.core.service;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
+import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.AggregateStatisticsDao;
@@ -25,7 +28,6 @@ import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.utils.Pair;
-import org.tdar.utils.PersistableUtils;
 
 import com.ibm.icu.util.GregorianCalendar;
 import com.opensymphony.xwork2.TextProvider;
@@ -144,11 +146,6 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
         return getDao().getFileStats(types);
     }
 
-    @Transactional
-    public void generateAggregateDailyResourceData(Date date) {
-        aggregateStatisticsDao.generateAggregateDailyResourceData(date);
-    }
-
     @Transactional(readOnly=false)
     public void cleanupOldDailyStats(Date date) {
         aggregateStatisticsDao.cleanupOldDailyStats(date);
@@ -167,46 +164,76 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
 
     @Transactional(readOnly = true)
     public StatsResultObject getStatsForCollection(SharedCollection collection, TextProvider provider, DateGranularity granularity) {
-        Set<Long> ids = new HashSet<>();
         if (collection != null) {
-            if (CollectionUtils.isNotEmpty(collection.getResources())) {
-                ids.addAll(PersistableUtils.extractIds(collection.getResources()));
-            }
-            for (SharedCollection child : resourceCollectionDao.getAllChildCollections(collection, SharedCollection.class)) {
-                if (child != null && CollectionUtils.isNotEmpty(((SharedCollection)child).getResources())) {
-                    ids.addAll(PersistableUtils.extractIds(child.getResources()));
-                }
-            }
-        }
-        if (CollectionUtils.isNotEmpty(ids)) {
-            return getStats(ids, provider, granularity);
+            return getStats(collection, provider, granularity);
         }
         return null;
     }
 
     @Transactional(readOnly = true)
     public StatsResultObject getStatsForAccount(BillingAccount account, TextProvider provider, DateGranularity granularity) {
-        Set<Long> ids = new HashSet<>();
         if (account != null && CollectionUtils.isNotEmpty(account.getResources())) {
-            ids.addAll(PersistableUtils.extractIds(account.getResources()));
-        }
-        if (CollectionUtils.isNotEmpty(ids)) {
-            return getStats(ids, provider, granularity);
+            return getStats(account, provider, granularity);
         }
         return null;
     }
 
-    private StatsResultObject getStats(Collection<Long> ids, TextProvider provider, DateGranularity granularity) {
+    private StatsResultObject getStats(Persistable p, TextProvider provider, DateGranularity granularity) {
         switch (granularity) {
             case DAY:
-                return aggregateStatisticsDao.getDailyStats(ids, provider);
+                return aggregateStatisticsDao.getDailyStats(p, provider);
             case MONTH:
-                return aggregateStatisticsDao.getMonthlyStats(ids, provider);
+                return aggregateStatisticsDao.getMonthlyStats(p, provider);
             case YEAR:
-                return aggregateStatisticsDao.getAnnualStats(ids, provider);
+                return aggregateStatisticsDao.getAnnualStats(p, provider);
             default:
                 return null;
         }
+    }
+
+
+    @Transactional(readOnly=false)
+    public void generateMonthlyResourceStats(DateTime date) {
+        aggregateStatisticsDao.updateMonthly(date);
+        
+    }
+
+    @Transactional(readOnly=false)
+    public void initializeNewAggregateEntries(DateTime date) {
+        aggregateStatisticsDao.createNewAggregateEntries(date);
+//        aggregateStatisticsDao.resetAnnualTable(date);
+    }
+
+
+
+    /**
+     * Find the count of downloads for a specified @link InformationResourceFile for a given date range, limited by the minimum occurrence count.
+     * 
+     * @param granularity
+     * @param start
+     * @param end
+     * @param minCount
+     * @param iRFileId
+     * @return
+     */
+    @Transactional(readOnly=true)
+    public List<AggregateDownloadStatistic> getAggregateDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long iRFileId) {
+        return aggregateStatisticsDao.getDownloadStatsForFile(granularity, start, end, minCount, iRFileId);
+    }
+
+    /**
+     * Find the count of views for the specified resources for a given date range, limited by the minimum occurrence count.
+     * 
+     * @param granularity
+     * @param start
+     * @param end
+     * @param minCount
+     * @param resourceIds
+     * @return
+     */
+    @Transactional(readOnly=true)
+    public List<AggregateDayViewStatistic> getUsageStatsForResource(Resource resource) {
+        return aggregateStatisticsDao.getUsageStatsForResource(resource);
     }
 
 }

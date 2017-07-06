@@ -1,6 +1,7 @@
 package org.tdar.core.bean.collection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -32,6 +34,12 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
     @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id"))
     @Column(name = "parent_id")
     private Set<Long> parentIds = new HashSet<>();
+    
+    @ElementCollection()
+    @CollectionTable(name = "collection_alternate_parents", joinColumns = @JoinColumn(name = "collection_id") )
+    @Column(name = "parent_id")
+    private Set<Long> alternateParentIds = new HashSet<>();
+
 
     /**
      * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
@@ -170,4 +178,31 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
             return tree.get(0).compareTo(tree_.get(0));
         }
     }
+    
+    @Transient
+    @ElementCollection
+    public Set<Long> getAlternateParentIds() {
+        return alternateParentIds;
+    }
+
+    public void setAlternateParentIds(Set<Long> alternateParentIds) {
+        this.alternateParentIds = alternateParentIds;
+    }
+
+    public Collection<String> getAlternateParentNameList() {
+        HashSet<String> names = new HashSet<>();
+        if (PersistableUtils.isNotNullOrTransient(getAlternateParent())) {
+            if (getAlternateParent() instanceof HierarchicalCollection<?>) {
+                HierarchicalCollection<?> hierarchicalCollection = (HierarchicalCollection<?>) getAlternateParent();
+                if (PersistableUtils.isNotNullOrTransient(hierarchicalCollection.getParent())) {
+                    names.addAll(hierarchicalCollection.getParentNameList());
+                }
+                if (PersistableUtils.isNotNullOrTransient(hierarchicalCollection.getAlternateParent())) {
+                    names.addAll(hierarchicalCollection.getAlternateParentNameList());
+                }
+            }
+        }
+        return names;
+    }
+
 }

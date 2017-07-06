@@ -63,15 +63,6 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
-    public void testAdminUsageStats() throws IOException {
-        gotoPage("/admin/internal");
-        clickLinkByHref("/admin/usage/stats");
-        assertTextPresentInPage("stats for");
-        clickLinkByHref("/admin/usage/downloads");
-        assertTextPresentInPage("Download Stats");
-    }
-
-    @Test
     public void testAuthManagement() {
         gotoPage("/admin/authority/index");
         assertTextPresentInPage("Merge Duplicates");

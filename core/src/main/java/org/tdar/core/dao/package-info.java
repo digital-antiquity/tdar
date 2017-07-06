@@ -638,8 +638,12 @@
                 query = "select r from Resource r join r.authorizedUsers au where au.dateExpires < :date and status in ('ACTIVE', 'DRAFT')"),
         @NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE,
-                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )")
-        })
+                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.MONTHLY_USAGE_FOR_RESOURCE,
+                query = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId")
+                }
+        )
 package org.tdar.core.dao;
 
 import org.hibernate.annotations.NamedQueries;

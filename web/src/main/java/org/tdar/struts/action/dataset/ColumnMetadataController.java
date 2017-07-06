@@ -191,7 +191,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
             results = {
                     @Result(name = SAVE_VIEW, type = TDAR_REDIRECT, location = "/${resource.resourceType.urlNamespace}/${resource.id}"),
                     @Result(name = SAVE_MAP_THIS, type = TDAR_REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
-                    @Result(name = INPUT_COLUMNS, location = "../dataset/edit-column-metadata.ftl")
+                    @Result(name = INPUT_COLUMNS, location = "../../dataset/edit-column-metadata.ftl")
             })
     /**
      * Saves column metadata for each column in a given DataTable (set on the controller and retrievable via getDataTable()).

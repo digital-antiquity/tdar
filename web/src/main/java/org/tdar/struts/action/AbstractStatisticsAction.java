@@ -47,7 +47,9 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
             return;
         }
         try {
+            logger.debug("begin json serialization");
             setJson(serializationService.convertToJson(getStatsForAccount().getObjectForJson()));
+            logger.debug("done json serialization");
         } catch (IOException e) {
             logger.error("error setting json", e);
         }

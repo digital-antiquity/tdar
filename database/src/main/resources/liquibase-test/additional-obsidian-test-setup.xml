@@ -98,6 +98,29 @@
         </insert>
         
         
-        
+    </changeSet>
+    <changeSet id="obsidian-stats-post" author="abrin">
+        <insert tableName="resource_access_month_agg">
+            <column name="resource_id" valueNumeric="3088" />
+            <column name="month" valueNumeric="1" />
+            <column name="year" valueNumeric="2017" />
+            <column name="total" valueNumeric="21" />
+            <column name="d1" valueNumeric="21" />            
+        </insert>
+        <insert tableName="resource_access_month_agg">
+            <column name="resource_id" valueNumeric="3088" />
+            <column name="month" valueNumeric="2" />
+            <column name="year" valueNumeric="2013" />
+            <column name="total" valueNumeric="21" />
+            <column name="d1" valueNumeric="21" />            
+        </insert>
+        <insert tableName="resource_access_month_agg">
+            <column name="resource_id" valueNumeric="3088" />
+            <column name="month" valueNumeric="1" />
+            <column name="year" valueNumeric="2012" />
+            <column name="total" valueNumeric="21" />
+            <column name="d1" valueNumeric="21" />            
+        </insert>
+    
     </changeSet>
 </databaseChangeLog>

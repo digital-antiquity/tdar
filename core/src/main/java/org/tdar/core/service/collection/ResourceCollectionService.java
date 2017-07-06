@@ -759,6 +759,32 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         saveOrUpdate(persistable);
 
     }
+    
+    @Transactional(readOnly = false)
+    public <C extends HierarchicalCollection>  void updateAlternateCollectionParentTo(TdarUser authorizedUser, C persistable, HierarchicalCollection hierarchicalCollection, Class<C> cls) {
+
+        List<C> children = getAllChildCollections(persistable, cls);
+        List<Long> oldParentIds = new ArrayList<>(persistable.getAlternateParentIds());
+        logger.debug("updating parent for {} from {} to {}", persistable.getId(), persistable.getAlternateParent(), hierarchicalCollection);
+        persistable.setAlternateParent(hierarchicalCollection);
+        List<Long> parentIds = new ArrayList<>();
+        if (PersistableUtils.isNotNullOrTransient(hierarchicalCollection)) {
+            if (CollectionUtils.isNotEmpty(hierarchicalCollection.getAlternateParentIds())) {
+                parentIds.addAll(hierarchicalCollection.getAlternateParentIds());
+                parentIds.addAll(hierarchicalCollection.getParentIds());
+            }
+            parentIds.add(hierarchicalCollection.getId());
+        }
+        persistable.getAlternateParentIds().clear();
+        persistable.getAlternateParentIds().addAll(parentIds);
+        for (C child : children) {
+            child.getAlternateParentIds().removeAll(oldParentIds);
+            child.getAlternateParentIds().addAll(parentIds);
+            saveOrUpdate(child);
+        }
+        saveOrUpdate(persistable);
+
+    }
 
     @Transactional(readOnly = true)
     public <C extends HierarchicalCollection> List<C> getAllChildCollections(C persistable, Class<C> cls) {
@@ -989,7 +1015,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         if (!Objects.equals(cso.getAlternateParentId(), persistable.getAlternateParentId())) {
             logger.debug("updating alternate parent for {} from {} to {}", persistable.getId(), persistable.getAlternateParent(), cso.getAlternateParent());
-            persistable.setAlternateParent(cso.getAlternateParent());
+            updateAlternateCollectionParentTo(authenticatedUser, persistable, cso.getAlternateParent(), cls);
         }
 
         String msg = String.format("%s modified %s", authenticatedUser, persistable.getTitle());

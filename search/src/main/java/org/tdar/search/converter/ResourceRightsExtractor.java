@@ -29,7 +29,7 @@ public class ResourceRightsExtractor {
 
     public ResourceRightsExtractor(Resource resource) {
         this.resource = resource;
-        extract();
+        extractCollectionHierarchy();
     }
 
     private HashSet<Long> directCollectionIds = new HashSet<>();;
@@ -88,34 +88,25 @@ public class ResourceRightsExtractor {
         return users;
     }
 
-    public void extract() {
+    public void extractCollectionHierarchy() {
         Set<RightsBasedResourceCollection> collections = new HashSet<>(resource.getRightsBasedResourceCollections());
+//        collections.addAll(resource.getUnmanagedResourceCollections());
         for (RightsBasedResourceCollection collection : collections) {
             if (collection instanceof SharedCollection) {
-                directCollectionIds.add(collection.getId());
                 if (collection instanceof VisibleCollection) {
                     directCollectionNames.add(((VisibleCollection) collection).getName());
                 }
                 if (collection instanceof SharedCollection) {
                 SharedCollection shared = (SharedCollection)collection;
                 collectionNames.addAll(shared.getParentNameList());
+                collectionIds.addAll(shared.getAlternateParentIds());
+                collectionNames.addAll(shared.getAlternateParentNameList());
                 collectionIds.addAll(shared.getParentIds());
-                appendAlternateParents(shared);
                 }
             }
         }
         collectionIds.addAll(directCollectionIds);
         allCollectionIds.addAll(collectionIds);
-    }
-
-    private void appendAlternateParents(SharedCollection collection) {
-        // handle alternate parents in search
-        SharedCollection alt = collection.getAlternateParent(); 
-        while (alt != null) {
-            collectionIds.add(alt.getId());
-            collectionNames.add(alt.getName());
-            alt = alt.getParent();
-        }
     }
 
     public HashSet<Long> getDirectCollectionIds() {

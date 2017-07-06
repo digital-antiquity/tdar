@@ -83,11 +83,12 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 stream = new FileInputStream(file);
                 try { 
                     // if we're a PDF and we're really big... then we should use PDFBox to extract the text to protect memory
-                    if ("pdf".equals(extension) && file.getTotalSpace() > ONE_GB) {
+                    if ("pdf".equals(extension) && file.length() > ONE_GB) {
+                        getLogger().debug("using fallback PDF model");
                         try {
                             fallbackWriteFile(stream, indexedFileOutputStream);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            getLogger().debug("NPE from PDF issue", e);
                         }
                     } else {
                         parser.parse(stream, handler, metadata, parseContext);

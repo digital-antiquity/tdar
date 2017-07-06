@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -11,11 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -24,14 +30,18 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
+import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
-import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
+import org.tdar.core.dao.AggregateStatisticsDao;
+import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.processes.daily.DailyStatisticsUpdate;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.utils.MessageHelper;
+
 
 public class StatisticsITCase extends AbstractIntegrationTestCase {
 
@@ -44,6 +54,10 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     private ResourceService resourceService;
     @Autowired
     private EntityService entityService;
+    @Autowired
+    private StatisticService statisticService;
+    @Autowired
+    private AggregateStatisticsDao aggregateStatisticsDao;
 
     
     @Test
@@ -57,6 +71,99 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testBasicStats() {
+        Document document = setupDacumentWithStats();
+        // should only catch 1 day(today) beacause the rest aren't in the agg stats table yet
+        Number count = datasetService.getDao().getAccessCount(document);
+        assertEquals(1l, count.longValue());
+        dailyTask.execute();
+        genericService.synchronize();
+        count = datasetService.getDao().getAccessCount(document);
+        assertTrue(2L <= count.longValue());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    @Rollback(true)
+    public void testResourceUsageStatsPage() {
+        Document document = setupDacumentWithStats();
+        // should only catch 1 day(today) beacause the rest aren't in the agg stats table yet
+        Number count = datasetService.getDao().getAccessCount(document);
+        assertEquals(1l, count.longValue());
+        dailyTask.execute();
+        genericService.synchronize();
+        List<AggregateDayViewStatistic> usageStatsForResource = statisticService.getUsageStatsForResource(document);
+        logger.debug("{} {}", StringUtils.join(usageStatsForResource));
+        assertEquals(3L, usageStatsForResource.get(0).getTotal().longValue());
+
+    }
+
+    
+    @SuppressWarnings("deprecation")
+    @Test
+    @Rollback(true)
+    public void testMonthlyInitialization() {
+        DateTime withDayOfMonth = DateTime.now().plusMonths(1).withDayOfMonth(1).withHourOfDay(4);
+        Document document = setupDacumentWithStats();
+        genericService.saveOrUpdate(new ResourceAccessStatistic(withDayOfMonth.toDate(), document, false));
+        genericService.synchronize();
+        aggregateStatisticsDao.createNewAggregateEntries(withDayOfMonth);
+        statisticService.generateMonthlyResourceStats(withDayOfMonth);
+        List<AggregateDayViewStatistic> usageStatsForResource = statisticService.getUsageStatsForResource(document);
+        logger.debug("{} {}", StringUtils.join(usageStatsForResource));
+        assertEquals(1L, usageStatsForResource.get(0).getTotal().longValue());
+    }
+
+    
+    @SuppressWarnings("deprecation")
+    @Test
+    @Rollback(true)
+    public void testUsageStatsBilling() {
+        Document document = setupDacumentWithStats();
+        BillingAccount bas = new BillingAccount("test");
+        bas.markUpdated(getAdminUser());
+        bas.getResources().add(document);
+        genericService.saveOrUpdate(bas);
+        dailyTask.execute();
+        genericService.synchronize();
+        StatsResultObject statsForAccount = statisticService.getStatsForAccount(bas, MessageHelper.getInstance(), DateGranularity.DAY);
+        logger.debug("{} {}", StringUtils.join(statsForAccount.getTotals()), StringUtils.join(statsForAccount.getRowLabels()));
+        assertTrue(statsForAccount.getTotals().contains(3L));
+        statsForAccount = statisticService.getStatsForAccount(bas, MessageHelper.getInstance(), DateGranularity.YEAR);
+        logger.debug("{} {}", StringUtils.join(statsForAccount.getTotals()), StringUtils.join(statsForAccount.getRowLabels()));
+        assertTrue(statsForAccount.getTotals().contains(3L));
+        statsForAccount = statisticService.getStatsForAccount(bas, MessageHelper.getInstance(), DateGranularity.MONTH);
+        logger.debug("{} {}", StringUtils.join(statsForAccount.getTotals()), StringUtils.join(statsForAccount.getRowLabels()));
+        assertTrue(statsForAccount.getTotals().contains(3L));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    @Rollback(true)
+    public void testUsageStatsCollection() {
+        Document document = setupDacumentWithStats();
+        SharedCollection col = new SharedCollection();
+        col.setName("test");
+        col.setDescription("test");
+        col.markUpdated(getAdminUser());
+        col.getResources().add(document);
+        document.getSharedCollections().add(col);
+        genericService.saveOrUpdate(col);
+        genericService.saveOrUpdate(document);
+        dailyTask.execute();
+        genericService.synchronize();
+        StatsResultObject statsForAccount = statisticService.getStatsForCollection(col, MessageHelper.getInstance(), DateGranularity.DAY);
+        logger.debug("{} {}", StringUtils.join(statsForAccount.getTotals()), StringUtils.join(statsForAccount.getRowLabels()));
+        assertTrue(statsForAccount.getTotals().contains(3L));
+        statsForAccount = statisticService.getStatsForCollection(col, MessageHelper.getInstance(), DateGranularity.YEAR);
+        logger.debug("{} {}", StringUtils.join(statsForAccount.getTotals()), StringUtils.join(statsForAccount.getRowLabels()));
+        assertTrue(statsForAccount.getTotals().contains(3L));
+        statsForAccount = statisticService.getStatsForCollection(col, MessageHelper.getInstance(), DateGranularity.MONTH);
+        logger.debug("{} {}", StringUtils.join(statsForAccount.getTotals()), StringUtils.join(statsForAccount.getRowLabels()));
+        assertTrue(statsForAccount.getTotals().contains(3L));
+    }
+
+
+    private Document setupDacumentWithStats() {
         Document document = new Document();
         document.setTitle("test");
         document.setDescription("test");
@@ -67,20 +174,11 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(new ResourceAccessStatistic(DateTime.now().minusDays(1).toDate(), document, false));
         genericService.saveOrUpdate(new ResourceAccessStatistic(DateTime.now().minusDays(1).toDate(), document,true));
         genericService.synchronize();
-        // should only catch 1 day(today) beacause the rest aren't in the agg stats table yet
-        Number count = datasetService.getDao().getAccessCount(document);
-        assertEquals(1l, count.longValue());
-        dailyTask.execute();
-        genericService.synchronize();
-        count = datasetService.getDao().getAccessCount(document);
-        assertEquals(2l, count.longValue());
-        // should only have 1 for the aggregates
-        List<AggregateViewStatistic> aggregateUsageStats = resourceService.getAggregateUsageStats(DateGranularity.DAY, DateTime.now().minusDays(5).toDate(),
-                DateTime.now().plusDays(1).toDate(), 0L);
-        assertEquals(1, aggregateUsageStats.size());
-
+        return document;
     }
 
+    
+    
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)

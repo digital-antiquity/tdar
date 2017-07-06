@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Transient;
 import javax.xml.parsers.DocumentBuilder;
@@ -305,7 +307,9 @@ public class OaiPmhService {
                 header.getSetSpec().add(Long.toString(rc.getId()));
                 if (rc instanceof HierarchicalCollection) {
                     HierarchicalCollection<?> hc = (HierarchicalCollection<?>) rc;
-                    for (Long pid : hc.getParentIds()) {
+                    Set<Long> parents = new HashSet<>(hc.getParentIds());
+                    parents.addAll(hc.getAlternateParentIds());
+                    for (Long pid : parents) {
                         header.getSetSpec().add(Long.toString(pid));
                     }
                 }
