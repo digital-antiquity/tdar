@@ -37,7 +37,7 @@
 
     <div class="form-actions">
     <@s.a cssClass="btn btn-large btn-primary" href="/dashboard" id="btnDashboard">Continue to add titles, descriptions, and dates</@s.a>
-    <@s.a cssClass="btn btn-large " href="/batch/template-prepare" id="btnBatch">Return to Batch Upload Page</@s.a>
+    <@s.a cssClass="btn btn-large " href="/bulk/add" id="btnBatch">Return to Batch Upload Page</@s.a>
 
     </div>
 </div>
