@@ -347,7 +347,6 @@
                 query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.resources as res "
                         + " where coll.id in (:collectionIds)) and res.status in (:statuses) "
         ),
-        @NamedQuery(
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FILE_DOWNLOAD_HISTORY,
                 query = "select ras FROM AggregateDownloadStatistic ras inner join ras.file as ref where ref.id in (:fileIds) and ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"
