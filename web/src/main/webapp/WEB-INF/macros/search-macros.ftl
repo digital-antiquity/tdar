@@ -222,14 +222,13 @@
             <#if label != ''>
                 <h4>${label}:</h4>
             </#if>
-            <ul class="${ulClass}">
+            <ul class="${ulClass} ${facetParam}">
                 <#list facetlist as facet>
                     <li class="${liCssClass}">
                         <#compress>
                             <#if (facetlist?size > 1)>
                             <span class="media-body">
-                                <#local facetUrl>
-                                    <@s.url action=action includeParams="get" >
+                                <#local facetUrl><@s.url action=action includeParams="get" >
                                             <@s.param name="${facetParam}">${facet.raw}</@s.param>
                                             <@s.param name="startRecord" value="0"/>
                                             <#-- hack to get object type into the parameters list when passing from resourceType -->
@@ -240,11 +239,10 @@
                                                 <@s.param name="resourceTypes" value="" suppressEmptyParameters=true />
                                             </#if>
                                         <#nested>
-                                    </@s.url
-                                ></#local>
+                                    </@s.url></#local>
 
                                 <#if link><#t>
-                                    <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>">
+                                    <a rel="noindex" id="${facetParam}${facet.raw}" href="<#noescape>${facetUrl?trim}</#noescape>">
                                 </#if>
                                 <#if icon || pictoralIcon>
                                     <#if pictoralIcon && facetParam?lower_case?contains('resourcetype') >
@@ -258,13 +256,13 @@
                                     </#if>
                                 </#if>
                                 <#if link></a></#if>
-                                <#if link><a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"></#if><@s.text name="${facet.label}"/><#if link></a></#if>
+                                <#if link><a rel="noindex" href="<#noescape>${facetUrl?trim}</#noescape>"></#if><@s.text name="${facet.label}"/><#if link></a></#if>
                                 <span>(${facet.count})</span>
                             </span>
                             <#elseif (currentValues?size > 0) >
                                 <@removeFacet facetlist=currentValues facetParam=facetParam />
                             <#else>
-                                <span class="media-body">
+                                <span class="media-body" id="${facetParam}${facet.raw}">
                                     <@s.text name="${facet.label}"/>
                                     <span>(${facet.count})</span>
                                 </span>
@@ -294,11 +292,7 @@
                 <#if facet.plural?has_content><#assign facetText=facet.plural/>
                     <#elseif facet.label?has_content><#assign facetText=facet.label/>
                 </#if>
-
-                <ul class="media-list tools">
-                    <li class="media">
-                        <span class="media-body">
-                            <a rel="noindex" href="<@s.url includeParams="all">
+				<#local removeUrl><@s.url includeParams="all">
                                     <@s.param suppressEmptyParameters=true />
                                     <@s.param name="${facetParam}" value="" suppressEmptyParameters=true  />
                                     <@s.param name="startRecord" value=""  suppressEmptyParameters=true/>
@@ -316,7 +310,11 @@
                                     </#if>
                                     <#nested>
                                     -->
-                                </@s.url>">
+                                </@s.url></#local>
+                <ul class="media-list tools">
+                    <li class="media">
+                        <span class="media-body">
+                            <a rel="noindex" id="${facetParam}${facet.name()}" href="${removeUrl?trim}">
                                 <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
                                 ${facetText}
                             </a>
