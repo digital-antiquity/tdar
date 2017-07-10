@@ -21,7 +21,7 @@ public enum UserAffiliation implements HasLabel, Localizable {
     NON_PROFESSIONAL_ARCH("Nonprofessional/Avocational Archaeologist"),
     GENERAL_PUBLIC("General Public"),
     NO_RESPONSE("No Response"),
-    INDIGENEOUS_RESEARCHER("Native American/Indigenous Researcher");
+    INDIGENEOUS_RESEARCHER("Native American/Indigenous Researcher"),
     PRIOR_TO_ASKING("Prior to Asking");
 
     private String label;
