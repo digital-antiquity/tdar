@@ -231,7 +231,7 @@
                     <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
                         <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
                     </#if>
-                    <@commonr.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i></#if><@_listCreators resource/></@commonr.cartouche>
+                    <@commonr.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i></#if> [id: ${_rid}] <@_listCreators resource/></@commonr.cartouche>
                     <#if resource.resourceType?has_content>
                         <@view.unapiLink resource  />
                     </#if>
@@ -239,7 +239,6 @@
                         <p class="project">${resource.project.title}</p>
                     </#if>
                     <p class="abstract">
-                        <span class="pull-right small">[tDAR id: ${_rid}]</span>
                         <#-- for comparing resources - points to /resource/compare?id=??&id=... -->
                         <#-- <br><span class="compare">compare:</span><input type="checkbox" name='id' style="margin-top:-2px" /></span> -->
                         <@common.truncate _desc length />

@@ -44,15 +44,19 @@
             <thead>
             <tr>
                 <th>Collection (${allResourceCollections?size})</th>
-                <th>action</th>
+                <th>Resources</th>
+                <th>Users</th>
+                <th>Action</th>
             </tr>
             </thead>
             <tbody>
             <#list allResourceCollections as collection>
                 <tr>
-                <td><a href="${collection.detailUrl}">${collection.name!'no name'}</a> <@dash.collectionLegend collection /><br/>
+                <td><a href="${collection.detailUrl}">${collection.name!'no name'}</a><br/>
                 ${collection.description!''}
                     </td>
+                   <td>${(collection.resources![])?size}</td>
+                   <td>${(collection.authorizedUsers![])?size}</td>
                 <td>
                     <div class="btn-group inline">
                       <a class="btn btn-mini" href="/collection/${collection.id?c}/edit">edit</a>
