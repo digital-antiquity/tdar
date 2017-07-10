@@ -126,10 +126,6 @@ public class InvoiceController extends AbstractCartController {
             return "redirect-start";
         }
 
-        if (!isAuthenticated() && StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            getH().generateRecapcha(recaptchaService);
-        }
-
         return SUCCESS;
     }
 

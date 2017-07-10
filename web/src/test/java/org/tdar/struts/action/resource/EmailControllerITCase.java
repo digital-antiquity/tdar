@@ -6,7 +6,6 @@ import static org.junit.Assert.assertFalse;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -14,14 +13,11 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.email.EmailController;
 import org.tdar.utils.EmailMessageType;
 
 public class EmailControllerITCase extends AbstractResourceControllerITCase {
-    @Autowired
-    RecaptchaService recaptchaService;
 
     @SuppressWarnings("deprecation")
     @Test()

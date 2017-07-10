@@ -11,7 +11,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.EmailMessageType;
@@ -49,8 +48,6 @@ public abstract class AbstractRequestAccessController<P extends Persistable> ext
     private String messageBody;
     private EmailMessageType type;
 
-    @Autowired
-    private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
 
 
@@ -75,11 +72,6 @@ public abstract class AbstractRequestAccessController<P extends Persistable> ext
             addActionError(getText("requestAccessController.specify_what_to_download"));
         }
     }
-
-    public RecaptchaService getRecaptchaService() {
-        return recaptchaService;
-    }
-
 
     public List<UserAffiliation> getAffiliations() {
         return affiliations;

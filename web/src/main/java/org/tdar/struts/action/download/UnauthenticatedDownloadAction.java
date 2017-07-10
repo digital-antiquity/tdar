@@ -45,9 +45,6 @@ public class UnauthenticatedDownloadAction extends AbstractDownloadController im
      */
     public String download() {
         if (!isAuthenticated()) {
-            if (!isAuthenticated() && StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-                getH().generateRecapcha(getRecaptchaService());
-            }
             return LOGIN;
         }
 

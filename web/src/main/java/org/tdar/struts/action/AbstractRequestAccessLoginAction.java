@@ -78,7 +78,7 @@ public abstract class AbstractRequestAccessLoginAction<P extends Persistable> ex
 
     @Override
     public void validate() {
-        ErrorTransferObject errors = getUserLogin().validate(authorizationService, getRecaptchaService(), getServletRequest().getRemoteHost());
+        ErrorTransferObject errors = getUserLogin().validate(authorizationService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
         if (errors.isNotEmpty()) {

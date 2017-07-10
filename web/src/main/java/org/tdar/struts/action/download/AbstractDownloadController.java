@@ -13,7 +13,6 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -64,8 +63,6 @@ public class AbstractDownloadController extends AbstractAuthenticatableAction im
     // the specific version to be downloaded, if just one
     private InformationResourceFileVersion informationResourceFileVersion;
 
-    @Autowired
-    private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
 
     public InformationResource getInformationResource() {
@@ -155,14 +152,6 @@ public class AbstractDownloadController extends AbstractAuthenticatableAction im
     public void setDownloadTransferObject(DownloadTransferObject downloadTransferObject) {
         getLogger().trace("setting download object: {}", downloadTransferObject);
         this.downloadTransferObject = downloadTransferObject;
-    }
-
-    public RecaptchaService getRecaptchaService() {
-        return recaptchaService;
-    }
-
-    public void setRecaptchaService(RecaptchaService recaptchaService) {
-        this.recaptchaService = recaptchaService;
     }
 
     public List<UserAffiliation> getAffiliations() {

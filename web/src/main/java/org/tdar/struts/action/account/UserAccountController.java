@@ -21,7 +21,6 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -58,9 +57,6 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
 
     private String url;
     private String passwordResetURL;
-
-    @Autowired
-    private transient RecaptchaService recaptchaService;
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -102,10 +98,6 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
             return AUTHENTICATED;
         }
 
-        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            getH().generateRecapcha(recaptchaService);
-
-        }
         return SUCCESS;
     }
 
@@ -192,7 +184,7 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        ErrorTransferObject errors = registration.validate(authenticationService, recaptchaService, getServletRequest().getRemoteHost());
+        ErrorTransferObject errors = registration.validate(authenticationService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
     }
 

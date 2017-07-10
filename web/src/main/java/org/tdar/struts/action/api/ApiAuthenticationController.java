@@ -23,7 +23,6 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -54,8 +53,6 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
 
     @Autowired
     private transient AuthenticationService authenticationService;
-    @Autowired
-    private transient RecaptchaService recaptchaService;
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
@@ -125,7 +122,7 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
 
     @Override
     public void validate() {
-        ErrorTransferObject errors = getUserLogin().validate(authorizationService, recaptchaService, getServletRequest().getRemoteHost());
+        ErrorTransferObject errors = getUserLogin().validate(authorizationService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
         if (errors.isNotEmpty()) {

@@ -5,11 +5,9 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts_base.action.TdarActionSupport;
 
@@ -37,8 +35,6 @@ public abstract class AbstractCartController extends AbstractAuthenticatableActi
 
     protected String inputResultName = INPUT;
 
-    @Autowired
-    protected transient RecaptchaService recaptchaService;
     // FIXME: this is unsafe, depends on order of initialization
     private AntiSpamHelper h = new AntiSpamHelper();
 

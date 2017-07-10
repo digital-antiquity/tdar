@@ -61,7 +61,7 @@ public abstract class AbstractRequestAcessRegistrationAction<P extends Persistab
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        ErrorTransferObject errors = getRequestUserRegistration().validate(authenticationService, getRecaptchaService(), getServletRequest().getRemoteHost());
+        ErrorTransferObject errors = getRequestUserRegistration().validate(authenticationService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
     }
 

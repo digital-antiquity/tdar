@@ -69,7 +69,7 @@ public class DownloadRegistrationController extends AbstractDownloadController i
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        ErrorTransferObject errors = getDownloadRegistration().validate(authenticationService, getRecaptchaService(), getServletRequest().getRemoteHost());
+        ErrorTransferObject errors = getDownloadRegistration().validate(authenticationService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
     }
 

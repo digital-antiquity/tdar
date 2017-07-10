@@ -16,7 +16,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -48,9 +47,6 @@ public class AccountRemindResetController extends AbstractAuthenticatableAction 
 
     private String url;
     private String passwordResetURL;
-
-    @Autowired
-    private transient RecaptchaService recaptchaService;
 
     @Autowired
     private AuthenticationService authenticationService;

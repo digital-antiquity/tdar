@@ -51,7 +51,7 @@ public class CartProcessRegistrationAction extends AbstractCartController {
         }
         getLogger().debug("validating registration request");
         // a new user purchasing space is a de facto contributor, therefore they must accept the contributor agreement
-        ErrorTransferObject errors = registrationInfo.validate(authenticationService, recaptchaService, getServletRequest().getRemoteHost());
+        ErrorTransferObject errors = registrationInfo.validate(authenticationService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
     }
 

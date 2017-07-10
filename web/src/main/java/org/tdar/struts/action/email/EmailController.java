@@ -19,7 +19,6 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
@@ -35,9 +34,6 @@ import com.opensymphony.xwork2.Preparable;
 public class EmailController extends AbstractAuthenticatableAction implements Preparable, ParameterAware {
 
     private static final long serialVersionUID = 2598289601940169922L;
-
-    @Autowired
-    private transient RecaptchaService recaptchaService;
 
     private AntiSpamHelper h = new AntiSpamHelper();
     private Long fromId;
@@ -123,7 +119,7 @@ public class EmailController extends AbstractAuthenticatableAction implements Pr
 
     @Override
     public void prepare() throws Exception {
-        h.checkForSpammers(recaptchaService, true, getServletRequest().getRemoteHost(),null, false);
+        h.checkForSpammers(true, getServletRequest().getRemoteHost(),null, false);
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Creator.class, toId);
         resource = genericService.find(Resource.class, resourceId);

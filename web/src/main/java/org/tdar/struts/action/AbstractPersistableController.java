@@ -30,7 +30,6 @@ import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.search.exception.SearchIndexException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -60,10 +59,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
     public static final String DRAFT = "draft";
     protected long epochTimeUpdated = 0L;
-
-    @SuppressWarnings("unused")
-    @Autowired
-    private transient RecaptchaService recaptchaService;
 
     @Autowired
     private transient ApplicationEventPublisher publisher;

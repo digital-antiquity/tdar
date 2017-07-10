@@ -18,7 +18,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
@@ -40,9 +39,6 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     private static final long serialVersionUID = 2598289601940169922L;
     @Autowired
     private transient ResourceService resourceService;
-
-    @Autowired
-    private transient RecaptchaService recaptchaService;
 
     private AntiSpamHelper h = new AntiSpamHelper();
     private Long fromId;
@@ -130,7 +126,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     @Override
     public void prepare() {
     	super.prepare();
-        h.checkForSpammers(recaptchaService, true, getServletRequest().getRemoteHost(), null, false);
+        h.checkForSpammers(true, getServletRequest().getRemoteHost(), null, false);
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Creator.class, toId);
     }

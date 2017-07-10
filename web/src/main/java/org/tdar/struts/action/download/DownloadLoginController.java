@@ -83,7 +83,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
 
     @Override
     public void validate() {
-        ErrorTransferObject errors = getDownloadUserLogin().validate(authorizationService, getRecaptchaService(), getServletRequest().getRemoteHost());
+        ErrorTransferObject errors = getDownloadUserLogin().validate(authorizationService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
         if (errors.isNotEmpty()) {

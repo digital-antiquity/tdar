@@ -7,9 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.RecaptchaService;
 
 import net.tanesha.recaptcha.ReCaptcha;
 
@@ -80,22 +78,9 @@ public class AntiSpamHelper implements Serializable {
         this.reCaptchaText = reCaptchaText;
     }
 
-    public boolean checkRecaptcha(RecaptchaService recaptchaService, String remoteHost) {
-        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            final boolean reCaptchaResponse = recaptchaService.checkResponse(getRecaptcha_challenge_field(), getRecaptcha_response_field(), remoteHost);
-            if (reCaptchaResponse == false) {
-                throw new TdarRecoverableRuntimeException("userAccountController.captcha_not_valid");
-            }
-        }
-        return true;
-    }
-
-    public boolean checkForSpammers(RecaptchaService recaptchaService, boolean ignoreTimecheck, String remoteHost, String contributorReason, boolean requestingContributorAccess) {
+    public boolean checkForSpammers(boolean ignoreTimecheck, String remoteHost, String contributorReason, boolean requestingContributorAccess) {
         long now = System.currentTimeMillis();
         checkUserInfo();
-        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            checkRecaptcha(recaptchaService, remoteHost);
-        }
 
         if (StringUtils.isNotBlank(getComment())) {
             logger.debug(String.format("we think this user was a spammer (had comment): %s", getComment()));
@@ -148,15 +133,6 @@ public class AntiSpamHelper implements Serializable {
 
     public void setPerson(Person person) {
         this.person = person;
-    }
-
-    public void generateRecapcha(RecaptchaService recaptchaService) {
-        logger.debug("recaptcha service: {}", recaptchaService);
-        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            setRecaptcha(recaptchaService.generateRecaptcha());
-            setReCaptchaText(getRecaptcha().createRecaptchaHtml(null, null));
-        }
-
     }
 
 }

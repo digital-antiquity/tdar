@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.core.service.external.RecaptchaService;
 
 public abstract class UserAuthData implements Serializable {
 
@@ -16,11 +15,11 @@ public abstract class UserAuthData implements Serializable {
     private AntiSpamHelper h;
     private TdarUser person = new TdarUser();
 
-    protected void checkForSpammers(ErrorTransferObject errors, boolean ignoreTimecheck, RecaptchaService recaptchaService, String remoteHost) {
-        checkForSpammers(errors, ignoreTimecheck, recaptchaService, remoteHost, null, false);
+    protected void checkForSpammers(ErrorTransferObject errors, boolean ignoreTimecheck, String remoteHost) {
+        checkForSpammers(errors, ignoreTimecheck, remoteHost, null, false);
     }
 
-    protected void checkForSpammers(ErrorTransferObject errors, boolean ignoreTimecheck, RecaptchaService recaptchaService, String remoteHost,
+    protected void checkForSpammers(ErrorTransferObject errors, boolean ignoreTimecheck, String remoteHost,
             String contributorReason, boolean requestingContributorAccess) {
         // SPAM CHECKING
         // 1 - check for whether the "bogus" comment field has data
@@ -30,7 +29,7 @@ public abstract class UserAuthData implements Serializable {
             if (getPerson() != null) {
                 getH().setPerson(getPerson());
             }
-            getH().checkForSpammers(recaptchaService, ignoreTimecheck, remoteHost, contributorReason, requestingContributorAccess);
+            getH().checkForSpammers(ignoreTimecheck, remoteHost, contributorReason, requestingContributorAccess);
         } catch (TdarRecoverableRuntimeException tre) {
             errors.getActionErrors().add(tre.getMessage());
         }

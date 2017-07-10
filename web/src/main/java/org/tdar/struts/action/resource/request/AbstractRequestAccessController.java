@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -49,8 +48,6 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
     private String messageBody;
     private EmailMessageType type;
 
-    @Autowired
-    private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
 
     public Resource getResource() {
@@ -78,11 +75,6 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
             addActionError(getText("requestAccessController.specify_what_to_download"));
         }
     }
-
-    public RecaptchaService getRecaptchaService() {
-        return recaptchaService;
-    }
-
 
 	public List<UserAffiliation> getAffiliations() {
 		return affiliations;

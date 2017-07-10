@@ -14,7 +14,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts.action.AbstractCartController;
@@ -46,9 +45,6 @@ public class CartLoginController extends AbstractCartController implements Valid
 
     private static final long serialVersionUID = 8641969120632289477L;
 
-    @SuppressWarnings("unused")
-    @Autowired
-    private RecaptchaService recaptchaService;
     @Autowired
     private AuthenticationService authenticationService;
 
