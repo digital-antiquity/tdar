@@ -86,7 +86,7 @@
             <#if sort.name() == 'PROJECT' || sort.name() == 'RESOURCE_TYPE' || sort.name() == "RESOURCE_TYPE_REVERSE">
                 <#local type="resource" />
             </#if>
-            <option name="${sort.name()}" <#if sort==sortField!>selected</#if> <#if type!=''>class="${type}"</#if>>${sort.label}</option>
+            <option value="${sort.name()}" <#if sort==sortField!>selected</#if> <#if type!=''>class="${type}"</#if>>${sort.label}</option>
         </#list>
         </select>
     <#--FIXME: move this block to tdar.common.js, bind if select has 'autoreload' class -->

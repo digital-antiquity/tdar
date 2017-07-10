@@ -40,7 +40,6 @@ public enum SortOption {
     LAST_NAME_REVERSE(Person.class, "Last Name (Reversed)", true);
 
     private String label;
-    private String sortField;
     private int luceneSortType;
     private boolean reversed;
     private Class<? extends Indexable> context;
@@ -55,7 +54,6 @@ public enum SortOption {
 
     private SortOption(Class<? extends Indexable> context, String label, boolean reversed) {
         this.setLabel(label);
-        this.setSortField(sortField);
         this.setReversed(reversed);
         this.setContext(context);
     }
@@ -85,21 +83,6 @@ public enum SortOption {
 
     public String getLabel() {
         return label;
-    }
-
-    /**
-     * @param sortField
-     *            the sortField to set
-     */
-    public void setSortField(String sortField) {
-        this.sortField = sortField;
-    }
-
-    /**
-     * @return the sortField
-     */
-    public String getSortField() {
-        return sortField;
     }
 
     /**

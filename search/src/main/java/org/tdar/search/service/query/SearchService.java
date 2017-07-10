@@ -118,7 +118,7 @@ public class SearchService<I extends Indexable> extends AbstractSearchService {
         resultHandler.setTotalRecords(ftq.getTotalResults());
         logger.trace("completed hibernate hydration ");
         String queryText = ftq.getQueryString();
-        logger.debug(queryText);
+        logger.debug(queryText + " :: " + ftq.getSortParam());
         Object searchMetadata[] = { resultHandler.getMode(), ftq.getLuceneTime(), ftq.getTotalResults(), resultHandler.getStartRecord(),
                 ftq.getHydrationTime() };
         logger.trace("query: {} ", queryText);

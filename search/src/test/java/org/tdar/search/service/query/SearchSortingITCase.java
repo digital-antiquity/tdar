@@ -211,7 +211,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
                 Comparator comparator = entry.getValue();
 
                 for (int i = 0; i < (results.size() - 2); i++) {
-                    logger.info("now testing sorting for {}.{}", sortTestInfo.type, sortOption.getSortField());
+                    logger.info("now testing sorting for {}.{}", sortTestInfo.type, sortOption);
                     Object item1 = results.get(i);
                     Object item2 = results.get(i + 1);
                     String msg = String.format("when sorting by %s, item1:[%s] should appear before item2:[%s] ", sortOption, item1, item2);
