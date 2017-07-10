@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-    <#import "../dashboard/dashboard-common.ftl" as dash />
+    <#import "../dashboard/common-dashboard.ftl" as dash />
 
 <head>
 <title>Resource Export Request</title>

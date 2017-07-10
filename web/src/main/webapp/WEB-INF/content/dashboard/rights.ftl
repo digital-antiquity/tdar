@@ -5,7 +5,7 @@
     <#import "/WEB-INF/macros/search-macros.ftl" as search>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "/WEB-INF/macros/common.ftl" as common>
-    <#import "dashboard-common.ftl" as dash />
+    <#import "common-dashboard.ftl" as dash />
     <#import "/${config.themeDir}/settings.ftl" as settings>
 
 <head>
