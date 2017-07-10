@@ -147,4 +147,5 @@ public interface QueryFieldNames {
     String END_PAGE = "page.end";
     String JOURNAL_NUMBER = "journal.number";
     String EFFECTIVELY_PUBLIC = "effectivelyPublic";
+    String RESOURCE_ANNOTATION = "resourceAnnotationPair";
 }

@@ -33,6 +33,7 @@ import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.AnnotationQueryPart;
 import org.tdar.search.query.part.ContentQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
@@ -48,6 +49,7 @@ import org.tdar.search.query.part.entity.CreatorQueryPart;
 import org.tdar.search.query.part.resource.TemporalQueryPart;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.StringPair;
 import org.tdar.utils.range.DateRange;
 import org.tdar.utils.range.StringRange;
 
@@ -117,6 +119,7 @@ public class SearchParameters {
     private List<DateRange> updatedDates = new ArrayList<>();
     private List<CoverageDate> coverageDates = new ArrayList<>();
     private List<StringRange> createdDates = new ArrayList<>();
+    private List<StringPair> annotations = new ArrayList<>();
     private List<Integer> creationDecades = new ArrayList<>();
 
     // parameters. don't render these in the form view.
@@ -403,6 +406,8 @@ public class SearchParameters {
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE_UPDATED, support.getText("searchParameter.date_updated"), getOperator(),
                 getUpdatedDates()));
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, support.getText("searchParameter.date"), getOperator(), getCreatedDates()));
+
+        queryPartGroup.append(new AnnotationQueryPart(QueryFieldNames.RESOURCE_ANNOTATION, support.getText("searchParameter.annotation"), getOperator(), getAnnotations()));
 
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
         SpatialQueryPart spatialQueryPart = new SpatialQueryPart(getLatitudeLongitudeBoxes());
@@ -699,6 +704,14 @@ public class SearchParameters {
 
     public void setDescriptions(List<String> descriptions) {
         this.descriptions = descriptions;
+    }
+
+    public List<StringPair> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(List<StringPair> annotations) {
+        this.annotations = annotations;
     }
 
 }

@@ -95,9 +95,18 @@ public class ResourceAnnotation extends AbstractPersistable implements HasResour
 
     @Override
     public boolean isValid() {
-        return (resourceAnnotationKey != null)
-                && StringUtils.isNotEmpty(resourceAnnotationKey.getKey())
-                && StringUtils.isNotEmpty(value);
+        if (resourceAnnotationKey == null) {
+            return false;
+        }
+        if (StringUtils.isEmpty(resourceAnnotationKey.getKey())) {
+            return false;
+        }
+        
+        if (StringUtils.isEmpty(value)) {
+            return false;
+        }
+        
+        return true;
     }
 
     @Override

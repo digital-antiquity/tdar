@@ -34,6 +34,7 @@ import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -192,9 +193,17 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         indexLatitudeLongitudeBoxes(resource, doc);
 
-        // getActiveResourceAnnotations, getActiveSourceCollections , getActiveRelatedComparativeCollections, getActiveResourceNotes,
+        // getActiveSourceCollections , getActiveRelatedComparativeCollections, getActiveResourceNotes,
         doc.setField(QueryFieldNames.RESOURCE_OWNER, resource.getResourceOwner());
 
+        
+        Set<String> concatenatedAnnotations = new HashSet<>();
+        for (ResourceAnnotation ann : resource.getActiveResourceAnnotations()) {
+            if (ann != null && ann.isValid()) {
+                concatenatedAnnotations.add(formatResourceAnnotation(ann.getResourceAnnotationKey().getLabel(), ann.getValue()));
+            }
+        }
+        doc.setField(QueryFieldNames.RESOURCE_ANNOTATION, concatenatedAnnotations);
         // project.*
 
         if (resource instanceof SupportsResource) {
@@ -215,6 +224,10 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         }
 
         return doc;
+    }
+
+    public static String formatResourceAnnotation(String key, String value) {
+        return String.format("%s-$$-%s", StringUtils.lowerCase(key), StringUtils.lowerCase(value));
     }
 
     private static void indexAll(SolrInputDocument doc, Map<String, Object> map) {

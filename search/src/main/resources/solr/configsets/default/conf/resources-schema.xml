@@ -163,6 +163,8 @@
     <field name="activeCoverageDates.startDate" type="ints" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="activeCoverageDates.endDate" type="ints" indexed="true"  required="false" multiValued="true"  stored="true"/>
 
+    <field name="resourceAnnotationPair" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
 
     <field name="type" type="string" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="collectionType" type="string" indexed="true" stored="true" required="false" multiValued="false" />

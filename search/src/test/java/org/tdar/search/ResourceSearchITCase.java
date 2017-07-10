@@ -84,9 +84,11 @@ import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.CreatorSearchInterface;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.StringPair;
 import org.tdar.utils.range.DateRange;
 
 public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
+
 
 
     @Autowired
@@ -123,25 +125,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         LuceneSearchResultHandler<Resource> result = new SearchResult<>();
         resourceSearchService.buildAdvancedSearch(asqo, getAdminUser(), result, MessageHelper.getInstance());
     }
-
-    @Test
-    @Rollback
-    public void testResourceAnnotationSearch() throws SearchException, SearchIndexException, IOException, ParseException {
-        Document doc = createAndSaveNewResource(Document.class);
-        ResourceAnnotationKey key = new ResourceAnnotationKey("MAC Lab Lot Number");
-        genericService.saveOrUpdate(key);
-        String code = "18ST659/158";
-        ResourceAnnotation ann = new ResourceAnnotation(key, code);
-        ResourceAnnotation ann2 = new ResourceAnnotation(key, "18ST659/143");
-        doc.getResourceAnnotations().add(ann);
-        doc.getResourceAnnotations().add(ann2);
-        genericService.saveOrUpdate(doc);
-        searchIndexService.index(doc);
-        SearchResult<Resource> result = doSearch(code,null,null,null);
-        assertFalse("we should get back at least one hit", result.getResults().isEmpty());
-        assertTrue(result.getResults().contains(doc));
-    }
-
     
     @Test
     @Rollback
@@ -158,9 +141,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
             assertTrue("expecting site name for resource", ((Resource)resource).getSiteNameKeywords().contains(snk));
         }
     }
-    
-    
-
     
     @Test
     @Rollback
@@ -384,6 +364,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         }
         assertTrue("search should have at least 1 result", resourceCount > 0);
     }
+    
 
 
     @Test
