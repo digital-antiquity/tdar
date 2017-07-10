@@ -19,7 +19,6 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -49,8 +48,6 @@ public class LoginAction extends AbstractAuthenticatedAction implements Validate
     private String url;
     private String internalReturnUrl;
 
-    @Autowired
-    private RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
     private UserLogin userLogin = new UserLogin(h);
 
@@ -195,7 +192,7 @@ public class LoginAction extends AbstractAuthenticatedAction implements Validate
 
     @Override
     public void validate() {
-        ErrorTransferObject errors = userLogin.validate(authorizationService, recaptchaService, getServletRequest().getRemoteHost());
+        ErrorTransferObject errors = userLogin.validate(authorizationService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
         if (errors.isNotEmpty()) {
