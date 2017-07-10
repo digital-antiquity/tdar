@@ -1282,19 +1282,21 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     private UserInvite toInvite(UserRightsProxy proxy, TdarUser user) {
         UserInvite invite = new UserInvite();
-        invite.setDateExpires(proxy.getUntilDate());
-        invite.setId(proxy.getInviteId());
-        invite.setPermissions(proxy.getPermission());
         if (PersistableUtils.isNotNullOrTransient(proxy.getInviteId() )) {
             invite = getDao().find(UserInvite.class, proxy.getInviteId());
+        } else {
+            invite.setDateExpires(proxy.getUntilDate());
+            invite.setId(proxy.getInviteId());
+            invite.setNote(proxy.getNote());
+            invite.setPermissions(proxy.getPermission());
+            invite.setAuthorizer(user);
+            Person person = new Person(proxy.getFirstName(), proxy.getLastName(), proxy.getEmail());
+            if (person.hasNoPersistableValues()) {
+                return null;
+            }
+            person = entityService.findOrSaveCreator(person);
+            invite.setPerson(person);
         }
-        invite.setAuthorizer(user);
-        Person person = new Person(proxy.getFirstName(), proxy.getLastName(), proxy.getEmail());
-        if (person.hasNoPersistableValues()) {
-            return null;
-        }
-        person = entityService.findOrSaveCreator(person);
-        invite.setPerson(person);
         return invite;
     }
 

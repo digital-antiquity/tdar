@@ -31,10 +31,6 @@ public class UserInvite extends AbstractPersistable {
 
     private static final long serialVersionUID = 2915969311944606586L;
 
-//    @Column(unique = true, nullable = true, name="email")
-//    @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
-//    private String emailAddress;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable=false)
     private Date dateCreated = new Date();
@@ -59,6 +55,7 @@ public class UserInvite extends AbstractPersistable {
     @JoinColumn(nullable = false, name = "authorizer_id")
     private TdarUser authorizer;
 
+    private transient String note;
     
     @ManyToOne
     @JoinColumn(nullable = false, name = "person_id")
@@ -130,6 +127,14 @@ public class UserInvite extends AbstractPersistable {
 
     public void setResource(Resource resource) {
         this.resource = resource;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
 }
