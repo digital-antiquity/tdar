@@ -62,6 +62,7 @@ import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.UserRightsProxyService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
@@ -82,8 +83,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private transient EntityService entityService;
-    @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient SimpleFileProcessingDao simpleFileProcessingDao;
@@ -92,7 +91,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Autowired
     private SerializationService serializationService;
     @Autowired
-    private EmailService emailService;
+    private UserRightsProxyService userRightsProxyService;
 
     /**
      * Reconcile @link AuthorizedUser entries on a @link ResourceCollection, save if told to.
@@ -1143,7 +1142,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         List<UserInvite> invites = new ArrayList<>();
 
-        convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
+        userRightsProxyService.convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
         RevisionLogType edit = RevisionLogType.EDIT;
         saveAuthorizedUsersForResourceCollection(c, c, authorizedUsers, true, authenticatedUser, edit);
 
@@ -1153,7 +1152,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             revision.setTimeBasedOnStart(startTime);
             getDao().saveOrUpdate(revision);
         }
-        handleInvites(authenticatedUser, invites, c);
+        userRightsProxyService.handleInvites(authenticatedUser, invites, c);
         publisher.publishEvent(new TdarEvent(c, EventType.CREATE_OR_UPDATE));
 
     }
@@ -1215,110 +1214,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public void saveResourceRights(List<UserRightsProxy> proxies, TdarUser authenticatedUser, Resource resource) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         List<UserInvite> invites = new ArrayList<>();
-        convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
+        userRightsProxyService.convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
         saveAuthorizedUsersForResource(resource, authorizedUsers, true, authenticatedUser);
 
-        handleInvites(authenticatedUser, invites, resource);
+        userRightsProxyService.handleInvites(authenticatedUser, invites, resource);
     }
 
-    private void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites, HasAuthorizedUsers c) {
-        List<UserInvite> existing = getDao().findUserInvites(c);
-        Map<Long, UserInvite> createIdMap = PersistableUtils.createIdMap(existing);
-        logger.debug("invites existing:: {}", existing);
-        logger.debug("invites incoming:: {}", invites);
-
-        if (CollectionUtils.isNotEmpty(invites)) {
-            for (UserInvite invite : invites) {
-                if (PersistableUtils.isNotTransient(invite) || invite == null || invite.getUser().hasNoPersistableValues()) {
-                    continue;
-                }
-
-                // existing one
-                if (PersistableUtils.isNotNullOrTransient(invite.getId() )) {
-                    UserInvite inv = createIdMap.get(invite.getId());
-                    inv.setDateExpires(invite.getDateExpires());
-                    inv.setPermissions(inv.getPermissions());
-                    getDao().saveOrUpdate(inv);
-                    createIdMap.remove(invite.getId());
-                    continue;
-                }
-
-                // new invite
-                if (c instanceof ResourceCollection) {
-                    invite.setResourceCollection((ResourceCollection) c);
-                }
-                if (c instanceof Resource) {
-                    invite.setResource((Resource) c);
-                }
-                getDao().saveOrUpdate(invite);
-                emailService.sendUserInviteEmail(invite, authenticatedUser);
-            }
-        }
-        Collection<UserInvite> toDelete = createIdMap.values();
-        logger.debug("invites delete:: {}", toDelete);
-
-        getDao().delete(toDelete);
-    }
-
-    private void convertProxyToItems(List<UserRightsProxy> proxies, TdarUser authenticatedUser, List<AuthorizedUser> authorizedUsers, List<UserInvite> invites) {
-        for (UserRightsProxy proxy : proxies) {
-            if (proxy == null || proxy.isEmpty()) {
-                return;
-            } 
-
-            if (proxy.getEmail() != null || proxy.getInviteId() != null) {
-                UserInvite invite = toInvite(proxy, authenticatedUser);
-                if (invite != null) {
-                    if (invite.getUser().isValidForController()) {
-                        invites.add(invite);
-                    } else {
-                        throw new TdarValidationException("resourceCollectionService.invalid", Arrays.asList(invite.getUser()));
-                    }
-                }
-            } else if (PersistableUtils.isNotNullOrTransient(proxy.getId())) {
-                authorizedUsers.add(toAuthorizedUser(proxy));
-            }
-        }
-    }
-
-    private UserInvite toInvite(UserRightsProxy proxy, TdarUser user) {
-        UserInvite invite = new UserInvite();
-        if (PersistableUtils.isNotNullOrTransient(proxy.getInviteId() )) {
-            invite = getDao().find(UserInvite.class, proxy.getInviteId());
-        } else {
-            invite.setDateExpires(proxy.getUntilDate());
-            invite.setId(proxy.getInviteId());
-            invite.setNote(proxy.getNote());
-            invite.setPermissions(proxy.getPermission());
-            invite.setAuthorizer(user);
-            Person person = new Person(proxy.getFirstName(), proxy.getLastName(), proxy.getEmail());
-            if (person.hasNoPersistableValues()) {
-                return null;
-            }
-            person = entityService.findOrSaveCreator(person);
-            invite.setPerson(person);
-        }
-        return invite;
-    }
-
-    private AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
-        try {
-            AuthorizedUser au = new AuthorizedUser();
-            logger.debug("{} {} ", proxy, proxy.getId());
-            TdarUser user = getDao().find(TdarUser.class, proxy.getId());
-            if (user == null && PersistableUtils.isNotNullOrTransient(proxy.getId() )) {
-                throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
-            }
-            logger.debug("{} {}", user.getClass() , user);
-            au.setUser(user);
-            au.setGeneralPermission(proxy.getPermission());
-            au.setDateExpires(proxy.getUntilDate());
-            getLogger().debug("{} ({})", au, proxy.getDisplayName());
-        return au;
-        } catch (WrongClassException e) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
-        }
-    }
 
     @Transactional(readOnly = true)
     public <C extends HierarchicalCollection> List<C> findAlternateChildren(List<Long> ids, TdarUser authenticatedUser, Class<C> cls) {
