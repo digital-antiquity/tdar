@@ -168,7 +168,7 @@ $(function() {
         <table class="tableFormat table">
             <thead>
             <tr>
-                <th>Collection</th>
+                <th>Where</th>
                 <th>User</th>
                 <#list availablePermissions as permission>
                     <th>${permission.label}</th>
