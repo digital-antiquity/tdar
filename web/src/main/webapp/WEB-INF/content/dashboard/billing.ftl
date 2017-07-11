@@ -29,7 +29,7 @@
         <br/>
       <h3>Add Space</h3>
       <p>Purchase addtional files or space.</p>
-    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='process-choice'>
+    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='/cart/process-choice'>
                 <table class="table pTable">
                     <tbody>
                         <tr>
