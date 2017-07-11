@@ -11,7 +11,7 @@
 </head>
 
 <div id="titlebar" parse="true">
-    <h1>Sharing: <span class="red">${persistable.name}</span></h1>
+    <h1>Permissions: <span class="red">${persistable.name}</span></h1>
 </div>
     <@s.form class="form-horizontal tdarvalidate" action="rights-save" method="POST" dynamicAttributes={"data-validate-method":"initRightsForm"}>
 <div class="row">

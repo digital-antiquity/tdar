@@ -170,6 +170,7 @@ $(function() {
             <tr>
                 <th>Where</th>
                 <th>User</th>
+
                 <#list availablePermissions as permission>
                     <th>${permission.label}</th>
                 </#list>

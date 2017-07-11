@@ -16,9 +16,10 @@
     <@commonCollection.header />
 
         <h1>${resourceCollection.name!"untitled collection"}</h1>
-
+    
     <#if !visible>
     This collection is not accessible
+    
     <#else>
 
         <@commonCollection.sidebar />
