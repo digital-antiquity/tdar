@@ -1,5 +1,5 @@
 Dear ${to.properName},
-  ${from.properName} would like to share <#if invite.resourceCollection>${invite.resourceCollection.name}<#else>${invite.resource.title}</#if> with you on The Digital Archaeological Record (tDAR). To register and acces your shared materials:  go to http://core.tdar.org/register and use ${to.email} when registering.
+  ${from.properName} would like to share <#if invite.resourceCollection>${invite.resourceCollection.name}<#else>${invite.resource.title}</#if> with you on The Digital Archaeological Record (tDAR). To register and acces your shared materials:  go to http://core.tdar.org/account/new?id=${to.id?c}&email=${to.email} and use ${to.email} when registering.
 
 <#if invite.note?has_content>
   -----------------------------------------------

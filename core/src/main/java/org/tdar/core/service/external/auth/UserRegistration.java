@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.ErrorTransferObject;
@@ -208,6 +209,16 @@ public class UserRegistration extends UserAuthData {
         getLogger().trace("{} : {}", "contrib access", isRequestingContributorAccess());
         getLogger().trace("{} : {}", "contrib reason", getContributorReason());
         getLogger().trace("{} : {}", "       browser", header);
+        
+    }
+
+    public void setupFrom(Person person) {
+        logger.debug("setting from: {}", person);
+        this.confirmEmail = person.getEmail();
+        this.institutionName = person.getInstitutionName();
+        this.getPerson().setFirstName(person.getFirstName());
+        this.getPerson().setLastName(person.getLastName());
+        this.getPerson().setEmail(person.getEmail());
         
     }
 }
