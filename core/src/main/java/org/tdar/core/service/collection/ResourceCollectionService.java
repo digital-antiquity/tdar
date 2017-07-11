@@ -1217,17 +1217,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<UserInvite> invites = new ArrayList<>();
         convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
         saveAuthorizedUsersForResource(resource, authorizedUsers, true, authenticatedUser);
-//        if (resource.getInternalResourceCollection() == null) {
-//            getDao().createInternalResourceCollectionForResource(resource.getSubmitter(), resource, true);
-//        }
-//        resource.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, GeneralPermissions.ADMINISTER_SHARE));
+
         handleInvites(authenticatedUser, invites, resource);
     }
 
     private void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites, HasAuthorizedUsers c) {
         List<UserInvite> existing = getDao().findUserInvites(c);
         Map<Long, UserInvite> createIdMap = PersistableUtils.createIdMap(existing);
-        
+        logger.debug("invites existing:: {}", existing);
+        logger.debug("invites incoming:: {}", invites);
+
         if (CollectionUtils.isNotEmpty(invites)) {
             for (UserInvite invite : invites) {
                 if (PersistableUtils.isNotTransient(invite) || invite == null || invite.getUser().hasNoPersistableValues()) {
@@ -1255,8 +1254,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 emailService.sendUserInviteEmail(invite, authenticatedUser);
             }
         }
-        
-        getDao().delete(createIdMap.values());
+        Collection<UserInvite> toDelete = createIdMap.values();
+        logger.debug("invites delete:: {}", toDelete);
+
+        getDao().delete(toDelete);
     }
 
     private void convertProxyToItems(List<UserRightsProxy> proxies, TdarUser authenticatedUser, List<AuthorizedUser> authorizedUsers, List<UserInvite> invites) {

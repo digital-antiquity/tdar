@@ -44,21 +44,22 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
     @Autowired
     SerializationService serializationService;
 
-//    private List<AuthorizedUser> authUsers;
+    // private List<AuthorizedUser> authUsers;
 
     /**
      * tests that a user with MODIFY_METADATA Permissions has limited rights -- specifically cannot modify collection assignments or authorized users
+     * 
      * @throws Exception
      */
     @SuppressWarnings("unused")
     @Test
     @Rollback(false)
     public void testUserRemovingCollectionWithTheirRights() throws Exception {
-        final TdarUser p = createAndSaveNewPerson(System.currentTimeMillis() +"a","aaa");
+        final TdarUser p = createAndSaveNewPerson(System.currentTimeMillis() + "a", "aaa");
         final Long pid = p.getId();
         // adminUser creates a a new image and assigns p as an authorized user
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
-        users.add(new AuthorizedUser(getAdminUser(),p, GeneralPermissions.MODIFY_RECORD));
+        users.add(new AuthorizedUser(getAdminUser(), p, GeneralPermissions.MODIFY_RECORD));
         SharedCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
         evictCache();
         ImageController imageController = generateNewInitializedController(ImageController.class);
@@ -87,7 +88,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
                 try {
                     resourceRightsController.prepare();
                     resourceRightsController.edit();
-                    
+
                     // Whaaat? p just removed the authuser entry that gives p the ability to edit this item in the first place. p, you crazy.
                     resourceRightsController.getProxies().clear();
                     resourceRightsController.setServletRequest(getServletPostRequest());
@@ -102,7 +103,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
                 assertNotEquals("submitter and p should not be the same", img.getSubmitter().getId(), pid);
 
                 logger.debug("resource collections: {}", img.getSharedCollections());
-                
+
                 List<AuthorizedUser> authUsers = resourceCollectionService.getAuthorizedUsersForResource(img, p_);
                 assertEquals("expecting authuser list should be empty now", 0, authUsers.size());
                 img.markUpdated(getAdminUser());
@@ -141,18 +142,16 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         });
 
     }
-    
-    
-/**
+
     @SuppressWarnings("unused")
     @Test
     @Rollback(false)
     public void testSelfEscalation() throws Exception {
-        final TdarUser p = createAndSaveNewPerson(System.currentTimeMillis() +"a","aaa");
+        final TdarUser p = createAndSaveNewPerson(System.currentTimeMillis() + "a", "aaa");
         final Long pid = p.getId();
         // adminUser creates a a new image and assigns p as an authorized user
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
-        users.add(new AuthorizedUser(getAdminUser(),p, GeneralPermissions.MODIFY_RECORD));
+        users.add(new AuthorizedUser(getAdminUser(), p, GeneralPermissions.MODIFY_RECORD));
         SharedCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
         evictCache();
         ImageController imageController = generateNewInitializedController(ImageController.class);
@@ -181,7 +180,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
                 try {
                     resourceRightsController.prepare();
                     resourceRightsController.edit();
-                    
+
                     // Whaaat? p just removed the authuser entry that gives p the ability to edit this item in the first place. p, you crazy.
                     resourceRightsController.getProxies().clear();
                     resourceRightsController.setServletRequest(getServletPostRequest());
@@ -196,7 +195,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
                 assertNotEquals("submitter and p should not be the same", img.getSubmitter().getId(), pid);
 
                 logger.debug("resource collections: {}", img.getSharedCollections());
-                
+
                 List<AuthorizedUser> authUsers = resourceCollectionService.getAuthorizedUsersForResource(img, p_);
                 assertEquals("expecting authuser list should be empty now", 0, authUsers.size());
                 img.markUpdated(getAdminUser());
@@ -235,6 +234,4 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         });
 
     }
-
-**/
-    }
+}

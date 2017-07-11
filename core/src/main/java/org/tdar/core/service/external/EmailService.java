@@ -99,6 +99,7 @@ public class EmailService {
         Map<String,Object> map = new HashMap<>();
         map.put("invite", invite);
         map.put("from", from);
+        map.put("to", invite.getUser());
         queueWithFreemarkerTemplate("invite.ftl", map , email);
 
     }
