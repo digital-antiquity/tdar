@@ -24,8 +24,25 @@
     </div>
 
 
+
         <#if (totalRecords > 0)>
-			<@search.partFacet selectedResourceTypes paginationHelper "Project" "h3" />
+
+        <div id="divResultsSortControl">
+            <div class="row">
+                <div class="span12">
+                    <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+        <div class="collection-facets">
+            <#assign mapSize="450" />
+			<@search.partFacet selectedResourceTypes paginationHelper "Project" "h4"/>
+        </div>
+
+			
 
             <#if ( results?has_content )>
                 <@rlist.listResources resourcelist=results listTag="ol" headerTag="h4" titleTag="h5" itemsPerRow=4
@@ -37,7 +54,6 @@
                 <@search.pagination ""/>
             </div>
             </#if>
-
         <#else>
         No resources have been associated with this project.
         </#if>

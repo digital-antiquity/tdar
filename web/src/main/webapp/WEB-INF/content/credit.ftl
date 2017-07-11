@@ -6,7 +6,6 @@
 Digital Antiquity worked with <a href="http://fervorcreative.com/">Fervor
     Creative</a> to re-envision the public interface for tDAR, with the primary goals of simplifying and enhancing the interface.<br/>
 
-
 <h2>Image Credits and Sources</h2>
 
 <p><b><a href="http://thenounproject.com/noun/camera/#icon-No476">http://thenounproject.com/noun/camera/#icon-No476</a><br>
