@@ -23,14 +23,12 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.WrongClassException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
@@ -56,15 +54,12 @@ import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.DeleteIssue;
-import org.tdar.core.service.EntityService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.UserRightsProxyService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.transform.jsonld.SchemaOrgCollectionTransformer;
 import org.tdar.utils.PersistableUtils;
@@ -1178,36 +1173,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = true)
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
         return getDao().findUsersSharedWith(authenticatedUser);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserInvite> findUserInvites(Persistable resource) {
-        if (resource instanceof Resource) {
-            return getDao().findUserInvites((Resource) resource);
-        }
-        if (resource instanceof ResourceCollection) {
-            return getDao().findUserInvites((ResourceCollection) resource);
-        }
-        if (resource instanceof TdarUser) {
-            return getDao().findUserInvites((TdarUser) resource);
-        }
-        return null;
-
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserInvite> findUserInvites(Resource resource) {
-        return getDao().findUserInvites(resource);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserInvite> findUserInvites(ResourceCollection resourceCollection) {
-        return getDao().findUserInvites(resourceCollection);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UserInvite> findUserInvites(TdarUser user) {
-        return getDao().findUserInvites(user);
     }
 
     @Transactional(readOnly = false)

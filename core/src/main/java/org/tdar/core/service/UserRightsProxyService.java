@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -44,6 +45,37 @@ public class UserRightsProxyService {
     
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     
+
+    @Transactional(readOnly = true)
+    public List<UserInvite> findUserInvites(Persistable resource) {
+        if (resource instanceof Resource) {
+            return resourceCollectionDao.findUserInvites((Resource) resource);
+        }
+        if (resource instanceof ResourceCollection) {
+            return resourceCollectionDao.findUserInvites((ResourceCollection) resource);
+        }
+        if (resource instanceof TdarUser) {
+            return resourceCollectionDao.findUserInvites((TdarUser) resource);
+        }
+        return null;
+
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserInvite> findUserInvites(Resource resource) {
+        return resourceCollectionDao.findUserInvites(resource);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserInvite> findUserInvites(ResourceCollection resourceCollection) {
+        return resourceCollectionDao.findUserInvites(resourceCollection);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserInvite> findUserInvites(TdarUser user) {
+        return resourceCollectionDao.findUserInvites(user);
+    }
+
     
     
     @Transactional(readOnly=false)

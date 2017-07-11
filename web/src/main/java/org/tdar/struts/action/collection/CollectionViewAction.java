@@ -42,6 +42,7 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.UserRightsProxyService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.collection.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
@@ -106,7 +107,9 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
-
+    @Autowired
+    private transient UserRightsProxyService userRightsProxyService;
+    
     private Long parentId;
     private List<HierarchicalCollection> collections = new LinkedList<>();
     private Long viewCount = 0L;
@@ -223,7 +226,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         Collections.sort(collections);
         getLogger().trace("child collections: end");
 
-        setInvites(resourceCollectionService.findUserInvites(getPersistable()));
+        setInvites(userRightsProxyService.findUserInvites(getPersistable()));
 
         // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
         // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS

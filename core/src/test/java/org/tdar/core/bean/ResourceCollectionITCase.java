@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -166,6 +168,25 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
         withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1.getName(), SharedCollection.class);
         assertNotEquals(withName, test);
+    }
+
+    @Test
+    @Rollback(true)
+    public void testFindDeletedShareWithRights() {
+        SharedCollection test = new SharedCollection();
+        test.setStatus(Status.DELETED);
+        test.setName("test");
+        test.markUpdated(getAdminUser());
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getAdminUser(), GeneralPermissions.ADMINISTER_SHARE));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(test);
+        genericService.saveOrUpdate(test.getAuthorizedUsers());
+        genericService.synchronize();
+        SharedCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, "test", SharedCollection.class);
+        assertNull("should be null for deleted collection",withName);
+        List<SharedCollection> findCollectionsSharedWith = resourceCollectionDao.findCollectionsSharedWith(getAdminUser(), getBillingUser(), SharedCollection.class, GeneralPermissions.MODIFY_METADATA, false);
+        assertTrue("result should be empty", CollectionUtils.isEmpty(findCollectionsSharedWith));
     }
 
     @Test

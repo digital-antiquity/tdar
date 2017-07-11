@@ -24,6 +24,7 @@ import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
+import org.tdar.core.service.UserRightsProxyService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.exception.SearchIndexException;
@@ -49,6 +50,8 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient UserRightsProxyService userRightsProxyService;
     @Autowired
     private transient SearchIndexService searchIndexService;
 
@@ -174,7 +177,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
                 proxies.add(new UserRightsProxy(au));
             });
 
-        List<UserInvite> invites = resourceCollectionService.findUserInvites(getPersistable());
+        List<UserInvite> invites = userRightsProxyService.findUserInvites(getPersistable());
         if (CollectionUtils.isNotEmpty(invites)) {
             invites.forEach(invite -> {
                 proxies.add(new UserRightsProxy(invite));

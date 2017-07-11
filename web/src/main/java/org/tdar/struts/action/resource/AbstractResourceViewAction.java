@@ -46,6 +46,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.UserRightsProxyService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -91,6 +92,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private transient AuthorizationService authorizationService;
 
+    @Autowired
+    private transient UserRightsProxyService userRightsProxyService;
+    
     @Autowired
     private transient InformationResourceFileService informationResourceFileService;
 
@@ -212,7 +216,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         }
 
         
-        setInvites(resourceCollectionService.findUserInvites(getPersistable()));
+        setInvites(userRightsProxyService.findUserInvites(getPersistable()));
         return SUCCESS;
     }
 
