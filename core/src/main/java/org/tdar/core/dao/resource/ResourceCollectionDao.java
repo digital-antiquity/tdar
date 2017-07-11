@@ -398,6 +398,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         }
         Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_RESOURCES_SHARED_WITH, Resource.class);
         query.setParameter("user", user);
+        query.setParameter("owner", authenticatedUser);
         query.setParameter("admin", admin);
         query.setParameter("collectionIds", ids);
         return query.getResultList();

@@ -217,18 +217,16 @@ $(function() {
     <#--  print out authorized Users by collection for rights table -->
     <#macro _collectionSection collections>
         <#list collections as collection_ >
+        <#--  if the persistable is NOT a collection OR the collection != current persistable (the latter is handled above) -->
+        <#if !(persistable?has_content && persistable == collection_) >
             <#if collection_.authorizedUsers?has_content >
                 <#list collection_.authorizedUsers as user>
                 <tr>
                     <td>
-                        <#if collection_.topCollection?has_content >
-                            <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
-                        <#else>
-                            Local Resource
-                        </#if>
+                        <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
                     </td>
                     <td>
-                    <a href="<@s.url value="${user.user.detailUrl}"/>">${user.user.properName}</a> <!-- ${user.user.properName}:${user.generalPermission} -->
+                        <a href="<@s.url value="${user.user.detailUrl}"/>">${user.user.properName}</a> <!-- ${user.user.properName}:${user.generalPermission} -->
                     </td>
                     <#list availablePermissions as permission>
                         <td>
@@ -251,6 +249,7 @@ $(function() {
                     <td colspan=5>n/a</td>
                 </tr>                    
                 </#if>
+            </#if>
             </#if>
         </#list>
     </#macro>

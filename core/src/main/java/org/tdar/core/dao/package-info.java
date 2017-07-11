@@ -579,8 +579,8 @@
                 name=TdarNamedQueries.FIND_RESOURCES_SHARED_WITH,
                 query = "select new Resource(r.id, r.title, r.resourceType, r.description, r.status) from Resource r left join r.authorizedUsers ru "
                         + " where  ru.user=:user and r.status in ('ACTIVE','DRAFT') and (:admin is true or r.id in "
-                        + "     (select r_.id from Resource r_ left join r_.resourceCollections as rc_ left join rc_.parentIds parentId "
-                        + "            where rc_.id in (:collectionIds) or parentId in (:collectionIds) "
+                        + "     (select r_.id from Resource r_ left join r_.resourceCollections as rc_ left join rc_.parentIds parentId left join r_.authorizedUsers au "
+                        + "            where rc_.id in (:collectionIds) or parentId in (:collectionIds) or au.user=:owner"
                         + "))"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH,

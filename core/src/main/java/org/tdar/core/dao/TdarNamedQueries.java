@@ -319,7 +319,16 @@ public interface TdarNamedQueries {
     String MONTHLY_USAGE_FOR_RESOURCE = "query.monthly_for_resource";
 
     
-    
+    /**
+     * it's possible this is too generous and we need something closer to the following which unions to explicit joins:
+     * select au.user_id, au.resource_id, au.resource_collection_id from authorized_user au join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') 
+        join authorized_user au2 on r.id=au2.resource_id and au2.user_id=8344 union
+        select au.user_id, au.resource_id, au.resource_collection_id from authorized_user au join collection c on au.resource_collection_id=c.id and c.status='ACTIVE'
+         left join authorized_user au3 on c.id=au3.resource_collection_id
+         left join collection_parents cp on c.id=cp.collection_id 
+         join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' 
+         join authorized_user au4 on c2.id=au4.resource_collection_id where (au3.user_id=8344  or au4.user_id=8344) order by 1;^C
+     */
     String QUERY_USERS_SHARED_WITH = "select id from person where id in "
             + " (select  au.user_id from authorized_user au left join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') "
             + "left join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:userId "

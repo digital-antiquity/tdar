@@ -82,7 +82,7 @@
             <@nav.makeLink
             namespace="${path}"
             action="add?parentId=${id?c}"
-            label="create child collection"
+            label="add child collection"
             name="child_collection"
             current=current
             includeResourceId=false
