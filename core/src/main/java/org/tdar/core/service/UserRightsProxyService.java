@@ -82,6 +82,10 @@ public class UserRightsProxyService {
     public void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites, HasAuthorizedUsers c) {
         List<UserInvite> existing = resourceCollectionDao.findUserInvites(c);
         Map<Long, UserInvite> createIdMap = PersistableUtils.createIdMap(existing);
+        if (CollectionUtils.isEmpty(existing) && CollectionUtils.isEmpty(invites)) {
+            logger.debug("no invites, skipping");
+            return;
+        }
         logger.debug("invites existing:: {}", existing);
         logger.debug("invites incoming:: {}", invites);
 

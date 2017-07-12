@@ -39,12 +39,12 @@
                 query = "SELECT au from AuthorizedUser au LEFT JOIN ResourceCollection c on au.collectionId=c.id "
                         + "left join c.resources r left join c.parentIds parentId "
                         + "left join ResourceCollection p on parentId=p.id left join p.resources r2 "
-                        + "where au.user.id=:userId and au.effectiveGeneralPermission > :perm and ( au.resourceId =:id or (c.status='ACTIVE' and r.id=:id) or (p.status='ACTIVE' and r2.id=:id))"),
+                        + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and ( au.resourceId =:id or (c.status='ACTIVE' and r.id=:id) or (p.status='ACTIVE' and r2.id=:id))"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_COLLECTION, 
                 query = "SELECT au from AuthorizedUser au LEFT JOIN ResourceCollection c on au.collectionId=c.id "
                         + "left join c.parentIds parentId "
-                        + "where au.user.id=:userId and au.effectiveGeneralPermission > :perm and ( au.collectionId =:id or parentId=:id)"),
+                        + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and ( au.collectionId =:id or parentId=:id)"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
                 query = "SELECT distinct 1 from " +

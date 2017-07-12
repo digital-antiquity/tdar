@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -51,6 +50,7 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.service.RightsResolver;
 import org.tdar.utils.PersistableUtils;
 
 /*
@@ -867,40 +867,16 @@ public class AuthorizationService implements Accessible {
         return authorizedUserDao.isAllowedTo(user, collection, permission);
     }
 
-    /*
-     * check whether the user has the rights to assign another user permissions.  This takes into account permissions and extending dates
-     */
+
     @Transactional(readOnly=true)
-    public boolean checkSelfEscalation(TdarUser actor, HasAuthorizedUsers source, InternalTdarRights editAnything, AuthorizedUser user) {
-        if (can(editAnything, actor)) {
-            return true;
+    public RightsResolver getRightsResolverFor(HasAuthorizedUsers resource, TdarUser actor, InternalTdarRights rights) {
+        RightsResolver resolver = new RightsResolver();
+        if (can(rights, actor)) {
+            resolver.setAdmin(true);
+            return resolver;
         }
 
-        List<AuthorizedUser> checkSelfEscalation = authorizedUserDao.checkSelfEscalation(actor, source, editAnything, user.getGeneralPermission());
-        logger.debug("{}", checkSelfEscalation);
-        Date latest = null;
-        if (CollectionUtils.isNotEmpty(checkSelfEscalation)) {
-            for (AuthorizedUser act : checkSelfEscalation) {
-                if (act.getDateExpires() != null) {
-                    if (latest != null && act.getDateExpires().before(latest)) {
-                        continue;
-                    }
-                }
-                latest = act.getDateExpires();
-            }
-            
-            // we have a date of expiry
-            if (latest != null) {
-                if (user.getDateExpires() == null || latest.before(user.getDateExpires())) {
-                    return false;
-                }
-                
-            }
-            // we have the rights
-            return true;
-        }
-        // no users found
-        return false;
+        return RightsResolver.evaluate(authorizedUserDao.checkSelfEscalation(actor, resource, rights, null));
     }
 
 }
