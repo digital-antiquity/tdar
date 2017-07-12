@@ -28,6 +28,7 @@ import org.tdar.utils.MessageHelper;
  *         be faster to query / index in the database
  */
 public enum GeneralPermissions implements HasLabel, Localizable {
+    NONE(-1000),
     VIEW_ALL( 100, Resource.class, SharedCollection.class),
     MODIFY_METADATA(400, Resource.class, SharedCollection.class),
     MODIFY_RECORD(500, Resource.class, SharedCollection.class),

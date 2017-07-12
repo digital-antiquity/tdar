@@ -17,62 +17,89 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 public class RightsResolverTestCase {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-
     @Test
     public void testRightsResolverInitOneUser() {
         List<AuthorizedUser> users = new ArrayList<>();
-        
+
         TdarUser basic = new TdarUser("basic", "user", "a@b.com");
-        AuthorizedUser user = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA);
         Date date = new Date(1000L);
-        user.setDateExpires(date);
+        AuthorizedUser user = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date);
         users.add(user);
         RightsResolver rr = RightsResolver.evaluate(users);
-        assertEquals(date, rr.getMinDate());
-        assertEquals(GeneralPermissions.MODIFY_METADATA, rr.getMinPerm());
 
-        user = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA);
-        users = Arrays.asList(user);
-        rr = RightsResolver.evaluate(users);
-        assertEquals(null, rr.getMinDate());
-        assertEquals(GeneralPermissions.MODIFY_METADATA, rr.getMinPerm());
+        assertFalse(rr.canModifyUsersOnResource());
+        assertFalse(rr.canModifyUsersOnShare());
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
 
-    
     }
-
-
 
     @Test
     public void testRightsResolverInitTwoUsesr() {
         List<AuthorizedUser> users = new ArrayList<>();
-        
+
         TdarUser basic = new TdarUser("basic", "user", "a@b.com");
-        AuthorizedUser user = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA);
-        AuthorizedUser user2 = new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE);
         Date date = new Date(1000L);
-        user.setDateExpires(date);
+        AuthorizedUser user = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date);
+        AuthorizedUser user2 = new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE);
         users.add(user);
         users.add(user2);
         RightsResolver rr = RightsResolver.evaluate(users);
-        assertEquals(null, rr.getMinDate());
-        assertEquals(GeneralPermissions.ADD_TO_SHARE, rr.getMinPerm());
+        assertTrue(rr.canModifyUsersOnResource());
+        assertFalse(rr.canModifyUsersOnShare());
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE)));
     }
-    
-    
+
     @Test
     public void testRightsResolverInitTwoDates() {
         List<AuthorizedUser> users = new ArrayList<>();
         TdarUser basic = new TdarUser("basic", "user", "a@b.com");
+        Date date = new Date(1500L);
         AuthorizedUser user = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA);
-        AuthorizedUser user2 = new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE);
-        Date date = new Date(1000L);
-        Date date2 = new Date(1500L);
-        user.setDateExpires(date);
-        user2.setDateExpires(date2);
+        AuthorizedUser user2 = new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE, date);
         users.add(user);
         users.add(user2);
         RightsResolver rr = RightsResolver.evaluate(users);
-        assertEquals(date2, rr.getMinDate());
-        assertEquals(GeneralPermissions.ADD_TO_SHARE, rr.getMinPerm());
+
+        assertTrue(rr.canModifyUsersOnResource());
+        assertFalse(rr.canModifyUsersOnShare());
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE)));
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE)));
+
+    }
+
+    @Test
+    public void testRightsResolverOver2() {
+        // make sure that once a date is set, it's applied
+        List<AuthorizedUser> users = new ArrayList<>();
+        TdarUser basic = new TdarUser("basic", "user", "a@b.com");
+        Date date = new Date(1500L);
+        AuthorizedUser user = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date);
+        AuthorizedUser user2 = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD);
+        users.add(user);
+        users.add(user2);
+        RightsResolver rr = RightsResolver.evaluate(users);
+        assertTrue(rr.canModifyUsersOnResource());
+        assertFalse(rr.canModifyUsersOnShare());
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE)));
+
+
     }
 }
