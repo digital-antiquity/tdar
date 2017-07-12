@@ -71,7 +71,7 @@ public class ListCollectionController extends AbstractCollectionController<ListC
     protected String save(ListCollection persistable) {
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
-        CollectionSaveObject<ListCollection> cso = new CollectionSaveObject<ListCollection>(persistable, getAuthenticatedUser(), getStartTime(), null,ListCollection.class);
+        CollectionSaveObject<ListCollection> cso = new CollectionSaveObject<ListCollection>(persistable, getAuthenticatedUser(), getStartTime(),ListCollection.class);
         cso.setParent(getParentCollection());
         cso.setAlternateParent(getAlternateParentCollection());
         cso.setParentId(getParentId());
@@ -80,7 +80,6 @@ public class ListCollectionController extends AbstractCollectionController<ListC
         cso.setFileProxy(generateFileProxy(getFileFileName(), getFile()));
         cso.setToAdd(getToAdd());
         cso.setToRemove(getToRemove());
-        cso.setAuthorizedUsers(new ArrayList<>(getPersistable().getAuthorizedUsers()));
         resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;

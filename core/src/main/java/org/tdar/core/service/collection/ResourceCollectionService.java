@@ -106,8 +106,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         CollectionRightsComparator comparator = new CollectionRightsComparator(resource.getAuthorizedUsers(), authorizedUsers);
         if (comparator.rightsDifferent()) {
-            logger.debug("{} ", actor);
-
             RightsResolver rco = authorizationService.getRightsResolverFor(resource, actor, InternalTdarRights.EDIT_ANYTHING);
             if (!rco.canModifyUsersOnResource()) {
                 throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
@@ -118,7 +116,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
 
             for (AuthorizedUser user : comparator.getAdditions()) {
-                if (rco.getMinDate() != null && user.getDateExpires() == null || rco.getMinDate().before(user.getDateExpires())) {
+                rco.logDebug(actor, user);
+                if (rco.hasPermissionsEscalation(user)) {
                     throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
                 }
 
@@ -268,7 +267,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         RightsResolver rightsResolver = authorizationService.getRightsResolverFor(resourceCollection, actor, InternalTdarRights.EDIT_ANYTHING);
         CollectionRightsComparator comparator = new CollectionRightsComparator(getDao().getUsersFromDb(resourceCollection), incomingUsers);
         if (comparator.rightsDifferent()) {
-            logger.debug("{} - {}", actor, resourceCollection.getOwner());
+            logger.debug("{}", actor);
 
             if (!authorizationService.canAdminiserUsersOn(source, actor)) {
                 throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
@@ -292,11 +291,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     private void checkEscalation(TdarUser actor, AuthorizedUser userToAdd, RightsResolver rco) {
-        // specifically checking for rights escalation
-        logger.debug("actor: {}, sourceRights:{} , transientUser:{}", actor, rco.getAuthorizedUsers(), userToAdd);
 
         // check escalation of permissions
         if (rco.hasPermissionsEscalation(userToAdd)) {
+            rco.logDebug(actor, userToAdd);
             throw new TdarAuthorizationException("resourceCollectionService.could_not_add_user", Arrays.asList(userToAdd,
                     userToAdd.getGeneralPermission()));
         }

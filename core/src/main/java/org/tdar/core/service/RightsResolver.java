@@ -3,7 +3,10 @@ package org.tdar.core.service;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 
 /**
@@ -12,9 +15,11 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 public class RightsResolver {
 
     private Date minDate = null;
+    private boolean seenInfinite = false;
     private boolean admin = false;
     private GeneralPermissions minPerm = null;
     private List<AuthorizedUser> authorizedUsers;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     public RightsResolver(List<AuthorizedUser> authorizedUsers) {
         this.setAuthorizedUsers(authorizedUsers);
@@ -22,12 +27,23 @@ public class RightsResolver {
             GeneralPermissions permission = au.getGeneralPermission();
             Date expires = au.getDateExpires();
 
-            if (getMinPerm() != null && permission != null && (permission.ordinal() > getMinPerm().ordinal() || getMinPerm() == null)) {
+            if (getMinPerm() == null && permission != null // if existing is null and new is not, or
+                    || getMinPerm() != null && permission != null && // both are not null AND
+                            permission.ordinal() > getMinPerm().ordinal()) { // incoming is greater
                 setMinPerm(permission);
             }
 
-            if (getMinDate() != null && expires != null && (expires.after(getMinDate()) || getMinDate() == null)) {
-                setMinDate(expires);
+            if (expires == null) {
+                // we've seen an AuthorizedUser with no expiration date... so always expire
+                seenInfinite = true;
+                setMinDate(null);
+            }
+            if (!seenInfinite) {
+                if (getMinDate() == null && expires != null // if existing is null and new is not, or
+                        || getMinDate() != null && expires != null && // both are not null AND
+                                expires.after(getMinDate())) { // incoming is later
+                    setMinDate(expires);
+                }
             }
         }
     }
@@ -125,6 +141,14 @@ public class RightsResolver {
         }
 
         return false;
+    }
+
+    public void logDebug(TdarUser actor, AuthorizedUser userToAdd) {
+        logger.debug("~~ EscalationIssue ~~");
+        logger.debug("actor:{}", actor);
+        logger.debug("  min:{} ; exp: {}", getMinPerm(), getMinDate());
+        logger.debug("  all:{}", getAuthorizedUsers());
+        logger.debug(" user:{}", userToAdd);
     }
 
 }

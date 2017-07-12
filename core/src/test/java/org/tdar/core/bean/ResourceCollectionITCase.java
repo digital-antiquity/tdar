@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +19,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -275,14 +278,20 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @SuppressWarnings("unused")
     @Test
     @Rollback(true)
+    /**
+     * Check that draft and normal rights can be applied properly
+     * @throws Exception
+     */
     public void testDraftResourceIssue() throws Exception {
-        String email = "a243@basda.com";
+        String email = System.currentTimeMillis() + "a243@basda.com";
         entityService.delete(entityService.findByEmail(email));
 
+        // create a person
         final TdarUser testPerson = createAndSaveNewPerson(email, "1234");
         String name = "test collection";
         String description = "test description";
 
+        // create a normal and draft resource giving basic users permissions
         InformationResource normal = generateDocumentWithUser();
         InformationResource draft = generateDocumentWithUser();
         normal.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(),GeneralPermissions.MODIFY_RECORD));
@@ -293,44 +302,60 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+        
+        // create a shared collection and add basic user, admin user as authorized users, owner is basic user
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         SharedCollection collection = new SharedCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
-
-        CollectionSaveObject<SharedCollection> cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L,
-                new ArrayList<>(), SharedCollection.class);
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+        genericService.saveOrUpdate(collection);
+        genericService.synchronize();
+        CollectionSaveObject<SharedCollection> cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, SharedCollection.class);
         cso.setToAdd(PersistableUtils.extractIds(resources));
         resourceCollectionService.saveCollectionForController(cso);
-        users.addAll(collection.getAuthorizedUsers());
-        cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, users, SharedCollection.class);
+        
+        // do it again, just to make a no-op
+        cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, SharedCollection.class);
         resourceCollectionService.saveCollectionForController(cso);
-
-        genericService.synchronize();
-
         final Long id = collection.getId();
-        String slug = collection.getSlug();
         collection = null;
-        collection = genericService.find(SharedCollection.class, id);
-        List<UserRightsProxy> aus = new ArrayList<>();
-        aus.add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
-        for (AuthorizedUser user : users) {
-            aus.add(new UserRightsProxy(user));
-        }
-//        CollectionSaveObject<SharedCollection> cso2 = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, aus, SharedCollection.class);
-        resourceCollectionService.saveCollectionForRightsController(collection, getBasicUser(), aus, SharedCollection.class, -1L);
-        genericService.synchronize();
-        logger.debug("au: {}", collection.getAuthorizedUsers());
-        logger.debug("no: {}", normal.getSharedCollections());
-        logger.debug("df: {}", draft.getSharedCollections());
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, GeneralPermissions.MODIFY_METADATA));
 
-        assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), draft));
-        assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), normal));
+        genericService.synchronize();
+
+//        setVerifyTransactionCallback(new TransactionCallback<SharedCollection>() {
+//
+//            @Override
+//            public SharedCollection doInTransaction(TransactionStatus arg0) {
+                List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+                        new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+                
+                SharedCollection myCollection = genericService.find(SharedCollection.class, id);
+                List<UserRightsProxy> aus = new ArrayList<>();
+                aus.add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
+                for (AuthorizedUser user : users) {
+                    aus.add(new UserRightsProxy(user));
+                }
+                
+                myCollection.getAuthorizedUsers().forEach(au -> {
+                    logger.debug(" au: {}", au);
+                });
+
+                resourceCollectionService.saveCollectionForRightsController(myCollection, getBasicUser(), aus, SharedCollection.class, -1L);
+                genericService.synchronize();
+                logger.debug("au: {}", myCollection.getAuthorizedUsers());
+                logger.debug("no: {}", normal.getSharedCollections());
+                logger.debug("df: {}", draft.getSharedCollections());
+                assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
+                assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_METADATA));
+                assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, GeneralPermissions.MODIFY_METADATA));
+                assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, GeneralPermissions.MODIFY_METADATA));
+
+                assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), draft));
+                assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), normal));
+                
+//                return null;
+//            }
+//         });
 
     }
 

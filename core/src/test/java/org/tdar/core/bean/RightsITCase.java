@@ -117,14 +117,13 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         dataset.getAuthorizedUsers().add(authorizedUser);
         genericService.saveOrUpdate(dataset);
         genericService.saveOrUpdate(authorizedUser);
-        authorizedUser = null;
-        Long id = dataset.getId();
+//        authorizedUser = null;
         genericService.synchronize();
 
         
-        AuthorizedUser au = new AuthorizedUser(badUser, getBasicUser(), GeneralPermissions.MODIFY_RECORD);
-        au.setDateExpires(soon);
-        List<UserRightsProxy> proxies = Arrays.asList(new UserRightsProxy(au));
+        AuthorizedUser au = new AuthorizedUser(badUser, getEditorUser(), GeneralPermissions.MODIFY_RECORD);
+//        au.setDateExpires(soon);
+        List<UserRightsProxy> proxies = Arrays.asList(new UserRightsProxy(au),new UserRightsProxy(authorizedUser));
         saveAndAssertException(dataset, badUser, proxies);
         
         
