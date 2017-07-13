@@ -1408,7 +1408,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <li class="hidden-tablet hidden-phone"><a href="#resourceNoteSectionGlide">Notes</a></li>
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
-                    <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
+                    <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
                     <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
                 </div>
             </div>

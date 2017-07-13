@@ -489,8 +489,13 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
         } else {
             
             for (HtmlElement el : elements) {
-                if (StringUtils.equalsIgnoreCase(text, el.getNodeValue())) {
-                    return el;
+                if (el instanceof HtmlInput) {
+                    HtmlInput htmlInput = (HtmlInput) el;
+                    logger.debug("  {}", el);
+                    if (StringUtils.equalsIgnoreCase(text, htmlInput.getValueAttribute())) {
+                        logger.debug("returned: {}", el);                        
+                        return el;
+                    }
                 }
             }
             

@@ -190,25 +190,14 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         contextMap.put(StrutsStatics.HTTP_REQUEST, getServletRequest());
         ActionContext context = new ActionContext(contextMap);
         context.setLocale(Locale.getDefault());
-        // http://mail-archives.apache.org/mod_mbox/struts-user/201001.mbox/%3C637b76e41001151852x119c9cd4vbbe6ff560e56e46f@mail.gmail.com%3E
 
         ConfigurationManager configurationManager = new ConfigurationManager(Container.DEFAULT_NAME);
         OgnlValueStackFactory factory = new OgnlValueStackFactory();
         configurationManager.addContainerProvider(new XWorkConfigurationProvider());
-        // FIXME: needs to be a better way to handle this
-        // LocaleProviderFactory localeProviderFactory = new DefaultLocaleProviderFactory();
-        // StrutsTextProviderFactory textProviderFactory = new StrutsTextProviderFactory();
-        // textProviderFactory.setLocaleProviderFactory(localeProviderFactory);
-        // LocalizedTextProvider localizedTextProvider = new GlobalLocalizedTextProvider();
-        //// applyLocales(localizedTextProvider);
-        // textProviderFactory.setLocalizedTextProvider(localizedTextProvider);
-        // factory.setTextProvider(textProviderFactory.createInstance(getResourceBundle()));
         configurationManager.reload();
         Container container = configurationManager.getConfiguration().getContainer();
         container.inject(factory);
 
-        // container.inject(textProviderFactory);
-        // container.inject(localizedTextProvider);
         LocalizedTextProvider instance = container.getInstance(LocalizedTextProvider.class);
         applyLocales(instance);
         assertEquals(MessageHelper.getMessage("project.no_associated_project"), instance.findDefaultText("project.no_associated_project", Locale.getDefault()));
