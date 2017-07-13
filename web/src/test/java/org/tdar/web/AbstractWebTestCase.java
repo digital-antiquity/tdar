@@ -424,14 +424,14 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
     }
 
     public void assertButtonPresentWithText(String buttonText) {
-        HtmlElement input = getButtonWithName(buttonText);
+        HtmlElement input = getButtonWithName(buttonText, "Save");
         assertNotNull(String.format("button with text [%s] not found in form [%s]", buttonText, getForm()), input);
         assertTrue(input.getAttribute("type").equalsIgnoreCase("submit"));
     }
 
     public int submitForm() {
         String defaultEditButton = "submitAction";
-        HtmlElement buttonWithName = getButtonWithName(defaultEditButton);
+        HtmlElement buttonWithName = getButtonWithName(defaultEditButton, "Save");
         if (buttonWithName == null) {
             return submitForm("Save");
         }
@@ -440,7 +440,7 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
 
     public void submitFormWithoutErrorCheck() {
         String defaultEditButton = "submitAction";
-        HtmlElement buttonWithName = getButtonWithName(defaultEditButton);
+        HtmlElement buttonWithName = getButtonWithName(defaultEditButton, "Save");
         if (buttonWithName == null) {
             defaultEditButton = "Save";
         }
@@ -466,27 +466,34 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
     public void submitFormWithoutErrorCheck(String buttonText) {
         assertButtonPresentWithText(buttonText);
         try {
-            HtmlElement buttonByName = getButtonWithName(buttonText);
+            HtmlElement buttonByName = getButtonWithName(buttonText, "Save");
             changePage(buttonByName.click(), true);
         } catch (FailingHttpStatusCodeException | IOException iox) {
             logger.error("exception while trying to submit from via button labeled {}", buttonText, iox);
         }
     }
 
-    private HtmlElement getButtonWithName(String buttonText) {
+    private HtmlElement getButtonWithName(String buttonName, String text ) {
         // get all the likely suspects we consider to be a "button" and return the best match
         logger.trace("get button by name, form {}", _internalForm);
         List<HtmlElement> elements = new ArrayList<HtmlElement>();
-        elements.addAll(getForm().getButtonsByName(buttonText));
-        elements.addAll(getForm().getInputsByValue(buttonText));
-        for (DomElement el : getHtmlPage().getElementsByName(buttonText)) {
+        elements.addAll(getForm().getButtonsByName(buttonName));
+        elements.addAll(getForm().getInputsByValue(buttonName));
+        for (DomElement el : getHtmlPage().getElementsByName(buttonName)) {
             elements.add((HtmlElement) el);
         }
 
         if (elements.isEmpty()) {
-            logger.error("could not find button or element with name or value '{}'", buttonText);
+            logger.error("could not find button or element with name or value '{}'", buttonName);
             return null;
         } else {
+            
+            for (HtmlElement el : elements) {
+                if (StringUtils.equalsIgnoreCase(text, el.getNodeValue())) {
+                    return el;
+                }
+            }
+            
             return elements.iterator().next();
         }
     }

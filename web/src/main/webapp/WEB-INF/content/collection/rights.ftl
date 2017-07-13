@@ -5,7 +5,8 @@
     <#import "/${config.themeDir}/settings.ftl" as settings>
 
 <head>
-    <title>${authenticatedUser.properName}'s Dashboard</title>
+
+    <title>Rights for ${persistable.name}</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     <@edit.resourceDataTableJavascript />
 </head>

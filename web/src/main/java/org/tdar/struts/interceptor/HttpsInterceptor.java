@@ -84,7 +84,7 @@ public class HttpsInterceptor implements Interceptor {
         if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled() || StringUtils.startsWithIgnoreCase(request.getRequestURL().toString(), "https:")) {
             return invocation.invoke();
         }
-        logger.debug(" :: url : {}", request.getQueryString());
+        logger.trace(" :: url: {} : {}", request.getRequestURI(), request.getQueryString());
         
         if (request.getMethod().equalsIgnoreCase("get") || request.getMethod().equalsIgnoreCase("head")) {
             response.sendRedirect(changeUrlProtocol("https", request));

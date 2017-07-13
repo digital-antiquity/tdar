@@ -267,7 +267,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE),
-                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT,  location = "/resource/rights/${id}")
+                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT,  location = "/resource/rights/${persistable.id}")
             })
     @WriteableSession
     @PostOnly
@@ -287,9 +287,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
     
         String save2 = super.save();
-        
-        if (StringUtils.equals(save2,SUCCESS) && StringUtils.equalsAnyIgnoreCase(getSubmitAction(),ASSIGN_RIGHTS)) {
+        getLogger().debug(save2);
+        getLogger().debug(getSubmitAction());
+        try {
+        if (StringUtils.equals(save2, SUCCESS) && StringUtils.equalsAnyIgnoreCase(getSubmitAction(), ASSIGN_RIGHTS)) {
             return RIGHTS;
+        }
+        } catch (Throwable t) {
+        getLogger().debug("{}",t,t);
         }
         return save2;
     }
