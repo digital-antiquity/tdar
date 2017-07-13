@@ -96,6 +96,7 @@ import org.tdar.utils.PersistableUtils;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
+
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
 
     private static final long serialVersionUID = 8620875853247755760L;
@@ -266,7 +267,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE),
-                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT,  location = "/resource/rights?id=${id}")
+                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT,  location = "/resource/rights/${id}")
             })
     @WriteableSession
     @PostOnly
@@ -285,7 +286,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             getPersistable().getAuthorizedUsers().add(new AuthorizedUser(getAuthenticatedUser(), getAuthenticatedUser(), GeneralPermissions.ADMINISTER_SHARE));
         }
     
-        return super.save();
+        String save2 = super.save();
+        
+        if (save2.equals(SUCCESS) && getSubmitAction().equalsIgnoreCase(ASSIGN_RIGHTS)) {
+            return RIGHTS;
+        }
+        return save2;
     }
 
     

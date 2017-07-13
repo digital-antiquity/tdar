@@ -84,6 +84,7 @@ public class ShareCollectionController extends AbstractCollectionController<Shar
         cso.setToRemove(getToRemove());
         resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
+        
         return SUCCESS;
     }
 

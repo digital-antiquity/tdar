@@ -202,7 +202,9 @@
             </div>
         </div>
 
-            <@edit.submit fileReminder=false />
+            <@edit.submit fileReminder=false class="button btn">
+                <input type="submit" name="submitAction" value="Assign Rights"  class="button btn " />
+            </@edit.submit>
         </@s.form>
 
         <#noescape>

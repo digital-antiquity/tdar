@@ -264,7 +264,13 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
      * @see org.tdar.struts.action.AbstractPersistableController#save()
      */
     public String save() throws TdarActionException {
-        return super.save();
+        String save2 = super.save();
+        getLogger().debug("{} -- {}", save2, getSubmitAction());
+        if (save2.equals(SUCCESS) && getSubmitAction().equalsIgnoreCase(ASSIGN_RIGHTS)) {
+            return RIGHTS;
+        }
+        return save2;
+
     }
 
     public List<Long> getSelectedResourceIds() {

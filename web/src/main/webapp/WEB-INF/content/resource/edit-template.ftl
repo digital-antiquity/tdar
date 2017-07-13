@@ -397,11 +397,11 @@
 
         <#if !resource.resourceType.project>
             <@edit.submit fileReminder=((resource.id == -1) && fileReminder) class="button btn" >
-                <input type="submit" name="submit" value="Assign Rights" class="button btn" />
+                <input type="submit" name="submitAction" value="Assign Rights" class="button btn" />
             </@edit.submit>
         <#else>
             <@edit.submit fileReminder=false class="button btn">
-                    <input type="submit" name="submit" value="Assign Rights"  class="button btn btn-primary " />
+                    <input type="submit" name="submitAction" value="Assign Rights"  class="button btn " />
             </@edit.submit>
         </#if>
     </@s.form>
