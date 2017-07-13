@@ -1,5 +1,7 @@
 package org.tdar.struts.action;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,16 +61,25 @@ import org.tdar.search.config.TdarSearchAppConfiguration;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.ErrorListener;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.DefaultLocaleProviderFactory;
 import com.opensymphony.xwork2.LocaleProvider;
+import com.opensymphony.xwork2.LocaleProviderFactory;
+import com.opensymphony.xwork2.LocalizedTextProvider;
+import com.opensymphony.xwork2.StrutsTextProviderFactory;
 import com.opensymphony.xwork2.TextProviderFactory;
 import com.opensymphony.xwork2.config.ConfigurationManager;
 import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
+import com.opensymphony.xwork2.inject.Container;
+import com.opensymphony.xwork2.inject.Context;
 import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
-import com.opensymphony.xwork2.util.LocalizedTextUtil;
+import com.opensymphony.xwork2.util.GlobalLocalizedTextProvider;
+import com.opensymphony.xwork2.util.StrutsLocalizedTextProvider;
+//import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import com.opensymphony.xwork2.util.ValueStack;
 
 @ContextConfiguration(classes = TdarSearchAppConfiguration.class)
@@ -181,53 +192,43 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         ActionContext context = new ActionContext(contextMap);
         context.setLocale(Locale.getDefault());
         // http://mail-archives.apache.org/mod_mbox/struts-user/201001.mbox/%3C637b76e41001151852x119c9cd4vbbe6ff560e56e46f@mail.gmail.com%3E
-        ConfigurationManager configurationManager = new ConfigurationManager();
+
+        ConfigurationManager configurationManager = new ConfigurationManager(Container.DEFAULT_NAME);
         OgnlValueStackFactory factory = new OgnlValueStackFactory();
-
-        // FIXME: needs to be a better way to handle this
-        TextProviderFactory textProviderFactory = new TextProviderFactory();
-
-        factory.setTextProvider(textProviderFactory.createInstance(getResourceBundle(), (LocaleProvider) controller));
-
         configurationManager.addContainerProvider(new XWorkConfigurationProvider());
-        configurationManager.getConfiguration().getContainer().inject(factory);
-        if (controller instanceof ActionSupport) {
-            ((ActionSupport) controller).setContainer(configurationManager.getConfiguration().getContainer());
-        }
-        ValueStack stack = factory.createValueStack();
+        // FIXME: needs to be a better way to handle this
+        // LocaleProviderFactory localeProviderFactory = new DefaultLocaleProviderFactory();
+        // StrutsTextProviderFactory textProviderFactory = new StrutsTextProviderFactory();
+        // textProviderFactory.setLocaleProviderFactory(localeProviderFactory);
+        // LocalizedTextProvider localizedTextProvider = new GlobalLocalizedTextProvider();
+        //// applyLocales(localizedTextProvider);
+        // textProviderFactory.setLocalizedTextProvider(localizedTextProvider);
+        // factory.setTextProvider(textProviderFactory.createInstance(getResourceBundle()));
+        configurationManager.reload();
+        Container container = configurationManager.getConfiguration().getContainer();
+        container.inject(factory);
 
-        context.setValueStack(stack);
+        // container.inject(textProviderFactory);
+        // container.inject(localizedTextProvider);
+        LocalizedTextProvider instance = container.getInstance(LocalizedTextProvider.class);
+        applyLocales(instance);
+        assertEquals(MessageHelper.getMessage("project.no_associated_project"), instance.findDefaultText("project.no_associated_project", Locale.getDefault()));
+
+        if (controller instanceof ActionSupport) {
+            logger.debug("setting container");
+            ((ActionSupport) controller).setContainer(container);
+        }
+        context.setValueStack(factory.createValueStack());
         ActionContext.setContext(context);
+
         return controller;
     }
 
-    private ResourceBundle getResourceBundle() {
-        /*
-         * NOTE: some issues encountered with finding the locale keys properly from the module
-         */
-        ResourceBundle bundle = loadLocale();
-        if (bundle != null) {
-            return bundle;
-        }
-        try {
-            String bundleName = "target/maven-shared-archive-resources/Locales";
-            FileUtils.copyDirectory(new File(bundleName), new File("target/classes/Locales"));
-        } catch (Exception e) {
-        }
-        // default
-
-        return bundle;
-    }
-
-    private ResourceBundle loadLocale() {
-        try {
-        String bundleName = "Locales/tdar-messages";
-        ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
-        LocalizedTextUtil.addDefaultResourceBundle(bundleName);
-        return bundle;
-        } catch (Exception e) {
-            return null;
-        }
+    private void applyLocales(LocalizedTextProvider localizedTextProvider) {
+        localizedTextProvider.addDefaultResourceBundle("target/maven-shared-archive-resources/Locales/tdar-messages");
+        localizedTextProvider.addDefaultResourceBundle("target/Locales/tdar-messages");
+        localizedTextProvider.addDefaultResourceBundle("Locales/tdar-messages");
+        localizedTextProvider.addDefaultResourceBundle("target/classes/Locales/tdar-messages");
     }
 
     protected void init(TdarActionSupport controller, TdarUser user) {
