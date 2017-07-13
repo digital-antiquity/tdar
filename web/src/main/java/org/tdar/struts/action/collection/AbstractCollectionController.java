@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -265,8 +266,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
      */
     public String save() throws TdarActionException {
         String save2 = super.save();
-        getLogger().debug("{} -- {}", save2, getSubmitAction());
-        if (save2.equals(SUCCESS) && getSubmitAction().equalsIgnoreCase(ASSIGN_RIGHTS)) {
+        if (StringUtils.equals(save2,SUCCESS) && StringUtils.equalsAnyIgnoreCase(getSubmitAction(),ASSIGN_RIGHTS)) {
             return RIGHTS;
         }
         return save2;

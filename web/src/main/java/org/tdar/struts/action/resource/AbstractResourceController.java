@@ -288,7 +288,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     
         String save2 = super.save();
         
-        if (save2.equals(SUCCESS) && getSubmitAction().equalsIgnoreCase(ASSIGN_RIGHTS)) {
+        if (StringUtils.equals(save2,SUCCESS) && StringUtils.equalsAnyIgnoreCase(getSubmitAction(),ASSIGN_RIGHTS)) {
             return RIGHTS;
         }
         return save2;
