@@ -101,7 +101,7 @@ TDAR.c3graph = (function(console, $, ctx) {
             }
             var cdata = {
                 data : {
-                    columns : [ [ 'data', $parent.data("val") ] ],
+                    columns : [ [ 'Usage', $parent.data("val") ] ],
                     type : 'gauge'
                 },
                 gauge : {
@@ -115,6 +115,11 @@ TDAR.c3graph = (function(console, $, ctx) {
                     units : ' %',
                 // width: 39 // for adjusting arc thickness
                 },
+                tooltip: {
+                    format: {
+                      value: function (value, ratio, id, index) { return value +"%"; }
+                    }
+                  },
                 color : _defaultColor,
                 size : {
                     height : $parent.data("height"),
