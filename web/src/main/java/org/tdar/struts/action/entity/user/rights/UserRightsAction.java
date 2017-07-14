@@ -60,7 +60,7 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         getLogger().debug("find collections");
         setFindCollectionsSharedWith(resourceCollectionService.findCollectionsSharedWith(getAuthenticatedUser(), getUser(), SharedCollection.class));
         getLogger().debug("find resources");
-        setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), getFindCollectionsSharedWith(), user));
+        setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), user));
         getLogger().debug("find accounts");
         integrations.addAll(integrationService.getWorkflowsForUser(user));
         getAccounts().addAll(accountService.listAvailableAccountsForUser(user, Status.ACTIVE));

@@ -45,6 +45,7 @@ import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
@@ -391,17 +392,29 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         }
     }
 
-    public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, List<SharedCollection> list, TdarUser user, boolean admin) {
-        List<Long> ids = PersistableUtils.extractIds(list);
-        if (CollectionUtils.isEmpty(ids)) {
-            return new ArrayList<>();
+    public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user, boolean admin) {
+        Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.QUERY_RESOURCES_SHARED_WITH);
+        query.setParameter("userId", user.getId());
+        query.setParameter("ownerId", authenticatedUser.getId());
+        List<Resource> resources = new ArrayList<>();
+        for (Object obj_ : query.getResultList()) {
+            Object[] obj = (Object[])obj_;
+            //id, title, status, resource_type
+            Long id = ((Number)obj[0]).longValue();
+            String title = (String)obj[1];
+            Status status = Status.valueOf((String)obj[2]);
+            ResourceType type = ResourceType.valueOf((String)obj[3]);
+            try {
+                Resource newInstance = type.getResourceClass().newInstance();
+                newInstance.setId(id);
+                newInstance.setTitle(title);
+                newInstance.setStatus(status);
+                resources.add(newInstance);
+            } catch (InstantiationException | IllegalAccessException e) {
+                logger.debug("{}",e);
+            }
         }
-        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_RESOURCES_SHARED_WITH, Resource.class);
-        query.setParameter("user", user);
-        query.setParameter("owner", authenticatedUser);
-        query.setParameter("admin", admin);
-        query.setParameter("collectionIds", ids);
-        return query.getResultList();
+        return resources;
         
     }
 

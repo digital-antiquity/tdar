@@ -28,6 +28,7 @@ import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -207,6 +208,29 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         assertEquals(withName, test);
     }
 
+    
+    @Test
+    @Rollback
+    public void testFindSharedResources() {
+        Dataset dataset = createAndSaveNewDataset();
+        dataset.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(dataset);
+        SharedCollection collection = createAndSaveNewResourceCollection("test collection");
+        collection.getAuthorizedUsers().clear();
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
+        collection.getResources().add(dataset);
+        genericService.saveOrUpdate(collection);
+        dataset.getSharedCollections().add(collection);
+        genericService.saveOrUpdate(dataset);
+        List<SharedCollection> list = resourceCollectionService.findCollectionsSharedWith(getBillingUser(), getBasicUser(), SharedCollection.class);
+        List<Resource> resources = resourceCollectionService.findResourcesSharedWith(getBillingUser(), getBasicUser());
+        logger.debug("c:{}", list);
+        logger.debug("r:{}", resources);
+        assertTrue("should not have shared any collections with user", CollectionUtils.isEmpty(list));
+        assertTrue("should have at least one resource", CollectionUtils.isNotEmpty(resources));
+    }
+    
+    
     @Test
     @Rollback(true)
     public void testDashboardQueries() {
