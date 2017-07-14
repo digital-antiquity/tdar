@@ -539,7 +539,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getGenericService().markReadOnly(project);
             potentialParents.add(0, noAssociatedProject);
         }
-        getLogger().debug("Returning all editable projects: {}", potentialParents);
+        if (getLogger().isTraceEnabled()) {
+            getLogger().trace("Returning all editable projects: {}", potentialParents);
+        }
         return potentialParents;
     }
 
