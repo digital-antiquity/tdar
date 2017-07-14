@@ -69,6 +69,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String submitAction;
+    private String alternateSubmitAction;
     private P persistable;
     private Long id;
     private Status status;
@@ -579,5 +580,13 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     @Override
     public boolean isRightSidebar() {
         return true;
+    }
+
+    public String getAlternateSubmitAction() {
+        return alternateSubmitAction;
+    }
+
+    public void setAlternateSubmitAction(String alternateSubmitAction) {
+        this.alternateSubmitAction = alternateSubmitAction;
     }
 }

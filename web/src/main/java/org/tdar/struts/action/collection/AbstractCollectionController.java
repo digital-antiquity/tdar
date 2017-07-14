@@ -266,7 +266,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
      */
     public String save() throws TdarActionException {
         String save2 = super.save();
-        if (StringUtils.equals(save2,SUCCESS) && StringUtils.equalsAnyIgnoreCase(getSubmitAction(),ASSIGN_RIGHTS)) {
+        if (StringUtils.equals(save2,SUCCESS) && StringUtils.equalsAnyIgnoreCase(getAlternateSubmitAction(),ASSIGN_RIGHTS)) {
             return RIGHTS;
         }
         return save2;
