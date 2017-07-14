@@ -348,7 +348,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         // if user has single billing account, use that (ignore the form);
         setupAccountForSaving();
 
-        if (SUCCESS.equals(actionMessage)) {
+        if (SUCCESS.equals(actionMessage) || RIGHTS.equals(actionMessage)) {
             if (shouldSaveResource()) {
                 if (getResource().getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                     getResource().setStatus(getResource().getPreviousStatus());
