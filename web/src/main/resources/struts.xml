@@ -25,9 +25,10 @@
     <!-- <constant name="struts.ui.templateSuffix" value="java" /> -->
     <constant name="struts.ui.theme" value="bootstrap" />
     <constant name="struts.url.includeParams" value="none" />
+    <!-- <constant name="struts.multipart.validationRegex" value="(.*)"/> -->
     <constant name="struts.action.extension" value="," />
     <constant name="struts.action.excludePattern" value="/services/.*,/dataone/.*,/oai-pmh/.*,/hosted/.*,/odata.svc/.*,/404.html" />
-    <constant name="struts.additional.excludedPatterns" value="^(action|method):.*"/>
+    <constant name="struts.additional.excludedPatterns" value="^(action|method):.*,.\.accessDecisionManager\.."/>
     <constant name="struts.custom.i18n.resources"
         value="Locales/tdar-freemarker-messages,Locales/tdar-messages" />
     <constant name="struts.freemarker.manager.classname" value="org.tdar.struts.freemarker.TdarFreemarkerManager"/>
