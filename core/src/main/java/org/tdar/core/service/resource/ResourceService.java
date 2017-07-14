@@ -854,7 +854,7 @@ public class ResourceService {
     }
 
     @Transactional(readOnly=false)
-    public void updateBatch(Project project,BillingAccount account, SharedCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
+    public void updateBatch(BillingAccount account, SharedCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
         List<Resource> resources = new ArrayList<>();
         for (int i=0; i< ids.size(); i++) {
             Long id = ids.get(i);
@@ -879,10 +879,6 @@ public class ResourceService {
                 if (!Objects.equals(date,  ir.getDate())) {
                     different = true;
                     ir.setDate(date);
-                }
-                if (!Objects.equals(ir.getProject(), project)) {
-                    different = true;                    
-                    ir.setProject(project);
                 }
             }
             if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getSharedCollections().contains(collectionToAdd)) { 

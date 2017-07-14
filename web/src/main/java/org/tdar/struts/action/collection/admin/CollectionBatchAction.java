@@ -41,9 +41,12 @@ import com.opensymphony.xwork2.Validateable;
 @Namespace("/collection/admin/batch")
 public class CollectionBatchAction extends AbstractCollectionAdminAction implements Preparable, Validateable {
 
-    private static final long serialVersionUID = 1L;
-
-    private Long accountId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4391259731930468732L;
+	
+	private Long accountId;
     private BillingAccount account;
 
     private Long projectId;
@@ -136,7 +139,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     @PostOnly
     @WriteableSession
     public String save() throws Exception {
-        resourceService.updateBatch(project, account, collectionToAdd, ids, dates, titles, descriptions, getAuthenticatedUser());
+        resourceService.updateBatch(account, collectionToAdd, ids, dates, titles, descriptions, getAuthenticatedUser());
         return SUCCESS;
     }
 
