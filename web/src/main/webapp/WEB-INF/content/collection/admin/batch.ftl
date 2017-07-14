@@ -26,17 +26,17 @@ textarea {height:10rem;}
 
 <div class="row">
     <div id="parentIdContainer" class="control-group">
-        <label class="control-label" for="collectionName">Collection</label>
+        <label class="control-label" for="collectionName">Add to Collection</label>
         <div class="controls">
             <input type="hidden" name="collectionId" value="" id="hdnParentId" autocompleteparentelement="#parentIdContainer">
-            <input type="text" name="collectionName" maxlength="255" value="" id="txtParentCollectionName" class="input-xxlarge collectionAutoComplete ui-autocomplete-input ui-corner-all" autocompleteparentelement="#parentIdContainer" autocomplete="off" autocompleteidelement="#hdnParentId" autocompletename="name" placeholder="parent collection name">
+            <input type="text" name="collectionName" maxlength="255" value="" id="txtParentCollectionName" class="input-xxlarge collectionAutoComplete ui-autocomplete-input ui-corner-all" autocompleteparentelement="#parentIdContainer" autocomplete="off" autocompleteidelement="#hdnParentId" autocompletename="name" placeholder="collection name">
         </div>
     </div>
 </div>
 
 <div class="row">
     <div id="parentIdContainer" class="control-group">
-            <@s.select name="accountId" list="%{availableAccounts}" label="Account" title="Choose an account to bill from" listValue="name" listKey="id" emptyOption="true" />
+            <@s.select name="accountId" list="%{availableAccounts}" label="Change to Account" title="Choose an account to bill from" listValue="name" listKey="id" emptyOption="true" />
     </div>
 </div>
 
