@@ -18,19 +18,18 @@ import org.tdar.utils.MessageHelper;
  * @version $Revision$
  */
 public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
-    CODING_SHEET("Coding Sheet", 10, "Dataset", "unknown", "Dataset", CodingSheet.class),
-    DATASET("Dataset", 3, "Dataset", "unknown", "Dataset", Dataset.class),
-    DOCUMENT("Document", 1, "Text", "document", "Book", Document.class),
-    IMAGE("Image", 2, "Still Image", "unknown", "Photograph", Image.class),
-    SENSORY_DATA("3D & Sensory Data", 7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
-    GEOSPATIAL("GIS", 6, "Dataset", "unknown", "Dataset", Geospatial.class),
-    ONTOLOGY("Ontology", 9, "Dataset", "unknown", "Dataset", Ontology.class),
-    PROJECT("Project", 5, "ItemList", Project.class),
-    VIDEO("Video", 4, "Moving Image", "unknown", "Movie", Video.class),
-    ARCHIVE("Site Archive", 8, "Collection", "unknown", "SoftwareApplication", Archive.class),
-    AUDIO("Audio", 11, "Sound", "unknown", "AudioObject", Audio.class);
+    CODING_SHEET(10, "Dataset", "unknown", "Dataset", CodingSheet.class),
+    DATASET(3, "Dataset", "unknown", "Dataset", Dataset.class),
+    DOCUMENT(1, "Text", "document", "Book", Document.class),
+    IMAGE(2, "Still Image", "unknown", "Photograph", Image.class),
+    SENSORY_DATA(7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
+    GEOSPATIAL(6, "Dataset", "unknown", "Dataset", Geospatial.class),
+    ONTOLOGY(9, "Dataset", "unknown", "Dataset", Ontology.class),
+    PROJECT(5, "ItemList", Project.class),
+    VIDEO(4, "Moving Image", "unknown", "Movie", Video.class),
+    ARCHIVE(8, "Collection", "unknown", "SoftwareApplication", Archive.class),
+    AUDIO(11, "Sound", "unknown", "AudioObject", Audio.class);
 
-    private final String label;
     /**
      * If possible, should match one of the strings referenced in the DcmiModsTypeMapper...
      * At the moment PROJECT and ARCHIVE don't match. Is this an issue?
@@ -44,12 +43,11 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
     private String schema;
     private final Class<? extends Resource> resourceClass;
 
-    private ResourceType(String label, int order, String schema, Class<? extends Resource> resourceClass) {
-        this(label, order, "", "unknown", schema, resourceClass);
+    private ResourceType(int order, String schema, Class<? extends Resource> resourceClass) {
+        this(order, "", "unknown", schema, resourceClass);
     }
 
-    private ResourceType(String label, int order, String dcmiTypeString, String genre, String schema, Class<? extends Resource> resourceClass) {
-        this.label = label;
+    private ResourceType(int order, String dcmiTypeString, String genre, String schema, Class<? extends Resource> resourceClass) {
         this.openUrlGenre = genre;
         this.setOrder(order);
         this.dcmiTypeString = dcmiTypeString;
@@ -58,18 +56,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
     }
 
     public String getPlural() {
-        switch (this) {
-            case ONTOLOGY:
-                return "Ontologies";
-            case SENSORY_DATA:
-                return SENSORY_DATA.label;
-            case GEOSPATIAL:
-                return GEOSPATIAL.label;
-            case AUDIO:
-                return AUDIO.label;
-            default:
-                return getLabel().concat("s");
-        }
+        return MessageHelper.getMessage(getPluralLocaleKey());
     }
 
     public boolean supportBulkUpload() {
@@ -92,9 +79,6 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         return StringUtils.uncapitalize(sb.toString());
     }
 
-//    public String getSortName() {
-//        return this.order + this.name();
-//    }
 
     public boolean isDataset() {
         return this == DATASET;
@@ -142,7 +126,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
 
     @Override
     public String getLabel() {
-        return label;
+        return MessageHelper.getMessage(getLocaleKey());
     }
 
     /**
@@ -213,10 +197,6 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         return urlToReturn.toLowerCase().replaceAll("_", "-");
     }
 
-    // @Override
-    // public String getLuceneFieldName() {
-    // return QueryFieldNames.RESOURCE_TYPE;
-    // }
 
     public boolean hasDemensions() {
         switch (this) {
