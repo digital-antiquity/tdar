@@ -1,5 +1,7 @@
 package org.tdar.struts_base.interceptor;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
 
     private static final long serialVersionUID = -89612159086314236L;
 
+    Logger logger = LoggerFactory.getLogger(getClass());
     protected TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     @Autowired
     transient AuthenticationService authenticationService;
@@ -37,7 +40,6 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
         this.sessionData = sessionData;
     }
 
-    Logger logger = LoggerFactory.getLogger(getClass());
 
     protected boolean validateSsoTokenAndAttachUser(String token) {
         if (StringUtils.isBlank(token)) {
@@ -57,4 +59,5 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
     protected String getSSoTokenFromParams() {
         return authenticationService.getSsoTokenFromRequest(ServletActionContext.getRequest());
     }
+    
 }

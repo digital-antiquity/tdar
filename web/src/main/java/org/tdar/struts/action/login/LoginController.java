@@ -51,6 +51,11 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
     private static final long serialVersionUID = -1219398494032484272L;
 
     private String url;
+    private String returnUrl;
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
     private String internalReturnUrl;
 
     private AntiSpamHelper h = new AntiSpamHelper();
@@ -71,6 +76,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
         if (isAuthenticated()) {
             return TdarActionSupport.AUTHENTICATED;
         }
+        getLogger().debug("{} - {}", returnUrl, url );
         return SUCCESS;
 
     }
@@ -133,7 +139,6 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
 
         setInternalReturnUrl(parseReturnUrl());
         if (StringUtils.isNotBlank(getInternalReturnUrl())) {
-            getSessionData().clearPassthroughParameters();
             return TDAR_REDIRECT;
         }
         return SUCCESS;
@@ -141,17 +146,12 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
 
     private String parseReturnUrl() {
         String parsedUrl = null;
-        getLogger().debug("url: {}, sessionUrl: {}", url, getSessionData().getReturnUrl());
-        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
+        getLogger().debug("url: {}", url);
+        if (StringUtils.isEmpty(url)) {
             return null;
         }
 
-        // Favor the session's 'returnUrl' over the querystring 'url'.
-        if (StringUtils.isNotBlank(getSessionData().getReturnUrl())) {
-            parsedUrl = getSessionData().getReturnUrl();
-        } else {
-            parsedUrl = UrlUtils.urlDecode(url);
-        }
+        parsedUrl = UrlUtils.urlDecode(url);
 
         // enforce valid + relative url
         String normalizedUrl = org.tdar.core.bean.util.UrlUtils.sanitizeRelativeUrl(parsedUrl);
@@ -171,11 +171,6 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
             getLogger().info(parsedUrl);
         }
 
-        // ignore AJAX/JSON requests
-        if (parsedUrl.contains("/lookup") || parsedUrl.contains("/check")
-                || parsedUrl.contains("/bookmark")) {
-            return null;
-        }
 
         getLogger().debug("Redirecting to return url: " + parsedUrl);
         return parsedUrl;

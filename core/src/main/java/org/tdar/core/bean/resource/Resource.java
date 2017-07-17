@@ -702,26 +702,6 @@ public class Resource implements Persistable,
         return join(getSiteTypeKeywords());
     }
 
-//    /**
-//     * If null or invalid, clears the existing lat-long box. Otherwise, replaces
-//     * its lat-long values with those from the incoming {@link LatitudeLongitudeBox}
-//     * 
-//     * @param latitudeLongitudeBox
-//     */
-//    public void setLatitudeLongitudeBox(LatitudeLongitudeBox latitudeLongitudeBox) {
-//        logger.debug("calling lat setter");
-//        if ((latitudeLongitudeBox == null) || !latitudeLongitudeBox.isValid()) {
-//            getLatitudeLongitudeBoxes().clear();
-//            return;
-//        }
-//        LatitudeLongitudeBox currentLatitudeLongitudeBox = getFirstLatitudeLongitudeBox();
-//        if (currentLatitudeLongitudeBox == null) {
-//            getLatitudeLongitudeBoxes().add(latitudeLongitudeBox);
-//        } else {
-//            currentLatitudeLongitudeBox.copyValuesFrom(latitudeLongitudeBox);
-//        }
-//    }
-
     @XmlElementWrapper(name = "latitudeLongitudeBoxes")
     @XmlElement(name = "latitudeLongitudeBox")
     public Set<LatitudeLongitudeBox> getLatitudeLongitudeBoxes() {
@@ -855,10 +835,6 @@ public class Resource implements Persistable,
     public ResourceType getResourceType() {
         return resourceType;
     }
-
-//    public String getResourceTypeSort() {
-//        return resourceType.getSortName();
-//    }
 
     @Deprecated()
     @JsonView(JsonLookupFilter.class)
@@ -1240,13 +1216,6 @@ public class Resource implements Persistable,
         return created;
     }
 
-//    /**
-//     * @param resourceCollections
-//     *            the resourceCollections to set
-//     */
-//    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
-//        this.resourceCollections = resourceCollections;
-//    }
 
     /**
      * @return the resourceCollections

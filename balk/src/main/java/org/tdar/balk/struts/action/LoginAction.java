@@ -90,8 +90,7 @@ public class LoginAction extends AbstractAuthenticatedAction implements Validate
         return SUCCESS;
     }
 
-    @Actions(
-    {
+    @Actions({
             @Action(value = "login/process",
                     interceptorRefs = { @InterceptorRef("registrationStack") },
                     results = {
@@ -110,11 +109,11 @@ public class LoginAction extends AbstractAuthenticatedAction implements Validate
             AuthenticationResult result = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(), getSessionData());
             status = result.getStatus();
         } catch (Exception e) {
-            getLogger().error("{}",e,e);
+            getLogger().error("{}", e, e);
             addActionError(e.getMessage());
             return INPUT;
         }
-        getLogger().debug("{}",status);
+        getLogger().debug("{}", status);
         switch (status) {
             case ERROR:
             case NEW:
@@ -126,7 +125,6 @@ public class LoginAction extends AbstractAuthenticatedAction implements Validate
 
         setInternalReturnUrl(parseReturnUrl());
         if (StringUtils.isNotBlank(getInternalReturnUrl())) {
-            getSessionData().clearPassthroughParameters();
             return TDAR_REDIRECT;
         }
         return SUCCESS;
@@ -134,17 +132,12 @@ public class LoginAction extends AbstractAuthenticatedAction implements Validate
 
     private String parseReturnUrl() {
         String parsedUrl = null;
-        getLogger().debug("url: {}, sessionUrl: {}", url, getSessionData().getReturnUrl());
-        if ((getSessionData().getReturnUrl() == null) && StringUtils.isEmpty(url)) {
+        getLogger().debug("url: {}", url);
+        if (StringUtils.isEmpty(url)) {
             return null;
         }
 
-        // Favor the session's 'returnUrl' over the querystring 'url'.
-        if (StringUtils.isNotBlank(getSessionData().getReturnUrl())) {
-            parsedUrl = getSessionData().getReturnUrl();
-        } else {
-            parsedUrl = UrlUtils.urlDecode(url);
-        }
+        parsedUrl = UrlUtils.urlDecode(url);
 
         // enforce valid + relative url
         String normalizedUrl = org.tdar.core.bean.util.UrlUtils.sanitizeRelativeUrl(parsedUrl);

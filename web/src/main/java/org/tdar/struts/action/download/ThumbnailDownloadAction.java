@@ -37,7 +37,6 @@ public class ThumbnailDownloadAction extends AbstractDownloadController implemen
             @Action(value = "sm/{informationResourceFileVersionId}")
     })
     public String thumbnail() {
-        getSessionData().clearPassthroughParameters();
         if (PersistableUtils.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;

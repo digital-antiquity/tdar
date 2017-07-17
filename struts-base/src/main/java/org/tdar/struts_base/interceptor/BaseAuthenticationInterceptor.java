@@ -1,13 +1,20 @@
 package org.tdar.struts_base.interceptor;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.common.util.UrlUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.struts2.RequestUtils;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
 import org.apache.struts2.dispatcher.HttpParameters;
+import org.apache.struts2.dispatcher.Parameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.service.ReflectionService;
@@ -18,6 +25,7 @@ import org.tdar.struts_base.interceptor.annotation.HttpNotFoundErrorOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 
@@ -34,6 +42,10 @@ import com.opensymphony.xwork2.ActionProxy;
  * @version $Rev$
  */
 public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticationInterceptor {
+
+    private static final String FORBIDDEN_STATUS_ONLY = "forbidden-status-only";
+
+    private static final String NOT_FOUND_STATUS_ONLY = "not-found-status-only";
 
     private static final long serialVersionUID = -3147151913316273258L;
 
@@ -90,13 +102,21 @@ public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticati
         }
 
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpForbiddenErrorResponseOnly.class)) {
-            return "forbidden-status-only";
+            return FORBIDDEN_STATUS_ONLY;
         }
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpNotFoundErrorOnly.class)) {
-            return "not-found-status-only";
+            return NOT_FOUND_STATUS_ONLY;
         }
 
-        setReturnUrl(invocation);
+        String returnUrl = getReturnUrl(invocation);
+        HttpServletResponse response = (HttpServletResponse) invocation.getInvocationContext().get(StrutsStatics.HTTP_RESPONSE);
+
+        // it'd be really nice to use the session here, but with things like CHrome making many prefetch requests, it's impossible
+        // to tie the "actual" request with the login. Hence, we redirect with the actual path 
+        if (StringUtils.isNotBlank(returnUrl)) {
+            response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
+            response.sendRedirect("/login?url=" + UrlUtils.urlEncode(returnUrl));
+        }
         return Action.LOGIN;
     }
 
@@ -126,7 +146,7 @@ public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticati
 
     public abstract boolean isMemberOf(SessionData sessionData, TdarGroup group, Object action, String methodName);
 
-    protected void setReturnUrl(ActionInvocation invocation) {
+    protected String getReturnUrl(ActionInvocation invocation) {
         HttpServletRequest request = ServletActionContext.getRequest();
         ActionProxy proxy = invocation.getProxy();
         String returnUrl = String.format("%s/%s", proxy.getNamespace(), proxy.getActionName());
@@ -136,13 +156,38 @@ public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticati
         logger.trace(returnUrl);
         if (!request.getMethod().equalsIgnoreCase("get") || returnUrl.matches(getSkipRedirectRegex())) {
             logger.warn("Not setting return url for anything other than a get {}", request.getMethod());
-            return;
+            return null;
         }
-        getSessionData().setReturnUrl(returnUrl);
+//        this.parameters = new String[map.size() * 2];
+        StringBuilder queryString = new StringBuilder();
         HttpParameters parameters = invocation.getInvocationContext().getParameters();
-        getSessionData().setParameters(parameters.toMap());
-        logger.debug("setting returnUrl to: {}", getSessionData().getReturnUrl());
-
+        parameters.entrySet().forEach(param_ -> {
+            String key = param_.getKey();
+            Parameter param = param_.getValue();
+            if (param.isMultiple()) {
+                int index = 0;
+                for (String value : param.getMultipleValues()) {
+                    if (queryString.length() != 0) {
+                        queryString.append("&");
+                    }
+                    queryString.append(key).append("[").append(index).append("]").append("=").append(value);
+                    index++;
+                }
+            } else {
+                if (queryString.length() != 0) {
+                    queryString.append("&");
+                }
+                queryString.append(key).append("=").append(param.getValue());
+                
+            }
+            
+        });
+        if (queryString.length() > 0) {
+            returnUrl += "?" + queryString;
+        }
+        invocation.getStack().set("returnUrl", returnUrl);
+        logger.debug("setting returnUrl to: {}", returnUrl);
+        return returnUrl;
     }
 
     public abstract String getSkipRedirectRegex();

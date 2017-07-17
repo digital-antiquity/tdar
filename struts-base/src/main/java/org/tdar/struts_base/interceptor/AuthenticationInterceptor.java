@@ -48,7 +48,7 @@ public class AuthenticationInterceptor extends BaseAuthenticationInterceptor {
 
     @Override
     public String getSkipRedirectRegex() {
-        return "(.*)/(lookup|page-not-found|unauthorized|datatable\\/browse)/(.*)";
+        return "(.*)/(lookup|page-not-found|check|bookmark|api|unauthorized|datatable\\/browse)/(.*)";
     }
 
 }
