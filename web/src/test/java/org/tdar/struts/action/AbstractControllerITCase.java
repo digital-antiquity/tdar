@@ -80,6 +80,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
     public static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
 
     public static final String REASON = "because";
+    
 
     public void bookmarkResource(Resource r, TdarUser user) throws Exception {
         bookmarkResource(r, false, user);
@@ -87,31 +88,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
 
     public void removeBookmark(Resource r, TdarUser user) throws Exception {
         removeBookmark(r, false, user);
-    }
-
-    public BillingAccount createAccount(TdarUser owner) {
-        BillingAccount account = new BillingAccount("my account");
-        account.setDescription("this is an account for : " + owner.getProperName());
-        account.setOwner(owner);
-        account.markUpdated(owner);
-        genericService.saveOrUpdate(account);
-        return account;
-    }
-
-    // public Account createAccountWithOneItem(Person person) {
-    // return createA
-    // }
-
-    public Invoice createInvoice(TdarUser person, TransactionStatus status, BillingItem... items) {
-        Invoice invoice = new Invoice();
-        invoice.setItems(new ArrayList<BillingItem>());
-        for (BillingItem item : items) {
-            invoice.getItems().add(item);
-        }
-        invoice.setOwner(person);
-        invoice.setTransactionStatus(status);
-        genericService.saveOrUpdate(invoice);
-        return invoice;
     }
 
     public void bookmarkResource(Resource r_, boolean ajax, TdarUser user) throws Exception {

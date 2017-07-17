@@ -238,7 +238,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         invoice.setInvoiceNumber(invoiceNumber);
         invoice.setPaymentMethod(PaymentMethod.INVOICE);
         invoice.setOtherReason("this is my reasoning");
-        BillingAccount account = createAccount(getBasicUser());
+        BillingAccount account = TestBillingHelper.createAccount(getBasicUser(), genericService);
         CartBillingAccountController billingAccountController = generateNewInitializedController(CartBillingAccountController.class);
         billingAccountController.setId(account.getId());
         billingAccountController.prepare();
@@ -264,7 +264,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
     public void testCartCouponWithRights() throws TdarActionException, IOException, InstantiationException, IllegalAccessException {
         String response;
         Document doc = generateDocumentWithFileAndUser();
-        BillingAccount account = createAccount(getAdminUser());
+        BillingAccount account = TestBillingHelper.createAccount(getAdminUser(), genericService);
         Coupon coupon = new Coupon();
         account.getCoupons().add(coupon);
         coupon.setCode("ABCD");

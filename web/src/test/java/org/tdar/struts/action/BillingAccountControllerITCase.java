@@ -93,7 +93,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testAccountControllerChoicesSelectAccounts() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
         invoice.setOwner(getAdminUser());
-        BillingAccount account = createAccount(getAdminUser());
+        BillingAccount account = TestBillingHelper.createAccount(getAdminUser(), genericService);
         BillingAccountSelectionAction controller = generateNewController(BillingAccountSelectionAction.class);
         init(controller, getAdminUser());
         controller.setInvoiceId(invoice.getId());
@@ -118,7 +118,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAddingInvoiceToExistingAccount() throws TdarActionException {
-        Long accountId = createAccount(getUser()).getId();
+        Long accountId = TestBillingHelper.createAccount(getUser(), genericService).getId();
         Invoice invoice = createTrivialInvoice();
         genericService.saveOrUpdate(invoice);
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
@@ -164,7 +164,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Rollback
     public void testAddingInvoiceToNewAccount() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = createAccount(getUser());
+        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1L);
         String save = controller.execute();
@@ -224,7 +224,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testCreateCouponInvalid() throws TdarActionException {
         setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = createAccount(getUser());
+        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1000L);
         try {
@@ -246,7 +246,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testCreateCouponEmpty() throws TdarActionException {
         setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = createAccount(getUser());
+        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         // controller.setNumberOfFiles(1000L);
         try {
@@ -265,7 +265,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testCreateCouponInvalidBoth() throws TdarActionException {
         setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = createAccount(getUser());
+        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1L);
         controller.setNumberOfMb(1L);
@@ -284,7 +284,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Rollback
     public void testCreateCouponValid() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = createAccount(getUser());
+        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         Long files = controller.getAccount().getAvailableNumberOfFiles();
         controller.setNumberOfFiles(1L);
