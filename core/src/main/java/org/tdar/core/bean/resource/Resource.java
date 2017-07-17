@@ -1261,10 +1261,10 @@ public class Resource implements Persistable,
         this.unmanagedResourceCollections = publicResourceCollections;
     }
 
-    @XmlElementWrapper(name = "sharedCollections")
+    @XmlElementWrapper(name = "resourceCollections")
     @XmlElementRefs({
-            @XmlElementRef(name = "sharedCollection", type = SharedCollection.class, required = false),
-            @XmlElementRef(name = "sharedCollectionRef", type = JAXBPersistableRef.class, required = false)
+            @XmlElementRef(name = "resourceCollection", type = SharedCollection.class, required = false),
+            @XmlElementRef(name = "resourceCollectionRef", type = JAXBPersistableRef.class, required = false)
     })
     @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
     public Set<SharedCollection> getSharedCollections() {

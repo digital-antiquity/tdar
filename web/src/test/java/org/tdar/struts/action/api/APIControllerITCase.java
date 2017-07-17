@@ -287,9 +287,21 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     }
 
     @Test
+    @Rollback
     public void testMimbres() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/mimbres.xml"));
+        controller.setRecord(text);
+        String uploadStatus = controller.upload();
+        assertEquals(Action.SUCCESS, uploadStatus);
+        assertEquals(StatusCode.CREATED, controller.getStatus());
+    }
+
+    @Test
+    @Rollback
+    public void testLoadHiddenCollection() throws Exception {
+        APIController controller = generateNewInitializedController(APIController.class);
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/hidden-collection.xml"));
         controller.setRecord(text);
         String uploadStatus = controller.upload();
         assertEquals(Action.SUCCESS, uploadStatus);

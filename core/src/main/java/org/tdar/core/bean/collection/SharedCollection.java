@@ -28,7 +28,7 @@ import org.tdar.core.bean.resource.Resource;
 
 @DiscriminatorValue(value = "SHARED")
 @Entity
-@XmlRootElement(name = "sharedCollection")
+@XmlRootElement(name = "resourceCollection")
 public class SharedCollection extends CustomizableCollection<SharedCollection>
         implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName, Sortable {
     private static final long serialVersionUID = 7900346272773477950L;
