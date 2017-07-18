@@ -19,6 +19,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -43,7 +44,7 @@ import com.opensymphony.xwork2.Action;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-public class PaymentResourceControllerITCase extends AbstractResourceControllerITCase {
+public class PaymentResourceControllerITCase extends AbstractResourceControllerITCase implements TestBillingAccountHelper {
 
     private DocumentController controller;
 

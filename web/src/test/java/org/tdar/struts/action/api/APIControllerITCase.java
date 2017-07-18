@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -65,7 +66,7 @@ import com.opensymphony.xwork2.Action;
  * 
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-public class APIControllerITCase extends AbstractAdminControllerITCase {
+public class APIControllerITCase extends AbstractAdminControllerITCase implements TestBillingAccountHelper {
 
     @Autowired
     ResourceService resourceService;

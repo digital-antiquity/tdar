@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.BillingTransactionLog;
@@ -36,7 +37,7 @@ import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Action;
 
-public abstract class AbstractCartControllerITCase extends AbstractResourceControllerITCase {
+public abstract class AbstractCartControllerITCase extends AbstractResourceControllerITCase implements TestBillingAccountHelper {
 
     @Autowired
     NelNetPaymentDao dao;
