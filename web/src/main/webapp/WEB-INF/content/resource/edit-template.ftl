@@ -66,8 +66,7 @@
         <@common.jsErrorLog />
         <@s.token name='struts.csrf.token' />
         <@s.hidden name="epochTimeUpdated" />
-
-
+        <@s.hidden name="doubleSubmitKey" />
 
     <#-- custom section ahead of the basic information -->
         <#if local_.topSection?? && local_.topSection?is_macro>
@@ -396,12 +395,12 @@
 <#--         <@edit.fullAccessRights /> -->
 
         <#if !resource.resourceType.project>
-            <@edit.submit fileReminder=((resource.id == -1) && fileReminder) class="button btn" >
-                <input type="submit" name="alternateSubmitAction" value="Assign Rights" class="button btn" />
+            <@edit.submit fileReminder=((resource.id == -1) && fileReminder) class="button btn submitButton" >
+                <input type="submit" name="alternateSubmitAction" value="Assign Rights" class="button btn submittableButtons" />
             </@edit.submit>
         <#else>
-            <@edit.submit fileReminder=false class="button btn">
-                    <input type="submit" name="submitAction" value="Assign Rights"  class="button btn " />
+            <@edit.submit fileReminder=false class="button btn submitButton">
+                    <input type="submit" name="submitAction" value="Assign Rights"  class="button btn submittableButtons" />
             </@edit.submit>
         </#if>
     </@s.form>

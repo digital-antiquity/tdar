@@ -76,6 +76,8 @@
             <interceptor name="cacheControl"
                 class="org.tdar.struts.interceptor.CacheControlInterceptor" />
             <interceptor name="activityLogging"
+                class="org.tdar.struts.interceptor.DoubleSubmitInterceptor" />
+            <interceptor name="doubleSubmit"
                 class="org.tdar.struts_base.interceptor.ActivityLoggingInterceptor" />
             <interceptor name="sso" class="org.tdar.struts_base.interceptor.CrowdTokenInterceptor" />
             <interceptor-stack name="tdarDefaultStack">
@@ -111,6 +113,7 @@
                     should be used sparingly -->
                 <interceptor-ref name="sso" />
                 <interceptor-ref name="authenticate" />
+                <interceptor-ref name="doubleSubmit" />
                 <interceptor-ref name='tdarDefaultStack' />
                 <interceptor-ref name="fileUpload">
                     <!-- ONLY OVERRIDE IF ABSOLUTELY NECESSARY - THIS PROTECTS 

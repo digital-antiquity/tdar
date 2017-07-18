@@ -261,7 +261,7 @@ TDAR.validate = (function($, ctx) {
      */
     var _submitButtonStartWait = function () {
         var $submitDivs = $('#editFormActions, #fakeSubmitDiv');
-        var $buttons = $submitDivs.find(".submitButton");
+        var $buttons = $submitDivs.find(".submittableButtons");
         $buttons.prop("disabled", true);
 
         //fade in the wait icon
@@ -358,7 +358,7 @@ TDAR.validate = (function($, ctx) {
 
         var $form = form;
         //disable double-submit protection if user gets here via backbutton
-        var $submit = $form.find(".submitButton").prop("disabled", false);
+        var $submit = $form.find(".submittableButtons").prop("disabled", false);
         var options = {
             //FIXME: allow for error label container to be specified from options,
             wrapper: "",
@@ -369,7 +369,7 @@ TDAR.validate = (function($, ctx) {
                 $(label).closest('.control-group').addClass('error');
             },
             submitHandler: function (f) {
-                var $submit = $(f).find(".submitButton").prop("disabled", true);
+                var $submit = $(f).find(".submittableButtons").prop("disabled", true);
                 //prevent doublesubmit for certain amount of time.
                 $submit.prop("disabled", true);
                 setTimeout(function () {

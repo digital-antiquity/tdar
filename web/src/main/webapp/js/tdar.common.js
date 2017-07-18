@@ -178,7 +178,7 @@ TDAR.common = function (TDAR, fileupload) {
      */
     var _submitButtonStopWait = function () {
         var $submitDivs = $('#editFormActions, #fakeSubmitDiv');
-        var $buttons = $submitDivs.find(".submitButton");
+        var $buttons = $submitDivs.find(".submittableButtons");
         $buttons.prop("disabled", false);
 
         //fade in the wait icon

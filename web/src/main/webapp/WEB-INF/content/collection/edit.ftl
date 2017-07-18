@@ -202,8 +202,8 @@
             </div>
         </div>
 
-            <@edit.submit fileReminder=false class="button btn">
-                <input type="submit" name="alternateSubmitAction" value="Assign Rights"  class="button btn " />
+            <@edit.submit fileReminder=false class="button btn submitButton">
+                <input type="submit" name="alternateSubmitAction" value="Assign Rights"  class="button btn submittableButtons" />
             </@edit.submit>
         </@s.form>
 
