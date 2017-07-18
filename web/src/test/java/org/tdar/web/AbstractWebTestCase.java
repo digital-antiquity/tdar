@@ -872,8 +872,10 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
     }
 
     public int login(String user, String pass, boolean expectingErrors) {
+        if (internalPage == null || !StringUtils.contains(getCurrentUrlPath(), "/login")) {
         gotoPage("/");
         clickLinkOnPage("Log In");
+        }
         completeLoginForm(user, pass, expectingErrors);
         return internalPage.getWebResponse().getStatusCode();
     }

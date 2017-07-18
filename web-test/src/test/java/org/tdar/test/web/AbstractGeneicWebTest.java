@@ -236,6 +236,9 @@ public abstract class AbstractGeneicWebTest {
     }
 
     public String getCurrentUrlPath() {
+        if (internalPage == null) {
+            return null;
+        }
         return internalPage.getUrl().getPath() + "?" + internalPage.getUrl().getQuery();
     }
 

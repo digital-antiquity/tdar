@@ -116,6 +116,7 @@ public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticati
         if (StringUtils.isNotBlank(returnUrl)) {
             response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
             response.sendRedirect("/login?url=" + UrlUtils.urlEncode(returnUrl));
+            return null;
         }
         return Action.LOGIN;
     }
