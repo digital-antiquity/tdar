@@ -235,11 +235,11 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         }
     }
 
-    protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass) {
+    public <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass) {
         return generateNewInitializedController(controllerClass, null);
     }
 
-    protected <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass, TdarUser user) {
+    public <T extends ActionSupport> T generateNewInitializedController(Class<T> controllerClass, TdarUser user) {
         T controller = generateNewController(controllerClass);
         if (controller instanceof TdarActionSupport) {
             if (user != null) {
@@ -260,6 +260,10 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         init(controller, null);
     }
 
+    /* (non-Javadoc)
+     * @see org.tdar.struts.action.TestFixtureSetup#getSessionData()
+     */
+    @Override
     public SessionData getSessionData() {
         if (sessionData == null) {
             this.sessionData = new SessionData();
@@ -267,20 +271,20 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         return sessionData;
     }
 
-    protected <T> List<T> createListWithSingleNull() {
-        ArrayList<T> list = new ArrayList<T>();
-        list.add(null);
-        return list;
-    }
-
     public void setHttpServletRequest(HttpServletRequest httpServletRequest) {
         this.httpServletRequest = httpServletRequest;
     }
 
+    /* (non-Javadoc)
+     * @see org.tdar.struts.action.TestFixtureSetup#getServletRequest()
+     */
     public HttpServletRequest getServletRequest() {
         return httpServletRequest;
     }
 
+    /* (non-Javadoc)
+     * @see org.tdar.struts.action.TestFixtureSetup#getServletPostRequest()
+     */
     public HttpServletRequest getServletPostRequest() {
         return httpServletPostRequest;
     }
@@ -293,26 +297,13 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         this.httpServletResponse = httpServletResponse;
     }
 
+    /* (non-Javadoc)
+     * @see org.tdar.struts.action.TestFixtureSetup#getServletResponse()
+     */
     public HttpServletResponse getServletResponse() {
         return httpServletResponse;
     }
 
-    public void addAuthorizedUser(Resource resource, TdarUser person, GeneralPermissions permission) {
-        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), person, permission);
-        // InternalCollection internalResourceCollection = resource.getInternalResourceCollection();
-        // if (internalResourceCollection == null) {
-        // internalResourceCollection = new InternalCollection();
-        // internalResourceCollection.setOwner(person);
-        // internalResourceCollection.markUpdated(person);
-        // resource.getInternalCollections().add(internalResourceCollection);
-        // genericService.save(internalResourceCollection);
-        // }
-        resource.getAuthorizedUsers().add(authorizedUser);
-        // logger.debug("{}", internalResourceCollection);
-        // genericService.saveOrUpdate(internalResourceCollection);
-        genericService.saveOrUpdate(authorizedUser);
-        genericService.saveOrUpdate(resource);
-    }
 
     /**
      * @param ignoreActionErrors
@@ -379,4 +370,13 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         this.actionErrors = actionErrors;
     }
 
+    @Override
+    public EntityService getEntityService() {
+        return entityService;
+    }
+    
+    @Override
+    public GenericService getGenericService() {
+        return genericService;
+    }
 }

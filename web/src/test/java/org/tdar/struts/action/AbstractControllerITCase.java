@@ -82,74 +82,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
     public static final String REASON = "because";
     
 
-    public void bookmarkResource(Resource r, TdarUser user) throws Exception {
-        bookmarkResource(r, false, user);
-    }
-
-    public void removeBookmark(Resource r, TdarUser user) throws Exception {
-        removeBookmark(r, false, user);
-    }
-
-    public void bookmarkResource(Resource r_, boolean ajax, TdarUser user) throws Exception {
-        Resource r = r_;
-        if (ajax) {
-            BookmarkApiController bookmarkController = generateNewInitializedController(BookmarkApiController .class);
-            logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
-            bookmarkController.setResourceId(r.getId());
-            bookmarkController.prepare();
-            bookmarkController.bookmarkResourceAjaxAction();
-        } else {
-            BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController .class);
-            logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
-            bookmarkController.setResourceId(r.getId());
-            bookmarkController.prepare();
-            bookmarkController.bookmarkResourceAction();
-        }
-        r = resourceService.find(r.getId());
-        assertNotNull(r);
-        genericService.refresh(user);
-        boolean seen = false;
-        for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {
-            if (ObjectUtils.equals(b.getResource(), r)) {
-                seen = true;
-            }
-        }
-        Assert.assertTrue("should have seen resource in bookmark list", seen);
-    }
-
-    @SuppressWarnings("deprecation")
-    public void removeBookmark(Resource r, boolean ajax, TdarUser user_) throws Exception {
-        TdarUser user = user_;
-        boolean seen = false;
-        for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {
-            if (ObjectUtils.equals(b.getResource(), r)) {
-                seen = true;
-            }
-        }
-
-        Assert.assertTrue("should have seen resource in bookmark list", seen);
-        logger.info("removing bookmark " + r.getTitle() + " (" + r.getId() + ")");
-        if (ajax) {
-            BookmarkApiController bookmarkController = generateNewInitializedController(BookmarkApiController .class);
-            bookmarkController.setResourceId(r.getId());
-            bookmarkController.prepare();
-            bookmarkController.removeBookmarkAjaxAction();
-        } else {
-            BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
-            bookmarkController.setResourceId(r.getId());
-            bookmarkController.prepare();
-            bookmarkController.removeBookmarkAction();
-        }
-        seen = false;
-        genericService.synchronize();
-        user = genericService.find(TdarUser.class, user.getId());
-        for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {
-            if (ObjectUtils.equals(b.getResource(), r)) {
-                seen = true;
-            }
-        }
-        Assert.assertFalse("should not see resource", seen);
-    }
 
     public SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             List<? extends Resource> resources, Long parentId)
@@ -444,7 +376,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
     }
 
     @Override
-    protected TdarUser getUser() {
+    public TdarUser getUser() {
         return getUser(getUserId());
     }
 

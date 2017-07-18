@@ -133,14 +133,7 @@ import org.xml.sax.SAXException;
 // 
 @ContextConfiguration(classes = TdarAppConfiguration.class)
 @SuppressWarnings("rawtypes")
-public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests {
-
-    protected HttpServletRequest defaultHttpServletRequest = new MockHttpServletRequest();
-
-    protected HttpServletRequest httpServletRequest = defaultHttpServletRequest;
-    protected HttpServletRequest httpServletPostRequest = new MockHttpServletRequest("POST", "/");
-    protected HttpServletResponse httpServletResponse = new MockHttpServletResponse();
-
+public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests implements TestEntityHelper {
     
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
     protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
@@ -223,10 +216,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (emailService.getMailSender() instanceof MockMailSender) {
             ((MockMailSender) emailService.getMailSender()).getMessages().clear();
         }
-        String base = TestConstants.TEST_ROOT_DIR + "schemaCache";
         if (TdarConfiguration.getInstance().shouldLogToFilestore()) {
             serializationService.setUseTransactionalEvents(false);
         }
+        setupSchemaMap();
+
+    }
+
+    private void setupSchemaMap() {
+        String base = TestConstants.TEST_ROOT_DIR + "schemaCache";
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));
@@ -235,7 +233,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         schemaMap.put("http://www.w3.org/XML/2008/06/xlink.xsd", new File(base, "xlink.xsd"));
         schemaMap.put("http://www.w3.org/2001/03/xml.xsd", new File(base, "xml.xsd"));
         schemaMap.put("http://dublincore.org/schemas/xmls/simpledc20021212.xsd", new File(base, "simpledc20021212.xsd"));
-
     }
     
     protected String getTestFilePath() {
@@ -252,31 +249,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
     }
 
-    public TdarUser createAndSaveNewPerson() {
-        return createAndSaveNewPerson(null, "");
-    }
-
-    public TdarUser createAndSaveNewPerson(String email_, String suffix) {
-        String email = email_;
-        if (StringUtils.isBlank(email)) {
-            email = TestConstants.DEFAULT_EMAIL;
-        }
-        TdarUser testPerson = new TdarUser();
-        testPerson.setEmail(email);
-        testPerson.setFirstName(TestConstants.DEFAULT_FIRST_NAME + suffix);
-        testPerson.setLastName(TestConstants.DEFAULT_LAST_NAME + suffix);
-        testPerson.setUsername(email);
-        Institution institution = entityService.findInstitutionByName(TestConstants.INSTITUTION_NAME);
-        if (institution == null) {
-            institution = new Institution();
-            institution.setName(TestConstants.INSTITUTION_NAME);
-            genericService.saveOrUpdate(institution);
-        }
-        testPerson.setInstitution(institution);
-        testPerson.setContributor(false);
-        genericService.save(testPerson);
-        return testPerson;
-    }
 
     @Deprecated
     /*
@@ -546,7 +518,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return list;
     }
 
-    protected TdarUser getUser() {
+    public TdarUser getUser() {
         return getUser(getUserId());
     }
 
@@ -618,30 +590,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected Long getEditorUserId() {
         return TestConfiguration.getInstance().getEditorUserId();
-    }
-
-    public void setHttpServletRequest(HttpServletRequest httpServletRequest) {
-        this.httpServletRequest = httpServletRequest;
-    }
-
-    public HttpServletRequest getServletRequest() {
-        return httpServletRequest;
-    }
-
-    public HttpServletRequest getServletPostRequest() {
-        return httpServletPostRequest;
-    }
-
-    public HttpServletRequest getDefaultHttpServletRequest() {
-        return defaultHttpServletRequest;
-    }
-
-    public void setHttpServletResponse(HttpServletResponse httpServletResponse) {
-        this.httpServletResponse = httpServletResponse;
-    }
-
-    public HttpServletResponse getServletResponse() {
-        return httpServletResponse;
     }
 
     public void addAuthorizedUser(Resource resource, TdarUser person, GeneralPermissions permission) {
@@ -878,88 +826,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
-    public BillingAccount setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
-        BillingAccount account = new BillingAccount();
-        BillingActivity activity = new BillingActivity("6 mb", 10f, 0, 0L, 0L, 6L, model);
-        initAccount(account, activity, getUser());
-        genericService.saveOrUpdate(account);
-        return account;
-    }
-
-    public BillingAccount setupAccountWithInvoiceForOneFile(BillingActivityModel model, TdarUser user) {
-        BillingAccount account = new BillingAccount();
-        initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model), user);
-        genericService.saveOrUpdate(account);
-        return account;
-    }
-
-    public BillingAccount setupAccountWithInvoiceForOneResource(BillingActivityModel model, TdarUser user) {
-        BillingAccount account = new BillingAccount();
-        initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model), user);
-        /* add one resource */
-        // account.resetTransientTotals();
-        genericService.saveOrUpdate(account);
-        return account;
-    }
-
-    public BillingAccount setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, TdarUser user) {
-        BillingAccount account = new BillingAccount();
-        initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model), user);
-        /* add one resource */
-        // account.resetTransientTotals();
-        genericService.saveOrUpdate(account);
-        return account;
-    }
-
-    public BillingAccount setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, TdarUser user) {
-        BillingAccount account = new BillingAccount();
-        initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model), user);
-        /* add one resource */
-        // account.resetTransientTotals();
-        genericService.saveOrUpdate(account);
-        return account;
-    }
-
-    public BillingAccount setupAccountWithInvoiceTenOfEach(BillingActivityModel model, TdarUser user) {
-        BillingAccount account = new BillingAccount();
-        initAccount(account, new BillingActivity("10 resource", 10f, 10, 10L, 10L, 10L, model), user);
-        /* add one resource */
-        // account.resetTransientTotals();
-        genericService.saveOrUpdate(account);
-        return account;
-    }
-
-    private Invoice initAccount(BillingAccount account, BillingActivity activity, TdarUser user) {
-        account.markUpdated(user);
-        Invoice invoice = setupInvoice(activity, user);
-        account.getInvoices().add(invoice);
-        return invoice;
-    }
-
-    public Invoice setupInvoice(BillingActivity activity, TdarUser user) {
-        Invoice invoice = new Invoice();
-        invoice.markUpdated(user);
-        genericService.saveOrUpdate(activity.getModel());
-        genericService.saveOrUpdate(activity);
-        invoice.setNumberOfFiles(activity.getNumberOfFiles());
-        invoice.setNumberOfMb(activity.getNumberOfMb());
-        invoice.getItems().add(new BillingItem(activity, 1));
-        invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
-        invoice.markFinal();
-        genericService.saveOrUpdate(invoice);
-        genericService.saveOrUpdate(invoice.getItems());
-        return invoice;
-    }
-
-    public BillingAccount setupAccountForPerson(TdarUser p) {
-        BillingAccount account = new BillingAccount("my account");
-        account.setOwner(p);
-        account.setStatus(Status.ACTIVE);
-        account.markUpdated(getUser());
-        genericService.saveOrUpdate(account);
-        return account;
-    }
-
     public static void assertNotEquals(Object obj1, Object obj2) {
         assertNotEquals("", obj1, obj2);
     }
@@ -1118,4 +984,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return files;
     }
 
+    @Override
+    public GenericService getGenericService() {
+        return genericService;
+    }
+    
+    @Override
+    public EntityService getEntityService() {
+        return entityService;
+    }
 }

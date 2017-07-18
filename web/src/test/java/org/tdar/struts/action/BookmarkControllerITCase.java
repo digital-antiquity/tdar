@@ -18,7 +18,7 @@ import org.tdar.core.configuration.TdarConfiguration;
  * @author Adam Brin
  * 
  */
-public class BookmarkControllerITCase extends AbstractAdminControllerITCase {
+public class BookmarkControllerITCase extends AbstractAdminControllerITCase implements TestBookmarkHelper {
 
     @Test
     @Rollback

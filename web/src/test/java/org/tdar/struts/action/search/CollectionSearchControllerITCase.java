@@ -137,7 +137,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     }
 
     @Override
-    protected TdarUser getUser() {
+    public TdarUser getUser() {
         return getAdminUser();
     }
 }

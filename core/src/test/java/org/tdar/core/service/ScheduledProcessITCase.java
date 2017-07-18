@@ -29,6 +29,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -63,7 +64,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
  * @version $Revision$
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
+public class ScheduledProcessITCase extends AbstractIntegrationTestCase implements TestBillingAccountHelper {
 
     @Autowired
     // private ScheduledProcessService scheduledProcessService;
