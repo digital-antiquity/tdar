@@ -38,7 +38,10 @@
         </div>
     </div>
 
-
+    <#assign newRecord = false>
+    <#if persistable.id == -1>
+        <#assign newRecord = true />
+    </#if>
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} enctype='multipart/form-data' action='save'>
         <@s.token name='struts.csrf.token' />
@@ -202,8 +205,9 @@
             </div>
         </div>
 
-            <@edit.submit fileReminder=false class="button btn submitButton">
-                <input type="submit" name="alternateSubmitAction" value="Assign Rights"  class="button btn submittableButtons" />
+            <#assign submitClasses>button btn submitButton <#if !newRecord>btn-primary</#if></#assign>
+            <@edit.submit fileReminder=false class=submitClasses>
+                <input type="submit" name="alternateSubmitAction" value="Assign Permissions"  class="button btn submittableButtons <#if newRecord>btn-primary</#if>" />
             </@edit.submit>
         </@s.form>
 

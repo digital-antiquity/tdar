@@ -17,7 +17,9 @@
 <head>
 <#-- expose pageTitle so edit pages can use it elsewhere -->
     <#assign pageTitle>Create a new <@edit.resourceTypeLabel /></#assign>
+    <#assign newRecord = true>
     <#if resource.id != -1>
+        <#assign newRecord = false/>
         <#assign pageTitle>Editing <@edit.resourceTypeLabel /> Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})</#assign>
     </#if>
     <title>${pageTitle}</title>
@@ -394,13 +396,14 @@
 
 <#--         <@edit.fullAccessRights /> -->
 
+        <#assign submitClasses>button btn submitButton <#if !newRecord>btn-primary</#if></#assign>
         <#if !resource.resourceType.project>
-            <@edit.submit fileReminder=((resource.id == -1) && fileReminder) class="button btn submitButton" >
-                <input type="submit" name="alternateSubmitAction" value="Assign Rights" class="button btn submittableButtons" />
+            <@edit.submit fileReminder=((resource.id == -1) && fileReminder) class=submitClasses >
+                <input type="submit" name="alternateSubmitAction" value="Assign Permissions" class="button btn submittableButtons <#if newRecord>btn-primary</#if>" />
             </@edit.submit>
         <#else>
-            <@edit.submit fileReminder=false class="button btn submitButton">
-                    <input type="submit" name="submitAction" value="Assign Rights"  class="button btn submittableButtons" />
+            <@edit.submit fileReminder=false class=submitClasses>
+                    <input type="submit" name="submitAction" value="Assign Permissions"  class="button btn submittableButtons <#if newRecord>btn-primary</#if>" />
             </@edit.submit>
         </#if>
     </@s.form>

@@ -57,7 +57,7 @@ import com.opensymphony.xwork2.Preparable;
 public abstract class AbstractPersistableController<P extends Persistable & Updatable> extends AbstractAuthenticatableAction
         implements Preparable, PersistableLoadingAction<P> {
 
-    public static final String ASSIGN_RIGHTS = "assign rights";
+    public static final String ASSIGN_RIGHTS = "assign permissions";
     public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
     public static final String DRAFT = "draft";
     protected long epochTimeUpdated = 0L;
