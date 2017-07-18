@@ -51,10 +51,12 @@ web/.tern-project
 web/phantomjsdriver.log
 .springBeans
 *.diff
+
+core/src/main/resources/rebel.xml
+web/src/main/resources/rebel.xml
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 webservice/([^\/]+)/build/.*
-
 syntax: regexp
 ^src/main/db/log\.txt$
 

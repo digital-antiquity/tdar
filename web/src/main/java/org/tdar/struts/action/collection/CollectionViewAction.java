@@ -20,8 +20,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.Sortable;
+import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.CustomizableCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -36,8 +42,9 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.WhiteLabelFiles;
+import org.tdar.core.service.UserRightsProxyService;
+import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.core.service.collection.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
@@ -51,11 +58,12 @@ import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.ResourceFacetedAction;
 import org.tdar.struts.action.SlugViewAction;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.TitleSortComparator;
 import org.tdar.web.service.HomepageDetails;
 import org.tdar.web.service.HomepageService;
 
@@ -66,17 +74,21 @@ import org.tdar.web.service.HomepageService;
 @Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, location = "view.ftl"),
         @Result(name = CollectionViewAction.SUCCESS_WHITELABEL, location = "view-whitelabel.ftl"),
+        @Result(name = CollectionViewAction.SUCCESS_SHARE, location = "view-share.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.TDAR_REDIRECT,
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements FacetedResultHandler<Resource>, SlugViewAction,
+public class CollectionViewAction<C extends HierarchicalCollection> extends AbstractPersistableViewableAction<C>
+        implements FacetedResultHandler<Resource>, SlugViewAction,
         ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
 
     public static final String SUCCESS_WHITELABEL = "success_whitelabel";
+    public static final String SUCCESS_SHARE = "success_share";
 
+    private List<UserInvite> invites;
     /**
      * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
      * refers to the combined count of authorized users +the count of resources associated with a collection. Big
@@ -95,9 +107,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
-
+    @Autowired
+    private transient UserRightsProxyService userRightsProxyService;
+    
     private Long parentId;
-    private List<ResourceCollection> collections = new LinkedList<>();
+    private List<HierarchicalCollection> collections = new LinkedList<>();
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
@@ -127,10 +141,17 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
      * 
      * @return
      */
-    public List<ResourceCollection> getCandidateParentResourceCollections() {
-        List<ResourceCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
-                getPersistable());
-        return publicResourceCollections;
+    public List<C> getCandidateParentResourceCollections() {
+        Class<C> cls = getActualClass();
+        return resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(), getPersistable(), cls);
+    }
+
+    private Class<C> getActualClass() {
+        Class cls = SharedCollection.class;
+        if (getPersistable() instanceof ListCollection) {
+            cls = ListCollection.class;
+        }
+        return (Class<C>) cls;
     }
 
     @Override
@@ -138,7 +159,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         if (getResourceCollection() == null) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
-        return authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
+        return authorizationService.canViewCollection(getAuthenticatedUser(), getResourceCollection());
     }
 
     public boolean isVisible() {
@@ -152,17 +173,17 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return false;
     }
 
-    public ResourceCollection getResourceCollection() {
+    public HierarchicalCollection getResourceCollection() {
         return getPersistable();
     }
 
-    public void setResourceCollection(ResourceCollection rc) {
-        setPersistable(rc);
+    public void setResourceCollection(HierarchicalCollection rc) {
+        setPersistable((C) rc);
     }
 
     @Override
-    public Class<ResourceCollection> getPersistableClass() {
-        return ResourceCollection.class;
+    public Class<C> getPersistableClass() {
+        return (Class<C>) HierarchicalCollection.class;
     }
 
     public List<SortOption> getSortOptions() {
@@ -179,7 +200,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
 
-        reSortFacets(this, getPersistable());
+        reSortFacets(this, (Sortable)getPersistable());
         return SUCCESS;
     }
 
@@ -189,20 +210,23 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             return;
         }
         getLogger().trace("child collections: begin");
-        TreeSet<ResourceCollection> findAllChildCollections;
+        TreeSet<HierarchicalCollection> findAllChildCollections = new TreeSet<>(new TitleSortComparator());
 
         if (isAuthenticated()) {
-            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
-            findAllChildCollections = getPersistable().getTransientChildren();
+            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), getActualClass());
+            findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
-            findAllChildCollections = new TreeSet<>(ResourceCollection.TITLE_COMPARATOR);
-            findAllChildCollections.addAll(resourceCollectionService.findDirectChildCollections(getId(), false, CollectionType.SHARED));
+            for (C c : resourceCollectionService.findDirectChildCollections(getId(), false, getActualClass())) {
+                findAllChildCollections.add((HierarchicalCollection) c);
+            }
         }
-        findAllChildCollections.addAll(resourceCollectionService.findAlternateChildren(Arrays.asList(getId()), getAuthenticatedUser()));
-        setCollections(new ArrayList<>(findAllChildCollections));
+        findAllChildCollections.addAll(resourceCollectionService.findAlternateChildren(Arrays.asList(getId()), getAuthenticatedUser(), getActualClass()));
+        setCollections(new ArrayList<HierarchicalCollection>(findAllChildCollections));
         getLogger().trace("child collections: sort");
         Collections.sort(collections);
         getLogger().trace("child collections: end");
+
+        setInvites(userRightsProxyService.findUserInvites(getPersistable()));
 
         // if this collection is public, it will appear in a resource's public collection id list, otherwise it'll be in the shared collection id list
         // String collectionListFieldName = getPersistable().isVisible() ? QueryFieldNames.RESOURCE_COLLECTION_PUBLIC_IDS
@@ -211,7 +235,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         getLogger().trace("lucene: end");
     }
 
-    @HttpOnlyIfUnauthenticated
+    @HttpsOnly
     @Actions(value = {
             @Action(value = "{id}/{slug}"),
             @Action(value = "{id}")
@@ -224,11 +248,21 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             }
             result = CollectionViewAction.SUCCESS_WHITELABEL;
         }
+
+        if (SUCCESS.equals(result) && getPersistable().getType() == CollectionType.SHARED) {
+            result = SUCCESS_SHARE;
+        }
         return result;
     }
 
     public boolean isWhiteLabelCollection() {
-        return getPersistable().isWhiteLabelCollection();
+        if (getPersistable() instanceof CustomizableCollection) {
+            CustomizableCollection lc = (CustomizableCollection) getPersistable();
+            if (lc.getProperties() != null && lc.getProperties().getWhitelabel()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public FacetWrapper getFacetWrapper() {
@@ -242,11 +276,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
         facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class, selectedResourceTypes);
-        setSortField(getPersistable().getSortBy());
+        setSortField(((Sortable) getPersistable()).getSortBy());
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
-            if (getPersistable().getSecondarySortBy() != null) {
-                setSecondarySortField(getPersistable().getSecondarySortBy());
+            if (getPersistable() instanceof CustomizableCollection && ((CustomizableCollection<ListCollection>) getPersistable()).getSecondarySortBy() != null) {
+                setSecondarySortField(((CustomizableCollection<ListCollection>) getPersistable()).getSecondarySortBy());
             }
         }
 
@@ -302,14 +336,14 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         this.recordsPerPage = recordsPerPage;
     }
 
-    public void setCollections(List<ResourceCollection> findAllChildCollections) {
+    public void setCollections(List<HierarchicalCollection> findAllChildCollections) {
         if (getLogger().isTraceEnabled()) {
             getLogger().trace("child collections: {}", findAllChildCollections);
         }
         this.collections = findAllChildCollections;
     }
 
-    public List<ResourceCollection> getCollections() {
+    public List<HierarchicalCollection> getCollections() {
         return this.collections;
     }
 
@@ -424,7 +458,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
      * @return
      */
     public boolean isBigCollection() {
-        return (getPersistable().getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        if (getPersistable() instanceof SharedCollection) {
+            return (((SharedCollection) getPersistable()).getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        } else {
+            return (((ListCollection) getPersistable()).getUnmanagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        }
     }
 
     public Long getViewCount() {
@@ -504,7 +542,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
      * @return
      */
     public boolean isSearchHeaderEnabled() {
-        return getResourceCollection().isSearchEnabled();
+            CollectionDisplayProperties properties = ((CustomizableCollection)(getResourceCollection())).getProperties();
+            if (properties != null && properties.getSearchEnabled()) {
+                return true;
+            }
+        return false;
     }
 
     /**
@@ -547,7 +589,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     @Override
     public DisplayOrientation getOrientation() {
         if (orientation == null) {
-            return getPersistable().getOrientation();
+            if (getPersistable() instanceof CustomizableCollection) {
+                return ((CustomizableCollection<ListCollection>) getPersistable()).getOrientation();
+            }
+            return DisplayOrientation.LIST;
         }
         return orientation;
     }
@@ -572,12 +617,24 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         this.homepageGraphs = homepageGraphs;
     }
 
+    public List<DisplayOrientation> getAvailableOrientations() {
+        return Arrays.asList(DisplayOrientation.values());
+    }
+
     public String getSchemaOrgJsonLD() {
         return schemaOrgJsonLD;
     }
 
     public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
         this.schemaOrgJsonLD = schemaOrgJsonLD;
+    }
+
+    public List<UserInvite> getInvites() {
+        return invites;
+    }
+
+    public void setInvites(List<UserInvite> invites) {
+        this.invites = invites;
     }
 
 }

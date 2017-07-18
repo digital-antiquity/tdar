@@ -25,8 +25,8 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.BaseFilestore;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.PersistableUtils;
 

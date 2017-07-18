@@ -28,10 +28,10 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 @Component
@@ -53,6 +53,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     private BillingAccountGroup accountGroup;
     private List<TdarUser> authorizedMembers = new ArrayList<>();
+    private List<String> authorizedUsersFullNames = new ArrayList<String>();
     private Long accountGroupId;
     private String name;
     private Date expires = new DateTime().plusYears(1).toDate();
@@ -68,10 +69,10 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     @Override
     public boolean authorize() {
-    	if (PersistableUtils.isNullOrTransient(getPersistable())) {
-    		return true;
-    	}
-    	return authorizationService.canEditAccount(getPersistable(), getAuthenticatedUser());
+        if (PersistableUtils.isNullOrTransient(getPersistable())) {
+            return true;
+        }
+        return authorizationService.canEditAccount(getAuthenticatedUser(), getPersistable());
     }
     
     public Invoice getInvoice() {
@@ -297,6 +298,15 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     public void setExpires(Date expires) {
         this.expires = expires;
+    }
+
+
+    public List<String> getAuthorizedUsersFullNames() {
+        return authorizedUsersFullNames;
+    }
+
+    public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
+        this.authorizedUsersFullNames = authorizedUsersFullNames;
     }
 
 }

@@ -11,11 +11,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,8 @@ public class ReflectionDao {
 
     // find all the instances of the specified type that refer to instances of the target specified type
     public ScrollableResults findReferrers(Field field, Collection<Long> idlist) {
-        String hql, fmt;
+        String hql;
+        String fmt;
         String targetClass = field.getDeclaringClass().getSimpleName();
         if (field.getAnnotation(ManyToMany.class) != null) {
             fmt = TdarNamedQueries.QUERY_HQL_MANY_TO_MANY_REFERENCES;
@@ -53,8 +54,29 @@ public class ReflectionDao {
             throw new IllegalArgumentException(MessageHelper.getMessage("reflectionDao.field_must_be_jpa", Arrays.asList(field)));
         }
         hql = String.format(fmt, targetClass, field.getName());
+
+        // FIXME: bug in hibernate won't do parameter replacement properly and throws NPE:
+/*
+ * java.lang.NullPointerException
+    at org.hibernate.param.NamedParameterSpecification.bind(NamedParameterSpecification.java:53)
+    at org.hibernate.loader.hql.QueryLoader.bindParameterValues(QueryLoader.java:628)
+    at org.hibernate.loader.Loader.prepareQueryStatement(Loader.java:1949)
+    at org.hibernate.loader.Loader.executeQueryStatement(Loader.java:1902)
+    at org.hibernate.loader.Loader.executeQueryStatement(Loader.java:1880)
+    at org.hibernate.loader.Loader.scroll(Loader.java:2684)
+    at org.hibernate.loader.hql.QueryLoader.scroll(QueryLoader.java:571)
+    at org.hibernate.hql.internal.ast.QueryTranslatorImpl.scroll(QueryTranslatorImpl.java:423)
+    at org.hibernate.engine.query.spi.HQLQueryPlan.performScroll(HQLQueryPlan.java:350)
+    at org.hibernate.internal.SessionImpl.scroll(SessionImpl.java:1543)
+    at org.hibernate.query.internal.AbstractProducedQuery.doScroll(AbstractProducedQuery.java:1310)
+    at org.hibernate.query.internal.AbstractProducedQuery.scroll(AbstractProducedQuery.java:1300)
+    at org.hibernate.query.internal.AbstractProducedQuery.scroll(AbstractProducedQuery.java:99)
+    at org.tdar.core.dao.ReflectionDao.findReferrers(ReflectionDao.java:60)
+
+ */
+//        hql = hql.replace(":idlist", StringUtils.join(idlist,","));
         Query query = getCurrentSession().createQuery(hql);
-        query.setParameterList("idlist", idlist);
+        query.setParameter("idlist", idlist);
 
         query.setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize());
         return query.scroll(ScrollMode.FORWARD_ONLY);
@@ -89,9 +111,9 @@ public class ReflectionDao {
         }
 
         hql = String.format(fmt, targetClass, field.getName());
-        Query query = getCurrentSession().createQuery(hql);
-        query.setParameterList("idlist", idlist);
-        return (Long) query.uniqueResult();
+        Query<Long> query = getCurrentSession().createQuery(hql, Long.class);
+        query.setParameter("idlist", idlist);
+        return  query.getSingleResult();
     }
 
     /**
@@ -137,8 +159,8 @@ public class ReflectionDao {
 
         hql = String.format(fmt, targetClass, field.getName());
         Query query = getCurrentSession().createQuery(hql);
-        query.setParameterList("idlist", idlist);
-        return query.list();
+        query.setParameter("idlist", idlist);
+        return query.getResultList();
     }
 
     public void updateReferrersToAuthority(Field field, List<Long> dupeIds, Long authorityId) {

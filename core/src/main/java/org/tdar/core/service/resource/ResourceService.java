@@ -30,9 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.RequestCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -58,7 +58,7 @@ import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.BillingAccountDao;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -155,12 +155,7 @@ public class ResourceService {
         if (id == null) {
             return null;
         }
-        ResourceType rt = datasetDao.findResourceType(id);
-        logger.trace("finding resource " + id + " type:" + rt);
-        if (rt == null) {
-            return null;
-        }
-        return (R) datasetDao.find(rt.getResourceClass(), id);
+        return (R) datasetDao.find(Resource.class, id);
     }
 
     /**
@@ -445,29 +440,34 @@ public class ResourceService {
         return datasetDao.getResourceCount(resourceType, status);
     }
 
-    /**
-     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
-     * 
-     * @param proxy
-     * @param resourceClass
-     * @return
-     */
-    @Transactional
-    public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass) {
-        return createResourceFrom(proxy, resourceClass, true);
+//    /**
+//     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
+//     * 
+//     * @param proxy
+//     * @param resourceClass
+//     * @return
+//     */
+//    @Transactional
+//    public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass) {
+//        return createResourceFrom(proxy, resourceClass, true);
+//    }
+
+    public <T extends Resource> void clearOneToManyIds(T resource) {
+        datasetDao.clearOneToManyIds(resource, false);
     }
 
     /**
-     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
+     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type. This is really a deep copy method
      * 
      * @param proxy
      * @param resourceClass
      * @return
      */
     @Transactional
-    public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass, boolean save) {
+    public <T extends Resource> T createResourceFrom(TdarUser authenticatedUser, Resource proxy, Class<T> resourceClass, boolean save) {
         try {
             T resource = resourceClass.newInstance();
+            genericDao.detachFromSession(resource);
             resource.setTitle(proxy.getTitle());
             resource.setDescription(proxy.getDescription());
             if (StringUtils.isEmpty(resource.getDescription())) {
@@ -476,9 +476,7 @@ public class ResourceService {
             resource.setDateCreated(proxy.getDateCreated());
             resource.markUpdated(proxy.getSubmitter());
             resource.setStatus(proxy.getStatus());
-            if (save) {
-                datasetDao.save(resource);
-            }
+
             resource.getMaterialKeywords().addAll(proxy.getMaterialKeywords());
             resource.getTemporalKeywords().addAll(proxy.getTemporalKeywords());
             resource.getInvestigationTypes().addAll(proxy.getInvestigationTypes());
@@ -490,31 +488,23 @@ public class ResourceService {
             resource.getManagedGeographicKeywords().addAll(proxy.getManagedGeographicKeywords());
             // CLONE if internal, otherwise just add
 
-            for (ResourceCollection collection : proxy.getResourceCollections()) {
-                if (collection.isInternal()) {
-                    logger.info("cloning collection: {}", collection);
-                    ResourceCollection newInternal = new ResourceCollection(CollectionType.INTERNAL);
-                    newInternal.setName(collection.getName());
-                    TdarUser owner = collection.getOwner();
-                    genericDao.refresh(owner);
-                    newInternal.markUpdated(owner);
-                    if (save) {
-                        datasetDao.save(newInternal);
-                    }
-                    for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
-                        AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
-                                proxyAuthorizedUser.getGeneralPermission());
-                        newInternal.getAuthorizedUsers().add(newAuthorizedUser);
-                    }
-                    resource.getResourceCollections().add(newInternal);
-                    newInternal.getResources().add(resource);
-                } else {
-                    logger.info("adding to shared collection : {} ", collection);
-                    if (collection.isTransient() && save) {
-                        genericDao.save(collection);
-                    }
-                    collection.getResources().add(resource);
-                    resource.getResourceCollections().add(collection);
+            for (AuthorizedUser au : proxy.getAuthorizedUsers()) {
+                AuthorizedUser newAuthorizedUser = new AuthorizedUser(authenticatedUser, au.getUser(),
+                        au.getGeneralPermission());
+                resource.getAuthorizedUsers().add(newAuthorizedUser);
+
+            }
+            for (RightsBasedResourceCollection collection : proxy.getRightsBasedResourceCollections()) {
+                 if (collection instanceof SharedCollection){
+                     SharedCollection shared = (SharedCollection)collection;
+                     logger.info("adding to shared collection : {} ", collection);
+                     if (collection.isTransient() && save) {
+                         genericDao.save(shared);
+                     }
+                     shared.getResources().add(resource);
+                     resource.getSharedCollections().add(shared);
+                 } else {
+                     throw new TdarRecoverableRuntimeException("resourceService.invalid_collectiontype");
                 }
             }
 
@@ -556,13 +546,10 @@ public class ResourceService {
                 informationResource.setInheritingCollectionInformation(proxyInformationResource.isInheritingCollectionInformation());
                 informationResource.setInheritingIndividualAndInstitutionalCredit(proxyInformationResource.isInheritingIndividualAndInstitutionalCredit());
             }
-            if (save) {
-                datasetDao.saveOrUpdate(resource);
-                return datasetDao.merge(resource);
-            }
             return resource;
             // NOTE: THIS SHOULD BE THE LAST THING DONE AS IT BRINGS EVERYTHING BACK ONTO THE SESSION PROPERLY
         } catch (Exception exception) {
+            logger.error("{}",exception, exception);
             throw new TdarRuntimeException(exception);
         }
     }
@@ -867,7 +854,7 @@ public class ResourceService {
     }
 
     @Transactional(readOnly=false)
-    public void updateBatch(Project project,BillingAccount account, ResourceCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
+    public void updateBatch(BillingAccount account, SharedCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
         List<Resource> resources = new ArrayList<>();
         for (int i=0; i< ids.size(); i++) {
             Long id = ids.get(i);
@@ -893,13 +880,9 @@ public class ResourceService {
                     different = true;
                     ir.setDate(date);
                 }
-                if (!Objects.equals(ir.getProject(), project)) {
-                    different = true;                    
-                    ir.setProject(project);
-                }
             }
-            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getResourceCollections().contains(collectionToAdd)) { 
-                r.getResourceCollections().add(collectionToAdd);
+            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getSharedCollections().contains(collectionToAdd)) { 
+                r.getSharedCollections().add(collectionToAdd);
                 collectionToAdd.getResources().add(r);
             }
             if (different) {
@@ -909,6 +892,7 @@ public class ResourceService {
                 genericDao.saveOrUpdate(r);
             }
             logger.debug("processed: {}", r);
+//            throw new TdarRecoverableRuntimeException("error.not_implemented");
         }
         
         if (PersistableUtils.isNotNullOrTransient(account)) {

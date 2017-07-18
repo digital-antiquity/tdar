@@ -17,18 +17,17 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.service.billing.PricingOption;
 import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.utils.MathUtils;
 
 @Component
-public class InvoiceDao extends Dao.HibernateBase<Invoice>{
+public class InvoiceDao extends HibernateBase<Invoice>{
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -281,23 +280,14 @@ public class InvoiceDao extends Dao.HibernateBase<Invoice>{
             List<Resource> findAll = findAll(Resource.class, coupon.getResourceIds());
             for (Resource res : findAll) {
                 res = markWritableOnExistingSession(res);
-                ResourceCollection rc = res.getInternalResourceCollection();
-                if (rc == null) {
-                    rc = new ResourceCollection(CollectionType.INTERNAL);
-                    rc.markUpdated(invoice.getOwner());
-                    saveOrUpdate(rc);
-                    res.getResourceCollections().add(rc);
-                }
-                rc = markWritableOnExistingSession(rc);
-                rc.getResources().add(res);
-                AuthorizedUser e = new AuthorizedUser(invoice.getOwner(), GeneralPermissions.MODIFY_RECORD);
+                AuthorizedUser e = new AuthorizedUser(invoice.getOwner(), invoice.getOwner(), GeneralPermissions.MODIFY_RECORD);
                 e = markWritableOnExistingSession(e);
-                rc.getAuthorizedUsers().add(e);
+                res.getAuthorizedUsers().add(e);
                 res.markUpdated(invoice.getOwner());
                 res.setAccount(account);
                 account.getResources().add(res);
                 accountDao.updateQuota(account, account.getResources(),invoice.getOwner());
-                saveOrUpdate(rc);
+                saveOrUpdate(res.getAuthorizedUsers());
                 saveOrUpdate(res);
                 logger.debug("{}",res);
             }

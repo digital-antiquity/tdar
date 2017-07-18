@@ -1,7 +1,6 @@
 package org.tdar.search.index.analyzer;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -40,6 +39,14 @@ public class SiteNameIndexingTestCase {
         assertMatches(compile, "AZ U:9:1 (ASM)");
     }
 
+    @Test
+    public void testHawaiiSiteExtractor() {
+        String title = "POLLEN AND MACROFLORAL ANALYSIS OF SEDIMENT FROM LOKO KAIPUNI FISHPOND (SIHP # 50-80-14-4573), WAIKĪKĪ, O’AHU, HAWAI’I";
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(title);
+        logger.debug("{}", extractSiteCodeTokens);
+        assertTrue("should have one site code", extractSiteCodeTokens.size() == 1);
+        assertEquals("5080144573", extractSiteCodeTokens.iterator().next());
+    }
     
     @Test
     public void testExtractor() {

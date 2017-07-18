@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-	<changeSet author="abrin (generated)" id="1412635782699-132">
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd" context="test,testintegration">
+	<changeSet  author="abrin (generated)" id="1412635782699-132">
 		<insert tableName="resource">
 			<column name="id" valueNumeric="42940"/>
 			<column name="date_registered" valueDate="2014-10-06 15:32:40.655"/>
@@ -29398,7 +29398,7 @@
 			<column name="orientation" value="LIST"/>
 			<column name="secondary_sort_order"/>
 			<column name="sort_order" value="TITLE"/>
-			<column name="collection_type" value="SHARED"/>
+			<column name="collection_type" value="LIST"/>
 			<column name="visible" valueBoolean="true"/>
 			<column name="owner_id" valueNumeric="8344"/>
 			<column name="parent_id"/>
@@ -29492,7 +29492,7 @@
 	</changeSet>
 
 	
-	<changeSet author="abrin" id="simplify-ontology">
+	<changeSet  author="abrin" id="simplify-ontology">
 		<sql>
 		delete from ontology_node_synonym where ontologynode_id in (select id from ontology_node where ontology_id =42940 and index not like '%.%' and import_order > 430000 and id != 63000)</sql>
 		<sql>update coding_rule set ontology_node_id=null where ontology_node_id in (select id from ontology_node where ontology_id =42940 and index not like '%.%' and import_order > 430000 and id != 63000)</sql>

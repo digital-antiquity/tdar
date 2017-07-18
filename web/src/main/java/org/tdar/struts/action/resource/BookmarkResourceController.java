@@ -19,8 +19,8 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
 

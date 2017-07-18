@@ -6,7 +6,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 @Component
 @Scope("prototype")

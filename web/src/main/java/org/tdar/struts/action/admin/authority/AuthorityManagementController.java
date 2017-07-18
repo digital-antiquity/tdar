@@ -24,10 +24,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.authority.DupeMode;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -36,7 +35,6 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-@HttpsOnly
 public class AuthorityManagementController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -264345419370974992L;

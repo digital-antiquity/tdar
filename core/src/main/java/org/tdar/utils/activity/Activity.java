@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.external.session.SessionData;
 
@@ -33,7 +32,6 @@ public class Activity implements Serializable {
     private Class<?> manipulationClass;
 
     private Long id;
-    private Person user;
 
     private String message;
 
@@ -45,6 +43,9 @@ public class Activity implements Serializable {
     private Float percentDone;
 
     private Object shortName;
+
+    private Long userId;
+    private String username;
 
     public Activity() {
         start();
@@ -65,21 +66,22 @@ public class Activity implements Serializable {
     public Activity(HttpServletRequest request, TdarUser user) {
         this();
         this.setShortName(String.format("%s:%s%s", request.getMethod(), request.getServletPath(), getQueryString(request)));
-        this.setBrowser(request.getHeader(USER_AGENT));
-        this.name = String.format("%s [%s]", getShortName(), getSimpleAgent(request.getHeader(USER_AGENT)));
+        this.name = String.format("%s [%s]", getShortName(), request.getHeader(USER_AGENT));
 
+        this.setBrowser(request.getHeader(USER_AGENT));
         this.setHost(request.getRemoteHost());
         SessionData sessionData = (SessionData) request.getSession().getAttribute("scopedTarget.sessionData");
+        if (user != null) {
+            setUser(user.getUsername(), user.getId());
+        }
         if (sessionData != null) {
-            setUser(user);
+            setUser(sessionData.getUsername(), sessionData.getTdarUserId());
         }
     }
 
-    private String getSimpleAgent(String header) {
-        if (isBot()) {
-            return "bot";
-        } 
-            return header;
+    public void setUser(String username2, Long id2) {
+        this.username = username2;
+        this.userId = id2;
     }
 
     public Date getStartDate() {
@@ -139,14 +141,6 @@ public class Activity implements Serializable {
         this.id = id;
     }
 
-    public Person getUser() {
-        return user;
-    }
-
-    public void setUser(Person user) {
-        this.user = user;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -157,7 +151,7 @@ public class Activity implements Serializable {
 
     public String getEndString() {
         // total time = action time + render time
-        return String.format("e» %sms %s", getTotalTime(), getFreemarkerFormattedTime());
+        return String.format("e» %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
     }
 
     public String getStartString() {
@@ -171,7 +165,7 @@ public class Activity implements Serializable {
 
     private String getFreemarkerFormattedTime() {
         if (freemarkerHandoffDate != null && endDate != null) {
-            return String.format(" | a:%sms; r:%sms", getActionTime(), getResultTime());
+            return String.format(" | a: %s ms; r: %s ms", getActionTime(), getResultTime());
         }
         return "";
     }
@@ -273,6 +267,22 @@ public class Activity implements Serializable {
     public void setShortName(Object shortName) {
         this.shortName = shortName;
     }
+
+    public void setUserId(Long tdarUserId) {
+        this.userId = tdarUserId;
+    }
+    
+    public Long getUserId() {
+        return userId;
+    }
+    
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
     
     public boolean isBot() {
         return Activity.testUserAgent(getBrowser());
@@ -284,6 +294,5 @@ public class Activity implements Serializable {
         }
         return pattern.matcher(userAgent).find();
     }
-    
     
 }

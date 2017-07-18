@@ -22,12 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;
 
@@ -65,7 +64,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
         Workbook workbook = WorkbookFactory.create(new FileInputStream(tempFile));
         Sheet sheet = workbook.getSheet("results");
-        Assert.assertEquals(TdarConfiguration.getInstance().getSearchExcelExportRecordMax(), sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT);
+        Assert.assertTrue(sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT >  4);
     }
 
     @Test

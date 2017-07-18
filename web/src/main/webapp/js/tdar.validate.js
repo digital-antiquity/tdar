@@ -81,6 +81,7 @@ TDAR.validate = (function($, ctx) {
                 method_ = window[method];
             }               
             if (method_ != undefined) {
+                // add options based on method ... here's where we implicitly call initBasicForm
                 var options  = method_($form);
                 var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
                 validator = $form.validate(allValidateOptions);
@@ -88,6 +89,9 @@ TDAR.validate = (function($, ctx) {
                 $form.data("tdar-validate-status","valid-custom");
                 if (method == 'initBasicForm') {
                     _postValidateBasic($form, validator);
+                }
+                if (method == 'initRightsForm') {
+                    _postValidateRights($form, validator);
                 }
             } else {
                 console.log("validate method specified, but not a function");
@@ -257,7 +261,7 @@ TDAR.validate = (function($, ctx) {
      */
     var _submitButtonStartWait = function () {
         var $submitDivs = $('#editFormActions, #fakeSubmitDiv');
-        var $buttons = $submitDivs.find(".submitButton");
+        var $buttons = $submitDivs.find(".submittableButtons");
         $buttons.prop("disabled", true);
 
         //fade in the wait icon
@@ -265,6 +269,34 @@ TDAR.validate = (function($, ctx) {
     };
 
 
+    var _initRightsForm = function(form) {
+        var opts = _initBasicForm(form);
+        return opts;
+    }
+    var _postValidateRights = function(form) {
+        $("#firstName").rules("add", {
+            required: function () {
+                if ($("#lastName").val().trim() != '' || $("#email").val().trim() != '') {
+                    return true;
+                }
+                return false;
+            }
+        });
+        $("#lastName").rules("add", {
+            required: function () {
+                if($("#firstName").val().trim() != '' || $("#email").val().trim() != '') {
+                    return true;
+                }
+                return false;
+            }
+        });
+        $("#email").rules("add", {
+            email:true,
+            required: function () {
+                return $("#lastName").val().trim() != '' || $("#firstName").val().trim() != '';
+            }
+        });
+    }
     
     // called whenever date type changes
     //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be
@@ -326,7 +358,7 @@ TDAR.validate = (function($, ctx) {
 
         var $form = form;
         //disable double-submit protection if user gets here via backbutton
-        var $submit = $form.find(".submitButton").prop("disabled", false);
+        var $submit = $form.find(".submittableButtons").prop("disabled", false);
         var options = {
             //FIXME: allow for error label container to be specified from options,
             wrapper: "",
@@ -337,7 +369,7 @@ TDAR.validate = (function($, ctx) {
                 $(label).closest('.control-group').addClass('error');
             },
             submitHandler: function (f) {
-                var $submit = $(f).find(".submitButton").prop("disabled", true);
+                var $submit = $(f).find(".submittableButtons").prop("disabled", true);
                 //prevent doublesubmit for certain amount of time.
                 $submit.prop("disabled", true);
                 setTimeout(function () {
@@ -355,11 +387,11 @@ TDAR.validate = (function($, ctx) {
         "initForm" : _initForm,
         "initRegForm" : _initRegForm,
         "initBasicForm": _initBasicForm,
-        "prepareDateFields": _prepareDateFields
+        "initRightsForm": _initRightsForm,
+        "prepareDateFields": _prepareDateFields,
+        main : function() {
+            TDAR.validate.init();
+        }
     }
 })(jQuery, window);
 
-//FIXME: inline onload binding complicates testing and makes it harder to discover the total number of initializers (and their sequence)
-$(function() {
-    TDAR.validate.init();
-});

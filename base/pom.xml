@@ -8,21 +8,14 @@
     <name>tDAR (base)</name>
 
     <properties>
-        <poi.version>3.12</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
-        <apache.cxf.version>3.1.4</apache.cxf.version>
-        <jena.version>2.13.0</jena.version>
-        <!-- /end managed versions -->
-        <geotools.version>14.0</geotools.version>
-        <http-components.version>4.4.1</http-components.version>
-        <http-client.version>4.5</http-client.version>
         <testChangeLog>changelog.xml</testChangeLog>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>parent</artifactId>
-        <version>15.0.0-OBSIDIAN-SNAPSHOT</version>
+        <version>16.0.1-PREHISTORIC-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -97,30 +90,38 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler.version}</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
 
-					<!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> <fork>true</fork> -->
+                    <!-- <executable>${env.JAVA_HOME_7}/bin/javac</executable> <fork>true</fork> -->
 
-					<!-- Welcome to Maven World, where 'no' means 'yes' and 'yes' means 
-						'no'! More info: https://jira.codehaus.org/browse/MCOMPILER-205 http://jira.codehaus.org/browse/MCOMPILER-209 -->
-					<useIncrementalCompilation>false</useIncrementalCompilation>
-					 <compilerArgs>
+                    <!-- Welcome to Maven World, where 'no' means 'yes' and 'yes' means
+                        'no'! More info: https://jira.codehaus.org/browse/MCOMPILER-205 http://jira.codehaus.org/browse/MCOMPILER-209 -->
+                    <useIncrementalCompilation>false</useIncrementalCompilation>
+                     <compilerArgs>
                 <arg>-Xlint:all</arg>
                 </compilerArgs>
-				</configuration>
-			</plugin>
+               <compilerId>eclipse</compilerId>
+                </configuration>
+                <dependencies>
+                     <dependency>
+                        <groupId>org.codehaus.plexus</groupId>
+                        <artifactId>plexus-compiler-eclipse</artifactId>
+                        <version>2.8</version>
+                      </dependency>
+                </dependencies>
+            </plugin>
 
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.10</version>
+                <version>${maven-eclipse-version}</version>
                 <configuration>
                     <downloadSources>true</downloadSources>
                     <downloadJavadocs>true</downloadJavadocs>
@@ -142,7 +143,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.4</version>
+                <version>${site-maven-version}</version>
                 <dependencies>
                     <dependency>
                         <groupId>commons-lang</groupId>
@@ -154,22 +155,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>2.6.1</version>
+                <version>${clean-maven-version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
+                <version>${deploy-maven-version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>2.5.2</version>
+                <version>${install-maven-version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>2.7</version>
+                <version>${resources-maven-version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -185,102 +186,102 @@
             </plugin>
         </plugins>
 
-    	<pluginManagement>
-    		<plugins>
-    			<!--This plugin's configuration is used to store Eclipse m2e settings 
-    				only. It has no influence on the Maven build itself. -->
-    			<plugin>
-    				<groupId>org.liquibase</groupId>
-    				<artifactId>liquibase-maven-plugin</artifactId>
-    				<version>${liquibase.version}</version>
-    			</plugin>
-    			<plugin>
-    				<artifactId>maven-antrun-plugin</artifactId>
-    				<groupId>org.apache.maven.plugins</groupId>
-    				<version>${antrun.version}</version>
-    			</plugin>
-    			<plugin>
-    				<groupId>org.codehaus.mojo</groupId>
-    				<artifactId>versions-maven-plugin</artifactId>
-    				<version>2.2</version>
-    			</plugin>
-    			<plugin>
-    				<groupId>org.codehaus.mojo</groupId>
-    				<artifactId>selenium-maven-plugin</artifactId>
-    				<version>2.3</version>
-    			</plugin>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings
+                    only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.liquibase</groupId>
+                    <artifactId>liquibase-maven-plugin</artifactId>
+                    <version>${liquibase.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <version>${antrun.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>selenium-maven-plugin</artifactId>
+                    <version>2.3</version>
+                </plugin>
 
-    			<plugin>
-    				<groupId>org.eclipse.m2e</groupId>
-    				<artifactId>lifecycle-mapping</artifactId>
-    				<version>1.0.0</version>
-    				<configuration>
-    					<lifecycleMappingMetadata>
-    						<pluginExecutions>
-    							<pluginExecution>
-    								<pluginExecutionFilter>
-    									<groupId>org.codehaus.mojo</groupId>
-    									<artifactId>properties-maven-plugin</artifactId>
-    									<versionRange>[1.0.0,)</versionRange>
-    									<goals>
-    										<goal>read-project-properties</goal>
-    									</goals>
-    								</pluginExecutionFilter>
-    								<action>
-    									<ignore></ignore>
-    								</action>
-    							</pluginExecution>
-    							<pluginExecution>
-    								<pluginExecutionFilter>
-    									<groupId>org.codehaus.mojo</groupId>
-    									<artifactId>keytool-maven-plugin</artifactId>
-    									<versionRange>[1.0,)</versionRange>
-    									<goals>
-    										<goal>generateKeyPair</goal>
-    									</goals>
-    								</pluginExecutionFilter>
-    								<action>
-    									<ignore></ignore>
-    								</action>
-    							</pluginExecution>
-    							<pluginExecution>
-    								<pluginExecutionFilter>
-    									<groupId>org.apache.maven.plugins</groupId>
-    									<artifactId>maven-antrun-plugin</artifactId>
-    									<versionRange>[1.3,)</versionRange>
-    									<goals>
-    										<goal>run</goal>
-    									</goals>
-    								</pluginExecutionFilter>
-    								<action>
-    									<ignore></ignore>
-    								</action>
-    							</pluginExecution>
-    							<pluginExecution>
-    								<pluginExecutionFilter>
-    									<groupId>org.liquibase</groupId>
-    									<artifactId>
-    										liquibase-maven-plugin
-    									</artifactId>
-    									<versionRange>
-    										[3.2.2,)
-    									</versionRange>
-    									<goals>
-    										<goal>update</goal>
-    									</goals>
-    								</pluginExecutionFilter>
-    								<action>
-    									<ignore></ignore>
-    								</action>
-    							</pluginExecution>
-    						</pluginExecutions>
-    					</lifecycleMappingMetadata>
-    				</configuration>
-    			</plugin>
-    		</plugins>
-    	</pluginManagement>
-	</build>
-	<profiles>
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>properties-maven-plugin</artifactId>
+                                        <versionRange>[1.0.0,)</versionRange>
+                                        <goals>
+                                            <goal>read-project-properties</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>keytool-maven-plugin</artifactId>
+                                        <versionRange>[1.0,)</versionRange>
+                                        <goals>
+                                            <goal>generateKeyPair</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-antrun-plugin</artifactId>
+                                        <versionRange>[1.3,)</versionRange>
+                                        <goals>
+                                            <goal>run</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.liquibase</groupId>
+                                        <artifactId>
+                                            liquibase-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [3.2.2,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>update</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <profiles>
         <profile>
             <id>liquibase-export</id>
             <!-- mvn -Pliquibase-export clean compile -->
@@ -447,7 +448,9 @@
                                 </goals>
                                 <configuration>
                                     <files>
-                                        <file>src/main/resources/hibernate.properties</file>
+                                        <!--<file>src/main/resources/hibernate.properties</file>-->
+                                        <file>${basedir}/src/main/resources/hibernate.properties</file>
+                                        <file>target/hg.properties</file>
                                     </files>
                                 </configuration>
                             </execution>
@@ -770,28 +773,28 @@
                                 </execution>
                             </executions>
                         </plugin>
-            			<plugin>
-            				<groupId>com.atlassian.maven.plugins</groupId>
-            				<artifactId>maven-clover2-plugin</artifactId>
-            				<version>${clover.version}</version>
-            				<configuration>
+                        <plugin>
+                            <groupId>com.atlassian.maven.plugins</groupId>
+                            <artifactId>maven-clover2-plugin</artifactId>
+                            <version>${clover.version}</version>
+                            <configuration>
                                 <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
-            					<includes>
-            						<include>**/*.java</include>
-            					</includes>
-            					<excludes>
-            						<exclude>**/PDFMergerUtility.java</exclude>
-            					</excludes>
+                                <includes>
+                                    <include>**/*.java</include>
+                                </includes>
+                                <excludes>
+                                    <exclude>**/PDFMergerUtility.java</exclude>
+                                </excludes>
                                 <scope>test</scope>
-            				</configuration>
-            				<dependencies>
-            					<dependency>
-            						<groupId>com.atlassian.clover</groupId>
-            						<artifactId>clover</artifactId>
-            						<version>${clover.version}</version>
-            					</dependency>
-            				</dependencies>
-            			</plugin>
+                            </configuration>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>com.atlassian.clover</groupId>
+                                    <artifactId>clover</artifactId>
+                                    <version>${clover.version}</version>
+                                </dependency>
+                            </dependencies>
+                        </plugin>
 
                         <plugin>
                             <groupId>org.liquibase</groupId>
@@ -805,6 +808,21 @@
                                 <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                             </configuration>
                             <executions>
+                                <execution>
+                                    <!--liquibase has problems dropping sequences and views in proper order, so we do it manually here -->
+                                    <id>pre-dropall</id>
+                                    <configuration>
+                                        <!--  NOTE CHANGELOGS can VARY so that we can load the integration data or not
+                                        changelog.xml or changelog-integration.xml -->
+                                        <changeLogFile>target/liquibase-test/pre-dropall.xml</changeLogFile>
+                                        <skip>${skipTestLiquibase}</skip>
+                                        <logging>warning</logging>
+                                    </configuration>
+                                    <phase>pre-integration-test</phase>
+                                    <goals>
+                                        <goal>update</goal>
+                                    </goals>
+                                </execution>
                                 <execution>
                                     <!-- in the "test" context, drop the database contents, 
                                         and reload it -->
@@ -835,6 +853,19 @@
                                         <goal>update</goal>
                                     </goals>
                                 </execution>
+
+                                <execution>
+                                    <id>cleanup-database</id>
+                                    <configuration>
+                                        <changeLogFile>target/liquibase-test/post-integration-test.xml</changeLogFile>
+                                        <skip>${skipUpgradeLiquibase}</skip>
+                                        <logging>warning</logging>
+                                    </configuration>
+                                    <phase>post-integration-test</phase>
+                                    <goals>
+                                        <goal>update</goal>
+                                    </goals>
+                                </execution>
                             </executions>
                         </plugin>
                 </plugins>
@@ -842,5 +873,5 @@
         </profile>
 
 
-	</profiles>
+    </profiles>
 </project>

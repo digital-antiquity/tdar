@@ -120,4 +120,5 @@ public class AuthenticationAndAuthorizationITCase extends AbstractIntegrationCon
         assertTrue("person should not have an id", PersistableUtils.isTransient(person));
     }
 
+
 }

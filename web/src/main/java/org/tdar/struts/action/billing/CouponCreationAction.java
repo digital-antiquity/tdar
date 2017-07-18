@@ -10,8 +10,8 @@ import org.apache.struts2.convention.annotation.Result;
 import org.joda.time.DateTime;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.PersistableUtils;
 
 @Component

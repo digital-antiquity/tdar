@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 
@@ -18,7 +18,7 @@ public class SchemaOrgCollectionTransformer extends AbstractSchemaOrgMetadataTra
 
     private static final long serialVersionUID = -1871001958288643018L;
 
-    public String convert(SerializationService serializationService, ResourceCollection collection) throws IOException {
+    public String convert(SerializationService serializationService, VisibleCollection collection) throws IOException {
         Map<String,Object> jsonLd = new HashMap<>();
         getGraph().add(jsonLd);
         jsonLd.put(NAME, collection.getTitle());

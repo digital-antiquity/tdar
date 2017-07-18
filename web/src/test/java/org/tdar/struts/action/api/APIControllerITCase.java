@@ -23,10 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
@@ -65,7 +66,7 @@ import com.opensymphony.xwork2.Action;
  * 
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-public class APIControllerITCase extends AbstractAdminControllerITCase {
+public class APIControllerITCase extends AbstractAdminControllerITCase implements TestBillingAccountHelper {
 
     @Autowired
     ResourceService resourceService;
@@ -79,9 +80,8 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Autowired
     private DatasetDao datasetDao;
 
-    
     @Autowired
-    BillingAccountService billingAccountService; 
+    BillingAccountService billingAccountService;
     public final static Long TEST_ID = 3794L;
 
     TestConfiguration config = TestConfiguration.getInstance();
@@ -92,7 +92,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         FileProxy proxy = new FileProxy();
         String convertToXML = serializationService.convertToXML(proxy);
         logger.debug(convertToXML);
-        ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection collection = new SharedCollection();
         collection.setHidden(true);
         String convertToXML4 = serializationService.convertToXML(collection);
         logger.debug(convertToXML4);
@@ -119,13 +119,12 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         final Long viewCount = fake.getTransientAccessCount();
         final Date creationDate = fake.getDateCreated();
 
-        
         // revert back
         Document old = resourceService.find(TEST_ID);
         genericService.markReadOnly(old);
         old.getRelatedComparativeCollections().add(new RelatedComparativeCollection("text"));
         // final String oldDocXml = serializationService.convertToXML(old);
-        assertEquals(1, old.getInternalResourceCollection().getAuthorizedUsers().size());
+        assertEquals(2, old.getAuthorizedUsers().size());
         genericService.detachFromSession(old);
         final Person oldSubmitter = old.getSubmitter();
         logger.info("DATES: {} ", old.getCoverageDates());
@@ -160,7 +159,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(resourceNotesSize, importedRecord.getResourceNotes().size());
         assertEquals(oldId, importedRecord.getId());
 
-        assertEquals(1, importedRecord.getInternalResourceCollection().getAuthorizedUsers().size());
+        assertEquals(2, importedRecord.getAuthorizedUsers().size());
         resourceService.updateTransientAccessCount(importedRecord);
         assertEquals(viewCount, importedRecord.getTransientAccessCount());
         assertEquals(creationDate, importedRecord.getDateCreated());
@@ -174,13 +173,16 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertTrue("field should be inherited", importedRecord.isInheritingNoteInformation());
         assertFalse("field should be inherited", importedRecord.isInheritingCollectionInformation());
         genericService.delete(importedRecord);
-        for (ResourceCollection rc : importedRecord.getSharedResourceCollections()) {
+        for (SharedCollection rc : importedRecord.getSharedResourceCollections()) {
             logger.debug("{} - {}", rc.getName(), rc.isHidden());
-            if (rc.getName().equals("hidden")) {
-                assertTrue(rc.isHidden());
+            if (rc instanceof VisibleCollection) {
+                if (rc.getName().equals("hidden")) {
+                    assertTrue(rc.isHidden());
+                } else {
+                    assertFalse(rc.isHidden());
+                }
             } else {
-                assertFalse(rc.isHidden());
-                
+                assertTrue(rc.isHidden());
             }
         }
     }
@@ -191,8 +193,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         // setup a fake record, with some new fields off the session
         genericService.saveOrUpdate(fake);
         genericService.synchronize();
-        
-        
+
         genericService.markReadOnly(fake);
         fake.setDescription(fake.getTitle());
         fake.getInvestigationTypes().clear();
@@ -202,20 +203,20 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         fake.setInheritingCulturalInformation(true);
         fake.setInheritingNoteInformation(true);
         fake.setInheritingMaterialInformation(true);
-        ResourceCollection coll = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection coll = new SharedCollection();
         coll.setHidden(true);
         coll.setName("hidden");
         coll.markUpdated(getAdminUser());
-        fake.getResourceCollections().add(coll);
-        ResourceCollection coll2 = new ResourceCollection(CollectionType.SHARED);
+        fake.getSharedCollections().add(coll);
+        SharedCollection coll2 = new SharedCollection();
         coll2.setHidden(false);
         coll2.setName("visible");
         coll2.markUpdated(getAdminUser());
-        fake.getResourceCollections().add(coll2);
+        fake.getSharedCollections().add(coll2);
 
         fake.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000));
         // fake.getResourceCollections().clear();
-        removeInvalidFields(fake);        
+        removeInvalidFields(fake);
     }
 
     @Test
@@ -253,12 +254,12 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = {RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS, RunWithTdarConfiguration.CREDIT_CARD })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS, RunWithTdarConfiguration.CREDIT_CARD })
     public void testNewConfidentialRecord() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
         Project project = genericService.findAll(Project.class, 1).get(0);
-        BillingAccount account = setupAccountWithInvoiceTenOfEach( billingAccountService.getLatestActivityModel(), getUser());
+        BillingAccount account = setupAccountWithInvoiceTenOfEach(billingAccountService.getLatestActivityModel(), getUser());
         Long actId = account.getId();
         Long totalNumberOfFiles = account.getFilesUsed();
         logger.debug("files: {}", totalNumberOfFiles);
@@ -287,6 +288,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     }
 
     @Test
+    @Rollback
     public void testMimbres() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/mimbres.xml"));
@@ -298,9 +300,20 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
+    public void testLoadHiddenCollection() throws Exception {
+        APIController controller = generateNewInitializedController(APIController.class);
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/hidden-collection.xml"));
+        controller.setRecord(text);
+        String uploadStatus = controller.upload();
+        assertEquals(Action.SUCCESS, uploadStatus);
+        assertEquals(StatusCode.CREATED, controller.getStatus());
+    }
+
+    @Test
+    @Rollback
     public void testDataset() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
-        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR +  "/xml/dataset.xml"));
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/dataset.xml"));
         controller.setRecord(text);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Workbook1.csv")));
         controller.setUploadFileFileName(Arrays.asList("Workbook1.csv"));
@@ -311,9 +324,9 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-//    @Ignore("not implemented yet")
+    // @Ignore("not implemented yet")
     public void testDatasetWithMappings() throws Exception {
-        
+
         APIController controller = generateNewInitializedController(APIController.class);
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/datasetmapping.xml"));
         controller.setRecord(text);
@@ -322,9 +335,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         assertEquals(Action.SUCCESS, uploadStatus);
         assertEquals(StatusCode.CREATED, controller.getStatus());
-        ((Dataset)controller.getImportedRecord()).getDataTables().forEach(dt ->
-        assertTrue(datasetDao.checkExists(dt))
-        );
+        ((Dataset) controller.getImportedRecord()).getDataTables().forEach(dt -> assertTrue(datasetDao.checkExists(dt)));
     }
 
     @Test

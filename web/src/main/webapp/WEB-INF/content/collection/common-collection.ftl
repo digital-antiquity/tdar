@@ -1,60 +1,107 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+<#import "/WEB-INF/macros/common.ftl" as common>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
-<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/common-rights.ftl" as rights>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/search-macros.ftl" as search>
 
 
 <#macro head>
     <@search.headerLinks includeRss=false />
     <title>${resourceCollection.name!"untitled collection"}</title>
     <@view.canonical resourceCollection />
-    <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
+    <#assign rssUrl = "/api/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
     <@search.rssUrlTag url=rssUrl />
     <link rel="alternate" href="/api/lod/collection/${id?c}" type="application/ld+json" />    
 
 </#macro>
 
-<#macro sidebar>
+<#macro sidebar minimal=false>
 
     <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true">
         <br/><br/>
-        <#if (logoAvailable && (resourceCollection.whiteLabelCollection || (resourceCollection.customHeaderEnabled!false) == false)) >
+        <#if !minimal>
+            <#if (logoAvailable && (resourceCollection.whiteLabelCollection || (resourceCollection.customHeaderEnabled!false) == false)) >
                 <img class="collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
-         </#if>
-        <#if results?has_content>
-        <hr class="light"/>
-        <@common.renderWorldMap mode="mini" />
-        <hr class="light"/>
-            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
-<i class="icon-document-red"></i>
+            </#if>
+            <#if results?has_content>
+            <hr class="light"/>
+            <@commonr.renderWorldMap mode="mini" />
+            <hr class="light"/>
+                <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
+    <i class="icon-document-red"></i>
+            </#if>
+		<#else>
+		    <div class="beige white-border-bottom">
+		        <div class="iconbox">
+		            <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+		        </div>
+		    </div>
         </#if>
         <#if collections?has_content && !collections.empty > 
-            <h3>Child Collections</h3>
-            <@common.listCollections collections=collections showOnlyVisible=true />
+            <h3>Child <#if resourceCollection.type == 'LIST'>Collections<#else>Collections</#if></h3>
+            <@commonr.listCollections collections=collections showOnlyVisible=true />
         </#if>
-        <@list.displayWidget />
+		<@list.displayWidget />
+
+            <hr/>
+        <ul class="media-list">
+        <#if false >
+            <li class="media"><i class="icon-envelope pull-left"></i>
+            <div class="media-body">
+                    <a id="requestAccess" href="/collection/request/${id?c}">Request Access, Submit Correction, Comment
+            </a>
+            </div>
+            </li>
+        </#if>
+        <@nav.shareSection id=resourceCollection.id title=resourceCollection.name citation=resourceCollection.name />
+
+        </ul>
+            <hr/>
+
+            <ul class="unstyled-list">
+            <li>
+                <strong>Owner</strong><br>
+                    <a href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
+            </li>
+        <li>
+            <strong>tDAR ID</strong><br>${id?c}
+        </li>
+    </ul>
+
     </div>
 </#macro>
 
 <#macro header>
     <#if editable>
+    <#local path="${resourceCollection.type.urlNamespace}"/>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
-            namespace="collection"
+            namespace="${path}"
             action="add?parentId=${id?c}"
-            label="create child collection"
-            name="columns"
+            label="add child collection"
+            name="child_collection"
             current=current
             includeResourceId=false
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
 
-        <#if editor && (resourceCollection.resources?size > 0) >
             <@nav.makeLink
-            namespace="collection/admin/batch"
+                namespace="${path}"
+                action="${id?c}/rights"
+                label="permissions"
+                name="rights"
+                includeResourceId=false
+                current=current
+                disabled=disabled
+            extraClass=""/>
+
+        <#if editor && ((resourceCollection.unmanagedResources![])?size > 0 || (resourceCollection.resources![])?size > 0) >
+            <@nav.makeLink
+            namespace="${path}/admin/batch"
             action="${id?c}"
             label="batch title (beta)"
             name="batch"
@@ -142,16 +189,14 @@
             </#if>
 </#macro>
 
-<#macro resultsSection>
+<#macro resultsSection header="Resources Inside This Collection">
 
         <#if results?has_content>
         <div id="divResultsSortControl">
-            <h2>Resources Inside This Collection</h2>
             <div class="row">
-                <div class="span4">
-                    <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
+                <div class="span12">
+                    <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
                 </div>
-                <div class="span5"></div>
             </div>
         </div>
         
@@ -238,7 +283,7 @@
 
 
     <#macro _authorizedUsers collection >
-        <@common.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
+        <@rights.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
     </#macro>
 
 </#escape>

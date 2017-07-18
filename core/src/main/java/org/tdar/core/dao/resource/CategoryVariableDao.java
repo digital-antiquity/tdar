@@ -7,7 +7,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.dao.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 
 /**
  * $Id$
@@ -18,7 +18,7 @@ import org.tdar.core.dao.Dao;
  * @version $Revision$
  */
 @Component
-public class CategoryVariableDao extends Dao.HibernateBase<CategoryVariable> {
+public class CategoryVariableDao extends HibernateBase<CategoryVariable> {
 
     public CategoryVariableDao() {
         super(CategoryVariable.class);

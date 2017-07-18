@@ -1,6 +1,6 @@
 <#-- common authentication/authorization macros and functions -->
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/common.ftl" as common>
 
 <#--
  registrationForm:  render a user registration form
@@ -9,7 +9,7 @@
 -->
 <#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart">
     <@common.chromeAutofillWorkaround />
-    <@common.antiSpam  />
+    <@antiSpam  />
 
     <#local level = 1/>
     <#local showMinimal = true />
@@ -117,8 +117,8 @@
             <label class="checkbox">
                 <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUseAndContributorAgreement" id="tou-id"  />
                 I have read and accept the ${siteAcronym}
-                <@s.a href="${tosUrl}" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a> and
-                <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                <@s.a href="${config.tosUrl}" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a> and
+                <@s.a href="${config.contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
             </label>
             <#else>
                 <@tos beanPrefix=beanPrefix />
@@ -133,7 +133,7 @@
                     <label class="checkbox">
                         <@s.checkbox theme="simple" name="${beanPrefix}.requestingContributorAccess" id="contributor-id"  />
                         I accept the ${siteAcronym}
-                        <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                        <@s.a href="${config.contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
                         and wish to add ${siteAcronym} content.
                     </label>
                 </div>
@@ -175,7 +175,7 @@
 -->
 <#macro login showLegend=false beanPrefix="userLogin">
 
-    <@common.antiSpam  />
+    <@antiSpam  />
     <#if showLegend>
         <legend>Login</legend>
     </#if>
@@ -197,18 +197,90 @@
     <label class="checkbox">
         <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUse" id="tou-id"  />
         I have read and accept the ${siteAcronym}
-        <@s.a href="${tosUrl}" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
+        <@s.a href="${config.tosUrl}" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a>.
     </label>
 </#macro>
 
 <#-- show a warning if authentication is disabled -->
 <#macro loginWarning>
-<#if !authenticationAllowed>
+<#if !config.authenticationAllowed>
  <div class="alert alert-warning">
  <b>Login to ${siteAcronym} is temporarily unavailable due to system maintence. Please try again later.</b>
 </div>
 </#if>
 
 </#macro>
+
+
+<#--FIXME:  there has to be a better way here -->
+    <#macro antiSpam>
+        <#if h.recaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${h.recaptcha_public_key}"></script>
+        </#if>
+    
+        <@s.hidden name="h.timeCheck"/>
+        <textarea name="h.comment" class="tdarCommentDescription" style="display:none"></textarea>
+
+        <#if h.reCaptchaText?has_content>
+            ${h.reCaptchaText}
+        </#if>
+    </#macro>
+
+    <#macro embeddedAntiSpam  bean="downloadRegistration">
+        <#local actual = bean?eval />
+        <#if actual.srecaptcha_public_key??>
+        <script type="text/javascript" src="http://api.recaptcha.net/challenge?k=${actual.h.recaptcha_public_key}"></script>
+        </#if>
+    
+        <@s.hidden name="${bean}.h.timeCheck"/>
+        <textarea name="${bean}.h.comment" class="tdarCommentDescription" style="display:none"></textarea>
+
+        <#if actual.h.reCaptchaText?has_content>
+            ${actual.h.reCaptchaText}
+        </#if>
+    </#macro>
+
+
+<#-- emit login menu list items -->
+<#-- @param showMenu:boolean if true,  wrap list items in UL tag, otherwise just emit LI's -->
+    <#macro loginMenu showMenu=false>
+        <#if showMenu>
+        <ul class="subnav-rht hidden-phone hidden-tablet">
+        </#if>
+        <#if !(authenticatedUser??) >
+            <li><a href="<@s.url value="/account/new" />" class="button" rel="nofollow">Sign Up</a></li>
+            <li><@loginButton class="button" /></li>
+        <#else>
+            <#--<li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>-->
+            <li>
+            <form class="form-unstyled seleniumIgnoreForm logoutForm" id="frmLogout" name="logoutForm" method="post" action="/logout">
+                    <input type="submit" class="tdar-button" name="logout" value="Logout" id="logout-button">
+            </form>
+            </li>
+        </#if>
+        <#if showMenu>
+        </ul>
+        </#if>
+    </#macro>
+
+
+
+<#--
+    Emit login button link.
+    If current page is home page, link has no querystring arguments.  Otherwise,  include the current url in the
+    querystring (in parameter named 'url).
+-->
+    <#macro loginButton class="" returnUrl="">
+        <#noescape>
+        <#local _current = (currentUrl!'/') >
+        <#if returnUrl != ''><#local _current = returnUrl /></#if>
+        <#if _current == '/' || currentUrl?starts_with('/login')>
+        <a class="${class}" href="<@s.url value='/login'/>" rel="nofollow" id="loginButton">Log In</a>
+        <#else>
+        <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>" id="loginButton">Log In</a>
+        </#if>
+        </#noescape>
+    </#macro>
+
 
 </#escape>

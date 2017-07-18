@@ -3,7 +3,7 @@
         <h4>About</h4> 
             <ul> 
                 <li><a class="external" href="http://www.fedarch.org/wordpress/?cat=3">News</a></li>
-                <!-- li><a class="" href="${helpUrl}">Getting started</a></li --> 
+                <!-- li><a class="" href="${config.helpUrl}">Getting started</a></li --> 
                 <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=648">Our Team</a></li>
                 <li><a class="external" href="http://www.fedarch.org">The ${siteAcronym} Project</a></li>
                 <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=655">Software</a></li>
@@ -22,7 +22,7 @@
     <div class="span3"> 
         <h4>Contact</h4> 
             <ul>
-                <li><a href="mailto:${contactEmail}?subject=FAIMS%20comments">Email: ${contactEmail}</a></li>
+                <li><a href="mailto:${config.contactEmail}?subject=FAIMS%20comments">Email: ${contactEmail}</a></li>
                 <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=84">Other contacts</a></li>
             </ul> 
      </div>

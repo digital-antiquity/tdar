@@ -13,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -27,11 +30,11 @@ import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.AnnotationQueryPart;
 import org.tdar.search.query.part.ContentQueryPart;
-import org.tdar.search.query.part.CreatorOwnerQueryPart;
-import org.tdar.search.query.part.CreatorQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
@@ -40,10 +43,13 @@ import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.query.part.RangeQueryPart;
 import org.tdar.search.query.part.SkeletonPersistableQueryPart;
 import org.tdar.search.query.part.SpatialQueryPart;
-import org.tdar.search.query.part.TemporalQueryPart;
 import org.tdar.search.query.part.TitleQueryPart;
+import org.tdar.search.query.part.entity.CreatorOwnerQueryPart;
+import org.tdar.search.query.part.entity.CreatorQueryPart;
+import org.tdar.search.query.part.resource.TemporalQueryPart;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.StringPair;
 import org.tdar.utils.range.DateRange;
 import org.tdar.utils.range.StringRange;
 
@@ -77,41 +83,44 @@ public class SearchParameters {
     private Operator operator = defaultOperator;
 
     // managed keywords. Ultimately we need list of list of id, but struts only knows how to construct list of list of strings
-    private List<List<String>> materialKeywordIdLists = new ArrayList<List<String>>();
-    private List<List<String>> approvedSiteTypeIdLists = new ArrayList<List<String>>();
-    private List<List<String>> approvedCultureKeywordIdLists = new ArrayList<List<String>>();
-    private List<List<String>> investigationTypeIdLists = new ArrayList<List<String>>();
+    private List<List<String>> materialKeywordIdLists = new ArrayList<>();
+    private List<List<String>> approvedSiteTypeIdLists = new ArrayList<>();
+    private List<List<String>> approvedCultureKeywordIdLists = new ArrayList<>();
+    private List<List<String>> investigationTypeIdLists = new ArrayList<>();
 
     // freeform keywords
-    private List<String> otherKeywords = new ArrayList<String>();
-    private List<String> siteNames = new ArrayList<String>();
-    private List<String> uncontrolledCultureKeywords = new ArrayList<String>();
-    private List<String> uncontrolledMaterialKeywords = new ArrayList<String>();
-    private List<String> temporalKeywords = new ArrayList<String>();
-    private List<String> geographicKeywords = new ArrayList<String>();
-    private List<String> uncontrolledSiteTypes = new ArrayList<String>();
+    private List<String> otherKeywords = new ArrayList<>();
+    private List<String> siteNames = new ArrayList<>();
+    private List<String> uncontrolledCultureKeywords = new ArrayList<>();
+    private List<String> uncontrolledMaterialKeywords = new ArrayList<>();
+    private List<String> temporalKeywords = new ArrayList<>();
+    private List<String> geographicKeywords = new ArrayList<>();
+    private List<String> uncontrolledSiteTypes = new ArrayList<>();
     private boolean latScaleUsed = true;
-    private List<String> allFields = new ArrayList<String>();
-    private List<String> titles = new ArrayList<String>();
-    private List<String> contents = new ArrayList<String>();
-    private List<String> filenames = new ArrayList<String>();
+    private List<String> allFields = new ArrayList<>();
+    private List<String> titles = new ArrayList<>();
+    private List<String> descriptions = new ArrayList<>();
+    private List<String> contents = new ArrayList<>();
+    private List<String> filenames = new ArrayList<>();
 
     private boolean join = false;
     private ResourceCreatorProxy creatorOwner;
     private Set<ResourceCreatorRole> creatorOwnerRoles = new HashSet<>();
-    private List<ResourceCreatorProxy> resourceCreatorProxies = new ArrayList<ResourceCreatorProxy>();
+    private List<ResourceCreatorProxy> resourceCreatorProxies = new ArrayList<>();
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
     private List<Resource> sparseProjects = new ArrayList<Resource>();
-    private List<ResourceCollection> sparseCollections = new ArrayList<ResourceCollection>();
+    private List<ListCollection> collections = new ArrayList<>();
+    private List<SharedCollection> shares = new ArrayList<>();
 
     private List<Long> resourceIds = new ArrayList<Long>();
 
-    private List<DateRange> registeredDates = new ArrayList<DateRange>();
-    private List<DateRange> updatedDates = new ArrayList<DateRange>();
-    private List<CoverageDate> coverageDates = new ArrayList<CoverageDate>();
-    private List<StringRange> createdDates = new ArrayList<StringRange>();
-    private List<Integer> creationDecades = new ArrayList<Integer>();
+    private List<DateRange> registeredDates = new ArrayList<>();
+    private List<DateRange> updatedDates = new ArrayList<>();
+    private List<CoverageDate> coverageDates = new ArrayList<>();
+    private List<StringRange> createdDates = new ArrayList<>();
+    private List<StringPair> annotations = new ArrayList<>();
+    private List<Integer> creationDecades = new ArrayList<>();
 
     // parameters. don't render these in the form view.
     private String startingLetter;
@@ -122,6 +131,9 @@ public class SearchParameters {
     // as well by selecting a faceted search.
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes = new ArrayList<LatitudeLongitudeBox>();
     private List<ResourceType> resourceTypes = new ArrayList<>();
+    private List<ObjectType> objectTypes = new ArrayList<>();
+    private List<CollectionType> collectionTypes = new ArrayList<CollectionType>();
+    private List<LookupSource> types = new ArrayList<>();
     private List<IntegratableOptions> integratableOptions = new ArrayList<IntegratableOptions>();
     private List<DocumentType> documentTypes = new ArrayList<DocumentType>();
     private List<ResourceAccessType> resourceAccessTypes = new ArrayList<ResourceAccessType>();
@@ -191,12 +203,12 @@ public class SearchParameters {
         this.titles = titles;
     }
 
-    public List<ResourceType> getResourceTypes() {
-        return resourceTypes;
-    }
-
     public void setResourceTypes(List<ResourceType> resourceTypes) {
         this.resourceTypes = resourceTypes;
+    }
+    
+    public List<ResourceType> getResourceTypes() {
+        return resourceTypes;
     }
 
     public List<String> getOtherKeywords() {
@@ -313,9 +325,15 @@ public class SearchParameters {
         }
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, support.getText("searchParameter.id"), Operator.OR, getResourceIds()));
-
+        if (CollectionUtils.isNotEmpty(getTypes())) {
+            queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.GENERAL_TYPE,support_.getText("searchParameter.general_type"), Operator.OR, getTypes()));
+        }
+        if (CollectionUtils.isNotEmpty(getCollectionTypes())) {
+            queryPartGroup.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
+        }
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, support.getText("searchParameters.description"), getOperator(), this.getDescriptions()));
 
         queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(),contents));
         FieldQueryPart<String> filenamePart = new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"), getOperator(), filenames);
@@ -365,8 +383,14 @@ public class SearchParameters {
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, support.getText("searchParameter.project"), "project.", Resource.class,
                 getOperator(), getProjects()));
 
-        appendFieldQueryPart(queryPartGroup, QueryFieldNames.RESOURCE_TYPE, support.getText("searchParameter.resource_type"), getResourceTypes(), Operator.OR,
-                Arrays.asList(ResourceType.values()));
+        for (ResourceType rt : getResourceTypes()) {
+            if (rt != null) {
+                getObjectTypes().add(ObjectType.from(rt));
+            }
+        }
+
+        appendFieldQueryPart(queryPartGroup, QueryFieldNames.OBJECT_TYPE, support.getText("searchParameter.object_type"), getObjectTypes(), Operator.OR,
+                Arrays.asList(ObjectType.values()));
         appendFieldQueryPart(queryPartGroup, QueryFieldNames.INTEGRATABLE, support.getText("searchParameter.integratable"), getIntegratableOptions(),
                 Operator.OR,
                 Arrays.asList(IntegratableOptions.values()));
@@ -383,6 +407,8 @@ public class SearchParameters {
                 getUpdatedDates()));
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, support.getText("searchParameter.date"), getOperator(), getCreatedDates()));
 
+        queryPartGroup.append(new AnnotationQueryPart(QueryFieldNames.RESOURCE_ANNOTATION, support.getText("searchParameter.annotation"), getOperator(), getAnnotations()));
+
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
         SpatialQueryPart spatialQueryPart = new SpatialQueryPart(getLatitudeLongitudeBoxes());
         if (!latScaleUsed) {
@@ -392,9 +418,12 @@ public class SearchParameters {
         queryPartGroup.append(spatialQueryPart);
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS,
+                support.getText("searchParameter.list_collection"), "listCollections.",
+                ListCollection.class, getOperator(), getCollections()));
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                ResourceCollection.class, getOperator(), getCollections()));
+                SharedCollection.class, getOperator(), getShares()));
         queryPartGroup.append(new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade
@@ -415,7 +444,8 @@ public class SearchParameters {
     private <P extends Persistable> SkeletonPersistableQueryPart constructSkeletonQueryPart(String fieldName, String label, String prefix, Class<P> cls,
             Operator operator, List<P> values) {
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);
-        if (HasName.class.isAssignableFrom(cls) && StringUtils.isNotBlank(prefix)) {
+        logger.trace("{} {} {} ", cls, prefix, values);
+        if ((HasName.class.isAssignableFrom(cls) || VisibleCollection.class.isAssignableFrom(cls)) && StringUtils.isNotBlank(prefix)) {
             TitleQueryPart tqp = new TitleQueryPart();
             tqp.setPrefix(prefix);
             for (Persistable p : values) {
@@ -541,12 +571,20 @@ public class SearchParameters {
         sparseProjects = projects;
     }
 
-    public List<ResourceCollection> getCollections() {
-        return sparseCollections;
+    public List<ListCollection> getCollections() {
+        return collections;
     }
 
-    public void setCollections(List<ResourceCollection> resourceCollections) {
-        sparseCollections = resourceCollections;
+    public void setCollections(List<ListCollection> resourceCollections) {
+        collections = resourceCollections;
+    }
+
+    public List<SharedCollection> getShares() {
+        return shares;
+    }
+
+    public void setShares(List<SharedCollection> resourceCollections) {
+        shares = resourceCollections;
     }
 
     public List<String> getContents() {
@@ -584,7 +622,7 @@ public class SearchParameters {
     public List<List<? extends Persistable>> getSparseLists() {
         List<List<? extends Persistable>> lists = new ArrayList<List<? extends Persistable>>();
         lists.add(sparseProjects);
-        lists.add(sparseCollections);
+        lists.add(collections);
         return lists;
     }
 
@@ -634,6 +672,46 @@ public class SearchParameters {
 
     public void setCreatorOwnerRoles(Set<ResourceCreatorRole> creatorOwnerRoles) {
         this.creatorOwnerRoles = creatorOwnerRoles;
+    }
+
+    public List<LookupSource> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<LookupSource> types) {
+        this.types = types;
+    }
+
+    public List<CollectionType> getCollectionTypes() {
+        return collectionTypes;
+    }
+
+    public void setCollectionTypes(List<CollectionType> collectionTypes) {
+        this.collectionTypes = collectionTypes;
+    }
+
+    public List<ObjectType> getObjectTypes() {
+        return objectTypes;
+    }
+
+    public void setObjectTypes(List<ObjectType> objectTypes) {
+        this.objectTypes = objectTypes;
+    }
+
+    public List<String> getDescriptions() {
+        return descriptions;
+    }
+
+    public void setDescriptions(List<String> descriptions) {
+        this.descriptions = descriptions;
+    }
+
+    public List<StringPair> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(List<StringPair> annotations) {
+        this.annotations = annotations;
     }
 
 }

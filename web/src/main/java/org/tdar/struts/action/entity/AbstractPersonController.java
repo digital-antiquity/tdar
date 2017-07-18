@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
 import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
@@ -80,7 +80,7 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
 
     @Override
     public boolean authorize() {
-        return authorizationService.canEditCreator(getPersistable(), getAuthenticatedUser());
+        return authorizationService.canEditCreator(getAuthenticatedUser(), getPersistable());
     }
 
     public String getInstitutionName() {

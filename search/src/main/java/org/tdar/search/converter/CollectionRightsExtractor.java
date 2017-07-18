@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -29,8 +31,11 @@ public class CollectionRightsExtractor {
                 people.add(user.getUser());
             }
         }
-        if ((collection_.getParent() != null) && recurse) {
-            people.addAll(getUsersWhoCan(collection_.getParent(), permission, recurse));
+        if (collection_ instanceof SharedCollection) {
+            SharedCollection shared = (SharedCollection)collection_;
+            if ((shared.getParent() != null) && recurse) {
+            people.addAll(getUsersWhoCan(shared.getParent(), permission, recurse));
+        }
         }
         return people;
     }
@@ -47,7 +52,6 @@ public class CollectionRightsExtractor {
     private List<Long> toUserList(GeneralPermissions permission) {
         ArrayList<Long> users = new ArrayList<>();
         HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(collection.getOwner());
         writable.addAll(getUsersWhoCan(collection, permission, true));
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
@@ -59,7 +63,10 @@ public class CollectionRightsExtractor {
     }
 
     public List<Long> getUsersWhoCanAdminister() {
-        return toUserList(GeneralPermissions.ADMINISTER_GROUP);
+        if (collection instanceof ListCollection) {
+            return toUserList(GeneralPermissions.ADMINISTER_GROUP);
+        } 
+        return toUserList(GeneralPermissions.ADMINISTER_SHARE);
     }
 
     public List<Long> getUsersWhoCanView() {

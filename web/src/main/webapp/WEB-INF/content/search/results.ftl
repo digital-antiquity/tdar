@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist />
-    <#import "/WEB-INF/macros/search/search-macros.ftl" as search />
+    <#import "/WEB-INF/macros/search-macros.ftl" as search />
 <head>
     <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}</#if></title>
     <@search.headerLinks includeRss=(actionName=="results") />
@@ -48,7 +48,7 @@
                             Return to project page &raquo;</@s.a></li>
                     <#else>
                         <li class="media"><@s.a href="/collection/${collectionId?c}">
-                            <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+                            <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
                             Return To collection page &raquo;</@s.a></li>
                     </#if>
                 </#if>
@@ -57,19 +57,22 @@
                 <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_download"></use></svg>
                 <span>Download these results &raquo;
                     <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
-	                    <@search.searchLink "download" "to Excel" />
-	                    <#if (totalRecords > maxDownloadRecords)>
-	                        Limited to the first ${maxDownloadRecords} results.
-	                    </#if>
+                        <@search.searchLink "download" "to Excel" />
+                        <#if (totalRecords > maxDownloadRecords)>
+                            Limited to the first ${maxDownloadRecords} results.
+                        </#if>
 
-	                <#else>
-	                    Login
-	                </#if></span>
-		            </li>
+                    <#else>
+                        Login
+                    </#if></span>
+                    </li>
             </ul>
-				<@rlist.displayWidget />
+                <@rlist.displayWidget />
             <form>
+<#--
+        <@search.facetBy facetlist=collectionTypeFacets currentValues=collectionTypes label="Collection Type(s)" facetParam="collectionTypes" />-->
         <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
+        <@search.facetBy facetlist=objectTypeFacets currentValues=objectTypes label="Object Type(s)" facetParam="objectTypes" />
         <@search.facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
         <@search.facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
         <@search.facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
@@ -93,7 +96,7 @@
                 <li>Bookmark datasets you'd like to integrate</li>
                 <li>Visit your workspace to begin the integration process</li>
             </ol>
-            <a href="${integrationDocumentationUrl}">visit ${siteAcronym} documentation for more details</a>
+            <a href="${config.integrationDocumentationUrl}">visit ${siteAcronym} documentation for more details</a>
         </div>
         </#if>
 
@@ -118,53 +121,24 @@
     </div>
 
     <div class="tdarresults">
-        <#if (showCollectionResults && (collectionResults![])?size > 0)>
-        <#--split the collection list into, at most, two sublists -->
-        <#assign _lastIndex = (collectionResults?size -1)>
-        <#if (_lastIndex > 9)><#assign _lastIndex = 9></#if>
-        <#assign resultPage = collectionResults[0.._lastIndex]>
-        <#assign cols = collectionResults?chunk(((collectionResults?size)/2)?ceiling) >
-        <div class="collectionResultsBox">
-            <h4>Related Collections</h4>
-            <div class="row">
-            <#list cols as col>
-                <div class="span4">
-                    <ul>
-                    <#list col as res>
-                    <li> <@s.a href="${res.detailUrl}">${res.name!'no name'}</@s.a>
-                    </#list>
-                    </ul>
-                </div>
-            </#list>
-            </div>
-            <#if ( collectionTotalRecords > 10)>
-            <div class="row">
-                <p class="span9">
-                    <@s.a  href="/search/collections?query=${query}"
-                        cssClass="pull-right">&raquo; Show all ${collectionTotalRecords?c} collections</@s.a>
-                </p>
-            </div>
-            </#if>
-        </div>
-        </#if>
+                <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+        
 
-        <#--fixme: replace explicit map sizes with css names -->
-        <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
     </div>
         <@search.pagination ""/>
 
     <#else>
-	    <h2>No records match the query.</h2>
-	    <#if query?has_content><br/>
+        <h2>No records match the query.</h2>
+        <#if query?has_content><br/>
 
-			<p><b>Try searching for:</b>
-				<ul>
-					<li><a href="<@s.url value="/search/people?query=${query?url}"/>">People named ${query}</a></li>
-					<li><a href="<@s.url value="/search/institutions?query=${query?url}"/>">Institutions named ${query}</a></li>
-					<li><a href="<@s.url value="/search/collections?query=${query?url}"/>">Collections named ${query}</a></li>
-				</ul>
-	
-		</#if>
+            <p><b>Try searching for:</b>
+                <ul>
+                    <li><a href="<@s.url value="/search/people?query=${query?url}"/>">People named ${query}</a></li>
+                    <li><a href="<@s.url value="/search/institutions?query=${query?url}"/>">Institutions named ${query}</a></li>
+                    <li><a href="<@s.url value="/search/collections?query=${query?url}"/>">Collections named ${query}</a></li>
+                </ul>
+    
+        </#if>
     </#if>
 
 <script type="text/javascript">

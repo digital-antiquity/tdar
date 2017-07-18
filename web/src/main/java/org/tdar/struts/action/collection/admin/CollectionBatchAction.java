@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -25,9 +26,9 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -40,15 +41,18 @@ import com.opensymphony.xwork2.Validateable;
 @Namespace("/collection/admin/batch")
 public class CollectionBatchAction extends AbstractCollectionAdminAction implements Preparable, Validateable {
 
-    private static final long serialVersionUID = 1L;
-
-    private Long accountId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -4391259731930468732L;
+	
+	private Long accountId;
     private BillingAccount account;
 
     private Long projectId;
     private Project project;
     private Long collectionId;
-    private ResourceCollection collectionToAdd;
+    private SharedCollection collectionToAdd;
 
     private List<Long> ids = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
@@ -73,8 +77,14 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        setResources(new ArrayList<>(getCollection().getResources()));
-        Collections.sort(resources, new Comparator<Resource>() {
+        
+        if (!(getCollection() instanceof SharedCollection)) {
+            addActionError("makeWhiteLableAction.invalid_collection_type");
+        }
+
+        // COMMENTED OUT UNTIL WE FIGURE OUT What sort of collection should support this
+        setResources(new ArrayList<>(((SharedCollection) getCollection()).getResources()));
+        Collections.sort(resources , new Comparator<Resource>() {
             @Override
             public int compare(Resource o1, Resource o2) {
                 return PersistableUtils.compareIds(o1, o2);
@@ -94,7 +104,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
             account = billingAccountService.find(accountId);
         }
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-            collectionToAdd = genericService.find(ResourceCollection.class, collectionId);
+            collectionToAdd = genericService.find(SharedCollection.class, collectionId);
         }
     }
 
@@ -129,7 +139,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     @PostOnly
     @WriteableSession
     public String save() throws Exception {
-        resourceService.updateBatch(project, account, collectionToAdd, ids, dates, titles, descriptions, getAuthenticatedUser());
+        resourceService.updateBatch(account, collectionToAdd, ids, dates, titles, descriptions, getAuthenticatedUser());
         return SUCCESS;
     }
 
@@ -241,7 +251,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
         return collectionToAdd;
     }
 
-    public void setCollectionToAdd(ResourceCollection collectionToAdd) {
+    public void setCollectionToAdd(SharedCollection collectionToAdd) {
         this.collectionToAdd = collectionToAdd;
     }
 

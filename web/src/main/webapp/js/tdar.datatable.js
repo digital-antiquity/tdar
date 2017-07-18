@@ -25,7 +25,7 @@ TDAR.datatable = function() {
             requestCallback : doNothingCallback,
             selectableRows : false,
             rowSelectionCallback : doNothingCallback,
-            "sAjaxSource" : TDAR.uri( 'lookup/resource'),
+            "sAjaxSource" : TDAR.uri( 'api/lookup/resource'),
             "sAjaxDataProp" : 'resources',
             "bJQueryUI" : false,
             "sScrollY" : "350px",
@@ -139,6 +139,7 @@ TDAR.datatable = function() {
                 // determine whether the user selected this item already (if so check the box)
                 var $cb = $(nRow).find('input[type=checkbox]');
                 var id = $cb.val();
+                $(nRow).attr("id","row-"+id);
                 $cb.prop('checked', obj.isCurrentlySelected );
                 return nRow;
             };
@@ -299,7 +300,7 @@ TDAR.datatable = function() {
         var $dataTable = $('#resource_datatable');
         _registerLookupDataTable({
             tableSelector : '#resource_datatable',
-            sAjaxSource : TDAR.uri( 'lookup/resource'),
+            sAjaxSource : TDAR.uri( 'api/lookup/resource'),
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
@@ -317,9 +318,14 @@ TDAR.datatable = function() {
                     'term' : $("#query").val(),
                     'projectId' : $("#project-selector").val(),
                     'collectionId' : $("#collection-selector").val(),
-                    useSubmitterContext : !_options.isAdministrator,
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid
                 };
+                if (!_options.isAdministrator && _options.limitContext == true ) {
+                    parms['useSubmitterContext'] = true;
+                } else {
+                    parms['useSubmitterContext'] = false;
+                }
+                console.log(parms);
                 if($("#parentCollectionsIncluded").length) {
                     parms.parentCollectionsIncluded = (!$("#parentCollectionsIncluded").prop("checked")).toString();
                 }
@@ -335,50 +341,52 @@ TDAR.datatable = function() {
             }
         });
 
-        $("#resource_datatable").on("click", "#lnkResetFilters", function(){_resetAllFilters()});
+        var $cs = $("#collection-selector");
+        var $ps = $("#project-selector");
+        var $rdt = $("#resource_datatable");
+        $rdt.on("click", "#lnkResetFilters", function(){_resetAllFilters()});
 
         //if the user modifies any of the filter controls, execute a new search and update the results
         //fixme: refactor these event bindings. lots of duplication here
-        $("#project-selector").change(function() {
+        $ps.change(function() {
             var projId = $(this).val();
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
-
-        $("#collection-selector").change(function() {
+        $cs.change(function() {
             var colId = $(this).val();
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#resourceTypes").change(function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#statuses").change(function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#sortBy").change(function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#query").change(function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         $("#query").bindWithDelay("keyup", function() {
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         }, 500);
 
         $("#parentCollectionsIncluded").change(function(){
             var $elem = $(this);
             var collectionId = $("#metadataForm_id").val();
             if($elem.prop("checked")) {
-                $("#collection-selector").val(collectionId);
+                $cs.val(collectionId);
             } else {
                 //select the first option (all collections)
-                $("#collection-selector").val("");
+                $cs.val("");
             }
-            $("#resource_datatable").dataTable().fnDraw();
+            $rdt.dataTable().fnDraw();
         });
 
         _scrollOnPagination();
@@ -562,7 +570,7 @@ TDAR.datatable = function() {
     function _registerUserLookupDatatable() {
         var settings = {
             tableSelector : '#dataTable',
-            sAjaxSource : TDAR.uri() + 'lookup/person',
+            sAjaxSource : TDAR.uri() + 'api/lookup/person',
             "sDom" : "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
             sPaginationType : "bootstrap",
             "bLengthChange" : true,

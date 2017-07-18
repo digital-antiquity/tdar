@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
@@ -24,7 +24,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.exception.SearchPaginationException;
@@ -34,10 +34,11 @@ import org.tdar.search.query.facet.Facet;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.TitleSortComparator;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -45,7 +46,10 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-@Namespace("/collection/admin")
+@Namespaces(value={
+        @Namespace("/collection/admin"),
+        @Namespace("/share/admin")
+})
 public class CollectionAdminAction extends AbstractCollectionAdminAction implements Preparable, FacetedResultHandler<Resource> {
 
     private static final long serialVersionUID = -4060598709570483884L;
@@ -61,7 +65,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private AuthorizationService authorizationService;
 
     private String term;
-    private TreeSet<ResourceCollection> allChildCollections = new TreeSet<>(ResourceCollection.TITLE_COMPARATOR);
+    private TreeSet<HierarchicalCollection> allChildCollections = new TreeSet<>(new TitleSortComparator());
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private PaginationHelper paginationHelper;
     private FacetWrapper facetWrapper = new FacetWrapper();
@@ -77,13 +81,15 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private ArrayList<Status> selectedResourceStatuses = new ArrayList<>();
     private ArrayList<ResourceAccessType> fileAccessTypes = new ArrayList<>();
 
+
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        resourceCollectionService.buildCollectionTreeForController(getCollection(), getAuthenticatedUser(), CollectionType.SHARED);
+        resourceCollectionService.buildCollectionTreeForController(getCollection(), getAuthenticatedUser(), HierarchicalCollection.class);
+        getLogger().debug("{}", getCollection());
         setAllChildCollections(getCollection().getTransientChildren());
 
-        List<Long> collectionIds = PersistableUtils.extractIds(getCollection().getTransientChildren());
+        List<Long> collectionIds = PersistableUtils.extractIds(getAllChildCollections());
         collectionIds.add(getId());
 
         setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
@@ -105,6 +111,12 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         }
 
     }
+
+    @Override
+    public HierarchicalCollection getCollection() {
+        return (HierarchicalCollection) super.getCollection();
+    }
+
 
     @Override
     @Action(value = "{id}", results = {
@@ -241,11 +253,11 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         return paginationHelper;
     }
 
-    public TreeSet<ResourceCollection> getAllChildCollections() {
+    public TreeSet<HierarchicalCollection> getAllChildCollections() {
         return allChildCollections;
     }
 
-    public void setAllChildCollections(TreeSet<ResourceCollection> allChildCollections) {
+    public void setAllChildCollections(TreeSet<HierarchicalCollection> allChildCollections) {
         this.allChildCollections = new TreeSet<>(allChildCollections);
     }
 

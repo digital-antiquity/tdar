@@ -9,7 +9,7 @@ import org.tdar.core.service.processes.ScheduledProcess;
 
 public class AutowiredProcessManager extends BaseProcessManager {
 
-	private static final long serialVersionUID = 7333013043608786215L;
+    private static final long serialVersionUID = 7333013043608786215L;
     /**
      * Autowiring of Scheduled Processes, filter by those enabled and have not run. Also use @link TdarConfiguration to check whether the client supports
      * running them
@@ -18,11 +18,11 @@ public class AutowiredProcessManager extends BaseProcessManager {
      */
     @Autowired
     public void setAllScheduledProcesses(List<ScheduledProcess> processes) {
-    	 if (!TdarConfiguration.getInstance().shouldRunPeriodicEvents()) {
-    		 return;
-    	 }
+         if (!TdarConfiguration.getInstance().shouldRunPeriodicEvents()) {
+             return;
+         }
 
-    	 for (ScheduledProcess process : processes) {
+         for (ScheduledProcess process : processes) {
             // scheduledProcessMap.clear();
             // logger.warn("current tdar configuration doesn't support running scheduled processes, skipping {}", processes);
             // return;

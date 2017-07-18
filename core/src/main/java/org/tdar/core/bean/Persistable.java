@@ -1,7 +1,10 @@
 package org.tdar.core.bean;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.tdar.utils.json.JsonIdNameFilter;
 
@@ -27,6 +30,12 @@ public interface Persistable extends Serializable {
      * Returns the list of property objects used for equality comparison and
      * hashCode generation.
      */
-    List<?> getEqualityFields();
+    /**
+     * By default, base the hashcode off of object's inherent hashcode.
+     */
+    @XmlTransient
+    public default List<?> getEqualityFields() {
+        return Collections.emptyList();
+    }
 
 }

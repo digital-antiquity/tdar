@@ -17,8 +17,7 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 /**
  * $Id$
@@ -33,7 +32,6 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-@HttpsOnly
 public class AdminFileInfoAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 4550037457679814164L;

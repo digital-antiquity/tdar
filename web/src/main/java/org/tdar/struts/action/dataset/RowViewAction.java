@@ -64,7 +64,7 @@ public class RowViewAction extends AbstractAuthenticatableAction implements Prep
             @Result(name = SUCCESS, location = "../../dataset/view-row.ftl") })
     @SkipValidation
     public String getDataResultsRow() {
-        if (!isViewRowSupported()) {
+        if (!getTdarConfiguration().isViewRowSupported()) {
             return ERROR;
         }
         setTransientViewableStatus(getResource(), getAuthenticatedUser());

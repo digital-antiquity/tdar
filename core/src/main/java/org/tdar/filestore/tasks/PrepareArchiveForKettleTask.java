@@ -17,7 +17,6 @@ import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.WorkflowContext;
-import org.tdar.filestore.tasks.Task.AbstractTask;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;

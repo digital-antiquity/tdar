@@ -35,40 +35,40 @@ public class MockMailSender implements JavaMailSender {
         return messages;
     }
 
-	@Override
-	public MimeMessage createMimeMessage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public MimeMessage createMimeMessage() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public MimeMessage createMimeMessage(InputStream contentStream) throws MailException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public MimeMessage createMimeMessage(InputStream contentStream) throws MailException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public void send(MimeMessage mimeMessage) throws MailException {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void send(MimeMessage mimeMessage) throws MailException {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void send(MimeMessage... mimeMessages) throws MailException {
-		// TODO Auto-generated method stub
-		
-	}
+    }
 
-	@Override
-	public void send(MimeMessagePreparator mimeMessagePreparator) throws MailException {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void send(MimeMessage... mimeMessages) throws MailException {
+        // TODO Auto-generated method stub
 
-	@Override
-	public void send(MimeMessagePreparator... mimeMessagePreparators) throws MailException {
-		// TODO Auto-generated method stub
-		
-	}
+    }
+
+    @Override
+    public void send(MimeMessagePreparator mimeMessagePreparator) throws MailException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void send(MimeMessagePreparator... mimeMessagePreparators) throws MailException {
+        // TODO Auto-generated method stub
+
+    }
 
 }

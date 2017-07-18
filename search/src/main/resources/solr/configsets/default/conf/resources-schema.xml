@@ -13,6 +13,13 @@
     <copyField source="resourceCollections.name" dest="resourceCollections.name_autocomplete" />
     <copyField source="resourceCollections.name" dest="resourceCollections.name_phrase" />
 
+
+    <field name="listCollections.name" type="text_en" indexed="true" stored="true" multiValued="true" />
+    <field name="listCollections.name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
+    <field name="listCollections.name_phrase" type="text_general" indexed="true" stored="true" multiValued="true" />
+    <copyField source="listCollections.name" dest="listCollections.name_autocomplete" />
+    <copyField source="listCollections.name" dest="listCollections.name_phrase" />
+
     <field name="description" type="text_en" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="description_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <copyField source="description" dest="description_phrase" />
@@ -31,8 +38,10 @@
     <field name="date" type="int" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="decadeCreated" type="int" indexed="true"  required="false" multiValued="false"  stored="true" />
 
-    <field name="resourceType" type="string" indexed="true"  required="true" multiValued="false"  stored="true"/>
-    <field name="resourceTypeSort" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="resourceType" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
+    <field name="resourceTypeSort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="objectType" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
+    <field name="objectTypeSort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="documentType" type="string" indexed="true"  required="false" multiValued="false" />
     <field name="subType" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
     <field name="degree" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
@@ -65,8 +74,10 @@
     <field name="crid" type="strings" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="bookmarkedResource.person.id" type="longs" indexed="true"  required="false" multiValued="true" stored="true" />
     <field name="collectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
+    <field name="listCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="allCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="directSharedCollectionIds" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
+    <field name="directListCollectionIds" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="sharedCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
 
     <field name="usersWhoCanModify" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
@@ -152,6 +163,21 @@
     <field name="activeCoverageDates.startDate" type="ints" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="activeCoverageDates.endDate" type="ints" indexed="true"  required="false" multiValued="true"  stored="true"/>
 
+    <field name="resourceAnnotationPair" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+
+
+    <field name="type" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="collectionType" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+
+	<!--  collection specific fields  -->
+    <field name="hidden" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="visibleInSearch" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="topLevel" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="resourceIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="parentIdList" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="parentId" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="usersWhoCanAdminister" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+	
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
     <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>

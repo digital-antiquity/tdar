@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.ontologyMapping methods", function() {  
+describe("OntologyMappingSpec.js: tests for TDAR.ontologyMapping methods", function() {
 
 xit("should work when we call initMapping", function() {
    var formSelector = null;

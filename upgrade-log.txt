@@ -86,3 +86,9 @@ standalone solr:
  - additional tasks
     - https://issues.tdar.org/browse/TDAR-3515
     - https://issues.tdar.org/browse/TDAR-610
+
+—————————————————
+::Prehistoric:
+—————————————————
+ - full-reindex for collection unification
+ - adjust cart page and SAA pages on tdar website for /api/ changes

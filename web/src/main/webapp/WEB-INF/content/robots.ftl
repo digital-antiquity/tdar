@@ -6,9 +6,11 @@ Disallow: /search/results
 Disallow: /login
 Disallow: /login*
 Disallow: /logout
-Disallow: /account/new
 Disallow: /logout*
+Disallow: /api
+Disallow: /account/new
 Disallow: /search/rss
+Disallow: /api/search/rss
 Disallow: /search/download
 Disallow: /filestore/
 Disallow: /filestore/download/

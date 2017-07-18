@@ -1,47 +1,46 @@
 package org.tdar.core.service;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Resource;
 
-public class CollectionSaveObject implements Serializable {
+public class CollectionSaveObject<C extends HierarchicalCollection> implements Serializable {
 
     private static final long serialVersionUID = -8676785579332687294L;
 
-    private ResourceCollection collection;
+    private C collection;
     private Long parentId;
     private Long alternateParentId;
-    private ResourceCollection parent;
-    private ResourceCollection alternateParent;
+    private C parent;
+    private C alternateParent;
     private TdarUser user;
     private List<AuthorizedUser> users;
     private List<Long> toAdd;
     private List<Long> toRemove;
-    private boolean shouldSave;
+    private boolean shouldSave = true;
     private FileProxy fileProxy;
     private Long startTime;
     private List<Long> publicToAdd;
     private List<Long> publicToRemove;
-    private List<AuthorizedUser> authorizedUsers;
+    private Class<C> persistableClass;
     
-    public CollectionSaveObject(ResourceCollection persistable, TdarUser authenticatedUser, Long startTime2, List<AuthorizedUser> authorizedUsers) {
+    public CollectionSaveObject(C persistable, TdarUser authenticatedUser, Long startTime2, Class<C> class1) {
         this.collection = persistable;
         this.user = authenticatedUser;
+        this.setPersistableClass(class1);
         this.startTime = startTime2;
-        this.authorizedUsers = authorizedUsers;
     }
 
-    public ResourceCollection getCollection() {
+    public C getCollection() {
         return collection;
     }
 
-    public void setCollection(ResourceCollection collection) {
+    public void setCollection(C collection) {
         this.collection = collection;
     }
 
@@ -61,19 +60,19 @@ public class CollectionSaveObject implements Serializable {
         this.alternateParentId = alternateParentId;
     }
 
-    public ResourceCollection getParent() {
+    public C getParent() {
         return parent;
     }
 
-    public void setParent(ResourceCollection parent) {
+    public void setParent(C parent) {
         this.parent = parent;
     }
 
-    public ResourceCollection getAlternateParent() {
+    public C getAlternateParent() {
         return alternateParent;
     }
 
-    public void setAlternateParent(ResourceCollection alternateParent) {
+    public void setAlternateParent(C alternateParent) {
         this.alternateParent = alternateParent;
     }
 
@@ -149,12 +148,13 @@ public class CollectionSaveObject implements Serializable {
         this.publicToRemove = publicToRemove;
     }
 
-    public List<AuthorizedUser> getAuthorizedUsers() {
-        return authorizedUsers;
+
+    public Class<C> getPersistableClass() {
+        return persistableClass;
     }
 
-    public void setAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
-        this.authorizedUsers = authorizedUsers;
+    public void setPersistableClass(Class<C> persistableClass) {
+        this.persistableClass = persistableClass;
     }
 
 }

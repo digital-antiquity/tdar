@@ -39,8 +39,8 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -55,7 +55,6 @@ public class MockNelnetController extends AbstractAuthenticatableAction implemen
     private Map<String, String[]> params;
     private Map<String, String[]> responseParams = new HashMap<String, String[]>();
 
-    
     @Autowired
     private transient NelNetPaymentDao nelnet;
 

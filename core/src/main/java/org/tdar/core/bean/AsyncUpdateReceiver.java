@@ -3,6 +3,9 @@ package org.tdar.core.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.utils.Pair;
 
 /**
@@ -42,6 +45,8 @@ public interface AsyncUpdateReceiver {
         private List<Throwable> throwables = new ArrayList<Throwable>();
         private List<Pair<Long, String>> details = new ArrayList<Pair<Long, String>>();
 
+        private final transient Logger logger = LoggerFactory.getLogger(getClass());
+        
         @Override
         public float getPercentComplete() {
             return percentComplete;
@@ -91,7 +96,13 @@ public interface AsyncUpdateReceiver {
         public List<String> getAsyncErrors() {
             List<String> messages = new ArrayList<>();
             for (Throwable throwable : getThrowables()) {
+                try {
                 messages.add(throwable.getLocalizedMessage());
+                } catch (Exception e) {
+                    logger.error(throwable.getMessage());
+                    logger.error(ExceptionUtils.getStackTrace(throwable));
+                    messages.add(throwable.getMessage());
+                }
             }
             return messages;
         }

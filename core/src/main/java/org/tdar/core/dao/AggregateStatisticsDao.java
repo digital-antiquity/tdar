@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
@@ -14,6 +14,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.dao.resource.stats.DateGranularity;
@@ -102,7 +103,7 @@ public class AggregateStatisticsDao extends GenericDao {
      */
     public void generateAggregateDailyDownloadData(Date date) {
         String sql = String.format(TdarNamedQueries.DAILY_DOWNLOAD_UPDATE, date);
-        getCurrentSession().createSQLQuery(sql).executeUpdate();
+        getCurrentSession().createNativeQuery(sql).executeUpdate();
 
     }
 

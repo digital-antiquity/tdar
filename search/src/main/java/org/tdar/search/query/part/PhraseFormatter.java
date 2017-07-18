@@ -7,6 +7,12 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Formatting text in a lucene query to help handle escaping and other issues like quoting.  
+ * These phrases can be stacked and order of operations is managed.
+ * @author abrin
+ *
+ */
 public enum PhraseFormatter {
 
     WILDCARD,
@@ -26,9 +32,9 @@ public enum PhraseFormatter {
             case ESCAPED:
                 return StringUtils.replaceEach(QueryParser.escape(value.trim()),FIND, REPLACE);
             case WILDCARD:
-            	if (StringUtils.startsWith(value, "\"") && StringUtils.endsWith(value, "\"")) {
-            		return value;
-            	}
+                if (StringUtils.startsWith(value, "\"") && StringUtils.endsWith(value, "\"")) {
+                    return value;
+                }
                 if (StringUtils.endsWith(value, "\"") && !StringUtils.endsWith(value, "\\\"")) {
                     logger.error("trying to wildcard a quoted element {}", value);
                 }

@@ -7,18 +7,18 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 
 public interface AbstractDataRecord {
 
-	Long getId();
+    Long getId();
 
-	String getTableName();
+    String getTableName();
 
-	DataTable getDataTable();
+    DataTable getDataTable();
 
-	Set<String> propertyNames();
+    Set<String> propertyNames();
 
-	Map<?, ?> asMap();
+    Map<?, ?> asMap();
 
-	Object get(String name);
+    Object get(String name);
 
-	void put(String name, Object value);
+    void put(String name, Object value);
 
 }

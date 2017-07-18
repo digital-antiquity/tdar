@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -162,7 +163,7 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     }
 
     @Transactional(readOnly = true)
-    public StatsResultObject getStatsForCollection(ResourceCollection collection, TextProvider provider, DateGranularity granularity) {
+    public StatsResultObject getStatsForCollection(SharedCollection collection, TextProvider provider, DateGranularity granularity) {
         if (collection != null) {
             return getStats(collection, provider, granularity);
         }

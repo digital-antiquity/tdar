@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
@@ -38,7 +37,7 @@ public class KeywordSearchService<I extends Keyword> extends AbstractSearchServi
     private SearchService<I> searchService;
 
     public LuceneSearchResultHandler<I> findKeyword(String term, String keywordType, LuceneSearchResultHandler<I> result, TextProvider provider, int min)
-            throws ParseException, SolrServerException, IOException {
+            throws SearchException, IOException {
         QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
         
         if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {
@@ -60,7 +59,7 @@ public class KeywordSearchService<I extends Keyword> extends AbstractSearchServi
        }
 
         // refine search to the correct keyword type
-        group.append(new FieldQueryPart<String>(QueryFieldNames.TYPE, keywordType));
+        group.append(new FieldQueryPart<String>(QueryFieldNames.GENERAL_TYPE, keywordType));
         subgroup.append(group);
         q.append(subgroup);
         q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));

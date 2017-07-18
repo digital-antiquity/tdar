@@ -8,7 +8,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 public class ResourceControllerITCase extends AbstractResourceControllerITCase {
 

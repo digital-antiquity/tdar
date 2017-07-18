@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.contexthelp methods", function() {  
+describe("ContexthelpSpec.js: tests for TDAR.contexthelp methods", function() {
 
 xit("should work when we call initializeTooltipContent", function() {
    var form = null;

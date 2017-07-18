@@ -13,8 +13,8 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.PersistableUtils;
 
 
@@ -38,10 +38,10 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
             addActionError(getText("transferAccountBalanceAction.toAccountNotSpecified"));
         }
 
-        if (!authorizationService.canAdministerAccount(getAccount(), getAuthenticatedUser())) {
+        if (!authorizationService.canAdministerAccount(getAuthenticatedUser(),getAccount())) {
             addActionError(getText("transferAccountBalanceAction.no_rights", Arrays.asList(getAccount())));
         }
-        if (!authorizationService.canAdministerAccount(toAccount, getAuthenticatedUser())) {
+        if (!authorizationService.canAdministerAccount(getAuthenticatedUser(),toAccount)) {
             addActionError(getText("transferAccountBalanceAction.no_rights", Arrays.asList(getAccount())));
 
         }

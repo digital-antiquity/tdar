@@ -25,10 +25,12 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.struts.action.cart.CartApiController;
+import org.tdar.struts.action.api.cart.CartApiController;
 import org.tdar.struts.action.cart.CartBillingAccountController;
 import org.tdar.struts.action.cart.CartController;
 import org.tdar.struts.action.cart.InvoiceController;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Action;
 
@@ -236,7 +238,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         invoice.setInvoiceNumber(invoiceNumber);
         invoice.setPaymentMethod(PaymentMethod.INVOICE);
         invoice.setOtherReason("this is my reasoning");
-        BillingAccount account = createAccount(getBasicUser());
+        BillingAccount account = TestBillingHelper.createAccount(getBasicUser(), genericService);
         CartBillingAccountController billingAccountController = generateNewInitializedController(CartBillingAccountController.class);
         billingAccountController.setId(account.getId());
         billingAccountController.prepare();
@@ -262,7 +264,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
     public void testCartCouponWithRights() throws TdarActionException, IOException, InstantiationException, IllegalAccessException {
         String response;
         Document doc = generateDocumentWithFileAndUser();
-        BillingAccount account = createAccount(getAdminUser());
+        BillingAccount account = TestBillingHelper.createAccount(getAdminUser(), genericService);
         Coupon coupon = new Coupon();
         account.getCoupons().add(coupon);
         coupon.setCode("ABCD");
@@ -306,10 +308,10 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         assertEquals(invoiceNumber, invoice.getInvoiceNumber());
         doc =  genericService.find(Document.class, docId);
         AuthorizedUser user = null;
-        for (AuthorizedUser au : doc.getInternalResourceCollection().getAuthorizedUsers()) {
-        	if (au.getUser().getId().equals(getUserId())) {
-        		user = au;
-        	}
+        for (AuthorizedUser au : doc.getAuthorizedUsers()) {
+            if (au.getUser().getId().equals(getUserId())) {
+                user = au;
+            }
         }
         assertNotNull(user);
         assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());

@@ -1,8 +1,9 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "../../common-collection.ftl" as commonCollection>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
     <#if persistable.id == -1>
@@ -41,10 +42,10 @@
                     <label class="control-label">Enable Custom Header?</label>
     
                     <div class="controls">
-                        <label for="rdoheaderTrue" class="radio inline"><input type="radio" id="rdoheaderTrue" name="collection.customHeaderEnabled"
-                                                                                value="true" <@common.checkedif collection.customHeaderEnabled true /> />Yes</label>
-                        <label for="rdoheaderFalse" class="radio inline"><input type="radio" id="rdoheaderFalse" name="collection.customHeaderEnabled"
-                                                                                 value="false" <@common.checkedif collection.customHeaderEnabled false /> />No</label>
+                        <label for="rdoheaderTrue" class="radio inline"><input type="radio" id="rdoheaderTrue" name="collection.properties.customHeaderEnabled"
+                                                                                value="true" <@commonr.checkedif collection.properties.customHeaderEnabled true /> />Yes</label>
+                        <label for="rdoheaderFalse" class="radio inline"><input type="radio" id="rdoheaderFalse" name="collection.properties.customHeaderEnabled"
+                                                                                 value="false" <@commonr.checkedif collection.properties.customHeaderEnabled false /> />No</label>
                     </div>
                 </div>
     
@@ -53,10 +54,10 @@
                     <label class="control-label">Enable Custom Document Logo?</label>
                     <i>Requires logo file in the filestore/collection/.../logo_lg.jpg</i>
                     <div class="controls">
-                        <label for="rdodocTrue" class="radio inline"><input type="radio" id="rdodocTrue" name="collection.customDocumentLogoEnabled"
-                                                                                value="true" <@common.checkedif collection.customDocumentLogoEnabled true /> />Yes</label>
-                        <label for="rdodocFalse" class="radio inline"><input type="radio" id="rdodocFalse" name="collection.customDocumentLogoEnabled"
-                                                                                 value="false" <@common.checkedif collection.customDocumentLogoEnabled false /> />No</label>
+                        <label for="rdodocTrue" class="radio inline"><input type="radio" id="rdodocTrue" name="collection.properties.customDocumentLogoEnabled"
+                                                                                value="true" <@commonr.checkedif collection.properties.customDocumentLogoEnabled true /> />Yes</label>
+                        <label for="rdodocFalse" class="radio inline"><input type="radio" id="rdodocFalse" name="collection.properties.customDocumentLogoEnabled"
+                                                                                 value="false" <@commonr.checkedif collection.properties.customDocumentLogoEnabled false /> />No</label>
                     </div>
                 </div>
     
@@ -66,10 +67,10 @@
                     <i>Requires manual SQL to add /modify featured resources</i>
     
                     <div class="controls">
-                        <label for="rdofeatTrue" class="radio inline"><input type="radio" id="rdofeatTrue" name="collection.featuredResourcesEnabled"
-                                                                                value="true" <@common.checkedif collection.featuredResourcesEnabled true /> />Yes</label>
-                        <label for="rdofeatFalse" class="radio inline"><input type="radio" id="rdofeatFalse" name="collection.featuredResourcesEnabled"
-                                                                                 value="false" <@common.checkedif collection.featuredResourcesEnabled false /> />No</label>
+                        <label for="rdofeatTrue" class="radio inline"><input type="radio" id="rdofeatTrue" name="collection.properties.featuredResourcesEnabled"
+                                                                                value="true" <@commonr.checkedif collection.properties.featuredResourcesEnabled true /> />Yes</label>
+                        <label for="rdofeatFalse" class="radio inline"><input type="radio" id="rdofeatFalse" name="collection.properties.featuredResourcesEnabled"
+                                                                                 value="false" <@commonr.checkedif collection.properties.featuredResourcesEnabled false /> />No</label>
                     </div>
                 </div>
 
@@ -80,10 +81,10 @@
                     <label class="control-label">Show Search on Collection Page?</label>
     
                     <div class="controls">
-                        <label for="rdosearchTrue" class="radio inline"><input type="radio" id="rdosearchTrue" name="collection.searchEnabled"
-                                                                                value="true" <@common.checkedif collection.searchEnabled true /> />Yes</label>
-                        <label for="rdosearchFalse" class="radio inline"><input type="radio" id="rdosearchFalse" name="collection.searchEnabled"
-                                                                                 value="false" <@common.checkedif collection.searchEnabled false /> />No</label>
+                        <label for="rdosearchTrue" class="radio inline"><input type="radio" id="rdosearchTrue" name="collection.properties.searchEnabled"
+                                                                                value="true" <@commonr.checkedif collection.properties.searchEnabled true /> />Yes</label>
+                        <label for="rdosearchFalse" class="radio inline"><input type="radio" id="rdosearchFalse" name="collection.properties.searchEnabled"
+                                                                                 value="false" <@commonr.checkedif collection.properties.searchEnabled false /> />No</label>
                     </div>
                 </div>
     
@@ -91,17 +92,17 @@
                     <label class="control-label">List Subcollections on Page?</label>
     
                     <div class="controls">
-                        <label for="rdosubcollTrue" class="radio inline"><input type="radio" id="rdosubcollTrue" name="collection.subCollectionsEnabled"
-                                                                                value="true" <@common.checkedif collection.subCollectionsEnabled true /> />Yes</label>
-                        <label for="rdosubcollFalse" class="radio inline"><input type="radio" id="rdosubcollFalse" name="collection.subCollectionsEnabled"
-                                                                                 value="false" <@common.checkedif collection.subCollectionsEnabled false /> />No</label>
+                        <label for="rdosubcollTrue" class="radio inline"><input type="radio" id="rdosubcollTrue" name="collection.properties.subCollectionsEnabled"
+                                                                                value="true" <@commonr.checkedif collection.properties.subCollectionsEnabled true /> />Yes</label>
+                        <label for="rdosubcollFalse" class="radio inline"><input type="radio" id="rdosubcollFalse" name="collection.properties.subCollectionsEnabled"
+                                                                                 value="false" <@commonr.checkedif collection.properties.subCollectionsEnabled false /> />No</label>
                     </div>
                 </div>
             </div>
             </div>
-            <@s.textfield name="collection.subtitle" label="Subtitle" cssClass="descriptiveTitle input-xxlarge"/>
+            <@s.textfield name="collection.properties.subtitle" label="Subtitle" cssClass="descriptiveTitle input-xxlarge"/>
 
-            <@s.textarea cols=80 rows=20 name="collection.css" label="WhiteLabel CSS" />
+            <@s.textarea cols=80 rows=20 name="collection.properties.css" label="WhiteLabel CSS" />
 
     
         </div>

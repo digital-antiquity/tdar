@@ -27,8 +27,8 @@ import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.SimpleFileProcessingDao;
+import org.tdar.core.dao.base.GenericDao.FindOptions;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
@@ -122,6 +122,24 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
         return institutionDao.findByName(name.trim());
     }
+    
+    /**
+     * Find an @link Institution by exact name
+     * 
+     * @param institution
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Person> findPersonsByInstitution(Institution institution) {
+        if (PersistableUtils.isNullOrTransient(institution)) {
+            return null;
+        }
+        return getDao().findPeopleByInstituion(institution);
+    }
+    
+    
+    
+    
 
     /**
      * Find a @link Institution by ID
@@ -143,7 +161,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @Transactional(readOnly = true)
     public List<Institution> findInstitutionLike(String name) {
         return institutionDao.withNameLike(name);
-    }
+    }  
 
     /**
      * Find a @link Person by their email
@@ -492,8 +510,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = false)
     public void deleteForController(Creator<?> creator, String deletionReason, TdarUser authenticatedUser) {
-    	creator.setStatus(Status.DELETED);
-    	getDao().saveOrUpdate(creator);
+        creator.setStatus(Status.DELETED);
+        getDao().saveOrUpdate(creator);
         publisher.publishEvent(new TdarEvent(creator, EventType.CREATE_OR_UPDATE));
     }
 

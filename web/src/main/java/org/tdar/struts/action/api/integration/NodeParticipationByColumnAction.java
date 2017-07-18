@@ -16,7 +16,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonIdNameFilter;
 
 import com.opensymphony.xwork2.Preparable;

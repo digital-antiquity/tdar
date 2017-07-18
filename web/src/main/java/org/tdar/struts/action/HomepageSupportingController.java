@@ -18,9 +18,10 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.HomepageDetails;
 import org.tdar.web.service.HomepageService;
@@ -64,7 +65,6 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     private List<SyndEntry> rssEntries;
     private HomepageDetails homepageGraphs;
 
-    @HttpOnlyIfUnauthenticated
     @Actions({
             @Action(value = "page-not-found", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP,
                     location = "/WEB-INF/content/errors/page-not-found.ftl", params = { "status", "404" }) }),
@@ -85,7 +85,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
         return ERROR;
     }
 
-//    @HttpOnlyIfUnauthenticated
+    @HttpsOnly
     @Actions({
             @Action(value = "robots", results = {
                     @Result(name = SUCCESS, location = "robots.ftl", type = FREEMARKER, params = { "contentType", "text/plain" })
@@ -101,7 +101,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
         return SUCCESS;
     }
 
-    @HttpOnlyIfUnauthenticated
+    @HttpsOnly
     @Actions(value = {
             @Action(value = "terms", results = { @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "${tosUrl}") }),
             @Action(value = "opensearch", results = {

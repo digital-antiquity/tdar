@@ -24,10 +24,10 @@ public class AuthenticationResult {
 
         public boolean isValid() {
             switch(this) {
-	            case VALID:
-	            	return true;
-	            default:
-	            	return false;
+                case VALID:
+                    return true;
+                default:
+                    return false;
             }
         }
     }

@@ -4,7 +4,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 
 /**
  * Created by jimdevos on 6/17/14.
@@ -45,7 +44,7 @@ public class UserLogin extends UserAuthData {
         this.loginPassword = loginPassword;
     }
 
-    public ErrorTransferObject validate(AuthorizationService authService, RecaptchaService recaptchaService, String remoteHost) {
+    public ErrorTransferObject validate(AuthorizationService authService, String remoteHost) {
 
         ErrorTransferObject errors = new ErrorTransferObject();
 
@@ -57,7 +56,7 @@ public class UserLogin extends UserAuthData {
             errors.addFieldError(getPrefix() + "loginPassword", "loginController.error_choose_password");
         }
 
-        checkForSpammers(errors, true, recaptchaService, remoteHost);
+        checkForSpammers(errors, true, remoteHost);
         return errors;
     }
 

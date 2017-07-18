@@ -14,8 +14,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 

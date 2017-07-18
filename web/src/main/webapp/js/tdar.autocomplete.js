@@ -518,7 +518,7 @@ TDAR.autocomplete = (function () {
      */
     function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
         var options = {};
-        options.url = "lookup/" + lookupType;
+        options.url = "api/lookup/" + lookupType;
         options.enhanceRequestData = function (requestData) {
             $.extend(requestData, extraData);
         };
@@ -529,7 +529,7 @@ TDAR.autocomplete = (function () {
         options.showCreatePhrase = "Create a new keyword";
         options.minLength = 2;
 
-        var useCustomRender = false;
+        var useCustomRender = true;
         if (useCustomRender) {
             options.customRender = function (ul, item) {
                 var star ="";
@@ -561,7 +561,7 @@ TDAR.autocomplete = (function () {
      */
     function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
         var options = {
-            url: "lookup/person",
+            url: "api/lookup/person",
             dataPath: "people",
             retainInputValueOnSelect: true,
             showCreate: showCreate,
@@ -605,11 +605,14 @@ TDAR.autocomplete = (function () {
             _options = options;
         }
         var defaults = {};
-        _options.enhanceRequestData = function (requestData) {
+        if ($elements.attr("collectionType") != undefined && $elements.attr("collectionType") != '') {
+            extraData.type = $elements.attr("collectionType");
+        }
+        options.enhanceRequestData = function (requestData) {
             $.extend(requestData, extraData);
         };
 
-        defaults.url = "lookup/collection";
+        defaults.url = "api/lookup/collection";
         defaults.dataPath = "collections";
         defaults.sortField = 'TITLE';
         defaults.showCreate = false;
@@ -617,6 +620,19 @@ TDAR.autocomplete = (function () {
             defaults.showCreatePhrase = "Create a new collection";
         }
         defaults.minLength = 2;
+        defaults.customRender = function (ul, item) {
+            var description = "";
+            if (item.description != undefined) {
+                description = item.description;
+            }
+            var link = "";
+            var idpart = "";
+            if (item.id != -1) {
+                idpart = "("+item.id+")";
+            }
+            return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>" +idpart).appendTo(ul);
+        };
+
         _applyGenericAutocomplete($elements, $.extend({}, defaults, _options));
     }
 
@@ -645,7 +661,7 @@ TDAR.autocomplete = (function () {
      */
     function _applyResourceAutocomplete($elements, type) {
         var options = {};
-        options.url = "lookup/resource";
+        options.url = "api/lookup/resource";
         options.dataPath = "resources";
         options.sortField = 'TITLE';
         options.enhanceRequestData = function (requestData) {
@@ -679,7 +695,7 @@ TDAR.autocomplete = (function () {
     function _applyInstitutionAutocomplete($elements, newOption) {
 
         var options = {};
-        options.url = "lookup/institution";
+        options.url = "api/lookup/institution";
         options.dataPath = "institutions";
         options.sortField = 'RELEVANCY';
         options.enhanceRequestData = function (requestData) {
@@ -785,7 +801,7 @@ TDAR.autocomplete = (function () {
     var _delegateAnnotationKey = function (id, prefix, delim) {
         $(id).delegate("." + prefix + "AutoComplete", "focusin", function () {
             _applyGenericAutocomplete($("." + prefix + "AutoComplete"), {
-                url: "lookup/" + delim,
+                url: "api/lookup/" + delim,
                 dataPath: "items",
                 sortField: 'LABEL',
                 minLength: 2,

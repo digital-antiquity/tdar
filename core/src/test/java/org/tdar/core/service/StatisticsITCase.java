@@ -22,6 +22,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -142,12 +143,12 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testUsageStatsCollection() {
         Document document = setupDacumentWithStats();
-        ResourceCollection col = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection col = new SharedCollection();
         col.setName("test");
         col.setDescription("test");
         col.markUpdated(getAdminUser());
         col.getResources().add(document);
-        document.getResourceCollections().add(col);
+        document.getSharedCollections().add(col);
         genericService.saveOrUpdate(col);
         genericService.saveOrUpdate(document);
         dailyTask.execute();

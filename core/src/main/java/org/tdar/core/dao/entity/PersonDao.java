@@ -1,7 +1,7 @@
 package org.tdar.core.dao.entity;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,27 +12,29 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.AgreementTypes;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.HibernateBase;
 
 /**
  * $Id$
@@ -45,7 +47,7 @@ import org.tdar.core.dao.TdarNamedQueries;
  * @version $Revision$
  */
 @Component
-public class PersonDao extends Dao.HibernateBase<Person> {
+public class PersonDao extends HibernateBase<Person> {
 
     private static final Long TDAR_USER_PRIOR_TO_ASKING_AFFILIATION = 5215L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -56,23 +58,38 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     @SuppressWarnings("unchecked")
     public List<TdarUser> findAllRegisteredUsers(Integer num) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_RECENT_USERS_ADDED);
+        Query<TdarUser> query = getCurrentSession().getNamedQuery(QUERY_RECENT_USERS_ADDED);
         if ((num != null) && (num > 0)) {
             query.setMaxResults(num);
         }
-        return query.list();
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public List<Person> findSimilarPeople(TdarUser user) {
         List<Person> people = new ArrayList<>();
         String initial = user.getFirstName().substring(0, 1).toUpperCase();
-        Query query = getCurrentSession().getNamedQuery(QUERY_SIMILAR_PEOPLE);
+        Query<Person> query = getCurrentSession().getNamedQuery(QUERY_SIMILAR_PEOPLE);
         query.setParameter("firstName", user.getFirstName());
         query.setParameter("lastName", user.getLastName());
         query.setParameter("initial", initial);
         query.setParameter("initial2", initial + ".");
-        people.addAll(query.list());
+        people.addAll(query.getResultList());
+        return people;
+    }
+    
+    @SuppressWarnings("unchecked")
+    /**
+     * Searches for all the people for a given institution, and returns a list sorted by last name, first name
+     * @param institution
+     * @return
+     */
+    public List<Person> findPeopleByInstituion(Institution institution) {
+        List<Person> people = new ArrayList<>();
+        Query<Person> query = getCurrentSession().getNamedQuery(QUERY_INSTITUTION_PEOPLE);
+        query.setParameter("id", institution.getId());
+        people.addAll(query.getResultList());
+        Collections.sort(people, (person1, person2)-> person1.getLastName().concat(person1.getFirstName()).compareTo(person2.getLastName().concat(person2.getFirstName())));
         return people;
     }
 
@@ -119,10 +136,10 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return new HashSet<Person>(criteria.list());
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Person findAuthorityFromDuplicate(Creator<?> dup) {
-        Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
-        @SuppressWarnings("unchecked")
-        List<BigInteger> result = query.list();
+        Query query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
+        List<Number> result = query.getResultList();
         if (CollectionUtils.isNotEmpty(result)) {
             try {
                 return find(result.get(0).longValue());
@@ -183,7 +200,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     @SuppressWarnings("unchecked")
     public Set<Long> findAllContributorIds() {
         Set<Long> ids = new HashSet<>();
-        for (Number obj_ : (List<Number>) getCurrentSession().createSQLQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).list()) {
+        for (Number obj_ : (List<Number>) getCurrentSession().createNativeQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).getResultList()) {
             ids.add(obj_.longValue());
         }
         return ids;
@@ -201,45 +218,45 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         Session session = getCurrentSession();
         String roles = getFormattedRoles(null);
         logger.info("clearing creator occurrence values");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT)).executeUpdate();
+        session.createNativeQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_CLEAR_COUNT)).executeUpdate();
         logger.info("beginning updates - resource");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE)).executeUpdate();
+        session.createNativeQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE)).executeUpdate();
         logger.info("beginning updates - resource - inherited");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED, roles)).executeUpdate();
+        session.createNativeQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INHERITED, roles)).executeUpdate();
         logger.info("beginning updates - copyright");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT)).executeUpdate();
+        session.createNativeQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_COPYRIGHT)).executeUpdate();
         logger.info("beginning updates - provider");
-        session.createSQLQuery(
+        session.createNativeQuery(
                 String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PROVIDER, Creator.OCCURRENCE, Creator.OCCURRENCE))
                 .executeUpdate();
         logger.info("beginning updates - publisher");
-        session.createSQLQuery(
+        session.createNativeQuery(
                 String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_INFORMATION_RESOURCE_PUBLISHER, Creator.OCCURRENCE, Creator.OCCURRENCE))
                 .executeUpdate();
         logger.info("beginning updates - submitter");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER)).executeUpdate();
+        session.createNativeQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_RESOURCE_SUBMITTER)).executeUpdate();
         logger.info("beginning updates - institution");
-        session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_INSTITUTION)).executeUpdate();
+        session.createNativeQuery(String.format(TdarNamedQueries.UPDATE_CREATOR_OCCURRENCE_INSTITUTION)).executeUpdate();
         logger.info("completed updates");
 
         // create a temp table for these users and drop them in (much faster than a single query); the 1st temp table is 1:1 with resources, the second is 1:1
         // with creators. This is much faster.
-        session.createSQLQuery(BROWSE_CREATOR_CREATE_TEMP).executeUpdate();
+        session.createNativeQuery(BROWSE_CREATOR_CREATE_TEMP).executeUpdate();
         // populate the resource table
-        session.createSQLQuery(BROWSE_CREATOR_ACTIVE_USERS_1).executeUpdate();
+        session.createNativeQuery(BROWSE_CREATOR_ACTIVE_USERS_1).executeUpdate();
         roles = getFormattedRoles(CreatorType.PERSON);
-        session.createSQLQuery(String.format(BROWSE_CREATOR_ROLES_2, roles, 1000)).executeUpdate();
-        session.createSQLQuery(String.format(BROWSE_CREATOR_IR_ROLES_3, roles, 1000)).executeUpdate();
+        session.createNativeQuery(String.format(BROWSE_CREATOR_ROLES_2, roles, 1000)).executeUpdate();
+        session.createNativeQuery(String.format(BROWSE_CREATOR_IR_ROLES_3, roles, 1000)).executeUpdate();
         // these roles matter less, so they get a negative priority. If someone is "just" the submitter, they are 0, if they have secondary roles or submitter,
         // they will have a negative value, if they have an authorship equivalent role we get a positive result
         roles = getFormattedRoles(CreatorType.INSTITUTION);
-        session.createSQLQuery(String.format(BROWSE_CREATOR_ROLES_2, roles, -10)).executeUpdate();
-        session.createSQLQuery(String.format(BROWSE_CREATOR_IR_ROLES_3, roles, -10)).executeUpdate();
-        session.createSQLQuery(BROWSE_CREATOR_IR_FIELDS_4).executeUpdate();
+        session.createNativeQuery(String.format(BROWSE_CREATOR_ROLES_2, roles, -10)).executeUpdate();
+        session.createNativeQuery(String.format(BROWSE_CREATOR_IR_ROLES_3, roles, -10)).executeUpdate();
+        session.createNativeQuery(BROWSE_CREATOR_IR_FIELDS_4).executeUpdate();
         // populate the temp_creator table with its values
-        session.createSQLQuery(BROWSE_CREATOR_CREATOR_TEMP_5).executeUpdate();
+        session.createNativeQuery(BROWSE_CREATOR_CREATOR_TEMP_5).executeUpdate();
         // migrate the data from the temp_creator table to the real one
-        session.createSQLQuery(BROWSE_CREATOR_UPDATE_CREATOR_6).executeUpdate();
+        session.createNativeQuery(BROWSE_CREATOR_UPDATE_CREATOR_6).executeUpdate();
         logger.info("completed updates");
 
     }
@@ -251,37 +268,39 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     public Long getCreatorViewCount(Creator<?> creator) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.CREATOR_VIEW);
+        Query<Number> query = getCurrentSession().createNamedQuery(TdarNamedQueries.CREATOR_VIEW, Number.class);
         query.setParameter("id", creator.getId());
-        Number result = (Number) query.uniqueResult();
+        Number result = query.getSingleResult();
         return result.longValue();
     }
 
     public TdarUser findConvertPersonToUser(Person person, String username) {
         Long id = person.getId();
-        getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.CONVERT_PERSON_TO_USER, id, username)).executeUpdate();
+        getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.CONVERT_PERSON_TO_USER, id, username)).executeUpdate();
         detachFromSession(person);
         TdarUser toReturn = find(TdarUser.class, id);
         logger.debug("toReturn: {}", toReturn);
         return toReturn;
     }
 
+    @SuppressWarnings("rawtypes")
     public Map<AgreementTypes, Long> getAgreementCounts() {
         HashMap<AgreementTypes, Long> toReturn = new HashMap<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.AGREEMENT_COUNTS);
-        Object[] result = (Object[]) query.uniqueResult();
+        Object[] result = (Object[]) query.getSingleResult();
         toReturn.put(AgreementTypes.USER_AGREEMENT, ((Number) result[0]).longValue());
         toReturn.put(AgreementTypes.CONTRIBUTOR_AGREEMENT, ((Number) result[1]).longValue());
         return toReturn;
     }
 
+    @SuppressWarnings("rawtypes")
     public Map<UserAffiliation, Long> getAffiliationCounts(boolean b) {
         HashMap<UserAffiliation, Long> toReturn = new HashMap<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.AFFILIATION_COUNTS);
         if (b) {
             query = getCurrentSession().getNamedQuery(TdarNamedQueries.AFFILIATION_COUNTS_CONTRIBUTOR);
         }
-        for (Object row_ : query.list()) {
+        for (Object row_ : query.getResultList()) {
             Object[] row = (Object[]) row_;
             toReturn.put((UserAffiliation) row[0], ((Number) row[1]).longValue());
         }
@@ -292,6 +311,14 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         }
         toReturn.put(UserAffiliation.NO_RESPONSE, noAnswer);
         return toReturn;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<UserInvite> checkInvite(TdarUser person) {
+        Query<UserInvite> query = getCurrentSession().createNamedQuery(TdarNamedQueries.CHECK_INVITES);
+        query.setParameter("email", person.getEmail());
+        return query.getResultList();
+        
     }
 
     public List<ResourceRevisionLog> findChangesForUser(TdarUser user, Date date) {

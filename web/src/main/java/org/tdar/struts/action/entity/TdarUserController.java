@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -21,8 +22,8 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.validator.annotations.EmailValidator;
 import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
@@ -54,13 +55,16 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     private List<BillingAccount> accounts;
     private List<String> groups = new ArrayList<String>();
 
+    // used to determine if any fields have changed when processing a save request
+    private Person originalPersonInfo;
+
     public static final String MYPROFILE = "myprofile";
 
     @Autowired
     private transient EntityService entityService;
 
     @Action(value = MYPROFILE, results = {
-            @Result(name = SUCCESS, location = "edit.ftl")
+            @Result(name = SUCCESS, location = "/WEB-INF/content/dashboard/myprofile.ftl")
     })
     @HttpsOnly
     @SkipValidation
@@ -85,6 +89,8 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
             setProxyInstitutionName(getPersistable().getProxyInstitution().getName());
         }
         setProxyNote(getPersistable().getProxyNote());
+
+        originalPersonInfo = new Person(getPerson().getFirstName(), getPerson().getLastName(), getPerson().getEmail());
     }
 
     @Override
@@ -111,6 +117,16 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
 
         if (passwordResetRequested) {
             authenticationService.getAuthenticationProvider().resetUserPassword(person);
+        }
+
+        //We store basic user info in two places:  our database and also the authentication system (i.e. crowd).  If user changes basic info, we need to update
+        // both systems.
+        String info1 = "" + originalPersonInfo.getFirstName() + originalPersonInfo.getLastName() + originalPersonInfo.getEmail();
+        String info2 = "" + getPerson().getFirstName() + getPerson().getLastName() + getPerson().getEmail();
+        if(!info1.equals(info2)) {
+            getLogger().info("basic user info changed for {} - updating crowd", getPerson().getUsername());
+            getLogger().debug("changing basic info to: {}", info2);
+            authenticationService.getAuthenticationProvider().updateBasicUserInformation(getPerson());
         }
         return SUCCESS;
     }
@@ -279,5 +295,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     public void setContributorReason(String contributorReason) {
         this.contributorReason = contributorReason;
     }
+
 
 }

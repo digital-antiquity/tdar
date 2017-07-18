@@ -37,7 +37,6 @@ public class ThumbnailDownloadAction extends AbstractDownloadController implemen
             @Action(value = "sm/{informationResourceFileVersionId}")
     })
     public String thumbnail() {
-        getSessionData().clearPassthroughParameters();
         if (PersistableUtils.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().warn("thumbnail request: no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
@@ -49,7 +48,7 @@ public class ThumbnailDownloadAction extends AbstractDownloadController implemen
             return ERROR;
         }
 
-        if (!authorizationService.canDownload(getInformationResourceFileVersion(), getAuthenticatedUser())) {
+        if (!authorizationService.canDownload(getAuthenticatedUser(), getInformationResourceFileVersion())) {
             getLogger().warn("thumbail request: resource is confidential/embargoed: {}", getInformationResourceFileVersionId());
             return FORBIDDEN;
         }

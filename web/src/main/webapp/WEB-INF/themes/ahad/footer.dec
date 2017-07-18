@@ -3,7 +3,7 @@
  <ul> 
 <li><a class="" href="http://www.tdar.org/about/">what is tDAR</a></li>
 
-<li><a class="" href="${helpUrl}">getting started</a></li> 
+<li><a class="" href="${config.helpUrl}">getting started</a></li> 
 <li><a class="" href="http://www.digitalantiquity.org/about/">about Digital Antiquity</a></li>
 <li><a class="" href="http://www.latrobe.edu.au/eresearch/">about La Trobe University eResearch</a></li> 
  

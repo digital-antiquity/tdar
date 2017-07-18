@@ -21,14 +21,15 @@ public class FacetWrapper implements Serializable {
     private Map<String, String> filters = new HashMap<>();
     private String facetPivotJson = null;
     private boolean mapFacet = false;
+    private Integer maxFacetLimit;
     public void facetBy(String facetField, Class<?> facetClass) {
         facetMap.put(facetField, facetClass);
     }
     
-	public <T> void facetBy(String facetField, Class<T> facetClass, ArrayList<T> selectedResourceTypes) {
-		facetBy(facetField, facetClass);
-		filters.put(facetField, StringUtils.join(selectedResourceTypes, " "));
-	}
+    public <T> void facetBy(String facetField, Class<T> facetClass, ArrayList<T> selectedResourceTypes) {
+        facetBy(facetField, facetClass);
+        filters.put(facetField, StringUtils.join(selectedResourceTypes, " "));
+    }
 
 
     public Map<String, Class<?>> getFacetMap() {
@@ -55,10 +56,10 @@ public class FacetWrapper implements Serializable {
         return facetMap.get(name);
     }
 
-	public String getFilter(String facet) {
-		return filters.get(facet);
-		
-	}
+    public String getFilter(String facet) {
+        return filters.get(facet);
+
+    }
 
     public boolean isMapFacet() {
         return mapFacet;
@@ -74,6 +75,14 @@ public class FacetWrapper implements Serializable {
 
     public void setFacetPivotJson(String facetPivotJson) {
         this.facetPivotJson = facetPivotJson;
+    }
+
+    public Integer getMaxFacetLimit() {
+        return maxFacetLimit;
+    }
+
+    public void setMaxFacetLimit(Integer maxFacetLimit) {
+        this.maxFacetLimit = maxFacetLimit;
     }
 
 

@@ -28,6 +28,8 @@ import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.login.LoginController;
 import org.tdar.struts.action.resource.ResourceController;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
@@ -540,7 +542,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     }
 
     @Override
-    protected TdarUser getUser() {
+    public TdarUser getUser() {
         return null;
     }
 
@@ -618,6 +620,52 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertEquals(REASON, user.getContributorReason());
     }
 
+    
+
+    @Test
+    @Rollback
+    // register new account with mixed-case username, and ensure that user can successfully login
+    public void testInviteRegister() {
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+        controller.setId(8424L);
+        String username = "pshackel@dnth.umd.edu";
+        controller.setEmail(username);
+        controller.execute();
+        controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setContributorReason(REASON);
+        controller.getRegistration().setAffiliation(UserAffiliation.CRM_ARCHAEOLOGIST);
+        controller.getReg().getPerson().setUsername(username);
+        controller.getReg().setPassword("1234");
+        controller.getReg().setConfirmPassword("1234");        
+
+        // create account, making sure the controller knows we're legit.
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
+        String accountResponse = controller.create();
+        logger.info(accountResponse);
+        logger.info("errors: {}", controller.getActionErrors());
+        assertEquals("user should have been successfully created", Action.SUCCESS, accountResponse);
+
+        TdarUser user = entityService.findByUsername(username);
+        assertNotNull(user);
+    }
+    
+    
+    @Test
+    @Rollback
+    // register new account with mixed-case username, and ensure that user can successfully login
+    public void testInviteRegisterWithoutEmail() {
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+        controller.setId(8424L);
+        String username = "pshackel@dnth.umd.edu";
+        controller.execute();
+        controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setContributorReason(REASON);
+        controller.getRegistration().setAffiliation(UserAffiliation.CRM_ARCHAEOLOGIST);
+        assertEquals(null,controller.getReg().getConfirmEmail());
+        assertEquals(null,controller.getReg().getPerson().getEmail());
+        assertEquals(null,controller.getReg().getPerson().getFirstName());
+        assertEquals(null,controller.getReg().getPerson().getLastName());
+    }
     // return a new person reference. an @after method will try to delete this person from crowd
     private TdarUser newPerson() {
         TdarUser person = new TdarUser();

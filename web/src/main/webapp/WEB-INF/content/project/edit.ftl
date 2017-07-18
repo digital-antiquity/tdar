@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#global itemPrefix="project"/>
     <#global inheritanceEnabled=false />
-    <#import "/${themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
 
     <#macro topSection>
         <@helptext.projectInheritance />

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,8 +39,8 @@ import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -121,11 +122,11 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         geos.getOtherKeywords().add(new OtherKeyword("map"));
         geos.getInvestigationTypes().add(new InvestigationType("Architectural Survey"));
         geos.getMaterialKeywords().add(new MaterialKeyword("Ceramic"));
+        geos.getUnmanagedResourceCollections().add(new ListCollection("test", "test", SortOption.TITLE, true, getAdminUser()));
         geos.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "collected around the national monument"));
         geos.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(-77.05041825771332, 38.889028630817144, -77.04992473125458, 38.88953803591012));
         geos.setTitle("map of ceramics around national monument");
-        geos.getResourceCollections()
-                .add(new ResourceCollection("test collection", "test description", SortOption.RESOURCE_TYPE, CollectionType.SHARED, true, getAdminUser()));
+        geos.getSharedCollections().add(new SharedCollection("test collection", "test description", getAdminUser()));
         geos.setDescription("test map");
         geos.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 2010, 2015));
         geos.getFileProxies().add(new FileProxy("geotiff.tiff", null, VersionType.UPLOADED, FileAction.ADD));
@@ -151,17 +152,18 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void exportResourceCollection() throws Exception {
-        ResourceCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
+        SharedCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
         for (Resource r : genericService.findRandom(Resource.class, 10)) {
             collection.getResources().add(r);
-            r.getResourceCollections().add(collection);
+            r.getSharedCollections().add(collection);
         }
         genericService.saveOrUpdate(collection);
         genericService.synchronize();
         genericService.refresh(collection);
         String convertToXML = serializationService.convertToXML(collection);
         logger.debug(convertToXML);
-
+        String json = serializationService.convertToJson(collection);
+        logger.debug(json);
     }
 
     @Test
@@ -184,6 +186,25 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         logger.info(sw.toString());
         assertFalse(sw.toString().contains("\"activeMaterialKeywords\":null"));
         assertTrue(sw.toString().contains(BEDOUIN));
+    }
+
+    @Test
+    @Rollback
+    public void testCollectionJson() throws IOException {
+        SharedCollection rc = new SharedCollection(10000L, "test", "test", SortOption.TITLE, false);
+        rc.markUpdated(getAdminUser());
+        rc.setOwner(getBasicUser());
+        rc.getResources().addAll(genericService.findRandom(Resource.class, 4));
+        genericService.saveOrUpdate(rc);
+        try {
+        String json = serializationService.convertToJson(rc);
+        logger.debug(json);
+        SharedCollection rc2 = serializationService.readObjectFromJson(json, SharedCollection.class);
+        logger.debug("{}",rc2);
+        } catch (Throwable t) {
+            logger.error("{}", t,t);
+            fail(t.getMessage());
+        }
     }
 
     @Test
@@ -249,9 +270,9 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Rollback(false)
     public void testJaxbRoundtrip() throws Exception {
         Project project = genericService.find(Project.class, 3805l);
-        ResourceCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
+        SharedCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
         collection.getResources().add(project);
-        project.getResourceCollections().add(collection);
+        project.getSharedCollections().add(collection);
         genericService.saveOrUpdate(project);
         genericService.saveOrUpdate(collection);
         final int totalShared = project.getSharedResourceCollections().size();
@@ -270,8 +291,8 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
                     newProject = (Project) serializationService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
                     newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
-                    logger.debug("collections:{}", newProject.getResourceCollections());
-                    size = newProject.getSharedResourceCollections().size();
+                    logger.debug("collections:{}",newProject.getSharedCollections());
+                     size = newProject.getSharedResourceCollections().size();
                 } catch (Exception e) {
                     exception = true;
                     logger.warn("exception: {}", e);
@@ -347,6 +368,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         try {
             File generateSchema = serializationService.generateSchema();
             FileUtils.copyFile(generateSchema, schemaFile);
+            logger.debug("{}",generateSchema);
             testValidXMLSchemaResponse(FileUtils.readFileToString(generateSchema));
         } catch (Exception e) {
             logger.warn("exception", e);

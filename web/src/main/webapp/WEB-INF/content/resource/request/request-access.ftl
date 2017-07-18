@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/common-auth.ftl" as common>
 
 
 <h1>Send a Message</h1>

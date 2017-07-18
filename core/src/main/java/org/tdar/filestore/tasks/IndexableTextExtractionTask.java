@@ -33,7 +33,6 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
-import org.tdar.filestore.tasks.Task.AbstractTask;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.MessageHelper;
 

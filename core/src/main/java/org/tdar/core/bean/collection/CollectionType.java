@@ -1,7 +1,11 @@
 package org.tdar.core.bean.collection;
 
-public enum CollectionType {
-    INTERNAL("Internal"), SHARED("Shared"), LIST("List");
+import org.tdar.core.bean.Localizable;
+import org.tdar.core.bean.PluralLocalizable;
+import org.tdar.utils.MessageHelper;
+
+public enum CollectionType implements Localizable, PluralLocalizable {
+     SHARED("Shared"), LIST("Public");
 
     private String label;
 
@@ -11,5 +15,46 @@ public enum CollectionType {
 
     public String getLabel() {
         return this.label;
+    }
+
+    public static <C extends ResourceCollection> CollectionType getTypeForClass(Class<C> cls) {
+        if (cls.isAssignableFrom(SharedCollection.class)) {
+            return SHARED;
+        }
+        if (cls.isAssignableFrom(ListCollection.class)) {
+            return LIST;
+        }
+        return null;
+    }
+
+    @Override
+    public String getPluralLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatPluralLocalizableKey(this);
+    }
+
+    public Class<? extends ResourceCollection> getClassForType() {
+        switch (this) {
+            case LIST:
+                return ListCollection.class;
+            case SHARED:
+                return SharedCollection.class;
+        }
+        return null;
+    }
+
+    public String getUrlNamespace() {
+        switch (this) {
+            case LIST:
+                return "listcollection";
+            case SHARED:
+                return "collection";
+            default:
+                return "invalid";
+        }
     }
 }

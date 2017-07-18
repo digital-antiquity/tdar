@@ -12,7 +12,6 @@ import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.filestore.WorkflowContext;
-import org.tdar.filestore.tasks.Task.AbstractTask;
 
 public class ExtractAudioInfoTask extends AbstractTask {
 

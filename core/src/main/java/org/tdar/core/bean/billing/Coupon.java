@@ -122,11 +122,11 @@ public class Coupon extends AbstractPersistable {
         this.dateRedeemed = dateRedeemed;
     }
 
-	public Set<Long> getResourceIds() {
-		return resourceIds;
-	}
+    public Set<Long> getResourceIds() {
+        return resourceIds;
+    }
 
-	public void setResourceIds(Set<Long> resourceIds) {
-		this.resourceIds = resourceIds;
-	}
+    public void setResourceIds(Set<Long> resourceIds) {
+        this.resourceIds = resourceIds;
+    }
 }

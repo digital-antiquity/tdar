@@ -16,7 +16,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 @Component
 @Scope("prototype")

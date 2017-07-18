@@ -2,7 +2,6 @@ package org.tdar.core.service.external.auth;
 
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.RecaptchaService;
 
 public abstract class AbstractWithContributorUserRegistration extends UserRegistration {
 
@@ -15,12 +14,12 @@ public abstract class AbstractWithContributorUserRegistration extends UserRegist
 
 
     @Override
-    public ErrorTransferObject validate(AuthenticationService authService, RecaptchaService recaptchaService, String remoteHost) {
+    public ErrorTransferObject validate(AuthenticationService authService, String remoteHost) {
         if (isAcceptTermsOfUseAndContributorAgreement()) {
             setAcceptTermsOfUse(true);
             setRequestingContributorAccess(true);
         }
-        ErrorTransferObject validate = super.validate(authService, recaptchaService, remoteHost);
+        ErrorTransferObject validate = super.validate(authService, remoteHost);
         if (!isRequestingContributorAccess()) {
             validate.addFieldError(getPrefix() + "requestingContributorAccess", "userAccountController.require_contributor_agreement");
         }

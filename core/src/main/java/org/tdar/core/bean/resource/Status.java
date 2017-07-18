@@ -12,18 +12,13 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum Status implements HasLabel, Localizable {
-    DRAFT("Draft"),
-    ACTIVE("Active"),
-    FLAGGED("Flagged"),
-    FLAGGED_ACCOUNT_BALANCE("Flagged: Overage"),
-    DUPLICATE("Duplicate"),
-    DELETED("Deleted");
+    DRAFT,
+    ACTIVE,
+    FLAGGED,
+    FLAGGED_ACCOUNT_BALANCE,
+    DUPLICATE,
+    DELETED;
 
-    private final String label;
-
-    private Status(String label) {
-        this.label = label;
-    }
 
     @Override
     public String getLocaleKey() {
@@ -32,7 +27,7 @@ public enum Status implements HasLabel, Localizable {
 
     @Override
     public String getLabel() {
-        return label;
+        return MessageHelper.getMessage(getLocaleKey());
     }
 
     public boolean isFlaggedForBilling() {

@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.download methods", function() {  
+describe("DownloadSpec.js: tests for TDAR.download methods", function() {
 
 xit("should work when we call setup", function() {
    var expectedVal = null;

@@ -22,20 +22,16 @@ public class SessionData implements Serializable {
 
     private static final long serialVersionUID = 2786144717909265676L;
 
-    private String returnUrl;
     private String[] parameters;
     private Long tdarUserId;
     private Long invoiceId;
+    private String username;
 
     public void clearAuthenticationToken() {
         this.parameters = null;
         this.tdarUserId = null;
         this.invoiceId = null;
-        clearPassthroughParameters();
-    }
-
-    public void clearPassthroughParameters() {
-        this.returnUrl = null;
+        this.username = null;
     }
 
     public boolean isAuthenticated() {
@@ -47,33 +43,6 @@ public class SessionData implements Serializable {
         return String.format("Auth user: %s [object id: %s]", tdarUserId, super.toString());
     }
 
-    public String getReturnUrl() {
-        return returnUrl;
-    }
-
-    public void setReturnUrl(String returnUrl) {
-        this.returnUrl = returnUrl;
-    }
-
-    /**
-     * appends parameters if any to the url map.
-     */
-    public void setParameters(Map<String, String[]> map) {
-        this.parameters = new String[map.size() * 2];
-        int index = 0;
-        ArrayList<String> queryParams = new ArrayList<>();
-        for (Map.Entry<String, String[]> entry : map.entrySet()) {
-            String paramName = entry.getKey();
-            String paramValue = ((String[]) entry.getValue())[0];
-            this.parameters[index++] = paramName;
-            this.parameters[index++] = paramValue;
-            queryParams.add(paramName + "=" + paramValue);
-        }
-        if (!queryParams.isEmpty()) {
-            String query = "?" + StringUtils.join(queryParams, '&');
-            returnUrl += query;
-        }
-    }
 
     public String[] getParameters() {
         return parameters;
@@ -83,11 +52,17 @@ public class SessionData implements Serializable {
         return tdarUserId;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public void setTdarUser(TdarUser user) {
         if (PersistableUtils.isNotNullOrTransient(user)) {
             this.tdarUserId = user.getId();
+            this.username = user.getUsername();
         } else {
             this.tdarUserId = null;
+            this.username = null;
         }
     }
 

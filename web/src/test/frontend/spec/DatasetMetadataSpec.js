@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.datasetMetadata methods", function() {  
+describe("DatasetMetadataSpec.js: tests for TDAR.datasetMetadata methods", function() {
 
 xit("should work when we call init", function() {
    var formId = null;

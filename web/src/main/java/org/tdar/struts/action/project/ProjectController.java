@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -20,9 +19,10 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.resource.ProjectService;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.resource.AbstractResourceController;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 /**
  * $Id$
@@ -66,7 +66,7 @@ public class ProjectController extends AbstractResourceController<Project> {
     }
 
     @Override
-    public void indexPersistable() throws SolrServerException, IOException {
+    public void indexPersistable() throws SearchIndexException, IOException {
         if (isAsync()) {
             searchIndexService.indexProjectAsync(getPersistable());
         } else {

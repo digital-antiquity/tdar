@@ -2,21 +2,18 @@ package org.tdar.struts.action.resource.request;
 
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
@@ -51,8 +48,6 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
     private String messageBody;
     private EmailMessageType type;
 
-    @Autowired
-    private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
 
     public Resource getResource() {
@@ -80,11 +75,6 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
             addActionError(getText("requestAccessController.specify_what_to_download"));
         }
     }
-
-    public RecaptchaService getRecaptchaService() {
-        return recaptchaService;
-    }
-
 
 	public List<UserAffiliation> getAffiliations() {
 		return affiliations;

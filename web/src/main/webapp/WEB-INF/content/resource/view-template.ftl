@@ -2,15 +2,18 @@
 
     <#import "/WEB-INF/content/${resource.urlNamespace}/view.ftl" as local_ />
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/common-rights.ftl" as rights>
+    <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+    <#import "/WEB-INF/macros/common.ftl" as common>
 
 <head>
     <title>${resource.title}</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     <#if includeRssAndSearchLinks??>
-        <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-        <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=PROJECT&groups[0].projects[0].id=${resource.id?c}&groups[0].projects[0].name=${(resource.name!'untitled')?url}">
+        <#import "/WEB-INF/macros/search-macros.ftl" as search>
+        <#assign rssUrl = "/api/search/rss?groups[0].fieldTypes[0]=PROJECT&groups[0].projects[0].id=${resource.id?c}&groups[0].projects[0].name=${(resource.name!'untitled')?url}">
         <@search.rssUrlTag url=rssUrl />
         <@search.headerLinks includeRss=false />
     </#if>
@@ -56,7 +59,7 @@
 
     <@view.pageStatusCallout />
 
-<h1 class="view-page-title">${resource.title!"No Title"}</h1>
+    <h1 class="view-page-title">${resource.title!"No Title"}</h1>
     <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
     <div id="subtitle">
@@ -80,7 +83,7 @@
         <@view.kvp key="Year" val=resource.date?c />
     </#if>
 
-    <#if copyrightMandatory && resource.copyrightHolder?? || resource.copyrightHolder?has_content >
+    <#if config.copyrightMandatory && resource.copyrightHolder?? || resource.copyrightHolder?has_content >
         <strong>Primary Copyright Holder:</strong>
         <@view.browse resource.copyrightHolder "copyrightHolder" />
     </p>
@@ -89,92 +92,30 @@
 </p>
 
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
-<hr class="dbl">
-    <#list viewableResourceCollections![]>
+
+<h2>Summary</h2>
+    <@common.description resource.description />
+<hr>
+    <#list viewableResourceCollections>
     <h3>This Resource is Part of the Following Collections</h3>
     <p>
     <ul class="inline">
         <#items as collection>
-            <#if !(collection.systemManaged!false)>
-            <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+    <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
         <#sep>&nbsp;&nbsp;&bull;</#sep></li>
-        </#if>
 </#items>
 </ul>
 </p>
 <hr>
 </#list>
 
-<h2>Summary</h2>
-    <@common.description resource.description />
-<hr>
+
 <@view.resourceCitationSection resource />
 
-    <#if authenticatedUser?has_content>
-     <div id="email-form"  class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
-     
-         <form id="followup">
-          <div class="modal-header">
-                <h3>Send Email</h3>
-           </div>
-           <div class="modal-body">
-                <p>Select the type of message you'd like to send to another ${siteAcronym} user.</p>
-                 <br/>
-                <@s.select name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type'/>
-                <#assign contactId = resource.submitter.id />
-                <#if contactProxies?has_content>
-                <#list contactProxies as prox>
-                <#assign contactId = prox.person.id />
-                <#if contactId == -1>
-                    <#assign contactId = prox.institution.id />
-                </#if>
-                <#break/>
-                </#list>
-                </#if>
-                <@s.hidden name="toId" value="${contactId?c}" />
-                <@s.hidden name="resourceId" value="${resource.id?c}" />
-                <#assign fromId = -1 />
-                <#if (authenticatedUser.id)?has_content>
-                    <#assign fromId = authenticatedUser.id />
-                </#if>
-                <@s.hidden name="fromId" value="${fromId?c}" /> 
-                <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span5" cols="80" />
-
-                <p><b>Note:</b> Please include sufficient information to fulfill your request (e.g. why you are requesting access to a file, or specific comments or corrections). Your contact information and a link to this resource will automatically be included in your message.</p>
-                <@common.antiSpam />
-            </div>
-            <div class="modal-footer">
-                 <button name="send" data-dismiss="modal" aria-hidden="true"  id="followup-send" class="button btn btn-primary">send</button>
-                 <button name="cancel" data-dismiss="modal" aria-hidden="true"  id="followup-cancel" class="button btn btn-cancel">cancel</button>
-            </div>
-     </form>
-    </div>
-    
-    
-        <div id="emailStatusModal" class="modal hide fade" tabindex="-1" role="dialog"  aria-hidden="true">
-          <div class="modal-header">
-            <h3 class="success">Success</h3>
-            <h3 class="error">Error</h3>
-           </div>
-           <div class="modal-body">
-                <span class="success">
-                    <p>Your message has been sent</p>
-                </span>
-                <span class="error">
-                    <p>An error occurred:
-                    <ul id="emailErrorContainer">
-                    </ul></p>
-                </span>
-            </div>
-            <div class="modal-footer">
-                <a href="#" data-dismiss="modal" aria-hidden="true" id="email-close-button" class="btn">Close</a>
-            </div>
-        </div>
-    </#if>
 <hr/>
     <#noescape>
         <#if resource.url! != ''>
-        <p><strong>URL:</strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
+        <p><strong>URL: </strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
                                    title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
         </#if>
     </#noescape>
@@ -218,7 +159,7 @@
                            class="dataTable table tableFormat table-striped table-bordered"></table>
                 </div>
             </div>
-                <#if tdarConfiguration.xmlExportEnabled>
+                <#if config.xmlExportEnabled>
                 <p class="faims_xml_logo"><a href="<@s.url value="/dataset/xml?dataTableId=${dataTable.id?c}"/>" target="_blank">XML</a></p>
                 </#if>
             <#else>
@@ -254,7 +195,7 @@
                     <th>Ontology</th>
                 </tr>
                 </thead>
-                <#list dataTable.dataTableColumns?sort_by("sequenceNumber") as column>
+                <#list dataTable.dataTableColumns as column>
                 <#assign oddEven="oddC" />
                 <#if column_index % 2 == 0>
                     <#assign oddEven="evenC" />
@@ -349,7 +290,7 @@
         <@view.categoryVariables />
     </#if>
     <#if !resource.resourceType.project >
-        <#if licensesEnabled?? &&  licensesEnabled || resource.licenseType?has_content >
+        <#if config.licensesEnabled?? &&  config.licensesEnabled || resource.licenseType?has_content >
             <@view.license />
         </#if>
     </#if>
@@ -548,6 +489,7 @@
     <#if local_.afterFileInfo?? && local_.afterFileInfo?is_macro>
         <@local_.afterFileInfo />
     </#if>
+
     <@view.accessRights>
     <div>
         <#if resource.embargoedFiles?? && !resource.embargoedFiles>
@@ -577,17 +519,30 @@
             <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
         </#if>
     </#if>
-        <ul class="inline">
+        <ul class="media-list">
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
-            <li class="media"><i class="icon-envelope pull-left"></i>
-            <div class="media-body">
-                    <a id="requestAccess" href="<@s.url value="/resource/request/${id?c}"/>">${txt}
-                <#if !(authenticatedUser.id)?has_content>
-                         (requires login)
-                </#if>
-            </a>
-            </div>
+            <li class="media">
+            <i class="icon-comment pull-left"></i>
+                <div class="media-body">
+                        <a id="requestAccess" href="<@s.url value="/resource/request/${id?c}"/>">${txt}
+                    <#if !(authenticatedUser.id)?has_content>
+                             (requires login)
+                    </#if>
+                </a>
+                </div>
             </li>
+        <#if (authenticatedUser.id)?has_content && editable>
+            <@list.bookmarkMediaLink resource />
+            <#-- 
+            <li class="media "><i class="icon-folder-open pull-left"></i>
+                <div class="media-body">
+                    <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
+                </div>
+            </li>
+             -->
+        </#if>
+
+            <@nav.shareSection />
         </ul>
     <h3>Basic Information</h3>
 
@@ -680,5 +635,20 @@
         </table>
         </#list>
     </#macro>
+
+                <div class="modal hide fade" id="modal">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>Add to a Collection</h3>
+                  </div>
+                  <div class="modal-body">
+                  <ul class="collection-list unstyled">
+                  </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                    <a href="#" class="btn btn-primary">Save changes</a>
+                  </div>
+                </div>
 
 </#escape>

@@ -24,7 +24,7 @@
     </p>
     <dl class="dl-horizontal">
         <dt>Requested File</dt>
-        <dd><a href="${download}" class="manual-download " id="manual-download" <#if shouldAutoDownload>data-auto-download</#if>
+        <dd><a href="${download}" class="manual-download " id="manual-download" <#if config.shouldAutoDownload>data-auto-download</#if>
                data-versionid="${versionid?c}" >${filename}</a>
         </dd>
     </dl>

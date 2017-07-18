@@ -9,11 +9,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.api.AbstractApiController;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -61,7 +62,11 @@ public class CollectionApiViewAction extends AbstractApiController implements Pr
             if (resource == null) {
                 getLogger().debug("could not find resource: {}", getId());
             }
-            logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
+            String title = "no title";
+            if (resource instanceof VisibleCollection) {
+                title = ((VisibleCollection) resource).getTitle();
+            }
+            logMessage("API VIEWING", resource.getClass(), resource.getId(), title);
             getXmlResultObject().setCollectionResult(resource);
         }
         

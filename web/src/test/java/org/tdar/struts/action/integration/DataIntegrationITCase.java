@@ -47,6 +47,7 @@ import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.TestBookmarkHelper;
 import org.tdar.struts.action.api.integration.IntegrationAction;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.utils.MessageHelper;
@@ -60,7 +61,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  * @author Adam Brin
  * @version $Revision$
  */
-public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
+public class DataIntegrationITCase extends AbstractDataIntegrationTestCase implements TestBookmarkHelper {
     private static final String TEST_PATH = TestConstants.TEST_ROOT_DIR + "/data_integration_tests/json/";
 
     private static final String ALEXANDRIA_DB_NAME = "qrybonecatalogueeditedkk.xls";

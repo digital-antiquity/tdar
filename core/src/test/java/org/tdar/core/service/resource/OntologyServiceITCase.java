@@ -70,7 +70,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         logger.debug("root elements: {}", rootElements);
         assertEquals(1, rootElements.size());
         String name = rootElements.iterator().next().getDisplayName();
-        assertTrue(name.equals("Paint"));
+        assertEquals("Paint", name);
     }
 
     @Test

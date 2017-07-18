@@ -35,10 +35,33 @@
             <@s.select theme="tdar" name="permission" id="permission" emptyOption='false' listValue='label' list='%{availablePermissions}' />
         </div>
       </div>
+    <br/>
+      <div class="control-group">
+        <label class="control-label" for="dp3">Grant Access Until</label>
+    <div class="controls">
+        <div class="input-append">
+          <input class="span2 datepicker" size="16" type="text" name="expiresString" value="" id="dp3" data-date-format="yyyy-mm-dd" >
+          <span class="add-on"><i class="icon-th"></i></span>
+        </div>
+    </div>
+    </div>
 
         <br/>
         <@s.textarea name="comment" id="messageBody" rows="4" label="Message" cssClass="span5" cols="80" />
         
     <@s.submit name="submit" cssClass="button btn btn-primary"/>
+    <script>
+	    $(function () {
+    	    'use strict';
+    	     $('input[type=radio][name=reject]').change(function() {
+	        if (this.value == 'true') {
+	        	$("#permission").attr("disabled","true");
+	        }
+	        else if (this.value == 'false') {
+	        	$("#permission").removeAttr("disabled");
+	        }
+    });
+		});
+    </script>
 </@s.form>
 </#escape>

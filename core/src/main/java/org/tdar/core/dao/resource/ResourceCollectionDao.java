@@ -6,43 +6,52 @@
  */
 package org.tdar.core.dao.resource;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.dao.Dao;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.utils.PersistableUtils;
 
@@ -51,13 +60,13 @@ import org.tdar.utils.PersistableUtils;
  * 
  */
 @Component
-public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection> {
+public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     AuthorizedUserDao authorizedUserDao;
-    
+
     public ResourceCollectionDao() {
         super(ResourceCollection.class);
     }
@@ -65,29 +74,40 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     /**
      * @return
      */
-    @SuppressWarnings("unchecked")
-    public List<ResourceCollection> findCollectionsOfParent(Long parent, Boolean visible, CollectionType... collectionTypes) {
-        Query namedQuery = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_BY_PARENT);
+    public <C extends HierarchicalCollection> List<C> findCollectionsOfParent(Long parent, Boolean visible, Class<C> cls) {
+        String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_PARENT;
+        if (CollectionType.getTypeForClass(cls) == CollectionType.LIST) {
+            q = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_PARENT;
+        }
+        Query<C> namedQuery = getCurrentSession().createNamedQuery(q, cls);
         namedQuery.setParameter("parent", parent);
-        namedQuery.setParameterList("collectionTypes", collectionTypes);
         namedQuery.setParameter("visible", visible);
-        return namedQuery.list();
+        return namedQuery.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<ResourceCollection> findPublicCollectionsWithHiddenParents() {
-        Query namedQuery = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT);
-        return namedQuery.list();
+        Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
+                ResourceCollection.class);
+        return namedQuery.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<ResourceCollection> findParentOwnerCollections(Person person, List<CollectionType> types) {
-        Query namedQuery = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_BY_AUTH_OWNER);
-        namedQuery.setParameter("authOwnerId", person.getId());
-        namedQuery.setParameterList("collectionTypes", types);
-        namedQuery.setParameter("equivPerm", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
+    public <C extends HierarchicalCollection> List<C> findParentOwnerCollections(Person person, Class<C> cls) {
+        String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER;
+        GeneralPermissions base = GeneralPermissions.ADMINISTER_SHARE;
+        if (CollectionType.getTypeForClass(cls) == CollectionType.LIST) {
+            q = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_AUTH_OWNER;
+            base = GeneralPermissions.ADMINISTER_GROUP;
+        }
+        Query<C> namedQuery = getCurrentSession().createNamedQuery(q, cls);
+        Long id = -1L;
+        if (PersistableUtils.isNotNullOrTransient(person)) {
+            id = person.getId();
+        }
+        namedQuery.setParameter("authOwnerId", id);
+        namedQuery.setParameter("collectionTypes", Arrays.asList(CollectionType.getTypeForClass(cls)));
+        namedQuery.setParameter("equivPerm", base.getEffectivePermissions() - 1);
         try {
-            List<ResourceCollection> list = namedQuery.list();
+            List<C> list = namedQuery.getResultList();
             logger.trace("{}", list);
             return list;
         } catch (Exception e) {
@@ -99,84 +119,80 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     /**
      * @return
      */
-    public List<ResourceCollection> findAllSharedResourceCollections() {
-        return findByCriteria(getDetachedCriteria().add(Restrictions.eq("type", CollectionType.SHARED)));
+    public List<SharedCollection> findAllSharedResourceCollections() {
+        return findAll(SharedCollection.class);
     }
 
-    @SuppressWarnings("unchecked")
-    public ResourceCollection findCollectionWithName(TdarUser user, boolean isAdmin, ResourceCollection collection) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
-        query.setString("name", collection.getName());
-        List<ResourceCollection> list = query.list();
-        for  (ResourceCollection coll : list) {
-        	if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
-        		return coll;
-        	}
+    public <C extends VisibleCollection> C findCollectionWithName(TdarUser user, boolean isAdmin, String name, Class<C> cls) {
+        String q = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
+        GeneralPermissions base = GeneralPermissions.ADMINISTER_SHARE;
+        if (cls.isAssignableFrom(ListCollection.class)) {
+            q = TdarNamedQueries.QUERY_LIST_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
+            base = GeneralPermissions.ADMINISTER_GROUP;
+        }
+        Query<C> query = getCurrentSession().createNamedQuery(q, cls);
+        query.setParameter("name", name);
+        List<C> list = query.getResultList();
+        logger.trace("found: {} ", list);
+        for (C coll : list) {
+            if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, base)) {
+                return coll;
+            }
         }
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public List<ResourceCollection> findCollectionsWithName(TdarUser user, boolean isAdmin, String name) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
-        query.setString("name", name);
-        List<ResourceCollection> list = new ArrayList<>(query.list());
-        list.removeIf( rc -> (
-            !isAdmin && !authorizedUserDao.isAllowedTo(user, rc, GeneralPermissions.ADMINISTER_GROUP)   
-        ));
-        return list;
-
-    }
-
-    @SuppressWarnings("unchecked")
     public List<Long> findAllPublicActiveCollectionIds() {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE);
-        return query.list();
+        Query<Long> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE, Long.class);
+        return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Resource> findAllResourcesWithStatus(ResourceCollection persistable, Status[] statuses) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_RESOURCES_WITH_STATUS);
-        query.setParameterList("ids", Arrays.asList(persistable.getId()));
-        query.setParameterList("statuses", Arrays.asList(statuses));
-        return query.list();
+        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_RESOURCES_WITH_STATUS, Resource.class);
+        query.setParameter("ids", Arrays.asList(persistable.getId()));
+        query.setParameter("statuses", Arrays.asList(statuses));
+        return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<ResourceCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
+    public <C extends ResourceCollection> List<C> findInheritedCollections(Person user, GeneralPermissions generalPermissions, Class<C> cls) {
         if (PersistableUtils.isTransient(user)) {
-            return Collections.EMPTY_LIST;
+            return Collections.<C>emptyList();
         }
         int permission = generalPermissions.getEffectivePermissions() - 1;
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER);
-        query.setInteger("effectivePermission", permission);
-        query.setLong("userId", user.getId());
-        return query.list();
+        String q = TdarNamedQueries.SHARED_COLLECTION_LIST_WITH_AUTHUSER;
+        if (cls.isAssignableFrom(ListCollection.class)) {
+            q = TdarNamedQueries.LIST_COLLECTION_LIST_WITH_AUTHUSER;
+        }
+        Query<C> query = getCurrentSession().createNamedQuery(q, cls);
+        query.setParameter("effectivePermission", permission);
+        query.setParameter("userId", user.getId());
+        return query.getResultList();
     }
 
-    public Set<ResourceCollection> findFlattendCollections(Person user, GeneralPermissions generalPermissions) {
-        Set<ResourceCollection> allCollections = new HashSet<>();
+//    @SuppressWarnings("unchecked")
+    public <C extends ResourceCollection> Set<C> findFlattendCollections(Person user, GeneralPermissions generalPermissions, Class<C> cls) {
+        Set<C> allCollections = new HashSet<>();
 
         // get all collections that grant explicit edit permissions to person
-        List<ResourceCollection> collections = findInheritedCollections(user, generalPermissions);
+        List<C> collections = findInheritedCollections(user, generalPermissions, cls);
 
-        for (ResourceCollection rc : collections) {
-            allCollections.addAll(findAllChildCollectionsOnly(rc, CollectionType.SHARED));
+        for (C rc : collections) {
+            if (rc instanceof SharedCollection) {
+                List<SharedCollection> find = findAllChildCollectionsOnly((SharedCollection) rc, SharedCollection.class);
+                allCollections.addAll((Collection<? extends C>) find);
+            }
+            if (rc instanceof ListCollection) {
+                List<ListCollection> find = findAllChildCollectionsOnly((ListCollection) rc, ListCollection.class);
+                allCollections.addAll((Collection<? extends C>) find);
+            }
             allCollections.add(rc);
         }
 
         return allCollections;
     }
 
-    public List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection, CollectionType collectionType) {
-        List<ResourceCollection> allChildren = getAllChildCollections(collection);
-        Iterator<ResourceCollection> iter = allChildren.iterator();
-        while (iter.hasNext()) {
-            ResourceCollection rc = iter.next();
-            if (!rc.getType().equals(collectionType)) {
-                iter.remove();
-            }
-        }
+    public <E extends HierarchicalCollection<?>> List<E> findAllChildCollectionsOnly(E collection, Class<E> cls) {
+        List<E> allChildren = getAllChildCollections(collection, cls);
         return allChildren;
     }
 
@@ -185,26 +201,26 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         if (PersistableUtils.isNullOrTransient(collectionId)) {
             return Collections.EMPTY_LIST;
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES);
-        query.setLong("id", collectionId);
-        return query.list();
+        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES, Resource.class);
+        query.setParameter("id", collectionId);
+        return query.getResultList();
     }
 
     public Long getCollectionViewCount(ResourceCollection persistable) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.COLLECTION_VIEW);
+        Query<Number> query = getCurrentSession().createNamedQuery(TdarNamedQueries.COLLECTION_VIEW, Number.class);
         query.setParameter("id", persistable.getId());
-        Number result = (Number) query.uniqueResult();
+        Number result = (Number) query.getSingleResult();
         return result.longValue();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<ResourceCollection> getAllChildCollections(ResourceCollection persistable) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <E extends HierarchicalCollection> List<E> getAllChildCollections(E persistable, Class<E> cls) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN);
-        query.setLong("id", persistable.getId());
-        return query.list();
+        Query query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN);
+        query.setParameter("id", persistable.getId());
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
@@ -221,26 +237,31 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             String referrer) {
         InformationResource ir = informationResourceFileVersion.getInformationResourceFile().getInformationResource();
         Set<Long> sharedCollectionIds = new HashSet<>();
-        for (ResourceCollection rc : ir.getSharedResourceCollections()) {
+        for (SharedCollection rc : ir.getSharedResourceCollections()) {
             sharedCollectionIds.add(rc.getId());
             sharedCollectionIds.addAll(rc.getParentIds());
         }
         if (CollectionUtils.isEmpty(sharedCollectionIds)) {
             return Collections.EMPTY_LIST;
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION);
-        query.setParameterList("collectionids", sharedCollectionIds);
+        Query<DownloadAuthorization> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
+                DownloadAuthorization.class);
+        query.setParameter("collectionids", sharedCollectionIds);
         query.setParameter("apiKey", apiKey);
         query.setParameter("hostname", referrer.toLowerCase());
-        return query.list();
+        return query.getResultList();
     }
 
-    public ScrollableResults findAllResourcesInCollectionAndSubCollectionScrollable(ResourceCollection persistable) {
+    public ScrollableResults findAllResourcesInCollectionAndSubCollectionScrollable(HierarchicalCollection persistable) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return null;
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES);
-        query.setLong("id", persistable.getId());
+        String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES;
+        if (persistable instanceof ListCollection) {
+            q = TdarNamedQueries.QUERY_LIST_COLLECTION_CHILDREN_RESOURCES;
+        }
+        Query<Resource> query = getCurrentSession().createNamedQuery(q, Resource.class);
+        query.setParameter("id", persistable.getId());
         return query.scroll();
     }
 
@@ -248,17 +269,15 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return null;
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT);
-        query.setLong("id", persistable.getId());
-        return (Long) query.uniqueResult();
+        Query<Number> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT, Number.class);
+        query.setParameter("id", persistable.getId());
+        return query.getSingleResult().longValue();
     }
 
     public void makeResourceInCollectionActive(ResourceCollection col, TdarUser person) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE);
+        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE, Resource.class);
         query.setParameter("id", col.getId());
-        List<?> resources = query.list();
-        for (Object resource_ : resources) {
-            Resource resource = (Resource)resource_;
+        for (Resource resource : query.getResultList()) {
             resource.markUpdated(person);
             resource.setStatus(Status.ACTIVE);
             ResourceRevisionLog rrl = new ResourceRevisionLog("Resource made Active", resource, person, RevisionLogType.EDIT);
@@ -281,13 +300,18 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
     }
 
-    public WhiteLabelCollection getWhiteLabelCollectionForResource(Resource resource) {
-        Set<ResourceCollection> resourceCollections = resource.getSharedResourceCollections();
+    public CustomizableCollection<?> getWhiteLabelCollectionForResource(Resource resource) {
+        Set<CustomizableCollection<?>> resourceCollections = new HashSet<>();
+        if (TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            resourceCollections.addAll(resource.getUnmanagedResourceCollections());
+        } else {
+            resourceCollections.addAll(resource.getSharedCollections());
+        }
 
-        List<WhiteLabelCollection> whiteLabelCollections = new ArrayList<>();
-        for (ResourceCollection rc : resourceCollections) {
-            if (rc.isWhiteLabelCollection()) {
-                whiteLabelCollections.add((WhiteLabelCollection) rc);
+        List<CustomizableCollection<?>> whiteLabelCollections = new ArrayList<>();
+        for (CustomizableCollection<?> rc : resourceCollections) {
+            if (rc.getProperties() != null && rc.getProperties().getWhitelabel()) {
+                whiteLabelCollections.add(rc);
             }
         }
         if (whiteLabelCollections.size() > 1) {
@@ -300,64 +324,36 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public Set<AuthorizedUser> getUsersFromDb(ResourceCollection collection) {
-        Query query = getNamedQuery(TdarNamedQueries.USERS_IN_COLLECTION);
-        query.setLong("id", collection.getId());
+        Query<AuthorizedUser> query = getNamedQuery(TdarNamedQueries.USERS_IN_COLLECTION, AuthorizedUser.class);
+        query.setParameter("id", collection.getId());
         query.setReadOnly(true);
-        query.list();
+        query.getResultList();
 
-        HashSet<AuthorizedUser> set = new HashSet<AuthorizedUser>(query.list());
+        HashSet<AuthorizedUser> set = new HashSet<AuthorizedUser>(query.getResultList());
         detachFromSession(set);
         return set;
     }
 
-    @SuppressWarnings("unchecked")
     public List<Long> findCollectionIdsWithTimeLimitedAccess() {
-        Query query = getNamedQuery(TdarNamedQueries.COLLECTION_TIME_LIMITED_IDS);
+        Query<Long> query = getNamedQuery(TdarNamedQueries.COLLECTION_TIME_LIMITED_IDS, Long.class);
         query.setReadOnly(true);
-        return query.list();
-    }
-
-    public void addToInternalCollection(Resource resource, TdarUser user, GeneralPermissions permission) {
-        ResourceCollection internal = resource.getInternalResourceCollection();
-        if (internal == null) {
-            internal = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, true);
-        }
-        internal.getAuthorizedUsers().add(new AuthorizedUser(user, permission));
-        saveOrUpdate(internal);
-    }
-
-    public ResourceCollection createInternalResourceCollectionWithResource(TdarUser owner, Resource resource, boolean shouldSave) {
-        ResourceCollection internalCollection;
-        internalCollection = new ResourceCollection();
-        internalCollection.setType(CollectionType.INTERNAL);
-        internalCollection.setOwner(owner);
-        internalCollection.markUpdated(owner);
-        if (shouldSave) {
-            saveOrUpdate(internalCollection);
-            refresh(internalCollection);
-        }
-        if (resource != null) {
-            resource.getResourceCollections().add(internalCollection);
-        }
-        internalCollection.getResources().add(resource);
-        return internalCollection;
+        return query.getResultList();
     }
 
     /**
      * Convert a resource collection into a white-label collection.
+     * 
      * @param rc
      * @return
      */
-    public WhiteLabelCollection convertToWhitelabelCollection(ResourceCollection rc) {
-        Long id = rc.getId();
-        detachFromSession(rc);
-        SQLQuery query = getCurrentSession().createSQLQuery(TdarNamedQueries.QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL);
-        query.setLong("id", id);
-        query.executeUpdate();
-        WhiteLabelCollection wlc = find(WhiteLabelCollection.class, id);
-        return wlc;
+    public <C extends CustomizableCollection> C convertToWhitelabelCollection(C rc) {
+        if (rc.getProperties() == null) {
+            rc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
+        }
+        rc.getProperties().setWhitelabel(true);
+        saveOrUpdate(rc);
+        return rc;
     }
 
     /**
@@ -366,22 +362,18 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @param wlc
      * @return
      */
-    public ResourceCollection convertToResourceCollection(WhiteLabelCollection wlc) {
-        Long id = wlc.getId();
-        detachFromSession(wlc);
-        SQLQuery query = getCurrentSession().createSQLQuery(TdarNamedQueries.QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION);
-        query.setLong("id", id);
-        query.executeUpdate();
-        ResourceCollection rc = find(ResourceCollection.class, id);
-        return rc;
+    public <C extends CustomizableCollection> C convertToResourceCollection(C wlc) {
+        if (wlc.getProperties() == null) {
+            return wlc;
+        }
+        wlc.getProperties().setWhitelabel(false);
+        return wlc;
     }
 
     public void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ALL_RESOURCES_IN_COLLECTION);
+        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.ALL_RESOURCES_IN_COLLECTION, Resource.class);
         query.setParameter("id", collection.getId());
-        List<?> resources = query.list();
-        for (Object resource_ : resources) {
-            Resource resource = (Resource)resource_;
+        for (Resource resource : query.getResultList()) {
             resource.markUpdated(authenticatedUser);
             String msg = String.format("changed submitter from %s to %s ", resource.getSubmitter().toString(), submitter.toString());
             ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, authenticatedUser, RevisionLogType.EDIT);
@@ -400,8 +392,105 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
     }
 
+    public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user, boolean admin) {
+        Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.QUERY_RESOURCES_SHARED_WITH);
+        query.setParameter("userId", user.getId());
+        query.setParameter("ownerId", authenticatedUser.getId());
+        List<Resource> resources = new ArrayList<>();
+        for (Object obj_ : query.getResultList()) {
+            Object[] obj = (Object[])obj_;
+            //id, title, status, resource_type
+            Long id = ((Number)obj[0]).longValue();
+            String title = (String)obj[1];
+            Status status = Status.valueOf((String)obj[2]);
+            ResourceType type = ResourceType.valueOf((String)obj[3]);
+            try {
+                Resource newInstance = type.getResourceClass().newInstance();
+                newInstance.setId(id);
+                newInstance.setTitle(title);
+                newInstance.setStatus(status);
+                resources.add(newInstance);
+            } catch (InstantiationException | IllegalAccessException e) {
+                logger.debug("{}",e);
+            }
+        }
+        return resources;
+        
+    }
+
+    public <C extends ResourceCollection> List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Class<C> cls, GeneralPermissions perm , boolean admin) {
+        Query<SharedCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, SharedCollection.class);
+        shared.setParameter("userId", authenticatedUser.getId());
+        shared.setParameter("perm", perm.getEffectivePermissions() - 1);
+        List<SharedCollection> resultList = shared.getResultList();
+        List<Long> ids = PersistableUtils.extractIds(resultList);
+        if (CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+
+        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH, SharedCollection.class);
+        query.setParameter("user", user);
+        query.setParameter("admin", admin);
+        query.setParameter("collectionIds", ids);
+        return query.getResultList();
+    }
+
+
+    /**
+     * Return a list of users that are assigned rights to collections created by the specified user.
+     *
+     * @param authenticatedUser
+     * @return
+     */
+    public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
+        logger.trace("user: {}",authenticatedUser);
+        Query<BigInteger> shared = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_USERS_SHARED_WITH);
+        shared.setParameter("userId", authenticatedUser.getId());
+//        shared.setParameter("permission", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        logger.trace(TdarNamedQueries.QUERY_USERS_SHARED_WITH);
+        List<BigInteger> resultList = shared.getResultList();
+        if (CollectionUtils.isEmpty(resultList)) {
+            return new ArrayList<>();
+        }
+        logger.trace("# userIds: {}",resultList.size());
+        List<Long> lst = new ArrayList<>();
+        resultList.forEach(i -> {lst.add(i.longValue());});
+        List<TdarUser> users = new ArrayList<>(findAll(TdarUser.class, lst));
+//        logger.debug("users: {}",users);
+        return users;
+    }
+
+    public List<UserInvite> findUserInvites(HasAuthorizedUsers c) {
+        if (c instanceof ResourceCollection) {
+            return findUserInvites((ResourceCollection) c);
+        }
+        if (c instanceof Resource) {
+            return findUserInvites((Resource) c);
+        }
+        return null;
+    }
+    
+    public List<UserInvite> findUserInvites(ResourceCollection resourceCollection) {
+        return getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_USERINVITES_BY_COLLECTION, UserInvite.class)
+                .setParameter("collection", resourceCollection)
+                .list();
+
+    }
+
+    public List<UserInvite> findUserInvites(TdarUser user) {
+        return getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_USERINVITES_BY_USER, UserInvite.class)
+                .setParameter("user", user)
+                .list();
+    }
+
+    public List<UserInvite> findUserInvites(Resource resource) {
+        return getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_USERINVITES_BY_RESOURCE, UserInvite.class)
+                .setParameter("resource", resource)
+                .list();
+    }
+
     public RequestCollection findCustomRequest(Resource resource) {
-        List<Long> ids = PersistableUtils.extractIds(resource.getResourceCollections());
+        List<Long> ids = PersistableUtils.extractIds(resource.getSharedCollections());
         for (RequestCollection rc : findAll(RequestCollection.class)) {
             if (CollectionUtils.containsAny(rc.getCollections(), ids)) {
                 return rc;
@@ -410,7 +499,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return null;
     }
 
-    public List<ResourceCollection> findAlternateChildren(List<Long> ids) {
+    public <C extends HierarchicalCollection> List<C> findAlternateChildren(List<Long> ids, Class<C> cls) {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.EMPTY_LIST;
         }
@@ -419,16 +508,24 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return query.list();
     }
 
-    public List<ResourceCollection> getAlternateChildrenTrees(Collection<ResourceCollection> allChildren, ResourceCollection collection) {
-//        if (CollectionUtils.isEmpty(allChildren)) {
-//            return Collections.EMPTY_LIST;
-//        }
+    public <C extends HierarchicalCollection> List<C> getAlternateChildrenTrees(Collection<C> allChildren, C collection, Class<C> cls) {
         List<Long> ids = PersistableUtils.extractIds(allChildren);
         ids.add(collection.getId());
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE);
         query.setParameterList("collectionIds", ids);
         return query.list();
     }
-    
+
+    public Collection<HasAuthorizedUsers> findExpiringUsers(Date date) {
+        ArrayList<HasAuthorizedUsers> toReturn = new ArrayList<>();
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION);
+        query.setParameter("date", date);
+        toReturn.addAll(query.list());
+        query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE);
+        query.setParameter("date", date);
+        toReturn.addAll(query.list());
+        
+        return toReturn;
+    }
     
 }

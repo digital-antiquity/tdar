@@ -2,14 +2,42 @@ TDAR.advancedSearch = {}
 TDAR.advancedSearch = (function () {
     "use strict";
 
+    
+    function _disableCheckbox($box) {
+        $box.attr('disabled', true);
+        $box.parent().addClass("disabled");
+    }
+
+    function _enableCheckbox($box) {
+        $box.removeAttr('disabled');
+        $box.parent().removeClass("disabled");
+    }
+
     /**
      * Initialize the "advanced search" page (including form validation,  autocompletes, term UI, backbutton safety)
      */
     function _initAdvancedSearch() {
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
+        $("#sortField .resource").removeAttr('disabled');
+        var $groups = $("#searchGroups");
 
+        $groups.on("searchchange", function(e){
+            var $int = $("#includedResourceTypesINTEGRATION");
+            var $col = $("#includedResourceTypesSHARED_COLLECTION"); 
+            if ($("#searchGroups .term").not(".multiIndex").length > 0) {
+                _disableCheckbox($int);
+                _disableCheckbox($col);
+                $("#sortField .resource").removeAttr('disabled');
+            } else { 
+                _enableCheckbox($int);
+                _enableCheckbox($col);
+                $("#sortField .resource").attr('disabled', 'disabled');
+            } 
+            });
+
+        $(".searchType",$groups).trigger("searchchange");
         // when user changes searchType: swap out the term ui snippet
-        $('#searchGroups').on('change', '.searchType', function (evt) {
+        $groups.on('change', '.searchType', function (evt) {
             "use strict";
 
             //console.log("change event on %s", this.id);
@@ -54,6 +82,7 @@ TDAR.advancedSearch = (function () {
             }
 
             _initializeSection(row);
+            $(this).trigger("searchchange");
         });
 
         // after rows added, replace attribute values
@@ -77,6 +106,7 @@ TDAR.advancedSearch = (function () {
         $('#searchGroups').on('repeatrowdeleted', '.grouptable', function (evt) {
             var $groupDiv = $(this).closest('.searchgroup');
             _showGroupingSelectorIfNecessary($groupDiv);
+            $(this).trigger("searchchange");
         });
 
         // mimic combobox - show complete list when user clicks down-arrow
@@ -130,8 +160,9 @@ TDAR.advancedSearch = (function () {
             TDAR.autocomplete.applyInstitutionAutocomplete($institutionAutoFields, false);
         }
 
-        $('.datepicker', containerElem).datepicker({
-            dateFormat: 'm/d/y'
+        var picker = $('.datepicker', containerElem).datepicker();
+        picker.on('changeDate', function(ev){
+            $(ev.target).datepicker('hide');
         });
 
         // collection, project combo boxes
@@ -283,6 +314,21 @@ TDAR.advancedSearch = (function () {
             TDAR.windowLocation(url);
         });
 
+        if ($(".objectTypes li").size() > 0) {
+            var count = 0;
+            if ($("#objectTypesSHARED_COLLECTION").size() > 0 ) {
+                count++;
+            }
+            if ($("#objectTypesINTEGRATION").size() > 0 ) {
+                count++;
+            }
+            
+            var remain = $(".objectTypes li").size() - count ;
+            //console.log("remain:" + remain + " count:" + count);
+            if (remain > 0 && count > 0 || remain == 0 && count > 0) {
+                $("#sortField .resource").attr('disabled','disabled');
+            }
+        }
         $("#sortField").change(function () {
             var url = window.location.search.replace(/([?&]+)sortField=([^&]+)/g, "");
             //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?

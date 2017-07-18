@@ -11,6 +11,11 @@ import org.tdar.search.query.QueryFieldNames;
 
 import com.opensymphony.xwork2.TextProvider;
 
+/**
+ * Abstracting out how to search for a resource or collection title
+ * @author abrin
+ *
+ */
 public class TitleQueryPart extends FieldQueryPart<String> {
 
     private static final float TITLE_BOOST = 6f;

@@ -17,8 +17,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts.action.TdarBaseActionSupport;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -27,7 +28,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Namespace("/resource/admin")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-public class AdminResourceXmlDownload extends TdarActionSupport implements Preparable {
+public class AdminResourceXmlDownload extends TdarBaseActionSupport implements Preparable {
 
     private static final long serialVersionUID = -1603500145262991935L;
     private Long id;

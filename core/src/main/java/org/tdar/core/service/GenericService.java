@@ -24,8 +24,8 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.base.GenericDao;
+import org.tdar.core.dao.base.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.PersistableUtils;
@@ -644,7 +644,7 @@ public class GenericService {
      * 
      * @param persistentClass
      * @return the number of deleted entities
-     * @see org.tdar.core.dao.GenericDao#deleteAll(java.lang.Class)
+     * @see org.tdar.core.dao.base.GenericDao#deleteAll(java.lang.Class)
      */
     @Transactional(readOnly = false)
     public <E extends Persistable> int deleteAll(Class<E> persistentClass) {

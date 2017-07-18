@@ -18,7 +18,7 @@ import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.service.SerializationService;
@@ -147,7 +147,7 @@ public class WorkflowContextService {
             orig.setInformationResourceFile(irFile);
             // genericDao.saveOrUpdate(orig);
             InformationResource informationResource = genericDao.find(InformationResource.class, ctx.getInformationResourceId());
-			irFile.setInformationResource(informationResource);
+            irFile.setInformationResource(informationResource);
             irFile.setWorkflowContext(ctx);
 
             // logger.info("end status: {}", irFile.getStatus());

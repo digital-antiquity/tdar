@@ -28,6 +28,9 @@ import org.tdar.struts.action.DashboardController;
  */
 public class DashboardControllerITCase extends AbstractResourceControllerITCase {
 
+    
+    
+    
     @Test
     @Rollback
     public void testProjectLists() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
@@ -44,7 +47,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
         addAuthorizedUser(projectWithDifferentSubmitterAndFullUser, testPerson, GeneralPermissions.MODIFY_RECORD);
         // evictCache();
 
-        logger.debug("{internal: {}", projectWithDifferentSubmitterAndFullUser.getInternalResourceCollection());
+        logger.debug("{internal: {}", projectWithDifferentSubmitterAndFullUser.getAuthorizedUsers());
         Project projectWithSameFullUserAndSubmitter = new Project();
         projectWithSameFullUserAndSubmitter.setTitle("project with same submitter");
         projectWithSameFullUserAndSubmitter.setDescription("test2");

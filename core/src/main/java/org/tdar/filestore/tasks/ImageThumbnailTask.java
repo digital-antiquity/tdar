@@ -26,7 +26,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.filestore.tasks.Task.AbstractTask;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -132,7 +131,7 @@ public class ImageThumbnailTask extends AbstractTask {
                     msg = dse.getMessage();
                 }
             } catch (IOException e) {
-                getLogger().error("issue with GeoTiff attempt to process" + sourceFile, e);
+                getLogger().warn("issue with GeoTiff attempt to process" + sourceFile, e);
                 msg = e.getMessage();
             }
         }
