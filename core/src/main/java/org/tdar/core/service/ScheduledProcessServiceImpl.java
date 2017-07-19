@@ -70,7 +70,7 @@ import com.google.common.collect.Sets;
  * 
  * @author Adam Brin
  */
-@Service
+@Service("scheduledProcessService")
 public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, ApplicationContextAware, ScheduledProcessService {
 
 

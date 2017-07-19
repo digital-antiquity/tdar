@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.ScheduledProcessService;
-import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
@@ -23,28 +21,21 @@ import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
-import org.tdar.core.service.processes.manager.ProcessManager;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 
 @Service
 public class WebScheduledProcessService {
 
-    private transient final GenericService genericService;
     private transient final RssService rssService;
-    private transient final AuthenticationService authenticationService;
-    private transient final ProcessManager manager;
     private transient final ScheduledProcessService scheduledProcessService;
     TdarConfiguration config = TdarConfiguration.getInstance();
 
     @Autowired
-    public WebScheduledProcessService(@Qualifier("genericService") GenericService gs,
-            RssService rss, AuthenticationService auth, @Qualifier("processManager") ProcessManager pm,
+    public WebScheduledProcessService(
+            RssService rss,
             @Qualifier("scheduledProcessService") ScheduledProcessService scheduledProcessService) {
-        this.genericService = gs;
         this.rssService = rss;
-        this.authenticationService = auth;
-        this.manager = pm;
         this.scheduledProcessService = scheduledProcessService;
     }
 
