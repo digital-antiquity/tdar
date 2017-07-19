@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.ArchiveEvaluator;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -124,7 +125,7 @@ public class DownloadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue("file should be non-empty", file.length() > 0);
 
         // don't do strict test since the downloaded pdf's will have a cover page
-        assertArchiveContents(files, file, false);
+        ArchiveEvaluator.assertArchiveContents(files, file, false);
     }
 
     @Test

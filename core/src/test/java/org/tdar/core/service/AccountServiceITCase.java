@@ -29,7 +29,7 @@ import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 
-public class AccountServiceITCase extends AbstractIntegrationTestCase implements TestBillingAccountHelper{
+public class AccountServiceITCase extends AbstractIntegrationTestCase implements TestBillingAccountHelper {
 
     @Autowired
     BillingAccountService accountService;

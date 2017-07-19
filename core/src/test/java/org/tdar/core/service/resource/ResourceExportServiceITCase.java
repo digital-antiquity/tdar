@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.ArchiveEvaluator;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -37,7 +38,7 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
         Document doc = generateDocumentWithFileAndUser();
         File export = exportService.export(TEST123_ZIP, false, Arrays.asList(doc));
         logger.debug("exported:{}", export);
-        Map<String, Long> nameSize = unzipArchive(export);
+        Map<String, Long> nameSize = ArchiveEvaluator.unzipArchive(export);
         String prefix = doc.getResourceType().name() + "/" + doc.getId() + "/";
         String filename = doc.getFirstInformationResourceFile().getFilename();
         assertTrue("archive contains schema",nameSize.containsKey(TDAR_XSD));
@@ -70,7 +71,7 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
         Image img = generateAndStoreVersion(Image.class, TestConstants.TEST_IMAGE_NAME, new File(TestConstants.TEST_IMAGE_DIR,TestConstants.TEST_IMAGE_NAME), TdarConfiguration.getInstance().getFilestore());
         File export = exportService.export(TEST123_ZIP, false, Arrays.asList(doc,img));
         logger.debug("exported:{}", export);
-        Map<String, Long> nameSize = unzipArchive(export);
+        Map<String, Long> nameSize = ArchiveEvaluator.unzipArchive(export);
         String prefix = doc.getResourceType().name() + "/" + doc.getId() + "/";
         String filename = doc.getFirstInformationResourceFile().getFilename();
         assertTrue("archive contains schema",nameSize.containsKey(TDAR_XSD));
@@ -87,7 +88,7 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
         File export = exportService.export(TEST123_ZIP, true, Arrays.asList(doc));
         logger.debug("exported:{}", export);
         ZipFile zipfile = new ZipFile(export);
-        Map<String, Long> nameSize = unzipArchive(export);
+        Map<String, Long> nameSize = ArchiveEvaluator.unzipArchive(export);
         logger.debug("{}", nameSize);
         String name = doc.getResourceType().name() + "/" + id + "/" + RESOURCE_XML;
         logger.debug(name);
