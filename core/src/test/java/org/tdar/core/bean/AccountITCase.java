@@ -95,11 +95,6 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         assertTrue(re.accountHasMinimumForNewResource(account, null));
     }
 
-    public void updateModel(BillingActivityModel model, boolean resources, boolean files, boolean space) {
-        model.setCountingResources(resources);
-        model.setCountingFiles(files);
-        model.setCountingSpace(space);
-    }
 
     @Test
     @Rollback

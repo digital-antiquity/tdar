@@ -8,12 +8,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -755,10 +758,25 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         this.publisherName = publisherName;
     }
 
+    /**
+     * Verifies if the resource can be allowed to add additional files. 
+     * The user may not have permission or the billing account may be over limit. 
+     * @return boolean
+     */
     public boolean isAbleToUploadFiles() {
         if (isAbleToUploadFiles == null) {
             isAbleToUploadFiles = authorizationService.canUploadFiles(getAuthenticatedUser(), getPersistable());
+            getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, getPersistable().getAccount());
+            if(PersistableUtils.isNotNullOrTransient(getPersistable()) && getPersistable().getAccount()!=null){
+            	List<BillingAccount> _activeAccounts = getActiveAccounts();
+            	getLogger().debug("_activeAccounts:{}", _activeAccounts);
+            	//BillingAccount account = _activeAccounts.stream().filter(a -> ObjectUtils.equals(a,getPersistable().getAccount())).collect(Collectors.toList()).get(0);
+            	if(!getPersistable().getAccount().isActive()){
+            		isAbleToUploadFiles = false;
+            	}
+            }
         }
+        
         return isAbleToUploadFiles;
     }
 

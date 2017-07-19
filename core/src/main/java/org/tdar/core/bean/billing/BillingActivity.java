@@ -92,6 +92,16 @@ public class BillingActivity extends AbstractPersistable implements Comparable<B
         this.model = model;
     }
 
+    /**
+     * Creates a new BilingActivity that contains the quota limits for usage. 
+     * @param name
+     * @param price		The cost for the quota limits
+     * @param numHours	The number of hours available
+     * @param numberOfResources	The number of resources available
+     * @param numberOfFiles	The limit of the number of files
+     * @param numberOfMb	The limit of the amount of space, in megabytes
+     * @param model
+     */
     public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb, BillingActivityModel model) {
         this(name, price, model);
         setNumberOfHours(numHours);
