@@ -31,16 +31,17 @@ import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.AbstractPersistableController;
+import org.tdar.struts.action.TestResourceCollectionHelper;
 import org.tdar.struts.action.document.DocumentController;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.ResourceRightsController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Action;
 
-public class ResourceCollectionRightsITCase extends AbstractResourceControllerITCase {
+public class ResourceCollectionRightsITCase extends AbstractControllerITCase implements TestResourceCollectionHelper {
 
     private static final String TEST123 = "test123";
 

@@ -20,7 +20,7 @@ import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;
 
-public class DataTableViewRowITCase extends AbstractDataIntegrationTestCase {
+public class DataTableViewRowITCase extends AbstractAdminControllerITCase {
 
     private static final String TEST_DATASET = "/data_integration_tests/england_woods.xlsx";
     private RowViewAction controller;

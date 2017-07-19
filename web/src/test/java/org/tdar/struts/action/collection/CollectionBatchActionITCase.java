@@ -1,74 +1,30 @@
 package org.tdar.struts.action.collection;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.tdar.core.bean.Viewable;
-import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.collection.CollectionRightsComparator;
 import org.tdar.core.service.collection.ResourceCollectionService;
-import org.tdar.search.index.LookupSource;
-import org.tdar.struts.action.browse.BrowseCollectionController;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TestResourceCollectionHelper;
 import org.tdar.struts.action.collection.admin.CollectionBatchAction;
-import org.tdar.struts.action.document.DocumentController;
-import org.tdar.struts.action.project.ProjectController;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
-import org.tdar.struts.action.resource.ResourceDeleteAction;
-import org.tdar.struts.action.resource.ResourceRightsController;
-import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.utils.PersistableUtils;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.opensymphony.xwork2.Action;
-
-public class CollectionBatchActionITCase extends AbstractResourceControllerITCase {
+public class CollectionBatchActionITCase extends AbstractControllerITCase implements TestResourceCollectionHelper  {
 
     @Autowired
     private GenericService genericService;

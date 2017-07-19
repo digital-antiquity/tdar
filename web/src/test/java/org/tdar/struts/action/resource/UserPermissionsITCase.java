@@ -27,6 +27,8 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TestResourceCollectionHelper;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
@@ -37,7 +39,7 @@ import com.opensymphony.xwork2.Action;
  * @author Adam Brin
  * 
  */
-public class UserPermissionsITCase extends AbstractResourceControllerITCase {
+public class UserPermissionsITCase extends AbstractControllerITCase  implements TestResourceCollectionHelper {
 
     @Autowired
     EntityService entityService;

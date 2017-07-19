@@ -27,13 +27,13 @@ import org.tdar.core.service.download.DownloadPdfFile;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
-public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
+public class DownloadControllerITCase extends AbstractAdminControllerITCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
 //    private static final File ROOT_SRC = new File(TestConstants.TEST_ROOT_DIR);
 

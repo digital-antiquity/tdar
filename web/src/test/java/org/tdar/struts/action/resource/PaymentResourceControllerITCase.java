@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
@@ -24,14 +25,20 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TestResourceCollectionHelper;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts_base.action.TdarActionException;
@@ -44,9 +51,12 @@ import com.opensymphony.xwork2.Action;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-public class PaymentResourceControllerITCase extends AbstractResourceControllerITCase implements TestBillingAccountHelper {
+public class PaymentResourceControllerITCase extends AbstractControllerITCase implements TestBillingAccountHelper, TestResourceCollectionHelper {
 
     private DocumentController controller;
+    
+    @Autowired
+    private BillingAccountService accountService;
 
     public void initControllerFields() throws TdarActionException {
         controller.prepare();
@@ -353,6 +363,22 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         d.setDescription("desc");
         d.markUpdated(getUser());
         return d;
+    }
+
+
+    public ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
+        ResourceCreatorProxy rcp = new ResourceCreatorProxy();
+        Person p = rcp.getPerson();
+        rcp.getPerson().setLastName(last);
+        rcp.getPerson().setFirstName(first);
+        rcp.getPerson().setEmail(email);
+        // id may be null
+        rcp.getPerson().setId(id);
+        Institution inst = new Institution();
+        inst.setName("University of TEST");
+        p.setInstitution(inst);
+        rcp.setRole(role);
+        return rcp;
     }
 
 }

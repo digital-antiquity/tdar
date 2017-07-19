@@ -2,7 +2,6 @@ package org.tdar.struts.action;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,25 +10,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.utils.PersistableUtils;
 
-public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
+import com.opensymphony.xwork2.ActionSupport;
 
-    // public static final long SPITAL_IR_ID = 503l;
+public interface TestDatasetHelper {
 
-    public static Map<String, String> getElementValueMap() {
+    final Logger logger_ = LoggerFactory.getLogger(TestFileUploadHelper.class);
+
+    default Map<String, String> getElementValueMap() {
         HashMap<String, String> elementValueMap = new HashMap<String, String>();
         elementValueMap.put("Atlas", "Atlas");
         elementValueMap.put("Axis", "Axis");
@@ -46,7 +47,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return elementValueMap;
     }
 
-    public static Map<String, String> getHierarchyElementMap() {
+    default Map<String, String> getHierarchyElementMap() {
         Map<String, String> elementValueMap = getElementValueMap();
         elementValueMap.put("TARSAL", "Tarsal");
         elementValueMap.put("ASTRAGALUS", "Astragalus");
@@ -69,7 +70,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return elementValueMap;
     }
 
-    public static Map<String, String> getTaxonValueMap() {
+    default Map<String, String> getTaxonValueMap() {
         HashMap<String, String> taxonValueMap = new HashMap<String, String>();
         taxonValueMap.put("cat", "Felis catus (Cat)");
         taxonValueMap.put("CAT", "Felis catus (Cat)");
@@ -80,8 +81,7 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         return taxonValueMap;
     }
 
-
-    protected void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws Exception {
+    default void mapDataOntologyValues(DataTable dataTable, String columnName, Map<String, String> valueMap, Ontology ontology) throws Exception {
         CodingSheetMappingController controller = generateNewInitializedController(CodingSheetMappingController.class);
         DataTableColumn column = dataTable.getColumnByName(columnName);
         controller.setId(column.getDefaultCodingSheet().getId());
@@ -90,20 +90,20 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         Set<CodingRule> rules = column.getDefaultCodingSheet().getCodingRules();
         // List<OntologyNode> ontologyNodes = column.getDefaultOntology().getOntologyNodes();
         // List<String> dataColumnValues = dataTableService.findAllDistinctValues(column);
-        logger.info("mapping ontology values for: {} [{}]", dataTable.getName(), columnName);
-        logger.info("ontology nodes: {}", ontology.getOntologyNodes());
+        logger_.info("mapping ontology values for: {} [{}]", dataTable.getName(), columnName);
+        logger_.info("ontology nodes: {}", ontology.getOntologyNodes());
         List<CodingRule> toSave = new ArrayList<CodingRule>();
         for (CodingRule rule : rules) {
             String value = valueMap.get(rule.getTerm());
             if (value != null) {
                 OntologyNode node = ontology.getNodeByNameIgnoreCase(value);
                 if (node != null) {
-                    logger.info(String.format("setting %s -> %s (%s)", rule.getTerm(), value, node));
+                    logger_.info(String.format("setting %s -> %s (%s)", rule.getTerm(), value, node));
                     rule.setOntologyNode(node);
                     toSave.add(rule);
                 }
             } else {
-                logger.info("ontology does not contain: " + rule.getTerm());
+                logger_.info("ontology does not contain: " + rule.getTerm());
             }
         }
         controller.setCodingRules(toSave);
@@ -111,10 +111,10 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
 
         Set<Long> idSet = PersistableUtils.createIdMap(toSave).keySet();
         for (Long toCheck : idSet) {
-            CodingRule find = genericService.find(CodingRule.class, toCheck);
+            CodingRule find = getGenericService().find(CodingRule.class, toCheck);
             if (find == null) {
-                logger.error("{} {}", toCheck, find);
-                logger.error("{}", toSave);
+                logger_.error("{} {}", toCheck, find);
+                logger_.error("{}", toSave);
             } else {
                 assertNotNull(find.getOntologyNode());
             }
@@ -122,8 +122,8 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         Assert.assertNotSame(0, toSave.size());
     }
 
-    public void mapColumnsToDataset(Dataset dataset, DataTable dataTable, DataTableColumn... mappings) throws Exception {
-        logger.info("{}", dataTable);
+    default void mapColumnsToDataset(Dataset dataset, DataTable dataTable, DataTableColumn... mappings) throws Exception {
+        logger_.info("{}", dataTable);
         ColumnMetadataController controller = generateNewInitializedController(ColumnMetadataController.class);
         controller.setDataTableId(dataTable.getId());
         controller.setId(dataset.getId());
@@ -138,33 +138,9 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
             assertEquals(col.getName() + " is missing coding sheet", mapping.getDefaultCodingSheet(), col.getDefaultCodingSheet());
         }
     }
+    
+    <T extends ActionSupport> T generateNewInitializedController(Class<T> class1);
 
-
-    public List<String> performIntegrationFiltering(List<IntegrationColumn> integrationColumns, HashMap<Ontology, String[]> nodeSelectionMap) {
-        List<String> checkedNodeList = new ArrayList<String>();
-        for (IntegrationColumn integrationColumn : integrationColumns) {
-            if (!integrationColumn.isIntegrationColumn()) {
-                continue;
-            }
-            String[] nodeSelections = nodeSelectionMap.get(integrationColumn.getSharedOntology());
-            if (nodeSelections != null) {
-                int foundNodeCount = 0;
-                for (OntologyNode nodeData : dataIntegrationService.getFilteredOntologyNodes(integrationColumn)) {
-                    String name = nodeData.getDisplayName();
-                    logger.debug("comparing {} <-> {}", name, StringUtils.join(nodeSelections, "|"));
-                    if (ArrayUtils.contains(nodeSelections, name)) {
-                        foundNodeCount++;
-                        integrationColumn.getFilteredOntologyNodes().add(new OntologyNode(nodeData.getId()));
-
-                    }
-                }
-                logger.debug("nodeSelections: {}", Arrays.asList(nodeSelections));
-                assertEquals(foundNodeCount, nodeSelections.length);
-            } else {
-                assertTrue("found unexpected ontology", false);
-            }
-        }
-        return checkedNodeList;
-    }
+    GenericService getGenericService();
 
 }

@@ -54,10 +54,11 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.CollectionRightsComparator;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TestResourceCollectionHelper;
 import org.tdar.struts.action.browse.BrowseCollectionController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.project.ProjectController;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts.action.resource.ResourceDeleteAction;
 import org.tdar.struts.action.resource.ResourceRightsController;
 import org.tdar.struts_base.action.TdarActionException;
@@ -66,7 +67,7 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
-public class ResourceCollectionControllerITCase extends AbstractResourceControllerITCase {
+public class ResourceCollectionControllerITCase extends AbstractControllerITCase implements TestResourceCollectionHelper {
 
     @Autowired
     private GenericService genericService;

@@ -5,9 +5,10 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.TestResourceCollectionHelper;
 import org.tdar.struts.action.api.collection.ListCollectionApiAction;
 
-public class ListCollectionApiITCase extends AbstractAdminControllerITCase {
+public class ListCollectionApiITCase extends AbstractAdminControllerITCase implements TestResourceCollectionHelper  {
 
     @Test
     @Rollback

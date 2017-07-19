@@ -48,6 +48,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.Pair;
@@ -60,7 +61,7 @@ import com.opensymphony.xwork2.Action;
  * @author Adam Brin
  * @version $Revision$
  */
-public class OntologyControllerITCase extends AbstractResourceControllerITCase {
+public class OntologyControllerITCase extends AbstractControllerITCase {
 
     @Autowired
     private OntologyController controller;

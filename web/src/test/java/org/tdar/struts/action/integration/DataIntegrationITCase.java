@@ -46,8 +46,9 @@ import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.TestBookmarkHelper;
+import org.tdar.struts.action.TestDatasetHelper;
 import org.tdar.struts.action.api.integration.IntegrationAction;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.utils.MessageHelper;
@@ -61,7 +62,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  * @author Adam Brin
  * @version $Revision$
  */
-public class DataIntegrationITCase extends AbstractDataIntegrationTestCase implements TestBookmarkHelper {
+public class DataIntegrationITCase extends AbstractAdminControllerITCase implements TestBookmarkHelper, TestDatasetHelper {
     private static final String TEST_PATH = TestConstants.TEST_ROOT_DIR + "/data_integration_tests/json/";
 
     private static final String ALEXANDRIA_DB_NAME = "qrybonecatalogueeditedkk.xls";
@@ -540,7 +541,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase imple
     }
 
     @Override
-    protected String getTestFilePath() {
+    public String getTestFilePath() {
         return TestConstants.TEST_DATA_INTEGRATION_DIR;
     }
 }

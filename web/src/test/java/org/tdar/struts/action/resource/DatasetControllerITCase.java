@@ -41,7 +41,9 @@ import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.model.PostgresIntegrationDatabase;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.TestDatasetHelper;
+import org.tdar.struts.action.TestFileUploadHelper;
 import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.dataset.TableXMLDownloadAction;
@@ -56,7 +58,7 @@ import org.tdar.struts_base.action.TdarActionException;
  * @version $Rev$
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
+public class DatasetControllerITCase extends AbstractAdminControllerITCase implements TestFileUploadHelper, TestDatasetHelper {
 
     private static final String PUNDO_FAUNAL_REMAINS_XLS = "Pundo faunal remains.xls";
     private static final String ALEXANDRIA_EXCEL_FILENAME = "qrybonecatalogueeditedkk.xls";
@@ -412,7 +414,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Override
-    protected String getTestFilePath() {
+    public String getTestFilePath() {
         return TestConstants.TEST_DATA_INTEGRATION_DIR;
     }
 }

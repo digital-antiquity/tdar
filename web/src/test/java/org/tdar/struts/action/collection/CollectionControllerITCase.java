@@ -27,9 +27,10 @@ import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TestResourceCollectionHelper;
 
-public class CollectionControllerITCase extends AbstractResourceControllerITCase {
+public class CollectionControllerITCase extends AbstractControllerITCase implements TestResourceCollectionHelper  {
 
     @Autowired
     private GenericService genericService;

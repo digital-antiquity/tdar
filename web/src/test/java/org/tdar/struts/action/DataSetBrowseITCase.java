@@ -33,7 +33,7 @@ import com.opensymphony.xwork2.Action;
  * @author Adam Brin
  * 
  */
-public class DataSetBrowseITCase extends AbstractDataIntegrationTestCase {
+public class DataSetBrowseITCase extends AbstractAdminControllerITCase {
 
     private static final int RESULTS_PER_PAGE = 2;
 

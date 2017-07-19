@@ -12,13 +12,14 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.UserRightsProxy;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;
 
-public class ResourceRightsControllerITCase extends AbstractResourceControllerITCase {
+public class ResourceRightsControllerITCase extends AbstractControllerITCase {
 
 
     @Test

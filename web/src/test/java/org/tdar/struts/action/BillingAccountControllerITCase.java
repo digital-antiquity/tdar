@@ -28,13 +28,12 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.billing.BillingAccountController;
 import org.tdar.struts.action.billing.BillingAccountSelectionAction;
 import org.tdar.struts.action.billing.CouponCreationAction;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
 
-public class BillingAccountControllerITCase extends AbstractResourceControllerITCase implements TestBillingAccountHelper {
+public class BillingAccountControllerITCase extends AbstractControllerITCase implements TestBillingAccountHelper, TestBillingControllerHelper {
 
     @Autowired
     BillingAccountService accountService;
@@ -94,7 +93,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testAccountControllerChoicesSelectAccounts() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
         invoice.setOwner(getAdminUser());
-        BillingAccount account = TestBillingHelper.createAccount(getAdminUser(), genericService);
+        BillingAccount account = createAccount(getAdminUser(), genericService);
         BillingAccountSelectionAction controller = generateNewController(BillingAccountSelectionAction.class);
         init(controller, getAdminUser());
         controller.setInvoiceId(invoice.getId());
@@ -119,7 +118,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAddingInvoiceToExistingAccount() throws TdarActionException {
-        Long accountId = TestBillingHelper.createAccount(getUser(), genericService).getId();
+        Long accountId = createAccount(getUser(), genericService).getId();
         Invoice invoice = createTrivialInvoice();
         genericService.saveOrUpdate(invoice);
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
@@ -165,7 +164,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Rollback
     public void testAddingInvoiceToNewAccount() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
+        BillingAccount account = createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1L);
         String save = controller.execute();
@@ -225,7 +224,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testCreateCouponInvalid() throws TdarActionException {
         setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
+        BillingAccount account = createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1000L);
         try {
@@ -247,7 +246,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testCreateCouponEmpty() throws TdarActionException {
         setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
+        BillingAccount account = createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         // controller.setNumberOfFiles(1000L);
         try {
@@ -266,7 +265,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     public void testCreateCouponInvalidBoth() throws TdarActionException {
         setIgnoreActionErrors(true);
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
+        BillingAccount account = createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1L);
         controller.setNumberOfMb(1L);
@@ -285,7 +284,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Rollback
     public void testCreateCouponValid() throws TdarActionException {
         Invoice invoice = createTrivialInvoice();
-        BillingAccount account = TestBillingHelper.createAccount(getUser(), genericService);
+        BillingAccount account = createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         Long files = controller.getAccount().getAvailableNumberOfFiles();
         controller.setNumberOfFiles(1L);
@@ -304,5 +303,10 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         logger.info(coupon.getCode());
         assertNotNull(coupon.getCode());
         assertEquals(files - 1l, controller.getAccount().getAvailableNumberOfFiles().longValue());
+    }
+
+    @Override
+    public BillingAccountService getAccountService() {
+        return accountService;
     }
 }

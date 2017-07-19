@@ -44,7 +44,7 @@ import com.vividsolutions.jts.util.Assert;
  * @version $Rev$
  * @param <E>
  */
-public class UserRegistrationITCase extends AbstractControllerITCase {
+public class UserRegistrationITCase extends AbstractControllerITCase implements TestUserAccountHelper {
 
     private static final String PASSWORD = "password";
     static final String REASON = "because";
@@ -123,7 +123,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 .iterator().next());
     }
 
-
     @Test
     @Rollback
     public void testEmailWithSpace() {
@@ -143,12 +142,12 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getRegistration().setAcceptTermsOfUse(true);
         controller.getRegistration().getH().setTimeCheck(System.currentTimeMillis() - 5000);
         controller.validate();
-//        String execute = controller.create();
-//        assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
+        // String execute = controller.create();
+        // assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
         logger.info(" messages: {}", controller.getActionMessages());
         logger.info(" errors  : {}", controller.getActionErrors());
         logger.info("field err: {}", controller.getFieldErrors());
-        assertEquals(1, controller.getFieldErrors().size() );
+        assertEquals(1, controller.getFieldErrors().size());
         assertTrue(controller.getActionErrors().size() > 0);
     }
 
@@ -168,17 +167,17 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getRegistration().setConfirmPassword(p.getEmail());
         controller.getRegistration().setPerson(p);
         controller.getRegistration().setContributorReason("1");
-        
+
         controller.setServletRequest(getServletPostRequest());
         controller.getRegistration().setAcceptTermsOfUse(true);
         controller.getRegistration().getH().setTimeCheck(System.currentTimeMillis() - 5000);
         controller.validate();
-//        String execute = controller.create();
-//        assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
+        // String execute = controller.create();
+        // assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
         logger.info(" messages: {}", controller.getActionMessages());
         logger.info(" errors  : {}", controller.getActionErrors());
         logger.info("field err: {}", controller.getFieldErrors());
-        assertEquals(0, controller.getFieldErrors().size() );
+        assertEquals(0, controller.getFieldErrors().size());
         assertTrue(controller.getActionErrors().size() > 0);
     }
 
@@ -297,22 +296,21 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         }
     }
 
-    
     @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testSpammerWithContributor() {
         setIgnoreActionErrors(true);
         UserAccountController controller = generateNewInitializedController(UserAccountController.class);
-            String email = "sdfdasdf@1234.com";
-            logger.info("TRYING =======> {}", email);
-            controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
-            TdarUser user = new TdarUser("a", "b",email);
-            controller.getRegistration().setContributorReason("abasd");
-            String execute = setupValidUserInController(controller, user, "test");
-            // assertFalse("user " + email + " succeeded??", TdarActionSupport.SUCCESS.equals(execute));
-            logger.info("errors:{}", controller.getActionErrors());
-            assertTrue(controller.getFieldErrors().size() > 0);
+        String email = "sdfdasdf@1234.com";
+        logger.info("TRYING =======> {}", email);
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
+        TdarUser user = new TdarUser("a", "b", email);
+        controller.getRegistration().setContributorReason("abasd");
+        String execute = setupValidUserInController(controller, user, "test");
+        // assertFalse("user " + email + " succeeded??", TdarActionSupport.SUCCESS.equals(execute));
+        logger.info("errors:{}", controller.getActionErrors());
+        assertTrue(controller.getFieldErrors().size() > 0);
     }
 
     @SuppressWarnings("unused")
@@ -584,7 +582,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         String loginResponse = loginAction.authenticate();
         assertEquals("login should have been successful", TdarActionSupport.SUCCESS, loginResponse);
     }
-    
+
     @SuppressWarnings("unused")
     @Test
     @Rollback
@@ -620,8 +618,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertEquals(REASON, user.getContributorReason());
     }
 
-    
-
     @Test
     @Rollback
     // register new account with mixed-case username, and ensure that user can successfully login
@@ -636,7 +632,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getRegistration().setAffiliation(UserAffiliation.CRM_ARCHAEOLOGIST);
         controller.getReg().getPerson().setUsername(username);
         controller.getReg().setPassword("1234");
-        controller.getReg().setConfirmPassword("1234");        
+        controller.getReg().setConfirmPassword("1234");
 
         // create account, making sure the controller knows we're legit.
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
@@ -648,8 +644,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         TdarUser user = entityService.findByUsername(username);
         assertNotNull(user);
     }
-    
-    
+
     @Test
     @Rollback
     // register new account with mixed-case username, and ensure that user can successfully login
@@ -661,15 +656,21 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getRegistration().setRequestingContributorAccess(true);
         controller.getRegistration().setContributorReason(REASON);
         controller.getRegistration().setAffiliation(UserAffiliation.CRM_ARCHAEOLOGIST);
-        assertEquals(null,controller.getReg().getConfirmEmail());
-        assertEquals(null,controller.getReg().getPerson().getEmail());
-        assertEquals(null,controller.getReg().getPerson().getFirstName());
-        assertEquals(null,controller.getReg().getPerson().getLastName());
+        assertEquals(null, controller.getReg().getConfirmEmail());
+        assertEquals(null, controller.getReg().getPerson().getEmail());
+        assertEquals(null, controller.getReg().getPerson().getFirstName());
+        assertEquals(null, controller.getReg().getPerson().getLastName());
     }
+
     // return a new person reference. an @after method will try to delete this person from crowd
     private TdarUser newPerson() {
         TdarUser person = new TdarUser();
         crowdPeople.add(person);
         return person;
+    }
+
+    @Override
+    public AuthenticationService getAuthenticationService() {
+        return authenticationService;
     }
 }

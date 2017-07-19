@@ -235,7 +235,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         schemaMap.put("http://dublincore.org/schemas/xmls/simpledc20021212.xsd", new File(base, "simpledc20021212.xsd"));
     }
     
-    protected String getTestFilePath() {
+    public String getTestFilePath() {
         return PATH;
     }
 

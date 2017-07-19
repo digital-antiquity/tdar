@@ -43,13 +43,14 @@ import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.converter.CollectionDataExtractor;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts.action.sensoryData.SensoryDataController;
 import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;
 
-public class ProjectControllerITCase extends AbstractResourceControllerITCase {
+public class ProjectControllerITCase extends AbstractControllerITCase {
 
     @Autowired
     ResourceCollectionService resourceCollectionService;

@@ -24,12 +24,12 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.junit.IgnoreActionErrors;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.collection.CollectionDeleteAction;
 
 import com.opensymphony.xwork2.Action;
 
-public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase {
+public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
 
     private Document doc;
 

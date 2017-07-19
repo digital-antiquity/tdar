@@ -45,7 +45,10 @@ import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TestFileUploadHelper;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 import org.tdar.struts.action.project.ProjectController;
@@ -56,7 +59,7 @@ import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
 
-public class DocumentControllerITCase extends AbstractResourceControllerITCase {
+public class DocumentControllerITCase extends AbstractControllerITCase implements TestFileUploadHelper {
 
     public DocumentController initControllerFields() throws TdarActionException {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
@@ -767,4 +770,25 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
         assertThat(controller.getActionErrors(), hasSize(1));
     }
 
+    @Override
+    public PersonalFilestoreService getFilestoreService() {
+        return filestoreService;
+    }
+
+
+
+    public ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
+        ResourceCreatorProxy rcp = new ResourceCreatorProxy();
+        Person p = rcp.getPerson();
+        rcp.getPerson().setLastName(last);
+        rcp.getPerson().setFirstName(first);
+        rcp.getPerson().setEmail(email);
+        // id may be null
+        rcp.getPerson().setId(id);
+        Institution inst = new Institution();
+        inst.setName("University of TEST");
+        p.setInstitution(inst);
+        rcp.setRole(role);
+        return rcp;
+    }
 }

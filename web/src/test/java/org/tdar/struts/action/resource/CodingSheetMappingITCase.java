@@ -52,7 +52,7 @@ import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
@@ -65,7 +65,7 @@ import org.tdar.utils.ExcelUnit;
  * 
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
+public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
 
     private static final String TEST_DATASET_FILENAME = "total-number-of-bones-per-period.xlsx";
 
@@ -665,7 +665,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Override
-    protected String getTestFilePath() {
+    public String getTestFilePath() {
         return PATH;
     }
 

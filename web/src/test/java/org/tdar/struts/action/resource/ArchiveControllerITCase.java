@@ -17,7 +17,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.archive.ArchiveController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -27,7 +27,7 @@ import org.tdar.struts_base.action.TdarActionSupport;
  * @author Martin Paulo
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
+public class ArchiveControllerITCase extends AbstractAdminControllerITCase {
 
     // Was "zip", "tar", "bz2", "tgz", but because of user interface confusion we are limiting
     // the choice that users can make.

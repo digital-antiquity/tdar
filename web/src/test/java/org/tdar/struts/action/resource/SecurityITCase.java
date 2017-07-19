@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.EntityService;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.download.DownloadController;
 import org.tdar.struts.action.download.ThumbnailDownloadAction;
 import org.tdar.struts_base.action.TdarActionException;
@@ -33,7 +34,7 @@ import com.opensymphony.xwork2.Action;
  * 
  */
 @SuppressWarnings("deprecation")
-public class SecurityITCase extends AbstractResourceControllerITCase {
+public class SecurityITCase extends AbstractControllerITCase {
 
     @Autowired
     EntityService entityService;

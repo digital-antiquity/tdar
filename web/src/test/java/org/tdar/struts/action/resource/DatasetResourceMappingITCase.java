@@ -22,13 +22,14 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.TestFileUploadHelper;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.dataset.ResourceMappingMetadataController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts_base.action.TdarActionException;
 
-public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCase {
+public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase implements TestFileUploadHelper {
 
     private static final String TAB_MAPPING_DATASET_TAB = "tab_mapping_dataset.tab";
 
@@ -148,7 +149,7 @@ public class DatasetResourceMappingITCase extends AbstractDataIntegrationTestCas
     }
 
     @Override
-    protected String getTestFilePath() {
+    public String getTestFilePath() {
         return TestConstants.TEST_DATA_INTEGRATION_DIR;
     }
 }

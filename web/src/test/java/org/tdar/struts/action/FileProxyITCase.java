@@ -37,7 +37,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
-import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.Pair;
 
@@ -45,7 +44,7 @@ import org.tdar.utils.Pair;
  * @author Adam Brin
  * 
  */
-public class FileProxyITCase extends AbstractResourceControllerITCase {
+public class FileProxyITCase extends AbstractControllerITCase {
 
     /**
      * Simulate situation where system encounters more files than file proxies.

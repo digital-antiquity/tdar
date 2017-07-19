@@ -22,6 +22,8 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
 
     InstitutionController controller;
 
+    public static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
+
     @Before
     public void setup() {
         controller = generateNewInitializedController(InstitutionController.class);
