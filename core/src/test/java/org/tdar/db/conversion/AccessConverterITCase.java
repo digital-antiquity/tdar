@@ -52,7 +52,6 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
             logger.info("{}", table);
         }
 
-        // FIXME: add more depth to testing
     }
     
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();

@@ -31,7 +31,7 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
     };
 
 
-    protected PostgresDatabase tdarDataImportDatabase;
+    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
 
     @Autowired
     @Qualifier("tdarDataImportDataSource")

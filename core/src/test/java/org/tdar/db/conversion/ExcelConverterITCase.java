@@ -42,7 +42,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
 public class ExcelConverterITCase extends AbstractIntegrationTestCase {
 
 
-    protected PostgresDatabase tdarDataImportDatabase;
+    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
     
     @Autowired
     @Qualifier("tdarDataImportDataSource")
