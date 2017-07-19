@@ -33,7 +33,7 @@ import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.StatisticsService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -57,7 +57,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
     private Long id;
 
     @Autowired
-    private StatisticService statisticService;
+    private StatisticsService StatisticsService;
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -251,11 +251,11 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
     @Override
     public void prepare() throws Exception {
         prepareAndLoad(this, RequestType.EDIT);
-        setUsageStatsForResources(statisticService.getUsageStatsForResource(getResource()));
+        setUsageStatsForResources(StatisticsService.getUsageStatsForResource(getResource()));
         if (getResource() instanceof InformationResource) {
             for (InformationResourceFile file : ((InformationResource) getResource()).getInformationResourceFiles()) {
                 getDownloadStats().put(file.getFilename(),
-                        statisticService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
+                        StatisticsService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
             }
         }
         setupAggregateStats();

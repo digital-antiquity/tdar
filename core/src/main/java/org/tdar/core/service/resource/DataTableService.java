@@ -58,4 +58,6 @@ public interface DataTableService {
      */
     Set<String> getMissingCodingKeys(CodingSheet sheet, List<DataTable> tables_);
 
+    DataTable find(Long dataTableId);
+
 }

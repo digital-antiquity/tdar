@@ -196,4 +196,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         }
         return serializationService.convertFilteredJsonForStream(result, JsonProjectLookupFilter.class, callback);
     }
+
+    @Override
+    public Project find(long l) {
+        return getDao().find(l);
+    }
 }

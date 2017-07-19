@@ -14,7 +14,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.StatisticsService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -40,7 +40,7 @@ public class AdminFileInfoAction extends AbstractAuthenticatableAction {
     private transient InformationResourceFileService informationResourceFileService;
 
     @Autowired
-    private transient StatisticService statisticService;
+    private transient StatisticsService StatisticsService;
 
     private Map<String, Long> extensionStats;
     private List<InformationResourceFile> files;
@@ -50,9 +50,9 @@ public class AdminFileInfoAction extends AbstractAuthenticatableAction {
 
     @Action("file-info")
     public String fileInfo() {
-        setFileAverageStats(statisticService.getFileAverageStats(Arrays.asList(VersionType.values())));
-        setFileStats(statisticService.getFileStats(Arrays.asList(VersionType.values())));
-        setFileUploadedAverageStats(statisticService.getFileAverageStats(
+        setFileAverageStats(StatisticsService.getFileAverageStats(Arrays.asList(VersionType.values())));
+        setFileStats(StatisticsService.getFileStats(Arrays.asList(VersionType.values())));
+        setFileUploadedAverageStats(StatisticsService.getFileAverageStats(
                 Arrays.asList(VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL, VersionType.UPLOADED_TEXT, VersionType.ARCHIVAL)));
         setExtensionStats(informationResourceFileService.getAdminFileExtensionStats());
         setFiles(informationResourceFileService.findFilesWithStatus(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING));

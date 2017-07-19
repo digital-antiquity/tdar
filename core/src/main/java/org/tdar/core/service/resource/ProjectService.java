@@ -89,4 +89,6 @@ public interface ProjectService {
 
     String getProjectAsJson(Project project, TdarUser user, String callback);
 
+    Project find(long l);
+
 }

@@ -42,7 +42,7 @@ import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
-import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
+import org.tdar.core.dao.external.auth.AuthenticationResultType;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarAuthorizationException;
@@ -61,9 +61,6 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
 
-    public enum AuthenticationStatus {
-        AUTHENTICATED, ERROR, NEW;
-    }
 
     @Autowired
     private ApplicationEventPublisher publisher;

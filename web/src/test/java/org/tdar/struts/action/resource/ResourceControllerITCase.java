@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.AbstractControllerITCase;
@@ -15,9 +16,9 @@ public class ResourceControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public <R extends Resource> void testFindProject() {
+    public void testFindProject() {
         @SuppressWarnings("unchecked")
-        R r = (R) projectService.find(1L);
+        Project r = projectService.find(1L);
         logger.info("Resource: {} ", r);
         assertNotNull(r);
         r = resourceService.find(1L);

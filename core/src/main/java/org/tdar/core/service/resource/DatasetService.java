@@ -176,4 +176,6 @@ public interface DatasetService {
 
     List<Dataset> findAll(String string);
 
+    Dataset find(Long id);
+
 }

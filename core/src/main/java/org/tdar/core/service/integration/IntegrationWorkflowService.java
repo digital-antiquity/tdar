@@ -26,4 +26,6 @@ public interface IntegrationWorkflowService {
 
     void deleteForController(TextProvider provider, DataIntegrationWorkflow persistable, TdarUser authenticatedUser);
 
+    DataIntegrationWorkflow find(Long id);
+
 }

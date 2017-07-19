@@ -19,4 +19,6 @@ public interface CategoryVariableService {
 
     List<CategoryVariable> findAll();
 
+    CategoryVariable find(Long categoryId);
+
 }

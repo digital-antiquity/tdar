@@ -19,7 +19,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AbstractRightsController;
 import org.tdar.struts_base.action.PersistableLoadingAction;

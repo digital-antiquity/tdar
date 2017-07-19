@@ -83,4 +83,6 @@ public interface OntologyService {
 
     OntologyNodeWrapper prepareOntologyJson(Ontology ontology);
 
+    Ontology find(Long id);
+
 }

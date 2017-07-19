@@ -27,4 +27,6 @@ public interface CodingSheetService {
 
     void parseUpload(CodingSheet sheet, InformationResourceFileVersion version) throws IOException, CodingSheetParserException;
 
+    List<CodingSheet> findAll();
+
 }

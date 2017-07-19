@@ -10,6 +10,7 @@ import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.ReflectionHelper;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.functional.AbstractSeleniumWebITCase;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -29,7 +30,7 @@ public class MultipleWebTdarConfigurationRunner extends BlockJUnit4ClassRunner {
     private Description describeTest(FrameworkMethod method) {
         Description description = Description.createSuiteDescription(testName(method), method.getAnnotations());
         try {
-            RunWithTdarConfiguration annotation = ReflectionService.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
+            RunWithTdarConfiguration annotation = ReflectionHelper.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
 
             if (annotation == null) {
                 return description;
@@ -53,7 +54,7 @@ public class MultipleWebTdarConfigurationRunner extends BlockJUnit4ClassRunner {
         Description description = describeTest(method);
         String testName = testName(method);
         final String currentConfig = TdarConfiguration.getInstance().getConfigurationFile();
-        RunWithTdarConfiguration annotation = ReflectionService.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
+        RunWithTdarConfiguration annotation = ReflectionHelper.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
 
         if ((annotation != null) &&
                 (method.getAnnotation(Ignore.class) == null)) {

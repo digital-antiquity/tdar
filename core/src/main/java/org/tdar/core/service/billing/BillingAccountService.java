@@ -186,4 +186,8 @@ public interface BillingAccountService {
 
     DeleteIssue getDeletionIssues(TextProvider provider, BillingAccount persistable);
 
+    BillingAccount find(Long id);
+
+    Collection<? extends BillingAccount> findAll();
+
 }

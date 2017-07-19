@@ -15,7 +15,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;

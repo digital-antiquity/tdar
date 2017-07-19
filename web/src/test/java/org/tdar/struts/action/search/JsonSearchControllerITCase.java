@@ -23,7 +23,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
-import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.core.service.GeoRssMode;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.exception.SearchIndexException;

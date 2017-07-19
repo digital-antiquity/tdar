@@ -8,6 +8,7 @@ import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.ReflectionHelper;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -28,10 +29,10 @@ public class HttpsInterceptor implements Interceptor {
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
 
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpsOnly.class)) {
+        if (ReflectionHelper.methodOrActionContainsAnnotation(invocation, HttpsOnly.class)) {
             return doHttpsIntercept(invocation);
         }
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpOnlyIfUnauthenticated.class)) {
+        if (ReflectionHelper.methodOrActionContainsAnnotation(invocation, HttpOnlyIfUnauthenticated.class)) {
             return doHttpIntercept(invocation);
         }
         // not annotated... business as usual.

@@ -21,7 +21,7 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
+import org.tdar.core.service.external.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;

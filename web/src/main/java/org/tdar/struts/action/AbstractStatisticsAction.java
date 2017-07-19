@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.StatisticsService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -34,7 +34,7 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
     protected SerializationService serializationService;
 
     @Autowired
-    protected StatisticService statisticsService;
+    protected StatisticsService statisticsService;
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

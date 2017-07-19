@@ -7,11 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.TdarGroup;
 
-import org.tdar.faims.dao.SpringLdapDao;
-import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import javax.naming.Name;
 
 import org.jmock.Expectations;
@@ -28,6 +24,9 @@ import org.springframework.ldap.core.LdapOperations;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.ldap.support.LdapUtils;
+import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.dao.external.auth.AuthenticationResultType;
 
 /**
  * We know that the Spring LDAP code is tested by SpringSource. We simply need to test that our interface between tdar and that code works as we expect it to.
