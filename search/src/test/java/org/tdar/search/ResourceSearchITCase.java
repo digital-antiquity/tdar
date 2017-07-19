@@ -81,7 +81,7 @@ import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.search.service.query.CreatorSearchInterface;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.StringPair;
@@ -92,7 +92,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
 
     @Autowired
-    CreatorSearchInterface<Creator<?>> creatorSearchService;
+    CreatorSearchService<Creator<?>> creatorSearchService;
 
     @Autowired
     ResourceService resourceService;

@@ -27,13 +27,13 @@ import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.search.service.query.CreatorSearchInterface;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.utils.MessageHelper;
 
 public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Autowired
-    CreatorSearchInterface<Person> creatorSearchService;
+    CreatorSearchService<Person> creatorSearchService;
 
     @Autowired
     SearchIndexService searchIndexService;

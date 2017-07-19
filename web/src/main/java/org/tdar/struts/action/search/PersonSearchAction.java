@@ -18,7 +18,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.bean.PersonSearchOption;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.query.CreatorSearchInterface;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
@@ -41,7 +41,7 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
     private PersonSearchOption personSearchOption;
      
 	@Autowired
-    private CreatorSearchInterface<Person> creatorSearchService;
+    private CreatorSearchService<Person> creatorSearchService;
 
 	@Action(value = "people", results = {
             @Result(name = SUCCESS, location = "people.ftl"),
