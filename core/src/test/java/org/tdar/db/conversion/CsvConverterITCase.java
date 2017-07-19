@@ -34,7 +34,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     @Autowired
     public DataTableService dataTableService;
 
-    protected PostgresDatabase tdarDataImportDatabase;
+    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
 
     @Autowired
     @Qualifier("tdarDataImportDataSource")
