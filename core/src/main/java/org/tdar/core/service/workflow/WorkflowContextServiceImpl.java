@@ -45,7 +45,6 @@ public class WorkflowContextServiceImpl implements WorkflowContextService  {
     private GenericDao genericDao;
     private SerializationService serializationService;
     private OntologyService ontologyService;
-    private GenericService genericService;
     private CodingSheetService codingSheetService;
     private DatasetImportService datasetImportService;
 
@@ -113,7 +112,7 @@ public class WorkflowContextServiceImpl implements WorkflowContextService  {
                     Ontology ontology = (Ontology) resource;
                     // should we pass in the context?
                     ontologyService.shred(ontology);
-                    genericService.saveOrUpdate(ontology);
+                    genericDao.saveOrUpdate(ontology);
                     break;
                 case CODING_SHEET:
                     CodingSheet codingSheet = (CodingSheet) resource;

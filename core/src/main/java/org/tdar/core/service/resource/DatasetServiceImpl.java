@@ -754,8 +754,13 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     }
 
     @Override
+    public List<Dataset> findAll() {
+        return getDao().findAllSorted("title asc");
+    }
+    
+    @Override
     public List<Dataset> findAll(String string) {
-        return getDao().findByTitle(string);
+        return getDao().findAllSorted(string);
     }
     
 }
