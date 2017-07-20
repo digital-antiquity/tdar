@@ -29,7 +29,6 @@ import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
-import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
@@ -55,12 +54,14 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
+import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.ResourceCitationFormatter;
+import org.tdar.web.service.ResourceViewControllerService;
 
 /**
  * $Id$
@@ -94,7 +95,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     @Autowired
     private transient UserRightsProxyService userRightsProxyService;
-    
+
     @Autowired
     private transient InformationResourceFileService informationResourceFileService;
 
@@ -120,13 +121,13 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     // private List<ListCollection> resourceCollections = new ArrayList<>();
     private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
 
-    private List<ResourceCreatorProxy> authorshipProxies;
-    private List<ResourceCreatorProxy> creditProxies;
-    private List<ResourceCreatorProxy> contactProxies;
+    private List<ResourceCreatorProxy> authorshipProxies = new ArrayList<>();
+    private List<ResourceCreatorProxy> creditProxies = new ArrayList<>();
+    private List<ResourceCreatorProxy> contactProxies = new ArrayList<>();
     private ResourceCitationFormatter resourceCitation;
 
-     private List<ListCollection> viewableListCollections;
-     private List<SharedCollection> viewableSharedCollections;
+    private List<ListCollection> viewableListCollections;
+    private List<SharedCollection> viewableSharedCollections;
 
     private String schemaOrgJsonLD;
 
@@ -134,37 +135,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     private List<UserInvite> invites;
 
-    private void initializeResourceCreatorProxyLists() {
-        Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
-        resourceCreators = getPersistable().getActiveResourceCreators();
-        if (resourceCreators == null) {
-            return;
-        }
-        authorshipProxies = new ArrayList<>();
-        creditProxies = new ArrayList<>();
-
-        // this may be duplicative... check
-        for (ResourceCreator rc : resourceCreators) {
-            if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
-                if ((rc.getCreatorType() == CreatorType.PERSON) && !isAuthenticated()) {
-                    obfuscationService.obfuscate(rc.getCreator(), getAuthenticatedUser());
-                }
-            }
-
-            ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
-            if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {
-                authorshipProxies.add(proxy);
-            } else {
-                creditProxies.add(proxy);
-            }
-
-            if (proxy.isValidEmailContact()) {
-                getContactProxies().add(proxy);
-            }
-        }
-        Collections.sort(authorshipProxies);
-        Collections.sort(creditProxies);
-    }
+    @Autowired
+    ResourceViewControllerService viewService;
 
     public String getOpenUrl() {
         return OpenUrlFormatter.toOpenURL(getResource());
@@ -215,7 +187,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
             }
         }
 
-        
         setInvites(userRightsProxyService.findUserInvites(getPersistable()));
         return SUCCESS;
     }
@@ -254,8 +225,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     public void loadBasicViewMetadata() {
+        AuthWrapper<Resource> authWrapper = new AuthWrapper<Resource>(getPersistable(), isAuthenticated(), getAuthenticatedUser());
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
-        initializeResourceCreatorProxyLists();
+        viewService.initializeResourceCreatorProxyLists(authWrapper, authorshipProxies, creditProxies, contactProxies);
         loadEffectiveResourceCollections();
         getLogger().trace("effective collections: {}", getEffectiveResourceCollections());
     }
@@ -365,9 +337,10 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
             }
         }
     }
-    
+
     /**
      * All shares and list collections
+     * 
      * @return
      */
     public List<VisibleCollection> getViewableResourceCollections() {
@@ -377,7 +350,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return visibleCollections;
     }
 
-    
     public List<SharedCollection> getViewableSharedResourceCollections() {
         if (viewableSharedCollections != null) {
             return viewableSharedCollections;
@@ -390,7 +362,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         viewableSharedCollections = new ArrayList<>(collections);
         return viewableSharedCollections;
     }
-
 
     public boolean isUserAbleToReTranslate() {
         if (authorizationService.canEdit(getAuthenticatedUser(), getPersistable())) {
