@@ -107,8 +107,8 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
     }
 
     @Transactional(readOnly=true)
-    public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
-        return getDao().findAllEmbargoFilesExpiringTomorrow();
+    public List<InformationResourceFile> findAllEmbargoFilesExpiring() {
+        return getDao().findAllEmbargoFilesExpiring();
     }
 
 }

@@ -140,11 +140,11 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         return query.getResultList();
     }
 
-    public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
+    public List<InformationResourceFile> findAllEmbargoFilesExpiring() {
         Query<InformationResourceFile> query = getCurrentSession().createNamedQuery(QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW, InformationResourceFile.class);
         DateTime today = new DateTime().plusDays(1).withTimeAtStartOfDay();
         query.setParameter("dateStart", today.toDate());
-        query.setParameter("dateEnd", today.plusDays(1).toDate());
+        query.setParameter("dateEnd", today.plusDays(2).toDate());
         return query.getResultList();
     }
 }

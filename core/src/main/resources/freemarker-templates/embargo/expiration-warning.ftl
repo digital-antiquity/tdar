@@ -1,6 +1,6 @@
 Dear ${submitter.properName},
 
-The following files are marked as "embargoed" in ${siteAcronym}. That embargo will expire tomorrow.
+The following files are marked as "embargoed" in ${siteAcronym}. That embargo will expire soon.
 At that time, the embargo will be automatically removed.
   
 <#list files as file>

@@ -59,7 +59,7 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
     @Override
     public void execute() {
         List<InformationResourceFile> expired = informationResourceFileService.findAllExpiredEmbargoFiles();
-        List<InformationResourceFile> toExpire = informationResourceFileService.findAllEmbargoFilesExpiringTomorrow();
+        List<InformationResourceFile> toExpire = informationResourceFileService.findAllEmbargoFilesExpiring();
 
         if (CollectionUtils.isEmpty(expired) && CollectionUtils.isEmpty(toExpire)) {
             completed = true;
