@@ -1,0 +1,1 @@
+We're proud to announce tDAR's fifteenth production release: Obsidian.  This release contains improved collections, data integration, and an export feature as well as numerous bug fixes, performance enhancements, and <a href="http://www.tdar.org/news/2016/06/tdar-software-update-obsidian/">much more</a>.

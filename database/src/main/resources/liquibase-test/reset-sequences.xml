@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd" context="test" >
+	<changeSet id="test123" author="abrin">
+		<sql dbms="postgresql" splitStatements="true" stripComments="true">
+			SELECT setval('category_variable_id_seq', (SELECT MAX(id) FROM category_variable)+1);
+			SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
+			SELECT setval('culture_keyword_id_seq', (SELECT MAX(id) FROM culture_keyword)+1);
+			SELECT setval('geographic_keyword_id_seq', (SELECT MAX(id) FROM geographic_keyword)+1);
+			SELECT setval('information_resource_file_id_seq', (SELECT MAX(id) FROM information_resource_file)+1);
+			SELECT setval('information_resource_file_version_id_seq', (SELECT MAX(id) FROM information_resource_file_version)+1);
+			SELECT setval('investigation_type_id_seq', (SELECT MAX(id) FROM investigation_type)+1);
+			SELECT setval('material_keyword_id_seq', (SELECT MAX(id) FROM material_keyword)+1);
+			SELECT setval('ontology_node_id_seq', (SELECT MAX(id) FROM ontology_node)+1);
+			SELECT setval('resource_revision_log_id_seq', (SELECT MAX(id) FROM resource_revision_log)+1);
+			SELECT setval('resource_sequence', (SELECT MAX(id) FROM resource)+1);
+			SELECT setval('site_name_keyword_id_seq', (SELECT MAX(id) FROM site_name_keyword)+1);
+			SELECT setval('site_type_keyword_id_seq', (SELECT MAX(id) FROM site_type_keyword)+1);
+			SELECT setval('source_collection_id_seq', (SELECT MAX(id) FROM source_collection)+1);
+			SELECT setval('temporal_keyword_id_seq', (SELECT MAX(id) FROM temporal_keyword)+1);
+			SELECT setval('bookmarked_resource_id_seq', (SELECT MAX(id) FROM bookmarked_resource)+1);
+			SELECT setval('coverage_date_id_seq', (SELECT MAX(id) FROM coverage_date)+1);
+			SELECT setval('coding_rule_id_seq', (SELECT MAX(id) FROM coding_rule)+1);
+			SELECT setval('data_table_id_seq', (SELECT MAX(id) FROM data_table)+1);
+			SELECT setval('data_table_column_id_seq', (SELECT MAX(id) FROM data_table_column)+1);
+			SELECT setval('data_table_relationship_id_seq', (SELECT MAX(id) FROM data_table_relationship)+1);
+			SELECT setval('latitude_longitude_id_seq', (SELECT MAX(id) FROM latitude_longitude)+1);
+			SELECT setval('other_keyword_id_seq', (SELECT MAX(id) FROM other_keyword)+1);
+			SELECT setval('personal_filestore_ticket_id_seq', (SELECT MAX(id) FROM personal_filestore_ticket)+1);
+			SELECT setval('related_comparative_collection_id_seq', (SELECT MAX(id) FROM related_comparative_collection)+1);
+			SELECT setval('resource_annotation_id_seq', (SELECT MAX(id) FROM resource_annotation)+1);
+			SELECT setval('resource_annotation_key_id_seq', (SELECT MAX(id) FROM resource_annotation_key)+1);
+			SELECT setval('resource_creator_id_seq', (SELECT MAX(id) FROM resource_creator)+1);
+			SELECT setval('resource_note_id_seq', (SELECT MAX(id) FROM resource_note)+1);
+			SELECT setval('stats_id_seq', (SELECT MAX(id) FROM stats)+1);
+			SELECT setval('upgrade_task_id_seq', (SELECT MAX(id) FROM upgrade_task)+1);
+			SELECT setval('collection_id_seq', (SELECT MAX(id) FROM collection)+1);
+			SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
+			SELECT setval('pos_billing_model_id_seq', (SELECT MAX(id) FROM pos_billing_model)+1);
+            SELECT setval('user_notification_id_seq', (SELECT MAX(id) FROM user_notification)+1);
+            SELECT setval('pos_account_id_seq', (SELECT MAX(id) FROM pos_account)+1);
+            SELECT setval('pos_invoice_id_seq', (SELECT MAX(id) FROM pos_invoice)+1);
+            SELECT setval('pos_billing_activity_id_seq', (SELECT MAX(id) FROM pos_billing_activity)+1);
+            SELECT setval('pos_item_id_seq', (SELECT MAX(id) FROM pos_item)+1);
+            SELECT setval('data_table_column_relationship_id_seq', (SELECT MAX(id) FROM data_table_column_relationship)+1);
+            SELECT setval('data_table_relationship_id_seq', (SELECT MAX(id) FROM data_table_relationship)+1);
+            SELECT setval('resource_access_statistics_id_seq', (SELECT MAX(id) FROM resource_access_statistics)+1);
+			<comment>incrementing sequence; does not seem to properly work with alterSequence calls</comment>
+		</sql>
+	</changeSet>
+</databaseChangeLog>
