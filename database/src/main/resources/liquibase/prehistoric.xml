@@ -358,4 +358,11 @@
             <column name="import_order" type="int" />
         </addColumn>
     </changeSet>
+    <changeSet id="prehistoric-default-25" author="abrin">
+        <insert tableName="user_notification">
+            <column name="message_type" value="SYSTEM_BROADCAST"/>
+            <column name="message_key" value="prehistoric"/>
+            <column name="display_type" value="FREEMARKER"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
