@@ -25,6 +25,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
@@ -432,23 +433,35 @@ public class AuthenticationService {
     @Transactional(readOnly = false)
     public void updatePersonWithInvites(TdarUser person) {
         List<UserInvite> invites = personDao.checkInvite(person);
+        Map<TdarUser, List<HasName>> notices = new HashMap<>();
         for (UserInvite invite : invites) {
             if (invite.getPermissions() == null) {
                 continue;
             }
             DateTime now = DateTime.now();
 
-            AuthorizedUser user = new AuthorizedUser(invite.getAuthorizer(), person, invite.getPermissions());
             Date dateExpires = invite.getDateExpires();
-            if (invite.getResourceCollection() != null && 
-                    (dateExpires == null ||  now.isBefore(new DateTime(dateExpires)))) {
+            TdarUser authorizer = invite.getAuthorizer();
+            if (dateExpires != null ||  now.isAfter(new DateTime(dateExpires))) {
+                logger.debug("invite expired: {}", invite);
+                continue;
+            }
+            notices.putIfAbsent(authorizer, new ArrayList<>());
+            AuthorizedUser user = new AuthorizedUser(authorizer, person, invite.getPermissions());
+            if (invite.getResourceCollection() != null) {
                 invite.getResourceCollection().getAuthorizedUsers().add(user);
                 personDao.saveOrUpdate(invite.getResourceCollection());
                 personDao.saveOrUpdate(user);
-            } else {
-                logger.error("added user, but invite expired...");
+                notices.get(authorizer).add((HasName)invite.getResourceCollection());
+            } 
+
+            if (invite.getResource() != null) {
+                invite.getResource().getAuthorizedUsers().add(user);
+                personDao.saveOrUpdate(invite.getResourceCollection());
+                personDao.saveOrUpdate(user);
+                notices.get(authorizer).add(invite.getResource());
             }
-//            invite.setUser(person);
+
             invite.setDateRedeemed(new Date());
             personDao.saveOrUpdate(invite);
             //FIXME: REMOVE if rights changes work
@@ -463,6 +476,7 @@ public class AuthenticationService {
 
             }
         }
+        emailService.sendUserInviteGrantedEmail(notices, person);
 
     }
 

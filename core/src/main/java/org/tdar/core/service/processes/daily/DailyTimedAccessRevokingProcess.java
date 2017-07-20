@@ -155,7 +155,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
             Email email = new Email();
             email.setUserGenerated(false);
             email.setTo(owner.getEmail());
-            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User from Collection");
+            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User(s)");
             Map<String, Object> map = new HashMap<>();
             map.put("user", owner);
             List<String> notes = ownerNotes.getOrDefault(owner, new ArrayList<>());
@@ -169,7 +169,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
             Email email = new Email();
             email.setUserGenerated(false);
             email.setTo(owner.getEmail());
-            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired Access To Collection");
+            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired Access");
             Map<String, Object> map = new HashMap<>();
             map.put("user", owner);
             map.put("notes", ownerNotes.getOrDefault(owner, new ArrayList<>()));
@@ -181,7 +181,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
             Email email = new Email();
             email.setTo(TdarConfiguration.getInstance().getSystemAdminEmail());
             email.setUserGenerated(false);
-            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User Access To Collection");
+            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User Access (admin)");
             Map<String, Object> map = new HashMap<>();
             map.put("notes", adminNotes);
             logger.debug("admin notes: {}", adminNotes);

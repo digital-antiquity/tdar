@@ -21,7 +21,7 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-public abstract class AbstractRequestAcessRegistrationAction<P extends Persistable> extends AbstractRequestAccessController<P> {
+public abstract class AbstractRequestAccessRegistrationAction<P extends Persistable> extends AbstractRequestAccessController<P> {
 
     private static final long serialVersionUID = -4643571075544328581L;
 
