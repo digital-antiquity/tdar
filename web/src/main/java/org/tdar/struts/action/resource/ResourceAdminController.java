@@ -37,6 +37,10 @@ import com.opensymphony.xwork2.Preparable;
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
 public class ResourceAdminController extends AbstractAuthenticatableAction implements Preparable {
 
+    public boolean isEditable() {
+        return true;
+    }
+    
     private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
     private static final long serialVersionUID = -2071449250711089300L;
     public static final String ADMIN = "admin";

@@ -250,11 +250,23 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
     protected List<BillingAccount> determineActiveAccounts() {
+    	//Get all available active accounts for the user. If the resource is being edited, and its associated account is over-limit, this list will 
+    	//not contain that billing account.
         List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
+
+        //If the resource has been created, e.g., not null, then check to see if the billing account needs to be added in. 
         if (getResource() != null) {
-            BillingAccount resourceAccount = getResource().getAccount();
-            if ((resourceAccount != null) && !accounts.contains(resourceAccount)
-                    && (isEditor() || authorizationService.isAllowedToEditInherited(getAuthenticatedUser(), getResource()))) {
+
+            accountService.updateTransientAccountInfo(getResource());
+        	
+            BillingAccount resourceAccount     = getResource().getAccount();
+            boolean resourceAccountIsNotNull   = resourceAccount !=null;
+            boolean resourceAccountNotInList   = !accounts.contains(resourceAccount);
+            boolean hasInheritedEditPermission = authorizationService.isAllowedToEditInherited(getAuthenticatedUser(), getResource());
+            
+            //If the billing account is not in the list, but should be, then move it to the front of the list.
+            if (resourceAccountIsNotNull && resourceAccountNotInList &&
+            	(isEditor() || hasInheritedEditPermission)) {
                 accounts.add(0, resourceAccount);
             }
         }
@@ -288,11 +300,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     
         String save2 = super.save();
         try {
-        if (StringUtils.equals(save2, SUCCESS) && StringUtils.equalsAnyIgnoreCase(getAlternateSubmitAction(), ASSIGN_RIGHTS)) {
-            return RIGHTS;
-        }
+	        if (StringUtils.equals(save2, SUCCESS) && StringUtils.equalsAnyIgnoreCase(getAlternateSubmitAction(), ASSIGN_RIGHTS)) {
+	            return RIGHTS;
+	        }
         } catch (Throwable t) {
-        getLogger().debug("{}",t,t);
+        	getLogger().debug("{}",t,t);
         }
         return save2;
     }
@@ -367,7 +379,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected void setupAccountForSaving() {
-        accountService.updateTransientAccountInfo(getResource());
         List<BillingAccount> accounts = determineActiveAccounts();
         if (accounts.size() == 1) {
             setAccountId(accounts.get(0).getId());

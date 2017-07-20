@@ -12,6 +12,20 @@ import org.tdar.core.service.GenericService;
 
 public interface TestBillingAccountHelper {
 
+    /**
+     * Creates a new BillingAccount object
+     * @param model
+     * @param user
+     * @return BillingAccount initialized to 6 mb
+     */
+    default BillingAccount setupAccountWithInvoiceForSpecifiedMb(BillingActivityModel model, TdarUser user, Long size) {
+    	BillingAccount account = new BillingAccount();
+    	BillingActivity activity = new BillingActivity(size.toString()+" mb", 10f, 0, 0L, 0L, size, model);
+    	initAccount(account, activity, getUser());
+    	getGenericService().saveOrUpdate(account);
+    	return account;
+    }
+
 
     default BillingAccount setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
         BillingAccount account = new BillingAccount();
@@ -94,6 +108,13 @@ public interface TestBillingAccountHelper {
         getGenericService().saveOrUpdate(account);
         return account;
     }
+    
+    default void updateModel(BillingActivityModel model, boolean resources, boolean files, boolean space) {
+        model.setCountingResources(resources);
+        model.setCountingFiles(files);
+        model.setCountingSpace(space);
+    }
+
 
     GenericService getGenericService();
 
