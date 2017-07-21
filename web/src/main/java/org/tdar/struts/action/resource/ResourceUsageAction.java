@@ -49,6 +49,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/resource/usage")
 public class ResourceUsageAction extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<Resource> {
 
+    private static final String YYYY_MM_DD = "yyyy-MM-dd";
     private static final long serialVersionUID = 97924349900255693L;
     private List<AggregateDayViewStatistic> usageStatsForResources = new ArrayList<>();
     private Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<>();
@@ -79,7 +80,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
     private Map<String, List<Long>> allByYear;
     private Map<String, List<Long>> allByMonth;
     private Map<String, List<Long>> allByDay;
-    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat format = new SimpleDateFormat(YYYY_MM_DD);
     Set<String> keys = new HashSet<>();
     private String graphJson;
 
@@ -169,6 +170,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
           for (DailyTotal t : s.getDailyTotals()) {
               DateTime date = DateTime.parse(t.getDate());
               Date date2 = date.toDate();
+              
             if (!map.containsKey(date2)) {
                   map.put(date2, new HashMap<String, Object>());
               }
@@ -180,7 +182,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
                   incrementKey(byMonth, formatMonth(s.getYear(), s.getMonth()), s.getTotal(), viewsText);
               }
               if (lastWeek.isBefore(date)) {
-                  incrementKey(byDay, format.format(date), t.getTotal().longValue(), viewsText);
+                  incrementKey(byDay, date.toString(YYYY_MM_DD), t.getTotal().longValue(), viewsText);
               }
               keys.add(viewsText);
           }
