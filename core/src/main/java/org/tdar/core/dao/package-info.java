@@ -617,7 +617,7 @@
         		query = "from Person p where p.status in ('ACTIVE','DUPLICATE') and p.institution.id in :id"),
         @NamedQuery(
                 name=TdarNamedQueries.AUTHORIZED_USERS_FOR_RESOURCE,
-                query = "select au from Resource r join r.authorizedUsers au where r.id=:id"),
+                query = "from AuthorizedUser au where au.resourceId=:id"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION,
                 query = "select r from ResourceCollection r join r.authorizedUsers au where au.dateExpires < :date and status='ACTIVE'"),
