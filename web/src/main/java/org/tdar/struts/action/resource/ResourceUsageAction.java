@@ -95,7 +95,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
 
 
         setupLabels(byMonth, byDay, lastYear, lastWeek);
-
+ 
         incrementViewStatistics(byYear, byMonth, byDay, viewsText, lastYear, lastWeek, map);
         incrementDownloadStatistics(byYear, byMonth, byDay, lastYear, lastWeek, map);
 
@@ -176,7 +176,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
               }
               Map<String, Object> submap = map.get(date2);
               submap.put(viewsText, t.getTotal());
-              submap.put("date", date);
+              submap.put("date", date.toString(YYYY_MM_DD));
 
               if (lastYear.isBefore(date)) {
                   incrementKey(byMonth, formatMonth(s.getYear(), s.getMonth()), s.getTotal(), viewsText);

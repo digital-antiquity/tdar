@@ -160,7 +160,7 @@ public class AggregateDayViewStatistic extends AbstractPersistable implements Se
         }
 
         if (t > 0) {
-            totals.add(new DailyTotal(t, String.format("%s-%s-%s", year, month, day)));
+            totals.add(new DailyTotal(t, String.format("%s-%02d-%s", year, month, day)));
         }
 
     }
