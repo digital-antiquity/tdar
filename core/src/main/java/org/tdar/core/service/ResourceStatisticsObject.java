@@ -1,17 +1,15 @@
 package org.tdar.core.service;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -186,9 +184,7 @@ public class ResourceStatisticsObject {
 
     private <T> void incrementKey(Map<T, Map<String, Long>> parent, T subKey, Long count, String k) {
         Map<String, Long> by = parent.getOrDefault(subKey, new HashMap<>());
-
-        Long v = by.getOrDefault(k,0L) + count;
-        by.put(k, v);
+        by.put(k, by.getOrDefault(k,0L) + count);
         parent.put(subKey, by);
     }
 
