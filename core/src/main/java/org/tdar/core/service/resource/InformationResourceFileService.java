@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.hibernate.ScrollableResults;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
@@ -59,8 +58,8 @@ public interface InformationResourceFileService {
 
     List<InformationResourceFile> findAllExpiredEmbargoFiles();
 
-    List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow();
-
     InformationResourceFile find(Long id);
+
+    List<InformationResourceFile> findAllEmbargoFilesExpiring();
 
 }

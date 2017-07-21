@@ -375,6 +375,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Transactional(readOnly = false)
+    @Override
     public void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person) {
         for (Entry<TdarUser, List<HasName>> entry : notices.entrySet()) {
             Email email = new Email();
