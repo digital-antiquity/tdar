@@ -1,0 +1,1 @@
+We're proud to announce tDAR's sixteenth production release: Prehistoric.  This release introduces a new dashboard, enhanced methods for managing rights, and unified search, as well as, numerous bug fixes and performance enhancements and visualizations and <a href="http://www.tdar.org/news/2017/07/tdar-software-update-prehistoric/">much more</a>.

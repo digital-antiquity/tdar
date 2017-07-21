@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd" context="production,test" >
+
+
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
+
+    <changeSet id="obsidian-1" author="abrin" failOnError="false">
+        <dropColumn tableName="institution" columnName="merge_creator_id" />
+        <dropColumn tableName="person" columnName="merge_creator_id" />
+    </changeSet>
+
+    <changeSet id="obsidian-2" author="abrin">
+        <addPrimaryKey tableName="data_integration_workflow" columnNames="id"/>
+        <createTable tableName="data_integration_users">
+            <column name="id" type="bigserial" />
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" references="tdar_user"
+                    foreignKeyName="fk_integration_authorization__tdar_user_id" />
+            </column>
+            <column name="integration_id" type="bigint">
+                <constraints nullable="false"
+                    references="data_integration_workflow"
+                    foreignKeyName="fk_integration_authorization___id" />
+            </column>
+        </createTable>
+        <addColumn tableName="data_integration_workflow">
+            <column name="hidden" defaultValueBoolean="false" type="boolean"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-3" author="abrin">
+        <addColumn tableName="email_queue">
+            <column name="resource_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_email_resource_id" referencedTableName="resource" baseColumnNames="resource_id" baseTableName="email_queue" referencedColumnNames="id" />        
+        <addColumn tableName="email_queue">
+            <column name="message_type" type="varchar(50)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-4" author="abrin">
+        <addColumn tableName="resource_revision_log">
+            <column name="revision_type" type="varchar(50)" />
+            <column name="time_seconds" type="bigint" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="obsidian-5" author="abrin">
+        <update tableName="data_integration_workflow">
+        <column name="hidden" valueBoolean="true"/></update>
+    </changeSet>
+    
+    <changeSet id="obsidian-6" author="abrin">
+    <comment>setting up resource revision log (type) based on unique keys/values</comment>    
+    <sql>
+        update  resource_revision_log set revision_type='DELETE' where log_message ilike '%deleted by%';
+        update  resource_revision_log set revision_type='EDIT' where log_message ilike '%edited and saved%';
+        update  resource_revision_log set revision_type='CREATE' where log_message ilike '%created\:%';
+        update  resource_revision_log set revision_type='EDIT' where log_message ilike 'updated:%';
+        update  resource_revision_log set revision_type='CREATE' where log_message ilike 'clone%';
+        update  resource_revision_log set revision_type='EDIT' where log_message ilike '%genearting%';
+    </sql>
+    </changeSet>
+    <changeSet id="obsidian-7" author="abrin">
+        <addColumn tableName="keyword_mapping">
+            <column name="label" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-8" author="abrin">
+        <addColumn tableName="tdar_user">
+            <column name="user_agent" type="varchar(512)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian9" author="abrin">
+        <createIndex tableName="culture_keyword" indexName="idx_culture_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="geographic_keyword" indexName="idx_geographic_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="material_keyword" indexName="idx_material_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="site_name_keyword" indexName="idx_site_name_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="site_type_keyword" indexName="idx_site_type_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="temporal_keyword" indexName="idx_temporal_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="investigation_type" indexName="idx_investigation_type_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="other_keyword" indexName="idx_other_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet id="obsidian-9" author="abrin">
+        <modifyDataType tableName="geographic_keyword" columnName="code" newDataType="varchar(10)"/>
+    </changeSet>
+    <changeSet id="obsidian-10" author="abrin">
+        <addColumn tableName="information_resource_file">
+            <column name="preservation_note" type="text" />
+            <column name="preservation_status" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="obsidian-11" author="abrin">
+    <createTable tableName="collection_revision_log">
+        <column name="id" type="bigserial" />
+        <column name="revision_type" type="varchar(25)" />
+        <column name="log_message" type="varchar(512)" />
+        <column name="time_seconds" type="bigint" />
+        <column name="person_id" type="bigint">
+            <constraints nullable="false" references="tdar_user"
+                foreignKeyName="fk_collection_revision__tdar_user_id" />
+        </column>
+        <column name="collection_id" type="bigint">
+            <constraints nullable="true" references="collection"
+                foreignKeyName="fk_collection_revision__collection_id" />
+        </column>
+    </createTable>
+    </changeSet>
+    <changeSet id="obsidian-12" author="abrin">
+        <addColumn tableName="collection_revision_log">
+            <column name="timestamp" type="timestamp" />
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-13" author="abrin">
+    <dropForeignKeyConstraint baseTableName="collection_revision_log" constraintName="fk_collection_revision__collection_id"/>
+    </changeSet>
+
+    <changeSet id="obsidian-14" author="abrin">
+    	<addColumn tableName="collection">
+    		<column name="system_managed" type="boolean" defaultValueBoolean="false" />
+   		</addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-15" author="abrin">
+        <renameColumn tableName="resource_culture_keyword" oldColumnName="culture_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_site_name_keyword" oldColumnName="site_name_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_site_type_keyword" oldColumnName="site_type_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_temporal_keyword" oldColumnName="temporal_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_other_keyword" oldColumnName="other_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_geographic_keyword" oldColumnName="geographic_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_managed_geographic_keyword" oldColumnName="geographic_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_investigation_type" oldColumnName="investigation_type_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_material_keyword" oldColumnName="material_keyword_id" newColumnName="keyword_id"/>
+    </changeSet>
+        
+    
+    <changeSet id="obsidian-16" author="abrin">
+        <createTable tableName="dataone_object">
+        <column name="id" type="bigserial" />
+        <column name="identifier" type="varchar(100)" />
+        <column name="series_id" type="varchar(100)" />
+        <column name="entry_type" type="varchar(100)" />
+        <column name="format_id" type="varchar(255)" />
+        <column name="submitter" type="varchar(512)" />
+        <column name="obsoletes" type="varchar(100)" />
+        <column name="obsoleted_by" type="varchar(100)" />
+        <column name="checksum" type="varchar(255)" />
+        <column name="size" type="bigint" />
+        <column name="tdar_id" type="bigint" />
+        <column name="sys_metadata_modified" type="timestamp" />
+        <column name="date_created" type="timestamp" />
+    </createTable>
+        </changeSet>
+    
+    <changeSet id="obsidian-17" author="abrin">
+	    <addColumn tableName="dataone_object">
+	        <column name="date_uploaded" type="timestamp" />
+	    </addColumn>
+    
+    </changeSet>
+    <changeSet id="obsidian-18" author="abrin">
+    <createTable tableName="collection_request">
+        <column name="id" type="bigserial" />
+        <column name="general_permission" type="varchar(50)"/>
+        <column name="name" type="varchar(500)"/>
+        <column name="description_request" type="varchar(500)" />
+        <column name="description_response" type="varchar(500)" />
+        <column name="contact_id" type="bigint" />
+    </createTable>
+    <createTable tableName="collection_request_collection_ids">
+        <column name="collection_request_id" type="bigint" />
+        <column name="collection_id" type="bigint" />
+        <column name="collections_id" type="bigint" />
+    </createTable>
+    <addPrimaryKey tableName="collection_request" columnNames="id"/>
+    <addForeignKeyConstraint constraintName="collection_request_user_id" 
+        referencedTableName="tdar_user" 
+        baseColumnNames="contact_id" baseTableName="collection_request" referencedColumnNames="id"/>
+    <addForeignKeyConstraint constraintName="collection_request_collection_id" 
+        referencedTableName="collection" 
+        baseColumnNames="collection_id" baseTableName="collection_request_collection_ids" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="obsidian-19" author="abrin">
+        <sql>update email_queue set message_type ='CUSTOM' where message_type='SAA';</sql>
+    </changeSet>
+    <changeSet id="obsidian-20" author="abrin">
+    <addColumn tableName="resource_access_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    <addColumn tableName="creator_view_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+
+    <addColumn tableName="resource_collection_view_statistics">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    <addColumn tableName="resource_access_day_agg">
+        <column name="bot" type="boolean" defaultValueBoolean="false" />
+    </addColumn>
+    
+    </changeSet>
+    <changeSet id="obsidian-21" author="abrin">
+        <addColumn tableName="information_resource_file_download_statistics">
+            <column name="bot" type="boolean" defaultValueBoolean="false" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-22" author="abrin">
+    <dropColumn tableName="resource_access_day_agg" columnName="bot"/>
+        <addColumn tableName="resource_access_day_agg">
+            <column name="bot" type="bigint" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-23" author="abrin">
+        <addColumn tableName="collection">
+            <column name="alternate_parent_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="collection_alternate_parent_id" 
+            referencedTableName="collection" 
+            baseColumnNames="alternate_parent_id" baseTableName="collection" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="obsidian-24" author="abrin">
+        <createIndex tableName="resource" indexName="resource_updated_status_id">
+            <column name="date_updated"/>
+            <column name="status"/>
+            <column name="id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="obsidian-stats-1" author="abrin">
+        <sql>create table resource_access_day_agg_2 (id bigserial, resource_id bigint, date_accessed date, year int, month int, day int, count bigint, bot int);</sql>
+        <sql>create index resource_access_day_agg_idx1 on resource_access_day_agg_2  (resource_id, year,month,day);</sql>
+        <sql>insert into resource_access_day_agg_2 (resource_id, date_accessed, year,month,day, "count" , bot)  select resource_id, date_accessed, year, month, date_part('day',date_accessed), "count", bot from resource_access_day_agg;</sql>
+
+        <sql>create temporary table tmp (id bigserial, total bigint, total_bot bigint, resource_id bigint, day int, month int, year int);</sql>
+        <sql>create index resource_access_day_agg_idx12 on tmp  (resource_id, year,month,day);</sql>
+        <sql>insert into tmp (total,  total_bot, resource_id, day, month, year)  select
+    (select sum(count) from resource_access_day_agg_2 where resource_id=a.resource_id  and a.month=month and a.year=year and a.day=day  ),
+    (select sum(bot) from resource_access_day_agg_2 where resource_id=a.resource_id  and a.month=month and a.year=year and a.day=day  ),
+     resource_id,  day, month, year from resource_access_day_agg_2 a group by resource_id, year, month, day;</sql>
+        
+        
+        <createTable tableName="resource_access_month_agg">
+            <column name="id" type="bigserial" />
+            <column name="resource_id" type="bigint" />
+            <column name="year" type="int" />
+            <column name="month" type="int" />
+            <column name="d1" type="int" />
+            <column name="d1_bot" type="int" />
+
+            <column name="d2" type="int" />
+            <column name="d2_bot" type="int" />
+            <column name="d3" type="int" />
+            <column name="d3_bot" type="int" />
+            <column name="d4" type="int" />
+            <column name="d4_bot" type="int" />
+            <column name="d5" type="int" />
+            <column name="d5_bot" type="int" />
+            <column name="d6" type="int" />
+            <column name="d6_bot" type="int" />
+            <column name="d7" type="int" />
+            <column name="d7_bot" type="int" />
+            <column name="d8" type="int" />
+            <column name="d8_bot" type="int" />
+            <column name="d9" type="int" />
+            <column name="d9_bot" type="int" />
+            <column name="d10" type="int" />
+            <column name="d10_bot" type="int" />
+            <column name="d11" type="int" />
+            <column name="d11_bot" type="int" />
+            <column name="d12" type="int" />
+            <column name="d12_bot" type="int" />
+            <column name="d13" type="int" />
+            <column name="d13_bot" type="int" />
+            <column name="d14" type="int" />
+            <column name="d14_bot" type="int" />
+            <column name="d15" type="int" />
+            <column name="d15_bot" type="int" />
+            <column name="d16" type="int" />
+            <column name="d16_bot" type="int" />
+            <column name="d17" type="int" />
+            <column name="d17_bot" type="int" />
+            <column name="d18" type="int" />
+            <column name="d18_bot" type="int" />
+            <column name="d19" type="int" />
+            <column name="d19_bot" type="int" />
+            <column name="d20" type="int" />
+            <column name="d20_bot" type="int" />
+            <column name="d21" type="int" />
+            <column name="d21_bot" type="int" />
+            <column name="d22" type="int" />
+            <column name="d22_bot" type="int" />
+            <column name="d23" type="int" />
+            <column name="d23_bot" type="int" />
+            <column name="d24" type="int" />
+            <column name="d24_bot" type="int" />
+            <column name="d25" type="int" />
+            <column name="d25_bot" type="int" />
+            <column name="d26" type="int" />
+            <column name="d26_bot" type="int" />
+            <column name="d27" type="int" />
+            <column name="d27_bot" type="int" />
+            <column name="d28" type="int" />
+            <column name="d28_bot" type="int" />
+            <column name="d29" type="int" />
+            <column name="d29_bot" type="int" />
+            <column name="d30" type="int" />
+            <column name="d30_bot" type="int" />
+            <column name="d31" type="int" />
+            <column name="d31_bot" type="int" />
+        </createTable>
+        <createIndex tableName="resource_access_month_agg" indexName="resource_access_month_agg_idx">
+            <column name="resource_id"/>
+            <column name="year"/>
+            <column name="month"/>
+        </createIndex>
+        <sql>
+        create table _2018_resource_access_month_agg (check (year=2018)) INHERITS (resource_access_month_agg);
+        create table _2017_resource_access_month_agg (check (year=2017)) INHERITS (resource_access_month_agg);
+        create table _2016_resource_access_month_agg (check (year=2016)) INHERITS (resource_access_month_agg);
+        create table _2015_resource_access_month_agg (check (year=2015)) INHERITS (resource_access_month_agg);
+        create table _2014_resource_access_month_agg (check (year=2014)) INHERITS (resource_access_month_agg);
+        create table _2013_resource_access_month_agg (check (year=2013)) INHERITS (resource_access_month_agg);
+        create table _2012_resource_access_month_agg (check (year=2012)) INHERITS (resource_access_month_agg);
+        create table _2011_resource_access_month_agg (check (year=2011)) INHERITS (resource_access_month_agg);
+        create table _2010_resource_access_month_agg (check (year=2010)) INHERITS (resource_access_month_agg);
+        
+        create index resource_access_month_agg_2010_id on _2010_resource_access_month_agg (id);
+        create index resource_access_month_agg_2010_rid on _2010_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2010_month on _2010_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2011_id on _2011_resource_access_month_agg (id);
+        create index resource_access_month_agg_2011_rid on _2011_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2011_month on _2011_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2012_id on _2012_resource_access_month_agg (id);
+        create index resource_access_month_agg_2012_rid on _2012_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2012_month on _2012_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2013_id on _2013_resource_access_month_agg (id);
+        create index resource_access_month_agg_2013_rid on _2013_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2013_month on _2013_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2014_id on _2014_resource_access_month_agg (id);
+        create index resource_access_month_agg_2014_rid on _2014_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2014_month on _2014_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2015_id on _2015_resource_access_month_agg (id);
+        create index resource_access_month_agg_2015_rid on _2015_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2015_month on _2015_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2016_id on _2016_resource_access_month_agg (id);
+        create index resource_access_month_agg_2016_rid on _2016_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2016_month on _2016_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2017_id on _2017_resource_access_month_agg (id);
+        create index resource_access_month_agg_2017_rid on _2017_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2017_month on _2017_resource_access_month_agg (month);
+        
+        create index resource_access_month_agg_2018_id on _2018_resource_access_month_agg (id);
+        create index resource_access_month_agg_2018_rid on _2018_resource_access_month_agg (resource_id);
+        create index resource_access_month_agg_2018_month on _2018_resource_access_month_agg (month);
+        </sql>
+        <sql splitStatements="false">
+        CREATE OR REPLACE FUNCTION  resource_access_month_agg_insert_trigger()
+        RETURNS TRIGGER AS $body$
+        BEGIN
+            IF ( NEW.year=2018 ) THEN
+                INSERT INTO _2018_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2017 ) THEN
+                INSERT INTO _2017_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2016) THEN
+                INSERT INTO _2016_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2015) THEN
+                INSERT INTO _2015_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2014) THEN
+                INSERT INTO _2014_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2013) THEN
+                INSERT INTO _2013_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2012) THEN
+                INSERT INTO _2012_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2011) THEN
+                INSERT INTO _2011_resource_access_month_agg VALUES (NEW.*);
+            ELSIF ( NEW.year=2010) THEN
+                INSERT INTO _2010_resource_access_month_agg VALUES (NEW.*);
+            ELSE
+                RAISE EXCEPTION 'Date out of range.  Fix the resource_access_month_agg_insert_trigger() function!';
+            END IF;
+            RETURN NULL;
+        END;
+        $body$
+        LANGUAGE plpgsql;
+        </sql>
+        <sql>
+        insert into resource_access_month_agg (resource_id, year, month, d1 , d2 , d3 , d4 , d5 , d6 , d7 , d8 , d9 , d10 , d11 , d12 , d13 , d14 , d15 , d16 , d17 , d18 , d19 , d20 , d21 , d22 , d23 , d24 , d25 , d26 , d27 , d28 , d29 , d30 , d31, d1_bot,  d2_bot,  d3_bot,  d4_bot,  d5_bot,  d6_bot,  d7_bot,  d8_bot,  d9_bot,  d10_bot,  d11_bot,  d12_bot,  d13_bot,  d14_bot,  d15_bot,  d16_bot,  d17_bot,  d18_bot,  d19_bot,  d20_bot,  d21_bot,  d22_bot,  d23_bot,  d24_bot,  d25_bot,  d26_bot,  d27_bot,  d28_bot,  d29_bot,  d30_bot,  d31_bot )
+select resource_id, year, month, 
+     (select total from tmp where resource_id=a.resource_id and day=1 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=2 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=3 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=4 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=5 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=6 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=7 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=8 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=9 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=10 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=11 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=12 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=13 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=14 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=15 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=16 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=17 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=18 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=19 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=20 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=21 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=22 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=23 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=24 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=25 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=26 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=27 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=28 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=29 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=30 and a.month=month and a.year=year ),
+     (select total from tmp where resource_id=a.resource_id and day=31 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=1 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=2 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=3 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=4 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=5 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=6 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=7 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=8 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=9 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=10 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=11 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=12 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=13 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=14 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=15 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=16 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=17 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=18 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=19 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=20 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=21 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=22 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=23 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=24 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=25 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=26 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=27 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=28 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=29 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=30 and a.month=month and a.year=year ),
+     (select total_bot from tmp where resource_id=a.resource_id and day=31 and a.month=month and a.year=year )
+     from tmp a  group by resource_id, year, month;
+        </sql>
+    </changeSet>
+
+    <changeSet id="obsidian-25" author="abrin">
+        <addColumn tableName="resource_access_day_agg">
+            <column name="day" type='int' />
+        </addColumn>
+    </changeSet>
+    <changeSet id="obsidian-26" author="abrin">
+        <dropUniqueConstraint tableName="institution" constraintName="uk_9grdn54hea5ns8ahq4yogpb7u"/>
+    </changeSet>
+    <changeSet id="obsidian-stats-2" author="abrin">
+        <addColumn tableName="resource_access_month_agg">
+            <column name="total" type='bigint'/>
+            <column name="total_bot" type='bigint'/>
+        </addColumn>
+        <sql>update resource_access_month_agg set total= coalesce(d1,0) + coalesce(d2,0) + coalesce(d3,0) + coalesce(d4,0) + coalesce(d5,0) + coalesce(d6,0) + coalesce(d7,0) + coalesce(d8,0) + coalesce(d9,0) + coalesce(d10,0) + coalesce(d11,0) + coalesce(d12,0) + coalesce(d13,0) + coalesce(d14,0) + coalesce(d15,0) + coalesce(d16,0) + coalesce(d17,0) + coalesce(d18,0) + coalesce(d19,0) + coalesce(d20,0) + coalesce(d21,0) + coalesce(d22,0) + coalesce(d23,0) + coalesce(d24,0) + coalesce(d25,0) + coalesce(d26,0) + coalesce(d27,0) + coalesce(d28,0) + coalesce(d29,0) + coalesce(d30,0) + coalesce(d31,0);</sql>
+        <sql>update resource_access_month_agg set total_bot= coalesce(d1_bot,0) + coalesce(d2_bot,0) + coalesce(d3_bot,0) + coalesce(d4_bot,0) + coalesce(d5_bot,0) + coalesce(d6_bot,0) + coalesce(d7_bot,0) + coalesce(d8_bot,0) + coalesce(d9_bot,0) + coalesce(d10_bot,0) + coalesce(d11_bot,0) + coalesce(d12_bot,0) + coalesce(d13_bot,0) + coalesce(d14_bot,0) + coalesce(d15_bot,0) + coalesce(d16_bot,0) + coalesce(d17_bot,0) + coalesce(d18_bot,0) + coalesce(d19_bot,0) + coalesce(d20_bot,0) + coalesce(d21_bot,0) + coalesce(d22_bot,0) + coalesce(d23_bot,0) + coalesce(d24_bot,0) + coalesce(d25_bot,0) + coalesce(d26_bot,0) + coalesce(d27_bot,0) + coalesce(d28_bot,0) + coalesce(d29_bot,0) + coalesce(d30_bot,0) + coalesce(d31_bot,0);</sql>
+    </changeSet>
+    <changeSet id="obsidian-stats-3" author="abrin">
+        <createIndex tableName="resource_access_month_agg" indexName="resource_access_month_agg_idx_rid">
+            <column name="resource_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="obsidian-stats-4" author="abrin">
+        <sql>update resource_access_month_agg set total=coalesce(total,0) + coalesce(total_bot,0)</sql>
+    </changeSet>
+    <changeSet id="obsidian-stats-5" author="abrin">
+        <createTable tableName="resource_access_year_agg">
+            <column name="id" type="bigserial" />
+            <column name="resource_id" type="bigint" />
+            <column name="year" type="int" />
+            <column name="total" type="bigint" />
+            <column name="total_bot" type="bigint" />        
+        </createTable>
+    </changeSet>
+    <changeSet id="obsidian-27" author="abrin">
+            <createTable tableName="collection_alternate_parents">
+            <column name="collection_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type="INT8" />
+        </createTable>
+    
+    </changeSet>
+    <changeSet id="obsidian-stats-6" author="abrin">
+        <dropTable tableName="resource_access_day_agg"/>
+    </changeSet>
+</databaseChangeLog>
