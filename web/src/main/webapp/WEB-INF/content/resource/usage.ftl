@@ -41,7 +41,7 @@ ${graphJson!'[]'}
             <td>${stat.date}</td>
         </tr>
         </#list>
-       	<#assign total = total + stats.total />
+       	<#assign total = total!0 + (stats.total)!0 />
     </#list>
 </table>
 
