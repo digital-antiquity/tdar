@@ -126,7 +126,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     private boolean showNavSearchBox = true;
     private FacetWrapper facetWrapper = new FacetWrapper();
 
-    private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
+    private ProjectionModel projectionModel = ProjectionModel.LUCENE;
 
     private boolean keywordSectionVisible = true;
 

@@ -65,6 +65,7 @@ public class ProjectionTransformer<I extends Indexable> {
         r_.setDescription((String) doc.getFieldValue(QueryFieldNames.DESCRIPTION));
 
         // set collections
+        logger.trace("begin collection");
         Collection<Long> collectionIds = (Collection<Long>) (Collection) doc.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_IDS);
         for (ResourceCollection rc : datasetDao.findAll(ResourceCollection.class, collectionIds)) {
             if(rc instanceof SharedCollection) {
@@ -72,8 +73,10 @@ public class ProjectionTransformer<I extends Indexable> {
             }
         }
 
+        logger.trace("begin authorized users");
         r_.getAuthorizedUsers().addAll(datasetDao.findAllAuthorizedUsersForResource(r_.getId()));
         
+        logger.trace("begin submitter");
         // handle submitter
         Long submitterId = (Long) doc.getFieldValue(QueryFieldNames.SUBMITTER_ID);
         r_.setSubmitter(datasetDao.find(TdarUser.class, submitterId));
@@ -86,6 +89,7 @@ public class ProjectionTransformer<I extends Indexable> {
             orientation = DisplayOrientation.LIST_FULL;
         }
         if (orientation == DisplayOrientation.MAP) {
+            logger.trace("begin latLong");
             findAll = datasetDao.findAll(LatitudeLongitudeBox.class,llIds);
             r_.getLatitudeLongitudeBoxes().addAll(findAll);
         }
@@ -94,6 +98,7 @@ public class ProjectionTransformer<I extends Indexable> {
         Collection<Long> cIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS);
         logger.trace("{}: creator: {}", r_.getId(), cIds);
         if (orientation == DisplayOrientation.LIST_FULL ) {
+            logger.trace("begin resource creator");
             r_.getResourceCreators().addAll(datasetDao.findAll(ResourceCreator.class, cIds));
         }
 
@@ -107,8 +112,10 @@ public class ProjectionTransformer<I extends Indexable> {
             }
             Collection<Long> fileIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.FILE_IDS);
             if (orientation == DisplayOrientation.GRID || orientation == DisplayOrientation.MAP) {
+                logger.trace("begin file");
                 ir.getInformationResourceFiles().addAll(datasetDao.findAll(InformationResourceFile.class,fileIds));
             }
+            logger.trace("begin project");
 
             // setup project
             String ptitle = (String) doc.getFieldValue(QueryFieldNames.PROJECT_TITLE);
@@ -122,16 +129,21 @@ public class ProjectionTransformer<I extends Indexable> {
 
             if (ir.isInheritingSpatialInformation()) {
                 if (findAll == null) {
+                    logger.trace("begin inherited LLB");
                     findAll = datasetDao.findAll(LatitudeLongitudeBox.class,llIds);
                 }
                 ir.getProject().getLatitudeLongitudeBoxes().addAll(findAll);
             }
         }
-        obfuscationService.getAuthenticationAndAuthorizationService().applyTransientViewableFlag(r_,
-                resultHandler.getAuthenticatedUser(), collectionIds);
+
+        TdarUser user = resultHandler.getAuthenticatedUser();
+        logger.trace("begin obfuscation");
+
+        obfuscationService.getAuthenticationAndAuthorizationService().applyTransientViewableFlag(r_, user, collectionIds);
+        
         if (CONFIG.obfuscationInterceptorDisabled()
-                && PersistableUtils.isNullOrTransient(resultHandler.getAuthenticatedUser())) {
-            obfuscationService.obfuscate((Obfuscatable) r_, resultHandler.getAuthenticatedUser());
+                && PersistableUtils.isNullOrTransient(user)) {
+            obfuscationService.obfuscate((Obfuscatable) r_, user);
         }
 
         return (I)r_;

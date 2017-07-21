@@ -35,7 +35,7 @@ import org.tdar.utils.PaginationHelper;
 public class ProjectViewAction extends AbstractResourceViewAction<Project> implements FacetedResultHandler<Resource>, ResourceFacetedAction {
 
     private static final long serialVersionUID = 974044619477885680L;
-    private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
+    private ProjectionModel projectionModel = ProjectionModel.LUCENE;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
     private int totalRecords;

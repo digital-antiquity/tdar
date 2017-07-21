@@ -192,7 +192,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
 
     @Override
     public ProjectionModel getProjectionModel() {
-        return ProjectionModel.LUCENE_EXPERIMENTAL;
+        return ProjectionModel.LUCENE;
     }
 
     @Override
