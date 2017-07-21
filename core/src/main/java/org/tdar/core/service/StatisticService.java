@@ -1,8 +1,10 @@
 package org.tdar.core.service;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,8 +17,10 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
@@ -43,6 +47,9 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
 
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
+
+    @Autowired
+    private SerializationService serializationService;
 
     @Autowired
     private AggregateStatisticsDao aggregateStatisticsDao;
@@ -234,6 +241,20 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
     @Transactional(readOnly=true)
     public List<AggregateDayViewStatistic> getUsageStatsForResource(Resource resource) {
         return aggregateStatisticsDao.getUsageStatsForResource(resource);
+    }
+    
+    @Transactional(readOnly=true)
+    public ResourceStatisticsObject getUsageStatsObjectForResource(TextProvider provider, Resource resource) throws IOException {
+        Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<String, List<AggregateDownloadStatistic>>();
+        if (resource instanceof InformationResource) {
+            for (InformationResourceFile file : ((InformationResource) resource).getInformationResourceFiles()) {
+                downloadStats.put(file.getFilename(), getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
+            }
+        }
+
+        ResourceStatisticsObject rso = new ResourceStatisticsObject(provider, getUsageStatsForResource(resource), downloadStats);
+        rso.setGraphJson(serializationService.convertToJson(rso.getMap().values()));
+        return rso;
     }
 
 }
