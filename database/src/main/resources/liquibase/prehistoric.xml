@@ -400,5 +400,11 @@
 			]]>
         </sql>
      </changeSet>
+     <changeSet id="prehistoric-rights-6" author="abrin">
+     <comment>fixing issue where collection rights were assigned to resource</comment>
+     <sql>
+     UPDATE authorized_user SET general_permission_int=500, general_permission='MODIFY_RECORD' WHERE resource_id IS NOT NULL AND general_permission_int=5000;
+     </sql>
+     </changeSet>
 </databaseChangeLog>
 

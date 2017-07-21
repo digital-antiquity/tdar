@@ -205,9 +205,15 @@
             </div>
         </div>
 
-            <#assign submitClasses>button btn submitButton <#if !newRecord>btn-primary</#if></#assign>
-            <@edit.submit fileReminder=false class=submitClasses>
-                <input type="submit" name="alternateSubmitAction" value="Assign Permissions"  class="button btn submittableButtons <#if newRecord>btn-primary</#if>" />
+            <@edit.submit fileReminder=false class="button btn submitButton btn-primary">
+            <p><b>Where to go after save:</b><br/>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-view" <#if !newRecord>checked=checked</#if> value="" class="inline radio" emptyoption="false">
+				<label for="alt-submit-view" class="inline radio">View Page</label>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-rights" value="Assign Permissions" class="inline radio" emptyoption="false" >
+				<label for="alt-submit-rights" class="inline radio" <#if newRecord>checked=checked</#if>>Assign Permissions</label>
+            <br>
+            <br>
+			</p>
             </@edit.submit>
         </@s.form>
 

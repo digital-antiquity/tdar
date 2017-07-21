@@ -129,6 +129,7 @@ public enum GeneralPermissions implements HasLabel, Localizable {
                 }
             }
         }
+        toReturn.remove(NONE);
         return toReturn;
     }
 }
