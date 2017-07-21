@@ -39,7 +39,7 @@
         
         <div class="collection-facets">
             <#assign mapSize="450" />
-			<@search.partFacet selectedResourceTypes paginationHelper "Project" "h4"/>
+			<@search.partFacet selectedResourceTypes paginationHelper "Project" "h4" />
         </div>
 
 			

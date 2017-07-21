@@ -5,7 +5,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.struts.action.AbstractRequestAcessRegistrationAction;
+import org.tdar.struts.action.AbstractRequestAccessRegistrationAction;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -19,7 +19,7 @@ import com.opensymphony.xwork2.Validateable;
 @Namespace("/collection/request")
 @Component
 @Scope("prototype")
-public class CollectionRequestAccessRegistrationController extends AbstractRequestAcessRegistrationAction<ResourceCollection> implements Validateable, Preparable {
+public class CollectionRequestAccessRegistrationController extends AbstractRequestAccessRegistrationAction<ResourceCollection> implements Validateable, Preparable {
 
     private static final long serialVersionUID = 8033398514273270692L;
 

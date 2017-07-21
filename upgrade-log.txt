@@ -91,4 +91,5 @@ standalone solr:
 ::Prehistoric:
 —————————————————
  - full-reindex for collection unification
- - adjust cart page and SAA pages on tdar website for /api/ changes
+ - adjust cart page and SAA/SHA pages on tdar website for /api/ changes
+

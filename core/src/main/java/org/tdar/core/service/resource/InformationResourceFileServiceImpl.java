@@ -133,8 +133,8 @@ public class InformationResourceFileServiceImpl  extends ServiceInterface.TypedD
      */
     @Override
     @Transactional(readOnly=true)
-    public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
-        return getDao().findAllEmbargoFilesExpiringTomorrow();
+    public List<InformationResourceFile> findAllEmbargoFilesExpiring() {
+        return getDao().findAllEmbargoFilesExpiring();
     }
 
 }

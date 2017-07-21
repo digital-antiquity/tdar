@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
@@ -118,5 +119,7 @@ public interface StatisticsService {
      * @return
      */
     List<AggregateDayViewStatistic> getUsageStatsForResource(Resource resource);
+
+    ResourceStatisticsObject getUsageStatsObjectForResource(TextProvider provider, Resource resource) throws IOException;
 
 }

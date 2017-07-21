@@ -358,4 +358,47 @@
             <column name="import_order" type="int" />
         </addColumn>
     </changeSet>
+    <changeSet id="prehistoric-default-25" author="abrin">
+        <insert tableName="user_notification">
+            <column name="message_type" value="SYSTEM_BROADCAST"/>
+            <column name="message_key" value="prehistoric"/>
+            <column name="display_type" value="FREEMARKER"/>
+            <column name="date_created" valueComputed="now()" />
+        </insert>
+    </changeSet>
+    
+    <changeSet id="prehistoric-rights-5" author="bcastel1">
+        <comment>Removes duplicate permissions per-user/per-resource, keeping the highest permission</comment>
+        <sql>
+        <![CDATA[
+        DELETE FROM authorized_user 
+		WHERE resource_id IS NOT NULL AND id NOT IN 
+		(   SELECT t1.id    
+		    FROM authorized_user t1
+		    LEFT JOIN authorized_user t2 
+		    ON t1.resource_id=t2.resource_id
+		    AND t1.user_id = t2.user_id
+		    AND t1.general_permission_int <  t2.general_permission_int
+		    WHERE t2.id IS NULL AND t1.resource_id IS NOT NULL
+		);
+		]]>
+        </sql>
+       
+        <comment>Removes duplicate permissions per-user/per-collection, keeping the highest permisison</comment>
+        <sql>
+        <![CDATA[
+            DELETE FROM authorized_user 
+			WHERE resource_collection_id IS NOT NULL AND id NOT IN 
+			(   SELECT t1.id    
+			    FROM authorized_user t1
+			    LEFT JOIN authorized_user t2 
+			    ON t1.resource_collection_id=t2.resource_collection_id
+			    AND t1.user_id = t2.user_id
+			    AND t1.general_permission_int <  t2.general_permission_int
+			    WHERE t2.id IS NULL AND t1.resource_collection_id IS NOT NULL
+			)
+			]]>
+        </sql>
+     </changeSet>
 </databaseChangeLog>
+

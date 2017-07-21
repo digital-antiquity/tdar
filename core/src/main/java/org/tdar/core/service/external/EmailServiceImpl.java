@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -26,6 +27,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.HasEmail;
@@ -75,12 +77,12 @@ public class EmailServiceImpl implements EmailService {
 
     public static String ATTACHMENTS = "ATTACHMENTS";
     public static String INLINE = "INLINE";
-    
+
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
      */
-    @Transactional(readOnly=true)
-    public void queueWithFreemarkerTemplate(String templateName, Map<String,?> dataModel, Email email) {
+    @Transactional(readOnly = true)
+    public void queueWithFreemarkerTemplate(String templateName, Map<String, ?> dataModel, Email email) {
         try {
             email.setMessage(freemarkerService.render(templateName, dataModel));
             queue(email);
@@ -89,23 +91,22 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void sendUserInviteEmail(UserInvite invite, TdarUser from) {
         Email email = new Email();
         email.setUserGenerated(false);
         email.setTo(invite.getUser().getEmail());
-        email.setSubject(String.format("%s has invited you to %s", from.getProperName(), TdarConfiguration.getInstance().getSiteAcronym() ));
-        Map<String,Object> map = new HashMap<>();
+        email.setSubject(String.format("%s has invited you to %s", from.getProperName(), TdarConfiguration.getInstance().getSiteAcronym()));
+        Map<String, Object> map = new HashMap<>();
         map.put("invite", invite);
         map.put("from", from);
         map.put("to", invite.getUser());
-        queueWithFreemarkerTemplate("invite.ftl", map , email);
+        queueWithFreemarkerTemplate("invite/invite.ftl", map, email);
 
     }
-    
-    @Transactional(readOnly=true)
-    public void sendMimeMessage(String templateName, Map<String,?> dataModel, Email email, List<File> attachments, List<File> inline) {
+
+    @Transactional(readOnly = true)
+    public void sendMimeMessage(String templateName, Map<String, ?> dataModel, Email email, List<File> attachments, List<File> inline) {
 
         try {
             email.setMessage(freemarkerService.render(templateName, dataModel));
@@ -121,8 +122,8 @@ public class EmailServiceImpl implements EmailService {
             helper.setFrom(email.getFrom());
             helper.setSubject(email.getSubject());
             helper.setTo(email.getToAsArray());
-            message.setText(email.getMessage(),"utf8","html");
-            
+            message.setText(email.getMessage(), "utf8", "html");
+
             if (CollectionUtils.isNotEmpty(attachments)) {
                 for (File file_ : attachments) {
                     FileSystemResource file = new FileSystemResource(file_);
@@ -136,7 +137,7 @@ public class EmailServiceImpl implements EmailService {
                     helper.addInline(file_.getName(), file);
                 }
             }
-            
+
             mailSender.send(message);
         } catch (MailException | MessagingException me) {
             email.setNumberOfTries(email.getNumberOfTries() - 1);
@@ -145,7 +146,6 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    
     /**
      * Sends an email message to the given recipients. If no recipients are passed in, defaults to TdarConfiguration.getSystemAdminEmail().
      * 
@@ -154,7 +154,7 @@ public class EmailServiceImpl implements EmailService {
      * @param recipients
      *            set of String varargs
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void queue(Email email) {
         logger.debug("Queuing email {}", email);
         enforceFromAndTo(email);
@@ -178,7 +178,7 @@ public class EmailServiceImpl implements EmailService {
      * @param recipients
      *            set of String varargs
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void send(Email email) {
         logger.debug("sending: {}", email);
         if (email.getNumberOfTries() < 1) {
@@ -238,14 +238,15 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Transactional(readOnly = false)
-    public Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type,  Map<String, String[]> params) {
+    public Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type,
+            Map<String, String[]> params) {
         Email email = new Email();
         genericDao.markWritable(email);
         email.setFrom(CONFIG.getDefaultFromEmail());
         String subjectPart = MessageHelper.getMessage(type.getLocaleKey());
         Map<String, Object> map = new HashMap<>();
 
-        if(type == EmailMessageType.CUSTOM) {
+        if (type == EmailMessageType.CUSTOM) {
             RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
             logger.debug("{}", customRequest);
             subjectPart = customRequest.getName();
@@ -258,8 +259,7 @@ public class EmailServiceImpl implements EmailService {
         }
         email.setTo(to.getEmail());
         createResourceRevisionLogEntry(from, to, resource, subjectPart);
-        
-        
+
         String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), subjectPart, resource.getId(), from.getProperName());
         if (StringUtils.isNotBlank(subjectSuffix)) {
             subject += " - " + subjectSuffix;
@@ -288,7 +288,8 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void createResourceRevisionLogEntry(Person from, HasEmail to, Resource resource, String subjectPart) {
-        String msg = String.format("%s[%s] requesting access (%s) sent to %s[%s]", from.getProperName(), from.getId(), subjectPart, to.getProperName(), to.getId());
+        String msg = String.format("%s[%s] requesting access (%s) sent to %s[%s]", from.getProperName(), from.getId(), subjectPart, to.getProperName(),
+                to.getId());
         TdarUser user = genericDao.find(TdarUser.class, CONFIG.getAdminUserId());
         if (from instanceof TdarUser) {
             user = (TdarUser) from;
@@ -309,7 +310,7 @@ public class EmailServiceImpl implements EmailService {
 
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Email> findEmailsWithStatus(Status status) {
         List<Email> allEmails = genericDao.findAll(Email.class);
         List<Email> toReturn = new ArrayList<>();
@@ -321,7 +322,7 @@ public class EmailServiceImpl implements EmailService {
         return toReturn;
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
             EmailMessageType type, GeneralPermissions permission, Date expires) {
         Email email = new Email();
@@ -358,19 +359,37 @@ public class EmailServiceImpl implements EmailService {
             resource.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, requestor, permission, expires));
             genericDao.saveOrUpdate(resource.getAuthorizedUsers());
             genericDao.saveOrUpdate(resource);
-//            resourceCollectionDao.addToInternalCollection(resource, authenticatedUser, requestor, permission, expires);
+            // resourceCollectionDao.addToInternalCollection(resource, authenticatedUser, requestor, permission, expires);
 
         }
         queueWithFreemarkerTemplate(template, map, email);
         email.setUserGenerated(false);
         send(email);
-        
+
     }
 
     private void setupBasicComponents(Map<String, Object> map) {
         map.put("baseUrl", CONFIG.getBaseUrl());
         map.put("siteAcronym", CONFIG.getSiteAcronym());
         map.put("serviceProvider", CONFIG.getServiceProvider());
+    }
+
+    @Transactional(readOnly = false)
+    public void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person) {
+        for (Entry<TdarUser, List<HasName>> entry : notices.entrySet()) {
+            Email email = new Email();
+            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + ": invite accepted");
+            email.setTo(entry.getKey().getEmail());
+            Map<String, Object> map = new HashMap<>();
+            map.put("owner", entry.getKey());
+            map.put("items", entry.getValue());
+            map.put("user", person);
+            setupBasicComponents(map);
+            String template = "invite/invite-accepted.ftl";
+            queueWithFreemarkerTemplate(template, map, email);
+            email.setUserGenerated(false);
+            send(email);
+        }
     }
 
 }

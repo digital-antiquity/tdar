@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -87,16 +88,16 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
-    public void testResourceUsageStatsPage() {
+    public void testResourceUsageStatsPage() throws IOException {
         Document document = setupDacumentWithStats();
         // should only catch 1 day(today) beacause the rest aren't in the agg stats table yet
         Number count = datasetDao.getAccessCount(document);
         assertEquals(1l, count.longValue());
         dailyTask.execute();
         genericService.synchronize();
-        List<AggregateDayViewStatistic> usageStatsForResource = statisticService.getUsageStatsForResource(document);
-        logger.debug("{} {}", StringUtils.join(usageStatsForResource));
-        assertEquals(3L, usageStatsForResource.get(0).getTotal().longValue());
+        ResourceStatisticsObject usageStatsForResource = statisticService.getUsageStatsObjectForResource(MessageHelper.getInstance(), document);
+         logger.debug("{} {}", StringUtils.join(usageStatsForResource));
+        assertEquals(3L, usageStatsForResource.getUsageStatsForResource().get(0).getTotal().longValue());
 
     }
 

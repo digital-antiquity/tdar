@@ -5,7 +5,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.struts.action.AbstractRequestAcessRegistrationAction;
+import org.tdar.struts.action.AbstractRequestAccessRegistrationAction;
 
 /**
  * Handle registration for new users and pass back to request-access-action
@@ -17,7 +17,7 @@ import org.tdar.struts.action.AbstractRequestAcessRegistrationAction;
 @Namespace("/resource/request")
 @Component
 @Scope("prototype")
-public class RequestAccessRegistrationController extends AbstractRequestAcessRegistrationAction<Resource> {
+public class RequestAccessRegistrationController extends AbstractRequestAccessRegistrationAction<Resource> {
 
     private static final long serialVersionUID = -893535919691607147L;
 

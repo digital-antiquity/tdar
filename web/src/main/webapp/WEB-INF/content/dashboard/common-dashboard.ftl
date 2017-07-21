@@ -5,7 +5,9 @@
 
         <li <@activeIf current "dashboard" />><a href="/dashboard">Resources</a></li>
 <!--        <li <@activeIf current "collections" />> <a href="/dashboard/collections">Collections</a></li> -->
+	<#if contributor>
         <li <@activeIf current "rights" />> <a href="/dashboard/rights">Collections</a></li>
+    </#if>
         <li <@activeIf current "bookmarks" />> <a href="/dashboard/bookmarks"> Bookmarks</a></li>
 
         <#--<li <@activeIf current "share" />><a href="/share">Share</a></li>-->

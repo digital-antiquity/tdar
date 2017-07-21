@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.mail.MailSender;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -46,4 +47,6 @@ public interface EmailService {
 
     void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject, EmailMessageType type,
             GeneralPermissions permission, Date expires);
+
+    void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person);
 }

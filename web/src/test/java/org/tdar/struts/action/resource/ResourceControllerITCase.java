@@ -54,7 +54,7 @@ public class ResourceControllerITCase extends AbstractControllerITCase implement
      */ 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-    @Rollback(false)
+    @Rollback
     public void testAvailableSpaceForBillingAccount() throws InstantiationException, IllegalAccessException, TdarActionException{
     	//Create a new billing account. 
         BillingActivityModel model = new BillingActivityModel();

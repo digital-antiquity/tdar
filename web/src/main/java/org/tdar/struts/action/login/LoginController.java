@@ -160,7 +160,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
         }
         parsedUrl = normalizedUrl;
 
-        getLogger().info("url {} ", parsedUrl);
+//        getLogger().info("url {} ", parsedUrl);
         if (parsedUrl.contains("filestore/")) {
             getLogger().info("download redirect");
             if (parsedUrl.contains("/get?") || parsedUrl.contains("/get/") || parsedUrl.endsWith("/get")) {
@@ -168,7 +168,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
             } else if (parsedUrl.matches("^(.+)filestore/(\\d+)$")) {
                 parsedUrl = parsedUrl + "/confirm";
             }
-            getLogger().info(parsedUrl);
+//            getLogger().info(parsedUrl);
         }
 
 
