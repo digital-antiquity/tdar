@@ -41,6 +41,9 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
     private static final long serialVersionUID = -3687383363452908687L;
     private transient boolean viewable;
 
+    public DataIntegrationWorkflow() {
+    }
+    
     @Column(nullable = false, length = FieldLength.FIELD_LENGTH_255)
     private String title;
 
@@ -77,6 +80,12 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
     @JoinTable(name = "data_integration_users", joinColumns = { @JoinColumn(nullable = false, name = "integration_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "user_id") })
     private Set<TdarUser> authorizedMembers = new HashSet<>();
+
+    public DataIntegrationWorkflow(String string, boolean b, TdarUser adminUser) {
+        this.title=string;
+        this.hidden = b;
+        this.submitter = adminUser;
+    }
 
     public String getTitle() {
         return title;
