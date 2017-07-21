@@ -28,8 +28,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <#local _resourceCollections = [blankShare] />
         </#if> 
 <h3>Collection Membership</h3>               
-        <#if (lst?has_content && (lst.size!0 > 0) )>
-            <#local _resourceCollections = lst />
+        <#if (list?has_content && list?is_collection && (list?size!0) > 0 )>
+            <#local _resourceCollections = list />
         </#if>
         <@helptext.resourceCollection />
     <div data-tiplabel="${siteAcronym} ${label}" data-tooltipcontent="#divResourceCollectionListTips">
