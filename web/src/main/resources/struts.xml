@@ -76,9 +76,9 @@
             <interceptor name="cacheControl"
                 class="org.tdar.struts.interceptor.CacheControlInterceptor" />
             <interceptor name="activityLogging"
-                class="org.tdar.struts.interceptor.DoubleSubmitInterceptor" />
-            <interceptor name="doubleSubmit"
                 class="org.tdar.struts_base.interceptor.ActivityLoggingInterceptor" />
+            <interceptor name="doubleSubmit"
+                class="org.tdar.struts.interceptor.DoubleSubmitInterceptor" />
             <interceptor name="sso" class="org.tdar.struts_base.interceptor.CrowdTokenInterceptor" />
             <interceptor-stack name="tdarDefaultStack">
                 <interceptor-ref name="exception">
