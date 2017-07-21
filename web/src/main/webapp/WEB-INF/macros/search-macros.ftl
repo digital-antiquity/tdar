@@ -423,7 +423,7 @@
 
 <#macro partFacet selectedResourceTypes paginationHelper name tag>
       <#if selectedResourceTypes.empty>
-            <@facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
+            <@facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" pictoralIcon=true />
         <#else>
         <${tag}>
             There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}

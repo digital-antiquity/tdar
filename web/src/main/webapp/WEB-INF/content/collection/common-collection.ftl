@@ -212,7 +212,7 @@
                 <#assign mapSize="1000" />
             </#if>
 -->
-			<@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4"/>
+			<@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4" />
         </div>
 
         <div class="tdarresults">
