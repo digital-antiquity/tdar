@@ -17,7 +17,7 @@ import org.tdar.struts.action.archive.ArchiveController;
  * @author Martin Paulo
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-public class TdarActionSupportITCase extends AbstractDataIntegrationTestCase {
+public class TdarActionSupportITCase extends AbstractAdminControllerITCase {
 
     /** Our proxy for the abstract TdarActionSupport class */
     private ArchiveController controller;
@@ -30,13 +30,13 @@ public class TdarActionSupportITCase extends AbstractDataIntegrationTestCase {
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testIsSwitchableMapObfuscationOnForFaims() {
-        assertTrue(controller.isSwitchableMapObfuscation());
+        assertTrue(controller.getConfig().isSwitchableMapObfuscation());
     }
 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR_DISABLED_OBFUSCATION })
     public void testIsSwitchableMapObfuscationOffForTdar() {
-        assertFalse(controller.isSwitchableMapObfuscation());
+        assertFalse(controller.getConfig().isSwitchableMapObfuscation());
     }
 
 }

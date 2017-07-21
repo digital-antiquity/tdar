@@ -7,7 +7,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 
 /*
- * Looks in the linked-data value index for vals
+ * Looks in the linked-data value index for vals (e..g key-value-pairs froma Mimbres record
  */
 public class DataValueQueryPart extends FieldQueryPart<String> {
 

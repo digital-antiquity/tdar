@@ -8,7 +8,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.resource.DataTableService;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 
 public abstract class AbstractSupportingResourceViewAction<R extends InformationResource> extends AbstractResourceViewAction<R> {
 

@@ -32,8 +32,10 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
@@ -65,11 +67,12 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.base.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
@@ -168,7 +171,9 @@ public class ImportService {
 
         processFiles(blessedAuthorizedUser, proxies, incomingResource);
         geoSearchService.processManagedGeographicKeywords(incomingResource, incomingResource.getLatitudeLongitudeBoxes());
-        
+        if (created == true) {
+            incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, GeneralPermissions.ADMINISTER_SHARE));
+        }
         incomingResource.setCreated(created);
         genericService.saveOrUpdate(incomingResource);
         return incomingResource;
@@ -349,10 +354,13 @@ public class ImportService {
         }
 
         Set<AuthorizedUser> aus = new HashSet<>();
-        // for non-admins don't want to have to figure out rights check logic, so reject authorizedUsers
-        incomingResource.getResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
-        if (CollectionUtils.isNotEmpty(aus) && !authenticationAndAuthorizationService.isAdministrator(user)) {
-            throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
+        if (incomingResource != null) {
+            // for non-admins don't want to have to figure out rights check logic, so reject authorizedUsers
+            incomingResource.getRightsBasedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
+            incomingResource.getUnmanagedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
+            if (CollectionUtils.isNotEmpty(aus) && !authenticationAndAuthorizationService.isAdministrator(user)) {
+                throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
+            }
         }
     }
 
@@ -398,37 +406,27 @@ public class ImportService {
         }
 
         // obfuscate LatLong and clear collections if no permissions to resource
-        ResourceCollection irc = rec.getInternalResourceCollection();
 
-        if (irc != null) {
-            for (AuthorizedUser au : irc.getAuthorizedUsers()) {
-                au.setId(null);
-            }
-            irc.setId(null);
-            irc.getResources().clear();
-            irc.getResources().add(rec);
+        for (AuthorizedUser au : rec.getAuthorizedUsers()) {
+            au.setId(null);
         }
 
         if (!canEditResource) {
             for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
                 latLong.obfuscate();
             }
-            rec.getResourceCollections().clear();
+            rec.getSharedCollections().clear();
+            rec.setAuthorizedUsers(null);
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
-            irc = null;
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            for (ResourceCollection rc : rec.getResourceCollections()) {
+            for (SharedCollection rc : rec.getSharedCollections()) {
                 rc.getResources().add(rec);
             }
         }
         genericService.detachFromSession(rec);
-        if (irc != null) {
-            genericService.detachFromSession(irc);
-            irc.setId(null);
-        }
 
         // reset one-to-many IDs so that new versions are generated for this resource and not the orignal clone
         resetOneToManyPersistableIds(rec);
@@ -605,9 +603,23 @@ public class ImportService {
         if (property instanceof ResourceCollection && resource instanceof Resource) {
             ResourceCollection collection = (ResourceCollection) property;
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
-            resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getResourceCollections(),
-                    authenticatedUser, true,
-                    ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
+            if (collection instanceof SharedCollection) {
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
+                        authenticatedUser, true,
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, SharedCollection.class);
+
+            }
+//            if (collection instanceof InternalCollection) {
+//                resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getInternalCollections()),
+//                        authenticatedUser, true,
+//                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (InternalCollection)collection, InternalCollection.class);
+//
+//            }
+            if (collection instanceof ListCollection) {
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getUnmanagedResourceCollections(),
+                        authenticatedUser, true,
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (ListCollection)collection, ListCollection.class);
+            }
             toReturn = null;
         }
 
@@ -624,8 +636,8 @@ public class ImportService {
                     toReturn = (P) Project.NULL;
                 } else if ((property instanceof Creator) && ((Creator<?>) property).hasNoPersistableValues()) {
                     toReturn = null;
-                } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property).isInternal()) {
-                    toReturn = property;
+//                } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property) instanceof InternalCollection) {
+//                    toReturn = property;
                 } else {
                     throw new APIException("importService.object_invalid", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);
                 }
@@ -639,12 +651,17 @@ public class ImportService {
         Long id = property.getId();
         @SuppressWarnings("unchecked")
         P toReturn = (P) findById(cls, id);
-        if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
-            ResourceCollection collection = (ResourceCollection) toReturn;
+        if (toReturn instanceof RightsBasedResourceCollection && resource instanceof Resource) {
+            RightsBasedResourceCollection collection = (RightsBasedResourceCollection) toReturn;
             // making sure that the collection's creators and other things are on the sessions properly too
-            resetOwnerOnSession(collection);
+            resetOwnerOnSession((ResourceCollection)collection);
             collection.getResources().add((Resource) resource);
-            ((Resource) resource).getResourceCollections().add(collection);
+            if (collection instanceof SharedCollection) {
+                ((Resource) resource).getSharedCollections().add((SharedCollection)collection);
+//            } else if (collection instanceof InternalCollection) {
+//                ((Resource) resource).getInternalCollections().add((InternalCollection)collection);
+//                
+            }
         }
         if (toReturn instanceof Person) {
             Institution inst = ((Person) toReturn).getInstitution();
@@ -713,11 +730,15 @@ public class ImportService {
 
 private void validateInvalidImportFields(ResourceCollection incomingResource, TdarUser user) throws APIException {
 
-        if (incomingResource.getType() == CollectionType.INTERNAL) {
-            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
+//        if (incomingResource.getType() == CollectionType.INTERNAL) {
+//            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
+//        }
+
+        if (incomingResource instanceof RightsBasedResourceCollection && CollectionUtils.isNotEmpty(((RightsBasedResourceCollection)incomingResource).getResources())) {
+            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
         }
 
-        if (CollectionUtils.isNotEmpty(incomingResource.getResources())) {
+        if (incomingResource instanceof ListCollection && CollectionUtils.isNotEmpty(((ListCollection) incomingResource).getUnmanagedResources())) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
         }
 

@@ -8,12 +8,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -43,8 +46,8 @@ import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.Pair;
@@ -305,7 +308,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // load resource provider institution and publishers
         setResourceProviderInstitution(getResource().getResourceProviderInstitution());
         setPublisherName(getResource().getPublisherName());
-        if (isCopyrightMandatory() && PersistableUtils.isNotNullOrTransient(getResource().getCopyrightHolder())) {
+        if (getTdarConfiguration().getCopyrightMandatory() && PersistableUtils.isNotNullOrTransient(getResource().getCopyrightHolder())) {
             copyrightHolderProxies = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
         }
     }
@@ -325,7 +328,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getResource().setPublisher(null);
         }
 
-        if (isCopyrightMandatory() && copyrightHolderProxies != null) {
+        if (getTdarConfiguration().getCopyrightMandatory() && copyrightHolderProxies != null) {
             ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
             getLogger().debug("setting copyright holder to:  {} ", transientCreator);
             getResource().setCopyrightHolder(entityService.findOrSaveCreator(transientCreator.getCreator()));
@@ -525,7 +528,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      */
     @DoNotObfuscate(reason = "always called by edit pages, so it shouldn't matter, also bad if called when user is anonymous")
     public List<Resource> getPotentialParents() {
-        getLogger().trace("get potential parents");
+        getLogger().debug("get potential parents");
         if (potentialParents == null) {
             TdarUser submitter = getAuthenticatedUser();
             potentialParents = new LinkedList<>();
@@ -539,7 +542,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getGenericService().markReadOnly(project);
             potentialParents.add(0, noAssociatedProject);
         }
-        getLogger().trace("Returning all editable projects: {}", potentialParents);
+        if (getLogger().isTraceEnabled()) {
+            getLogger().trace("Returning all editable projects: {}", potentialParents);
+        }
         return potentialParents;
     }
 
@@ -709,7 +714,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             String resourceTypeLabel = getText(getPersistable().getResourceType().name());
             addActionError("Please enter a valid creation year for " + resourceTypeLabel);
         }
-        if (isCopyrightMandatory()) {
+        if (getTdarConfiguration().getCopyrightMandatory()) {
             // first check to see if the form has copyright holders specified
             if (copyrightHolderProxies != null && copyrightHolderProxies.getActualCreatorType() != null) {
                 ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
@@ -753,10 +758,25 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         this.publisherName = publisherName;
     }
 
+    /**
+     * Verifies if the resource can be allowed to add additional files. 
+     * The user may not have permission or the billing account may be over limit. 
+     * @return boolean
+     */
     public boolean isAbleToUploadFiles() {
         if (isAbleToUploadFiles == null) {
             isAbleToUploadFiles = authorizationService.canUploadFiles(getAuthenticatedUser(), getPersistable());
+            getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, getPersistable().getAccount());
+            if(PersistableUtils.isNotNullOrTransient(getPersistable()) && getPersistable().getAccount()!=null){
+            	List<BillingAccount> _activeAccounts = getActiveAccounts();
+            	getLogger().debug("_activeAccounts:{}", _activeAccounts);
+            	//BillingAccount account = _activeAccounts.stream().filter(a -> ObjectUtils.equals(a,getPersistable().getAccount())).collect(Collectors.toList()).get(0);
+            	if(!getPersistable().getAccount().isActive()){
+            		isAbleToUploadFiles = false;
+            	}
+            }
         }
+        
         return isAbleToUploadFiles;
     }
 

@@ -1,9 +1,9 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/content/cart/common-invoice.ftl" as invoicecommon >
     <#import "/WEB-INF/content/billing/common-account.ftl" as accountcommon >
     <#import "/WEB-INF/macros/common-auth.ftl" as auth>
@@ -89,13 +89,13 @@
         <div class="alert alert-info">
             <strong>Contributer Features Required</strong>
             <p>Contributor-specific features are currently disabled in your user profile.  Please review and accept the
-                <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                <@s.a href="${config.contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
                 to enable these features and continue.
             </p>
             <label class="checkbox">
                 <@s.checkbox theme="simple" name="acceptContributorAgreement" id="tou-id"  />
                 I have read and accept the ${siteAcronym}
-                <@s.a href="${contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
+                <@s.a href="${config.contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
             </label>
 
         </div>

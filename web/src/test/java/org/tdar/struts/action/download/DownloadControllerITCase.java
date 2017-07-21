@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.ArchiveEvaluator;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -27,13 +28,13 @@ import org.tdar.core.service.download.DownloadPdfFile;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
-public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
+public class DownloadControllerITCase extends AbstractAdminControllerITCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
 //    private static final File ROOT_SRC = new File(TestConstants.TEST_ROOT_DIR);
 
@@ -124,7 +125,7 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
         assertTrue("file should be non-empty", file.length() > 0);
 
         // don't do strict test since the downloaded pdf's will have a cover page
-        assertArchiveContents(files, file, false);
+        ArchiveEvaluator.assertArchiveContents(files, file, false);
     }
 
     @Test

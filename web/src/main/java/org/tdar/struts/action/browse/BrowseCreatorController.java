@@ -3,6 +3,7 @@ package org.tdar.struts.action.browse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,7 +17,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -52,15 +53,16 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.billing.BillingAccountService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.bean.SearchFieldType;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
@@ -68,11 +70,11 @@ import org.tdar.search.query.facet.Facet;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
-
+import org.tdar.core.bean.entity.Person;
 import com.opensymphony.xwork2.Preparable;
 
 /**
@@ -89,7 +91,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 @Results(value = { @Result(location = "../view-creator.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.TDAR_REDIRECT,
                 location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
@@ -188,13 +190,17 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
 
         if (isEditor() && getPersistable() instanceof TdarUser) {
-            getOwnerCollections().addAll(resourceCollectionService.findParentOwnerCollections((TdarUser) getPersistable()));
+            getOwnerCollections().addAll(resourceCollectionService.findParentOwnerCollections((TdarUser) getPersistable(), SharedCollection.class));
             getOwnerCollections().addAll(entityService.findAccessibleResourceCollections((TdarUser) getPersistable()));
 
         }
 
         if (isLogoAvailable()) {
             setLogoUrl(UrlService.creatorLogoUrl(creator));
+        }
+        
+        if(creator instanceof Institution){
+        	people.addAll(entityService.findPersonsByInstitution((Institution) creator));
         }
     }
 
@@ -242,6 +248,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
+    
+    private List<Person> people = new ArrayList<Person>();
 
     @SuppressWarnings("unchecked")
     private void prepareLuceneQuery() throws TdarActionException {
@@ -285,11 +293,9 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             } catch (TdarRecoverableRuntimeException tdre) {
                 getLogger().warn("search parse exception", tdre);
                 addActionError(tdre.getMessage());
-            } catch (ParseException e) {
+            } catch (SearchException e) {
                 getLogger().warn("search parse exception", e);
-            } catch (SolrServerException e) {
-                getLogger().warn("search parse exception", e);
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 getLogger().warn("search parse exception", e);
             }
 
@@ -489,6 +495,14 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     public void setKeywordFacetMap(Map<String, Facet> keywordFacetMap) {
         this.keywordFacetMap = keywordFacetMap;
+    }
+    
+    public List<Person> getPeople(){
+    	return people;
+    }
+  
+    public void setPeople(List<Person> peopleList ){
+    	people = peopleList;
     }
 
 }

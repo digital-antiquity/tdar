@@ -15,27 +15,34 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TestResourceCollectionHelper;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
@@ -44,9 +51,12 @@ import com.opensymphony.xwork2.Action;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-public class PaymentResourceControllerITCase extends AbstractResourceControllerITCase {
+public class PaymentResourceControllerITCase extends AbstractControllerITCase implements TestBillingAccountHelper, TestResourceCollectionHelper {
 
     private DocumentController controller;
+    
+    @Autowired
+    private BillingAccountService accountService;
 
     public void initControllerFields() throws TdarActionException {
         controller.prepare();
@@ -88,10 +98,10 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.saveOrUpdate(account);
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
-        ResourceCollection rCollection = generateResourceCollection("test", "test", CollectionType.SHARED, true,
-                Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
+        SharedCollection rCollection = generateResourceCollection("test", "test", true,
+                Arrays.asList(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
                 getAdminUser(), Arrays.asList(dataset), null);
-        dataset.getResourceCollections().add(rCollection);
+        dataset.getSharedCollections().add(rCollection);
         dataset.setSubmitter(getBasicUser());
         genericService.saveOrUpdate(rCollection);
 
@@ -102,7 +112,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.refresh(ds);
         accountService.updateTransientAccountInfo(ds);
         logger.debug("accnt:{}", ds.getAccount());
-        assertNotEmpty(ds.getResourceCollections());
+        assertNotEmpty(ds.getSharedCollections());
         ds = null;
         DatasetController dc = generateNewInitializedController(DatasetController.class, getBasicUser());
         dc.setId(id);
@@ -161,7 +171,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         Assert.assertTrue(CollectionUtils.isEmpty(controller.getActiveAccounts()));
         initControllerFields();
-        Assert.assertTrue(controller.isPayPerIngestEnabled());
+        Assert.assertTrue(controller.getConfig().isPayPerIngestEnabled());
 
         getLogger().trace("controller:" + controller);
         getLogger().trace("controller.resource:" + controller.getResource());
@@ -211,7 +221,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         }
         if (enabled) {
             Assert.assertFalse(rc.isAllowedToCreateResource());
-            Assert.assertTrue(rc.isPayPerIngestEnabled());
+            Assert.assertTrue(rc.getConfig().isPayPerIngestEnabled());
         }
         Assert.assertNull(tdae);
         return result;
@@ -242,7 +252,8 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         // Account account = createAccount(getBasicUser());
         // d.setAccount(account);
         genericService.saveOrUpdate(d);
-
+        d.getAuthorizedUsers().add(new AuthorizedUser(d.getSubmitter(),d.getSubmitter(),GeneralPermissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(d);
         logger.info("account: {}", d.getAccount());
         setIgnoreActionErrors(true);
         Pair<String, Exception> tdae = setupResource(d);
@@ -352,6 +363,22 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         d.setDescription("desc");
         d.markUpdated(getUser());
         return d;
+    }
+
+
+    public ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
+        ResourceCreatorProxy rcp = new ResourceCreatorProxy();
+        Person p = rcp.getPerson();
+        rcp.getPerson().setLastName(last);
+        rcp.getPerson().setFirstName(first);
+        rcp.getPerson().setEmail(email);
+        // id may be null
+        rcp.getPerson().setId(id);
+        Institution inst = new Institution();
+        inst.setName("University of TEST");
+        p.setInstitution(inst);
+        rcp.setRole(role);
+        return rcp;
     }
 
 }

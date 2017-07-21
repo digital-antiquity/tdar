@@ -20,8 +20,8 @@ public class TaintedFileException extends Exception {
     }
 
     /**
-	 * 
-	 */
+     *
+     */
     private static final long serialVersionUID = 2614025298404673325L;
 
 }

@@ -6,13 +6,13 @@
 <html class="no-js" lang="en" <#if ngApplicationName?has_content>ng-app="${ngApplicationName}"</#if>> <!--<![endif]-->
 <#import "decorator-macros.ftl" as dec>
 <#import "whitelabel-decorator-macros.ftl" as wdec>
-<#import "/WEB-INF/macros/resource/bootstrap-macros.ftl" as bs>
+<#import "/WEB-INF/macros/bootstrap-macros.ftl" as bs>
 
 <!-- README - UPDATE BOWER.JSON in lockstep -->
 <#global jquery_version="1.11.3">
 <#global jquery_ui_version="1.11.4">
 <#global jquery_ui_css_version="1.11.4">
-<#global jquery_validate_version="1.13.1" >
+<#global jquery_validate_version="1.15.1" >
 <#assign pageType ="view">
 <#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
     <#assign pageType=actionName>
@@ -23,7 +23,8 @@
 <#if !(protocol?has_content)>
     <#include "/500.html" />
 <#else>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common><#t>
+    <#import "/WEB-INF/macros/common.ftl" as common><#t>
+    <#import "/WEB-INF/macros/common-auth.ftl" as auth><#t>
     <#import "/WEB-INF/macros/header.ftl" as header>
     <#assign uri = request.requestURI />
     <#assign bodyid = 'alt' />
@@ -46,13 +47,14 @@
     <#if useCDN>
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_css_version}/themes/smoothness/jquery-ui.min.css">
     <#else>
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href='${staticHost}/includes/jquery-ui-${jquery_ui_css_version}/jquery-ui.min.css'>
     </#if>
+
+        <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.min.css">
+        <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.theme.min.css">
 
     <link href="${staticHost}/css/tdar-base.css" rel="stylesheet">
     <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
@@ -63,13 +65,12 @@
     <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
     <#if useCDN>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/${jquery_ui_version}/jquery-ui.min.js"></script>
     <#else>
         <script src="${staticHost}/includes/jquery-${jquery_version}.min.js"></script>
-        <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}/jquery-ui.min.js"></script>
     </#if>
+    <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}.custom/jquery-ui.min.js"></script>
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
-    <#include "/${themeDir}/head.dec" />
+    <#include "/${config.themeDir}/head.dec" />
     <#if whiteLabelCollection??>  
         <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
     </#if>
@@ -95,11 +96,10 @@ ${head}
     </#if>
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${pageType} <#if !production>not-production</#if>"
-	 data-leaflet-api-key="${leafletApiKey}" data-leaflet-tile-provider="${leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${mapDefaultLat}" data-centerLong="${mapDefaultLng}"  data-useGeoLoc="${geoLocationToBeUsed?then('true', 'false')}"
+	 data-leaflet-api-key="${config.leafletApiKey}" data-leaflet-tile-provider="${config.leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${config.mapDefaultLat}" data-centerLong="${config.mapDefaultLng}"  data-useGeoLoc="${config.geoLocationToBeUsed?then('true', 'false')}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
-
-      <#if authenticatedUser?has_content>data-currentTime="1" </#if>
-      <#if ngApplicationName?has_content>ng-cloak</#if>
+     <#if authenticatedUser?has_content>data-userid="${authenticatedUser.id?c}" data-currentTime="1" </#if>
+     <#if ngApplicationName?has_content>ng-cloak</#if>
     >
     <#if hostName?contains("alpha") >
     <div class="ribbon-green">ALPHA</div>
@@ -238,7 +238,7 @@ ${head}
     
     <footer>
         <div class="container">
-            <#include "/${themeDir}/footer.dec" />
+            <#include "/${config.themeDir}/footer.dec" />
             <div>
                 <p>
                     <small>
@@ -273,21 +273,28 @@ ${head}
         <span class="statusMessage"></span>
     </div>
 
-    <#if showJiraLink && jiraScriptLink?has_content && (!production || editor?has_content && editor) >
+    <#if config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor) >
         <script type="text/javascript">
-            TDAR.loadScript('https://${jiraScriptLink}');
+            TDAR.loadScript('https://${config.jiraScriptLink}');
         </script>
     </#if>
 
 </#if>
-    <#import "/${themeDir}/settings.ftl" as settings />
+    <#import "/${config.themeDir}/settings.ftl" as settings />
 <script id="c3colors">
- [<#list barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
+ [<#list config.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
+</script>
+
+<#if page.properties["div.customIncludes"]?has_content>
+    ${page.properties["div.customIncludes"]}<#t>
+</#if>
+<script>
+    $(TDAR.main);
 </script>
 
     <!-- BEGIN-TDAR-FOOTER -->
     
-    <#include "/${themeDir}/sub-footer.dec" />
+    <#include "/${config.themeDir}/sub-footer.dec" />
 
 </body>
 </html>

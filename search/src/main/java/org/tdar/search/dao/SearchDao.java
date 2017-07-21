@@ -27,12 +27,15 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.search.bean.SolrSearchObject;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
@@ -77,12 +80,13 @@ public class SearchDao<I extends Indexable> {
      * @throws SolrServerException
      */
     public SolrSearchObject<I> search(SolrSearchObject<I> query, LuceneSearchResultHandler<I> resultHandler,
-            TextProvider provider) throws ParseException, SolrServerException, IOException {
+            TextProvider provider) throws SearchException, IOException {
         query.markStartSearch();
         SolrParams solrParams = query.getSolrParams();
         if (logger.isTraceEnabled()) {
             logger.trace(solrParams.toQueryString());
         }
+        try {
         QueryResponse rsp = template.query(query.getCoreName(), solrParams);
         query.processResults(rsp);
         if (logger.isTraceEnabled()) {
@@ -93,6 +97,9 @@ public class SearchDao<I extends Indexable> {
         processFacets(rsp, resultHandler, provider);
         logger.trace("completed fulltextquery setup");
         query.markEndSearch();
+        } catch (SolrServerException e) {
+            throw new SearchException(e.getMessage(), e);
+        }
         return query;
     }
 
@@ -160,7 +167,7 @@ public class SearchDao<I extends Indexable> {
         }
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected List<Facet> hydrateEnumFacets(TextProvider provider, FacetField field, Class facetClass) {
         List<Facet> facet = new ArrayList<>();
         for (Count c : field.getValues()) {
@@ -176,8 +183,18 @@ public class SearchDao<I extends Indexable> {
 //                }
 //            }
 
-            @SuppressWarnings("unchecked")
-            Enum enum1 = Enum.valueOf(facetClass, name);
+            Enum enum1 = null;
+            if (facetClass.equals(ResourceType.class)) {
+                for (CollectionType type : CollectionType.values()) {
+                    if (name.equals(type.name())) {
+                        enum1 = type;
+                    }
+                }
+            }
+            if (enum1 == null) {
+                enum1 = Enum.valueOf(facetClass, name);
+            }
+
             if (enum1 instanceof PluralLocalizable && c.getCount() > 1) {
                 label = ((PluralLocalizable) enum1).getPluralLocaleKey();
             } else {
@@ -246,8 +263,9 @@ public class SearchDao<I extends Indexable> {
         }
         // iterate over all of the objects and create an objectMap if needed
         if (CollectionUtils.isNotEmpty(results.getIdList())) {
+            logger.debug("hydration via:{}", projectionModel);
             switch (projectionModel) {
-                case LUCENE:
+                case LUCENE_ID_ONLY:
                     for (SolrDocument doc : results.getDocumentList()) {
                         I obj = null;
                         Long id = (Long) doc.getFieldValue(QueryFieldNames.ID);
@@ -264,7 +282,7 @@ public class SearchDao<I extends Indexable> {
                         toReturn.add(obj);
                     }
                     break;
-                case LUCENE_EXPERIMENTAL:
+                case LUCENE:
                     // if we're stored and projected properly, then use the new projection model, otherwise fall through to hibernate model
                     if (projectionTransformer.isProjected(results)) {
                         hydrateExperimental(resultHandler, results, toReturn);

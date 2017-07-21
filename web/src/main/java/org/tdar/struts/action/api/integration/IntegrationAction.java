@@ -12,7 +12,7 @@ import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.core.JsonParseException;

@@ -23,9 +23,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
 @Component
@@ -69,11 +69,11 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     @Override
     public boolean authorize() {
         getLogger().info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
-        return authorizationService.canViewBillingAccount(getAccount(), getAuthenticatedUser());
+        return authorizationService.canViewBillingAccount(getAuthenticatedUser(), getAccount());
     }
 
     public boolean isEditable() {
-        return authorizationService.canEditAccount(getAccount(), getAuthenticatedUser());
+        return authorizationService.canEditAccount(getAuthenticatedUser(), getAccount());
     }
 
     @Override

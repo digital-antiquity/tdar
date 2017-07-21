@@ -2,7 +2,7 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 	<changeSet id="pre-dropall" author="abrin">
 	<comment>ideally, not necessary, but liquibase is not playing nice and deleting sequences in the right order (before tabels)</comment>
 	<sql>
@@ -50,6 +50,9 @@ drop sequence if exists pos_item_id_seq cascade;
 drop sequence if exists data_table_column_relationship_id_seq cascade;
 drop sequence if exists data_table_relationship_id_seq cascade;
 drop sequence if exists resource_access_statistics_id_seq cascade;
-</sql>
+
+drop view if exists vw_collection_ancestry cascade;
+drop view if exists vw_collection_progeny cascade;
+	</sql>
 	</changeSet>
 </databaseChangeLog>

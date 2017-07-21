@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
@@ -33,12 +32,13 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.ReservedSearchParameters;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.SearchUtils;
-import org.tdar.search.service.query.CreatorSearchService;
+import org.tdar.search.service.query.CreatorSearchInterface;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -80,7 +80,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     @SuppressWarnings("rawtypes")
     @Autowired
-    private CreatorSearchService creatorSearchService;
+    private CreatorSearchInterface creatorSearchService;
 
     @Autowired
     ObfuscationService obfuscationService;
@@ -348,7 +348,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
             try {
                 creatorSearchService.findPerson(person, term, registered, this, this, getMinLookupLength());
                 // sanitize results if the user is not logged in
-            } catch (ParseException e) {
+            } catch (SearchException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
@@ -398,7 +398,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         if (SearchUtils.checkMinString(institution, getMinLookupLength())) {
             try {
                 creatorSearchService.findInstitution(institution, this, this, getMinLookupLength());
-            } catch (ParseException e) {
+            } catch (SearchException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
@@ -478,9 +478,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     }
 
 
-	@Override
-	public DisplayOrientation getOrientation() {
-		return null;
-	}
+    @Override
+    public DisplayOrientation getOrientation() {
+        return null;
+    }
 
 }

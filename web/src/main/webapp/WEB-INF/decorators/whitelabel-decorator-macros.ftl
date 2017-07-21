@@ -1,6 +1,6 @@
 <#macro searchHeader>
 <#if !searchHeaderEnabled><#return></#if>
-<#assign subtitle = (resourceCollection.subtitle!(resourceCollection.institution.name)!'')>
+<#assign subtitle = (resourceCollection.properties.subtitle!(resourceCollection.institution.name)!'')>
 <div class="searchheader whitelabel">
     <div class="container">
         <div class="row">
@@ -16,7 +16,7 @@
                     <input type="hidden" name="_tdar.searchType" value="simple">
                     <input type="hidden" name="collectionId" value="${resourceCollection.id}">
                 </form>
-                <ul class="subnav-rht hidden-phone hidden-tablet"><@common.loginMenu false/></ul>
+                <ul class="subnav-rht hidden-phone hidden-tablet"><@auth.loginMenu false/></ul>
             </div>
         </div>
     </div>

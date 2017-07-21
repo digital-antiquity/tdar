@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -23,10 +21,8 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.event.EventType;
@@ -34,11 +30,14 @@ import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.action.PersistableLoadingAction;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -55,24 +54,22 @@ import com.opensymphony.xwork2.Preparable;
  * @author Adam Brin, <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public abstract class AbstractPersistableController<P extends Persistable & Updatable> extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<P> {
+public abstract class AbstractPersistableController<P extends Persistable & Updatable> extends AbstractAuthenticatableAction
+        implements Preparable, PersistableLoadingAction<P> {
 
+    public static final String ASSIGN_RIGHTS = "assign permissions";
     public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
     public static final String DRAFT = "draft";
     protected long epochTimeUpdated = 0L;
 
-    @SuppressWarnings("unused")
-    @Autowired
-    private transient RecaptchaService recaptchaService;
-
     @Autowired
     private transient ApplicationEventPublisher publisher;
 
-    
     private AntiSpamHelper h = new AntiSpamHelper();
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
     private String submitAction;
+    private String alternateSubmitAction;
     private P persistable;
     private Long id;
     private Status status;
@@ -84,8 +81,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public final static String REDIRECT_HOME = "REDIRECT_HOME";
     public final static String REDIRECT_PROJECT_LIST = "PROJECT_LIST";
     private boolean asyncSave = true;
-    private List<AuthorizedUser> authorizedUsers;
-    private List<String> authorizedUsersFullNames = new ArrayList<String>();
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
@@ -132,21 +127,25 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         return null;
     }
 
-
     /**
-     * Returns true if form is considered 'obsolete', otherwise false.  By default, this method considers a form obsolete if it refers to a persistable
+     * Returns true if form is considered 'obsolete', otherwise false. By default, this method considers a form obsolete if it refers to a persistable
      * that has an updateDate() that is older than the age of the form.
+     * 
      * @return
      */
     protected boolean isFormObsolete() {
-        //a 'new' resource wont ever be obsolete
-        if(PersistableUtils.isNullOrTransient(getPersistable())) {return false;}
-        //if dateUpdated is null, we can't (easily) determine obsolescence
-        if(getPersistable().getDateUpdated() == null) {return false;}
+        // a 'new' resource wont ever be obsolete
+        if (PersistableUtils.isNullOrTransient(getPersistable())) {
+            return false;
+        }
+        // if dateUpdated is null, we can't (easily) determine obsolescence
+        if (getPersistable().getDateUpdated() == null) {
+            return false;
+        }
 
         long now = System.currentTimeMillis();
-        long formAge = now - getStartTime(); 
-        long persistableAge = now - getEpochTimeUpdated(); 
+        long formAge = now - getStartTime();
+        long persistableAge = now - getEpochTimeUpdated();
         getLogger().debug("now:{} startTime:{} epochTimeUpdated:{}", now, getStartTime(), getEpochTimeUpdated());
         return formAge > persistableAge;
     }
@@ -220,7 +219,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
             return INPUT;
         }
-        
+
         return actionReturnStatus;
     }
 
@@ -234,10 +233,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         }
     }
 
-    protected void indexPersistable() throws SolrServerException, IOException {
-    	if (getPersistable() instanceof Indexable) {
-    		publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
-    	}
+    protected void indexPersistable() throws IOException, SearchIndexException {
+        if (getPersistable() instanceof Indexable) {
+            publisher.publishEvent(new TdarEvent((Indexable) getPersistable(), EventType.CREATE_OR_UPDATE));
+        }
     }
 
     private void logAction(String action_) {
@@ -339,11 +338,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     }
 
     public enum RequestType {
-        EDIT,
-        CREATE,
-        DELETE,
-        SAVE,
-        NONE, VIEW;
+        EDIT, CREATE, DELETE, SAVE, NONE, VIEW;
 
         public String getLabel() {
             switch (this) {
@@ -393,19 +388,19 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public void prepare() throws TdarActionException {
         RequestType type = RequestType.EDIT;
 
-        if (getId() == null && (getCurrentUrl().contains("/add") || 
-        		(getTdarConfiguration().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
+        if (getId() == null && (getCurrentUrl().contains("/add") ||
+                (TdarConfiguration.getInstance().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
             getLogger().debug("setting persistable");
             if (getPersistable() == null) {
-            	setPersistable(createPersistable());
+                setPersistable(createPersistable());
             }
             type = RequestType.CREATE;
         }
         prepareAndLoad(this, type);
-        if(PersistableUtils.isNotNullOrTransient(getId()) && getPersistable().getDateUpdated() != null) {
+        if (PersistableUtils.isNotNullOrTransient(getId()) && getPersistable().getDateUpdated() != null) {
             setEpochTimeUpdated(getPersistable().getDateUpdated().getTime());
         }
-     }
+    }
 
     protected boolean isPersistableIdSet() {
         return PersistableUtils.isNotNullOrTransient(getPersistable());
@@ -438,40 +433,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
     public boolean isAsync() {
         return asyncSave;
-    }
-
-    /**
-     * @param authorizedUsers
-     *            the authorizedUsers to set
-     */
-    public void setAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
-        this.authorizedUsers = authorizedUsers;
-    }
-
-    /**
-     * @return the authorizedUsers
-     */
-    public List<AuthorizedUser> getAuthorizedUsers() {
-        if (authorizedUsers == null) {
-            authorizedUsers = new ArrayList<AuthorizedUser>();
-        }
-        return authorizedUsers;
-    }
-
-    public AuthorizedUser getBlankAuthorizedUser() {
-        AuthorizedUser user = new AuthorizedUser();
-        user.setUser(new TdarUser());
-        return user;
-    }
-
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
-        for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if ((permission.getContext() == null) ||  ClassUtils.isAssignable(permission.getContext(), getPersistableClass())) {
-                permissions.add(permission);
-            }
-        }
-        return permissions;
     }
 
     /**
@@ -518,7 +479,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
             }
         }
 
-        if(isFormObsolete()) {
+        if (isFormObsolete()) {
             getLogger().info("save rejected because form was obsolete. formtime:{}  lastUpdate:{}",
                     getEpochTimeUpdated(), getPersistable().getDateUpdated().getTime());
             addActionError(getText("resourceController.submission_obsolete"));
@@ -526,7 +487,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         }
 
     }
-
 
     /*
      * This method returns the base URL for where a save should go, in 99% of the cases,
@@ -594,14 +554,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         this.h = h;
     }
 
-    public List<String> getAuthorizedUsersFullNames() {
-        return authorizedUsersFullNames;
-    }
-
-    public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
-        this.authorizedUsersFullNames = authorizedUsersFullNames;
-    }
-
     public String getSaveSuccessSuffix() {
         return saveSuccessSuffix;
     }
@@ -628,5 +580,13 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     @Override
     public boolean isRightSidebar() {
         return true;
+    }
+
+    public String getAlternateSubmitAction() {
+        return alternateSubmitAction;
+    }
+
+    public void setAlternateSubmitAction(String alternateSubmitAction) {
+        this.alternateSubmitAction = alternateSubmitAction;
     }
 }

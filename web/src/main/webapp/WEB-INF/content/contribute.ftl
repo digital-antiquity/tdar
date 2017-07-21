@@ -1,10 +1,10 @@
-<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 <#import "/WEB-INF/content/cart/common-invoice.ftl" as invoiceCommon >
-<#import "/${themeDir}/settings.ftl" as settings>
+<#import "/${config.themeDir}/settings.ftl" as settings>
 
 <head>
     <title>Upload &amp; contribute content to ${siteAcronym}</title>

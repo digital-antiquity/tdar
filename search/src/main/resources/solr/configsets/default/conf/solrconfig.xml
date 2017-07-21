@@ -35,7 +35,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
   -->
-  <luceneMatchVersion>6.1.0</luceneMatchVersion>
+  <luceneMatchVersion>6.5.1</luceneMatchVersion>
 
   <!-- <lib/> directives can be used to instruct Solr to load any Jars
        identified and use them to resolve any "plugins" specified in
@@ -1581,5 +1581,16 @@
   <admin>
     <defaultQuery>*:*</defaultQuery>
   </admin>
+	
+	<requestHandler name="/multicore" class="solr.SearchHandler">
+	    <lst name="defaults">
+	      <str name="echoParams">explicit</str>
+	      <int name="rows">10</int>
+	      <!-- <str name="df">text</str> -->
+	    </lst>
+	  <lst name="invariants">
+	    <str name="shards">resources,collections</str>
+	  </lst>
+	</requestHandler>
 
 </config>

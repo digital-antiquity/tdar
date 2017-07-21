@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -27,8 +28,6 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.BaseSearchResult;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class GeoJSONITCase extends AbstractIntegrationTestCase {
 

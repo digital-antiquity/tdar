@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -17,6 +16,8 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.SearchResult;
 import org.tdar.utils.PersistableUtils;
 
@@ -25,7 +26,7 @@ public class ResourceFIleAttachmentSearchITCase extends AbstractResourceSearchIT
 
     @Test
     @Rollback(true)
-    public void testAttachedFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+    public void testAttachedFileSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), _33_CU_314);
         addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"));
         searchIndexService.index(document);
@@ -53,7 +54,7 @@ public class ResourceFIleAttachmentSearchITCase extends AbstractResourceSearchIT
 
     @Test
     @Rollback(true)
-    public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+    public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
         String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"), FileAccessRestriction.CONFIDENTIAL);
@@ -74,7 +75,7 @@ public class ResourceFIleAttachmentSearchITCase extends AbstractResourceSearchIT
 
     @Test
     @Rollback(true)
-    public void testFilenameFound() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+    public void testFilenameFound() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
         Document doc = generateDocumentWithFileAndUseDefaultUser();
         searchIndexService.index(doc);
         SearchParameters sp = new SearchParameters();

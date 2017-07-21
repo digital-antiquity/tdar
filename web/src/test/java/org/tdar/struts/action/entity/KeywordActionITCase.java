@@ -8,12 +8,12 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.browse.BrowseKeywordController;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 
-public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
+public class KeywordActionITCase extends AbstractAdminControllerITCase {
 
     @Test
     public void testBasicKeywordAction() {

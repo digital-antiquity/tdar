@@ -11,7 +11,7 @@ import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
-import org.tdar.struts.action.lookup.ResourceAnnotationKeyLookupAction;
+import org.tdar.struts.action.api.lookup.ResourceAnnotationKeyLookupAction;
 
 public class AnnotationKeyLookupControllerITCase extends AbstractIntegrationControllerTestCase {
 

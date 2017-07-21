@@ -97,8 +97,8 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         login(TEST.getAdminUsername(), TEST.getAdminPassword());
         createDocumentAndUploadFile("test");
         gotoPage("/document/"+ extractTdarIdFromCurrentURL() + "/edit");
-        setInput("resourceCollections[0].id", 1000L);
-        setInput("resourceCollections[0].name", "display_orientationLIST");
+        setInput("shares[0].id", 999L);
+        setInput("shares[0].name", "download authorization");
         submitForm();
         String txt = getPageCode();
         txt = txt.substring(txt.indexOf(FILESTORE_DOWNLOAD) + FILESTORE_DOWNLOAD.length() );

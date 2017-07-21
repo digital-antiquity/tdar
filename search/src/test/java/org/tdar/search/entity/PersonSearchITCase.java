@@ -11,7 +11,6 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -22,16 +21,19 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.EntityService;
+import org.tdar.search.bean.PersonSearchOption;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.search.service.query.CreatorSearchService;
+import org.tdar.search.service.query.CreatorSearchInterface;
 import org.tdar.utils.MessageHelper;
 
 public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Autowired
-    CreatorSearchService<Person> creatorSearchService;
+    CreatorSearchInterface<Person> creatorSearchService;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -49,7 +51,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testPersonRelevancy() throws SolrServerException, IOException, ParseException {
+    public void testPersonRelevancy() throws SearchException, SearchIndexException, IOException, ParseException {
         List<Person> people = new ArrayList<>();
         Person whelan = new Person("Mary", "Whelan", null);
         people.add(whelan);
@@ -79,12 +81,12 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         assertTrue(results.size() == 2);
     }
 
-    private void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
+    private void updateAndIndex(Indexable doc) throws SearchException, SearchIndexException, IOException {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
     }
 
-    private SearchResult<Person> searchPerson(String term) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Person> searchPerson(String term) throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<Person> result = new SearchResult<>();
         creatorSearchService.findPerson(term, result, MessageHelper.getInstance());
         assertResultsOkay(term, result);
@@ -93,14 +95,14 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testPersonSearch() throws ParseException, SolrServerException, IOException {
+    public void testPersonSearch() throws ParseException, SearchException, SearchIndexException, IOException {
         String term = "Manney";
         searchPerson(term);
     }
 
     @Test
     @Rollback
-    public void testPersonFullNameSearch() throws ParseException, SolrServerException, IOException {
+    public void testPersonFullNameSearch() throws ParseException, SearchException, SearchIndexException, IOException {
         String term = "Joshua Watts";
         searchPerson(term);
     }
@@ -123,7 +125,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testPersonLookupWithNoResults() throws SolrServerException, IOException, ParseException {
+    public void testPersonLookupWithNoResults() throws SearchException, SearchIndexException, IOException, ParseException {
         searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         Person person_ = setupPerson("bobby", null, null, null);
         SearchResult<Person> result = findPerson(person_, null, null, min);
@@ -133,7 +135,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testUserLookupWithrelevancy() throws SolrServerException, IOException, ParseException {
+    public void testUserLookupWithrelevancy() throws SearchException, SearchIndexException, IOException, ParseException {
         TdarUser person = setupMScottPeople();
         SearchResult<Person> result = findPerson(null, "M Scott Thompson", true, min, SortOption.RELEVANCE);
 
@@ -155,7 +157,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testUserLastNameSpaceWithRelevancy() throws SolrServerException, IOException, ParseException {
+    public void testUserLastNameSpaceWithRelevancy() throws SearchException, SearchIndexException, IOException, ParseException {
         TdarUser person = setupMScottPeople();
         Person person_ = setupPerson(null, "Scott Th", null, null);
         SearchResult<Person> result = findPerson(person_, null, null, min, SortOption.RELEVANCE);
@@ -193,7 +195,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testPersonLookupTooShortOverride() throws SolrServerException, IOException, ParseException {
+    public void testPersonLookupTooShortOverride() throws SearchException, SearchIndexException, IOException, ParseException {
         Person person_ = setupPerson(null, "B", null, null);
         SearchResult<Person> result = findPerson(person_, null, null, 0);
         List<Person> people = result.getResults();
@@ -201,7 +203,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testPersonLookupTooShort() throws SolrServerException, IOException, ParseException {
+    public void testPersonLookupTooShort() throws SearchException, SearchIndexException, IOException, ParseException {
         Person person_ = setupPerson(null, "Br", null, null);
         SearchResult<Person> result = findPerson(person_, null, null, min);
         List<Person> people = result.getResults();
@@ -209,7 +211,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testPersonLookupWithOneResult() throws SolrServerException, IOException, ParseException {
+    public void testPersonLookupWithOneResult() throws SearchException, SearchIndexException, IOException, ParseException {
         Person person_ = setupPerson(null, null, "test@tdar.org", null);
         SearchResult<Person> result = findPerson(person_, null, null, min,null,getBasicUser());
         List<Person> people = result.getResults();
@@ -218,7 +220,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     // we should properly escape input
-    public void testPersonWithInvalidInput() throws SolrServerException, IOException, ParseException {
+    public void testPersonWithInvalidInput() throws SearchException, SearchIndexException, IOException, ParseException {
         searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         // FIXME: need more invalid input examples than just paren
         Person person_ = setupPerson(null, " (     ", null, null);
@@ -230,7 +232,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Test
     @Rollback
     // we should properly escape input
-    public void testPersonByUsername() throws SolrServerException, IOException, ParseException {
+    public void testPersonByUsername() throws SearchException, SearchIndexException, IOException, ParseException {
         TdarUser user = new TdarUser("billing", "admin", "billingadmin@tdar.net");
         user.setUsername("billingAdmin");
         user.markUpdated(getAdminUser());
@@ -245,7 +247,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testRegisteredPersonLookupWithResults() throws SolrServerException, IOException, ParseException {
+    public void testRegisteredPersonLookupWithResults() throws SearchException, SearchIndexException, IOException, ParseException {
         Person person_ = setupPerson("Keit", null, null, null);
         SearchResult<Person> result = findPerson(person_, null, true, min);
         List<Person> people = result.getResults();
@@ -257,7 +259,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testPersonWithInstitution() throws SolrServerException, IOException, ParseException, InterruptedException {
+    public void testPersonWithInstitution() throws SearchException, SearchIndexException, IOException, ParseException, InterruptedException {
         searchIndexService.purgeAll();
         String institution = "University of TEST is fun";
         String email = "test1234@tdar.org";
@@ -277,7 +279,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testPersonLookupWithSeveralResults() throws SolrServerException, IOException, ParseException {
+    public void testPersonLookupWithSeveralResults() throws SearchException, SearchIndexException, IOException, ParseException {
         searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         // based on our test data this should return at least two records (john doe and jane doe)
         String partialLastName = "Mann";
@@ -291,7 +293,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testUserLookup() throws SolrServerException, IOException, ParseException {
+    public void testUserLookup() throws SearchException, SearchIndexException, IOException, ParseException {
         setupUsers();
         searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         // based on our test data this should return at least two records (john doe and jane doe)
@@ -351,7 +353,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testUnauthenticatedWithEmail() throws ParseException, SolrServerException, IOException {
+    public void testUnauthenticatedWithEmail() throws ParseException, SearchException, SearchIndexException, IOException {
         Person person = new Person();
         person.setEmail("tiffany.clark@dsu.edu");
         String msg = null;
@@ -374,7 +376,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testAuthenticatedWithEmail() throws ParseException, SolrServerException, IOException {
+    public void testAuthenticatedWithEmail() throws ParseException, SearchException, SearchIndexException, IOException {
         Person person = new Person();
         person.setEmail("tiffany.clark@dsu.edu");
         SearchResult<Person> result = new SearchResult<>();
@@ -386,7 +388,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testInstitutionAlone() throws SolrServerException, IOException, ParseException {
+    public void testInstitutionAlone() throws SearchException, SearchIndexException, IOException, ParseException {
         Person person = new Person("a test", "person", null);
         Institution inst = new Institution("TQF");
         genericService.saveOrUpdate(person);
@@ -401,7 +403,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testValidInstitutionWithSpace() throws SolrServerException, IOException, ParseException {
+    public void testValidInstitutionWithSpace() throws SearchException, SearchIndexException, IOException, ParseException {
         searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         Person person = setupPerson(null, null, null, "University of");
         SearchResult<Person> result = findPerson(person, null, null, min);
@@ -416,7 +418,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testPersonEscapeIssues() throws SolrServerException, IOException, ParseException {
+    public void testPersonEscapeIssues() throws SearchException, SearchIndexException, IOException, ParseException {
         searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         SearchResult<Person> result = findPerson(new Person(), "Margaret Nelson(CNH", null, min);
         List<Person> people = result.getResults();
@@ -430,7 +432,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testInstitutionEmpty() throws SolrServerException, IOException, ParseException {
+    public void testInstitutionEmpty() throws SearchException, SearchIndexException, IOException, ParseException {
         searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         // FIXME: should not need to be quoted
         Person person = setupPerson(null, null, null, "University ABCD");
@@ -448,7 +450,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     private SearchResult<Person> findPerson(Person person_, String term, Boolean registered, int min2, SortOption relevance, TdarUser user)
-            throws ParseException, SolrServerException, IOException {
+            throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<Person> result = new SearchResult<>();
         result.setAuthenticatedUser(user);
         result.setSortField(relevance);
@@ -456,10 +458,10 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         return result;
     }
 
-    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2, SortOption option) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2, SortOption option) throws ParseException, SearchException, SearchIndexException, IOException {
         return findPerson(person, term, registered, min2, option, null);
     }
-    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2) throws ParseException, SearchException, SearchIndexException, IOException {
         return findPerson(person, term, registered, min2, null, null);
     }
 }

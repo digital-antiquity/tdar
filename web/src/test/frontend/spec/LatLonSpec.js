@@ -1,6 +1,6 @@
 /* global describe, it, expect, $, $j, jasmine */
 
-describe("latlong tests", function () {
+describe("LatLonSpec.js: latlong tests", function () {
     "use strict";
     var RADIUS_EARTH = 6371;
     var RADIUS_MARS = 3389.28;

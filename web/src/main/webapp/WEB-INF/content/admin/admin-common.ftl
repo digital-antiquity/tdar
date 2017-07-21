@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html >
-<#import "/${themeDir}/settings.ftl" as settings>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/${config.themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/macros/common.ftl" as common>
 <title>Admin Pages</title>
     <#setting url_escaping_charset="UTF-8">
     <#macro header>
@@ -12,7 +12,7 @@
             <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Statistics <b class='caret'></b></a>
             <ul class='dropdown-menu'>
                 <li><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
-<!--                <li><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li> -->
+                <!-- <li><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li> -->
                 <li><a href="<@s.url value="/admin/usage/downloads"/>">Download Statistics</a></li>
                 <li><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
                 <li><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>

@@ -19,7 +19,7 @@ public class HtmlUnitSVGTest {
     @SuppressWarnings({ "resource", "unused" })
     @Test
     public void testSVG() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
-        WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
+        WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
         webClient.getOptions().setJavaScriptEnabled(true);
         HtmlPage page =(HtmlPage)webClient.getPage("http://c3js.org");
 

@@ -26,9 +26,9 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonLookupFilter;
 
 @SuppressWarnings("serial")

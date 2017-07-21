@@ -21,11 +21,13 @@ import org.slf4j.MDC;
 import org.tdar.core.LoggingConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 
@@ -61,7 +63,11 @@ public class SolrSearchObject<I extends Indexable> {
     private List<String> statsFields = new ArrayList<>();
     private List<String> filters = new ArrayList<>();
     private Integer totalResults = 0;
-    // max # of facets
+    private boolean deemphasizeSupportingTypes = false;
+    private ResourceType boostType = null;
+    // max # of facets default 100
+    private Integer mapFacetLimit;
+    // default 10
     private Integer facetLimit;
     // min # of items to show in a facet
     private Integer facetMinCount;
@@ -75,7 +81,7 @@ public class SolrSearchObject<I extends Indexable> {
     private Map<String, List<Long>> searchByMap = new HashMap<>();
     private StringBuilder facetText = new StringBuilder();
     private ProjectionModel projection;
-
+    private List<String> boosts = new ArrayList<>();
     public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
         this.builder = queryBuilder;
         this.coreName = queryBuilder.getCoreName();
@@ -89,6 +95,16 @@ public class SolrSearchObject<I extends Indexable> {
         }
         if (handler.getSecondarySortField() != null) {
             addSortField(handler.getSecondarySortField(), sort);
+        }
+        if (queryBuilder instanceof ResourceQueryBuilder && handler.getSortField() == SortOption.RELEVANCE) {
+            ResourceQueryBuilder qb = (ResourceQueryBuilder) queryBuilder;
+//            if (qb.getBoostType() != null) {
+//                boosts.add(String.format("{!boost b=\"if(exists(query({!v='resourceType:(%s)'})),10,1)\"}", StringUtils.join(qb.getBoostType(), " ")));
+//            }
+            if (qb.isDeemphasizeSupporting()) {
+                boosts.add("{!boost b=\"if(exists(query({!v='resourceType:(ONTOLOGY CODING_SHEET)'})),-10,1)\"} ");
+            }
+            
         }
         if (CollectionUtils.isNotEmpty(sort)) {
             setSortParam(StringUtils.join(sort, ","));
@@ -105,8 +121,11 @@ public class SolrSearchObject<I extends Indexable> {
                 if (wrap.isMapFacet()) {
                     this.pivotFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
                     this.statsFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
-                    facetLimit = 10000;
+                    mapFacetLimit = 10000;
                     facetFieldNames.add(QueryFieldNames.RESOURCE_TYPE);
+                }
+                if (wrap.getMaxFacetLimit() != null) {
+                    facetLimit = wrap.getMaxFacetLimit();
                 }
                 for (String facet : facetFieldNames) {
                     if (StringUtils.isNotBlank(facet)) {
@@ -119,7 +138,11 @@ public class SolrSearchObject<I extends Indexable> {
                             filters.add(String.format("{!tag=%s}%s:(%s)", facet, facet, filter));
                             exclude = String.format(", domain:{excludeTags:%s}", facet);
                         }
-                        facetText.append(String.format("%s:{field:%s, type:terms %s}", facet, facet, exclude));
+                        String limit = "";
+                        if (getFacetLimit() != null) {
+                            limit = String.format(", limit: %s",getFacetLimit());
+                        }
+                        facetText.append(String.format("%s:{field:%s, type:terms %s %s}", facet, facet, exclude, limit));
                     }
                 }
                 if (facetText.length() > 0) {
@@ -191,7 +214,7 @@ public class SolrSearchObject<I extends Indexable> {
 
     public SolrParams getSolrParams() {
         SolrQuery solrQuery = new SolrQuery();
-        setQueryString(builder.generateQueryString());
+        setQueryString(StringUtils.join(boosts,"") + builder.generateQueryString());
         solrQuery.setParam("q", getQueryString());
         solrQuery.setParam("start", Integer.toString(startRecord));
         solrQuery.setParam("rows", Integer.toString(resultSize));
@@ -216,8 +239,8 @@ public class SolrSearchObject<I extends Indexable> {
         if (CollectionUtils.isNotEmpty(filters)) {
             solrQuery.setParam("fq", filters.toArray(new String[0]));
         }
-        if (facetLimit != null) {
-            solrQuery.setFacetLimit(facetLimit);
+        if (mapFacetLimit != null) {
+            solrQuery.setFacetLimit(mapFacetLimit);
         }
         if (facetMinCount != null) {
             solrQuery.setFacetMinCount(facetMinCount);
@@ -317,12 +340,12 @@ public class SolrSearchObject<I extends Indexable> {
         this.facetMinCount = facetMinCount;
     }
 
-    public Integer getFacetLimit() {
-        return facetLimit;
+    public Integer getMapFacetLimit() {
+        return mapFacetLimit;
     }
 
-    public void setFacetLimit(Integer facetLimit) {
-        this.facetLimit = facetLimit;
+    public void setMapFacetLimit(Integer facetLimit) {
+        this.mapFacetLimit = facetLimit;
     }
 
     public Map<String, List<Long>> getSearchByMap() {
@@ -376,6 +399,30 @@ public class SolrSearchObject<I extends Indexable> {
 
     public void setStatsFields(List<String> statsFields) {
         this.statsFields = statsFields;
+    }
+
+    public ResourceType getBoostType() {
+        return boostType;
+    }
+
+    public void setBoostType(ResourceType boostType) {
+        this.boostType = boostType;
+    }
+
+    public boolean isDeemphasizeSupportingTypes() {
+        return deemphasizeSupportingTypes;
+    }
+
+    public void setDeemphasizeSupportingTypes(boolean deemphasizeSupportingTypes) {
+        this.deemphasizeSupportingTypes = deemphasizeSupportingTypes;
+    }
+
+    public Integer getFacetLimit() {
+        return facetLimit;
+    }
+
+    public void setFacetLimit(Integer facetLimit) {
+        this.facetLimit = facetLimit;
     }
 
     

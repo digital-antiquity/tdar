@@ -11,15 +11,6 @@ import javax.naming.ldap.Rdn;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.tdar.core.dao.external.auth.BaseAuthenticationProvider;
-import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.utils.MessageHelper;
-import org.tdar.core.dao.external.auth.AuthenticationResult;
-import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +29,15 @@ import org.springframework.ldap.filter.Filter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
 import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.ldap.support.LdapUtils;
+import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
+import org.tdar.core.dao.external.auth.BaseAuthenticationProvider;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$
@@ -478,6 +478,16 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
     @Override
     public AuthenticationResult checkToken(String token, HttpServletRequest request) {
         throw new TdarRuntimeException("error.not_implemented");
+    }
+
+    @Override
+    public boolean updateBasicUserInformation(TdarUser user) {
+        throw new TdarRecoverableRuntimeException("error.not_implemented");
+    }
+
+    @Override
+    public boolean renameUser(TdarUser user, String newUserName) {
+        throw new TdarRecoverableRuntimeException("error.not_implemented");
     }
 
 }

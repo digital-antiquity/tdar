@@ -1,8 +1,8 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/content/entity/entity-edit-common.ftl" as entityEdit>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <head>
     <#assign pageTitle = "Add a new User">
 

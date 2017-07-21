@@ -20,8 +20,8 @@ import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts_base.action.TdarActionException;
 
 /**
  * $Id$

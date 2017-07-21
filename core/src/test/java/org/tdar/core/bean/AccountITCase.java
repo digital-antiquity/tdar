@@ -46,7 +46,7 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.filestore.FileAnalyzer;
 
-public class AccountITCase extends AbstractIntegrationTestCase {
+public class AccountITCase extends AbstractIntegrationTestCase implements TestBillingAccountHelper {
 
     @Autowired
     BillingAccountService accountService;
@@ -95,11 +95,6 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertTrue(re.accountHasMinimumForNewResource(account, null));
     }
 
-    public void updateModel(BillingActivityModel model, boolean resources, boolean files, boolean space) {
-        model.setCountingResources(resources);
-        model.setCountingFiles(files);
-        model.setCountingSpace(space);
-    }
 
     @Test
     @Rollback

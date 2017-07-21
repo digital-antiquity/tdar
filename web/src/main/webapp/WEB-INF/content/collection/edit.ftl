@@ -1,8 +1,9 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
-    <#import "common-collection.ftl" as commonCollection>
-    <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+    <#import "../collection/common-collection.ftl" as commonCollection>
+    <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <head>
     <#if persistable.id == -1>
@@ -20,7 +21,6 @@
                 <ul class="nav">
                     <li class="alwaysHidden"><a href="#top">top</a></li>
                     <li class="active"><a href="#basicInformationSection">Basic</a></li>
-                    <li><a href="#divAccessRights">Rights</a></li>
                     <li><a href="#divResourcesSesction">Resources</a></li>
                 </ul>
                 <div id="fakeSubmitDiv" class="pull-right">
@@ -38,7 +38,10 @@
         </div>
     </div>
 
-
+    <#assign newRecord = false>
+    <#if persistable.id == -1>
+        <#assign newRecord = true />
+    </#if>
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} enctype='multipart/form-data' action='save'>
         <@s.token name='struts.csrf.token' />
@@ -52,7 +55,7 @@
                 <@s.hidden name="id"  value="${resourceCollection.id?c}" />
             </#if>
             <@edit.hiddenStartTime />
-            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge trim"  title="A title is required for all collections." maxlength="500" />
+            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="500" />
 
             <div id="parentIdContainer" class="control-group">
                 <label class="control-label">Parent Collection</label>
@@ -99,7 +102,8 @@
             </div>
 
 
-
+            <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
+            cssClass='resizable input-xxlarge' title="Please enter the description " />
 
             <#if administrator>
                 <@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
@@ -113,6 +117,7 @@
                     labelposition='left' size='40' dynamicAttributes={
                         "data-rule-extension":"jpg,tiff,jpeg,png"
                     }/>
+                    <button name="clear" type="button" id="clearButton" class="button btn btn-mini">clear</button>
                 </div>
             </div>
         </#if>
@@ -136,9 +141,9 @@
 
                 <div class="controls">
                     <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"
-                                                                            value="true" <@common.checkedif resourceCollection.hidden true /> />Yes</label>
+                                                                            value="true" <@commonr.checkedif resourceCollection.hidden true /> />Yes</label>
                     <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
-                                                                             value="false" <@common.checkedif resourceCollection.hidden false /> />No</label>
+                                                                             value="false" <@commonr.checkedif resourceCollection.hidden false /> />No</label>
                 </div>
             </div>
     
@@ -166,7 +171,6 @@
                 <dd>
             </dl>
         </div>
-            <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" label="Users who can View or Modify this Collection"/>
 
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
@@ -174,7 +178,8 @@
             <h2>Share Resources with other users</h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && (resourceCollection.resources?size > 0)>
-            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection>
+            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
+
             </@edit.resourceDataTable>
 
             <div id="divNoticeContainer" style="display:none">
@@ -186,24 +191,6 @@
 
         </div>
 
-        <#--
-        <div class="glide" id="divPublicResourcesSesction" data-tiplabel="Include Other Resources" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
-                    in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
-                    of results.">
-            <h2>Include other resources (display only)</h2>
-            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection idAddition="public">
-            </@edit.resourceDataTable>
-
-            <div id="divNoticeContainerpublic" style="display:none">
-                <div id="divAddProjectToCollectionNoticepublic" class="alert">
-                    <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="divAddProjectToCollectionNoticepublic">×</button>
-                    <em>Reminder:</em> Adding projects to a collection does not include the resources within a project.
-                </div>
-            </div>
-
-        </div>
-
-        -->
         <div id="divAddRemove">
             <h2>Modifications</h2>
 
@@ -218,8 +205,16 @@
             </div>
         </div>
 
-
-            <@edit.submit fileReminder=false />
+            <@edit.submit fileReminder=false class="button btn submitButton btn-primary">
+            <p><b>Where to go after save:</b><br/>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-view" <#if !newRecord>checked=checked</#if> value="" class="inline radio" emptyoption="false">
+				<label for="alt-submit-view" class="inline radio">View Page</label>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-rights" value="Assign Permissions" class="inline radio" emptyoption="false" >
+				<label for="alt-submit-rights" class="inline radio" <#if newRecord>checked=checked</#if>>Assign Permissions</label>
+            <br>
+            <br>
+			</p>
+            </@edit.submit>
         </@s.form>
 
         <#noescape>
@@ -229,6 +224,7 @@
             $(function () {
                 TDAR.datatable.setupDashboardDataTable({
                     isAdministrator: ${(editor!false)?string},
+                    limitContext: ${((!editor)!true)?string},
                     isSelectable: true,
                     showDescription: false,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
@@ -242,12 +238,13 @@
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
-                TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
+                //TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
+                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
+                TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
-        });
+				$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
+                });
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />

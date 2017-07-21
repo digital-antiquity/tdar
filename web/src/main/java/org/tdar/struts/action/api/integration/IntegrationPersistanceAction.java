@@ -23,11 +23,11 @@ import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.PersistableLoadingAction;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.action.PersistableLoadingAction;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.opensymphony.xwork2.Preparable;
@@ -149,7 +149,7 @@ public class IntegrationPersistanceAction extends AbstractJsonApiAction implemen
 
     @Override
     public boolean authorize() {
-        return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(), workflow);
     }
 
     @Override

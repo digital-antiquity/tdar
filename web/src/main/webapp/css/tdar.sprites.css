@@ -1,3 +1,15 @@
+.toolbaricon {
+    height: 1.2em;
+    width:1.2em;
+}
+
+#toolbars a svg {
+    margin-bottom: -.2em;
+}
+
+.media a svg, .cartouche svg {
+    margin-bottom: -.1em;
+}
 
 .responsive-large-desktop i.document-bg-large {
     background: url(../images/r4/resource-types-large.gif) 0px 0px;

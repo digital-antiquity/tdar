@@ -14,14 +14,14 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.AbstractCartController;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -45,9 +45,6 @@ public class CartLoginController extends AbstractCartController implements Valid
 
     private static final long serialVersionUID = 8641969120632289477L;
 
-    @SuppressWarnings("unused")
-    @Autowired
-    private RecaptchaService recaptchaService;
     @Autowired
     private AuthenticationService authenticationService;
 

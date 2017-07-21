@@ -1,5 +1,7 @@
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
-<#import "/${themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+<#import "/WEB-INF/macros/common.ftl" as common>
+<#import "/WEB-INF/macros/search-macros.ftl" as search>
+<#import "/${config.themeDir}/settings.ftl" as settings>
 
 <title>Explore ${siteAcronym}</title>
 
@@ -30,12 +32,12 @@
 <br/>
 
 <div class="row">    
-        <@common.renderWorldMap mode='vertical'/>
+        <@commonr.renderWorldMap mode='vertical'/>
 </div>
 
 <div class="row">
     <div class="span12">
-         <@common.resourceBarGraph /> 
+         <@commonr.resourceBarGraph /> 
     </div>
 </div>
 
@@ -71,21 +73,21 @@
 <h2>Browse by Investigation Type</h2>
 <ul class="inline">
     <#list investigationTypes?sort as keyword>
-        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
+        <@search.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
 <h2>Browse by Site Type</h2>
 <ul class="inline">
     <#list siteTypeKeywords?sort as keyword>
-        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
+        <@search.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
-<h2>Browse by ${culturalTermsLabel!"Culture"}</h2>
+<h2>Browse by ${config.culturalTermsLabel!"Culture"}</h2>
 <ul class="inline">
     <#list cultureKeywords?sort as keyword>
-        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
+        <@search.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
@@ -93,7 +95,7 @@
 <h2>Browse by Material Type</h2>
 <ul class="inline">
     <#list materialTypes?sort as keyword>
-        <@common.searchFor keyword=keyword asList=true showOccurrence=true />
+        <@search.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 

@@ -11,6 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.utils.PersistableUtils;
 
+/**
+ * Handle "Skeleton" records being passed in as search terms.  Keep a local query part that contains the hydrated version
+ * @author abrin
+ *
+ * @param <P>
+ */
 public class SkeletonPersistableQueryPart<P extends Persistable> extends AbstractHydrateableQueryPart<P> {
 
     private FieldQueryPart<P> transientFieldQueryPart;

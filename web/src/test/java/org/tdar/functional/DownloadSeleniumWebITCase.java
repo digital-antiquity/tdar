@@ -5,9 +5,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.openqa.selenium.support.ui.ExpectedConditions.titleContains;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
-import static org.tdar.struts.action.TdarActionSupport.CONFIRM;
+import static org.tdar.struts_base.action.TdarActionSupport.CONFIRM;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +27,8 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
     String documentViewUrl;
 
     @Before
-    public void createDocument() {
+    public void createDocument() throws IOException {
+        super.beforeTest();
         loginAdmin();
         gotoPage("/document/add");
         setFieldByName("document.title", "My Sample Document");

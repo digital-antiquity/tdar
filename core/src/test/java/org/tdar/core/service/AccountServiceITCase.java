@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingActivity;
@@ -28,7 +29,7 @@ import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 
-public class AccountServiceITCase extends AbstractIntegrationTestCase {
+public class AccountServiceITCase extends AbstractIntegrationTestCase implements TestBillingAccountHelper {
 
     @Autowired
     BillingAccountService accountService;

@@ -654,11 +654,11 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         defaults: _defaults,
         dynamicUpdateMap: _dynamicUpdateMap,
         getMaps : _getMaps,
-        update: _update
+        update: _update,
+        main : function() {
+            TDAR.leaflet.initLeafletMaps();
+            TDAR.leaflet.initEditableLeafletMaps();
+            TDAR.leaflet.initResultsMaps();
+        }
     }
 })(console, jQuery, window, L);
-$(function() {
-    TDAR.leaflet.initLeafletMaps();
-    TDAR.leaflet.initEditableLeafletMaps();
-    TDAR.leaflet.initResultsMaps();
-});

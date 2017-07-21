@@ -51,6 +51,10 @@ public class TdarExpectedConditions {
                     return visibleElements;
                 }
             }
+
+            public String toString() {
+                return "visibility of elements located by " + locator;
+            }
         };
     }
 

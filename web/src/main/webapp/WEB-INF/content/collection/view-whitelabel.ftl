@@ -1,15 +1,15 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "common-collection.ftl" as commonCollection>
     <#import "/WEB-INF/macros/whitelabel-macros.ftl" as whitelabel>
 
 <#--This is just an alias to help illustrate when we are using fields exclusive to whitelabel collections -->
-    <#assign whitelabelCollection = resourceCollection>
+    <#assign whitelabelCollection = resourceCollection >
 <head>
     <@commonCollection.head />
     <style>
-    <#noescape>${whitelabelCollection.css!''}</#noescape>
+    <#noescape>${whitelabelCollection.properties.css!''}</#noescape>
 
 	<#-- todo: move these to .css and use collection-specific css classes -->
     <#if searchHeaderLogoAvailable>
@@ -30,7 +30,6 @@
 </head>
 <body>
     <@commonCollection.header />
-
     <#if !searchHeaderEnabled><h1>${resourceCollection.name!"untitled collection"}</h1></#if>
 
 <#-- FIXME: have the controller handle isVisible via separate result name -->
@@ -44,17 +43,17 @@
         <@commonCollection.descriptionSection />
                 <#-- TODO: move this logic to logoAvailable() -->
 
-        <#if whitelabelCollection.featuredResourcesEnabled>
+        <#if whitelabelCollection.properties.featuredResourcesEnabled>
             <div class="viewpage-section">
                 <div class="row">
-                    <@view.featured colspan="9" resourceList=whitelabelCollection.featuredResources />
+                    <@view.featured colspan="9" resourceList=whitelabelCollection.properties.featuredResources />
                 </div>
             </div>
         </#if>
 
         <@commonCollection.keywordSection />
 
-        <#if whitelabelCollection.subCollectionsEnabled>
+        <#if whitelabelCollection.properties.subCollectionsEnabled>
             <div class="viewpage-section">
                 <h2>Collections</h2>
                 <#list collections as childCollection>

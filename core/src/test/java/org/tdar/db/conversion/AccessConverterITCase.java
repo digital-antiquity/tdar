@@ -19,7 +19,8 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.junit.Ignore;
+import org.apache.commons.lang.ArrayUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,33 +29,34 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.db.model.PostgresDatabase;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 
 public class AccessConverterITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    @Ignore
     public void testDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File("c://Users/abrin/Desktop/rpms.mdb"), 1224L);
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(),"rpms_corrected.mdb"), 1224L);
         for (DataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
 
-        // FIXME: add more depth to testing
     }
+    
+    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
 
-    @Override
+
     @Autowired
     @Qualifier("tdarDataImportDataSource")
     public void setIntegrationDataSource(DataSource dataSource) {
@@ -108,13 +110,12 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         ds.setDescription("test");
         ds.markUpdated(getAdminUser());
         ds.setProject(genericService.find(Project.class, TestConstants.PROJECT_ID));
-        ResourceCollection col = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection col = new SharedCollection();
         col.markUpdated(getAdminUser());
-        col.setSortBy(SortOption.RELEVANCE);
         col.setName("test");
         col.setDescription("test");
         genericService.saveOrUpdate(col);
-        ds.getResourceCollections().add(col);
+        ds.getSharedCollections().add(col);
         genericService.saveOrUpdate(ds);
         dataTable.setDataset(ds);
         CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), MessageHelper.getInstance(), dataTable.getColumnByName("basic_int"),
@@ -271,6 +272,49 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         }
 
         // FIXME: add more depth to testing
+    }
+
+
+    static Long spitalIrId = (long) (Math.random() * 10000);
+
+    public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
+        spitalIrId++;
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
+        return converter;
+    }
+
+
+    public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
+        InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
+        File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
+        assertTrue("text file exists", storedFile.exists());
+        DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
+        converter.execute();
+        setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(), converter.getTableNames().toArray(new String[0])));
+        return converter;
+    }
+
+
+
+    String[] dataImportTables = new String[0];
+
+    public String[] getDataImportTables() {
+        return dataImportTables;
+    }
+
+    public void setDataImportTables(String[] dataImportTables) {
+        this.dataImportTables = dataImportTables;
+    }
+
+    @Before
+    public void dropDataImportDatabaseTables() throws Exception {
+        for (String table : getDataImportTables()) {
+            try {
+                tdarDataImportDatabase.dropTable(table);
+            } catch (Exception ignored) {
+            }
+        }
+
     }
 
 }

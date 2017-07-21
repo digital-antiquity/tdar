@@ -253,8 +253,7 @@ TDAR.repeatrow = function (TDAR, $) {
         registerDeleteButtons: registerDeleteButtons,
         cloneSection: cloneSection,
         deleteRow: deleteRow,
-        clearInputs: _clearInputs,
-        taco: "tuesday"
+        clearInputs: _clearInputs
     };
 
 }(TDAR, jQuery);

@@ -176,7 +176,7 @@
     <#macro siteName>
     <div class="hidden" id="siteinfohelp">
         <h2>Site Information</h2>
-        Keyword list: Enter site names and select (<a target="_blank" title="click to open view the complete list in a new window" href="${siteTypesHelpUrl}">feature
+        Keyword list: Enter site names and select (<a target="_blank" title="click to open view the complete list in a new window" href="${config.siteTypesHelpUrl}">feature
         types</a>)
         discussed in the document. Use the <em>Other</em> field if necessary.
     </div>
@@ -186,7 +186,7 @@
     <#macro materialType>
     <div class="hidden" id="materialtypehelp">
         <h2>Material Types</h2>
-        Keyword list: Select the artifact types discussed in the document.<a href="${materialTypesHelpUrl}">view all material types</a>
+        Keyword list: Select the artifact types discussed in the document.<a href="${config.materialTypesHelpUrl}">view all material types</a>
     </div>
     </#macro>
 
@@ -194,13 +194,13 @@
     <div id="culturehelp" class="hidden">
         <h2>${culturalTermsLabel!"Cultural Terms"}</h2>
         Keyword list: Select the archaeological &quot;${culturalTermsLabel!"cultures"}&quot; discussed in the document. Use the Other field if needed.
-        <a href="${culturalTermsHelpUrl}">view all controlled terms</a>
+        <a href="${config.culturalTermsHelpUrl}">view all controlled terms</a>
     </div>
 
     </#macro>
 
     <#macro investigationType>
-    <div class="hidden" id="investigationtypehelp">Keyword list: Select the investigation types relevant to the document.<a href="${investigationTypesHelpUrl}">
+    <div class="hidden" id="investigationtypehelp">Keyword list: Select the investigation types relevant to the document.<a href="${config.investigationTypesHelpUrl}">
         view all investigation types</a></div>
     </#macro>
 
@@ -280,7 +280,7 @@
             <dt>Add Another</dt>
             <dd> Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles</dd>
             <dt>Roles</dt>
-            <dd>View <a href="${resourceCreatorRoleDocumentationUrl}">All Roles</a></dd>
+            <dd>View <a href="${config.resourceCreatorRoleDocumentationUrl}">All Roles</a></dd>
         </dl>
     </div>
     </#macro>

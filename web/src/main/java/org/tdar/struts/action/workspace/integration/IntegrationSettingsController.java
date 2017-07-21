@@ -14,8 +14,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 
 @Component
@@ -28,7 +28,10 @@ public class IntegrationSettingsController extends AbstractPersistableController
     private static final long serialVersionUID = -2663378965534285107L;
     public static final String SUCCESS_WORKSPACE = "workspace";
     private List<TdarUser> authorizedMembers = new ArrayList<>();
+    private List<String> authorizedUsersFullNames = new ArrayList<String>();
 
+    
+    
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -37,7 +40,7 @@ public class IntegrationSettingsController extends AbstractPersistableController
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return true;
         }
-        return authorizationService.canEditWorkflow(getPersistable(), getAuthenticatedUser());
+        return authorizationService.canEditWorkflow( getAuthenticatedUser(),getPersistable());
     }
 
     @Override
@@ -77,5 +80,13 @@ public class IntegrationSettingsController extends AbstractPersistableController
 
     public Person getBlankPerson() {
         return new Person();
+    }
+
+    public List<String> getAuthorizedUsersFullNames() {
+        return authorizedUsersFullNames;
+    }
+
+    public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
+        this.authorizedUsersFullNames = authorizedUsersFullNames;
     }
 }

@@ -13,10 +13,9 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -64,8 +63,6 @@ public class AbstractDownloadController extends AbstractAuthenticatableAction im
     // the specific version to be downloaded, if just one
     private InformationResourceFileVersion informationResourceFileVersion;
 
-    @Autowired
-    private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
 
     public InformationResource getInformationResource() {
@@ -157,19 +154,11 @@ public class AbstractDownloadController extends AbstractAuthenticatableAction im
         this.downloadTransferObject = downloadTransferObject;
     }
 
-    public RecaptchaService getRecaptchaService() {
-        return recaptchaService;
+    public List<UserAffiliation> getAffiliations() {
+        return affiliations;
     }
 
-    public void setRecaptchaService(RecaptchaService recaptchaService) {
-        this.recaptchaService = recaptchaService;
+    public void setAffiliations(List<UserAffiliation> affiliations) {
+        this.affiliations = affiliations;
     }
-
-	public List<UserAffiliation> getAffiliations() {
-		return affiliations;
-	}
-
-	public void setAffiliations(List<UserAffiliation> affiliations) {
-		this.affiliations = affiliations;
-	}
 }

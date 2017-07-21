@@ -16,6 +16,12 @@ import org.tdar.utils.range.Range;
 
 import com.opensymphony.xwork2.TextProvider;
 
+/**
+ * Formulate a Luence/SOLR range query
+ * @author abrin
+ *
+ * @param <C>
+ */
 public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
 
     private String descriptionLabel;

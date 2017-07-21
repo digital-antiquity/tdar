@@ -2,8 +2,45 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd" context="test" >
+    <changeSet id="collection-parent" author="abrin">
+        <insert tableName="collection_parents">
+            <column name="collection_id" valueNumeric="1002"/>
+            <column name="parent_id" valueNumeric="1003"/>
+        </insert>
+        <insert tableName="whitelabel_collection">
+            <column name="id" valueNumeric="1003"/>
+            <column name="whitelabel" valueBoolean="true"/>
+        </insert>
+        <update tableName="collection">
+            <column name="parent_id" valueNumeric="1003"/>
+            <where>id=1002</where>
+        </update>
+        <insert tableName="whitelabel_featured_resource">
+            <column name="collection_id" valueNumeric="1003"/>
+            <column name="resource_id" valueNumeric="4230"/>
+        </insert>
+<!--         <sql>
+            SELECT setval('whitelabel_collection_id_seq', (SELECT MAX(id) FROM collection_display_properties)+1);
+        </sql>
+ -->
+    </changeSet>
+    <changeSet id="lat_long_obfuscation_fix" author="abrin">
+        <sql>update latitude_longitude set max_obfuscated_lat=maximum_latitude , max_obfuscated_long=maximum_longitude , 
+            min_obfuscated_lat=minimum_latitude , min_obfuscated_long=minimum_longitude </sql>
+        <sql>update latitude_longitude set max_obfuscated_lat=max_obfuscated_lat + .2, max_obfuscated_long= max_obfuscated_long+ .2 where id=6701</sql>
+    </changeSet>
 
+    <changeSet id="collection-abcd-additional" author="abrin">
+        <insert tableName="collection_resource">
+            <column name="collection_id" valueNumeric="1004" />
+            <column name="resource_id" valueNumeric="3087" />
+        </insert>
+        <insert tableName="collection_resource">
+            <column name="collection_id" valueNumeric="1004" />
+            <column name="resource_id" valueNumeric="1628" />
+        </insert>
+    </changeSet>
     <changeSet id="integration-workflow" author="abrin">
         <insert tableName="data_integration_workflow">
             <column name="id" valueNumeric="1000" />
@@ -18,7 +55,27 @@
             <column name="date_updated" valueDate="2016-01-01" />
             <column name="json_data">{}</column>
         </insert>
+	</changeSet>
+    
+	<changeSet id="unmanaged-collections" author="abrin">
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1000"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1001"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1002"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1003"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
     </changeSet>
+
     <changeSet id="dateone_old" author="abrin">
         <insert tableName="dataone_log">
             <column name="date_logged" value="2010-01-01" />

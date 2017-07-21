@@ -1,5 +1,6 @@
 package org.tdar.search.index.analyzer;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -7,8 +8,6 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 public final class SiteCodeExtractor {
 
@@ -34,21 +33,21 @@ public final class SiteCodeExtractor {
 
     @SuppressWarnings("unchecked")
     public static Set<String> extractSiteCodeTokens(String str) {
-    	if (str == null) {
-    		return Collections.emptySet();
-    	}
-    	Set<String> toReturn = new HashSet<>();
-    	Matcher matcher = pattern.matcher(str);
-    	while (matcher.find()) {
-    		String group = matcher.group(0);
-    		toReturn.add(group.replaceAll(SEP, ""));
-    	}
-    	return toReturn;
+        if (str == null) {
+            return Collections.emptySet();
+        }
+        Set<String> toReturn = new HashSet<>();
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            String group = matcher.group(0);
+            toReturn.add(group.replaceAll(SEP, ""));
+        }
+        return toReturn;
     }
 
 
-	public static boolean matches(String term) {
-		return pattern.matcher(term).matches();
-	}
+    public static boolean matches(String term) {
+        return pattern.matcher(term).matches();
+    }
 
 }

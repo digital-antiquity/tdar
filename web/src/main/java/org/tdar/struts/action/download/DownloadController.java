@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.download.DownloadResult;
 import org.tdar.core.service.download.DownloadService;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.ResourceCitationFormatter;
 
@@ -38,7 +38,6 @@ public class DownloadController extends AbstractDownloadController implements Pr
                     results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) })
     })
     public String confirm() throws TdarActionException {
-        getSessionData().clearPassthroughParameters();
 
         if (PersistableUtils.isNotNullOrTransient(getInformationResourceFileVersionId())) {
             setDownloadTransferObject(downloadService.validateDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
@@ -63,7 +62,6 @@ public class DownloadController extends AbstractDownloadController implements Pr
             @Action(value = "get/{informationResourceId}/{informationResourceFileVersionId}"),
     })
     public String execute() {
-        getSessionData().clearPassthroughParameters();
         if (PersistableUtils.isNullOrTransient(getInformationResourceFileVersion())) {
             getLogger().debug("no informationResourceFiles associated with this id [{}]", getInformationResourceFileVersionId());
             return ERROR;
@@ -86,7 +84,6 @@ public class DownloadController extends AbstractDownloadController implements Pr
             @Action(value = "get/{informationResourceId}")
     })
     public String downloadZipArchive() {
-        getSessionData().clearPassthroughParameters();
         if (PersistableUtils.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }

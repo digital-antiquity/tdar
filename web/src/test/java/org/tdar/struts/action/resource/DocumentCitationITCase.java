@@ -19,13 +19,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts_base.action.TdarActionException;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
 import edu.asu.lib.mods.ModsDocument;
 
-public class DocumentCitationITCase extends AbstractResourceControllerITCase {
+public class DocumentCitationITCase extends AbstractControllerITCase {
 
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 

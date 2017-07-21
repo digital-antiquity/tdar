@@ -2,6 +2,7 @@
  * common functions to the tDAR homepage
  */
 TDAR.menu = (function(console, $, ctx) {
+    "use strict";
     function _init() {
         $("#welcome-menu a").click(function() {
             $(".welcome-drop").toggle();
@@ -24,9 +25,7 @@ TDAR.menu = (function(console, $, ctx) {
     }
 
     return {
-        init : _init
+        "init" : _init,
+        "main": _init
     };
 })(console, jQuery, window);
-$(function() {
-    TDAR.menu.init();
-});

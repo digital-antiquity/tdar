@@ -1,8 +1,5 @@
 package org.tdar.core.bean;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -74,11 +71,14 @@ public abstract class AbstractPersistable implements Persistable {
     @Override
     public boolean equals(final Object object) {
         if (object == this) {
+            logger.trace("exact equals {},{}", this,object);
             return true;
         }
         if ((object instanceof Persistable) && getClass().isInstance(object)) {
+            logger.trace("same class {},{}", this,object);
             return PersistableUtils.isEqual(this, getClass().cast(object));
         }
+        logger.trace("!! not equals {},{}", this,object);
         return false;
     }
 
@@ -97,12 +97,4 @@ public abstract class AbstractPersistable implements Persistable {
         return hashCode;
     }
 
-    /**
-     * By default, base the hashcode off of object's inherent hashcode.
-     */
-    @Override
-    @XmlTransient
-    public List<?> getEqualityFields() {
-        return Collections.emptyList();
-    }
 }

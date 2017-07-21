@@ -8,9 +8,9 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.SerializationService;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 
-public class CloneResourceITCase extends AbstractDataIntegrationTestCase {
+public class CloneResourceITCase extends AbstractAdminControllerITCase {
 
     @Autowired
     SerializationService serializationService;
@@ -19,7 +19,7 @@ public class CloneResourceITCase extends AbstractDataIntegrationTestCase {
     private ImportService importService;
 
     @Override
-    protected String getTestFilePath() {
+    public String getTestFilePath() {
         return TestConstants.TEST_DATA_INTEGRATION_DIR;
     }
 
@@ -27,7 +27,7 @@ public class CloneResourceITCase extends AbstractDataIntegrationTestCase {
     @Test
     @Rollback
     public void testDatasetClone() throws Exception {
-        Dataset dataset = setupAndLoadResource(AbstractDataIntegrationTestCase.SPITAL_DB_NAME, Dataset.class);
+        Dataset dataset = setupAndLoadResource(AbstractAdminControllerITCase.SPITAL_DB_NAME, Dataset.class);
         Long id = dataset.getId();
         genericService.synchronize();
         Dataset newDoc = importService.cloneResource(dataset, getAdminUser());

@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.bulk methods", function() {
+describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
 
     beforeEach(function() {
         loadFixtures("bulk-upload-form.html");

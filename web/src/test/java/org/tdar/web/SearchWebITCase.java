@@ -14,6 +14,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -74,9 +75,9 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
-    @Override
     public void testBasicSearchView() {
-        super.testBasicSearchView();
+        gotoPage("/search/advanced");
+        assertTextPresentInPage("Search");
         submitForm("Search");
         assertNoErrorTextPresent();
     }
@@ -185,7 +186,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Rollback
     public void testFacets() throws InstantiationException,
             IllegalAccessException {
-    	 List<ResourceType> types = Arrays.asList(ResourceType.DATASET, ResourceType.DOCUMENT, ResourceType.IMAGE, ResourceType.GEOSPATIAL);
+         List<ResourceType> types = Arrays.asList(ResourceType.DATASET, ResourceType.DOCUMENT, ResourceType.IMAGE, ResourceType.GEOSPATIAL);
         for (ResourceType rt : types) {
             createResourceFromType(rt, "test");
         }
@@ -384,7 +385,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     // refine a collection search
     public void testModifyCollectionSearch() {
         String name = "superduper";
-        createTestCollection(name, "description goes here", getSomeResources());
+        createTestCollection(CollectionType.SHARED, name, "description goes here", getSomeResources());
         gotoPage("/search/collection");
         setInput("query", name);
         submitForm("Search");

@@ -12,7 +12,7 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
@@ -22,22 +22,35 @@ import com.opensymphony.xwork2.TextProvider;
 /**
  * @author abrin
  * 
+ * This is the basic class for managing Lucene/Solr Queries. It handles a number of issues related to queries from building them out to formatting the
+ * "text" description of the query part. The main entry into this class is "generateQueryString()"
+ * 
  * @param <C>
  */
 public class FieldQueryPart<C> implements QueryPart<C> {
 
     private static final String NOT = " NOT ";
 
+    // the "lucene" name for this field
     private String fieldName;
+    // the display name for the field (shown to users)
     private String displayName;
+    // the list of values to search for
     private List<C> fieldValues = new ArrayList<C>();
+    // boost the relevancy by
     private Float boost;
+    // how "fuzzy" should the search be?
     private Float fuzzy;
+    // how many words away can the terms be to match
     private Integer proximity;
+    // How should the term be formatted (escaped)
     private List<PhraseFormatter> phraseFormatters;
+    // operator
     private Operator operator = Operator.AND;
     private boolean inverse;
+    // a few fields may be "hidden" from the description
     private boolean descriptionVisible = true;
+    // if the field value implements "Validatable" should we allow invalid values (e.g. a Person with just a first name)
     private boolean allowInvalid = false;
 
     public FieldQueryPart() {
@@ -110,6 +123,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     @Override
+    /**
+     * For each field value, convert it to a phrase and append it, then construct the entire query phrase from the values
+     */
     public String generateQueryString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < fieldValues.size(); i++) {
@@ -122,8 +138,13 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return sb.toString();
     }
 
+    /**
+     * Given a list of values (or a single one), prepend the text with the field name. Then append boost if needed  
+     * @param sb
+     * @param fieldName
+     */
     protected void constructQueryPhrase(StringBuilder sb, String fieldName) {
-        StringBuilder startPhrase = new StringBuilder(getInverse());
+        StringBuilder startPhrase = new StringBuilder();
         // support for "all fields query"
         if (StringUtils.isNotBlank(fieldName)) {
             startPhrase.append(fieldName).append(":");
@@ -137,6 +158,16 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         }
     }
 
+    /**
+     * Format the specified value as a string, apply the phrase formatters, and then append it to the query.  
+     * 
+     * E.g. take a Institution, extract the name, format it and escape it ("Arizona\ State\ University"
+     * 
+     * Then append proximity and fuzzyness modifiers
+     * 
+     * @param sb
+     * @param index
+     */
     protected void appendPhrase(StringBuilder sb, int index) {
         String value = "";
         value = formatValueAsStringForQuery(index);
@@ -167,6 +198,11 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         }
     }
 
+    /**
+     * Either call "toString()" or get the name of the enum
+     * @param index
+     * @return
+     */
     protected String formatValueAsStringForQuery(int index) {
         C item = fieldValues.get(index);
         if (item == null) {
@@ -268,6 +304,10 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return this;
     }
 
+    
+    /**
+     * Get a "Plain Text" version of the query
+     */
     @Override
     public String getDescription(TextProvider provider) {
         if (!descriptionVisible) {
@@ -282,8 +322,8 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             }
             if (Resource.class.isAssignableFrom(fieldValue.getClass())) {
                 fieldValue = ((Resource) fieldValue).getTitle();
-            } else if (ResourceCollection.class.isAssignableFrom(fieldValue.getClass())) {
-                fieldValue = ((ResourceCollection) fieldValue).getTitle();
+            } else if (VisibleCollection.class.isAssignableFrom(fieldValue.getClass())) {
+                fieldValue = ((VisibleCollection) fieldValue).getTitle();
             } else if (fieldValue instanceof Localizable) {
                 fieldValue = provider.getText(((Localizable) fieldValue).getLocaleKey());
             } else if (fieldValue instanceof HasLabel) {
@@ -295,6 +335,9 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return String.format("%s: \"%s\" ", getDisplayName(), StringUtils.join(vals, getDescriptionOperator(provider)));
     }
 
+    /**
+     * get a HTML acceptable version of the query
+     */
     @Override
     public String getDescriptionHtml(TextProvider provider) {
         return StringEscapeUtils.escapeHtml4(getDescription(provider));
@@ -309,27 +352,27 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.operator = operator;
     }
 
-    /**
-     * @param inverse
-     *            the inverse to set
-     */
-    public void setInverse(boolean inverse) {
-        this.inverse = inverse;
-    }
+//    /**
+//     * @param inverse
+//     *            the inverse to set
+//     */
+//    public void setInverse(boolean inverse) {
+//        this.inverse = inverse;
+//    }
 
-    protected String getInverse() {
-        if (isInverse()) {
-            return NOT;
-        }
-        return "";
-    }
-
-    /**
-     * @return the inverse
-     */
-    public boolean isInverse() {
-        return inverse;
-    }
+//    protected String getInverse() {
+//        if (isInverse()) {
+//            return NOT;
+//        }
+//        return "";
+//    }
+//
+//    /**
+//     * @return the inverse
+//     */
+//    public boolean isInverse() {
+//        return inverse;
+//    }
 
     public List<PhraseFormatter> getPhraseFormatters() {
         return phraseFormatters;

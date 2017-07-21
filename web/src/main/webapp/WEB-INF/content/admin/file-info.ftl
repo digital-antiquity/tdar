@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html >
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+    <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "admin-common.ftl" as admin>
 <title>Admin Pages - file info</title>
 

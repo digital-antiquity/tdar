@@ -1,8 +1,9 @@
-(function (TDAR, $, ctx, flattedOntologyNodes) {
+(function (TDAR, $, ctx) {
     'use strict';
 
     var rePrefix = /^[-| ]*/;
     var reSynonyms = /\((.*?)\)/;
+    var ontology;
 
     //derive original name, synonyms from formatted input string
     //fixme: hack: we should get the opposite via embedded json, and construct the formatted string dynamically
@@ -30,10 +31,11 @@
     }
 
 
-    var _initMapping = function (formSelector) {
+    var _initMapping = function (formSelector, flattedOntologyNodes) {
         var $form = $(formSelector);
         //decorate each node with "allNames" property which is an array of the original name and all synonyms
-        flattedOntologyNodes = $.map(flattedOntologyNodes, processNode);
+        ontology = $.map(flattedOntologyNodes, processNode);
+
 
         $("#autosuggest").click(_autosuggest);
         $("#clearAll").click(_clearall);
@@ -142,4 +144,4 @@
         "autoSuggest": _autosuggest
     };
 
-})(TDAR, jQuery, window, window.ontology);
+})(TDAR, jQuery, window);

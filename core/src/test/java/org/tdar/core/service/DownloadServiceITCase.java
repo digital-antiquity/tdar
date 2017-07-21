@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.ArchiveEvaluator;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -79,7 +80,7 @@ public class DownloadServiceITCase extends AbstractIntegrationTestCase {
 
         assertTrue("file should have been created", dest.exists());
         assertTrue("file should be non-empty", dest.length() > 0);
-        assertArchiveContents(files, dest);
+        ArchiveEvaluator.assertArchiveContents(files, dest);
     }
 
     // get some files from the test dir and put them into an archive stream
@@ -110,7 +111,7 @@ public class DownloadServiceITCase extends AbstractIntegrationTestCase {
 
         assertTrue("file should have been created", dest.exists());
         assertTrue("file should be non-empty", dest.length() > 0);
-        assertArchiveContents(files, dest);
+        ArchiveEvaluator.assertArchiveContents(files, dest);
     }
 
 }

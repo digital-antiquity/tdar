@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/${themeDir}/local-helptext.ftl" as  helptext>
+<#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
 
 <#if informationResourceFileVersion?has_content>
     <#assign title>${informationResourceFileVersion.filename!"undefined"?html}</#assign>
@@ -22,7 +22,7 @@
 <h2 class="red">Log in / Registration Required</h2>
         <p>You must register or Log in to download files from ${siteAcronym}. If you already are a registered ${siteAcronym} User, please log in. Otherwise, please register below.  There is no charge for registering.</p>
 
-        <p>We ask that you provide some information and affirm that you will abide by the <@s.a href="tosUrl" target="_blank" title="click to open contributor agreement in another window">${siteAcronym} User Agreement</@s.a>, 
+        <p>We ask that you provide some information and affirm that you will abide by the <@s.a href="config.tosUrl" target="_blank" title="click to open contributor agreement in another window">${siteAcronym} User Agreement</@s.a>, 
           <@helptext.userAgreementSummary /></p>
         <ul class="inline">
             <#if ((informationResourceFileVersion.informationResourceFile.latestThumbnail.viewable)!false) >

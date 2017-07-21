@@ -5,22 +5,19 @@ import java.io.ByteArrayInputStream;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -31,18 +28,14 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
-@Results(value = {
-        @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }),
-        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
-})
 public class MoveResourceAction extends AbstractJsonApiAction implements Preparable {
 
     private Long resourceId;
     private Long fromCollectionId;
     private Long toCollectionId;
     private Resource resource;
-    private ResourceCollection fromCollection;
-    private ResourceCollection toCollection;
+    private HierarchicalCollection fromCollection;
+    private HierarchicalCollection toCollection;
 
     @Autowired
     protected transient SerializationService serializationService;
@@ -85,8 +78,8 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
     @Override
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
-        this.fromCollection = getGenericService().find(ResourceCollection.class, fromCollectionId);
-        this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
+        this.fromCollection = getGenericService().find(HierarchicalCollection.class, fromCollectionId);
+        this.toCollection = getGenericService().find(HierarchicalCollection.class, toCollectionId);
         
     }
 

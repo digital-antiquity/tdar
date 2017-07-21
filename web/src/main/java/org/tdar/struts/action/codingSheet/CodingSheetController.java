@@ -15,8 +15,8 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.resource.CodingSheetService;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
 
@@ -96,7 +96,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     @Override
     public Set<String> getValidFileExtensions() {
-    	//FIXME: was showing all valid dataset extensions
+        //FIXME: was showing all valid dataset extensions
         return new HashSet<>(Arrays.asList("csv","xlsx","xls"));
     }
 

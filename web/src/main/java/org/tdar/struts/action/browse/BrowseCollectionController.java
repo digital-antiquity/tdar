@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -18,21 +16,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.bean.SearchFieldType;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -48,7 +47,7 @@ import org.tdar.utils.PersistableUtils;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class BrowseCollectionController extends AbstractLookupController<ResourceCollection> {
 
     public static final String COLLECTIONS = "collections";
@@ -80,7 +79,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         performLuceneQuery();
 
         if (isEditor()) {
-            List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED));
+            List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, SharedCollection.class));
             setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 
@@ -99,9 +98,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception", tdre);
             addActionError(tdre.getMessage());
-        } catch (ParseException e) {
-            getLogger().warn("search parse exception", e);
-        } catch (SolrServerException e) {
+        } catch (SearchException e) {
             getLogger().warn("search parse exception", e);
         } catch (IOException e) {
             getLogger().warn("search parse exception", e);

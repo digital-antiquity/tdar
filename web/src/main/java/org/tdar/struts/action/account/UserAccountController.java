@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -21,16 +22,15 @@ import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.CacheControl;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Validateable;
 
@@ -58,10 +58,9 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
 
     private String url;
     private String passwordResetURL;
-
-    @Autowired
-    private transient RecaptchaService recaptchaService;
-
+    private Long id;
+    private String email;
+    
     @Autowired
     private AuthenticationService authenticationService;
 
@@ -101,10 +100,12 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
         if (isAuthenticated()) {
             return AUTHENTICATED;
         }
-
-        if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
-            getH().generateRecapcha(recaptchaService);
-
+        if (id != null) {
+            Person person = getGenericService().find(Person.class, id);
+            // if our email passed matches... then pre-fill the form.  This helps with fishing of email addresses
+            if (StringUtils.equalsIgnoreCase(email, person.getEmail())) {
+                getReg().setupFrom(person);
+            }
         }
         return SUCCESS;
     }
@@ -192,7 +193,7 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
     @Override
     public void validate() {
         getLogger().debug("validating registration request");
-        ErrorTransferObject errors = registration.validate(authenticationService, recaptchaService, getServletRequest().getRemoteHost());
+        ErrorTransferObject errors = registration.validate(authenticationService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
     }
 
@@ -202,6 +203,22 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
 
     public void setAffiliations(List<UserAffiliation> affiliations) {
         this.affiliations = affiliations;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
 }

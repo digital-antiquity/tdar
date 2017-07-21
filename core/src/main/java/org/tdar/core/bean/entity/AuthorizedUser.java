@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -48,20 +47,12 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.AuthorizedUser")
-public class AuthorizedUser extends AbstractPersistable implements Persistable {
+public class AuthorizedUser extends AbstractPersistable {
 
     private static final long serialVersionUID = -6747818149357146542L;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
-    /* Right now not used */
-    enum AdminPermissions {
-        NONE,
-        PUBLISH,
-        CAN_DELETE,
-        ALL
-    }
 
     @Enumerated(EnumType.STRING)
     @Column(name = "general_permission", length = FieldLength.FIELD_LENGTH_50)
@@ -69,19 +60,29 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
 
     @Column(name = "general_permission_int")
     private Integer effectiveGeneralPermission;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "admin_permission", length = FieldLength.FIELD_LENGTH_255)
-    private AdminPermissions adminPermission;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "user_id")
     private TdarUser user;
 
-    @Column(name = "date_expires")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "date_created", nullable = false)
+    private Date dateCreated = new Date();
+
     @Temporal(TemporalType.DATE)
+    @Column(name = "date_expires", nullable = true)
     private Date dateExpires;
 
-    
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false, name = "creator_id")
+    private TdarUser createdBy;
+
+    @Column(name="resource_collection_id", insertable=false, updatable=false)
+    private Long collectionId;
+
+    @Column(name="resource_id", insertable=false, updatable=false)
+    private Long resourceId;
+
     private transient boolean enabled = false;
 
     /**
@@ -91,17 +92,17 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
     public AuthorizedUser() {
     }
 
-    public AuthorizedUser(TdarUser person, GeneralPermissions permission) {
+    public AuthorizedUser(TdarUser authenticatedUser, TdarUser person, GeneralPermissions permission) {
+        this.createdBy = authenticatedUser;
         this.user = person;
         setGeneralPermission(permission);
     }
 
-    public AdminPermissions getAdminPermission() {
-        return adminPermission;
-    }
-
-    public void setAdminPermission(AdminPermissions adminPermission) {
-        this.adminPermission = adminPermission;
+    public AuthorizedUser(TdarUser authenticatedUser, TdarUser person, GeneralPermissions permission, Date date) {
+        this(authenticatedUser, person, permission);
+        if (date != null) {
+            setDateExpires(date);
+        }
     }
 
     @XmlElement(name = "personRef")
@@ -151,7 +152,11 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
             userid = user.getId();
             properName = user.getProperName();
         }
-        return String.format("%s[%s] ( %s)", properName, userid, generalPermission);
+        String ex = "";
+        if (getDateExpires() != null) {
+            ex = dateExpires.toString();
+        }
+        return String.format("%s[%s] (%s - %s %s)", properName, userid, generalPermission, getId(), ex);
     }
 
     /**
@@ -168,14 +173,6 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
      */
     public Integer getEffectiveGeneralPermission() {
         return effectiveGeneralPermission;
-    }
-
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
     }
 
     /**
@@ -204,6 +201,36 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
         this.dateExpires = dateExpires;
     }
 
-    private transient String test = "";
+    public TdarUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(TdarUser createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(Date dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public Long getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+    }
 
 }

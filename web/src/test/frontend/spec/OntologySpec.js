@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("D3TreeSpec", function() {
+describe("OntologySpec.js: ontology tree UI", function() {
 
         it("should work when we call init", function() {
             loadFixtures("ontology-tree.html");

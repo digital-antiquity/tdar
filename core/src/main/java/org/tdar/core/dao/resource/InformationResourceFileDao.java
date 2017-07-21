@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.hibernate.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.query.Query;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +26,8 @@ import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.dao.Dao.HibernateBase;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
@@ -46,10 +46,10 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
 
     public Map<String, Long> getAdminFileExtensionStats() {
         Query query = getCurrentSession().getNamedQuery(QUERY_KEYWORD_COUNT_FILE_EXTENSION);
-        query.setParameterList("internalTypes", Arrays.asList(VersionType.ARCHIVAL,
+        query.setParameter("internalTypes", Arrays.asList(VersionType.ARCHIVAL,
                 VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL));
         Map<String, Long> toReturn = new HashMap<>();
-        for (Object o : query.list()) {
+        for (Object o : query.getResultList()) {
             try {
                 Object[] objs = (Object[]) o;
                 if (ArrayUtils.isEmpty(objs)) {
@@ -68,7 +68,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
 
     public Number getDownloadCount(InformationResourceFile irFile) {
         String sql = String.format(TdarNamedQueries.DOWNLOAD_COUNT_SQL, irFile.getId(), new Date());
-        return (Number) getCurrentSession().createSQLQuery(sql).uniqueResult();
+        return (Number)getCurrentSession().createNativeQuery(sql).getSingleResult();
     }
 
     public void deleteTranslatedFiles(Dataset dataset) {
@@ -102,24 +102,22 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         query.setParameter("id", version.getId()).executeUpdate();
     }
 
-    @SuppressWarnings("unchecked")
     public List<InformationResourceFile> findFilesWithStatus(FileStatus[] statuses) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_FILE_STATUS);
-        query.setParameterList("statuses", Arrays.asList(statuses));
-        return query.list();
+        Query<InformationResourceFile> query = getCurrentSession().createNamedQuery(QUERY_FILE_STATUS, InformationResourceFile.class);
+        query.setParameter("statuses", Arrays.asList(statuses));
+        return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<InformationResource> findInformationResourcesWithFileStatus(
             Person authenticatedUser, List<Status> resourceStatus,
             List<FileStatus> fileStatus) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_STATUS);
+        Query<ResourceProxy> query = getCurrentSession().createNamedQuery(QUERY_RESOURCE_FILE_STATUS, ResourceProxy.class);
         query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        query.setParameterList("statuses", resourceStatus);
-        query.setParameterList("fileStatuses", fileStatus);
+        query.setParameter("statuses", resourceStatus);
+        query.setParameter("fileStatuses", fileStatus);
         query.setParameter("submitterId", authenticatedUser.getId());
         List<InformationResource> list = new ArrayList<>();
-        for (ResourceProxy proxy : (List<ResourceProxy>) query.list()) {
+        for (ResourceProxy proxy : query.getResultList()) {
             try {
                 list.add((InformationResource) proxy.generateResource());
             } catch (IllegalAccessException | InvocationTargetException
@@ -135,20 +133,18 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         return query.setReadOnly(true).setCacheable(false).scroll(ScrollMode.FORWARD_ONLY);
     }
 
-    @SuppressWarnings("unchecked")
     public List<InformationResourceFile> findAllExpiredEmbargoes() {
-        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_EMBARGO_EXIPRED);
+        Query<InformationResourceFile> query = getCurrentSession().createNamedQuery(QUERY_RESOURCE_FILE_EMBARGO_EXIPRED, InformationResourceFile.class);
         DateTime today = new DateTime().withTimeAtStartOfDay();
         query.setParameter("dateStart", today.toDate());
-        return query.list();
+        return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
-        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW);
+    public List<InformationResourceFile> findAllEmbargoFilesExpiring() {
+        Query<InformationResourceFile> query = getCurrentSession().createNamedQuery(QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW, InformationResourceFile.class);
         DateTime today = new DateTime().plusDays(1).withTimeAtStartOfDay();
         query.setParameter("dateStart", today.toDate());
-        query.setParameter("dateEnd", today.plusDays(1).toDate());
-        return query.list();
+        query.setParameter("dateEnd", today.plusDays(2).toDate());
+        return query.getResultList();
     }
 }

@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.DownloadAuthorization;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
@@ -29,7 +29,7 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PdfService;
-import org.tdar.core.service.WhiteLabelFiles;
+import org.tdar.core.service.collection.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.PersistableUtils;
@@ -292,7 +292,7 @@ public class DownloadService {
         Iterator<InformationResourceFileVersion> iter = versionsToDownload.iterator();
         while (iter.hasNext()) {
             InformationResourceFileVersion version = iter.next();
-            if (!authorizationService.canDownload(version, authenticatedUser) && authorization == null) {
+            if (!authorizationService.canDownload(authenticatedUser, version) && authorization == null) {
                 logger.warn("thumbail request: resource is confidential/embargoed: {}", version);
                 dto.setResult(DownloadResult.FORBIDDEN);
                 return dto;
@@ -338,8 +338,8 @@ public class DownloadService {
     }
 
     private File getCoverLogo(InformationResource resourceToDownload) {
-        WhiteLabelCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
-        if (whiteLabelCollection == null || !whiteLabelCollection.isCustomDocumentLogoEnabled()) {
+        CustomizableCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
+        if (whiteLabelCollection == null || whiteLabelCollection.getProperties() == null || !whiteLabelCollection.getProperties().getCustomDocumentLogoEnabled()) {
             return null;
         }
         return fileSystemResourceDao.getHostedFile(WhiteLabelFiles.PDF_COVERPAGE_FILENAME, FilestoreObjectType.COLLECTION, whiteLabelCollection.getId());

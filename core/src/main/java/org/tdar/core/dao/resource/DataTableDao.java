@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.dao.Dao;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.dao.integration.DataTableProxy;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.integration.search.DatasetSearchFilter;
@@ -21,21 +21,20 @@ import org.tdar.core.dao.integration.search.DatasetSearchFilter;
  * @version $Revision$
  */
 @Component
-public class DataTableDao extends Dao.HibernateBase<DataTable> {
+public class DataTableDao extends HibernateBase<DataTable> {
 
     public DataTableDao() {
         super(DataTable.class);
     }
 
-    @SuppressWarnings("unchecked")
     public List<DataTable> findDataTablesUsingResource(Resource resource) {
         if (resource == null) {
             return Collections.emptyList();
         }
-        Query query = getCurrentSession().getNamedQuery(QUERY_DATATABLE_RELATED_ID);
+        Query<DataTable> query = getCurrentSession().createNamedQuery(QUERY_DATATABLE_RELATED_ID, DataTable.class);
         getLogger().trace("Searching for linked resources to {}", resource.getId());
-        query.setLong("relatedId", resource.getId());
-        return query.list();
+        query.setParameter("relatedId", resource.getId());
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
@@ -43,7 +42,7 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         getLogger().debug("start table query");
         Query countQuery = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE_COUNT);
         countQuery.setProperties(searchFilter);
-        Number count = (Number) countQuery.uniqueResult();
+        Number count = (Number) countQuery.getSingleResult();
         getLogger().debug("done count: {}", count);
         // FIXME: rewrite query to run twice, once for total count, and once for the paginated data
         Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE);
@@ -52,7 +51,7 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         query.setFirstResult(searchFilter.getStartRecord());
         query.setReadOnly(true);
         List<DataTableProxy> proxies = new ArrayList<>();
-        for (Object[] obj_ : (List<Object[]>) query.list()) {
+        for (Object[] obj_ : (List<Object[]>) query.getResultList()) {
             DataTable dataTable = (DataTable) obj_[0];
             proxies.add(new DataTableProxy(dataTable));
         }

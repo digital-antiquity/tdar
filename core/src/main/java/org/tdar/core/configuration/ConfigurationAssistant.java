@@ -8,14 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.security.AccessControlException;
-import java.util.Arrays;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.exception.ConfigurationFileException;
 
 /**
  * $Id$
@@ -79,6 +77,7 @@ public class ConfigurationAssistant implements Serializable {
     public static InputStream toInputStream(String resource) {
         // first try to read it as a file
         InputStream stream = null;
+
         try {
             File file = new File(resource);
             if (file.isFile()) {
@@ -89,8 +88,7 @@ public class ConfigurationAssistant implements Serializable {
             }
         } catch (AccessControlException e) {
             stream = getResourceAsStream(resource);
-            return stream;
-        } catch (Exception e) {
+        } catch (FileNotFoundException e) {
             stream = getResourceAsStream(resource);
         }
         return stream;

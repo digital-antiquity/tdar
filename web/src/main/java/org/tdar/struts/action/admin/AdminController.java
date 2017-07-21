@@ -37,11 +37,11 @@ import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.Pair;
+import org.tdar.web.service.WebScheduledProcessService;
 
 /**
  * $Id$
@@ -56,7 +56,6 @@ import org.tdar.utils.Pair;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-@HttpsOnly
 public class AdminController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 4385039298623767568L;
@@ -76,6 +75,9 @@ public class AdminController extends AbstractAuthenticatableAction {
     @Autowired
     private transient EntityService entityService;
 
+    @Autowired
+    WebScheduledProcessService webScheduledProcessService;
+    
     private List<ResourceRevisionLog> resourceRevisionLogs;
 
     private List<Pair<CultureKeyword, Integer>> uncontrolledCultureKeywordStats;
@@ -126,7 +128,7 @@ public class AdminController extends AbstractAuthenticatableAction {
     @PostOnly
     @WriteableSession
     public String verifyFilestore() throws IOException {
-        scheduledProcessService.cronVerifyTdarFiles();
+        webScheduledProcessService.cronVerifyTdarFiles();
         getActionMessages().add("Running ... this may take a while");
         return SUCCESS;
     }
@@ -137,7 +139,7 @@ public class AdminController extends AbstractAuthenticatableAction {
     @PostOnly
     @WriteableSession
     public String updateDois() throws IOException {
-        scheduledProcessService.cronUpdateDois();
+        webScheduledProcessService.cronUpdateDois();
         getActionMessages().add("Running ... this may take a while");
         return SUCCESS;
     }

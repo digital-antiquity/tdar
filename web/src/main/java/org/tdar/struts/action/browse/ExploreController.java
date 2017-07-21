@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -33,9 +31,10 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.SearchFieldType;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.web.service.HomepageDetails;
 import org.tdar.web.service.HomepageService;
 
@@ -53,7 +52,7 @@ import org.tdar.web.service.HomepageService;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class ExploreController extends AbstractLookupController {
 
     private static final long serialVersionUID = -2826087034735486222L;
@@ -114,7 +113,7 @@ public class ExploreController extends AbstractLookupController {
         getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
         try {
             getRecentResources().addAll(searchService.findMostRecentResources(10, getAuthenticatedUser(), this));
-        } catch (ParseException | SolrServerException pe) {
+        } catch (SearchException pe) {
             getLogger().debug("parse exception", pe);
         }
         return SUCCESS;

@@ -1,7 +1,7 @@
-<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/search-macros.ftl" as search>
 <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
-<#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+<#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 
 <#--FIXME: this method for determining active tab won't work if (for example) controller returns INPUT for collection/institution/person search -->
 
@@ -19,15 +19,17 @@
 	<@search.toolbar />
         <div id="person" class="tab-pane active">
             <div class="glide">
-                <h3>Search For Person By Name</h3>
+                <h3>Search For Person</h3>
+
                 <@s.form action="people" method="GET" id='searchForm4'>
-                    <@search.queryField freeTextLabel="Person Name" showLimits=false showAdvancedLink=false />
+                    <@search.queryField freeTextLabel="Person Name" showLimits=false showPersonField=true showAdvancedLink=false />
                 </@s.form>
             </div>
             <div id="collection-spacer" style="height:850px"></div>
         </div>
 
     </div>
+   
 
 </div>
 

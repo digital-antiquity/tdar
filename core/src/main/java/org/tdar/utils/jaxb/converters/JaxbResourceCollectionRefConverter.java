@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.service.GenericService;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.utils.PersistableUtils;
 
@@ -28,10 +29,10 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    GenericService genericService;
+    private GenericDao genericDao;
 
     @Autowired
-    ReflectionService reflectionService;
+    private ReflectionService reflectionService;
 
     public Persistable marshal(ResourceCollection d) throws Exception {
         if (d == null) {
@@ -41,7 +42,7 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
         if (HibernateProxy.class.isAssignableFrom(d.getClass())) {
             rc = (ResourceCollection) ((HibernateProxy) d).getHibernateLazyInitializer().getImplementation();
         }
-        if (rc.isInternal() || PersistableUtils.isTransient(rc)) {
+        if (PersistableUtils.isTransient(rc)) {
             return rc;
         }
         return new JAXBPersistableRef(rc.getId(), d.getClass());
@@ -58,11 +59,19 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
         }
         JAXBPersistableRef ref = (JAXBPersistableRef)ref_;
         Class<? extends Persistable> cls = reflectionService.getMatchingClassForSimpleName(ref.getType());
-        ResourceCollection rc = (ResourceCollection) genericService.find(cls, ref.getId());
-        ResourceCollection rc_ = new ResourceCollection();
-        rc_.setType(rc.getType());
+        logger.debug("{} - {}" , cls, ref);
+        ResourceCollection rc = (ResourceCollection) genericDao.find(cls, ref.getId());
+        if (rc == null) {
+            logger.error("null collection!");
+        }
+        ResourceCollection rc_ = null;
+        if (cls.isAssignableFrom(SharedCollection.class)) {
+            rc_ = new SharedCollection();
+//        } else if (cls.isAssignableFrom(InternalCollection.class)) {
+//            rc_ = new InternalCollection();
+        }
         rc_.setId(ref.getId());
-        rc = null;
+//        rc = null;
         return rc_;
     }
 

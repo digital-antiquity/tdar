@@ -3,7 +3,6 @@ package org.tdar.struts.action.search;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -15,17 +14,18 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.query.CreatorSearchService;
+import org.tdar.search.service.query.CreatorSearchInterface;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionException;
 
 @Namespace("/search")
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class InstitutionSearchAction extends AbstractLookupController<Institution> {
 
     private static final long serialVersionUID = -2102002561399688184L;
@@ -35,7 +35,7 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
     private String query;
 
     @Autowired
-    private CreatorSearchService<Institution> creatorSearchService;
+    private CreatorSearchInterface<Institution> creatorSearchService;
 
     @Action(value = "institutions", results = {
             @Result(name = SUCCESS, location = "institutions.ftl"),
@@ -47,7 +47,7 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
         setMode("INSTITUTION");
         try {
             creatorSearchService.searchInstitution(getQuery(),this,this);
-        } catch (TdarRecoverableRuntimeException | ParseException trex) {
+        } catch (TdarRecoverableRuntimeException | SearchException trex) {
             addActionError(trex.getMessage());
             return INPUT;
         }

@@ -16,9 +16,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
@@ -29,12 +33,22 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ExcelConverter;
+import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class ExcelConverterITCase extends AbstractIntegrationTestCase {
+
+
+    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
+    
+    @Autowired
+    @Qualifier("tdarDataImportDataSource")
+    public void setIntegrationDataSource(DataSource dataSource) {
+        tdarDataImportDatabase.setDataSource(dataSource);
+    }
 
     @SuppressWarnings("deprecation")
     @Test

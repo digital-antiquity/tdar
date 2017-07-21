@@ -1,10 +1,10 @@
 /* global describe, it, expect, beforeEach */
 
-describe("collection autocomplete", function(){
+describe("AutocompleteSpec.js: collection autocomplete", function(){
     
 
     var responses = {
-        "/lookup/collection": {
+        "/api/lookup/collection": {
             "status": {
                 "startRecord": 0,
                 "sortField": "TITLE",
@@ -62,15 +62,15 @@ describe("collection autocomplete", function(){
     it("collection autocomplete1", function(){
 
         var $elem = $('#txtResourceCollectionRow_0_id');
-        applyCollectionAutocomplete($elem, false);
+        applyCollectionAutocomplete($elem, {});
 
         $elem.focus();
         //force a lookup
         $elem.autocomplete('search', 'hot dogs');
         var req = jasmine.Ajax.requests.mostRecent()
-        expect(req.url).toContain('/lookup/collection');
+        expect(req.url).toContain('/api/lookup/collection');
 
-        var response  = jsonpEncode(responses["/lookup/collection"], req);
+        var response  = jsonpEncode(responses["/api/lookup/collection"], req);
 
 
         jasmine.Ajax.requests.mostRecent().respondWith({

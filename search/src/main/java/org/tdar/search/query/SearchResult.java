@@ -15,8 +15,8 @@ public class SearchResult<I extends Indexable> extends BaseSearchResult<I> imple
     public SearchResult() {}
     
     public SearchResult(int i) {
-    	setRecordsPerPage(i);
-	}
+        setRecordsPerPage(i);
+    }
 
 
     @Override

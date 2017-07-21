@@ -11,13 +11,15 @@ import org.apache.solr.common.SolrDocument;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.AbstractResourceSearchITCase;
 import org.tdar.search.bean.ReservedSearchParameters;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.search.service.query.ResourceSearchService;
@@ -33,15 +35,15 @@ public class PartialIndexingITCase extends AbstractResourceSearchITCase {
     
     @Test
     @Rollback
-    public void testPartialIndexing() throws SolrServerException, IOException, ParseException {
+    public void testPartialIndexing() throws SolrServerException, IOException, ParseException, SearchException, SearchIndexException {
         Dataset ds = createAndSaveNewDataset();
         CultureKeyword hittite = new CultureKeyword("hittite");
         ds.getActiveCultureKeywords().add(hittite);
         genericService.saveOrUpdate(ds.getActiveCultureKeywords());
-        ResourceCollection rc = createAndSaveNewResourceCollection("turkey");
+        SharedCollection rc = createAndSaveNewResourceCollection("turkey");
         rc.setHidden(false);
         rc.getResources().add(ds);
-        ds.getResourceCollections().add(rc);
+        ds.getSharedCollections().add(rc);
         searchIndexService.index(ds);
         searchIndexService.index(rc);
         SolrDocument byId = template.getById(SearchUtils.createKey(ds));

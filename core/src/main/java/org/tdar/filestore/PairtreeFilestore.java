@@ -24,7 +24,6 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 //import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.filestore.Filestore.BaseFilestore;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
@@ -40,8 +39,8 @@ import org.tdar.utils.PersistableUtils;
 public class PairtreeFilestore extends BaseFilestore {
 
     private static final String V = "v";
-	private static final String XML = "xml";
-	private static final String SUPPORT = "support";
+    private static final String XML = "xml";
+    private static final String SUPPORT = "support";
     public static final String CONTAINER_NAME = "rec";
     public static final String DERIV = "deriv";
     public static final String ARCHIVAL = "archival";
@@ -363,9 +362,9 @@ public class PairtreeFilestore extends BaseFilestore {
         }
     }
 
-	@Override
-	public File getDirectory(FilestoreObjectType type, Long persistableId) {
-		return new File(getResourceDirPath(type, persistableId));
-	}
+    @Override
+    public File getDirectory(FilestoreObjectType type, Long persistableId) {
+        return new File(getResourceDirPath(type, persistableId));
+    }
 
 }

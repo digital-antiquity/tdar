@@ -7,17 +7,19 @@
 -->
 
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "/WEB-INF/content${namespace}/edit.ftl" as local_ />
 <#-- We define local_ as a reference to the actual template in question. It's going to define for us any functions/methods that get overriden 
 	 in the form. if local_.method?? && local_.method?is_macro ... then execute it...  -->
 
-    <#import "/${themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
 <#-- helptext can be overriden by the theme so we import it, it, in turn override the default helptext -->
 <head>
 <#-- expose pageTitle so edit pages can use it elsewhere -->
     <#assign pageTitle>Create a new <@edit.resourceTypeLabel /></#assign>
+    <#assign newRecord = true>
     <#if resource.id != -1>
+        <#assign newRecord = false/>
         <#assign pageTitle>Editing <@edit.resourceTypeLabel /> Metadata for ${resource.title} (${siteAcronym} id: ${resource.id?c})</#assign>
     </#if>
     <title>${pageTitle}</title>
@@ -66,8 +68,7 @@
         <@common.jsErrorLog />
         <@s.token name='struts.csrf.token' />
         <@s.hidden name="epochTimeUpdated" />
-
-
+        <@s.hidden name="doubleSubmitKey" />
 
     <#-- custom section ahead of the basic information -->
         <#if local_.topSection?? && local_.topSection?is_macro>
@@ -90,7 +91,7 @@
             <label class="control-label">Status</label>
 
             <div class="controls">
-                <#if guestUserId != -1 && guestUserId == authenticatedUser.id>
+                <#if config.guestUserId != -1 && config.guestUserId == authenticatedUser.id>
                     <select name="status">
                         <option value='DRAFT' selected>Draft</option>
                     </select>
@@ -261,8 +262,8 @@
         <#if !resource.resourceType.project && showProjects>
 
             <h2>${siteAcronym} Collections &amp; Project</h2>
-            <h4>Add to a Collection</h4>
-            <@edit.resourceCollectionSection />
+            <!-- <h4>Add to a Collection</h4> -->
+            <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
             <#assign _projectId = 'project.id' />
             <#if resource.id == -1 >
                 <#assign _projectId = request.getParameter('projectId')!'' />
@@ -281,7 +282,7 @@
                     <div class="controls">
                         <div class="">
                             <select id="projectId" name="projectId" class="resource-autocomplete input-xxlarge" tabindex="-1" aria-hidden="true"
-                                    data-ajax--url="/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
+                                    data-ajax--url="/api/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
                                     data-allow-clear="false"
                                     data-placeholder="Search for a project..."
                                     data-minimum-input-length="0">
@@ -334,7 +335,8 @@
             </div>
         <#else>
             <h2>${siteAcronym} Collections</h2>
-            <@edit.resourceCollectionSection />
+            <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
+
 
         <#if !resource.resourceType.project>
             <h4>Create a Project</h4>
@@ -351,7 +353,7 @@
             <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
             <br/>
         </div>
-            <#if licensesEnabled?? && licensesEnabled || resource.licenseType?has_content>
+            <#if config.licensesEnabled?? && config.licensesEnabled || resource.licenseType?has_content>
                 <@edit.license />
             </#if>
         </#if>
@@ -392,13 +394,24 @@
             <@edit.relatedCollections inheritanceEnabled />
         </#if>
 
-        <@edit.fullAccessRights />
+<#--         <@edit.fullAccessRights /> -->
 
+        <#assign submitClasses>button btn submitButton btn-primary</#assign>
+        
+        <#assign reminder = false />
         <#if !resource.resourceType.project>
-            <@edit.submit fileReminder=((resource.id == -1) && fileReminder) />
-        <#else>
-            <@edit.submit fileReminder=false />
+        	<#assign reminder = ((resource.id == -1) && fileReminder)/>
         </#if>
+            <@edit.submit fileReminder=reminder class=submitClasses>
+            <p><b>Where to go after save:</b><br/>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-view" <#if !newRecord>checked=checked</#if> value="" class="inline radio" emptyoption="false">
+				<label for="alt-submit-view" class="inline radio">SaView Page</label>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-rights" value="Assign Permissions" class="inline radio" emptyoption="false" >
+				<label for="alt-submit-rights" class="inline radio" <#if newRecord>checked=checked</#if>>Assign Permissions</label>
+            <br>
+            <br>
+        </p>
+            </@edit.submit>
     </@s.form>
 
 <#-- include any JS templates -->

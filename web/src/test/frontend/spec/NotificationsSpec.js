@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.notifications methods", function() {  
+describe("NotificationsSpec.js: tests for TDAR.notifications methods", function() {
 
 xit("should work when we call init", function() {
    var expectedVal = null;

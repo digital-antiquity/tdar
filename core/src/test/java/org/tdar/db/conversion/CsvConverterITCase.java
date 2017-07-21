@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 
@@ -33,7 +34,8 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     @Autowired
     public DataTableService dataTableService;
 
-    @Override
+    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
+
     @Autowired
     @Qualifier("tdarDataImportDataSource")
     public void setIntegrationDataSource(DataSource dataSource) {

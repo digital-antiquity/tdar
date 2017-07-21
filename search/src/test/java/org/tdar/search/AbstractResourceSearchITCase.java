@@ -7,14 +7,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -40,6 +38,8 @@ import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.utils.MessageHelper;
@@ -148,7 +148,7 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     }
 
     public SearchResult<Resource> doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams,
-            SortOption option) throws ParseException, SolrServerException, IOException {
+            SortOption ... option ) throws SearchException, IOException {
         asqo = new AdvancedSearchQueryObject();
         SearchParameters params = params_;
         if (params == null) {
@@ -158,7 +158,12 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
             params.getAllFields().add(text);
         }
         SearchResult<Resource> result = new SearchResult<>();
-        result.setSortField(option);
+        if (option != null && option.length > 0) {
+        result.setSortField(option[0]);
+        } 
+        if (option != null && option.length > 1) {
+        result.setSecondarySortField(option[1]);
+        } 
         asqo.getSearchParameters().add(params);
         asqo.setReservedParams(reservedParams);
 
@@ -167,11 +172,11 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     }
 
     public SearchResult<Resource> doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams)
-            throws ParseException, SolrServerException, IOException {
+            throws SearchException, IOException {
         return doSearch(text, user, params_, reservedParams, null);
     }
 
-    public SearchResult<Resource> doSearch(String text) throws ParseException, SolrServerException, IOException {
+    public SearchResult<Resource> doSearch(String text) throws SearchException, IOException {
         return doSearch(text, null, null, null, null);
     }
 
@@ -180,7 +185,7 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         return extractIds.contains(l);
     }
 
-    protected void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
+    protected void updateAndIndex(Indexable doc) throws SearchException, SearchIndexException, IOException {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
     }
@@ -191,13 +196,13 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         return project;
     }
 
-    protected ResourceCollection sparseCollection(Long id) {
-        ResourceCollection collection = new ResourceCollection();
+    protected SharedCollection sparseCollection(Long id) {
+        SharedCollection collection = new SharedCollection();
         collection.setId(id);
         return collection;
     }
 
-    protected void setSortThenCheckFirstResult(String message, SortOption sortField, Long projectId, Long expectedId) throws ParseException, SolrServerException, IOException {
+    protected void setSortThenCheckFirstResult(String message, SortOption sortField, Long projectId, Long expectedId) throws IOException ,SearchException, SearchIndexException{
         SearchParameters sp = new SearchParameters();
         sp.getProjects().add(sparseProject(projectId));
         SearchResult<Resource> result = doSearch(null, null, sp, null, sortField);
@@ -212,7 +217,7 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     }
 
 
-    protected Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+    protected Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException, IOException ,SearchException, SearchIndexException{
         TdarUser submitter = new TdarUser("E", "deVos", "ecd@tdar.net");
         genericService.save(submitter);
         Document doc = createAndSaveNewInformationResource(Document.class, submitter);
@@ -235,25 +240,25 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     }
 
 
-    public SearchResult<Resource> performSearch(String term, TdarUser user, int max) throws ParseException, SolrServerException, IOException {
+    public SearchResult<Resource> performSearch(String term, TdarUser user, int max) throws  IOException,SearchException, SearchIndexException {
         return performSearch(term, null, null, null, null, user, null, null, max);
     }
 
     public SearchResult<Resource> performSearch(String term, Long projectId, Long collectionId, Boolean includeParent, Long categoryId, TdarUser user,
-            ReservedSearchParameters reservedSearchParameters, int max) throws ParseException, SolrServerException, IOException {
+            ReservedSearchParameters reservedSearchParameters, int max) throws IOException,SearchException, SearchIndexException {
         return performSearch(term, projectId, collectionId, includeParent, categoryId, user, reservedSearchParameters, null, max);
     }
 
     public SearchResult<Resource> performSearch(String term, Long projectId, Long collectionId, Boolean includeParent, Long categoryId, TdarUser user,
-            ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, int max) throws ParseException, SolrServerException, IOException {
+            ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, int max) throws IOException,SearchException, SearchIndexException {
         SearchResult<Resource> result = new SearchResult<>(max);
         logger.debug("{}, {}", resourceSearchService, MessageHelper.getInstance());
-        ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent, collectionId, categoryId, permission, reservedSearchParameters);
+        ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent,null, collectionId, categoryId, permission, reservedSearchParameters);
         resourceSearchService.lookupResource(user, rl, result, MessageHelper.getInstance());
         return result;
     }
 
-    public void setupTestDocuments() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+    public void setupTestDocuments() throws InstantiationException, IllegalAccessException,IOException ,SearchException, SearchIndexException{
         String[] titles = {
                 "Preliminary Archeological Investigation at the Site of a Mid-Nineteenth Century Shop and Yard Complex Associated With the Belvidere and Delaware Railroad, Lambertville, New Jersey",
                 "The James Franks Site (41DT97): Excavations at a Mid-Nineteenth Century Farmstead in the South Sulphur River Valley, Cooper Lake Project, Texas",

@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.TdarBaseActionSupport;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -25,7 +26,7 @@ import com.opensymphony.xwork2.Preparable;
         @Result(name=GeographicRedirectAction.SUCCESS_TYPE, type=TdarActionSupport.REDIRECT, location="/browse/geographic-keyword/${keyword.id}/${keyword.slug}?resourceTypes=${resourceTypes}"),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.REDIRECT, location = "/not-found", params = { "status", "404" })
 })
-public class GeographicRedirectAction extends TdarActionSupport implements Preparable {
+public class GeographicRedirectAction extends TdarBaseActionSupport implements Preparable {
 
     public static final String SUCCESS_TYPE = "success_type";
     private static final long serialVersionUID = 5689969933025476573L;

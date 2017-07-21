@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.internalEmailForm methods", function() {  
+describe("InternalEmailFormSpec.js: tests for TDAR.internalEmailForm methods", function() {
     beforeEach(function(){
        loadFixtures("request-correction-form.html");
     });

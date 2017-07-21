@@ -1,7 +1,6 @@
 package org.tdar.web.collection;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -9,7 +8,9 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -17,13 +18,26 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
+@Ignore
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    
+    public static final String PERMISSIONS = "permissions";
+    private static final String LISTCOLLECTION = "/listcollection/";
+
+
+    private void gotoEdit(String url_) {
+        String url = url_;
+        url = url.substring(0, url.lastIndexOf("/"));
+        String id = org.apache.commons.lang3.StringUtils.substringAfterLast(url, "/");
+        gotoPage(LISTCOLLECTION + id +"/edit");
+    }
+
+
     private static final String RETAIN_COLLECTION = "My Test Retain Collection";
     private static final TestConfiguration TEST = TestConfiguration.getInstance();
     private static final String RETAIN_COLLECTION_2 = "My test dataset revoke collection";
@@ -31,6 +45,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testCreateEditDocumentBlankCollection() {
+        if (!TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            return;
+        }
         gotoPage("/image/add");
         setInput("image.title", "test title");
         setInput("status", Status.DRAFT.name());
@@ -64,44 +81,6 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
     
 
-
-    @Test
-    public void testCreateEditDocumentRetainShared() {
-        gotoPage("/dataset/add");
-        setInput("dataset.title", "test title");
-        setInput("status", Status.DRAFT.name());
-        setInput("dataset.date", "2000");
-        setInput("dataset.description", "test description of a dataset with edit rights by user");
-//        setInput("authorizedUsers[0].user.id", TEST.getUserId());
-//        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
-//        setInput("authorizedUsersFullNames[0]", "test user");
-        setInput("resourceCollections[0].name", RETAIN_COLLECTION_2);
-        submitForm();
-        assertTextPresentInPage(RETAIN_COLLECTION_2);
-        String pageUrl = getCurrentUrlPath();
-        clickLinkWithText(RETAIN_COLLECTION_2);
-        clickLinkWithText("edit");
-        setInput("resourceCollection.hidden", "true");
-        setInput(String.format(FMT_AUTHUSERS_ID, 0), TEST.getUserId()); // leave the id blank
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.MODIFY_RECORD.name());
-        submitForm();
-        assertTextPresentInPage("true");
-        logout();
-        login(TEST.getUsername(), TEST.getPassword());
-        gotoPage(pageUrl);
-        assertTextPresentInCode("test user:MODIFY_RECORD");
-        assertTextPresent(RETAIN_COLLECTION_2);
-        clickLinkWithText("edit");
-        assertTextPresent(RETAIN_COLLECTION_2);
-        submitForm();
-        assertTextPresent(RETAIN_COLLECTION_2);
-        assertTextNotPresent("the resource you requested is");
-        logout();
-        loginAdmin();
-        gotoPage(pageUrl);
-        assertTextPresentInPage(RETAIN_COLLECTION_2);
-    }
-    
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testCreateThenEditCollection() {
@@ -111,21 +90,27 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         someResources.add(createDocument());
         someResources.add(createDocument());
         someResources.add(createDocument());
-        createTestCollection(name, desc, someResources);
+        createTestCollection(CollectionType.LIST, name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());
         String currentUrlPath = getCurrentUrlPath();
+        try {
+            // trying to handle reindexing issue
+            Thread.sleep(500);
+        } catch (InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
         gotoPage(currentUrlPath);
         for (Resource resource : someResources) {
             if ((resource.getStatus() == Status.ACTIVE) || (resource.getStatus() == Status.DRAFT)) {
                 assertTextPresent(resource.getTitle());
             }
         }
-
+        clickLinkWithText(PERMISSIONS);
         // now go back to the edit page, add some users and remove some of the resources
         List<TdarUser> registeredUsers = getSomeUsers();
-        clickLinkWithText("edit");
         logger.debug("adding users: {}" , registeredUsers);
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
@@ -135,7 +120,8 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             createUserWithPermissions(i, user, GeneralPermissions.VIEW_ALL);
             i++;
         }
-
+        submitForm();
+        gotoEdit(currentUrlPath);
         // remove the first 2 resources
         int removeCount = 2;
         Assert.assertTrue("this test needs at least 2 resources in the test DB", someResources.size() > removeCount);
@@ -193,12 +179,15 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String name = "my fancy collection: " + System.currentTimeMillis();
         String desc = "description goes here: " + System.currentTimeMillis();
         List<? extends Resource> someResources = getSomeResources();
-        createTestCollection(name, desc, someResources);
+        createTestCollection(CollectionType.LIST, name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());
         String currentUrlPath = getCurrentUrlPath();
         logger.debug(currentUrlPath);
+        if (getPageText().contains("is either empty ")) {
+            gotoPage(currentUrlPath);
+        }
         for (Resource resource : someResources) {
             assertTextPresent(resource.getTitle());
         }
@@ -211,21 +200,25 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm("delete");
         logger.debug("currentPage: " + currentUrlPath);
         gotoPageWithoutErrorCheck(currentUrlPath);
-        logger.debug("{}",internalPage);
-        assertFalse(getPageCode().contains("my fancy collection"));
+        logger.debug("{}",getPageText());
+        assertTrue(getPageCode().contains("my fancy collection"));
+        assertTrue(getPageCode().contains("Deleted"));
 
     }
 
     // assign a parent collection, then go back to dashboard
     @Test
     public void testCreateChildCollection() {
+        if (!TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            return;
+        }
         // get a shared collection id - we don't have one in init-db so just rerun the previous test
         testCreateThenEditCollection();
         // previous test logged us out
         loginAdmin();
-        Long parentId = 1575L;
+        Long parentId = 2578L;
 
-        gotoPage("/collection/add");
+        gotoPage(LISTCOLLECTION + "add");
         String name = "testCreateChildCollection";
         String desc = "lame child colllection";
 
@@ -233,18 +226,39 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("resourceCollection.description", desc);
         setInput("parentId", "" + parentId);
         submitForm();
+        // assert we're on the save
         assertTextPresentInPage(name);
         assertTextPresentInPage(desc);
 
         // now look for the collection on the dashboard (implicitly test encoding errors also)
-        gotoPage("/dashboard");
+        gotoPage("/dashboard/collections");
         assertTextPresentInPage(name);
+    }
+    // assign a parent collection, then go back to dashboard
+    @Test
+    public void testCreateChildCollectionBadHierarchy() {
+        // get a shared collection id - we don't have one in init-db so just rerun the previous test
+        testCreateThenEditCollection();
+        // previous test logged us out
+        loginAdmin();
+        Long parentId = 1575L;
+
+        gotoPage(LISTCOLLECTION + "add");
+        String name = "testCreateChildCollection";
+        String desc = "lame child colllection";
+
+        setInput("resourceCollection.name", name);
+        setInput("resourceCollection.description", desc);
+        setInput("parentId", "" + parentId);
+        submitFormWithoutErrorCheck();
+        // assert we're on the save
+        assertCurrentUrlContains("save");
     }
 
     @Test
     public void testAssignNonUserToCollection() {
         // try to create a collection and assign it to a person that is not a registered user.
-        gotoPage("/collection/add");
+        gotoPage(LISTCOLLECTION + "add");
 
         // first lets start populating the person fields with a person that does not yet exist. tDAR should not create the person record on the fly, and
         // should not assign to the collection.
@@ -265,11 +279,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         Person user = new Person("joe", "blow", "testAssignNonUserToCollection@tdar.net");
 
-        createInput("hidden", String.format(FMT_AUTHUSERS_ID, 1), ""); // leave the id blank
-        createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, 1), user.getLastName());
-        createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, 1), user.getFirstName());
-        createInput("text", String.format(FMT_AUTHUSERS_EMAIL, 1), user.getEmail());
-        createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, 1), GeneralPermissions.VIEW_ALL.toString());
+        createUserFields(1, user, GeneralPermissions.VIEW_ALL, null);
 
         submitFormWithoutErrorCheck();
 
@@ -279,9 +289,11 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 //        assertNull("person from form should not be persisted", person);
     }
 
+
+
     @Test
     public void testAssignNonUserToCollection2() {
-        gotoPage("/collection/add");
+        gotoPage(LISTCOLLECTION + "add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
@@ -298,34 +310,22 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             createInput("hidden", "resources.id", fieldValue);
         }
 
+        submitForm();
+        clickLinkOnPage(PERMISSIONS);
         List<Person> nonUsers = getSomePeople();
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person person : nonUsers) {
             if (StringUtils.containsIgnoreCase(person.getProperName(), "user")) {
                 continue;
             }
-            createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), person.getId());
-            createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), person.getLastName());
-            createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), person.getFirstName());
-            if (StringUtils.isNotBlank(person.getEmail())) {
-                createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), person.getEmail());
-            } else {
-                createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), "");
-            }
-            if (StringUtils.isNotBlank(person.getInstitutionName())) {
-                createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), person.getInstitutionName());
-
-            } else {
-                createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), "");
-            }
-            createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), GeneralPermissions.VIEW_ALL.toString());
+            createUserFields(i, person, GeneralPermissions.VIEW_ALL, person.getId());
             i++;
         }
 
         submitFormWithoutErrorCheck();
-
+        logger.debug(getPageText());
         assertTrue(getPageText().contains("User does not exist"));
-        assertTrue(getCurrentUrlPath().contains("/collection/save"));
+        assertTrue(getCurrentUrlPath().contains("rights-save"));
 
         assertTextPresent("my fancy collection");
     }
@@ -335,25 +335,25 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testCollectionRightsRevoke() {
         //create test collection with basic user having adminGroup rights
-        gotoPage("/collection/add");
+        gotoPage(LISTCOLLECTION + "add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
         setInput("resourceCollection.description", desc);
-
-        setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_GROUP.toString());
-
         submitForm();
         String url = getCurrentUrlPath();
         Long id = extractTdarIdFromCurrentURL();
+        gotoPage(LISTCOLLECTION + id + "/rights");
+        setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_GROUP.toString());
+        submitForm();
         logout();
         
         // logout and login as that user, remove self
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(url);
         assertTextPresent("my fancy collection");
-        clickLinkWithText("edit");
+        clickLinkWithText(PERMISSIONS);
         assertTextPresent("my fancy collection");
         removeElementsByName(String.format(FMT_AUTHUSERS_ID, 0));
         removeElementsByName(String.format(FMT_AUTHUSERS_PERMISSION, 0));

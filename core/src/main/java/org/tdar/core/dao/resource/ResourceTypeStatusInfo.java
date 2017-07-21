@@ -13,59 +13,59 @@ import org.tdar.utils.MessageHelper;
 
 public class ResourceTypeStatusInfo implements Serializable {
 
-	private static final long serialVersionUID = -5499873582720227457L;
+    private static final long serialVersionUID = -5499873582720227457L;
 
-	private Map<Status, Integer> statusMap = new HashMap<>();
-	private Map<ResourceType, Integer> resourceMap = new HashMap<>();
+    private Map<Status, Integer> statusMap = new HashMap<>();
+    private Map<ResourceType, Integer> resourceMap = new HashMap<>();
 
-	private int total = 0;
-
-	public Map<ResourceType, Integer> getResourceMap() {
-		return resourceMap;
-	}
-
-	public Map<Status, Integer> getStatusMap() {
-		return statusMap;
-	}
-
-	public void increment(Status status, ResourceType type) {
-		increment(type, resourceMap);
-		increment(status, statusMap);
-		total ++;
-	}
-
-	private <C> void increment(C type, Map<C, Integer> map) {
-		Integer count = map.get(type);
-		if (count == null) {
-			count = 0;
-		}
-		count++;
-		map.put(type, count);
-
-	}
+    private Integer total = 0;
 
 
-	public Integer getTotal() {
-		return total;
-	}
+    public Map<ResourceType, Integer> getResourceMap() {
+        return resourceMap;
+    }
 
-	public List<List<Object>> getStatusData() {
-		return createOutput(statusMap);
-	}
+    public Map<Status, Integer> getStatusMap() {
+        return statusMap;
+    }
 
-	private <C extends Localizable> List<List<Object>> createOutput(Map<C, Integer> imap) {
-		List<List<Object>> toReturn = new ArrayList<>();
-		for (C stat : imap.keySet()) {
-			List<Object> list = new ArrayList<>();
-			toReturn.add(list);
-			list.add(MessageHelper.getMessage(stat.getLocaleKey()));
-			list.add(imap.get(stat));
-			list.add(stat);
-		}
-		return toReturn;
-	}
+    public void increment(Status status, ResourceType type, int count) {
+        increment(type, resourceMap, count);
+        increment(status, statusMap, count);
+        total += count;
+    }
 
-	public List<List<Object>>getResourceTypeData() {
-		return createOutput(resourceMap);
-	}
+    private <C> void increment(C type, Map<C, Integer> map, int count_) {
+        Integer count = map.get(type);
+        if (count == null) {
+            count = 0;
+        }
+        map.put(type, count + count_);
+
+    }
+
+
+    public Integer getTotal() {
+        return total ;
+    }
+
+    public List<List<Object>> getStatusData() {
+        return createOutput(statusMap);
+    }
+
+    private <C extends Localizable> List<List<Object>> createOutput(Map<C, Integer> imap) {
+        List<List<Object>> toReturn = new ArrayList<>();
+        for (C stat : imap.keySet()) {
+            List<Object> list = new ArrayList<>();
+            toReturn.add(list);
+            list.add(MessageHelper.getMessage(stat.getLocaleKey()));
+            list.add(imap.get(stat));
+            list.add(stat);
+        }
+        return toReturn;
+    }
+
+    public List<List<Object>>getResourceTypeData() {
+        return createOutput(resourceMap);
+    }
 }

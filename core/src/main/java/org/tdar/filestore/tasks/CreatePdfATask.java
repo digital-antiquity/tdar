@@ -8,7 +8,6 @@ import org.apache.commons.exec.DefaultExecuteResultHandler;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Executor;
-import org.tdar.filestore.tasks.Task.AbstractTask;
 
 public class CreatePdfATask extends AbstractTask {
 

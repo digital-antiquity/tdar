@@ -1,6 +1,7 @@
 package org.tdar.struts.action.project;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Namespace;
@@ -23,8 +24,8 @@ import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.ResourceFacetedAction;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PaginationHelper;
 
 @Component
@@ -34,7 +35,7 @@ import org.tdar.utils.PaginationHelper;
 public class ProjectViewAction extends AbstractResourceViewAction<Project> implements FacetedResultHandler<Resource>, ResourceFacetedAction {
 
     private static final long serialVersionUID = 974044619477885680L;
-    private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
+    private ProjectionModel projectionModel = ProjectionModel.LUCENE;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
     private int totalRecords;
@@ -256,9 +257,13 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         this.facetWrapper = facetWrapper;
     }
 
-	@Override
-	public DisplayOrientation getOrientation() {
-		return getPersistable().getOrientation();
-	}
+    @Override
+    public DisplayOrientation getOrientation() {
+        return getPersistable().getOrientation();
+    }
+
+    public List<DisplayOrientation> getAvailableOrientations() {
+        return Arrays.asList(DisplayOrientation.values());
+    }
 
 }

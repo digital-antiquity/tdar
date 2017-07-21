@@ -8,9 +8,11 @@ package org.tdar.core.bean.resource;
  */
 public interface Addressable {
 
-    public abstract Long getId();
+    Long getId();
 
-    public abstract String getUrlNamespace();
+    String getUrlNamespace();
 
-    public abstract String getDetailUrl();
+    default String getDetailUrl() {
+        return getUrlNamespace() + "/" + getId();
+    }
 }

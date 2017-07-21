@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.junit.Before;
@@ -25,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -38,14 +41,17 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.resource.DataTableService;
+import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.PostgresIntegrationDatabase;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.AbstractDataIntegrationTestCase;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.TestDatasetHelper;
+import org.tdar.struts.action.TestFileUploadHelper;
 import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.dataset.TableXMLDownloadAction;
+import org.tdar.struts_base.action.TdarActionException;
 
 /**
  * $Id$
@@ -56,7 +62,7 @@ import org.tdar.struts.action.dataset.TableXMLDownloadAction;
  * @version $Rev$
  */
 @RunWith(MultipleTdarConfigurationRunner.class)
-public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
+public class DatasetControllerITCase extends AbstractAdminControllerITCase implements TestFileUploadHelper, TestDatasetHelper {
 
     private static final String PUNDO_FAUNAL_REMAINS_XLS = "Pundo faunal remains.xls";
     private static final String ALEXANDRIA_EXCEL_FILENAME = "qrybonecatalogueeditedkk.xls";
@@ -412,7 +418,17 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Override
-    protected String getTestFilePath() {
+    public String getTestFilePath() {
         return TestConstants.TEST_DATA_INTEGRATION_DIR;
     }
+
+    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
+
+
+    @Autowired
+    @Qualifier("tdarDataImportDataSource")
+    public void setIntegrationDataSource(DataSource dataSource) {
+        tdarDataImportDatabase.setDataSource(dataSource);
+    }
+
 }

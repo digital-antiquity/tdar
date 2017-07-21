@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.SearchResult;
 import org.tdar.utils.PersistableUtils;
 
@@ -20,29 +21,29 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
 
 
     @Test
-    public void testSearchPhraseWithQuote() throws ParseException, SolrServerException, IOException {
+    public void testSearchPhraseWithQuote() throws ParseException, SearchException, SearchIndexException, IOException {
         doSearch("\"test");
     }
 
     @Test
-    public void testSearchPhraseWithColon() throws ParseException, SolrServerException, IOException {
+    public void testSearchPhraseWithColon() throws ParseException, SearchException, SearchIndexException, IOException {
         doSearch("\"test : abc ");
     }
 
     @Test
-    public void testSearchPhraseWithLuceneSyntax() throws ParseException, SolrServerException, IOException {
+    public void testSearchPhraseWithLuceneSyntax() throws ParseException, SearchException, SearchIndexException, IOException {
         doSearch("title:abc");
     }
 
     @Test
-    public void testSearchPhraseWithUnbalancedParenthesis() throws ParseException, SolrServerException, IOException {
+    public void testSearchPhraseWithUnbalancedParenthesis() throws ParseException, SearchException, SearchIndexException, IOException {
         doSearch("\"test ( abc ");
     }
 
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSearchBasic() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+    public void testHyphenatedSearchBasic() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException, SearchException, SearchIndexException {
         String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -56,7 +57,7 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
 
     @Test
     @Rollback(true)
-    public void testHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+    public void testHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException,SearchException, SearchIndexException {
         String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -71,7 +72,7 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
 
     @Test
     @Rollback(true)
-    public void testUnHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+    public void testUnHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException,SearchException, SearchIndexException {
         String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -86,7 +87,7 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSiteNameSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+    public void testHyphenatedSiteNameSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException,SearchException, SearchIndexException {
         String resourceTitle = "what fun";
         SiteNameKeyword snk = new SiteNameKeyword();
         String label = _33_CU_314;
@@ -109,7 +110,7 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException,SearchException, SearchIndexException {
         String resourceTitle = "what fun";
         SiteNameKeyword snk = new SiteNameKeyword();
         String label = _33_CU_314;

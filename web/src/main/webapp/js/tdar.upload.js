@@ -132,7 +132,12 @@ TDAR.fileupload = (function (TDAR, $) {
                     file.context = $(this);
                     return file;
                 }).get();
-
+                TDAR.datepicker.applyHidden($(".new-file input.datepicker"));
+                $(".new-file").on("datechanged",function(e){
+                    console.log(this);
+                    console.log(e.target);
+                    _updateFileAction(e.target);
+                });
                 //translate property names and add extension
                 files = $.map(files, function (file) {
                     var ext = file.fileReplaceName.substring(file.fileReplaceName.indexOf(".") + 1).toLowerCase();
@@ -156,10 +161,22 @@ TDAR.fileupload = (function (TDAR, $) {
         _registerReplaceButton(_options.fileuploadSelector);
 
         //update the proxy action if user updates fileproxy metadata
-        $filesContainer.on("change", "select,textarea,input[type=text],input[type=date]", function (e) {
+        $filesContainer.on("change", "select,textarea,input[type=text],.datepicker", function (e) {
+            console.log("update file action fired");
             _updateFileAction(this);
         });
+        
+        $filesContainer.on("datechanged",function(e){
+            console.log(this);
+            console.log(e.target);
+            _updateFileAction(e.target);
+        });
 
+        
+        TDAR.datepicker.bind($("input.datepicker",$filesContainer));
+
+
+        
         $(_options.fileuploadSelector).bind("fileuploadcompleted", function (e, data) {
             var $datefields = $(data.context).find(".date");
             _applyDateInputs($datefields);
@@ -270,7 +287,11 @@ TDAR.fileupload = (function (TDAR, $) {
                 fileCreatedDate: ""
             }, proxy);
             if (proxy.fileCreatedDate) {
-                file.fileCreatedDate = $.datepicker.formatDate("mm/dd/yy", new Date(proxy.fileCreatedDate))
+                var date = new Date(proxy.fileCreatedDate);
+                var year = date.getYear() - 100;
+                var month = date.getMonth() + 1;
+                var day = date.getDate();                
+                file.fileCreatedDate = month + "/" + day + "/" + year;
             }
             return file;
         });
@@ -489,7 +510,7 @@ TDAR.fileupload = (function (TDAR, $) {
     }
 
     var _applyDateInputs = function ($elements) {
-        $elements.datepicker({dateFormat: "mm/dd/yy"});
+        TDAR.datepicker.apply($elements);
     }
 
     /**

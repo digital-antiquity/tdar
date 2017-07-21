@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.CustomizableCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
@@ -19,7 +22,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 import org.tdar.core.service.resource.ResourceService;
@@ -45,9 +47,6 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
 
     @Autowired
     private transient StatisticService statisticService;
-
-    @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
 
     private boolean run = false;
 
@@ -82,10 +81,31 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
 
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
-        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
-        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS_WHITE_LABEL, genericService.count(WhiteLabelCollection.class), ""));
-        stats.add(generateStatistics(StatisticType.NUM_EMAILS, statisticService.countWeeklyEmails(), ""));
+        List<CustomizableCollection> findAllResourceCollections = new ArrayList<>();
+        findAllResourceCollections.addAll(genericService.findAll(ListCollection.class));
+        int numListCollections = findAllResourceCollections.size();
+        List<SharedCollection> shareCollections = genericService.findAll(SharedCollection.class);
+        int numSharedCollections = shareCollections.size();
+        stats.add(generateStatistics(StatisticType.NUM_LIST_COLLECTIONS, numListCollections, ""));
 
+        
+        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, numSharedCollections + numListCollections, ""));
+        stats.add(generateStatistics(StatisticType.NUM_SHARED_COLLECTIONS, numSharedCollections, ""));
+        int whitelabelCount = 0;
+        if (!TdarConfiguration.getInstance().isListCollectionsEnabled()) {
+            findAllResourceCollections.clear();
+            findAllResourceCollections.addAll(shareCollections);
+        }
+        
+        for (CustomizableCollection c : findAllResourceCollections) {
+            if (c.getProperties() != null && c.getProperties().getWhitelabel()) {
+                whitelabelCount++;
+            }
+        }
+        
+        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS_WHITE_LABEL, whitelabelCount, ""));
+        stats.add(generateStatistics(StatisticType.NUM_EMAILS, statisticService.countWeeklyEmails(), ""));
+        stats.add(generateStatistics(StatisticType.NUM_INTEGRATIONS, genericService.count(DataIntegrationWorkflow.class), ""));
         stats.add(generateStatistics(StatisticType.NUM_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, true), ""));
         stats.add(generateStatistics(StatisticType.NUM_UNCONTROLLED_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, false), ""));
         Thread.yield();

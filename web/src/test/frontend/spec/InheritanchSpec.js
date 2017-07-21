@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-describe("tests for TDAR.inheritance methods", function() {  
+describe("InheritanchSpec.js: tests for TDAR.inheritance methods", function() {
 
 xit("should work when we call resetRepeatable", function() {
    var repeatableSelector = null;

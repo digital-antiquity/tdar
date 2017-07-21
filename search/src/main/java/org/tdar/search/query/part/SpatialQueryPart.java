@@ -75,10 +75,10 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
             
             //*** NOTE *** ENVELOPE uses following pattern minX, maxX, maxy, minY *** // 
             Double minLong = box.getObfuscatedWest();
-			Double maxLat = box.getObfuscatedNorth();
-			Double minLat = box.getObfuscatedSouth();
-			Double maxLong = box.getObfuscatedEast();
-			if (box.crossesDateline() && !box.crossesPrimeMeridian()) {
+            Double maxLat = box.getObfuscatedNorth();
+            Double minLat = box.getObfuscatedSouth();
+            Double maxLong = box.getObfuscatedEast();
+            if (box.crossesDateline() && !box.crossesPrimeMeridian()) {
                 q.append (String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" OR"
                         + "  %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
                 minLong, -180d, maxLat,minLat,
@@ -86,22 +86,22 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
                 180d, minLong, maxLat,minLat));
 
             } else  if (box.crossesPrimeMeridian()) {
-				q.append (String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
+                q.append (String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
                 minLong, maxLong,  maxLat,minLat));
             } else {
-            	if (minLat > maxLat) {
-            		Double t = maxLat;
-            		maxLat = minLat;
-            		minLat = t;
-            	}
-				q.append (String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
-		                minLong, maxLong,  maxLat,minLat));            	
+                if (minLat > maxLat) {
+                    Double t = maxLat;
+                    maxLat = minLat;
+                    minLat = t;
+                }
+                q.append (String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
+                        minLong, maxLong,  maxLat,minLat));
             }
-			
-			if (!ignoreScale) {
+
+            if (!ignoreScale) {
                 q.append(String.format(" AND %s:[%s TO %s] ", QueryFieldNames.SCALE, 0,
                         box.getScale() + SCALE_RANGE));
-			}
+            }
         }
 
         return q.toString();

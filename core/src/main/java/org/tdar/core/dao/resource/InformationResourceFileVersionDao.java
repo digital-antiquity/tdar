@@ -2,15 +2,15 @@ package org.tdar.core.dao.resource;
 
 import java.io.IOException;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.Dao.HibernateBase;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
@@ -29,7 +29,7 @@ public class InformationResourceFileVersionDao extends HibernateBase<Information
     public int deleteDerivatives(InformationResourceFileVersion version) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_DELETE_INFORMATION_RESOURCE_FILE_DERIVATIVES);
         query.setParameter("informationResourceFileId", version.getInformationResourceFileId());
-        query.setParameterList("derivativeFileVersionTypes", VersionType.getDerivativeVersionTypes());
+        query.setParameter("derivativeFileVersionTypes", VersionType.getDerivativeVersionTypes());
         return query.executeUpdate();
     }
 

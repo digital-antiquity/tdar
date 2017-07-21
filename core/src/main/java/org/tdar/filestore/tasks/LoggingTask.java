@@ -11,7 +11,6 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.filestore.tasks.Task.AbstractTask;
 
 /**
  * @author Adam Brin

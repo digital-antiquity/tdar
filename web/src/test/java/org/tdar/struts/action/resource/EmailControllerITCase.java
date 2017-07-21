@@ -6,30 +6,27 @@ import static org.junit.Assert.assertFalse;
 import java.util.Arrays;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.RequestCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.email.EmailController;
 import org.tdar.utils.EmailMessageType;
 
-public class EmailControllerITCase extends AbstractResourceControllerITCase {
-    @Autowired
-    RecaptchaService recaptchaService;
+public class EmailControllerITCase extends AbstractControllerITCase {
 
     @SuppressWarnings("deprecation")
     @Test()
     public void testSuccess() throws Exception {
         Document document = genericService.find(Document.class, Long.parseLong(TestConstants.TEST_DOCUMENT_ID));
-        ResourceCollection test = createAndSaveNewResourceCollection("testing");
+        SharedCollection test = createAndSaveNewResourceCollection("testing");
         test.getResources().add(document);
-        document.getResourceCollections().add(test);
+        document.getSharedCollections().add(test);
         genericService.saveOrUpdate(test);
         genericService.saveOrUpdate(document);
         RequestCollection request = new RequestCollection();

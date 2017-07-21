@@ -1,5 +1,5 @@
 /* global describe, it, xit, expect, beforeEach, loadFixtures, TDAR */
-describe("tests for TDAR.pricing methods", function() {
+describe("PricingSpec.js: tests for TDAR.pricing methods", function() {
 
     beforeEach(function(){
         loadFixtures("pricing.html");
