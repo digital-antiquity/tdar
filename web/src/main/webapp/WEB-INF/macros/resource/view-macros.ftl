@@ -710,13 +710,24 @@ View freemarker macros
     <#-- if you don't test if the resource hasThumbnails -- then you start showing the Image Unavailable on Projects, Ontologies... -->
         <#local seenThumbnail = (resource_.supportsThumbnails!false && resource_.primaryThumbnail?has_content) >
         <#t><span class="primary-thumbnail <#if seenThumbnail>thumbnail-border</#if>"><#t>
-        <#if seenThumbnail ><#t>
+        <#if seenThumbnail && (resource_.primaryThumbnail?has_content)!false><#t>
             <#t><span class="thumbnail-center-spacing"></span><#t>
             <#t><img src="<@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="/files/sm/${resource_.primaryThumbnail.id?c}" />"
                      title="${resource_.title!''}" alt="${_imageDescription(resource_.primaryThumbnail resource_)}"
                      onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"/><#t>
         <#else>
-            <#if resource_.resourceType?has_content>
+	        <div class="iconbox125 beige">
+	        <#local type="integration" />
+	        <#if (resource_.resourceType?has_content)!false>
+	        	<#local type=resource_.resourceType?lower_case />
+	        <#elseif (resource_.type?has_content)!false>
+	        	<#local type="collection" />
+	        </#if>
+	            <svg class="svgicon white svg-dynamic125"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${type}"></use></svg>
+	        </div>
+<#--
+		    
+             <#if resource_.resourceType?has_content>
                 <#t><i class="${resource_.resourceType?lower_case}-125"></i><#t>
             </#if>
             <#if resource_.type?has_content>
@@ -725,6 +736,7 @@ View freemarker macros
             <#if resource_.jsonData?has_content>
                 <#t><i class="integration-125 integration-125"></i><#t>
             </#if>
+             -->
         </#if>
         <#t>                </span><#t>
     </#macro>
