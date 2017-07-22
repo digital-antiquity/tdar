@@ -24,10 +24,13 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * @author Adam Brin
@@ -37,6 +40,8 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private OntologyService ontologyService;
+    @Autowired
+    private OntologyNodeDao ontologyNodeDao;
 
     @Test
     public void testDuplicateNodeToSynonym() throws IOException {
@@ -64,7 +69,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testBadHierarchyParsing() throws IOException {
         Ontology ont = createOntology();
-        File file = createOwlFile(ont,"not_flat.txt");
+        File file = createOwlFile(ont, "not_flat.txt");
         ont = addFileToResource(ont, file);
         List<OntologyNode> rootElements = ontologyService.getRootElements(ont.getOntologyNodes());
         logger.debug("root elements: {}", rootElements);
@@ -77,7 +82,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testJsonSerialization() throws IOException {
         Ontology ont = createOntology();
-        File file = createOwlFile(ont,"not_flat.txt");
+        File file = createOwlFile(ont, "not_flat.txt");
         ont = addFileToResource(ont, file);
         OntologyNodeWrapper wrapper = ontologyService.prepareOntologyJson(ont);
         logger.debug(wrapper.getDisplayName());
@@ -86,16 +91,25 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
 
     }
 
+    @Test
+    @Rollback(true)
+    public void testFindDatasetUsingOntology() {
+        OntologyNode node = genericService.find(OntologyNode.class, 68840L);
+        List<Dataset> using = ontologyNodeDao.findDatasetsUsingNode(node);
+        List<Long> ids = PersistableUtils.extractIds(using);
+        assertTrue(ids.contains(42990L));
+    }
+
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testSplitOntologyNodeSynonymIntoNode() throws IOException {
         Ontology ont = createOntology();
-        File file = createOwlFile(ont,"synonym_initial.txt");
+        File file = createOwlFile(ont, "synonym_initial.txt");
         ont = addFileToResource(ont, file);
-        
+
         mapTrivialCodingSheet(ont);
-        
+
         OntologyNode dent = ont.getNodeByIri("Dentary");
         OntologyNode mand = ont.getNodeByIri("Mandible");
         Long mandId = mand.getId();
@@ -104,7 +118,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         assertNull(dent);
         genericService.synchronize();
         logger.debug("nodes:{}", ont.getOntologyNodes());
-        File newFile = createOwlFile(ont,"synonym_as_parent.txt");
+        File newFile = createOwlFile(ont, "synonym_as_parent.txt");
         ont = replaceFileOnResource(ont, newFile, ont.getFirstInformationResourceFile());
         logger.debug("nodes:{}", ont.getOntologyNodes());
         ont.clearTransientMaps();
@@ -122,7 +136,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         String ontologyTextInput = FileUtils.readFileToString(new File(TestConstants.TEST_ONTOLOGY_DIR, name));
         String owlXml = ontologyService.toOwlXml(ont.getId(), ontologyTextInput);
         File file = File.createTempFile("test-owl", ".owl");
-        FileUtils.write(file , owlXml);
+        FileUtils.write(file, owlXml);
         return file;
     }
 
@@ -133,7 +147,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         sheet.setDate(1234);
         sheet.markUpdated(getBasicUser());
         genericService.saveOrUpdate(sheet);
-        CodingRule rule = new CodingRule(sheet,"Epiotic");
+        CodingRule rule = new CodingRule(sheet, "Epiotic");
         sheet.getCodingRules().add(rule);
         genericService.saveOrUpdate(rule);
         genericService.saveOrUpdate(sheet);
@@ -142,18 +156,17 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(rule);
     }
 
-    
     @SuppressWarnings({ "deprecation", "unused" })
     @Test
     @Rollback(true)
     public void testJoinOntologyNodeSynonymIntoNode() throws IOException {
         // assert that the merged node gets dropped in mappings of IDs
         Ontology ont = createOntology();
-        File file = createOwlFile(ont,"synonym_as_parent.txt");
+        File file = createOwlFile(ont, "synonym_as_parent.txt");
         ont = addFileToResource(ont, file);
-        
+
         mapTrivialCodingSheet(ont);
-        
+
         OntologyNode dent = ont.getNodeByIri("Dentary");
         OntologyNode mand = ont.getNodeByIri("Mandible");
         Long mandId = mand.getId();
@@ -163,7 +176,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         assertNotNull(dent);
         genericService.synchronize();
         logger.debug("nodes:{}", ont.getOntologyNodes());
-        File newFile = createOwlFile(ont,"synonym_initial.txt");
+        File newFile = createOwlFile(ont, "synonym_initial.txt");
         ont = replaceFileOnResource(ont, newFile, ont.getFirstInformationResourceFile());
         logger.debug("nodes:{}", ont.getOntologyNodes());
         ont.clearTransientMaps();
@@ -186,7 +199,6 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         return ont;
     }
 
-    
     @Test
     public void testDegenerateTextToOwlXml() throws IOException {
         String ontologyTextInput = FileUtils.readFileToString(new File(TestConstants.TEST_ONTOLOGY_DIR, "degenerate.txt"));
