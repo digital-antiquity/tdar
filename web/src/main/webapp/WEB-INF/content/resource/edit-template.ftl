@@ -405,7 +405,7 @@
             <@edit.submit fileReminder=reminder class=submitClasses>
             <p><b>Where to go after save:</b><br/>
 				<input type="radio" name="alternateSubmitAction" id="alt-submit-view" <#if !newRecord>checked=checked</#if> value="" class="inline radio" emptyoption="false">
-				<label for="alt-submit-view" class="inline radio">SaView Page</label>
+				<label for="alt-submit-view" class="inline radio">View Page</label>
 				<input type="radio" name="alternateSubmitAction" id="alt-submit-rights" value="Assign Permissions" class="inline radio" emptyoption="false" >
 				<label for="alt-submit-rights" class="inline radio" <#if newRecord>checked=checked</#if>>Assign Permissions</label>
             <br>
