@@ -708,7 +708,7 @@ View freemarker macros
 <#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents)  -->
     <#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>
     <#-- if you don't test if the resource hasThumbnails -- then you start showing the Image Unavailable on Projects, Ontologies... -->
-        <#local seenThumbnail = (resource_.supportsThumbnails && resource_.primaryThumbnail?has_content) >
+        <#local seenThumbnail = (resource_.supportsThumbnails!false && resource_.primaryThumbnail?has_content) >
         <#t><span class="primary-thumbnail <#if seenThumbnail>thumbnail-border</#if>"><#t>
         <#if seenThumbnail ><#t>
             <#t><span class="thumbnail-center-spacing"></span><#t>
@@ -721,6 +721,9 @@ View freemarker macros
             </#if>
             <#if resource_.type?has_content>
                 <#t><i class="collection-125 ${resource_.type?lower_case}-125"></i><#t>
+            </#if>
+            <#if resource_.jsonData?has_content>
+                <#t><i class="integration-125 integration-125"></i><#t>
             </#if>
         </#if>
         <#t>                </span><#t>
