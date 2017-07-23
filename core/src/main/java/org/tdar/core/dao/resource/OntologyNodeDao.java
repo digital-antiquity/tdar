@@ -54,7 +54,7 @@ public class OntologyNodeDao extends HibernateBase<OntologyNode> {
 
     public List<Dataset> findDatasetsUsingNode(OntologyNode node) {
         List<Long> ids = new ArrayList<>();
-        Query<OntologyNode> query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.DATASETS_USING_NODES, node.getId()), OntologyNode.class);
+        Query query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.DATASETS_USING_NODES, node.getId()));
         for (Object obj : query.getResultList()) {
             ids.add(((Number) obj).longValue());
         }

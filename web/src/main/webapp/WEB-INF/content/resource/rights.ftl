@@ -15,9 +15,8 @@
     <@s.form class="form-horizontal tdarvalidate" action="save" method="POST" dynamicAttributes={"data-validate-method":"initRightsForm"}>
 <div class="row">
     <div class="span12">
-    <p><i>This resource is shared with ${proxies?size} people<#if (persistable.sharedCollections?size > 0)>, and is in ${persistable.sharedCollections?size} collections</#if>.</i><br></p>
+    <p><i>This ${persistable.resourceType.label?lower_case} is currently shared with ${proxies?size} <#if (proxies?size == 1)>person<#else>people</#if><#if (persistable.sharedCollections?size > 0)>, and is in ${persistable.sharedCollections?size} collections</#if>.</i><br></p>
     <@s.hidden name="id" />
-    
     <#if editor>
     <#-- 
 	    <div class="control-group" id="divSubmitter">

@@ -965,7 +965,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
             reconcileIncomingResourcesForCollectionWithoutRights(list, authenticatedUser, resourcesToAdd, resourcesToRemove);
         }
         // saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser,type);
-        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection<ListCollection>) persistable).getProperties(),
+        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection) persistable).getProperties(),
                 cso.getFileProxy());
 
         if (!Objects.equals(cso.getParentId(), persistable.getParentId())) {

@@ -617,7 +617,7 @@
         		query = "from Person p where p.status in ('ACTIVE','DUPLICATE') and p.institution.id in :id"),
         @NamedQuery(
                 name=TdarNamedQueries.AUTHORIZED_USERS_FOR_RESOURCE,
-                query = "select au from Resource r join r.authorizedUsers au where r.id=:id"),
+                query = "from AuthorizedUser au where au.resourceId=:id"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION,
                 query = "select r from ResourceCollection r join r.authorizedUsers au where au.dateExpires < :date and status='ACTIVE'"),
@@ -626,7 +626,10 @@
                 query = "select r from Resource r join r.authorizedUsers au where au.dateExpires < :date and status in ('ACTIVE', 'DRAFT')"),
         @NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE,
-                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )"),
+                query = "from SharedCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from SharedCollection rc1 where rc1.alternateParent.id in :collectionIds )"),
+        @NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_LIST_CHILDRENS_TREE,
+                query = "from SharedCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from SharedCollection rc1 where rc1.alternateParent.id in :collectionIds )"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.MONTHLY_USAGE_FOR_RESOURCE,
                 query = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId")

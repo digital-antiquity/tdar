@@ -21,6 +21,7 @@ import org.tdar.core.service.RssService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.HomepageDetails;
@@ -42,6 +43,7 @@ import com.rometools.rome.feed.synd.SyndEntry;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
+@HttpsOnly
 public class IndexAction extends AbstractAuthenticatableAction {
 
     private static final String PAGE_NOT_FOUND = "page-not-found";

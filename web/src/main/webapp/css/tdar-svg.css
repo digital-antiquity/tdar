@@ -13,14 +13,40 @@
 }
 
 
+.iconbox125 {
+    padding-top:3%;
+    padding-left: 10%;
+    padding-right: 10%;
+    padding-bottom: 3%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top:0% !Important; 
+    margin-bottom:0% !important;
+    height:125px;
+    width:125px;
+    float: none;
+}
+
+
+.svg-dynamic125 {
+    width:80%;
+    height:80%;
+    margin-top:5%;
+    margin-bottom: 5%;
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
+
+
 
 .iconbox {
     float: none;
     padding: 10%;
      margin-left: auto;
      margin-right: auto;
-    
 }
+
 .svg-dynamic {
     width:80%;
     height:80%;

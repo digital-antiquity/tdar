@@ -175,6 +175,7 @@ public interface TdarNamedQueries {
     String  FIND_USERINVITES_BY_RESOURCE = "query.find_user_invites_by_resource";
     String FIND_ALTERNATE_CHILDRENS = "query.alternate_children";
     String FIND_ALTERNATE_CHILDRENS_TREE = "query.alternate_children_tree";
+    String FIND_ALTERNATE_LIST_CHILDRENS_TREE = "query.alternate_list_children_tree";
     String QUERY_INSTITUTION_PEOPLE="query.find_people_by_institution";
     String FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE = "query.expiring_auth_users_resource";
     String FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION = "query.expiring_auth_users_collection";

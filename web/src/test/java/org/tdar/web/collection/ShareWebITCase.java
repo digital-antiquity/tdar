@@ -37,6 +37,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     private static final String RETAIN_COLLECTION = "My Test Retain Collection";
     private static final TestConfiguration TEST = TestConfiguration.getInstance();
     private static final String RETAIN_COLLECTION_2 = "My test dataset revoke collection";
+    private Long idFromCurrentURL;
 
 
     @Test
@@ -193,7 +194,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         for (Resource resource : removedResources) {
             assertTextNotPresent(resource.getTitle());
         }
-
+        idFromCurrentURL = extractTdarIdFromCurrentURL();
         logout();
 
         gotoPage(currentUrlPath);
@@ -244,6 +245,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testCreateChildCollection() {
         // get a shared collection id - we don't have one in init-db so just rerun the previous test
         testCreateThenEditCollection();
+        Long id2 = idFromCurrentURL;
         // previous test logged us out
         loginAdmin();
         Long parentId = 1575L;
@@ -255,14 +257,14 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("resourceCollection.name", name);
         setInput("resourceCollection.description", desc);
         setInput("parentId", "" + parentId);
+        setInput("alternateParentId", "" + id2);
         submitForm();
         assertTextPresentInPage(name);
         assertTextPresentInPage(desc);
-
-        // now look for the collection on the dashboard (implicitly test encoding errors also)
-        gotoPage("/dashboard");
-        clickLinkOnPage("Collections");
-        assertTextPresentInPage(name);
+        assertNoErrorTextPresent();
+        assertFalse(getCurrentUrlPath().contains("save"));
+        assertFalse(getCurrentUrlPath().contains("edit"));
+        assertFalse(getCurrentUrlPath().contains("add"));
     }
 
     @Test

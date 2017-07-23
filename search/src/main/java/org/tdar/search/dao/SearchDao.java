@@ -263,8 +263,9 @@ public class SearchDao<I extends Indexable> {
         }
         // iterate over all of the objects and create an objectMap if needed
         if (CollectionUtils.isNotEmpty(results.getIdList())) {
+            logger.debug("hydration via:{}", projectionModel);
             switch (projectionModel) {
-                case LUCENE:
+                case LUCENE_ID_ONLY:
                     for (SolrDocument doc : results.getDocumentList()) {
                         I obj = null;
                         Long id = (Long) doc.getFieldValue(QueryFieldNames.ID);
@@ -281,7 +282,7 @@ public class SearchDao<I extends Indexable> {
                         toReturn.add(obj);
                     }
                     break;
-                case LUCENE_EXPERIMENTAL:
+                case LUCENE:
                     // if we're stored and projected properly, then use the new projection model, otherwise fall through to hibernate model
                     if (projectionTransformer.isProjected(results)) {
                         hydrateExperimental(resultHandler, results, toReturn);

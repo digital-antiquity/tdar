@@ -10,5 +10,4 @@
   <include file="neolithic.xml"  relativeToChangelogFile="true"/> 
   <include file="obsidian.xml"  relativeToChangelogFile="true"/> 
   <include file="prehistoric.xml"  relativeToChangelogFile="true"/> 
-  <include file="dropbox.xml"  relativeToChangelogFile="true"/> 
 </databaseChangeLog>

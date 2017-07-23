@@ -182,8 +182,12 @@ public class ResourceStatisticsObject {
         return toReturn;
     }
 
-    private <T> void incrementKey(Map<T, Map<String, Long>> parent, T subKey, Long count, String k) {
+    private <T> void incrementKey(Map<T, Map<String, Long>> parent, T subKey, Long count_, String k) {
         Map<String, Long> by = parent.getOrDefault(subKey, new HashMap<>());
+        long count = 0l;
+        if (count_ != null) {
+            count = count_;
+        }
         by.put(k, by.getOrDefault(k,0L) + count);
         parent.put(subKey, by);
     }

@@ -209,7 +209,7 @@ $(function() {
                             </#if>
                         </td>
                     </#list>
-                    <td>${(user.dateExpires?string("MM/dd/yyyy"))!''}</td>
+                    <td>${(user.dateExpires?string("MM/dd/yyyy"))!'∞'}</td>
                 </tr>
             </#list>
    	</#macro>
@@ -237,7 +237,7 @@ $(function() {
                             </#if>
                         </td>
                     </#list>
-                    <td>${(user.dateExpires?string("MM/dd/yyyy"))!''}</td>
+                    <td>${(user.dateExpires?string("MM/dd/yyyy"))!'∞'}</td>
                 </tr>
                 </#list>
             <#else>
@@ -270,7 +270,7 @@ $(function() {
                         </#if>
                     </td>
                 </#list>
-                <td>${(invite.dateExpires?string("MM/dd/yyyy"))!''}</td>
+                <td>${(invite.dateExpires?string("MM/dd/yyyy"))!'∞'}</td>
             </tr>
         </#list>
     </#macro>

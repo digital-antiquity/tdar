@@ -231,7 +231,7 @@
                     <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
                         <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
                     </#if>
-                    <@commonr.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i></#if><small>[ID: ${_rid}]</small> <@_listCreators resource/></@commonr.cartouche>
+                    <@commonr.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i> </#if><small>[ID: ${_rid}]</small> <@_listCreators resource/></@commonr.cartouche>
                     <#if resource.resourceType?has_content>
                         <@view.unapiLink resource  />
                     </#if>
@@ -285,7 +285,7 @@ bookmark indicator, etc..
             </#if>
             <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
         </a><#lt>
-        <#if isMapLayout && result.latLongVisible><i class="icon-map-marker" title="click to highlight on map" alt="click to highlight on map"></i></#if>
+        <#if isMapLayout && result.latLongVisible!false><i class="icon-map-marker" title="click to highlight on map" alt="click to highlight on map"></i></#if>
         <#if titleTag?has_content>
         </${titleTag}>
         </#if>

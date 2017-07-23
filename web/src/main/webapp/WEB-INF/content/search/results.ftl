@@ -16,7 +16,7 @@
         <#elseif query?has_content>
         ${lookupSource.proper} Search Results: <span>${query?html}</span>
         <#else>
-            Search Results: ${(searchSubtitle!"all records")?html}
+            Search Results: ${(searchSubtitle!"all records")}
         </#if>
         <#if sortField?? && sortField != defaultSort>
             <span class="smaller">; sorted by ${sortField.label}</span>

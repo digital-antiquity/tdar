@@ -396,16 +396,22 @@
 
 <#--         <@edit.fullAccessRights /> -->
 
-        <#assign submitClasses>button btn submitButton <#if !newRecord>btn-primary</#if></#assign>
+        <#assign submitClasses>button btn submitButton btn-primary</#assign>
+        
+        <#assign reminder = false />
         <#if !resource.resourceType.project>
-            <@edit.submit fileReminder=((resource.id == -1) && fileReminder) class=submitClasses >
-                <input type="submit" name="alternateSubmitAction" value="Assign Permissions" class="button btn submittableButtons <#if newRecord>btn-primary</#if>" />
-            </@edit.submit>
-        <#else>
-            <@edit.submit fileReminder=false class=submitClasses>
-                    <input type="submit" name="submitAction" value="Assign Permissions"  class="button btn submittableButtons <#if newRecord>btn-primary</#if>" />
-            </@edit.submit>
+        	<#assign reminder = ((resource.id == -1) && fileReminder)/>
         </#if>
+            <@edit.submit fileReminder=reminder class=submitClasses>
+            <p><b>Where to go after save:</b><br/>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-view" <#if !newRecord>checked=checked</#if> value="" class="inline radio" emptyoption="false">
+				<label for="alt-submit-view" class="inline radio">View Page</label>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-rights" value="Assign Permissions" class="inline radio" emptyoption="false" >
+				<label for="alt-submit-rights" class="inline radio" <#if newRecord>checked=checked</#if>>Assign Permissions</label>
+            <br>
+            <br>
+        </p>
+            </@edit.submit>
     </@s.form>
 
 <#-- include any JS templates -->

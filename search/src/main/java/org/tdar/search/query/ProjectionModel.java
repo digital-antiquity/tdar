@@ -6,12 +6,12 @@ import java.util.Collection;
 import java.util.List;
 
 public enum ProjectionModel {
-    HIBERNATE_DEFAULT, LUCENE, RESOURCE_PROXY, LUCENE_EXPERIMENTAL;
+    HIBERNATE_DEFAULT, LUCENE_ID_ONLY, RESOURCE_PROXY, LUCENE;
 
     private List<String> projections = new ArrayList<>();
 
     public List<String> getProjections() {
-        if (this == ProjectionModel.LUCENE_EXPERIMENTAL) {
+        if (this == ProjectionModel.LUCENE) {
             return Arrays.asList(QueryFieldNames.NAME, QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS,
                     QueryFieldNames.NAME_SORT, QueryFieldNames.SUBMITTER_ID, QueryFieldNames.PROJECT_TITLE, QueryFieldNames.PROJECT_ID,
                     QueryFieldNames.RESOURCE_COLLECTION_IDS,
