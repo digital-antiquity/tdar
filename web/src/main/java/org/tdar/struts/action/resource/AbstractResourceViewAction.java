@@ -2,10 +2,7 @@ package org.tdar.struts.action.resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,17 +17,12 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.AbstractSequenced;
-import org.tdar.core.bean.Sequenceable;
-import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
-import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
@@ -39,17 +31,13 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.UserRightsProxyService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
@@ -59,7 +47,6 @@ import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.utils.EmailMessageType;
-import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.ResourceCitationFormatter;
 import org.tdar.web.service.ResourceViewControllerService;
 
@@ -161,15 +148,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
     
     protected void loadCustomViewMetadata() throws TdarActionException {
-        if (getResource() instanceof InformationResource) {
-            InformationResource informationResource = (InformationResource) getResource();
-            boolean fail = false;
-            if (getTdarConfiguration().isProductionEnvironment()) {
-                fail = true;
-            }
-            setMappedData(resourceService.getMappedDataForInformationResource(informationResource, fail));
-        }
-        }
+    }
 
 
     @Override
@@ -194,22 +173,17 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return result;
     }
 
-//    public <T extends Sequenceable<T>> void prepSequence(List<T> list) {
-//        if (list == null) {
-//            return;
-//        }
-//        if (list.isEmpty()) {
-//            return;
-//        }
-//        list.removeAll(Collections.singletonList(null));
-//        AbstractSequenced.applySequence(list);
-//    }
-
     public void loadBasicViewMetadata() {
         AuthWrapper<Resource> authWrapper = new AuthWrapper<Resource>(getPersistable(), isAuthenticated(), getAuthenticatedUser(), isEditor());
         viewService.initializeResourceCreatorProxyLists(authWrapper, authorshipProxies, creditProxies, contactProxies);
         viewService.loadSharesCollectionsAuthUsers(authWrapper, getEffectiveShares(), getEffectiveResourceCollections(), getAuthorizedUsers());
         getLogger().trace("effective collections: {}", getEffectiveResourceCollections());
+        visibleCollections = viewService.getVisibleCollections(authWrapper);
+        if (getResource() instanceof InformationResource) {
+            InformationResource informationResource = (InformationResource) getResource();
+            setMappedData(resourceService.getMappedDataForInformationResource(informationResource, getTdarConfiguration().isProductionEnvironment()));
+        }
+
     }
 
 
@@ -265,76 +239,17 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return creditProxies;
     }
 
-    public void setCreditProxies(List<ResourceCreatorProxy> creditProxies) {
-        this.creditProxies = creditProxies;
-    }
 
-    public List<ResourceCreatorRole> getInstitutionAuthorshipRoles() {
-        return ResourceCreatorRole.getAuthorshipRoles(CreatorType.INSTITUTION, getResource().getResourceType());
-    }
 
-    public List<ResourceCreatorRole> getInstitutionCreditRoles() {
-        return ResourceCreatorRole.getCreditRoles(CreatorType.INSTITUTION, getResource().getResourceType());
-    }
-
-    public List<ResourceCreatorRole> getPersonAuthorshipRoles() {
-        return ResourceCreatorRole.getAuthorshipRoles(CreatorType.PERSON, getResource().getResourceType());
-    }
-
-    public List<ResourceCreatorRole> getPersonCreditRoles() {
-        return ResourceCreatorRole.getCreditRoles(CreatorType.PERSON, getResource().getResourceType());
-    }
-
-    // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
-    // shared+invisible+canEdit
-    public List<ListCollection> getViewableListResourceCollections() {
-        if (viewableListCollections != null) {
-            return viewableListCollections;
-        }
-
-        // if nobody logged in, just get the shared+visible collections
-        Set<ListCollection> collections = new HashSet<>();
-        collections.addAll(getResource().getVisibleUnmanagedResourceCollections());
-        // if authenticated, also add the collections that the user can modify
-        addViewableCollections(collections, getResource().getUnmanagedResourceCollections());
-
-        viewableListCollections = new ArrayList<>(collections);
-        return viewableListCollections;
-    }
-
-    private <C extends VisibleCollection> void addViewableCollections(Set<C> list, Collection<C> incomming) {
-        if (isAuthenticated()) {
-            for (C resourceCollection : incomming) {
-                if (authorizationService.canViewCollection(getAuthenticatedUser(), resourceCollection) && !resourceCollection.isSystemManaged()) {
-                    list.add(resourceCollection);
-                }
-            }
-        }
-    }
-
+    private List<VisibleCollection> visibleCollections = new ArrayList<>();
     /**
      * All shares and list collections
      * 
      * @return
      */
     public List<VisibleCollection> getViewableResourceCollections() {
-        List<VisibleCollection> visibleCollections = new ArrayList<>();
-        visibleCollections.addAll(getViewableListResourceCollections());
-        visibleCollections.addAll(getViewableSharedResourceCollections());
+        
         return visibleCollections;
-    }
-
-    public List<SharedCollection> getViewableSharedResourceCollections() {
-        if (viewableSharedCollections != null) {
-            return viewableSharedCollections;
-        }
-
-        // if nobody logged in, just get the shared+visible collections
-        Set<SharedCollection> collections = new HashSet<>(getResource().getVisibleSharedResourceCollections());
-        addViewableCollections(collections, getResource().getSharedCollections());
-
-        viewableSharedCollections = new ArrayList<>(collections);
-        return viewableSharedCollections;
     }
 
     public boolean isUserAbleToReTranslate() {
@@ -368,14 +283,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
 
-
-//    public boolean isHasDeletedFiles() {
-//        return hasDeletedFiles;
-//    }
-//
-//    public void setHasDeletedFiles(boolean hasDeletedFiles) {
-//        this.hasDeletedFiles = hasDeletedFiles;
-//    }
 
     private Boolean editable = null;
 

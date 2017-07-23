@@ -1,7 +1,10 @@
 package org.tdar.web.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -140,5 +145,47 @@ public class ResourceViewControllerService {
         
     }
 
+
+    @Transactional(readOnly=true)
+    public List<VisibleCollection> getVisibleCollections(AuthWrapper<Resource> auth ) {
+        List<VisibleCollection> visibleCollections = new ArrayList<>();
+        visibleCollections.addAll(getViewableListResourceCollections(auth));
+        visibleCollections.addAll(getViewableSharedResourceCollections(auth));
+        return visibleCollections;
+    }
+
+
+    private Set<SharedCollection> getViewableSharedResourceCollections(AuthWrapper<Resource> auth) {
+
+        // if nobody logged in, just get the shared+visible collections
+        Set<SharedCollection> collections = new HashSet<>(auth.getItem().getVisibleSharedResourceCollections());
+        addViewableCollections(collections, auth.getItem().getSharedCollections(),auth);
+        return collections;
+    }
+    
+    // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
+    // shared+invisible+canEdit
+    private  Set<ListCollection> getViewableListResourceCollections(AuthWrapper<Resource> auth) {
+
+        // if nobody logged in, just get the shared+visible collections
+        Set<ListCollection> collections = new HashSet<>();
+        collections.addAll(auth.getItem().getVisibleUnmanagedResourceCollections());
+        // if authenticated, also add the collections that the user can modify
+        addViewableCollections(collections,auth.getItem().getUnmanagedResourceCollections(), auth);
+
+        return collections;
+    }
+
+    private <C extends VisibleCollection> void addViewableCollections(Set<C> list, Collection<C> incomming, AuthWrapper<Resource> auth) {
+        if (auth.isAuthenticated()) {
+            for (C resourceCollection : incomming) {
+                if (authorizationService.canViewCollection(auth.getAuthenticatedUser(), resourceCollection) && !resourceCollection.isSystemManaged()) {
+                    list.add(resourceCollection);
+                }
+            }
+        }
+    }
+
+    
 
 }
