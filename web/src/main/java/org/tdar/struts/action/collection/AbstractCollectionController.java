@@ -223,7 +223,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     @Override
     public String loadAddMetadata() {
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
-            HierarchicalCollection parent = getGenericService().find(HierarchicalCollection.class,parentId);
+            ResourceCollection parent = getGenericService().find(ResourceCollection.class,parentId);
             if (parent != null) {
                 parentCollectionName = parent.getName();
             }
