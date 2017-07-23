@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -386,7 +385,6 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     /**
      * make sure that the collection tree has all children alternate and not including grandchildren in alternate tree
      */
-    @Ignore
     public void testAlternateChildrenInTree() {
         TdarUser user = getBasicUser();
         // setup beans
