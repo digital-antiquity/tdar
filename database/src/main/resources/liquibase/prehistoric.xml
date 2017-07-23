@@ -406,5 +406,29 @@
      UPDATE authorized_user SET general_permission_int=500, general_permission='MODIFY_RECORD' WHERE resource_id IS NOT NULL AND general_permission_int=5000;
      </sql>
      </changeSet>
+     <changeSet id="prehistoric-rights-7" author="abrin">
+      <createIndex tableName="authorized_user" indexName="authorized_user_resource_id_idx">
+        <column name="resource_id"/>
+      </createIndex>
+     </changeSet>
+     <changeSet id="prehistoric-stable-25" author="abrin">
+
+         <addColumn tableName="collection">
+            <column name="l_alternate_parent_id" type='bigint' />
+        </addColumn>
+
+        <addForeignKeyConstraint constraintName="collection_l_alternate_parent_id" 
+            referencedTableName="collection" 
+            baseColumnNames="l_alternate_parent_id" baseTableName="collection" referencedColumnNames="id"/>
+
+         <addColumn tableName="collection">
+            <column name="l_parent_id" type='bigint' />
+        </addColumn>
+
+        <addForeignKeyConstraint constraintName="collection_l_parent_id" 
+            referencedTableName="collection" 
+            baseColumnNames="l_parent_id" baseTableName="collection" referencedColumnNames="id"/>
+     
+     </changeSet>
 </databaseChangeLog>
 

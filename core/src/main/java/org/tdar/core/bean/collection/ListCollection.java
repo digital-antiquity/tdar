@@ -31,11 +31,11 @@ public class ListCollection extends CustomizableCollection<ListCollection> imple
     private static final long serialVersionUID = 1225586588061994193L;
 
     @ManyToOne
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "l_parent_id")
     private ListCollection parent;
 
     @ManyToOne
-    @JoinColumn(name = "alternate_parent_id")
+    @JoinColumn(name = "l_alternate_parent_id")
     private ListCollection alternateParent;
 
     public ListCollection getParent() {
