@@ -510,8 +510,12 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     public <C extends HierarchicalCollection> List<C> getAlternateChildrenTrees(Collection<C> allChildren, C collection, Class<C> cls) {
         List<Long> ids = PersistableUtils.extractIds(allChildren);
+        String qs = TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE;
+        if (collection instanceof ListCollection) {
+            qs = TdarNamedQueries.FIND_ALTERNATE_LIST_CHILDRENS_TREE;
+        }
         ids.add(collection.getId());
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE);
+        Query query = getCurrentSession().getNamedQuery(qs);
         query.setParameterList("collectionIds", ids);
         return query.list();
     }
