@@ -87,13 +87,11 @@ th {border-right:1px solid #DDD}
         <#list resources as resource>
         <td>
             <#list resource.sharedResourceCollections as it>
-            	<#if !it.internal>
                 <#if collections?seq_contains(it) >
                     <a href="${it.detailUrl}">${it.name}</a>
                 <#else>
                     <b><a href="${it.detailUrl}">${it.name}</a></b>
                 </#if>
-				</#if>
                 <#sep> <b>&bull;</b> </#sep>
             </#list>
 
