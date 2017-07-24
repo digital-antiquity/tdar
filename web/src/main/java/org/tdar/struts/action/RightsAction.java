@@ -114,6 +114,7 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         setupResourceCollectionTreesForDashboard();
         getLogger().trace("begin find shared with");
         setFindUsersSharedWith(resourceCollectionService.findUsersSharedWith(getAuthenticatedUser()));
+        getLogger().trace("done");
 //        prepareProjectStuff();
 //        internalCollections = resourceCollectionService.findAllInternalCollections(getAuthenticatedUser());
     }
