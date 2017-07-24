@@ -1,8 +1,6 @@
 package org.tdar.web.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,10 +23,10 @@ import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -52,8 +50,6 @@ import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.action.bulk.BulkUploadController;
-import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.utils.PersistableUtils;
 
@@ -137,11 +133,11 @@ public class ResourceEditControllerService {
 
         resourceService.saveResourceCreatorsFromProxies(rcp.getResourceCreatorProxies(), authWrapper.getItem(), rcp.shouldSaveResource());
 
-        
+        resolveAnnotations(authWrapper, rcp);
         List<SharedCollection> retainedSharedCollections = new ArrayList<>();
         List<ListCollection> retainedListCollections = new ArrayList<>();
-        List<SharedCollection> shares = new ArrayList<>();
-        List<ListCollection> resourceCollections = new ArrayList<>();
+        List<SharedCollection> shares = rcp.getShares();
+        List<ListCollection> resourceCollections = rcp.getResourceCollections();
 
         loadEffectiveResourceCollectionsForSave(authWrapper, retainedSharedCollections, retainedListCollections);
         logger.debug("retained collections:{}", retainedSharedCollections);
