@@ -186,17 +186,15 @@ public interface TdarNamedQueries {
     /**
      * Static HQL and SQL queries that cannot be represented as annotations because they are either pure SQL or use String replacement.
      */
-    String QUERY_SQL_DASHBOARD = "select r.status, resource_type , count(*) from resource r where exists ( select 1 from resource r " +
-            "left join collection_resource cr on r.id=cr.resource_id " +
-            "left join collection c on cr.collection_id = c.id " +
-            "left join authorized_user au on c.id=au.resource_collection_id " +
-            "left join collection_parents cp on c.id= cp.collection_id " +
-            "left join collection c2 on cp.parent_id = c2.id " +
-            "left join authorized_user au3 on c2.id=au3.resource_collection_id " +
-            "left join authorized_user au2 on r.id = au2.resource_id where " +
-            "(au2.user_id=:submitterId and au2.general_permission_int > :effectivePermissions ) or " +
-            "(c.status='ACTIVE' and au.user_id=:submitterId and au.general_permission_int > :effectivePermissions) or " +
-            "(c2.status='ACTIVE' and au3.user_id=:submitterId and au3.general_permission_int > :effectivePermissions)) group by 1,2";
+    String QUERY_SQL_DASHBOARD = "select r.status, resource_type , count(*) "
+            + " from resource r where  exists (select 1 from collection_resource cr join collection c on cr.collection_id =c.id and c.status='ACTIVE' "
+            + "     left join authorized_user au on c.id=au.resource_collection_id left join collection_parents cp on c.id=cp.collection_id "
+            + "     join collection c2 on cp.parent_id=c2.id join authorized_user au2 on c2.id=au2.resource_collection_id where"
+            + "          (au.user_id=:submitterId and au.general_permission_int > :effectivePermissions) or"
+            + "          (au2.user_id=:submitterId and au2.general_permission_int > :effectivePermissions))  "
+            + " or exists (select 1 from authorized_user au where r.id=au.resource_id and au.user_id=:submitterId "
+            + "     and au.general_permission_int > :effectivePermissions) "
+            + " group by 1,2";
 
     String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
     String QUERY_FIND_ALL = "FROM %s";
@@ -323,29 +321,29 @@ public interface TdarNamedQueries {
     /**
      * it's possible this is too generous and we need something closer to the following which unions to explicit joins:
      * select au.user_id, au.resource_id, au.resource_collection_id from authorized_user au join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') 
-        join authorized_user au2 on r.id=au2.resource_id and au2.user_id=8344 union
+        join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:submitterId union
         select au.user_id, au.resource_id, au.resource_collection_id from authorized_user au join collection c on au.resource_collection_id=c.id and c.status='ACTIVE'
          left join authorized_user au3 on c.id=au3.resource_collection_id
          left join collection_parents cp on c.id=cp.collection_id 
          join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' 
-         join authorized_user au4 on c2.id=au4.resource_collection_id where (au3.user_id=8344  or au4.user_id=8344) order by 1;^C
+         join authorized_user au4 on c2.id=au4.resource_collection_id where (au3.user_id=:submitterId  or au4.user_id=:submitterId) order by 1;^C
      */
     String QUERY_USERS_SHARED_WITH = "select id from person where id in "
             + " (select  au.user_id from authorized_user au left join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') "
-            + "left join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:userId "
+            + " join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:userId "
             + "left join collection c on au.resource_collection_id=c.id and c.status='ACTIVE' "
-            + "left join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:userId "
+            + " join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:userId "
             + "left join collection_parents cp on c.id=cp.collection_id "
-            + "left join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
-            + "left join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:userId)";
+            + " join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
+            + " join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:userId)";
 
     String QUERY_RESOURCES_SHARED_WITH = "select id, title, status, resource_type from resource where id in "
             + " (select  au.resource_id from authorized_user au left join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') "
-            + "left join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:ownerId "
+            + " join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:ownerId "
             + "left join collection c on au.resource_collection_id=c.id and c.status='ACTIVE' "
-            + "left join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:ownerId "
+            + " join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:ownerId "
             + "left join collection_parents cp on c.id=cp.collection_id "
             + "left join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
-            + "left join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:ownerId where au.user_id=:userId and au.resource_id is not null)";
+            + " join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:ownerId where au.user_id=:userId and au.resource_id is not null)";
 
 }
