@@ -330,20 +330,20 @@ public interface TdarNamedQueries {
      */
     String QUERY_USERS_SHARED_WITH = "select id from person where id in "
             + " (select  au.user_id from authorized_user au left join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') "
-            + " join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:userId "
+            + "left join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:userId "
             + "left join collection c on au.resource_collection_id=c.id and c.status='ACTIVE' "
-            + " join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:userId "
+            + "left join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:userId "
             + "left join collection_parents cp on c.id=cp.collection_id "
-            + " join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
-            + " join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:userId)";
+            + "left join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
+            + "left join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:userId)";
 
     String QUERY_RESOURCES_SHARED_WITH = "select id, title, status, resource_type from resource where id in "
             + " (select  au.resource_id from authorized_user au left join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') "
-            + " join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:ownerId "
+            + "left join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:ownerId "
             + "left join collection c on au.resource_collection_id=c.id and c.status='ACTIVE' "
-            + " join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:ownerId "
+            + "left join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:ownerId "
             + "left join collection_parents cp on c.id=cp.collection_id "
             + "left join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
-            + " join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:ownerId where au.user_id=:userId and au.resource_id is not null)";
+            + "left join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:ownerId where au.user_id=:userId and au.resource_id is not null)";
 
 }
