@@ -179,7 +179,7 @@ public class ResourceRightsController extends AbstractRightsController implement
     public void loadEffectiveResourceCollectionsForSave() {
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedCollections()) {
-            if (!authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
+            if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 getRetainedSharedCollections().add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }
