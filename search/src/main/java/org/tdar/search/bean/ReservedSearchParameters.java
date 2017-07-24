@@ -22,7 +22,7 @@ public class ReservedSearchParameters extends SearchParameters {
     private TdarUser authenticatedUser;
     private TdarGroup tdarGroup;
     private boolean useSubmitterContext = false;
-    private boolean dasboardQuery;
+    private boolean dasboardQuery = false;
 
     public ReservedSearchParameters() {
         setOperator(Operator.AND);
@@ -45,6 +45,7 @@ public class ReservedSearchParameters extends SearchParameters {
         QueryPartGroup queryPartGroup = super.toQueryPartGroup(support);
         // TODO: not just statusQueryPart, but also maps, resourceTypes
         StatusAndRelatedPermissionsQueryPart statusQueryPart = new StatusAndRelatedPermissionsQueryPart(statuses, getAuthenticatedUser(), getTdarGroup());
+
         if (isDasboardQuery()) {
             statusQueryPart = new StatusAndRelatedPermissionsQueryPart(statuses, getAuthenticatedUser(), TdarGroup.TDAR_USERS);
         }

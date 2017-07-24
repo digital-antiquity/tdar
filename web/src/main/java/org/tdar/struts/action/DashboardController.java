@@ -207,7 +207,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
         advancedSearchQueryObject.getReservedParams().setUseSubmitterContext(true);
         advancedSearchQueryObject.getReservedParams().setDasboardQuery(true);
-        advancedSearchQueryObject.getReservedParams().setStatuses(Arrays.asList(Status.ACTIVE,Status.DRAFT, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE));
+        advancedSearchQueryObject.getReservedParams().setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE,Status.DRAFT, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE)));
         SearchResult<Resource> request = new SearchResult<>();
         request.setFacetWrapper(new FacetWrapper());
         request.setRecordsPerPage(0);
