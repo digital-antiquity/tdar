@@ -135,7 +135,9 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         }
         // note, in rare occasions, a cache hit might mean that the resource's
         // status has changed
-        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
+        if (!isContributor()) {
+            getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
+        }
 
     }
 
@@ -148,6 +150,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     public String execute() throws SolrServerException, IOException {
         getLogger().trace("recent resources");
         setupRecentResources();
+        getLogger().trace("notifications");
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
         getLogger().trace("find recently edited resources");
         setRecentlyEditedResources(
