@@ -500,6 +500,9 @@ public class ResourceService {
                      logger.info("adding to shared collection : {} ", collection);
                      if (collection.isTransient() && save) {
                          genericDao.save(shared);
+                     } else {
+                         // manage session (when called from bulk upload, need to make sure we're on the session, as the incomming may be on a different thread)
+                         shared = genericDao.find(SharedCollection.class, shared.getId());
                      }
                      shared.getResources().add(resource);
                      resource.getSharedCollections().add(shared);
