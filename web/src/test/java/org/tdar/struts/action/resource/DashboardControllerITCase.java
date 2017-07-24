@@ -29,9 +29,7 @@ import org.tdar.struts.action.DashboardController;
  */
 public class DashboardControllerITCase extends AbstractControllerITCase {
 
-    
-    
-    
+
     @Test
     @Rollback
     public void testProjectLists() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
