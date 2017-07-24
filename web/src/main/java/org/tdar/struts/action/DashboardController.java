@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.UserNotification;
@@ -40,7 +41,15 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.exception.SearchException;
+import org.tdar.search.query.LuceneSearchResultHandler;
+import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResult;
+import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
@@ -78,6 +87,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient ResourceSearchService resourceSearchService;
     @Autowired
     private transient ProjectService projectService;
     @Autowired
@@ -189,9 +200,29 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     }
 
     private void initCounts() {
-        ResourceTypeStatusInfo info = resourceService.getResourceCountAndStatusForUser(getAuthenticatedUser(),
-                Arrays.asList(ResourceType.values()));
-        activeResourceCount = info.getTotal();
+        AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
+        advancedSearchQueryObject.getReservedParams().setUseSubmitterContext(true);
+        SearchResult<Resource> request = new SearchResult<>();
+        request.setFacetWrapper(new FacetWrapper());
+        request.setRecordsPerPage(0);
+        request.getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+        request.getFacetWrapper().facetBy(QueryFieldNames.STATUS, Status.class);
+
+        ResourceTypeStatusInfo info = new ResourceTypeStatusInfo();
+        try {
+            FacetedResultHandler<Resource> result = (FacetedResultHandler<Resource>) resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, getAuthenticatedUser(), request, this);
+            activeResourceCount = result.getTotalRecords();
+            FacetWrapper facetWrapper = result.getFacetWrapper();
+            facetWrapper.getFacetResults().get(QueryFieldNames.RESOURCE_TYPE).forEach(facet -> {
+                info.getResourceMap().put(ResourceType.valueOf(facet.getRaw()), facet.getCount().intValue());
+            });
+            facetWrapper.getFacetResults().get(QueryFieldNames.STATUS).forEach(facet -> {
+                info.getStatusMap().put(Status.valueOf(facet.getRaw()), facet.getCount().intValue());
+            });
+        } catch (SearchException | IOException  e1) {
+            getLogger().error("issue generating map search", e1);
+        }
+
         try {
             setStatusData(serializationService.convertToJson(info.getStatusData()));
             setResourceTypeData(serializationService.convertToJson(info.getResourceTypeData()));

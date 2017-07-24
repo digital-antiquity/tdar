@@ -430,5 +430,11 @@
             baseColumnNames="l_parent_id" baseTableName="collection" referencedColumnNames="id"/>
      
      </changeSet>
+     <changeSet id="prehistoric-stable-26" author="abrin">
+         <sql>create index resource_dataone on resource (resource_type, external_id ) where resource_type not in ('PROJECT', 'CODING_SHEET','ONTOLOGY')</sql>
+        <createIndex tableName="dataone_object" indexName="dataone_object_modified">
+            <column name="sys_metadata_modified"/>
+        </createIndex>
+     </changeSet>
 </databaseChangeLog>
 
