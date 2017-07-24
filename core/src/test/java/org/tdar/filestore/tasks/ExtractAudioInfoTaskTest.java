@@ -3,6 +3,7 @@ package org.tdar.filestore.tasks;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
@@ -26,28 +27,28 @@ public class ExtractAudioInfoTaskTest {
     private Audio testSubject = new Audio();
 
     @Test
-    public void readAiffFileMetadata() {
+    public void readAiffFileMetadata() throws FileNotFoundException {
         testFileCodec("testing.aiff", AIFF_EXPECTED);
     }
 
     @Test
-    public void readWavFileMetadata() {
+    public void readWavFileMetadata() throws FileNotFoundException {
         testFileCodec("testing.wav", WAV_EXPECTED);
     }
 
     @Test
-    public void readFlacFileMetadata() {
+    public void readFlacFileMetadata() throws FileNotFoundException {
         testFileCodec("testing.flac", UNKNOWN_CODEC);
     }
 
     @Test
-    public void readMp3FileMetadata() {
+    public void readMp3FileMetadata() throws FileNotFoundException {
         testFileCodec("testing.mp3", UNKNOWN_CODEC);
     }
 
-    private void testFileCodec(String fileName, String expected) {
+    private void testFileCodec(String fileName, String expected) throws FileNotFoundException {
         ExtractAudioInfoTask task = new ExtractAudioInfoTask();
-        File audioFile = new File(TestConstants.TEST_AUDIO_DIR + fileName);
+        File audioFile = TestConstants.getFile(TestConstants.TEST_AUDIO_DIR , fileName);
         task.writeFileMetadataToAudioFile(testSubject, audioFile);
         final String audioCodecFound = testSubject.getAudioCodec();
         assertTrue("Expected: '" + expected + "' but found: '" + audioCodecFound + "'", expected.equals(audioCodecFound));

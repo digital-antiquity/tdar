@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpHeaders.REFERER;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -132,7 +133,7 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     @IgnoreActionErrors
-    public void testMissingApiKeyHostedDownloadReferrer() throws InstantiationException, IllegalAccessException {
+    public void testMissingApiKeyHostedDownloadReferrer() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Long setup = setup();
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
@@ -147,7 +148,7 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
         assertThat(controller.getActionErrors(), is( not( empty())));
     }
 
-    public Long setup() throws InstantiationException, IllegalAccessException {
+    public Long setup() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         doc = generateDocumentWithFileAndUseDefaultUser();
         SharedCollection collection = new SharedCollection();
         collection.setName("authorized collection");

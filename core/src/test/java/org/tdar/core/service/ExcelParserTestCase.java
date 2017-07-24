@@ -163,7 +163,7 @@ public class ExcelParserTestCase {
     }
 
     private FileInputStream getDataIntegrationResource(String filename) throws Exception {
-        return new FileInputStream(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, filename));
+        return new FileInputStream(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, filename));
     }
 
 }

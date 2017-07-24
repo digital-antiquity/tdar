@@ -388,7 +388,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testValidateOAIStatic() throws ConfigurationException, SAXException, IOException {
-        testValidXMLResponse(new FileInputStream(new File(TestConstants.TEST_XML_DIR, "oaidc_get_records.xml")),
+        testValidXMLResponse(new FileInputStream(TestConstants.getFile(TestConstants.TEST_XML_DIR, "oaidc_get_records.xml")),
                 "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd");
     }
 
@@ -468,8 +468,9 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
      *            the URL of the schema to use to validate the document
      * @throws ConfigurationException
      * @throws SAXException
+     * @throws FileNotFoundException 
      */
-    public void testValidXMLResponse(InputStream code, String schemaLocation) throws ConfigurationException, SAXException {
+    public void testValidXMLResponse(InputStream code, String schemaLocation) throws ConfigurationException, SAXException, FileNotFoundException {
         testValidXML(code, schemaLocation, true);
     }
 
@@ -526,7 +527,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         addSchemaToValidatorWithLocalFallback(setupValidator, null, tempFile);
     }
 
-    private Validator setupValidator(boolean extra) {
+    private Validator setupValidator(boolean extra) throws FileNotFoundException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         if (v != null) {
             return v;
@@ -535,18 +536,18 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", new File(TestConstants.TEST_XML_DIR,
+        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", TestConstants.getFile(TestConstants.TEST_XML_DIR,
                 "schemaCache/xlink.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://dublincore.org/schemas/xmls/simpledc20021212.xsd", new File(TestConstants.TEST_XML_DIR,
+        addSchemaToValidatorWithLocalFallback(v, "http://dublincore.org/schemas/xmls/simpledc20021212.xsd", TestConstants.getFile(TestConstants.TEST_XML_DIR,
                 "schemaCache/simpledc20021212.xsd"));
         // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(TestConstants.TEST_XML_DIR,
+        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", TestConstants.getFile(TestConstants.TEST_XML_DIR,
                 "schemaCache/oaipmh.xsd"));
         addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
-                new File(TestConstants.TEST_XML_DIR, "schemaCache/oaidc.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(TestConstants.TEST_XML_DIR,
+                TestConstants.getFile(TestConstants.TEST_XML_DIR, "schemaCache/oaidc.xsd"));
+        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", TestConstants.getFile(TestConstants.TEST_XML_DIR,
                 "schemaCache/mods3.3.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(TestConstants.TEST_XML_DIR,
+        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", TestConstants.getFile(TestConstants.TEST_XML_DIR,
                 "schemaCache/oai-identifier.xsd"));
 
         try {
@@ -557,7 +558,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         }
         return v;
     }
-    private void testValidXML(InputStream code, String schema, boolean loadSchemas) {
+    private void testValidXML(InputStream code, String schema, boolean loadSchemas) throws FileNotFoundException {
         Validator v = setupValidator(loadSchemas);
 
         if (schema != null) {

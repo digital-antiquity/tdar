@@ -45,7 +45,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testDuplicateNodeToSynonym() throws IOException {
-        String ontologyTextInput = FileUtils.readFileToString(new File(TestConstants.TEST_ONTOLOGY_DIR, "parentSynonymDuplicate.txt"));
+        String ontologyTextInput = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ONTOLOGY_DIR, "parentSynonymDuplicate.txt"));
         Exception exception = null;
         try {
             ontologyService.toOwlXml(239L, ontologyTextInput);
@@ -59,7 +59,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testValidTextToOwlXml() throws IOException {
-        String ontologyTextInput = FileUtils.readFileToString(new File(TestConstants.TEST_ONTOLOGY_DIR, "simpleValid.txt"));
+        String ontologyTextInput = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ONTOLOGY_DIR, "simpleValid.txt"));
         String owlXml = ontologyService.toOwlXml(237L, ontologyTextInput);
         // FIXME: make assertions on the generated OWL XML.
         assertNotNull(owlXml);
@@ -133,7 +133,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
     }
 
     private File createOwlFile(Ontology ont, String name) throws IOException {
-        String ontologyTextInput = FileUtils.readFileToString(new File(TestConstants.TEST_ONTOLOGY_DIR, name));
+        String ontologyTextInput = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ONTOLOGY_DIR, name));
         String owlXml = ontologyService.toOwlXml(ont.getId(), ontologyTextInput);
         File file = File.createTempFile("test-owl", ".owl");
         FileUtils.write(file, owlXml);
@@ -201,7 +201,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testDegenerateTextToOwlXml() throws IOException {
-        String ontologyTextInput = FileUtils.readFileToString(new File(TestConstants.TEST_ONTOLOGY_DIR, "degenerate.txt"));
+        String ontologyTextInput = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ONTOLOGY_DIR, "degenerate.txt"));
         Exception exception = null;
         try {
             logger.info(ontologyService.toOwlXml(238L, ontologyTextInput));

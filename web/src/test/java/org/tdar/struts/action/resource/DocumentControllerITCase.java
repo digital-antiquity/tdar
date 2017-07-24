@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -225,7 +226,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
     @Ignore("Ignoring because this is an internal performance test, not really a unit-test")
     @Test
     @Rollback
-    public void testPerformance() throws InstantiationException, IllegalAccessException, TdarActionException {
+    public void testPerformance() throws InstantiationException, IllegalAccessException, TdarActionException, FileNotFoundException {
         // 42s -- reconcileSet + indexInterceptor @100docs
         // 52s -- reconcileSet + w/o indexInterceptor @100docs
         // 43s -- setter model + w/o indexInterceptor @100docs
@@ -267,7 +268,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
                 doc.getResourceCreators().add(rc);
                 genericService.saveOrUpdate(rc);
             }
-            File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+            File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
             addFileToResource(doc, file);
             genericService.saveOrUpdate(doc);
         }
@@ -689,7 +690,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         uc.grabTicket();
         Long ticketId = uc.getPersonalFilestoreTicket().getId();
         uc.setTicketId(ticketId);
-        uc.getUploadFile().add(new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
+        uc.getUploadFile().add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
         uc.upload();
         

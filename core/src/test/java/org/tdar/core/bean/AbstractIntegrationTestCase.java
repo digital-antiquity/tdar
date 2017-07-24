@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -204,10 +205,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     /*
      * deprecated, use generateInformationResourceWithFileAndUser() or generateInformationResourceWithUser() instead
      */
-    public InformationResource generateInformationResourceWithFile() throws InstantiationException, IllegalAccessException {
+    public InformationResource generateInformationResourceWithFile() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, true);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
         ir = (Document) addFileToResource(ir, file);
         return ir;
@@ -238,10 +239,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    public Document generateDocumentWithFileAndUseDefaultUser() throws InstantiationException, IllegalAccessException {
+    public Document generateDocumentWithFileAndUseDefaultUser() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, false);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
         ir = (Document) addFileToResource(ir, file);
         return ir;
@@ -252,10 +253,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException {
+    public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, true);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
         ir = (Document) addFileToResource(ir, file);
         return ir;

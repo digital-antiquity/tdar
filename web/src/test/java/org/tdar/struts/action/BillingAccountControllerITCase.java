@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Set;
 
 import org.junit.Test;
@@ -134,15 +135,15 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
 
     @Test
     @Rollback
-    public void testReEvaluationAppropriateWithUncountedThings() throws TdarActionException, InstantiationException, IllegalAccessException {
+    public void testReEvaluationAppropriateWithUncountedThings() throws TdarActionException, InstantiationException, IllegalAccessException, FileNotFoundException {
         TdarUser person = createAndSaveNewPerson();
         BillingAccount invoice = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), person);
         Project project = createAndSaveNewProject("title");
         Document doc = createAndSaveNewInformationResource(Document.class, person);
-        addFileToResource(doc, new File(TestConstants.TEST_DOCUMENT));
+        addFileToResource(doc, TestConstants.getFile(TestConstants.TEST_DOCUMENT));
         doc.setStatus(Status.DELETED);
         Document doc2 = createAndSaveNewInformationResource(Document.class, person);
-        addFileToResource(doc2, new File(TestConstants.TEST_DOCUMENT));
+        addFileToResource(doc2, TestConstants.getFile(TestConstants.TEST_DOCUMENT));
         invoice.getResources().add(doc);
         invoice.getResources().add(doc2);
         invoice.getResources().add(project);

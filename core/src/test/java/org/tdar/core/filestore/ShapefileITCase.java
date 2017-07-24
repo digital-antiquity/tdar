@@ -42,8 +42,8 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         WorkflowContext wc = new WorkflowContext();
         wc.setFilestore(TdarConfiguration.getInstance().getFilestore());
         wc.setInformationResourceId(123456789L);
-        Geospatial doc = generateAndStoreVersion(Geospatial.class, "untitled.tif", new File(TestConstants.TEST_GEOTIFF), store);
-        Geospatial doc2 = generateAndStoreVersion(Geospatial.class, "untitled.tfw", new File(TestConstants.TEST_GEOTIFF_TFW),
+        Geospatial doc = generateAndStoreVersion(Geospatial.class, "untitled.tif", TestConstants.getFile(TestConstants.TEST_GEOTIFF), store);
+        Geospatial doc2 = generateAndStoreVersion(Geospatial.class, "untitled.tfw", TestConstants.getFile(TestConstants.TEST_GEOTIFF_TFW),
                 store);
         InformationResourceFileVersion originalFile= doc.getLatestUploadedVersion();
         InformationResourceFileVersion supportingFile = doc2.getLatestUploadedVersion();
@@ -63,7 +63,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         GisFileReaderTask task = new GisFileReaderTask();
         WorkflowContext wc = new WorkflowContext(store, 11115L);
-        Geospatial doc = generateAndStoreVersion(Geospatial.class, "untitled.tif", new File(TestConstants.TEST_GEOTIFF_COMBINED),
+        Geospatial doc = generateAndStoreVersion(Geospatial.class, "untitled.tif", TestConstants.getFile(TestConstants.TEST_GEOTIFF_COMBINED),
                 store);
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
 
@@ -78,7 +78,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         GisFileReaderTask task = new GisFileReaderTask();
         WorkflowContext wc = new WorkflowContext(store, 11114L);
-        Geospatial doc = generateAndStoreVersion(Geospatial.class, "doc.kml", new File(TestConstants.TEST_KML),
+        Geospatial doc = generateAndStoreVersion(Geospatial.class, "doc.kml", TestConstants.getFile(TestConstants.TEST_KML),
                 store);
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
 

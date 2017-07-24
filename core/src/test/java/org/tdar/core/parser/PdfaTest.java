@@ -26,14 +26,14 @@ public class PdfaTest {
 
     // @Test
     public void test() throws IOException {
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR, "1-01.PDF");
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, "1-01.PDF");
         testFile(file);
     }
 
     @Test
     // was a test for making sure we get to the end of the file
     public void testReadForBigFile() throws IOException {
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
         IndexableTextExtractionTask task = new IndexableTextExtractionTask();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         BufferedOutputStream outputStream = new BufferedOutputStream(out);

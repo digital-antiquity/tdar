@@ -108,7 +108,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     @Rollback
     public void testCreate() throws Exception {
         setupValidLogin();
-        String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/newDocument.xml"));
+        String docXml = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/newDocument.xml"));
         ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
@@ -119,7 +119,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     @Rollback
     public void testHiddenCollection() throws Exception {
         setupValidLogin();
-        String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/hidden-collection.xml"));
+        String docXml = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR,"/xml/hidden-collection.xml"));
         ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
@@ -150,7 +150,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     @Rollback
     public void testInvalid() throws Exception {
         setupValidLogin();
-        String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/invalid.xml"));
+        String docXml = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/invalid.xml"));
         ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
@@ -165,9 +165,8 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         String filesUed = getFilesUsed(true);
         logger.debug("used: {}", filesUed);
 
-        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
-        ApiClientResponse response = apiClient.uploadRecord(text, null, 1L, new File(TestConstants.TEST_IMAGE),
-                new File(TestConstants.TEST_IMAGE2));
+        String text = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/confidentialImage.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(text, null, 1L, TestConstants.getFile(TestConstants.TEST_IMAGE2));
 
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
@@ -181,8 +180,8 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     public void testReplaceFile() throws Exception {
         setupValidLogin();
 
-        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
-        ApiClientResponse response = apiClient.uploadRecord(text, null, null, new File(TestConstants.TEST_IMAGE));
+        String text = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/confidentialImage.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(text, null, null, TestConstants.getFile(TestConstants.TEST_IMAGE));
         logger.debug("status:{} ", response.getStatusLine());
         String resp = response.getBody();
         logger.debug("response: {}", resp);
@@ -193,11 +192,11 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         String fileId = viewRecord.getXmlDocument().getElementsByTagName("tdar:informationResourceFile").item(0)
                 .getAttributes().getNamedItem("id").getNodeValue();
         logger.debug("fileId::{}", fileId);
-        text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
+        text = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
         text = text.replace("{{FILE_ID}}", fileId);
         text = text.replace("{{FILENAME}}", TestConstants.TEST_IMAGE_NAME2);
         logger.debug(text);
-        response = apiClient.updateFiles(text, id, null, new File(TestConstants.TEST_IMAGE2));
+        response = apiClient.updateFiles(text, id, null, TestConstants.getFile(TestConstants.TEST_IMAGE2));
 
         logger.debug("status:{} ", response.getStatusLine());
         assertEquals(HttpStatus.SC_ACCEPTED, response.getStatusLine().getStatusCode());
@@ -221,7 +220,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     public void testProjectWithCollection() throws Exception {
         setupValidLogin();
         String text = FileUtils
-                .readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/record-with-collections.xml"));
+                .readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/record-with-collections.xml"));
         ApiClientResponse response = apiClient.uploadRecord(text, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());

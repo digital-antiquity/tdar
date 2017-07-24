@@ -318,7 +318,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         controller.setId(id);
         controller.prepare();
         controller.edit();
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
         Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(Arrays.asList(file));
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());

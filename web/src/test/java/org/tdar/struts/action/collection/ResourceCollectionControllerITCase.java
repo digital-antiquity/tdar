@@ -992,6 +992,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         projectController.setId(pid);
         projectController.prepare();
         projectController.edit();
+        logger.debug("shares: {}", projectController.getShares());
         Project project2 = projectController.getPersistable();
         project2.setStatus(Status.ACTIVE);
         projectController.setServletRequest(getServletPostRequest());

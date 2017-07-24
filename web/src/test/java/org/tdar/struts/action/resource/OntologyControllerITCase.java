@@ -81,7 +81,7 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
         controller.getOntology().setTitle("test");
         controller.getOntology().setDescription("test");
         controller.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
-        String ontologyText = IOUtils.toString(new FileInputStream(new File(TestConstants.TEST_ONTOLOGY_DIR, "degenerateTabOntologyFile.txt")));
+        String ontologyText = IOUtils.toString(new FileInputStream(TestConstants.getFile(TestConstants.TEST_ONTOLOGY_DIR, "degenerateTabOntologyFile.txt")));
         controller.setFileTextInput(ontologyText);
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.INPUT, controller.save());
@@ -104,7 +104,7 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
         controller.getOntology().setTitle("test");
         controller.getOntology().setDescription("test");
         controller.setFileInputMethod(AbstractInformationResourceController.FILE_INPUT_METHOD);
-        String ontologyText = IOUtils.toString(new FileInputStream(new File(TestConstants.TEST_CODING_SHEET_DIR, "fauna-element-ontology.txt")));
+        String ontologyText = IOUtils.toString(new FileInputStream(TestConstants.getFile(TestConstants.TEST_CODING_SHEET_DIR, "fauna-element-ontology.txt")));
         controller.setFileTextInput(ontologyText);
         controller.setServletRequest(getServletPostRequest());
         controller.save();

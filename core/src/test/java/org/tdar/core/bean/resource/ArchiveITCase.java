@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Set;
 
 import org.junit.Test;
@@ -20,11 +21,11 @@ import org.tdar.filestore.FilestoreObjectType;
 
 public class ArchiveITCase extends AbstractIntegrationTestCase {
 
-    public Archive generateArchiveFileAndUser(String archive) {
+    public Archive generateArchiveFileAndUser(String archive) throws FileNotFoundException {
 
         Archive result = createAndSaveNewInformationResource(Archive.class, false);
         assertTrue(result.getResourceType() == ResourceType.ARCHIVE);
-        File file = new File(TestConstants.TEST_ARCHIVE_DIR + archive);
+        File file = TestConstants.getFile(TestConstants.TEST_ARCHIVE_DIR , archive);
         assertTrue("testing " + TestConstants.FAULTY_ARCHIVE + " doesn't exis?", file.exists());
         result = (Archive) addFileToResource(result, file); // now take the file through the work flow.
         return result;
@@ -51,7 +52,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
 
         // however, whatever caused the processing error is fixed
         File fileInStore = TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, irFile.getLatestUploadedVersion());
-        File sourceFile = new File(TestConstants.TEST_ARCHIVE_DIR + TestConstants.GOOD_ARCHIVE);
+        File sourceFile = TestConstants.getFile(TestConstants.TEST_ARCHIVE_DIR + TestConstants.GOOD_ARCHIVE);
         fileInStore.setWritable(true);
         org.apache.commons.io.FileUtils.copyFile(sourceFile, fileInStore);
 

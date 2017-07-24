@@ -79,7 +79,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.prepare();
 
         // setup images to upload
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
@@ -198,7 +198,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     // @Ignore
     public void testDatasetBulkUpload() throws Exception {
         List<File> files = new ArrayList<>();
-        File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
+        File file = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
         files.add(file);
         assertTrue(file.exists());
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest( TdarActionSupport.SUCCESS_ASYNC, files);
@@ -260,7 +260,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
 
     private BulkUploadController setupBasicBulkUploadTest( String successAsync) throws Exception {
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
@@ -436,7 +436,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.prepare();
 
         // setup images to upload
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));

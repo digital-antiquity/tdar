@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
@@ -202,7 +203,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
-    public void testStats() throws InstantiationException, IllegalAccessException {
+    public void testStats() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Number docs = resourceService.countActiveResources(ResourceType.DOCUMENT);
         Number datasets = resourceService.countActiveResources(ResourceType.DATASET);
         Number images = resourceService.countActiveResources(ResourceType.IMAGE);

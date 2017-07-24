@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,11 +53,12 @@ public class ResourceControllerITCase extends AbstractControllerITCase implement
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws TdarActionException 
+     * @throws FileNotFoundException 
      */ 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     @Rollback
-    public void testAvailableSpaceForBillingAccount() throws InstantiationException, IllegalAccessException, TdarActionException{
+    public void testAvailableSpaceForBillingAccount() throws InstantiationException, IllegalAccessException, TdarActionException, FileNotFoundException{
     	//Create a new billing account. 
         BillingActivityModel model = new BillingActivityModel();
         updateModel(model, false, false, true);

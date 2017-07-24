@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase implements
 
     @Test
     @Rollback(false)
-    public void updateOverdrawnAccountTest() throws InstantiationException, IllegalAccessException {
+    public void updateOverdrawnAccountTest() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         BillingAccount account = setupAccountForPerson(getBasicUser());
         BillingActivityModel model = new BillingActivityModel();
         model.setCountingResources(false);

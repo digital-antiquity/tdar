@@ -68,7 +68,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
     }
 
     public void testArchiveFormat(PairtreeFilestore store, String filename) throws InstantiationException, IllegalAccessException, IOException, Exception {
-        File f = new File(TestConstants.TEST_SENSORY_DIR, filename);
+        File f = TestConstants.getFile(TestConstants.TEST_SENSORY_DIR, filename);
         SensoryData doc = generateAndStoreVersion(SensoryData.class, filename, f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
 

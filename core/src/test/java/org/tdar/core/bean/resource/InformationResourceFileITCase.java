@@ -77,7 +77,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void findByFilename() throws InstantiationException, IllegalAccessException {
+    public void findByFilename() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
         InformationResourceFile foundFile = informationResourceService.findFileByFilename(ir, TestConstants.TEST_DOCUMENT_NAME);
         assertNotNull(foundFile);
@@ -93,7 +93,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException {
+    public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
@@ -204,7 +204,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testDeleteInformationResourceFile() throws InstantiationException, IllegalAccessException {
+    public void testDeleteInformationResourceFile() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
         boolean seen = false;
         try {

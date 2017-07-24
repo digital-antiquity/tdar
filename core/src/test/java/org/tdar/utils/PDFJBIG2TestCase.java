@@ -32,7 +32,7 @@ public class PDFJBIG2TestCase {
     @Test
 //    @Ignore("test for PDFBox issue, not tDAR issue")
     public void testJBIG2() throws IOException {
-        File pdfFile = new File(TestConstants.TEST_ROOT_DIR + "/documents/pia-09-lame-1980-small.pdf");
+        File pdfFile = TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/documents/pia-09-lame-1980-small.pdf");
         String imageFormat = "jpg";
         ImageIO.scanForPlugins();
         int resolution;

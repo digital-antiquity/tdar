@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
@@ -18,10 +19,10 @@ public class FileUploadSeleniumITCase extends AbstractBasicSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
-    public void testDocumentUpload() {
+    public void testDocumentUpload() throws FileNotFoundException {
         gotoPage("/document/add");
 
-        File testDocument = new File(TestConstants.TEST_DOCUMENT);
+        File testDocument = TestConstants.getFile(TestConstants.TEST_DOCUMENT);
         assertTrue("file exists", testDocument.exists());
         String path = testDocument.getAbsolutePath();
         find("#resourceRegistrationTitle").val("testing file upload");

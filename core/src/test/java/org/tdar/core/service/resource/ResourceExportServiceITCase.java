@@ -69,7 +69,7 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testMultipleExport() throws Exception {
         Document doc = generateDocumentWithFileAndUser();
-        Image img = generateAndStoreVersion(Image.class, TestConstants.TEST_IMAGE_NAME, new File(TestConstants.TEST_IMAGE_DIR,TestConstants.TEST_IMAGE_NAME), TdarConfiguration.getInstance().getFilestore());
+        Image img = generateAndStoreVersion(Image.class, TestConstants.TEST_IMAGE_NAME, TestConstants.getFile(TestConstants.TEST_IMAGE_DIR,TestConstants.TEST_IMAGE_NAME), TdarConfiguration.getInstance().getFilestore());
         File export = exportService.export(TEST123_ZIP, false, Arrays.asList(doc,img));
         logger.debug("exported:{}", export);
         Map<String, Long> nameSize = ArchiveEvaluator.unzipArchive(export);

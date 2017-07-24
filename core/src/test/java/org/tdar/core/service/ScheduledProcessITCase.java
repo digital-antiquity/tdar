@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -144,7 +145,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
 
     @Test
     @Rollback
-    public void testVerifyProcess() throws InstantiationException, IllegalAccessException {
+    public void testVerifyProcess() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document document = generateDocumentWithFileAndUseDefaultUser();
         scheduledProcessService.queue(WeeklyFilestoreLoggingProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
@@ -170,7 +171,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
     
     @Test
     @Rollback
-    public void testEmbargo() throws InstantiationException, IllegalAccessException {
+    public void testEmbargo() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         // queue the embargo task
         Document doc = generateDocumentWithFileAndUser();
         long id = doc.getId();
