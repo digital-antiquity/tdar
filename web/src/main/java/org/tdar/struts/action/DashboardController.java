@@ -314,7 +314,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     private void prepareProjectStuff() {
         boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         editableProjects = new TreeSet<Resource>(
-                projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), false));
+                projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
 
         fullUserProjects = new ArrayList<Resource>(editableProjects);
         Collections.sort(fullUserProjects);

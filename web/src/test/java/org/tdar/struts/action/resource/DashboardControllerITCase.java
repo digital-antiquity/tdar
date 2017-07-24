@@ -72,6 +72,7 @@ public class DashboardControllerITCase extends AbstractControllerITCase {
         init(controller, getAdminUser());
         controller.execute();
         fullUserProjects = controller.getEditableProjects();
+        logger.debug("projects: {}", fullUserProjects.size());
         assertTrue(3 < fullUserProjects.size());
     }
 

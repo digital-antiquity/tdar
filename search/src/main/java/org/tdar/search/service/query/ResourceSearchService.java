@@ -333,7 +333,7 @@ public class ResourceSearchService extends AbstractSearchService {
             statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
 
-        statuses.retainAll(allowedSearchStatuses);
+        CollectionUtils.retainAll(statuses , new ArrayList<>(allowedSearchStatuses));
         reservedSearchParameters.setStatuses(statuses);
         if (statuses.isEmpty()) {
             throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
