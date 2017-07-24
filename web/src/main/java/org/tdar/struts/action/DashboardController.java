@@ -170,18 +170,19 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         prepareProjectStuff();
         getLogger().trace("counts for graphs");
         initCounts();
-
+        setupResourceCollectionTreesForDashboard();
         return SUCCESS;
     }
 
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
+        TreeSet<SharedCollection> colls = new TreeSet<>(new TitleSortComparator());
         for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
                 SharedCollection.class)) {
-            getAllResourceCollections().add((SharedCollection) rc);
+            colls.add(rc);
         }
 
-        allResourceCollections.sort(new TitleSortComparator());
+        allResourceCollections.addAll(colls);
     }
 
     /**
