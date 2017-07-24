@@ -1,7 +1,10 @@
 <#escape _untrusted as _untrusted?html >
+<head>
 <style>
-th {border-right:1px solid #DDD}
-</style>
+    th {border-right:1px solid #DDD}
+    </style>
+    <title>Comparing ${resources?size?c} Resources</title>
+</head>
 <h3>Comparing ${resources?size?c} Resources</h3>
 
 <#-- for trying to do things as a columns: ${resource['resourceType']} -->
