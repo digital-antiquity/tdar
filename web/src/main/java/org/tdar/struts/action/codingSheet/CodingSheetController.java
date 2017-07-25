@@ -58,6 +58,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
      */
     @Override
     protected String save(CodingSheet codingSheet) throws TdarActionException {
+        String save2 = super.save(codingSheet);
+
         if (!PersistableUtils.isNullOrTransient(ontology)) {
             // load the full hibernate entity and set it back on the incoming column
             ontology = getGenericService().find(Ontology.class, ontology.getId());
@@ -65,20 +67,9 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
         codingSheetService.reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, ontology);
 
-        super.saveBasicResourceMetadata();
-        super.saveInformationResourceProperties();
         super.saveCategories();
 
-        // getGenericService().saveOrUpdate(codingSheet);
-        handleUploadedFiles();
-        return SUCCESS;
-    }
-
-    @Override
-    protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
-        String filename = getPersistable().getTitle() + ".csv";
-        // ensure csv conversion
-        return new FileProxy(filename, FileProxy.createTempFileFromString(fileTextInput), VersionType.UPLOADED);
+        return save2;
     }
 
     /**

@@ -14,13 +14,18 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.bulk.BulkUploadService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.ResourceSaveControllerService;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$
@@ -48,6 +53,9 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Autowired
     private transient BulkUploadService bulkUploadService;
 
+    @Autowired
+    private transient ResourceSaveControllerService resourceSaveControllerService;
+
     private String bulkFileName;
     private long bulkContentLength;
 
@@ -74,8 +82,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
         saveInformationResourceProperties();
         getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
 
-        handleAsyncUploads();
-        Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
+        AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getImage(), isAuthenticated(), getAuthenticatedUser(), isEditor());
+        Collection<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, getTicketId(), isMultipleFileUploadEnabled(), getFileProxies(), null, getUploadedFilesFileName(), getUploadedFiles());
         setupAccountForSaving();
         getCreditProxies().clear();
         getGenericService().detachFromSession(getPersistable());

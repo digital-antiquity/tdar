@@ -30,7 +30,6 @@ import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -72,6 +71,7 @@ import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.ResourceControllerProxy;
 import org.tdar.web.service.ResourceEditControllerService;
+import org.tdar.web.service.ResourceSaveControllerService;
 
 /**
  * $Id$
@@ -168,6 +168,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceAnnotation> resourceAnnotations;
 
+    @Autowired
+    private ResourceSaveControllerService saveService;
     @Autowired
     private ResourceEditControllerService editService;
     
@@ -420,7 +422,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             proxies.addAll(creditProxies);
         }
         rcp.setResourceCreatorProxies(proxies);
-        editService.save(authWrapper, rcp);
+        saveService.save(authWrapper, rcp);
 
     }
 

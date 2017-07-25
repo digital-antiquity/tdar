@@ -35,8 +35,6 @@ public class VideoController extends AbstractInformationResourceController<Video
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
         getGenericService().saveOrUpdate(video);
-        handleUploadedFiles();
-        getGenericService().saveOrUpdate(video);
         return SUCCESS;
     }
 

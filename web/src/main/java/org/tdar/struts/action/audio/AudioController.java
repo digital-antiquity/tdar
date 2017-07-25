@@ -28,7 +28,6 @@ public class AudioController extends AbstractInformationResourceController<Audio
     protected String save(Audio persistable) throws TdarActionException {
         saveBasicResourceMetadata();
         saveInformationResourceProperties();
-        handleUploadedFiles();
         return SUCCESS;
     }
 

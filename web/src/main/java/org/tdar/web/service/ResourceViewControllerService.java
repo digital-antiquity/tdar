@@ -124,16 +124,19 @@ public class ResourceViewControllerService {
     /*
      * Creating a simple transient boolean to handle visibility here instead of freemarker
      */
-    public void setTransientViewableStatus(InformationResource ir, TdarUser p) {
+    @Transactional(readOnly=true)
+    public boolean setTransientViewableStatus(InformationResource ir, TdarUser p) {
+        boolean hasDeleted = false;
         authorizationService.applyTransientViewableFlag(ir, p);
         if (PersistableUtils.isNotNullOrTransient(p)) {
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 informationResourceFileService.updateTransientDownloadCount(irf);
-//                if (irf.isDeleted()) {
-//                    setHasDeletedFiles(true);
-//                }
+                if (irf.isDeleted()) {
+                    hasDeleted=true;
+                }
             }
         }
+        return hasDeleted;
     }
 
     @Transactional(readOnly= true)

@@ -43,15 +43,6 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     @Autowired
     private transient OntologyService ontologyService;
 
-    @Override
-    protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
-        String filename = getPersistable().getTitle() + ".owl";
-        // convert text input to OWL XML text and use that as our archival version
-        String owlXml = ontologyService.toOwlXml(getPersistable().getId(), fileTextInput);
-        getLogger().info("owl xml is: \n{}", owlXml);
-        return new FileProxy(filename, FileProxy.createTempFileFromString(owlXml), VersionType.UPLOADED);
-    }
-
     /**
      * Sets the various pieces of metadata on this ontology and then saves it.
      * 
@@ -60,13 +51,9 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
      */
     @Override
     protected String save(Ontology ontology) throws TdarActionException {
-        super.saveBasicResourceMetadata();
-        super.saveInformationResourceProperties();
-
+        String save2 = super.save(ontology);
         saveCategories();
-        // ontologyService.saveOrUpdate(ontology);
-        handleUploadedFiles();
-        return SUCCESS;
+        return save2;
     }
 
     public Ontology getOntology() {

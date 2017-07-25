@@ -50,8 +50,6 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
         // HACK: implicitly cache fullUsers via call to getProjectAsJson() as workaround for TDAR-1162. This is the software equivalent of turning the radio up
         // to mask weird sounds your engine is making
 
-        handleUploadedFiles();
-
         // getLogger().debug("{}", getFileProxies());
         resolvePostSaveAction(dataset);
         return SUCCESS;

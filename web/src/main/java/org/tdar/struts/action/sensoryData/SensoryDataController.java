@@ -71,8 +71,6 @@ public class SensoryDataController extends AbstractInformationResourceController
         saveCustomMetadata();
 
         getGenericService().saveOrUpdate(sensoryData);
-        handleUploadedFiles();
-        getGenericService().saveOrUpdate(sensoryData);
         return SUCCESS;
     }
 

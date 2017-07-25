@@ -40,8 +40,6 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
         super.saveInformationResourceProperties();
 
-        handleUploadedFiles();
-
         resolvePostSaveAction(getPersistable());
         return SUCCESS;
     }
