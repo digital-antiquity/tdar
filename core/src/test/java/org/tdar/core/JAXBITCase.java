@@ -536,8 +536,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", TestConstants.getFile(TestConstants.TEST_SCHEMA_DIR ,
-                "xlink.xsd"));
+//        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", TestConstants.getFile(TestConstants.TEST_SCHEMA_DIR , "xlink.xsd"));
         addSchemaToValidatorWithLocalFallback(v, "http://dublincore.org/schemas/xmls/simpledc20021212.xsd", TestConstants.getFile(TestConstants.TEST_SCHEMA_DIR ,
                 "simpledc20021212.xsd"));
         // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
