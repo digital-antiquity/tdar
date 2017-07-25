@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -19,7 +18,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Project;
@@ -226,7 +224,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
             ResourceCollection parent = getGenericService().find(ResourceCollection.class,parentId);
             if (parent != null) {
-                parentCollectionName = ((VisibleCollection) parent).getName();
+                parentCollectionName =  parent.getName();
             }
         }
         prepareDataTableSection();
