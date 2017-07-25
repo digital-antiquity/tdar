@@ -1,9 +1,7 @@
 package org.tdar.struts.action.browse;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +31,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -74,7 +73,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.core.bean.entity.Person;
+
 import com.opensymphony.xwork2.Preparable;
 
 /**
@@ -236,7 +235,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             } catch (Exception e) {
                 getLogger().error("unable to set resource access statistics", e);
             }
-            setViewCount(entityService.getCreatorViewCount(creator));
+//            setViewCount(entityService.getCreatorViewCount(creator));
         }
 
         if (!isEditor() && !PersistableUtils.isEqual(creator, getAuthenticatedUser())) {

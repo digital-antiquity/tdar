@@ -224,4 +224,6 @@ public class SecurityITCase extends AbstractControllerITCase {
         assertEquals(Action.SUCCESS, controller.thumbnail());
     }
 
+    
+    
 }

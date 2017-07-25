@@ -274,7 +274,7 @@
                 
                 <#else>
 	                <h2>Institution Members</h2>
-	                <@common.listUsers users=people span=10 baseUrl="/browse/creators" well=false />
+	                <@common.listUsers users=people span=8 baseUrl="/browse/creators" well=false />
 				</#if>
 
     <#if ( results?? && results?size > 0) >
@@ -307,7 +307,10 @@
         </#if>
     </#if>
     <#if editor>
+    <#--
     <p><b>This Creator Page was Viewed:</b>${viewCount} times</p>
+    
+    -->
     </#if>
 
     <#macro _datefield _label _val="" _alwaysShow=true>

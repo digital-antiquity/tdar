@@ -197,7 +197,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
             ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable(), isBot());
             getGenericService().saveOrUpdate(rcvs);
         } else {
-            setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
+//            setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
 
         reSortFacets(this, (Sortable)getPersistable());

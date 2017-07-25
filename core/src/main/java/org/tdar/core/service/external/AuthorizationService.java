@@ -854,7 +854,7 @@ public class AuthorizationService implements Accessible {
         return authorizedUserDao.isAllowedTo(user, collectionToAdd, permission);
     }
 
-    public boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user) {
+    public <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user) {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }

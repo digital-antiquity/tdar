@@ -250,8 +250,8 @@
                 <@view.kvp key="Sort By" val=resourceCollection.sortBy.label />
             </div>
             <div class="span4">
-                <#assign viewed>${viewCount} times</#assign>
-                <@view.kvp key="Viewed" val=viewed />
+<#--                <#assign viewed>${viewCount} times</#assign>
+                <@view.kvp key="Viewed" val=viewed /> -->
             </div>
         </div>
         <div class="row">

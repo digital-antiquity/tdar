@@ -6,15 +6,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.hibernate.boot.model.relational.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -40,7 +44,14 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.exception.SearchException;
+import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResult;
+import org.tdar.search.query.facet.Facet;
+import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
@@ -78,6 +89,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient ResourceSearchService resourceSearchService;
     @Autowired
     private transient ProjectService projectService;
     @Autowired
@@ -123,7 +136,9 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         }
         // note, in rare occasions, a cache hit might mean that the resource's
         // status has changed
-        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
+        if (!isContributor()) {
+            getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
+        }
 
     }
 
@@ -136,14 +151,15 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     public String execute() throws SolrServerException, IOException {
         getLogger().trace("recent resources");
         setupRecentResources();
+        getLogger().trace("notifications");
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
         getLogger().trace("find recently edited resources");
         setRecentlyEditedResources(
                 projectService.findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
         getLogger().trace("find empty projects");
         setEmptyProjects(projectService.findEmptyProjects(getAuthenticatedUser()));
-//        getLogger().trace("trees");
-//        setupResourceCollectionTreesForDashboard();
+        getLogger().trace("trees");
+        setupResourceCollectionTreesForDashboard();
         getLogger().trace("errors");
         setResourcesWithErrors(informationResourceFileService.findInformationResourcesWithFileStatus(
                 getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT),
@@ -159,18 +175,18 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         prepareProjectStuff();
         getLogger().trace("counts for graphs");
         initCounts();
-
         return SUCCESS;
     }
 
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
+        TreeSet<SharedCollection> colls = new TreeSet<>(new TitleSortComparator());
         for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
                 SharedCollection.class)) {
-            getAllResourceCollections().add((SharedCollection) rc);
+            colls.add(rc);
         }
 
-        allResourceCollections.sort(new TitleSortComparator());
+        allResourceCollections.addAll(colls);
     }
 
     /**
@@ -189,9 +205,38 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     }
 
     private void initCounts() {
-        ResourceTypeStatusInfo info = resourceService.getResourceCountAndStatusForUser(getAuthenticatedUser(),
-                Arrays.asList(ResourceType.values()));
-        activeResourceCount = info.getTotal();
+        AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
+        advancedSearchQueryObject.getReservedParams().setUseSubmitterContext(true);
+        advancedSearchQueryObject.getReservedParams().setDasboardQuery(true);
+        advancedSearchQueryObject.getReservedParams().setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE,Status.DRAFT, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE)));
+        SearchResult<Resource> request = new SearchResult<>();
+        request.setFacetWrapper(new FacetWrapper());
+        request.setRecordsPerPage(0);
+        request.getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+        request.getFacetWrapper().facetBy(QueryFieldNames.STATUS, Status.class);
+
+        ResourceTypeStatusInfo info = new ResourceTypeStatusInfo();
+        try {
+            FacetedResultHandler<Resource> result = (FacetedResultHandler<Resource>) resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, getAuthenticatedUser(), request, this);
+            activeResourceCount = result.getTotalRecords();
+            FacetWrapper facetWrapper = result.getFacetWrapper();
+            if (facetWrapper != null && MapUtils.isNotEmpty(facetWrapper.getFacetResults())) {
+                Map<String, List<Facet>> facetResults = facetWrapper.getFacetResults();
+                if (CollectionUtils.isNotEmpty(facetResults.get(QueryFieldNames.RESOURCE_TYPE))) {
+                    facetResults.get(QueryFieldNames.RESOURCE_TYPE).forEach(facet -> {
+                        info.getResourceMap().put(ResourceType.valueOf(facet.getRaw()), facet.getCount().intValue());
+                    });
+                }
+                if (CollectionUtils.isNotEmpty(facetResults.get(QueryFieldNames.STATUS))) {
+                facetWrapper.getFacetResults().get(QueryFieldNames.STATUS).forEach(facet -> {
+                    info.getStatusMap().put(Status.valueOf(facet.getRaw()), facet.getCount().intValue());
+                });
+                }
+            }
+        } catch (SearchException | IOException  e1) {
+            getLogger().error("issue generating map search", e1);
+        }
+
         try {
             setStatusData(serializationService.convertToJson(info.getStatusData()));
             setResourceTypeData(serializationService.convertToJson(info.getResourceTypeData()));
@@ -276,13 +321,12 @@ public class DashboardController extends AbstractAuthenticatableAction implement
                 projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
 
         fullUserProjects = new ArrayList<Resource>(editableProjects);
-        Collections.sort(fullUserProjects);
+        getLogger().trace("find all submitted projects");
         allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
         Collections.sort(allSubmittedProjects);
+        getLogger().trace("remove dups");
         fullUserProjects.removeAll(getAllSubmittedProjects());
         filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
-        filteredFullUserProjects.removeAll(getAllSubmittedProjects());
-
     }
 
     public Set<Resource> getEditableProjects() {

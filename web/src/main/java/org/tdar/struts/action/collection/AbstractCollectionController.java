@@ -19,6 +19,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Project;
@@ -223,9 +224,9 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     @Override
     public String loadAddMetadata() {
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
-            HierarchicalCollection parent = getGenericService().find(HierarchicalCollection.class,parentId);
+            ResourceCollection parent = getGenericService().find(ResourceCollection.class,parentId);
             if (parent != null) {
-                parentCollectionName = parent.getName();
+                parentCollectionName = ((VisibleCollection) parent).getName();
             }
         }
         prepareDataTableSection();

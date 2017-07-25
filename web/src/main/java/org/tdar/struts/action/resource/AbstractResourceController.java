@@ -670,13 +670,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private void loadEffectiveResourceCollectionsForSave() {
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedCollections()) {
-            if (!authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+            if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 retainedSharedCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }
         }
         for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
-            if (!authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+            if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 retainedListCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }

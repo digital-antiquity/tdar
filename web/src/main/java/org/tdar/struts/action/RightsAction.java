@@ -77,7 +77,9 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         getLogger().trace("parent/ owner collections");
         for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
                 SharedCollection.class)) {
-            getAllResourceCollections().add((SharedCollection) rc);
+            if (rc.isTopCollection()) {
+                getAllResourceCollections().add((SharedCollection) rc);
+            }
         }
         getLogger().trace("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
@@ -87,18 +89,20 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         }
         List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
         collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
+        /*
         getLogger().trace("reconcile tree1");
-        resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
+         resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
                 collectionIds, SharedCollection.class);
         getLogger().trace("reconcile tree2");
         resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
                 collectionIds, SharedCollection.class);
+         */
 
         getLogger().trace("removing duplicates");
-        getSharedResourceCollections().removeAll(getAllResourceCollections());
+//        getSharedResourceCollections().removeAll(getAllResourceCollections());
         getLogger().trace("sorting");
         Collections.sort(allResourceCollections);
-        Collections.sort(sharedResourceCollections);
+//        Collections.sort(sharedResourceCollections);
         getLogger().trace("done sort");
     }
 
@@ -110,6 +114,7 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         setupResourceCollectionTreesForDashboard();
         getLogger().trace("begin find shared with");
         setFindUsersSharedWith(resourceCollectionService.findUsersSharedWith(getAuthenticatedUser()));
+        getLogger().trace("done");
 //        prepareProjectStuff();
 //        internalCollections = resourceCollectionService.findAllInternalCollections(getAuthenticatedUser());
     }
