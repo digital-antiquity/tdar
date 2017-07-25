@@ -301,6 +301,9 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         accountService.updateQuota(account, account.getOwner(), ok);
         assertEquals(Status.ACTIVE, ok.getStatus());
         addFileToResource((InformationResource) ok, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
+        genericService.synchronize();
+        genericService.refresh(ok);
+        genericService.refresh(account);
         accountService.updateQuota(account, account.getOwner(), ok);
         assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, ok.getStatus());
 

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 
 
 public class AccountEvaluationHelper {
@@ -135,5 +136,22 @@ public class AccountEvaluationHelper {
 
     public void setUpdatedItems(List<Resource> updatedItems) {
         this.updatedItems = updatedItems;
+    }
+
+    public boolean requireFullEvaluationOfFlaggedAccount() {
+        boolean fullEvaluate = false;
+        for (Resource r : getNewItems()) {
+            if (r.getStatus() == Status.DRAFT || r.getStatus() == Status.ACTIVE ) {
+                fullEvaluate = true;
+                break;
+            }
+        }
+        for (Resource r : getUpdatedItems()) {
+            if (r.getStatus() == Status.DRAFT || r.getStatus() == Status.ACTIVE ) {
+                fullEvaluate = true;
+                break;
+            }
+        }
+        return fullEvaluate;
     }
 }

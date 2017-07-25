@@ -306,6 +306,9 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
         if (initialAccountStatus == Status.FLAGGED_ACCOUNT_BALANCE && overdrawn) {
             // don't need to do anything, right???
             logger.debug("fast-tracking 'update' because we're still overdrawn ");
+            logger.debug("    new: {}", helper.getNewItems());
+            logger.debug("updated: {}", helper.getUpdatedItems());
+            
             helper.updateAccount();
             if (helper.getAvailableNumberOfFiles() < 0) { 
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
@@ -313,8 +316,17 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
             if (helper.getAvailableSpaceInBytes() < 0) { 
                 status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
             }
+            boolean fullEvaluate = helper.requireFullEvaluationOfFlaggedAccount();
+            
+            if (fullEvaluate == false) {
+                saveOrUpdate(account);
+                helper = null;
+                logger.trace(account.usedString());
+                return status;
+            }
+        } 
 
-        } else if (!hasUpdates || overdrawn || resourceEvaluator.isHasDeletedResources()) {
+        if (!hasUpdates || overdrawn || resourceEvaluator.isHasDeletedResources()) {
             logger.debug("re-evaluating all resources in account");
             /*
              * If we don't have anything to update (no resource has been marked as "changed" or the account has been overdrawn, then we need to start from
