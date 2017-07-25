@@ -24,6 +24,7 @@ public class AccountEvaluationHelper {
     private Long spaceUsedInBytes;
     private BillingAccount account;
     private List<Resource> newItems = new ArrayList<Resource>();
+    private List<Resource> updatedItems = new ArrayList<Resource>();
     private List<Resource> existingItems = new ArrayList<Resource>();
     private Set<Resource> flagged = new HashSet<Resource>();
     private Set<Resource> unflagged = new HashSet<Resource>();
@@ -126,5 +127,13 @@ public class AccountEvaluationHelper {
 
     public void setFlagged(Set<Resource> flagged) {
         this.flagged = flagged;
+    }
+
+    public List<Resource> getUpdatedItems() {
+        return updatedItems;
+    }
+
+    public void setUpdatedItems(List<Resource> updatedItems) {
+        this.updatedItems = updatedItems;
     }
 }

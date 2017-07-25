@@ -202,6 +202,66 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         assertEquals(filesUsed.longValue() + resource.getFilesUsed(), account.getFilesUsed().longValue());
     }
 
+    
+    @Test
+    @Rollback
+    public void testAccountUpdateQuotaDeletedFast() throws InstantiationException, IllegalAccessException {
+        BillingActivityModel model = new BillingActivityModel();
+        updateModel(model, true, true, true);
+        model.setActive(true);
+        model.setVersion(100); // forcing the model to be the "latest"
+        genericService.saveOrUpdate(model);
+        BillingAccount account = setupAccountForPerson(getUser());
+        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource2 = generateDocumentWithFileAndUseDefaultUser();
+        logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
+        Long spaceUsedInBytes = account.getSpaceUsedInBytes();
+        Long resourcesUsed = account.getResourcesUsed();
+        Long filesUsed = account.getFilesUsed();
+
+        assertFalse(account.getResources().contains(resource));
+
+        AccountAdditionStatus status = accountService.updateQuota(account, resource.getSubmitter() ,resource);
+        genericService.refresh(account);
+        Long spaceUsedInBytesAfterAdd = account.getSpaceUsedInBytes();
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status);
+        logger.info("{} space used in bytes ({})", spaceUsedInBytesAfterAdd, spaceUsedInBytes);
+        assertTrue(account.getResources().contains(resource));
+        assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, resource.getStatus());
+
+        assertNotEquals(spaceUsedInBytes.longValue(), spaceUsedInBytesAfterAdd.longValue());
+        assertEquals(resourcesUsed.longValue(), account.getResourcesUsed().longValue());
+        assertNotEquals(filesUsed.longValue(), account.getFilesUsed().longValue());
+
+        assertEquals(spaceUsedInBytes.longValue() + resource.getSpaceInBytesUsed(), account.getSpaceUsedInBytes().longValue());
+        // assertEquals(resourcesUsed.longValue() + resource.getResourcesUsed(), account.getResourcesUsed().longValue());
+        assertEquals(filesUsed.longValue() + resource.getFilesUsed(), account.getFilesUsed().longValue());
+
+        AccountAdditionStatus status2 = accountService.updateQuota(account, resource2.getSubmitter() ,resource2);
+        logger.debug("{}",status2);
+        genericService.refresh(account);
+        resource2.setStatus(Status.DELETED);
+        genericService.saveOrUpdate(resource2);
+        genericService.refresh(account);
+        AccountAdditionStatus status3 = accountService.updateQuota(account, resource2.getSubmitter() ,resource2);
+        logger.debug("{} {} {} {}", status3, account.getStatus(), account.getSpaceUsedInBytes(), account.getFilesUsed());
+
+        assertEquals(spaceUsedInBytesAfterAdd.longValue(), account.getSpaceUsedInBytes().longValue());
+        assertNotEquals(1, account.getFilesUsed().longValue());
+
+        genericService.refresh(account);
+        resource2.setUpdated(false);
+        AccountAdditionStatus status4 = accountService.updateQuota(account, resource2.getSubmitter() ,resource2);
+        logger.debug("{} {} {}",status2, status3,status4);
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status2);
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status3);
+        assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status4);
+
+    }
+
+    
+    
+    
     @Test
     @Rollback
     public void testAccountUpdateQuotaOverdrawnMinorEdit() throws InstantiationException, IllegalAccessException {
