@@ -183,6 +183,11 @@ public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticati
             }
             
         });
+        
+        if (returnUrl.startsWith("//")) {
+            returnUrl = StringUtils.substring(returnUrl, 1);
+        }
+        
         if (queryString.length() > 0) {
             returnUrl += "?" + queryString;
         }
