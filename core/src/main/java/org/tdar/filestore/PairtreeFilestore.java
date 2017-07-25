@@ -62,6 +62,9 @@ public class PairtreeFilestore extends BaseFilestore {
     public PairtreeFilestore(String pathToFilestore) {
         baseStoreDirectory = new File(pathToFilestore);
         String error = "Can not initialize " + pathToFilestore + " as the filestore location.";
+        if (!baseStoreDirectory.exists()) {
+            baseStoreDirectory.mkdirs();
+        }
         if (!baseStoreDirectory.isDirectory()) {
             logger.error(error);
             throw new IllegalArgumentException(error);
