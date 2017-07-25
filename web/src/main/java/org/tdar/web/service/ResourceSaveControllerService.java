@@ -419,7 +419,10 @@ public class ResourceSaveControllerService {
 
     // return a persisted annotation based on incoming pojo
     private void resolveAnnotations(AuthWrapper<Resource> auth, ResourceControllerProxy rcp) {
-        
+        // fixme: check that this is right
+        if (rcp.getIncomingAnnotations() == null) {
+            rcp.setIncomingAnnotations(new ArrayList<>());
+        }
         
         List<ResourceAnnotation> toAdd = new ArrayList<>();
         for (ResourceAnnotation incomingAnnotation : rcp.getIncomingAnnotations()) {
