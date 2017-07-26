@@ -10,7 +10,7 @@ import org.tdar.core.service.GenericService;
 public interface TestEntityHelper {
 
     default TdarUser createAndSaveNewUser() {
-        return createAndSaveNewPerson(null, "");
+        return createAndSaveNewPerson("" + System.currentTimeMillis() + "@test.com", "" + System.currentTimeMillis());
     }
 
     default TdarUser createAndSaveNewPerson(String email_, String suffix) {
