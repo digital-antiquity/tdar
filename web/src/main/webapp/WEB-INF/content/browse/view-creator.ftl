@@ -273,7 +273,7 @@
                 </#if>
                 
                 <#else>
-                    <#if (people?size)!0 > 0)>
+                    <#if ((people![])?size > 0)>
 	                <h2>Institution Members</h2>
 	                <@common.listUsers users=people span=8 baseUrl="/browse/creators" well=false />
         				</#if>
