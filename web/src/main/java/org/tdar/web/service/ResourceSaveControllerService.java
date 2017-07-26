@@ -220,7 +220,7 @@ public class ResourceSaveControllerService {
     public List<FileProxy> getFileProxiesToProcess(AuthWrapper<InformationResource> auth, TextProvider provider,Long ticketId, boolean multipleFileUploadEnabled, List<FileProxy> fileProxies, FileProxy textInputFileProxy,
             List<String> filenames, List<File> files) {
         List<FileProxy> fileProxiesToProcess = new ArrayList<>();
-
+        logger.debug("getFileProxiesToProcess: {}, {}, {} ({})", ticketId, files, fileProxies, multipleFileUploadEnabled);
         // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
         if (textInputFileProxy != null) {
             fileProxiesToProcess.add(textInputFileProxy);
@@ -234,6 +234,7 @@ public class ResourceSaveControllerService {
         // 3. single file upload (dataset|coding sheet|ontology)
         // there could be an incoming file payload, or just a metadata change.
         {
+            logger.debug("uploaded: {} {}", files, filenames);
             fileProxiesToProcess = handleSingleFileUpload(fileProxiesToProcess, auth.getItem(), filenames, files, fileProxies);
         }
 
@@ -292,7 +293,8 @@ public class ResourceSaveControllerService {
          */
 
         FileProxy singleFileProxy = CollectionUtils.isEmpty(fileProxies) ? new FileProxy() : fileProxies.get(0);
-        if (CollectionUtils.isEmpty(uploadedFiles)) {
+        if (CollectionUtils.isEmpty(uploadedFiles) || // test for init state 
+                CollectionUtils.isEmpty(uploadedFilesFileNames) && uploadedFiles.contains(null) && uploadedFiles.size() == 1) {
             // check for metadata change iff this resource has an existing file.
             InformationResourceFile file = persistable.getFirstInformationResourceFile();
             if (file != null && singleFileProxy.isDifferentFromFile(file)) {

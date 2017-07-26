@@ -43,16 +43,14 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
     protected String save(Dataset dataset) throws TdarActionException {
         getLogger().debug("Saving dataset: {}", dataset);
         // save basic metadata
-        super.saveBasicResourceMetadata();
-
-        super.saveInformationResourceProperties();
+        String save2 = super.save(dataset);
         // getDatasetService().saveOrUpdate(dataset);
         // HACK: implicitly cache fullUsers via call to getProjectAsJson() as workaround for TDAR-1162. This is the software equivalent of turning the radio up
         // to mask weird sounds your engine is making
 
         // getLogger().debug("{}", getFileProxies());
         resolvePostSaveAction(dataset);
-        return SUCCESS;
+        return save2;
     }
 
     public void setDataset(Dataset dataset) {

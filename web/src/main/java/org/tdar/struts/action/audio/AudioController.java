@@ -26,9 +26,7 @@ public class AudioController extends AbstractInformationResourceController<Audio
 
     @Override
     protected String save(Audio persistable) throws TdarActionException {
-        saveBasicResourceMetadata();
-        saveInformationResourceProperties();
-        return SUCCESS;
+        return super.save(persistable);
     }
 
     @Override

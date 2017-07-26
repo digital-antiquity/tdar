@@ -48,6 +48,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.junit.IgnoreActionErrors;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TestFileUploadHelper;
 import org.tdar.struts.action.document.DocumentController;
@@ -660,6 +661,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
 
     @Test
     @Rollback
+    @IgnoreActionErrors
     public void testUserPermIssUpload() throws Exception {
         // setup document
         TdarUser newUser = createAndSaveNewPerson();
@@ -704,6 +706,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         dc.setId(id);
         dc.prepare();
         boolean seenException = false;
+        setIgnoreActionErrors(true);
         try {
             dc.edit();
             FileProxy fileProxy = new FileProxy();
@@ -712,15 +715,16 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
             fileProxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
             dc.getFileProxies().add(fileProxy);
             dc.setTicketId(ticketId);
-            dc.save();
+            String save = dc.save();
+            assertEquals(TdarActionSupport.INPUT, save);
         } catch (TdarActionException e) {
             logger.error("{}",e,e);
             assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
             seenException = true;
         }
-        assertTrue(seenException);
-        // assertNotEmpty(dc.getActionErrors());
-        // setIgnoreActionErrors(true);
+        
+        assertFalse(seenException);
+         assertNotEmpty(dc.getActionErrors());
 
     }
 

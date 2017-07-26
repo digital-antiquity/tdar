@@ -328,22 +328,23 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return new FileProxy();
     }
 
-    protected void saveInformationResourceProperties() {
+    private void saveInformationResourceProperties() {
         // handle dataset availability + date made public
         getResource().setResourceLanguage(resourceLanguage);
         getResource().setMetadataLanguage(metadataLanguage);
         // handle dataset availability + date made public
+        
         saveResourceProviderInformation();
+        if (isBulkUpload()) {
+            return;
+        }
         try {
 
             FileProxy processTextInput = null;
             
             AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(), isEditor());
             
-            if (!isMultipleFileUploadEnabled()) {
-                if (!isTextInput()) {
-                    return;
-                }
+            if (!isMultipleFileUploadEnabled() && isTextInput()) {
                 if (StringUtils.isBlank(getFileTextInput())) {
                     addActionError(this.getText("abstractSupportingInformationResourceController.please_enter"));
                     return;

@@ -32,10 +32,7 @@ public class ImageController extends AbstractInformationResourceController<Image
 
     @Override
     protected String save(Image image) throws TdarActionException {
-        saveBasicResourceMetadata();
-        saveInformationResourceProperties();
-        // getGenericService().saveOrUpdate(image);
-        return SUCCESS;
+        return super.save(image);
     }
 
     @Override

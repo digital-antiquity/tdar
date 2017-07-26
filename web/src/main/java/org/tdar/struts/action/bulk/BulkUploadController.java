@@ -22,6 +22,7 @@ import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.ResourceSaveControllerService;
 
@@ -61,10 +62,11 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     /**
      * Save basic metadata of the registering concept.
+     * @throws TdarActionException 
      * 
      */
     @Override
-    protected String save(Image image) {
+    protected String save(Image image) throws TdarActionException {
         Status oldStatus = getPersistable().getStatus();
         getPersistable().setStatus(Status.DELETED);
         getGenericService().markReadOnly(getPersistable());
@@ -75,11 +77,11 @@ public class BulkUploadController extends AbstractInformationResourceController<
             return INPUT;
         }
         
-        
+        super.save(image);
         getLogger().debug("ticketId: {} ", getTicketId());
         getLogger().debug("proxy:    {}", getFileProxies());
-        saveBasicResourceMetadata();
-        saveInformationResourceProperties();
+//        saveBasicResourceMetadata();
+//        saveInformationResourceProperties();
         getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
 
         AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getImage(), isAuthenticated(), getAuthenticatedUser(), isEditor());

@@ -1,6 +1,5 @@
 package org.tdar.struts.action.codingSheet;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,10 +9,8 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts_base.action.TdarActionException;

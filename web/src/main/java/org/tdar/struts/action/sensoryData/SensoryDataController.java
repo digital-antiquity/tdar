@@ -65,13 +65,12 @@ public class SensoryDataController extends AbstractInformationResourceController
      */
     @Override
     protected String save(SensoryData sensoryData) throws TdarActionException {
-        saveBasicResourceMetadata();
-        saveInformationResourceProperties();
+        String result = super.save(sensoryData); 
 
         saveCustomMetadata();
 
         getGenericService().saveOrUpdate(sensoryData);
-        return SUCCESS;
+        return result;
     }
 
     private void saveCustomMetadata() {
