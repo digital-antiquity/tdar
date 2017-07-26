@@ -134,11 +134,11 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         } catch (SearchException pe) {
             getLogger().debug("parse exception", pe);
         }
-        // note, in rare occasions, a cache hit might mean that the resource's
-        // status has changed
-        if (!isContributor()) {
-            getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
-        }
+//        // note, in rare occasions, a cache hit might mean that the resource's
+//        // status has changed
+//        if (!isContributor()) {
+//            getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
+//        }
 
     }
 
