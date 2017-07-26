@@ -26,7 +26,7 @@ public class ResourceRightsControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testUserPermIssuesUsers() throws Exception {
         // setup document
-        TdarUser newUser = createAndSaveNewPerson();
+        TdarUser newUser = createAndSaveNewUser();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         Document doc = dc.getDocument();
@@ -63,7 +63,7 @@ public class ResourceRightsControllerITCase extends AbstractControllerITCase {
         image.setTitle("test image");
         image.setDescription("test description");
         imageController.setServletRequest(getServletPostRequest());
-        TdarUser p = createAndSaveNewPerson();
+        TdarUser p = createAndSaveNewUser();
 
         // create the dataset
         imageController.save();

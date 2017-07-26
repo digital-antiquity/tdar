@@ -40,7 +40,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase implements
     @Test
     @Rollback
     public void testAccountList() {
-        TdarUser p = createAndSaveNewPerson();
+        TdarUser p = createAndSaveNewUser();
         BillingAccount account = setupAccountForPerson(p);
         BillingAccount accountWithPermissions = new BillingAccount("my account");
         TdarUser p2 = createAndSaveNewPerson("a@aas", "bb");
@@ -66,7 +66,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase implements
         group.setName("my account group");
         group.markUpdated(getBasicUser());
         BillingAccount accountForPerson = setupAccountForPerson(getBasicUser());
-        BillingAccount accountForPerson2 = setupAccountForPerson(createAndSaveNewPerson());
+        BillingAccount accountForPerson2 = setupAccountForPerson(createAndSaveNewUser());
         accountForPerson2.getAuthorizedMembers().add(getBasicUser());
         group.getAccounts().add(accountForPerson);
         group.getAccounts().add(accountForPerson2);
@@ -150,7 +150,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase implements
         BillingAccount accountForPerson = setupAccountForPerson(getBasicUser());
         BillingAccount accountForPerson2 = setupAccountForPerson(getBasicUser());
         accountForPerson2.getAuthorizedMembers().add(getBasicUser());
-        TdarUser person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewUser();
         group.getAuthorizedMembers().add(person);
         group.getAccounts().add(accountForPerson);
         group.getAccounts().add(accountForPerson2);

@@ -28,7 +28,7 @@ public class RightsITCase extends AbstractIntegrationTestCase {
     public void testRightsExtend() {
         // setup user that expires in two days, that has access to dataset
         Dataset dataset = createAndSaveNewDataset();
-        TdarUser badUser = createAndSaveNewPerson();
+        TdarUser badUser = createAndSaveNewUser();
         AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), badUser, GeneralPermissions.MODIFY_RECORD);
         Date soon = DateTime.now().plusDays(2).toDate();
         authorizedUser.setDateExpires(soon);
@@ -62,7 +62,7 @@ public class RightsITCase extends AbstractIntegrationTestCase {
     public void testRightsModifyMetadata() {
         // setup user that expires in two days, that has access to dataset
         Dataset dataset = createAndSaveNewDataset();
-        TdarUser badUser = createAndSaveNewPerson();
+        TdarUser badUser = createAndSaveNewUser();
         AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), badUser, GeneralPermissions.MODIFY_METADATA);
         Date soon = DateTime.now().plusDays(2).toDate();
         authorizedUser.setDateExpires(soon);
@@ -86,7 +86,7 @@ public class RightsITCase extends AbstractIntegrationTestCase {
     public void testRightsUpgrade() {
         // setup user that expires in two days, that has access to dataset
         Dataset dataset = createAndSaveNewDataset();
-        TdarUser badUser = createAndSaveNewPerson();
+        TdarUser badUser = createAndSaveNewUser();
         AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), badUser, GeneralPermissions.MODIFY_RECORD);
         Date soon = DateTime.now().plusDays(2).toDate();
         authorizedUser.setDateExpires(soon);
@@ -110,7 +110,7 @@ public class RightsITCase extends AbstractIntegrationTestCase {
     public void testRightsExtendNewUser() {
         // setup user that expires in two days, that has access to dataset
         Dataset dataset = createAndSaveNewDataset();
-        TdarUser badUser = createAndSaveNewPerson();
+        TdarUser badUser = createAndSaveNewUser();
         AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), badUser, GeneralPermissions.MODIFY_RECORD);
         Date soon = DateTime.now().plusDays(2).toDate();
         authorizedUser.setDateExpires(soon);

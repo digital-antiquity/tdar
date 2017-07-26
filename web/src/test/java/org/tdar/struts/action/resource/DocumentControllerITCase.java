@@ -178,7 +178,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
     @Rollback
     public void testSubmitterChangeRights() throws TdarActionException {
         // setup document
-        TdarUser newUser = createAndSaveNewPerson();
+        TdarUser newUser = createAndSaveNewUser();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         Document doc = dc.getDocument();
@@ -661,7 +661,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
     @Rollback
     public void testUserPermIssUpload() throws Exception {
         // setup document
-        TdarUser newUser = createAndSaveNewPerson();
+        TdarUser newUser = createAndSaveNewUser();
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.prepare();
         Document doc = dc.getDocument();

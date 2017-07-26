@@ -7,4 +7,4 @@ Dear ${to.properName},
 </#if>
 
 To preview the resource(s) being shared, you can go here:
- <#if invite.resourceCollection?has_content>${invite.resourceCollection.detailUrl}<#else>(${invite.resource.detailUrl}</#if>
+ ${baseUrl}<#if invite.resourceCollection?has_content>${invite.resourceCollection.detailUrl}<#else>${invite.resource.detailUrl}</#if>

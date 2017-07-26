@@ -111,6 +111,11 @@ public class TdarUser extends Person {
         this.username = username;
     }
 
+    public TdarUser(Person person, String username) {
+        super(person.getFirstName(),person.getLastName(), person.getEmail());
+        this.setUsername(username);
+    }
+
     public Boolean isContributor() {
         return contributor;
     }

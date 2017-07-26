@@ -28,7 +28,7 @@ public class AddressControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void addNullAddressToPerson() throws Exception {
         setIgnoreActionErrors(true);
-        Person p = createAndSaveNewPerson();
+        Person p = createAndSaveNewUser();
         Long presonId = p.getId();
         p = null;
         controller = generateNewInitializedController(AddressController.class);
@@ -122,7 +122,7 @@ public class AddressControllerITCase extends AbstractAdminControllerITCase {
     
 
     private Long addAddressToNewPerson() throws Exception {
-        Person p = createAndSaveNewPerson();
+        Person p = createAndSaveNewUser();
         Long presonId = p.getId();
         p = null;
         controller = generateNewInitializedController(AddressController.class);

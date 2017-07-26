@@ -253,7 +253,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     }
 
     private void assertResultsOkay(String term, SearchResult<Institution> controller_) {
-        assertNotEmpty(controller_.getResults());
+        assertNotEmpty("should have results", controller_.getResults());
         for (Institution inst : controller_.getResults()) {
             assertTrue(String.format("Creator: %s should match %s", inst, term), inst.getProperName().toLowerCase().contains(term.toLowerCase()));
         }

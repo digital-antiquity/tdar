@@ -20,7 +20,7 @@ import org.tdar.struts.action.resource.ResourceRightsController;
 
 import com.opensymphony.xwork2.Action;
 
-public class UserInviteITCase extends AbstractControllerITCase {
+public class RightsControllerInviteITCase extends AbstractControllerITCase {
 
     @Autowired
     ScheduledProcessService scheduledProcessService;

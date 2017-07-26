@@ -53,7 +53,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testFindByExample() {
         // create a user that we will try to find
-        TdarUser user1 = createAndSaveNewPerson();
+        TdarUser user1 = createAndSaveNewUser();
         user1.setDescription("this sia tst");
         user1.setUsername("1234");
         genericService.update(user1);
@@ -70,7 +70,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testCreatePerson() {
-        TdarUser person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewUser();
         genericService.saveOrUpdate(person);
         logger.debug("{}", person);
         assertNotNull(person);
@@ -110,7 +110,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testModifyPerson() {
-        Person person = createAndSaveNewPerson();
+        Person person = createAndSaveNewUser();
         Long id = person.getId();
         getLogger().info("testing findById / modify/update");
         person.setFirstName(NEW_NAME);
@@ -132,7 +132,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDeletePerson() {
-        Person person = createAndSaveNewPerson();
+        Person person = createAndSaveNewUser();
         Long id = person.getId();
 
         getLogger().info("testing delete");

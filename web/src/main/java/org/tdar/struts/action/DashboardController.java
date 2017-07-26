@@ -123,10 +123,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         super.validate();
     }
 
-    // remove when we track down what exactly the perf issue is with the
-    // dashboard;
-    // toggles let us turn off specific queries / parts of homepage
-
     private void setupRecentResources() throws SolrServerException, IOException {
         int count = 10;
         try {
@@ -134,11 +130,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         } catch (SearchException pe) {
             getLogger().debug("parse exception", pe);
         }
-//        // note, in rare occasions, a cache hit might mean that the resource's
-//        // status has changed
-//        if (!isContributor()) {
-//            getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
-//        }
 
     }
 

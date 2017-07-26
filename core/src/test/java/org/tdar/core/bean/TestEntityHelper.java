@@ -9,7 +9,7 @@ import org.tdar.core.service.GenericService;
 
 public interface TestEntityHelper {
 
-    default TdarUser createAndSaveNewPerson() {
+    default TdarUser createAndSaveNewUser() {
         return createAndSaveNewPerson(null, "");
     }
 

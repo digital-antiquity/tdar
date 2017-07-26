@@ -64,7 +64,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         SearchResult<ResourceCollection> result = new SearchResult<>();
         collectionSearchService.buildResourceCollectionQuery(getEditorUser(), csqo,  result, MessageHelper.getInstance());
         logger.debug("{}", result.getResults());
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
         assertEquals("should have one result",  1, result.getResults().size());
     }
 
@@ -74,7 +74,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         init();
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         SearchResult<ResourceCollection> result = runQuery(null, csqo);
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
         for (ResourceCollection c : result.getResults()) {
             logger.debug("{} {}", c.getId(), c);
         }
@@ -87,7 +87,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.setLimitToTopLevel(false);
         SearchResult<ResourceCollection> result = runQuery(getAdminUser(), csqo);
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
         boolean seen = false;
         for (ResourceCollection c : result.getResults()) {
             logger.debug("{} {}", c.getId(), c);
@@ -99,7 +99,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
         csqo.setLimitToTopLevel(true);
         result = runQuery(getAdminUser(), csqo);
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
 
         seen = false;
         for (ResourceCollection c : result.getResults()) {
@@ -121,7 +121,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.setIncludeHidden(false);
         SearchResult<ResourceCollection> result = runQuery(getAdminUser(), csqo);
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
         for (ResourceCollection c : result.getResults()) {
             if (c instanceof VisibleCollection) {
                 logger.debug("{} {} {}", c.getId(), c, ((VisibleCollection) c).isHidden());

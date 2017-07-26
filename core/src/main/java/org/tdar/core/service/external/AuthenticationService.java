@@ -448,33 +448,26 @@ public class AuthenticationService {
             }
             notices.putIfAbsent(authorizer, new ArrayList<>());
             AuthorizedUser user = new AuthorizedUser(authorizer, person, invite.getPermissions());
+            invite.setDateRedeemed(new Date());
+            personDao.saveOrUpdate(invite);
+
             if (invite.getResourceCollection() != null) {
                 invite.getResourceCollection().getAuthorizedUsers().add(user);
                 personDao.saveOrUpdate(invite.getResourceCollection());
                 personDao.saveOrUpdate(user);
                 notices.get(authorizer).add((HasName)invite.getResourceCollection());
+                publisher.publishEvent(new TdarEvent(invite.getResourceCollection(), EventType.CREATE_OR_UPDATE));
             } 
 
             if (invite.getResource() != null) {
                 invite.getResource().getAuthorizedUsers().add(user);
-                personDao.saveOrUpdate(invite.getResourceCollection());
+                personDao.saveOrUpdate(invite.getResource());
                 personDao.saveOrUpdate(user);
                 notices.get(authorizer).add(invite.getResource());
+                publisher.publishEvent(new TdarEvent(invite.getResource(), EventType.CREATE_OR_UPDATE));
             }
 
-            invite.setDateRedeemed(new Date());
-            personDao.saveOrUpdate(invite);
             //FIXME: REMOVE if rights changes work
-            if (invite.getResourceCollection() instanceof RightsBasedResourceCollection) {
-                for (Resource r : ((RightsBasedResourceCollection) invite.getResourceCollection()).getResources()) {
-                    publisher.publishEvent(new TdarEvent(r, EventType.CREATE_OR_UPDATE));
-                }
-            } else {
-                for (Resource r : ((ListCollection) invite.getResourceCollection()).getUnmanagedResources()) {
-                    publisher.publishEvent(new TdarEvent(r, EventType.CREATE_OR_UPDATE));
-                }
-
-            }
         }
         emailService.sendUserInviteGrantedEmail(notices, person);
 

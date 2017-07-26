@@ -571,7 +571,7 @@
                 query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col"),
         @NamedQuery(
                 name=TdarNamedQueries.CHECK_INVITES,
-                query = "from UserInvite ui inner join ui.user as user where lower(user.email) like lower(:email)"),
+                query = "select ui from UserInvite ui inner join ui.user as user where lower(user.email) like lower(:email)"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_DOWNLOAD_AUTHORIZATION,
                 query = "from DownloadAuthorization da where da.sharedCollection.id=:collectionId"),

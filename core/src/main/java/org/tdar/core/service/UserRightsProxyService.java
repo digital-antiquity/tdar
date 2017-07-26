@@ -112,8 +112,15 @@ public class UserRightsProxyService {
                 if (c instanceof Resource) {
                     invite.setResource((Resource) c);
                 }
-                genericDao.saveOrUpdate(invite);
-                emailService.sendUserInviteEmail(invite, authenticatedUser);
+                
+                // if the user is already a tDAR user, delete the invite, otherwise save it
+                if (invite.getUser() instanceof TdarUser) {
+                    c.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, invite.getAuthorizer(), invite.getPermissions(), invite.getDateExpires()));
+                    genericDao.delete(invite);
+                } else {
+                    genericDao.saveOrUpdate(invite);
+                    emailService.sendUserInviteEmail(invite, authenticatedUser);
+                }
             }
         }
         Collection<UserInvite> toDelete = createIdMap.values();

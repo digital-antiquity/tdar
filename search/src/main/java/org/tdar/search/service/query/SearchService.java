@@ -349,7 +349,7 @@ public class SearchService<I extends Indexable> extends AbstractSearchService {
         result.setSortField(SortOption.ID_REVERSE);
         result.setSecondarySortField(SortOption.TITLE);
         result.setStartRecord(0);
-        result.setOrientation(DisplayOrientation.GRID);
+        result.setOrientation(DisplayOrientation.MAP); // has files and coords
         handleSearch(qb, result, provider);
         return (List<Resource>) ((List<?>) result.getResults());
     }
