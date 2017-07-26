@@ -258,8 +258,9 @@ public interface AuthorizationService {
 
     boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd);
 
-    boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user);
+    <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user);
 
     RightsResolver getRightsResolverFor(HasAuthorizedUsers resource, TdarUser actor, InternalTdarRights rights);
 
+    
 }

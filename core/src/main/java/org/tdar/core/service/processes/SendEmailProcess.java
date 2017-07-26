@@ -4,9 +4,11 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.external.EmailService;
 
 /**
@@ -28,6 +30,11 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
     private static final long serialVersionUID = 6711790499277412427L;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    @Qualifier("genericDao")
+    // this seems really weird to have @Autowired fields in beans...
+    protected GenericDao genericDao;
 
     private transient EmailService emailService;
 

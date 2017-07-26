@@ -395,13 +395,13 @@ public class ResourceSaveControllerService {
     private void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections, List<ListCollection> retainedListCollections) {
         logger.debug("loadEffective...");
         for (SharedCollection rc : auth.getItem().getSharedCollections()) {
-            if (!authorizationService.canViewCollection(auth.getAuthenticatedUser(),rc)) {
+            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser())) {
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
         for (ListCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
-            if (!authorizationService.canViewCollection(auth.getAuthenticatedUser(),rc)) {
+            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser())) {
                 retainedListCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }

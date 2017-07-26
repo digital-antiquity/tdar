@@ -263,7 +263,7 @@ public class SearchDao<I extends Indexable> {
         }
         // iterate over all of the objects and create an objectMap if needed
         if (CollectionUtils.isNotEmpty(results.getIdList())) {
-            logger.debug("hydration via:{}", projectionModel);
+            logger.trace("hydration via:{}", projectionModel);
             switch (projectionModel) {
                 case LUCENE_ID_ONLY:
                     for (SolrDocument doc : results.getDocumentList()) {

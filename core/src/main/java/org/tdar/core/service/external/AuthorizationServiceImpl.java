@@ -889,7 +889,7 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
      * @see org.tdar.core.service.external.AuthorizationService#canRemoveFromCollection(org.tdar.core.bean.collection.ResourceCollection, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    public boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user) {
+    public <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user) {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }

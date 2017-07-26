@@ -142,8 +142,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
     @Transactional(readOnly = true)
     public List<Resource> findSparseTitleIdProjectListByPerson(TdarUser person, boolean isAdmin) {
         // get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
+        logger.debug("p>find collections");
         Set<SharedCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA, SharedCollection.class);
-
+        logger.debug("p>find project");
         // find all of the editable projects for the user (either directly assigned or via the specified collections)
         List<Long> collectionIds = PersistableUtils.extractIds(collections);
         List<Resource> editableResources = authorizedUserDao.findEditableResources(person, Arrays.asList(ResourceType.PROJECT), isAdmin, true, collectionIds);

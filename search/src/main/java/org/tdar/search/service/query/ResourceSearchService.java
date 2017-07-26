@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;

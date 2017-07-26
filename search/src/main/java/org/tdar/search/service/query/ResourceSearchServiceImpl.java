@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -326,8 +327,12 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         if (CollectionUtils.isEmpty(statuses)) {
             statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
-
-        statuses.retainAll(allowedSearchStatuses);
+        for (Iterator<Status> iterator = statuses.iterator(); iterator.hasNext();) {
+            Status status = iterator.next();
+            if (!allowedSearchStatuses.contains(status)) {
+                iterator.remove();
+            }
+        }
         reservedSearchParameters.setStatuses(statuses);
         if (statuses.isEmpty()) {
             throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));

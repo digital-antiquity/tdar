@@ -3,7 +3,6 @@ package org.tdar.core.service.resource;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
