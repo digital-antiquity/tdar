@@ -352,9 +352,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
             }
             
-            resourceSaveControllerService.getFileProxiesToProcess(auth, this,getTicketId(), isMultipleFileUploadEnabled(), getFileProxies(), processTextInput, getUploadedFilesFileName(), getUploadedFiles());
+            List<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this,getTicketId(), isMultipleFileUploadEnabled(), getFileProxies(), processTextInput, getUploadedFilesFileName(), getUploadedFiles());
             
-            ErrorTransferObject eto = resourceSaveControllerService.handleUploadedFiles(auth, this , getValidFileExtensions(), getTicketId(), getFileProxies());
+            ErrorTransferObject eto = resourceSaveControllerService.handleUploadedFiles(auth, this , getValidFileExtensions(), getTicketId(), fileProxiesToProcess);
             processErrorObject(eto);
         } catch (Exception e) {
             addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);

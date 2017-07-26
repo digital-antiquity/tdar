@@ -132,6 +132,7 @@ public class ResourceSaveControllerService {
 
 
     public FileProxy processTextInput(TextProvider provider, String fileTextInput, InformationResource persistable) {
+        logger.debug("textInput {}", fileTextInput);
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion(persistable);
         if ((latestUploadedTextVersion != null)
                 && (latestUploadedTextVersion.getInformationResourceFile().getStatus() != FileStatus.PROCESSING_ERROR)) {
@@ -223,9 +224,10 @@ public class ResourceSaveControllerService {
         // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
         if (textInputFileProxy != null) {
             fileProxiesToProcess.add(textInputFileProxy);
-        }
+        } else 
+
         // 2. async uploads for Image or Document or ...
-        else if (multipleFileUploadEnabled) {
+         if (multipleFileUploadEnabled) {
             fileProxiesToProcess =  fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(fileProxies, ticketId);
 
         } else
