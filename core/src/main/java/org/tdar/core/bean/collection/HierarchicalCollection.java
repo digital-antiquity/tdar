@@ -46,6 +46,13 @@ public abstract class HierarchicalCollection<C extends HierarchicalCollection<C>
     private Set<Long> alternateParentIds = new HashSet<>();
 
 
+    public abstract C getParent();
+    public abstract void setParent(C parent);
+
+    public abstract C getAlternateParent();
+    public abstract void setAlternateParent(C parent);
+
+    
     /**
      * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
      * 
