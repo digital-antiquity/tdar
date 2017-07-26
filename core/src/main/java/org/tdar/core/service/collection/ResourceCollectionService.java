@@ -30,6 +30,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
+import org.tdar.core.bean.collection.HasAlternateParent;
 import org.tdar.core.bean.collection.HasParent;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
@@ -727,11 +728,20 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<C> children = getAllChildCollections(persistable, cls);
         List<Long> oldParentIds = new ArrayList<>(persistable.getParentIds());
         logger.debug("updating parent for {} from {} to {}", persistable.getId(), persistable.getParent(), parent);
-        if (persistable instanceof ListCollection && parent instanceof ListCollection) {
-            ((ListCollection) persistable).setParent((ListCollection)parent);
+        if (persistable instanceof ListCollection ) {
+            if (parent instanceof ListCollection) {
+                ((ListCollection) persistable).setParent((ListCollection)parent);
+            }
+            if (PersistableUtils.isNullOrTransient(parent)) {
+                ((ListCollection) persistable).setParent(null);
+            }
+            
         }
         if (persistable instanceof SharedCollection && parent instanceof SharedCollection) {
             ((SharedCollection) persistable).setParent((SharedCollection)parent);
+            if (PersistableUtils.isNullOrTransient(parent)) {
+                ((SharedCollection) persistable).setParent(null);
+            }
         }
         List<Long> parentIds = new ArrayList<>();
         if (PersistableUtils.isNotNullOrTransient(parent)) {
@@ -759,11 +769,21 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<Long> oldParentIds = new ArrayList<>(persistable.getAlternateParentIds());
         logger.debug("updating parent for {} from {} to {}", persistable.getId(), persistable.getAlternateParent(), hierarchicalCollection);
         
-        if (persistable instanceof ListCollection && hierarchicalCollection instanceof ListCollection) {
-            ((ListCollection) persistable).setAlternateParent((ListCollection)hierarchicalCollection);
+        if (persistable instanceof ListCollection ){
+            if (hierarchicalCollection instanceof ListCollection) {
+                ((ListCollection) persistable).setAlternateParent((ListCollection)hierarchicalCollection);
+            }
+            if (PersistableUtils.isNullOrTransient(hierarchicalCollection)) {
+                ((ListCollection) persistable).setAlternateParent(null);
+            }
         }
-        if (persistable instanceof SharedCollection && hierarchicalCollection instanceof SharedCollection) {
-            ((SharedCollection) persistable).setAlternateParent((SharedCollection)hierarchicalCollection);
+        if (persistable instanceof SharedCollection) {
+            if (hierarchicalCollection instanceof SharedCollection) {
+                ((SharedCollection) persistable).setAlternateParent((SharedCollection)hierarchicalCollection);
+            }
+            if (PersistableUtils.isNullOrTransient(hierarchicalCollection)) {
+                ((SharedCollection) persistable).setAlternateParent(null);
+            }
         }
 
         List<Long> parentIds = new ArrayList<>();
