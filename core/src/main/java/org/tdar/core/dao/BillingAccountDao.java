@@ -275,10 +275,10 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
         Collection<Resource> resourcesToEvaluate = resourcesToEvaluate_;
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         logger.trace("model {}", getLatestActivityModel());
-        Status initialAccountStatus = account.getStatus();
         if (PersistableUtils.isNullOrTransient(account)) {
             throw new TdarRecoverableRuntimeException("accountService.account_is_null");
         }
+        Status initialAccountStatus = account.getStatus();
         /* evaluate resources based on the model, and update their counts of files and space */
         ResourceEvaluator resourceEvaluator = getResourceEvaluator(resourcesToEvaluate);
         // saveOrUpdate(resourcesToEvaluate);
