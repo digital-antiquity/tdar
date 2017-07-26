@@ -714,7 +714,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         vc.setId(collection1.getId());
         vc.setSlug(collection1.getSlug());
         vc.prepare();
-        assertEquals(CollectionViewAction.SUCCESS_SHARE, vc.view());
+        assertEquals(CollectionViewAction.SUCCESS, vc.view());
         logger.info("results: {}", vc.getResults());
         assertTrue(vc.getResults().contains(document));
     }

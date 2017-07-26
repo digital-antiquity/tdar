@@ -75,7 +75,6 @@ import org.tdar.web.service.HomepageService;
 @Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, location = "view.ftl"),
         @Result(name = CollectionViewAction.SUCCESS_WHITELABEL, location = "view-whitelabel.ftl"),
-        @Result(name = CollectionViewAction.SUCCESS_SHARE, location = "view-share.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.TDAR_REDIRECT,
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
@@ -87,7 +86,6 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     private static final long serialVersionUID = 5126290300997389535L;
 
     public static final String SUCCESS_WHITELABEL = "success_whitelabel";
-    public static final String SUCCESS_SHARE = "success_share";
 
     private List<UserInvite> invites;
     /**
@@ -250,9 +248,9 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
             result = CollectionViewAction.SUCCESS_WHITELABEL;
         }
 
-        if (SUCCESS.equals(result) && getPersistable().getType() == CollectionType.SHARED) {
-            result = SUCCESS_SHARE;
-        }
+//        if (SUCCESS.equals(result) && getPersistable().getType() == CollectionType.SHARED) {
+//            result = SUCCESS_SHARE;
+//        }
         return result;
     }
 
