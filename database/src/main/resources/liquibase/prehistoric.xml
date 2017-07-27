@@ -440,11 +440,5 @@
         <comment>make whitelabel collections whitelabel again</comment>
         <sql>update whitelabel_collection set whitelabel = true where custom_header_enabled is true or featured_resources_enabled is true or search_enabled is true or sub_collections_enabled is true or custom_doc_logo_enabled is true</sql>
      </changeSet>
-     <changeSet id="prehistoric-dropbox-1" author="abrin">
-     <addPrimaryKey columnNames="id" tableName="dropbox_items"/>
-     <createIndex tableName="dropbox_items" indexName="dropbox_items_type">
-        <column name="item_type"/>
-     </createIndex>
-     </changeSet>
 </databaseChangeLog>
 
