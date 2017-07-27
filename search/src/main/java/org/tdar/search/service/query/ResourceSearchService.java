@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -54,6 +55,7 @@ import org.tdar.search.query.part.resource.CategoryTermQueryPart;
 import org.tdar.search.query.part.resource.ProjectIdLookupQueryPart;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.range.StringRange;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -344,5 +346,22 @@ public class ResourceSearchService extends AbstractSearchService {
             throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    public LuceneSearchResultHandler<Resource> findByTdarYear(int year, LuceneSearchResultHandler<Resource> result, TextProvider support)
+            throws SearchException, IOException {
+        ResourceQueryBuilder q = new ResourceQueryBuilder();
+        q.setOperator(Operator.AND);
+        ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
+        reservedSearchParameters.setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE)));
+        initializeReservedSearchParameters(reservedSearchParameters, null);
+        SearchParameters params = new SearchParameters();
+        params.getCreatedDates().add(new StringRange(Integer.toString(year), Integer.toString(year + 1)));
+        q.append(params.toQueryPartGroup(support));
+        q.append(reservedSearchParameters.toQueryPartGroup(support));
+        result.setSortField(SortOption.DATE);
+        searchService.handleSearch(q, result, support);
+        return result;
     }
 }

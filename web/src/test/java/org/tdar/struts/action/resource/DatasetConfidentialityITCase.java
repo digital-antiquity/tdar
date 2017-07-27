@@ -88,7 +88,7 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
                 Dataset mydataset = genericService.find(Dataset.class, datasetId);
                 logger.info("{} {}", datasetId, mydataset);
                 Set<InformationResourceFile> informationResourceFiles = mydataset.getInformationResourceFiles();
-                assertNotEmpty(informationResourceFiles);
+                assertNotEmpty("should have files", informationResourceFiles);
                 assertEquals("should have description", TEST_DESCRIPTION,mydataset.getDataTables().iterator().next().getDescription());
                 assertEquals(FileAccessRestriction.CONFIDENTIAL, informationResourceFiles.iterator().next().getRestriction());
                 genericService.delete(mydataset);

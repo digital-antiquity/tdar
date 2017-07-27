@@ -434,31 +434,5 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         
         
     }
-
-    @Test
-    @Rollback(true)
-    //make a collection w/ three authusers, and confirm those users found via findUsersSharedWith()
-    public void testFindUsersSharedWith() {
-        final String collectionName = "the best collection ever";
-        List<TdarUser> users = new ArrayList<>(Arrays.asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
-
-        SharedCollection collection = createAndSaveNewResourceCollection(collectionName, SharedCollection.class);
-        users.remove(collection.getOwner());
-
-        // sanity checks
-//        assertThat("collection should have no authusers", collection.getAuthorizedUsers(), is( empty()));
-        assertThat("test requires at least one user that is not the same as the current user", users, not( empty()));
-
-        // now add some authusers
-        collection.getAuthorizedUsers().addAll(
-                users.stream().map(user -> new AuthorizedUser(getAdminUser(), user, GeneralPermissions.MODIFY_RECORD)).collect(Collectors.toList()));
-
-        genericService.saveOrUpdate(collection);
-        genericService.saveOrUpdate(collection.getAuthorizedUsers());
-        genericService.synchronize();
-        List<TdarUser> grantees = resourceCollectionDao.findUsersSharedWith(collection.getOwner());
-        for (TdarUser grantee : users) {
-            assertTrue(String.format("grantees should contain: %s", grantee),grantees.contains(grantee));
-        }
-    }
+    
 }

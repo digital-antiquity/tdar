@@ -116,7 +116,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     public void testSorting() {
         controller.execute();
         logger.debug("sort:{}", controller.getSortOptions());
-        assertNotEmpty(controller.getSortOptions());
+        assertNotEmpty("should have sort options", controller.getSortOptions());
     }
 
     @Test

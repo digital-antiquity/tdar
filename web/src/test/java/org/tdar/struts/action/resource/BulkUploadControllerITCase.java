@@ -231,7 +231,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String expectedResponse, List<File> uploadFiles) throws Exception {
-        TdarUser user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewUser();
         BulkUploadController bulkUploadController = generateNewController(BulkUploadController.class);
         init(bulkUploadController, user);
         bulkUploadController.prepare();

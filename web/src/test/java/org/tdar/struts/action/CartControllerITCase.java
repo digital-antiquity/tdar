@@ -590,7 +590,7 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         String response2 = controller.processExternalPayment();
         if (response2 == TdarActionSupport.SUCCESS) {
             List<BillingTransactionLog> logs = genericService.findAll(BillingTransactionLog.class);
-            assertNotEmpty(logs);
+            assertNotEmpty("should have log entries", logs);
             assertEquals(totalLogs + 1, logs.size());
         }
         return response2;

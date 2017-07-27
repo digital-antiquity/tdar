@@ -446,8 +446,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         logger.trace("user: {}",authenticatedUser);
         Query<BigInteger> shared = getCurrentSession().createNativeQuery(TdarNamedQueries.QUERY_USERS_SHARED_WITH);
         shared.setParameter("userId", authenticatedUser.getId());
-//        shared.setParameter("permission", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
-        logger.trace(TdarNamedQueries.QUERY_USERS_SHARED_WITH);
+        logger.debug(TdarNamedQueries.QUERY_USERS_SHARED_WITH);
         List<BigInteger> resultList = shared.getResultList();
         if (CollectionUtils.isEmpty(resultList)) {
             return new ArrayList<>();

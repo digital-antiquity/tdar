@@ -313,12 +313,12 @@ public class PersonDao extends HibernateBase<Person> {
         return toReturn;
     }
 
-    @SuppressWarnings("unchecked")
     public List<UserInvite> checkInvite(TdarUser person) {
         Query<UserInvite> query = getCurrentSession().createNamedQuery(TdarNamedQueries.CHECK_INVITES);
         query.setParameter("email", person.getEmail());
-        return query.getResultList();
-        
+        List<UserInvite> resultList = query.getResultList();
+        logger.debug("{}", resultList);
+        return resultList;
     }
 
     public List<ResourceRevisionLog> findChangesForUser(TdarUser user, Date date) {

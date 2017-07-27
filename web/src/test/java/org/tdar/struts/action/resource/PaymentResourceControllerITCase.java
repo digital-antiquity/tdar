@@ -112,7 +112,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         genericService.refresh(ds);
         accountService.updateTransientAccountInfo(ds);
         logger.debug("accnt:{}", ds.getAccount());
-        assertNotEmpty(ds.getSharedCollections());
+        assertNotEmpty("should have results", ds.getSharedCollections());
         ds = null;
         DatasetController dc = generateNewInitializedController(DatasetController.class, getBasicUser());
         dc.setId(id);
@@ -167,7 +167,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
     @Test
     @Rollback()
     public void testCreateWithoutValidAccount() throws Exception {
-        controller = generateNewInitializedController(DocumentController.class, createAndSaveNewPerson());
+        controller = generateNewInitializedController(DocumentController.class, createAndSaveNewUser());
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         Assert.assertTrue(CollectionUtils.isEmpty(controller.getActiveAccounts()));
         initControllerFields();
@@ -191,7 +191,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
     public void testResourceControllerWithoutValidAccount() throws Exception {
         // run first a general tDAR user -- so you get the CONTRIBUTOR result
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
-        TdarUser user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewUser();
         String result = runController(user, true);
         assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(user)));
         Assert.assertEquals(ResourceController.CONTRIBUTOR, result);

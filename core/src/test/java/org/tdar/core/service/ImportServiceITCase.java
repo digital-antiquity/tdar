@@ -38,10 +38,10 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         logger.debug("oldId: {} newId: {}", id, newDoc.getId());
         Assert.assertNotNull(newDoc.getId());
         Set<CoverageDate> coverageDates = newDoc.getCoverageDates();
-        assertNotEmpty(coverageDates);
+        assertNotEmpty("should have coverage dates", coverageDates);
         document = genericService.find(Document.class, 4287L);
         Set<CoverageDate> coverageDates2 = document.getCoverageDates();
-        assertNotEmpty(coverageDates2);
+        assertNotEmpty("should have coverage dates", coverageDates2);
         assertNotEquals(coverageDates.iterator().next().getId(), coverageDates2.iterator().next().getId());
         logger.debug(serializationService.convertToXML(newDoc));
     }
