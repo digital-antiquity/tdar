@@ -63,6 +63,9 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, String token, TdarUser user) {
         MockAuthenticationInfo info = users.get(user.getUsername().toLowerCase());
+        if (info == null) {
+            return;
+        }
         info.setToken("abc123");
         logger.debug("mock logout: {} ({})", user.getUsername().toLowerCase(), token);
 //        info.setToken(null);
