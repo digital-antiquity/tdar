@@ -18,12 +18,15 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.FieldLength;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @MappedSuperclass
 @XmlType(name = "hierCollBase")
@@ -45,14 +48,6 @@ public abstract class HierarchicalCollection<C extends HierarchicalCollection<C>
     @Column(name = "parent_id")
     private Set<Long> alternateParentIds = new HashSet<>();
 
-
-    public abstract C getParent();
-    public abstract void setParent(C parent);
-
-    public abstract C getAlternateParent();
-    public abstract void setAlternateParent(C parent);
-
-    
     /**
      * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
      * 
@@ -71,6 +66,21 @@ public abstract class HierarchicalCollection<C extends HierarchicalCollection<C>
     }
 
     private transient TreeSet<C> transientChildren = new TreeSet<>(new TitleSortComparator());
+
+    @XmlAttribute(name = "parentIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public abstract C getParent();
+
+
+    @XmlAttribute(name = "altParentIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public abstract C getAlternateParent();
+
+
+    public abstract void setParent(C c);
+
+    
+    public abstract void setAlternateParent(C c);
 
     @XmlTransient
     @Transient

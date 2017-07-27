@@ -91,8 +91,7 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
     @JoinColumn(name = "alternate_parent_id")
     private SharedCollection alternateParent;
     
-    @XmlAttribute(name = "parentIdRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @Override
     public SharedCollection getParent() {
         return parent;
     }
@@ -146,6 +145,7 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         return getVisibleParents(SharedCollection.class);
     }
 
+    @Override
     public SharedCollection getAlternateParent() {
         return alternateParent;
     }

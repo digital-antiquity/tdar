@@ -41,8 +41,7 @@ public class ListCollection extends HierarchicalCollection<ListCollection> imple
     @JoinColumn(name = "l_alternate_parent_id")
     private ListCollection alternateParent;
 
-    @XmlAttribute(name = "parentIdRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @Override
     public ListCollection getParent() {
         return parent;
     }
@@ -127,8 +126,6 @@ public class ListCollection extends HierarchicalCollection<ListCollection> imple
         return false;
     }
 
-    @XmlAttribute(name = "altParentIdRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public ListCollection getAlternateParent() {
         return alternateParent;
     }
