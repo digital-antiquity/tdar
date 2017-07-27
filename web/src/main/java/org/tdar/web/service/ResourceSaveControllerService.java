@@ -258,7 +258,9 @@ public class ResourceSaveControllerService {
             logger.debug("handling uploaded files for {}", auth.getItem());
             validateFileExtensions(proxies, validFileNames, provider);
             logger.debug("Final proxy set: {}", proxies);
-
+            if (CollectionUtils.isEmpty(proxies)) {
+                return null;
+            }
             
         if (!authorizationService.canDo(auth.getAuthenticatedUser(), auth.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
                         GeneralPermissions.MODIFY_RECORD)) {
