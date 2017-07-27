@@ -142,7 +142,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         reindex();
         RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class, getAdminUser());
         controller.viewRss();
-        assertNotEmpty(controller.getResults());
+        assertNotEmpty("should have results", controller.getResults());
         String xml = IOUtils.toString(controller.getInputStream());
         logger.debug(xml);
         StringUtils.containsAny(xml, "<link rel=\"enclosure\" type=\"application/pdf\"", "<link rel=\"enclosure\" type=\"application/vnd.ms-excel");

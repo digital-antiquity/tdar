@@ -2,6 +2,7 @@ package org.tdar.search.query;
 
 import java.io.Serializable;
 
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
@@ -11,7 +12,7 @@ public class SearchResult<I extends Indexable> extends BaseSearchResult<I> imple
     private static final long serialVersionUID = 8370261049894410532L;
     private FacetWrapper facetWrapper = new FacetWrapper();
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;    
-
+    private DisplayOrientation orientation = null;
     public SearchResult() {}
     
     public SearchResult(int i) {
@@ -36,6 +37,14 @@ public class SearchResult<I extends Indexable> extends BaseSearchResult<I> imple
 
     public void setProjectionModel(ProjectionModel projectionModel) {
         this.projectionModel = projectionModel;
+    }
+
+    public DisplayOrientation getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(DisplayOrientation orientation) {
+        this.orientation = orientation;
     }
 
 }

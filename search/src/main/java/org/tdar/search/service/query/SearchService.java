@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.DeHydratable;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
@@ -348,6 +349,7 @@ public class SearchService<I extends Indexable> extends AbstractSearchService {
         result.setSortField(SortOption.ID_REVERSE);
         result.setSecondarySortField(SortOption.TITLE);
         result.setStartRecord(0);
+        result.setOrientation(DisplayOrientation.MAP); // has files and coords
         handleSearch(qb, result, provider);
         return (List<Resource>) ((List<?>) result.getResults());
     }

@@ -68,7 +68,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         resourceSearchService.buildAdvancedSearch(asqo, null, result, MessageHelper.getInstance());
         logger.debug("{}", result.getFacetWrapper().getFacetResults());
         List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
-        assertNotEmpty(list);
+        assertNotEmpty("should have results", list);
         boolean seenDocuments = false;
         boolean seenDatasets = false;
         for (Facet facet : list) {
@@ -96,7 +96,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         resourceSearchService.buildAdvancedSearch(asqo, null, result, MessageHelper.getInstance());
         logger.debug("{}", result.getFacetWrapper().getFacetResults());
         List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
-        assertNotEmpty(list);
+        assertNotEmpty("should have results", list);
         boolean seenDocuments = false;
         boolean seenDatasets = false;
         for (Facet facet : list) {
@@ -122,7 +122,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         resourceSearchService.buildAdvancedSearch(asqo, null, result, MessageHelper.getInstance());
         List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS);
-        assertNotEmpty(list);
+        assertNotEmpty("should have results", list);
         boolean seenPuebloan = false;
         boolean seenHistoric = false;
         for (Facet facet : list) {

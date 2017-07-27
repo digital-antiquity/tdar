@@ -668,8 +668,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
-    public static void assertNotEmpty(Collection<?> results) {
-        assertTrue(CollectionUtils.isNotEmpty(results));
+    public static void assertNotEmpty(String message, Collection<?> results) {
+        assertTrue(message, CollectionUtils.isNotEmpty(results));
+    }
+
+    public static void assertEmpty(String message,Collection<?> results) {
+        assertTrue(message, CollectionUtils.isEmpty(results));
     }
 
     public SimpleMailMessage checkMailAndGetLatest(String text) {
