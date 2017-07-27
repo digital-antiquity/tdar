@@ -328,14 +328,12 @@ public interface TdarNamedQueries {
          join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' 
          join authorized_user au4 on c2.id=au4.resource_collection_id where (au3.user_id=:submitterId  or au4.user_id=:submitterId) order by 1;^C
      */
-    String QUERY_USERS_SHARED_WITH = "select id from person where id in "
-            + " (select  au.user_id from authorized_user au left join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') "
-            + "join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:userId "
-            + "left join collection c on au.resource_collection_id=c.id and c.status='ACTIVE' "
-            + "left join authorized_user au3 on c.id=au3.resource_collection_id and au3.user_id=:userId "
-            + "left join collection_parents cp on c.id=cp.collection_id "
-            + "left join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
-            + "left join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:userId)";
+    String QUERY_USERS_SHARED_WITH = "select distinct user_id from authorized_user inner join collection on authorized_user.resource_collection_id=collection.id and exists ( "
+            + "select resource_collection_id as collection_id from authorized_user where user_id=:userId and general_permission_int > 499 and resource_collection_id=collection.id union "
+            + "select collection_parents.collection_id as collection_id  from authorized_user a1  join collection_parents on "
+            + "a1.resource_collection_id=collection_parents.parent_id where user_id=:userId and general_permission_int > 499 and resource_collection_id=collection.id ) "
+            + "and status='ACTIVE' union select user_id from authorized_user  inner join resource on authorized_user.resource_id=resource.id and exists ( "
+            + "select resource_id from authorized_user where user_id=:userId and general_permission_int > 499 and resource_id=resource.id and resource.status in ('ACTIVE','DRAFT'))  ";
 
     String QUERY_RESOURCES_SHARED_WITH = "select id, title, status, resource_type from resource where id in "
             + " (select  au.resource_id from authorized_user au left join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') "
