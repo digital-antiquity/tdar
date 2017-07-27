@@ -3,7 +3,9 @@ package org.tdar.search.service.query;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -55,7 +57,7 @@ import org.tdar.search.query.part.resource.CategoryTermQueryPart;
 import org.tdar.search.query.part.resource.ProjectIdLookupQueryPart;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.range.StringRange;
+import org.tdar.utils.range.DateRange;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -357,7 +359,7 @@ public class ResourceSearchService extends AbstractSearchService {
         reservedSearchParameters.setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE)));
         initializeReservedSearchParameters(reservedSearchParameters, null);
         SearchParameters params = new SearchParameters();
-        params.getCreatedDates().add(new StringRange(Integer.toString(year), Integer.toString(year + 1)));
+        params.getRegisteredDates().add(new DateRange(new Date(year, 1, 1), new Date(year + 1, 1, 1)));
         q.append(params.toQueryPartGroup(support));
         q.append(reservedSearchParameters.toQueryPartGroup(support));
         result.setSortField(SortOption.DATE);
