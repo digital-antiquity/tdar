@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.bouncycastle.jcajce.provider.symmetric.util.IvAlgorithmParameters;
 import org.hibernate.WrongClassException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,7 +116,12 @@ public class UserRightsProxyService {
                 
                 // if the user is already a tDAR user, delete the invite, otherwise save it
                 if (invite.getUser() instanceof TdarUser) {
-                    c.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, invite.getAuthorizer(), invite.getPermissions(), invite.getDateExpires()));
+                    logger.debug("moving invite to AuthorizedUser for :{}", invite.getUser());
+                    AuthorizedUser authorizedUser = new AuthorizedUser(authenticatedUser, (TdarUser) invite.getUser(), invite.getPermissions(), invite.getDateExpires());
+                    c.getAuthorizedUsers().add(authorizedUser);
+                    genericDao.saveOrUpdate(c);
+                    genericDao.saveOrUpdate(c.getAuthorizedUsers());
+                    logger.debug("new id:{}", authorizedUser.getId());
                     genericDao.delete(invite);
                 } else {
                     genericDao.saveOrUpdate(invite);
