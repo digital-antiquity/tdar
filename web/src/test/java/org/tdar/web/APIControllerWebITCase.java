@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -166,7 +165,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         logger.debug("used: {}", filesUed);
 
         String text = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/confidentialImage.xml"));
-        ApiClientResponse response = apiClient.uploadRecord(text, null, 1L, TestConstants.getFile(TestConstants.TEST_IMAGE2));
+        ApiClientResponse response = apiClient.uploadRecord(text, null, 1L, TestConstants.getFile(TestConstants.TEST_IMAGE), TestConstants.getFile(TestConstants.TEST_IMAGE2));
 
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
