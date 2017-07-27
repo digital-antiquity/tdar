@@ -2,6 +2,7 @@ package org.tdar.struts.action.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -12,6 +13,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -142,6 +144,10 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         }
         getPersistable().setContributorReason(contributorReason);
         getPersistable().setProxyNote(proxyNote);
+        if (Objects.equals(getPersistable().isContributor(),  Boolean.FALSE ) && Objects.equals(contributor, Boolean.TRUE)) {
+            authenticationService.satisfyPrerequisite(getPersistable(), AuthNotice.CONTRIBUTOR_AGREEMENT);
+        }
+        
         getPersistable().setContributor(contributor);
     }
 
