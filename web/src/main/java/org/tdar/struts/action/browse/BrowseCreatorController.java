@@ -278,6 +278,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                     roles.add(role.name());
                     getFacetWrapper().facetBy(role.name(), Creator.class);
                 }
+                getFacetWrapper().setMaxFacetLimit(20);
                 resourceSearchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this, this);
                 List<Long> ignoreIds = new ArrayList<>();
                 ignoreIds.add(creator.getId());
