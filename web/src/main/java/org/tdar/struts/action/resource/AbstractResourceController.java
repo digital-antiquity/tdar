@@ -192,6 +192,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return sw.toString();
     }
 
+    
+    @Override
+    public String save(Resource resource) {
+        getLogger().debug("calling save");
+        saveBasicResourceMetadata();
+        return SUCCESS;
+    }
+    
     @Override
     public String loadAddMetadata() {
         if (PersistableUtils.isNotNullOrTransient(getResource())) {
@@ -273,6 +281,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         } catch (Throwable t) {
         	getLogger().debug("{}",t,t);
         }
+        getLogger().debug("success: {}", getSaveSuccessPath());
         return save2;
     }
 

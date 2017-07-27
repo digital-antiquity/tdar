@@ -254,24 +254,13 @@ public class ResourceSaveControllerService {
      */
     @Transactional(readOnly=false)
     public ErrorTransferObject handleUploadedFiles(AuthWrapper<InformationResource> auth, TextProvider provider,Collection<String> validFileNames, Long ticketId, List<FileProxy> proxies) throws TdarActionException, IOException {
-        boolean hasProxyChanges = false; // need to return
         // need to call getFileProxiesToProcess() before
             logger.debug("handling uploaded files for {}", auth.getItem());
             validateFileExtensions(proxies, validFileNames, provider);
             logger.debug("Final proxy set: {}", proxies);
 
-            for (FileProxy proxy : proxies) {
-                if (proxy != null && proxy.getAction() != FileAction.NONE) {
-                    hasProxyChanges = true;
-                }
-            }
-
-            if (!hasProxyChanges) {
-                return null;
-            }
             
-        if (hasProxyChanges
-                && !authorizationService.canDo(auth.getAuthenticatedUser(), auth.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
+        if (!authorizationService.canDo(auth.getAuthenticatedUser(), auth.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
                         GeneralPermissions.MODIFY_RECORD)) {
             throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
         }

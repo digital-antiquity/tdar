@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -18,10 +17,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.CategoryVariable;
-import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.LicenseType;
@@ -30,19 +26,13 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.StatusCode;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
-import org.tdar.core.service.resource.InformationResourceFileService;
-import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.AuthWrapper;
@@ -55,8 +45,6 @@ import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.ResourceEditControllerService;
 import org.tdar.web.service.ResourceSaveControllerService;
 import org.tdar.web.service.ResourceViewControllerService;
-
-import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$
@@ -152,7 +140,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     protected String save(InformationResource document) throws TdarActionException {
         // save basic metadata
-        super.saveBasicResourceMetadata();
+        getLogger().debug("save ir");
+        saveBasicResourceMetadata();
         saveInformationResourceProperties();
         return SUCCESS;
 
@@ -355,6 +344,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             
             List<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this,getTicketId(), isMultipleFileUploadEnabled(), getFileProxies(), processTextInput, getUploadedFilesFileName(), getUploadedFiles());
             
+            for (FileProxy proxy : fileProxiesToProcess) {
+                if (proxy != null && proxy.getAction() != FileAction.NONE) {
+                    hasFileProxyChanges  = true;
+                }
+            }
+
             ErrorTransferObject eto = resourceSaveControllerService.handleUploadedFiles(auth, this , getValidFileExtensions(), getTicketId(), fileProxiesToProcess);
             processErrorObject(eto);
         } catch (Exception e) {
@@ -484,6 +479,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();
         getResource().setProject(getProject());
+        getLogger().debug("setting projectid: {}", getResource().getProject());
         super.saveBasicResourceMetadata();
     }
 

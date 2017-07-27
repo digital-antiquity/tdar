@@ -69,7 +69,7 @@ public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase 
         genericService.detachFromSession(dataset);
         // do search for something in another column
         sharedImageIds = Arrays.asList(image1_id, image2_id);
-
+        genericService.synchronize();
         assertEquals(3, projectService.findAllResourcesInProject(project).size());
 
         ResourceMappingMetadataController columnController = generateNewInitializedController(ResourceMappingMetadataController.class);

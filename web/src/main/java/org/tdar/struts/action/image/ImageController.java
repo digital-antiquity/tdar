@@ -30,10 +30,6 @@ public class ImageController extends AbstractInformationResourceController<Image
 
     private static final long serialVersionUID = 8690371228267286260L;
 
-    @Override
-    protected String save(Image image) throws TdarActionException {
-        return super.save(image);
-    }
 
     @Override
     public Set<String> getValidFileExtensions() {
