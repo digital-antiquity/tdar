@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -359,7 +360,8 @@ public class ResourceSearchService extends AbstractSearchService {
         reservedSearchParameters.setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE)));
         initializeReservedSearchParameters(reservedSearchParameters, null);
         SearchParameters params = new SearchParameters();
-        params.getRegisteredDates().add(new DateRange(new Date(year, 1, 1), new Date(year + 1, 1, 1)));
+        DateTime dt = new DateTime().withYear(year).withMonthOfYear(1).withDayOfMonth(1).withTimeAtStartOfDay();
+        params.getRegisteredDates().add(new DateRange(dt.toDate(), dt.plusYears(1).toDate()));
         q.append(params.toQueryPartGroup(support));
         q.append(reservedSearchParameters.toQueryPartGroup(support));
         result.setSortField(SortOption.DATE);
