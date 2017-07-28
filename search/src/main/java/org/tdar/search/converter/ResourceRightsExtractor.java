@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
@@ -93,9 +92,7 @@ public class ResourceRightsExtractor {
 //        collections.addAll(resource.getUnmanagedResourceCollections());
         for (RightsBasedResourceCollection collection : collections) {
             if (collection instanceof SharedCollection) {
-                if (collection instanceof VisibleCollection) {
-                    directCollectionNames.add(((VisibleCollection) collection).getName());
-                }
+                directCollectionNames.add(((ResourceCollection) collection).getName());
                 if (collection instanceof SharedCollection) {
                 SharedCollection shared = (SharedCollection)collection;
                 collectionNames.addAll(shared.getParentNameList());

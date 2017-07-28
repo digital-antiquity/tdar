@@ -19,7 +19,7 @@ import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -51,7 +51,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
 
     public boolean isAllowedTo(TdarUser person, HasAuthorizedUsers resource, GeneralPermissions permission) {
         if (resource instanceof ResourceCollection) {
-            return isAllowedTo(person, (VisibleCollection) resource, permission);
+            return isAllowedTo(person, (ResourceCollection) resource, permission);
         } else {
             return isAllowedTo(person, (Resource) resource, permission);
         }

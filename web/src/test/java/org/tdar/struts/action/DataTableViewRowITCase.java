@@ -100,7 +100,7 @@ public class DataTableViewRowITCase extends AbstractAdminControllerITCase {
             file.setRestriction(FileAccessRestriction.CONFIDENTIAL);
         }
         genericService.save(dataset);
-        TdarUser user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewUser();
         init(controller, user);
         controller.setRowId(1L);
         controller.prepare();

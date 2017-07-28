@@ -101,6 +101,7 @@ public class EmailServiceImpl implements EmailService {
         map.put("invite", invite);
         map.put("from", from);
         map.put("to", invite.getUser());
+        setupBasicComponents(map);
         queueWithFreemarkerTemplate("invite/invite.ftl", map, email);
 
     }

@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -150,8 +150,8 @@ public class ResourceViewControllerService {
 
 
     @Transactional(readOnly=true)
-    public List<VisibleCollection> getVisibleCollections(AuthWrapper<Resource> auth ) {
-        List<VisibleCollection> visibleCollections = new ArrayList<>();
+    public List<ResourceCollection> getVisibleCollections(AuthWrapper<Resource> auth ) {
+        List<ResourceCollection> visibleCollections = new ArrayList<>();
         visibleCollections.addAll(getViewableListResourceCollections(auth));
         visibleCollections.addAll(getViewableSharedResourceCollections(auth));
         return visibleCollections;
@@ -179,7 +179,7 @@ public class ResourceViewControllerService {
         return collections;
     }
 
-    private <C extends VisibleCollection> void addViewableCollections(Set<C> list, Collection<C> incomming, AuthWrapper<Resource> auth) {
+    private <C extends ResourceCollection> void addViewableCollections(Set<C> list, Collection<C> incomming, AuthWrapper<Resource> auth) {
         if (auth.isAuthenticated()) {
             for (C resourceCollection : incomming) {
                 if (authorizationService.canViewCollection(auth.getAuthenticatedUser(), resourceCollection) && !resourceCollection.isSystemManaged()) {

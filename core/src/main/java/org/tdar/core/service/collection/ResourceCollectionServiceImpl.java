@@ -30,13 +30,11 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
-import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -198,7 +196,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      */
     @Override
     @Transactional(readOnly = true)
-    public <C extends VisibleCollection> List<C> findAllTopLevelCollections() {
+    public <C extends ResourceCollection> List<C> findAllTopLevelCollections() {
         Set<C> resultSet = new HashSet<>();
         resultSet.addAll((List<C>) getDao().findCollectionsOfParent(null, false, SharedCollection.class));
         resultSet.addAll((List<C>) getDao().findCollectionsOfParent(null, false, ListCollection.class));
@@ -389,8 +387,8 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
             C collection) {
         if (!authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {
             String name = "Collection";
-            if (collection instanceof VisibleCollection) {
-                name = ((VisibleCollection) collection).getName();
+            if (collection instanceof ResourceCollection) {
+                name = ((ResourceCollection) collection).getName();
             }
             throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_remmove_error", Arrays.asList(name));
 
@@ -471,8 +469,8 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
 
     private <C extends ResourceCollection> String getName(C collectionToAdd) {
         String name = "Internal";
-        if (collectionToAdd instanceof VisibleCollection) {
-            name = ((VisibleCollection) collectionToAdd).getName();
+        if (collectionToAdd instanceof ResourceCollection) {
+            name = ((ResourceCollection) collectionToAdd).getName();
         }
         return name;
     }
@@ -485,7 +483,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
         ((RightsBasedResourceCollection) collectionToAdd).getResources().add(resource);
     }
 
-    private <C extends VisibleCollection> C findOrCreateCollection(Resource resource, TdarUser authenticatedUser, C collection, Class<C> cls) {
+    private <C extends ResourceCollection> C findOrCreateCollection(Resource resource, TdarUser authenticatedUser, C collection, Class<C> cls) {
         boolean isAdmin = authorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser);
         C potential = getDao().findCollectionWithName(authenticatedUser, isAdmin, collection.getName(), cls);
         if (potential != null) {
@@ -493,8 +491,8 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
         } else {
             collection.setOwner(authenticatedUser);
             collection.markUpdated(resource.getSubmitter());
-            if (collection instanceof CustomizableCollection && ((CustomizableCollection) collection).getSortBy() == null) {
-                ((CustomizableCollection) collection).setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
+            if (collection instanceof ResourceCollection && ((ResourceCollection) collection).getSortBy() == null) {
+                ((ResourceCollection) collection).setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
             }
             publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
             return collection;
@@ -836,7 +834,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      */
     @Override
     @Transactional(readOnly = false)
-    public void removeResourceFromCollection(Resource resource, VisibleCollection collection, TdarUser authenticatedUser) {
+    public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser) {
         if (!authorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
                 authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {
             throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
@@ -876,7 +874,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      */
     @Override
     @Transactional(readOnly = false)
-    public void deleteForController(VisibleCollection persistable, String deletionReason, TdarUser authenticatedUser) {
+    public void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser) {
         // should I do something special?
         if (persistable instanceof SharedCollection) {
             for (Resource resource : ((RightsBasedResourceCollection) persistable).getResources()) {
@@ -965,7 +963,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
             reconcileIncomingResourcesForCollectionWithoutRights(list, authenticatedUser, resourcesToAdd, resourcesToRemove);
         }
         // saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser,type);
-        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(((CustomizableCollection) persistable).getProperties(),
+        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable.getProperties(),
                 cso.getFileProxy());
 
         if (!Objects.equals(cso.getParentId(), persistable.getParentId())) {
@@ -1010,7 +1008,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      */
     @Override
     @Transactional(readOnly = true)
-    public CustomizableCollection getWhiteLabelCollectionForResource(Resource resource) {
+    public ResourceCollection getWhiteLabelCollectionForResource(Resource resource) {
         return getDao().getWhiteLabelCollectionForResource(resource);
     }
 
@@ -1035,7 +1033,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      * @param rc
      * @return
      */
-    public CustomizableCollection convertToWhitelabelCollection(CustomizableCollection rc) {
+    public ResourceCollection convertToWhitelabelCollection(ResourceCollection rc) {
         if (rc.getProperties() != null && rc.getProperties().getWhitelabel()) {
             return rc;
         }
@@ -1053,7 +1051,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      * @param wlc
      * @return
      */
-    public CustomizableCollection convertToResourceCollection(CustomizableCollection wlc) {
+    public ResourceCollection convertToResourceCollection(ResourceCollection wlc) {
         return getDao().convertToResourceCollection(wlc);
     }
 
@@ -1071,7 +1069,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      */
     @Override
     @Transactional(readOnly = false)
-    public <C extends VisibleCollection> void moveResource(Resource resource, C fromCollection, C toCollection, TdarUser tdarUser) {
+    public <C extends ResourceCollection> void moveResource(Resource resource, C fromCollection, C toCollection, TdarUser tdarUser) {
         if (!authorizationService.canEdit(tdarUser, resource) || !authorizationService.canEdit(tdarUser, fromCollection)
                 || !authorizationService.canEdit(tdarUser, toCollection)) {
             throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
@@ -1112,7 +1110,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      */
     @Override
     @Transactional(readOnly = true)
-    public String getSchemaOrgJsonLD(VisibleCollection resource) throws IOException {
+    public String getSchemaOrgJsonLD(ResourceCollection resource) throws IOException {
         SchemaOrgCollectionTransformer transformer = new SchemaOrgCollectionTransformer();
         return transformer.convert(serializationService, resource);
     }
@@ -1132,8 +1130,8 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
         RevisionLogType edit = RevisionLogType.EDIT;
         saveAuthorizedUsersForResourceCollection(c, c, authorizedUsers, true, authenticatedUser, edit);
 
-        if (c instanceof VisibleCollection) {
-            String msg = String.format("%s modified rights on %s", authenticatedUser, ((VisibleCollection) c).getTitle());
+        if (c instanceof ResourceCollection) {
+            String msg = String.format("%s modified rights on %s", authenticatedUser, ((ResourceCollection) c).getTitle());
             CollectionRevisionLog revision = new CollectionRevisionLog(msg, c, authenticatedUser, edit);
             revision.setTimeBasedOnStart(startTime);
             getDao().saveOrUpdate(revision);

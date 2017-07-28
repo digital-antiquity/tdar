@@ -85,7 +85,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         reindex();
         JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class, getAdminUser());
         controller.viewJson();
-        assertNotEmpty(controller.getResults());
+        assertNotEmpty("should have results", controller.getResults());
         String xml = IOUtils.toString(controller.getJsonInputStream());
         logger.debug(xml);
     }

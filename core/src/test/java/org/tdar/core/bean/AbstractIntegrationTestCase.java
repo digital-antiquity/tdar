@@ -48,8 +48,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -402,7 +402,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     // create new, public, collection with the getUser() as the owner and no resources
-    public <C extends VisibleCollection> C createAndSaveNewResourceCollection(String name, Class<C> class1) {
+    public <C extends ResourceCollection> C createAndSaveNewResourceCollection(String name, Class<C> class1) {
         try {
             return init(class1.newInstance(), name);
         } catch (InstantiationException | IllegalAccessException e) {
@@ -425,7 +425,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return wlc;
     }
 
-    protected <C extends VisibleCollection> C init(C resourceCollection, String name) {
+    protected <C extends ResourceCollection> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
         resourceCollection.setViewable(true);
@@ -656,8 +656,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         }
     }
 
-    public static void assertNotEmpty(Collection<?> results) {
-        assertTrue(CollectionUtils.isNotEmpty(results));
+    public static void assertNotEmpty(String message, Collection<?> results) {
+        assertTrue(message, CollectionUtils.isNotEmpty(results));
+    }
+
+    public static void assertEmpty(String message,Collection<?> results) {
+        assertTrue(message, CollectionUtils.isEmpty(results));
     }
 
     public SimpleMailMessage checkMailAndGetLatest(String text) {

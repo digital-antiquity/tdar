@@ -69,7 +69,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     public void testContributorStats() {
         Set<Long> findAllContributorIds = entityService.findAllContributorIds();
         logger.debug("{}", findAllContributorIds);
-        assertNotEmpty(findAllContributorIds);
+        assertNotEmpty("should have contributor ids", findAllContributorIds);
     }
     
     @SuppressWarnings("deprecation")
@@ -218,7 +218,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         createAndSaveNewInformationResource(CodingSheet.class);
         createAndSaveNewInformationResource(Ontology.class);
         createAndSaveNewInformationResource(Geospatial.class);
-        createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewPerson());
+        createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewUser());
         generateDocumentWithFileAndUseDefaultUser();
         processingTask.execute();
         genericService.synchronize();

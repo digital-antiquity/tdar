@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.CustomizableCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
@@ -81,7 +81,7 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
 
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
-        List<CustomizableCollection> findAllResourceCollections = new ArrayList<>();
+        List<ResourceCollection> findAllResourceCollections = new ArrayList<>();
         findAllResourceCollections.addAll(genericService.findAll(ListCollection.class));
         int numListCollections = findAllResourceCollections.size();
         List<SharedCollection> shareCollections = genericService.findAll(SharedCollection.class);
@@ -97,7 +97,7 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
             findAllResourceCollections.addAll(shareCollections);
         }
         
-        for (CustomizableCollection c : findAllResourceCollections) {
+        for (ResourceCollection c : findAllResourceCollections) {
             if (c.getProperties() != null && c.getProperties().getWhitelabel()) {
                 whitelabelCount++;
             }

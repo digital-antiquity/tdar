@@ -108,7 +108,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     private void assertResultsOkay(String term, SearchResult<Person> controller_) {
-        assertNotEmpty(controller_.getResults());
+        assertNotEmpty("should have results", controller_.getResults());
         for (Object obj : controller_.getResults()) {
             Person inst = (Person) obj;
             if (!term.contains(" ")) {
@@ -242,7 +242,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         SearchResult<Person> result = findPerson(person_, "billingAdmin", true, min);
 
         List<Person> people = result.getResults();
-        assertNotEmpty(people);
+        assertNotEmpty("should have results", people);
         assertTrue(people.contains(user));
     }
 

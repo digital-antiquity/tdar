@@ -39,7 +39,7 @@ public class DashboardControllerITCase extends AbstractControllerITCase {
         projectWithDifferentSubmitterAndFullUser.setDescription("test");
         projectWithDifferentSubmitterAndFullUser.setStatus(Status.ACTIVE);
         projectWithDifferentSubmitterAndFullUser.markUpdated(getBasicUser());
-        TdarUser testPerson = createAndSaveNewPerson();
+        TdarUser testPerson = createAndSaveNewUser();
 
         genericService.save(projectWithDifferentSubmitterAndFullUser);
 

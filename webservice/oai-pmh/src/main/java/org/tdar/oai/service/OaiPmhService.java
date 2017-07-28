@@ -2,7 +2,6 @@ package org.tdar.oai.service;
 
 import java.util.Date;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.bean.OAIResumptionToken;
 import org.tdar.oai.bean.OaiIdentifier;
@@ -36,7 +35,6 @@ public interface OaiPmhService {
      * @param response
      * @return
      * @throws OAIException
-     * @throws ParseException
      */
     ResumptionTokenType listIdentifiersOrRecords(Date from, Date until, OAIMetadataFormat metadataPrefix,
             OAIResumptionToken resumptionToken, ListResponse response) throws OAIException;
@@ -73,7 +71,6 @@ public interface OaiPmhService {
      * @param resumptionToken
      * @return
      * @throws OAIException
-     * @throws ParseException
      */
     ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat,
             OAIResumptionToken resumptionToken) throws OAIException;
@@ -88,7 +85,6 @@ public interface OaiPmhService {
      * @param resumptionToken
      * @return
      * @throws OAIException
-     * @throws ParseException
      */
     ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat,
             OAIResumptionToken resumptionToken) throws OAIException;

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.Keyword;
@@ -51,7 +51,7 @@ public interface ResourceSearchService {
      * @throws SolrServerException
      * @throws ParseException
      */
-    LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(VisibleCollection indexable, String term, TdarUser user,
+    LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(ResourceCollection indexable, String term, TdarUser user,
             LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SearchException, IOException;
 
     LuceneSearchResultHandler<Resource> lookupResource(TdarUser user, ResourceLookupObject look, LuceneSearchResultHandler<Resource> result,
@@ -84,5 +84,8 @@ public interface ResourceSearchService {
      */
     LuceneSearchResultHandler<Resource> generateQueryForRelatedResources(Creator<?> creator, TdarUser user, FacetedResultHandler<Resource> result,
             TextProvider provider) throws SearchException, IOException;
+
+    LuceneSearchResultHandler<Resource> findByTdarYear(int year, LuceneSearchResultHandler<Resource> result, TextProvider support)
+            throws SearchException, IOException;
 
 }

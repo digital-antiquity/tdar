@@ -17,11 +17,14 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.CustomizableCollection;
+import org.tdar.core.bean.AbstractSequenced;
+import org.tdar.core.bean.Sequenceable;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -240,15 +243,13 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
 
-
-    private List<VisibleCollection> visibleCollections = new ArrayList<>();
+    private List<ResourceCollection> visibleCollections = new ArrayList<>();
     /**
      * All shares and list collections
      * 
      * @return
      */
-    public List<VisibleCollection> getViewableResourceCollections() {
-        
+    public List<ResourceCollection> getViewableResourceCollections() {
         return visibleCollections;
     }
 
@@ -304,7 +305,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 
-    private transient CustomizableCollection whiteLabelCollection;
+    private transient ResourceCollection whiteLabelCollection;
 
     @XmlTransient
     /**
@@ -312,7 +313,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
      *
      * @return
      */
-    public CustomizableCollection getWhiteLabelCollection() {
+    public ResourceCollection getWhiteLabelCollection() {
         if (whiteLabelCollection == null) {
             whiteLabelCollection = resourceCollectionService.getWhiteLabelCollectionForResource(getResource());
         }
@@ -320,7 +321,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     public boolean isWhiteLabelLogoAvailable() {
-        CustomizableCollection wlc = getWhiteLabelCollection();
+        ResourceCollection wlc = getWhiteLabelCollection();
         return wlc != null && checkLogoAvailable(FilestoreObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
     }
 

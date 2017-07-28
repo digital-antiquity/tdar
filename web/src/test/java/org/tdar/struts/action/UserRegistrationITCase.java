@@ -88,7 +88,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase implements 
     @Test
     @Rollback
     public void testUnContributorStatus() throws TdarActionException {
-        TdarUser person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewUser();
 
         person.setContributor(false);
         ResourceController controller = generateNewInitializedController(ResourceController.class, person);

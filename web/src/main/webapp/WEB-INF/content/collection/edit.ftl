@@ -102,9 +102,6 @@
             </div>
 
 
-            <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
-            cssClass='resizable input-xxlarge' title="Please enter the description " />
-
             <#if administrator>
                 <@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
                 cssClass='resizable input-xxlarge' title="Please enter the description " />

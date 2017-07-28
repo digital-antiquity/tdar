@@ -14,7 +14,6 @@ import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -35,14 +34,14 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
         for (ResourceCollection collection : results.getResults()) {
             logger.info("{}", collection);
             if (collection != null) {
-                assertFalse(((VisibleCollection) collection).getTitle().equals("Kleis"));
+                assertFalse(collection.getTitle().equals("Kleis"));
             }
         }
         results = search(null, null, "Kintigh - C");
         for (ResourceCollection collection : results.getResults()) {
             logger.info("{}", collection);
             if (collection != null) {
-                assertTrue(((VisibleCollection) collection).getTitle().contains("Kintigh - C"));
+                assertTrue(collection.getTitle().contains("Kintigh - C"));
             }
         }
 
@@ -66,7 +65,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
         for (ResourceCollection collection : result.getResults()) {
             logger.info("{}", collection);
             if (collection != null) {
-                assertTrue(((VisibleCollection) collection).getTitle().contains("Kintigh - C"));
+                assertTrue(collection.getTitle().contains("Kintigh - C"));
             }
         }
 

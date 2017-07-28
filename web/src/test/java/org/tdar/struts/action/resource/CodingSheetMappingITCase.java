@@ -677,7 +677,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         Long ontology_id = ontology.getId();
         genericService.refresh(ontology);
         logger.info("nodes;{}", ontology.getOntologyNodes());
-        assertNotEmpty(ontology.getOntologyNodes());
+        assertNotEmpty("should have ontology nodes", ontology.getOntologyNodes());
         genericService.detachFromSession(ontology);
         Dataset dataset = setupAndLoadResource(TestConstants.TEST_ROOT_DIR + "/data_integration_tests/periods-modified-sm-01182011.xlsx", Dataset.class);
         ColumnMetadataController controller = generateNewInitializedController(ColumnMetadataController.class);

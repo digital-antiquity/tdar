@@ -47,10 +47,13 @@ public class CollectionAlternateParentWebITCase extends AbstractAdminAuthenticat
         gotoPage(childUrl);
         clickLinkWithText("edit");
         assertTextPresentInPage(namea);
+        setInput("parentId", "");
+        setInput("parentCollectionName", "");
         setInput("alternateParentId", "");
         setInput("alternateParentCollectionName", "");
         submitForm();
         assertTextNotPresent(namea);
+        assertTextNotPresent(name);
         
         logout();
 

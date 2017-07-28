@@ -49,4 +49,5 @@ public interface EmailService {
             GeneralPermissions permission, Date expires);
 
     void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person);
+
 }

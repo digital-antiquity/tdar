@@ -12,18 +12,18 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.apache.solr.client.solrj.SolrServerException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.Keyword;
@@ -54,6 +54,7 @@ import org.tdar.search.query.part.resource.CategoryTermQueryPart;
 import org.tdar.search.query.part.resource.ProjectIdLookupQueryPart;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.range.DateRange;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -116,7 +117,7 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
      */
     @Override
     @Transactional(readOnly = true)
-    public LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(VisibleCollection indexable, String term, TdarUser user,
+    public LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(ResourceCollection indexable, String term, TdarUser user,
             LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SearchException, IOException {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         List<Long> ids = new ArrayList<>();
@@ -338,5 +339,23 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
             throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    public LuceneSearchResultHandler<Resource> findByTdarYear(int year, LuceneSearchResultHandler<Resource> result, TextProvider support)
+            throws SearchException, IOException {
+        ResourceQueryBuilder q = new ResourceQueryBuilder();
+        q.setOperator(Operator.AND);
+        ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
+        reservedSearchParameters.setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE)));
+        initializeReservedSearchParameters(reservedSearchParameters, null);
+        SearchParameters params = new SearchParameters();
+        DateTime dt = new DateTime().withYear(year).withMonthOfYear(1).withDayOfMonth(1).withTimeAtStartOfDay();
+        params.getRegisteredDates().add(new DateRange(dt.toDate(), dt.plusYears(1).toDate()));
+        q.append(params.toQueryPartGroup(support));
+        q.append(reservedSearchParameters.toQueryPartGroup(support));
+        result.setSortField(SortOption.DATE);
+        searchService.handleSearch(q, result, support);
+        return result;
     }
 }

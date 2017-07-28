@@ -487,7 +487,7 @@
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
                 query = "select count(distinct res.id) from SharedCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
         @NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
-                query = "from HierarchicalCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
+                query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
                 query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv"),
@@ -497,10 +497,10 @@
 
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGO_EXIPRED,
-                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic <= :dateStart and irf_.restriction like 'EMBARGO%' )"),
+                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic < :dateStart and irf_.restriction like 'EMBARGO%' )"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW,
-                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic <= :dateStart and irf_.dateMadePublic >=:dateEnd  and irf_.restriction like 'EMBARGO%' )"),
+                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic < :dateStart and irf_.dateMadePublic >:dateEnd  and irf_.restriction like 'EMBARGO%' )"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
                 query = "select distinct dt, ds.title " + TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX
@@ -571,7 +571,7 @@
                 query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col"),
         @NamedQuery(
                 name=TdarNamedQueries.CHECK_INVITES,
-                query = "from UserInvite ui inner join ui.user as user where lower(user.email) like lower(:email)"),
+                query = "select ui from UserInvite ui inner join ui.user as user where lower(user.email) like lower(:email)"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_DOWNLOAD_AUTHORIZATION,
                 query = "from DownloadAuthorization da where da.sharedCollection.id=:collectionId"),

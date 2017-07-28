@@ -1,6 +1,6 @@
 package org.tdar.struts.action.scholar;
 
-import java.util.List;
+import java.io.IOException;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -10,27 +10,28 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Indexable;
-import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.utils.PaginationHelper;
 
-@SuppressWarnings("rawtypes")
 @Namespace("/scholar")
 @ParentPackage("default")
 @Component
 @Scope("prototype")
 @HttpsOnly
-public class ScholarController extends AbstractLookupController {
+public class ScholarController extends AbstractLookupController<Resource> {
 
     private static final long serialVersionUID = -4680630242612817779L;
     private int year;
+    private PaginationHelper paginationHelper;
+    
+    
+    
     @Autowired
-    private transient AuthorizationService authorizationService;
-
-    @Autowired
-    private transient ResourceService resourceService;
+    private transient ResourceSearchService resourceSearchService;
 
     public int getYear() {
         return year;
@@ -40,18 +41,25 @@ public class ScholarController extends AbstractLookupController {
         this.year = year;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     @Actions({
             @Action(value = "scholar", results = { @Result(name = SUCCESS, location = "scholar.ftl") }),
     })
-    public String execute() {
+    public String execute() throws SearchException, IOException {
         setRecordsPerPage(250);
-        setResults(resourceService.findByTdarYear(this, getYear()));
-        for (Indexable p : (List<Indexable>) getResults()) {
-            authorizationService.applyTransientViewableFlag(p, getAuthenticatedUser());
-        }
+        setResults(resourceSearchService.findByTdarYear(year,this, this).getResults());
         return SUCCESS;
+    }
+
+    public PaginationHelper getPaginationHelper() {
+        if (paginationHelper == null) {
+            paginationHelper = PaginationHelper.withSearchResults(this);
+        }
+        return paginationHelper;
+    }
+
+    public void setPaginationHelper(PaginationHelper paginationHelper) {
+        this.paginationHelper = paginationHelper;
     }
 
 }

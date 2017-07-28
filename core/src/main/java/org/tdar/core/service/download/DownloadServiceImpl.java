@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.CustomizableCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
@@ -362,7 +362,7 @@ public class DownloadServiceImpl implements DownloadService  {
     }
 
     private File getCoverLogo(InformationResource resourceToDownload) {
-        CustomizableCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
+        ResourceCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
         if (whiteLabelCollection == null || whiteLabelCollection.getProperties() == null || !whiteLabelCollection.getProperties().getCustomDocumentLogoEnabled()) {
             return null;
         }

@@ -26,9 +26,7 @@ import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.base.GenericDao;
@@ -67,8 +65,6 @@ import org.tdar.transform.ExtendedDcTransformer;
 import org.tdar.transform.ModsTransformer;
 import org.tdar.utils.MessageHelper;
 import org.w3c.dom.Document;
-
-import com.ibm.icu.util.BytesTrie.Result;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 
@@ -222,7 +218,6 @@ public class OaiPmhServiceImpl implements OaiPmhService {
 	 * @param startRecord
 	 * @param response
 	 * @return
-	 * @throws ParseException
 	 * @throws OAIException
 	 */
 	private OaiSearchResult populateResult(OAIRecordType recordType, 

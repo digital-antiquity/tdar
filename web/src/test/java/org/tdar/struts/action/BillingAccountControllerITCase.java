@@ -58,7 +58,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
     @Test
     @Rollback
     public void testAccountControllerChoicesOkNewAccount() throws TdarActionException {
-        TdarUser user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewUser();
         Invoice invoice = new Invoice(user, PaymentMethod.INVOICE, 10L, 0L, null);
         genericService.saveOrUpdate(invoice);
 
@@ -77,7 +77,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         BillingAccountSelectionAction controller = generateNewController(BillingAccountSelectionAction.class);
         Invoice invoice = createTrivialInvoice();
         String msg = null;
-        init(controller, createAndSaveNewPerson());
+        init(controller, createAndSaveNewUser());
         controller.setInvoiceId(invoice.getId());
         controller.prepare();
         try {
@@ -136,7 +136,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
     @Test
     @Rollback
     public void testReEvaluationAppropriateWithUncountedThings() throws TdarActionException, InstantiationException, IllegalAccessException, FileNotFoundException {
-        TdarUser person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewPerson("aa@bbasdas.com", "suffix");
         BillingAccount invoice = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), person);
         Project project = createAndSaveNewProject("title");
         Document doc = createAndSaveNewInformationResource(Document.class, person);
@@ -299,7 +299,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         }
         assertFalse(seen);
         Set<Coupon> coupons = controller.getAccount().getCoupons();
-        assertNotEmpty(coupons);
+        assertNotEmpty("should have coupons", coupons);
         Coupon coupon = coupons.iterator().next();
         logger.info(coupon.getCode());
         assertNotNull(coupon.getCode());

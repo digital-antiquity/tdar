@@ -278,6 +278,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                     roles.add(role.name());
                     getFacetWrapper().facetBy(role.name(), Creator.class);
                 }
+                // 10 per facet group should be plenty
+                getFacetWrapper().setMaxFacetLimit(10);
                 resourceSearchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this, this);
                 List<Long> ignoreIds = new ArrayList<>();
                 ignoreIds.add(creator.getId());

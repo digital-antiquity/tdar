@@ -2,6 +2,7 @@ package org.tdar.struts.action.entity;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasKey;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Assert;
@@ -11,6 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts_base.action.TdarActionException;
@@ -48,6 +50,36 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         p = null;
         p = genericService.find(Person.class, 1L);
         Assert.assertEquals("bill", p.getFirstName().toLowerCase());
+    }
+
+    @Test
+    @Rollback
+    public void testContributorChange() throws Exception {
+        // simulate the edit
+        TdarUser user = createAndSaveNewPerson("dfsd@sdasdf.com", "non");
+        user.setContributorAgreementVersion(-1);
+        user.setContributor(false);
+        genericService.saveOrUpdate(user);
+        TdarUserController uc = generateNewInitializedController(TdarUserController.class, user);
+        Long userId = user.getId();
+        user = null;
+        
+        uc.setId(userId);
+        uc.prepare();
+        uc.edit();
+        logger.debug("{}", uc.getPersistable());
+//        Assert.assertEquals(uc.getPersistable().getFirstName().toLowerCase(), "allen");
+        assertEquals(false, uc.getContributor());
+        uc.setContributor(true);
+        uc.setServletRequest(getServletPostRequest());
+        uc.save();
+
+        user = null;
+        genericService.synchronize();
+        user = genericService.find(TdarUser.class, userId);
+        logger.debug("version: {}; contributor: {}", user.getContributorAgreementVersion(), user.isContributor());
+        Assert.assertEquals(Boolean.TRUE, user.isContributor());
+        Assert.assertNotEquals(-1, user.getContributorAgreementVersion().intValue());
     }
 
     @Test

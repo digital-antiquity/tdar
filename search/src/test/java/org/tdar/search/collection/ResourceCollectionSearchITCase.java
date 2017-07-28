@@ -3,7 +3,6 @@ package org.tdar.search.collection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -15,7 +14,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -64,7 +62,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         SearchResult<ResourceCollection> result = new SearchResult<>();
         collectionSearchService.buildResourceCollectionQuery(getEditorUser(), csqo,  result, MessageHelper.getInstance());
         logger.debug("{}", result.getResults());
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
         assertEquals("should have one result",  1, result.getResults().size());
     }
 
@@ -74,7 +72,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         init();
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         SearchResult<ResourceCollection> result = runQuery(null, csqo);
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
         for (ResourceCollection c : result.getResults()) {
             logger.debug("{} {}", c.getId(), c);
         }
@@ -87,7 +85,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.setLimitToTopLevel(false);
         SearchResult<ResourceCollection> result = runQuery(getAdminUser(), csqo);
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
         boolean seen = false;
         for (ResourceCollection c : result.getResults()) {
             logger.debug("{} {}", c.getId(), c);
@@ -99,7 +97,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
         csqo.setLimitToTopLevel(true);
         result = runQuery(getAdminUser(), csqo);
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
 
         seen = false;
         for (ResourceCollection c : result.getResults()) {
@@ -121,14 +119,10 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.setIncludeHidden(false);
         SearchResult<ResourceCollection> result = runQuery(getAdminUser(), csqo);
-        assertNotEmpty(result.getResults());
+        assertNotEmpty("should have results", result.getResults());
         for (ResourceCollection c : result.getResults()) {
-            if (c instanceof VisibleCollection) {
-                logger.debug("{} {} {}", c.getId(), c, ((VisibleCollection) c).isHidden());
-                assertFalse("should not be hidden", ((VisibleCollection) c).isHidden());
-            } else {
-                fail("should not be indexing InternalCollections");
-            }
+                logger.debug("{} {} {}", c.getId(), c, c.isHidden());
+                assertFalse("should not be hidden", c.isHidden());
         }
     }
 
@@ -145,8 +139,8 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
         result = runQuery(null, csqo);
         for (ResourceCollection c : result.getResults()) {
-            logger.debug("{} {}", c.getId(), ((VisibleCollection) c).getTitle());
-            assertTrue("title contains kbp or kintigh", ((VisibleCollection) c).getTitle().contains("KBP") || ((VisibleCollection) c).getTitle().contains("Kintigh"));
+            logger.debug("{} {}", c.getId(), c.getTitle());
+            assertTrue("title contains kbp or kintigh", c.getTitle().contains("KBP") || c.getTitle().contains("Kintigh"));
         }
     }
 

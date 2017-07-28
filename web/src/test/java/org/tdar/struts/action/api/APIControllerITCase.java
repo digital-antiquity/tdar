@@ -27,7 +27,6 @@ import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
@@ -175,15 +174,11 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         genericService.delete(importedRecord);
         for (SharedCollection rc : importedRecord.getSharedResourceCollections()) {
             logger.debug("{} - {}", rc.getName(), rc.isHidden());
-            if (rc instanceof VisibleCollection) {
                 if (rc.getName().equals("hidden")) {
                     assertTrue(rc.isHidden());
                 } else {
                     assertFalse(rc.isHidden());
                 }
-            } else {
-                assertTrue(rc.isHidden());
-            }
         }
     }
 

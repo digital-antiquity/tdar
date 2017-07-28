@@ -112,6 +112,10 @@ public class ResourceRequestAccessAction extends AbstractAuthenticatableAction
     @SkipValidation
     @Override
     public String execute() throws TdarActionException {
+        if (PersistableUtils.isNullOrTransient(getResource())) {
+            return ERROR;
+        }
+        
         // if we're logged out, go to request-access-unathenticated.ftl
         if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
             return SUCCESS_UNAUTH;

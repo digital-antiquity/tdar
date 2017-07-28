@@ -6,13 +6,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -53,7 +51,7 @@ public interface ResourceCollectionService {
      * 
      * @return
      */
-    <C extends VisibleCollection> List<C> findAllTopLevelCollections();
+    <C extends ResourceCollection> List<C> findAllTopLevelCollections();
 
     /**
      * Find all direct child @link ResourceCollection entries of a @link ResourceCollection
@@ -243,12 +241,12 @@ public interface ResourceCollectionService {
     void reconcileIncomingResourcesForCollection(RightsBasedResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove);
 
-    void removeResourceFromCollection(Resource resource, VisibleCollection collection, TdarUser authenticatedUser);
+    void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser);
 
     void reconcileIncomingResourcesForCollectionWithoutRights(ListCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove);
 
-    void deleteForController(VisibleCollection persistable, String deletionReason, TdarUser authenticatedUser);
+    void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser);
 
     DeleteIssue getDeletionIssues(TextProvider provider, ResourceCollection persistable);
 
@@ -258,7 +256,7 @@ public interface ResourceCollectionService {
 
     ResourceCollection getRandomFeaturedCollection();
 
-    CustomizableCollection getWhiteLabelCollectionForResource(Resource resource);
+    ResourceCollection getWhiteLabelCollectionForResource(Resource resource);
 
     /**
      * Return list of shared resources that match a specified name and are editable for a specified user. This
@@ -279,7 +277,7 @@ public interface ResourceCollectionService {
      * @param rc
      * @return
      */
-    CustomizableCollection convertToWhitelabelCollection(CustomizableCollection rc);
+    ResourceCollection convertToWhitelabelCollection(ResourceCollection rc);
 
     /**
      * Detach the provided white-label collection and return a persisted resource collection object.
@@ -287,13 +285,13 @@ public interface ResourceCollectionService {
      * @param wlc
      * @return
      */
-    CustomizableCollection convertToResourceCollection(CustomizableCollection wlc);
+    ResourceCollection convertToResourceCollection(ResourceCollection wlc);
 
     void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser);
 
-    <C extends VisibleCollection> void moveResource(Resource resource, C fromCollection, C toCollection, TdarUser tdarUser);
+    <C extends ResourceCollection> void moveResource(Resource resource, C fromCollection, C toCollection, TdarUser tdarUser);
 
-    String getSchemaOrgJsonLD(VisibleCollection resource) throws IOException;
+    String getSchemaOrgJsonLD(ResourceCollection resource) throws IOException;
 
     <C extends ResourceCollection> void saveCollectionForRightsController(C c, TdarUser authenticatedUser,
             List<UserRightsProxy> proxies,
