@@ -608,8 +608,8 @@ public class AuthenticationService {
             case TOS_AGREEMENT:
                 user.setTosVersion(tosLatestVersion);
                 break;
-            case GUEST_ACCOUNT:
-                break;
+//            case GUEST_ACCOUNT:
+//                break;
         }
     }
 

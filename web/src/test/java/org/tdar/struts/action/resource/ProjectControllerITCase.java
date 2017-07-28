@@ -23,7 +23,6 @@ import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -341,8 +340,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         // the collections should appear in the list, though we aren't sure of the order.
         ArrayList<String> names = new ArrayList<String>();
         for (ResourceCollection rc : resourceCollections) {
-            if (rc instanceof VisibleCollection)
-            names.add(((VisibleCollection) rc).getName());
+            names.add(rc.getName());
         }
 
         assertTrue(names.contains(name1));

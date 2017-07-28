@@ -487,7 +487,7 @@
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
                 query = "select count(distinct res.id) from SharedCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
         @NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
-                query = "from HierarchicalCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
+                query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
                 query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv"),

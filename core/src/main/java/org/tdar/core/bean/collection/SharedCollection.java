@@ -11,8 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -25,11 +27,12 @@ import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @DiscriminatorValue(value = "SHARED")
 @Entity
 @XmlRootElement(name = "resourceCollection")
-public class SharedCollection extends CustomizableCollection<SharedCollection>
+public class SharedCollection extends HierarchicalCollection<SharedCollection>
         implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName, Sortable {
     private static final long serialVersionUID = 7900346272773477950L;
 
@@ -88,6 +91,7 @@ public class SharedCollection extends CustomizableCollection<SharedCollection>
     @JoinColumn(name = "alternate_parent_id")
     private SharedCollection alternateParent;
     
+    @Override
     public SharedCollection getParent() {
         return parent;
     }
@@ -141,6 +145,7 @@ public class SharedCollection extends CustomizableCollection<SharedCollection>
         return getVisibleParents(SharedCollection.class);
     }
 
+    @Override
     public SharedCollection getAlternateParent() {
         return alternateParent;
     }
@@ -149,4 +154,11 @@ public class SharedCollection extends CustomizableCollection<SharedCollection>
         this.alternateParent = alternateParent;
     }
 
+    @Override
+    public void copyImmutableFieldsFrom(ResourceCollection resource) {
+        super.copyImmutableFieldsFrom(resource);
+        if (resource instanceof SharedCollection ) {
+            this.setParent(((SharedCollection) resource).getParent());
+        }
+    }
 }

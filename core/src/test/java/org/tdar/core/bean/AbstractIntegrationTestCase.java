@@ -1,6 +1,5 @@
 package org.tdar.core.bean;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
@@ -8,25 +7,17 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -56,8 +47,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -98,9 +89,6 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.db.conversion.DatasetConversionFactory;
-import org.tdar.db.conversion.converters.DatasetConverter;
-import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
@@ -414,7 +402,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     // create new, public, collection with the getUser() as the owner and no resources
-    public <C extends VisibleCollection> C createAndSaveNewResourceCollection(String name, Class<C> class1) {
+    public <C extends ResourceCollection> C createAndSaveNewResourceCollection(String name, Class<C> class1) {
         try {
             return init(class1.newInstance(), name);
         } catch (InstantiationException | IllegalAccessException e) {
@@ -437,7 +425,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return wlc;
     }
 
-    protected <C extends VisibleCollection> C init(C resourceCollection, String name) {
+    protected <C extends ResourceCollection> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
         resourceCollection.setViewable(true);

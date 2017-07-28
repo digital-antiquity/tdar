@@ -16,11 +16,12 @@ public enum AuthNotice {
     /**
      * Contributor agreement has changed; user must accept new terms in order to perform "logged-in" actions
      */
-    CONTRIBUTOR_AGREEMENT,
-
-    /**
-     * user is logged-in with 'guest' account; The system should notify user of limitations (e.g. 'contributions will
-     * be deleted after 24hrs'), but does not require explicit acceptance
-     */
-    GUEST_ACCOUNT
+    CONTRIBUTOR_AGREEMENT
+//    ,
+//
+//    /**
+//     * user is logged-in with 'guest' account; The system should notify user of limitations (e.g. 'contributions will
+//     * be deleted after 24hrs'), but does not require explicit acceptance
+//     */
+//    GUEST_ACCOUNT
 }

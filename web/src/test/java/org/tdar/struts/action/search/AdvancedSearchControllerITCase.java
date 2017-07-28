@@ -21,7 +21,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -343,7 +342,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         // We should now have two terms: within-collection, and all-fields
         assertThat(firstGroup().getFieldTypes(), contains(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
-        assertThat(((VisibleCollection)firstGroup().getCollections().get(0)).getTitle(), is(collectionTitle));
+        assertThat((firstGroup().getCollections().get(0)).getTitle(), is(collectionTitle));
     }
 
     private void updateAndIndex(Indexable doc) throws SearchIndexException, IOException {

@@ -23,11 +23,10 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -328,7 +327,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return viewableListCollections;
     }
 
-    private <C extends VisibleCollection> void addViewableCollections(Set<C> list, Collection<C> incomming) {
+    private <C extends ResourceCollection> void addViewableCollections(Set<C> list, Collection<C> incomming) {
         if (isAuthenticated()) {
             for (C resourceCollection : incomming) {
                 if (authorizationService.canViewCollection(getAuthenticatedUser(), resourceCollection) && !resourceCollection.isSystemManaged()) {
@@ -343,8 +342,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
      * 
      * @return
      */
-    public List<VisibleCollection> getViewableResourceCollections() {
-        List<VisibleCollection> visibleCollections = new ArrayList<>();
+    public List<ResourceCollection> getViewableResourceCollections() {
+        List<ResourceCollection> visibleCollections = new ArrayList<>();
         visibleCollections.addAll(getViewableListResourceCollections());
         visibleCollections.addAll(getViewableSharedResourceCollections());
         return visibleCollections;
@@ -448,7 +447,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 
-    private transient CustomizableCollection whiteLabelCollection;
+    private transient ResourceCollection whiteLabelCollection;
 
     @XmlTransient
     /**
@@ -456,7 +455,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
      *
      * @return
      */
-    public CustomizableCollection getWhiteLabelCollection() {
+    public ResourceCollection getWhiteLabelCollection() {
         if (whiteLabelCollection == null) {
             whiteLabelCollection = resourceCollectionService.getWhiteLabelCollectionForResource(getResource());
         }
@@ -464,7 +463,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     public boolean isWhiteLabelLogoAvailable() {
-        CustomizableCollection wlc = getWhiteLabelCollection();
+        ResourceCollection wlc = getWhiteLabelCollection();
         return wlc != null && checkLogoAvailable(FilestoreObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
     }
 

@@ -37,7 +37,6 @@ import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -441,7 +440,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         vc.prepare();
         vc.view();
 
-        HierarchicalCollection rc2 = vc.getResourceCollection();
+        HierarchicalCollection rc2 = (HierarchicalCollection) vc.getResourceCollection();
         assertEquals(rc.getName(), rc2.getName());
         assertEquals("3 redundant authusers should have been normalized", 3, rc2.getAuthorizedUsers().size());
 
@@ -522,7 +521,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         List<ResourceCollection> collections_ = controller_.getResults();
         for (ResourceCollection result : collections_) {
             if (result != null) {
-                logger.debug("{} {} {} {} ", result.getId(), ((VisibleCollection) result).isHidden());
+                logger.debug("{} {} {} {} ", result.getId(), result.isHidden());
             }
             logger.debug("NULL");
         }
@@ -1037,9 +1036,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         shareController.getToAdd().add(proxy.getId());
         shareController.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         shareController.getPersistable().setDescription("description");
-        if (shareController.getPersistable() instanceof VisibleCollection) {
-            shareController.getPersistable().setHidden(true);
-        }
+        shareController.getPersistable().setHidden(true);
         shareController.setServletRequest(getServletPostRequest());
         shareController.setAsync(false);
         String result = shareController.save();

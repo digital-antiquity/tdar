@@ -21,7 +21,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -49,7 +48,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testSetupCorrect() {
         ResourceCollection collection = resourceCollectionService.find(1575l);
-        assertFalse(((VisibleCollection) collection).isHidden());
+        assertFalse(( collection).isHidden());
     }
 
     @Test

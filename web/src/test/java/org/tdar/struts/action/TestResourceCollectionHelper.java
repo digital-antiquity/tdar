@@ -14,7 +14,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -82,9 +81,7 @@ public interface TestResourceCollectionHelper {
             controller.setParentId(parentId);
         }
 
-        if (resourceCollection instanceof CustomizableCollection) {
-            ((CustomizableCollection) resourceCollection).setSortBy(SortOption.RESOURCE_TYPE);
-        }
+        resourceCollection.setSortBy(SortOption.RESOURCE_TYPE);
         controller.setServletRequest(getServletPostRequest());
 
         // A better replication of the struts lifecycle would include calls to prepare() and validate(), however, this

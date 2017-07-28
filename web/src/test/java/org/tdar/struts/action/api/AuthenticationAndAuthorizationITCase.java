@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -69,6 +70,31 @@ public class AuthenticationAndAuthorizationITCase extends AbstractIntegrationCon
     }
 
     @Test
+    @Rollback(true)
+    public void testDeclineContributor() throws Exception {
+        // a contributor that hasn't signed on since updated TOS and creator agreement
+        UserAgreementController controller = generateNewController(UserAgreementController.class);
+        TdarUser user = createAndSaveNewPerson("asdas@adasd.casd.com", "non-contib-decline");
+        user.setContributorAgreementVersion(-1);
+        user.setContributor(true);
+        genericService.saveOrUpdate(user);
+        Long userId = user.getId();
+        init(controller, user);
+        assertThat(authenticationService.getUserRequirements(user), hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT));
+        user = null;
+        controller.prepare();
+        controller.setAcceptedAuthNotices(Arrays.asList(AuthNotice.TOS_AGREEMENT));
+        controller.setSubmitDecline("declined");
+        controller.setServletRequest(getServletPostRequest());
+        controller.agreementResponse();
+        evictCache();
+        user = genericService.find(TdarUser.class, userId);
+        assertThat(authenticationService.getUserRequirements(user), not(hasItem(AuthNotice.CONTRIBUTOR_AGREEMENT)));
+        assertEquals(Boolean.FALSE, user.getContributor());
+
+    }
+
+    @Test
     @Rollback
     public void testCrowdDisconnected() {
         // Create a user ... replace crowd witha "broken crowd" and then
@@ -119,6 +145,5 @@ public class AuthenticationAndAuthorizationITCase extends AbstractIntegrationCon
         logger.info("person:{}", person);
         assertTrue("person should not have an id", PersistableUtils.isTransient(person));
     }
-
 
 }

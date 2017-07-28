@@ -10,8 +10,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -20,6 +23,7 @@ import javax.persistence.ConstraintMode;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -28,8 +32,11 @@ import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -43,25 +50,38 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Length;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.DeHydratable;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.HasSubmitter;
+import org.tdar.core.bean.Hideable;
+import org.tdar.core.bean.Sortable;
+import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.OaiDcProvider;
+import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -104,8 +124,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
 @XmlSeeAlso(value = { SharedCollection.class, ListCollection.class })
+@SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
 public abstract class ResourceCollection extends AbstractPersistable
-        implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus , HasAuthorizedUsers {
+        implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus , HasAuthorizedUsers, Sortable,
+        OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Hideable {
 
     /**
 
@@ -188,6 +210,194 @@ public abstract class ResourceCollection extends AbstractPersistable
     private Set<Long> resourceIds = new HashSet<>();
 
     private transient boolean created;
+    
+    
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sort_order", length = FieldLength.FIELD_LENGTH_25)
+    private SortOption sortBy = DEFAULT_SORT_OPTION;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "secondary_sort_order", length = FieldLength.FIELD_LENGTH_25)
+    private SortOption secondarySortBy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
+    private DisplayOrientation orientation = DisplayOrientation.LIST;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "whitelabel", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "custom_header_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "custom_doc_logo_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "featured_resources_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "subtitle", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "css", column = @Column(table = "whitelabel_collection"))
+    })
+    @Access(AccessType.FIELD)
+    private CollectionDisplayProperties properties;
+
+    public CollectionDisplayProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(CollectionDisplayProperties properties) {
+        this.properties = properties;
+    }
+
+    private transient boolean viewable;
+
+    @JsonView(JsonLookupFilter.class)
+    @Length(max = FieldLength.FIELD_LENGTH_500)
+    @NotNull
+    private String name;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    private String description;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "description_formatted")
+    private String formattedDescription;
+
+    @Column(name = "hidden", nullable = false)
+    private boolean hidden = false;
+
+
+    @XmlAttribute
+    @Override
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean visible) {
+        this.hidden = visible;
+    }
+
+    @Override
+    @JsonView(JsonLookupFilter.class)
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = StringUtils.trimToEmpty(name);
+    }
+
+    @Override
+    @JsonView(JsonLookupFilter.class)
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = StringUtils.trimToEmpty(description);
+    }
+
+    @Override
+    public boolean isValidForController() {
+        return StringUtils.isNotBlank(getName());
+    }
+
+    
+
+    @Override
+    public boolean isValid() {
+        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName());
+        if (isValidForController()) {
+            return ((getOwner() != null) && (getOwner().getId() != null) && (getOwner().getId() > -1));
+        }
+        
+        if (sortBy == null) {
+            return false;
+        }
+
+        return PersistableUtils.isNotNullOrTransient(getOwner());
+    }    
+
+    @Override
+    public String getTitle() {
+        return getName();
+    }
+
+    public String getFormattedDescription() {
+        return formattedDescription;
+    }
+
+    public void setFormattedDescription(String adminDescription) {
+        this.formattedDescription = adminDescription;
+    }
+
+    @JsonView(JsonLookupFilter.class)
+    public String getDetailUrl() {
+        return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
+    }
+
+    @Override
+    public String getSlug() {
+        return UrlUtils.slugify(getName());
+    }
+
+    @XmlTransient
+    @Override
+    public boolean isViewable() {
+        return viewable;
+    }
+
+    @Override
+    public void setViewable(boolean viewable) {
+        this.viewable = viewable;
+    }
+
+    public boolean isSupportsThumbnails() {
+        return false;
+    }
+
+    @XmlTransient
+    public boolean isVisibleAndActive() {
+        if (hidden) {
+            return false;
+        }
+        if (getStatus() != Status.ACTIVE) {
+            return false;
+        }
+        return true;
+    }
+    /**
+     * @param sortBy
+     *            the sortBy to set
+     */
+    public void setSortBy(SortOption sortBy) {
+        this.sortBy = sortBy;
+    }
+
+    /**
+     * @return the sortBy
+     */
+    @Override
+    public SortOption getSortBy() {
+        return sortBy;
+    }
+
+    public DisplayOrientation getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(DisplayOrientation orientation) {
+        this.orientation = orientation;
+    }
+
+    public SortOption getSecondarySortBy() {
+        return secondarySortBy;
+    }
+
+    public void setSecondarySortBy(SortOption secondarySortBy) {
+        this.secondarySortBy = secondarySortBy;
+    }
+
 
     public CollectionType getType() {
         return type;
@@ -252,14 +462,13 @@ public abstract class ResourceCollection extends AbstractPersistable
 
     @Override
     public String toString() {
-        return String.format("%s collection %s  (creator: %s %s)", getType(), getId(), owner.getProperName(), owner.getId());
+        String own = "no owner -1";
+        if (owner != null) {
+            own = owner.getProperName() + " " + owner.getId();
+        }
+        return String.format("%s collection %s  (creator: %s)", getType(), getId(), own);
     }
 
-    @Override
-    public boolean isValid() {
-        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner());
-        return PersistableUtils.isNotNullOrTransient(getOwner());
-    }
 
     @Override
     @Transient
@@ -335,12 +544,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.setSystemManaged(resource.isSystemManaged());
         if (resource instanceof RightsBasedResourceCollection && this instanceof RightsBasedResourceCollection) {
             ((RightsBasedResourceCollection)this).getResources().addAll(((RightsBasedResourceCollection) resource).getResources());
-        }
-        if (resource instanceof HierarchicalCollection && this instanceof HierarchicalCollection) {
-            ((HierarchicalCollection)this).setParent(((HierarchicalCollection) resource).getParent());
-        }
-        if (resource instanceof ListCollection && this instanceof ListCollection) {
-            ((ListCollection)this).getUnmanagedResources().addAll(((ListCollection) resource).getUnmanagedResources());
         }
     }
 

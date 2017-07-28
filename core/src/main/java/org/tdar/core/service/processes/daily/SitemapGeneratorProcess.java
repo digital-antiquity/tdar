@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -147,7 +147,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             if (collection.isHidden()) {
                 continue;
             }
-            String url = UrlService.absoluteSecureUrl((VisibleCollection)collection);
+            String url = UrlService.absoluteSecureUrl((ResourceCollection)collection);
             addUrl(wsg, url);
             totalCollections++;
             if (totalCollections % 500 == 0) {

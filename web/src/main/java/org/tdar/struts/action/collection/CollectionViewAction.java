@@ -23,9 +23,10 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -109,7 +110,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     private transient UserRightsProxyService userRightsProxyService;
     
     private Long parentId;
-    private List<HierarchicalCollection> collections = new LinkedList<>();
+    private List<ResourceCollection> collections = new LinkedList<>();
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
@@ -171,17 +172,17 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         return false;
     }
 
-    public HierarchicalCollection getResourceCollection() {
+    public ResourceCollection getResourceCollection() {
         return getPersistable();
     }
 
-    public void setResourceCollection(HierarchicalCollection rc) {
+    public void setResourceCollection(ResourceCollection rc) {
         setPersistable((C) rc);
     }
 
     @Override
     public Class<C> getPersistableClass() {
-        return (Class<C>) HierarchicalCollection.class;
+        return (Class<C>) (Class)ResourceCollection.class;
     }
 
     public List<SortOption> getSortOptions() {
@@ -208,20 +209,20 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
             return;
         }
         getLogger().trace("child collections: begin");
-        TreeSet<HierarchicalCollection> findAllChildCollections = new TreeSet<>(new TitleSortComparator());
+        TreeSet<ResourceCollection> findAllChildCollections = new TreeSet<>(new TitleSortComparator());
 
         if (isAuthenticated()) {
             resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), getActualClass());
             findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
             for (C c : resourceCollectionService.findDirectChildCollections(getId(), false, getActualClass())) {
-                findAllChildCollections.add((HierarchicalCollection) c);
+                findAllChildCollections.add((ResourceCollection) c);
             }
         }
         findAllChildCollections.addAll(resourceCollectionService.findAlternateChildren(Arrays.asList(getId()), getAuthenticatedUser(), getActualClass()));
-        setCollections(new ArrayList<HierarchicalCollection>(findAllChildCollections));
+        setCollections(new ArrayList<ResourceCollection>(findAllChildCollections));
         getLogger().trace("child collections: sort");
-        Collections.sort(collections);
+//        Collections.sort(collections);
         getLogger().trace("child collections: end");
 
         setInvites(userRightsProxyService.findUserInvites(getPersistable()));
@@ -254,11 +255,9 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     }
 
     public boolean isWhiteLabelCollection() {
-        if (getPersistable() instanceof CustomizableCollection) {
-            CustomizableCollection lc = (CustomizableCollection) getPersistable();
-            if (lc.getProperties() != null && lc.getProperties().getWhitelabel()) {
-                return true;
-            }
+        ResourceCollection lc = getPersistable();
+        if (lc.getProperties() != null && lc.getProperties().getWhitelabel()) {
+            return true;
         }
         return false;
     }
@@ -277,8 +276,8 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         setSortField(((Sortable) getPersistable()).getSortBy());
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
-            if (getPersistable() instanceof CustomizableCollection && ((CustomizableCollection<ListCollection>) getPersistable()).getSecondarySortBy() != null) {
-                setSecondarySortField(((CustomizableCollection<ListCollection>) getPersistable()).getSecondarySortBy());
+            if (getPersistable().getSecondarySortBy() != null) {
+                setSecondarySortField(getPersistable().getSecondarySortBy());
             }
         }
 
@@ -334,14 +333,14 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         this.recordsPerPage = recordsPerPage;
     }
 
-    public void setCollections(List<HierarchicalCollection> findAllChildCollections) {
+    public void setCollections(List<ResourceCollection> findAllChildCollections) {
         if (getLogger().isTraceEnabled()) {
             getLogger().trace("child collections: {}", findAllChildCollections);
         }
         this.collections = findAllChildCollections;
     }
 
-    public List<HierarchicalCollection> getCollections() {
+    public List<ResourceCollection> getCollections() {
         return this.collections;
     }
 
@@ -540,7 +539,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
      * @return
      */
     public boolean isSearchHeaderEnabled() {
-            CollectionDisplayProperties properties = ((CustomizableCollection)(getResourceCollection())).getProperties();
+            CollectionDisplayProperties properties = getResourceCollection().getProperties();
             if (properties != null && properties.getSearchEnabled()) {
                 return true;
             }
@@ -587,10 +586,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     @Override
     public DisplayOrientation getOrientation() {
         if (orientation == null) {
-            if (getPersistable() instanceof CustomizableCollection) {
-                return ((CustomizableCollection<ListCollection>) getPersistable()).getOrientation();
-            }
-            return DisplayOrientation.LIST;
+            return getPersistable().getOrientation();
         }
         return orientation;
     }

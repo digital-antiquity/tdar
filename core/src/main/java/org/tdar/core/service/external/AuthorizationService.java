@@ -30,7 +30,7 @@ import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -400,8 +400,8 @@ public class AuthorizationService implements Accessible {
     public boolean canView(TdarUser authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
-        } else if (item instanceof VisibleCollection) {
-            return canViewCollection( authenticatedUser, (VisibleCollection) item);
+        } else if (item instanceof ResourceCollection) {
+            return canViewCollection( authenticatedUser, (ResourceCollection) item);
         } else if (item instanceof DataIntegrationWorkflow) {
             return canViewWorkflow(authenticatedUser,(DataIntegrationWorkflow) item);
         } else {
@@ -516,7 +516,7 @@ public class AuthorizationService implements Accessible {
      * Visible collections
      */
     @Transactional(readOnly = true)
-    public boolean canViewCollection(TdarUser person, VisibleCollection collection) {
+    public boolean canViewCollection(TdarUser person, ResourceCollection collection) {
         if (collection == null) {
             return false;
         }
@@ -557,7 +557,7 @@ public class AuthorizationService implements Accessible {
             boolean viewable = setupViewable(authenticatedUser, item);
             if (item instanceof ResourceCollection) {
                 logger.trace("item is resource collection: {}", p);
-                if (item instanceof VisibleCollection  && !((VisibleCollection) item).isHidden()) {
+                if (item instanceof ResourceCollection  && !((ResourceCollection) item).isHidden()) {
                     viewable = true;
                 }
             }

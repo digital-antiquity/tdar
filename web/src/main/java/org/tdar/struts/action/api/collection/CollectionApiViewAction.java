@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.api.AbstractApiController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -63,8 +63,8 @@ public class CollectionApiViewAction extends AbstractApiController implements Pr
                 getLogger().debug("could not find resource: {}", getId());
             }
             String title = "no title";
-            if (resource instanceof VisibleCollection) {
-                title = ((VisibleCollection) resource).getTitle();
+            if (resource instanceof ResourceCollection) {
+                title = ((ResourceCollection) resource).getTitle();
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), title);
             getXmlResultObject().setCollectionResult(resource);

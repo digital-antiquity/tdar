@@ -24,7 +24,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.collection.ResourceCollectionService;
 
-@Ignore
+//@Ignore
 public class SharingITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -35,6 +35,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testResource() {
+        // test that a direct resource share exists (BillingUser -> reosurce -> basicUser)
         Dataset dataset = createAndSaveNewDataset();
         dataset.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(dataset);
@@ -46,7 +47,8 @@ public class SharingITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testResourceInCollection() {
+    public void testResourceInCollection() { 
+        // test that a direct collection share works
         Dataset dataset = createAndSaveNewDataset();
         SharedCollection collection = createAndSaveNewResourceCollection("test collection");
         collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
@@ -64,6 +66,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testResourceInNestedCollection() {
+        // test that a child collection share works, billing user is in child collection
         Dataset dataset = createAndSaveNewDataset();
         SharedCollection collection = createAndSaveNewResourceCollection("test collection");
         SharedCollection child = createAndSaveNewResourceCollection("test collection");
@@ -84,6 +87,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(false)
     public void testNewUser() {
+        // tests that a new user has notihng
         TdarUser user = createAndSaveNewUser();
         genericService.synchronize();
         List<TdarUser> findUsersSharedWith = resourceCollectionService.findUsersSharedWith(user);
