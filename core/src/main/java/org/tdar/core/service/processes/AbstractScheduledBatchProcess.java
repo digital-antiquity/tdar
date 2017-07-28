@@ -23,8 +23,6 @@ import org.tdar.utils.Pair;
  */
 public abstract class AbstractScheduledBatchProcess<P extends Persistable> extends AbstractPersistableScheduledProcess<P> implements BatchProcess {
 
-    private static final int DEFAULT_PROCESS_END_ID = 1_000_000;
-
     private static final long serialVersionUID = -334767596935956563L;
 
     protected final List<Pair<P, Throwable>> errors = new ArrayList<>();
