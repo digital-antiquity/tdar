@@ -229,6 +229,9 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             if (user.getUsername().equals(USERNAME)) {
                 info.setPassword(PASSWORD);
             }
+            if (StringUtils.isBlank(info.getPassword() )) {
+                info.setPassword(PASSWORD);
+            }
 
             if (localValues.containsKey(user.getUsername())) {
                 MockAuthenticationInfo local = localValues.get(user.getUsername());

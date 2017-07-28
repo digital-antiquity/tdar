@@ -23,5 +23,67 @@
             <column name="resource_id" valueNumeric="4292"/>
         </insert>
     </changeSet>
-    
+    <changeSet id="login-setup" author="abrin">
+        <insert tableName="creator">
+            <column name="id" valueNumeric="12550" />
+            <column name="status" value="ACTIVE" />
+            <column name="date_created" valueComputed="now()" />
+            <column name="date_updated" valueComputed="now()" />
+        </insert>
+        <insert tableName="person">
+            <column name="id" valueNumeric="12550" />
+            <column name="first_name" value="beatrice" />
+            <column name="last_name" value="user" />
+            <column name="email" value="bea@tdar.net" />
+        </insert>
+        <insert tableName="tdar_user">
+            <column name="id" valueNumeric="12550" />
+            <column name="tos_version" valueNumeric="4" />
+            <column name="contributor_agreement_version" valueNumeric="0" />
+            <column name="contributor" valueBoolean="true" />
+            <column name="username" value="bea@tdar.net" />
+            
+        </insert>
+        <insert tableName="creator">
+            <column name="id" valueNumeric="12551" />
+            <column name="status" value="ACTIVE" />
+            <column name="date_created" valueComputed="now()" />
+            <column name="date_updated" valueComputed="now()" />
+        </insert>
+        <insert tableName="person">
+            <column name="id" valueNumeric="12551" />
+            <column name="first_name" value="margeret" />
+            <column name="last_name" value="user" />
+            <column name="email" value="mu@tdar.net" />
+        </insert>
+        <insert tableName="tdar_user">
+            <column name="id" valueNumeric="12551" />
+            <column name="tos_version" valueNumeric="0" />
+            <column name="contributor_agreement_version" valueNumeric="0" />
+            <column name="contributor" valueBoolean="true" />
+            <column name="username" value="mu@tdar.net" />
+            
+        </insert>
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="MODIFY_RECORD"/>
+            <column name="general_permission_int" valueNumeric="500"/>
+            <column name="user_id" valueNumeric="12551"/>
+            <column name="creator_id" valueNumeric="8093"/>
+            <column name="resource_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="MODIFY_RECORD"/>
+            <column name="general_permission_int" valueNumeric="500"/>
+            <column name="user_id" valueNumeric="12550"/>
+            <column name="creator_id" valueNumeric="8093"/>
+            <column name="resource_collection_id" valueNumeric="1002"/>
+        </insert>
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="ADMINISTER_SHARE"/>
+            <column name="general_permission_int" valueNumeric="500"/>
+            <column name="user_id" valueNumeric="8093"/>
+            <column name="creator_id" valueNumeric="8093"/>
+            <column name="resource_collection_id" valueNumeric="1002"/>
+        </insert>
+    </changeSet>
 </databaseChangeLog>
