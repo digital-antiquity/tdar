@@ -85,5 +85,9 @@
             <column name="creator_id" valueNumeric="8093"/>
             <column name="resource_collection_id" valueNumeric="1002"/>
         </insert>
+        <sql>
+        SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
+        SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
+        </sql>
     </changeSet>
 </databaseChangeLog>
