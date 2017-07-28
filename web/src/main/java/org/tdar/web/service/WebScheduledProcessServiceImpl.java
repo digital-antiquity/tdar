@@ -23,6 +23,7 @@ import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
+import org.tdar.core.service.processes.weekly.WeeklyUserNotificationCleanup;
 
 @Service
 public class WebScheduledProcessServiceImpl implements WebScheduledProcessService {
@@ -161,4 +162,10 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
     public void cronGenerateWeeklyStats() {
         scheduledProcessService.queue(WeeklyStatisticsLoggingProcess.class);
     }
+    
+    @Scheduled(cron = "50 0 0 * * SAT")
+    public void removeOldNotifications() throws IOException {
+        scheduledProcessService.queue(WeeklyUserNotificationCleanup.class);
+    }
+
 }
