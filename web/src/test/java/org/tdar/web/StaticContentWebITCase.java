@@ -5,10 +5,9 @@ import java.io.File;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.configuration.TdarConfiguration;
 
-public class StaticContentWebITCase extends AbstractIntegrationTestCase {
+public class StaticContentWebITCase extends AbstractAnonymousWebTestCase {
 
     TdarConfiguration tdarConfig = TdarConfiguration.getInstance();
     

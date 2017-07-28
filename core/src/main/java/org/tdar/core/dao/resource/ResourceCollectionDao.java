@@ -452,10 +452,11 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
             return new ArrayList<>();
         }
         logger.trace("# userIds: {}",resultList.size());
-        List<Long> lst = new ArrayList<>();
+        Set<Long> lst = new HashSet<>();
         resultList.forEach(i -> {lst.add(i.longValue());});
+        
         List<TdarUser> users = new ArrayList<>(findAll(TdarUser.class, lst));
-//        logger.debug("users: {}",users);
+
         return users;
     }
 

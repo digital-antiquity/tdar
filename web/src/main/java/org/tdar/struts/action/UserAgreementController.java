@@ -83,13 +83,20 @@ public class UserAgreementController extends AbstractAuthenticatableAction imple
 
         if (acceptClicked()) {
             return SUCCESS;
-        } else {
+        };
+        
+        if (declineClicked()) {
             String fmt = getText("userAgreementController.decline_message");
             addActionMessage(String.format(fmt, getSiteAcronym()));
             getLogger().debug("agreements declined,  redirecting to logout page");
-            authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
-            return NONE;
+            if (authNotices.contains(AuthNotice.CONTRIBUTOR_AGREEMENT)) {
+                getAuthenticatedUser().setContributor(false);
+                getGenericService().save(getAuthenticatedUser());
+            }
         }
+        authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
+        
+        return NONE;
     }
 
     boolean processResponse() {

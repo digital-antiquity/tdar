@@ -29,6 +29,7 @@ import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.purl.dc.terms.MESH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
@@ -1506,4 +1507,43 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     }
 
 
+    @Test
+    @Rollback
+    public void testScholarLookup() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
+        // From the Hibernate documentation:
+        // "The default Date bridge uses Lucene's DateTools to convert from and to String. This means that all dates are expressed in GMT time."
+        // The Joda DateMidnight defaults to DateTimeZone.getDefault(). Which is probably *not* GMT
+        // So for the tests below to work in, say, Australia, we need to force the DateMidnight to the GMT time zone...
+        // ie:
+        // DateTimeZone dtz = DateTimeZone.forID("Australia/Melbourne");
+        // will break this test.
+        DateTimeZone dtz = DateTimeZone.forID("GMT");
+
+        // first create two documents with two separate create dates
+        Document document1 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest1@tdar.net", ""));
+        DateMidnight dm1 = new DateMidnight(2001, 2, 16, dtz);
+        document1.setDateCreated(dm1.toDate());
+        document1.setDate(2017);
+        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@tdar.net", ""));
+        DateMidnight dm2 = new DateMidnight(2002, 11, 1, dtz);
+        document2.setDateCreated(dm2.toDate());
+        document1.setDate(2012);
+
+        genericService.saveOrUpdate(document1, document2);
+        searchIndexService.index(document1, document2);
+        LuceneSearchResultHandler<Resource> result = new SearchResult<>();
+        resourceSearchService.findByTdarYear(2001, result, MessageHelper.getInstance());
+
+        assertTrue(result.getResults().contains(document1));
+        assertFalse(result.getResults().contains(document2));
+        
+        result = new SearchResult<>();
+        resourceSearchService.findByTdarYear(2017, result, MessageHelper.getInstance());
+
+        assertFalse(result.getResults().contains(document1));
+        assertFalse(result.getResults().contains(document2));
+    }
+
+
+    
 }
