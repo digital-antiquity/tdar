@@ -911,7 +911,6 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
             }
         }
         webClient.getCookieManager().clearCookies();
-        assertCurrentUrlEquals("/");
         assertTextPresentIgnoreCase("log in");
     }
 
