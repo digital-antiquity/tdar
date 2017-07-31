@@ -42,6 +42,27 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     }
     
     @Test
+    public void testDisableAccount() {
+        Map<String, String> personmap = new HashMap<String, String>();
+        setupBasicUser(personmap, "contributor" + System.currentTimeMillis());
+        String username = personmap.get("registration.person.username");;
+        String password = personmap.get("registration.password");
+        testRegister(personmap, TERMS.BOTH, true);
+        assertCurrentUrlContains("dashboard");
+        assertTextPresentIgnoreCase("Start a new Project");
+        clickLinkWithText("UPLOAD");
+        assertPageTitleEquals("add a new resource");
+        gotoPage("/entity/user/myprofile");
+        clickElementWithId("disable-account");
+        setInput("delete", "delete");
+        submitForm("delete");
+        assertTextPresentIgnoreCase("log in");
+        login(username, password);
+        logger.debug(getPageText());
+        assertTextPresent("Authentication failed.");
+    }
+    
+    @Test
     public void testRegisterNonContributor() {
     	Map<String, String> personmap = new HashMap<String, String>();
     	setupBasicUser(personmap, "contributor" + System.currentTimeMillis());

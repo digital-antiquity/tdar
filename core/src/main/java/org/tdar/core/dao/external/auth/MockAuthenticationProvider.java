@@ -272,7 +272,10 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public boolean updateBasicUserInformation(TdarUser user) {
-        //our mock service doesn't store email, firstname, or lastname so a no-op is sufficient here
+        MockAuthenticationInfo authenticationInfo = users.get(user.getUsername());
+        if (!user.isActive()) {
+            users.remove(user.getUsername());
+        }
         return true;
     }
 

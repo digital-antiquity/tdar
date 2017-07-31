@@ -29,18 +29,18 @@ public class DisableAccountAction extends AbstractAuthenticatableAction implemen
     @Autowired
     private AuthenticationService authenticationService;
 
-    @Action(value = "disable-confirm",
+    @Action(value = "delete",
             results = {
                     @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/"),
                     @Result(name = CONFIRM, location = "/WEB-INF/content/account/confirm-disable.ftl")
             })
-    @PostOnly
     @SkipValidation
     public String execute() {
-        if (!DELETE.equals(getDelete())) {
+        if (!isPostRequest() || !DELETE.equals(getDelete())) {
             return CONFIRM;
         }
 
+        getLogger().error("user is disabling account: {} -- {}", getAuthenticatedUser(), getDeletionReason());
         authenticationService.disableAccount(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
         return SUCCESS;
     }
