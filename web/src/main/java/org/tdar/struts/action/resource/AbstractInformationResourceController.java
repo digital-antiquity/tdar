@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -26,8 +25,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.service.EntityService;
-import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.SerializationService;
@@ -77,12 +74,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private transient CategoryVariableService categoryVariableService;
 
     @Autowired
-    private transient EntityService entityService;
-
-
-    @Autowired
     private transient ObfuscationService obfuscationService;
-    
+
     @Autowired
     private transient ResourceViewControllerService resourceViewControllerService;
     @Autowired
@@ -126,7 +119,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     // protected PersonalFilestoreTicket filestoreTicket;
     private ResourceCreatorProxy copyrightHolderProxies = new ResourceCreatorProxy();
 
-
     public boolean isMultipleFileUploadEnabled() {
         return false;
     }
@@ -136,13 +128,28 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Autowired
     private ResourceEditControllerService resourceEditControllerService;
 
-
     @Override
     protected String save(InformationResource document) throws TdarActionException {
         // save basic metadata
         getLogger().debug("save ir");
         saveBasicResourceMetadata();
-        saveInformationResourceProperties();
+        
+        // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
+        resolveProject();
+        getResource().setProject(getProject());
+        getLogger().debug("setting projectid: {}", getResource().getProject());
+
+        // handle dataset availability + date made public
+        getResource().setResourceLanguage(resourceLanguage);
+        getResource().setMetadataLanguage(metadataLanguage);
+        // handle dataset availability + date made public
+
+        proxy.setResourceProviderInstitutionName(resourceProviderInstitutionName);
+        proxy.setPublisherName(publisherName);
+        proxy.setCopyrightHolder(copyrightHolderProxies);
+
+        setupFileProxiesForSave();
+        super.save(document);
         return SUCCESS;
 
     }
@@ -153,28 +160,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         setPublisherName(getResource().getPublisherName());
         if (getTdarConfiguration().getCopyrightMandatory() && PersistableUtils.isNotNullOrTransient(getResource().getCopyrightHolder())) {
             copyrightHolderProxies = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
-        }
-    }
-
-    protected void saveResourceProviderInformation() {
-        getLogger().debug("Saving resource provider information: {}", resourceProviderInstitutionName);
-        // save resource provider institution and contact information
-        if (StringUtils.isNotBlank(resourceProviderInstitutionName)) {
-            getResource().setResourceProviderInstitution(entityService.findOrSaveCreator(new Institution(resourceProviderInstitutionName)));
-        } else {
-            getResource().setResourceProviderInstitution(null);
-        }
-
-        if (StringUtils.isNotBlank(publisherName)) {
-            getResource().setPublisher(entityService.findOrSaveCreator(new Institution(publisherName)));
-        } else {
-            getResource().setPublisher(null);
-        }
-
-        if (getTdarConfiguration().getCopyrightMandatory() && copyrightHolderProxies != null) {
-            ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
-            getLogger().debug("setting copyright holder to:  {} ", transientCreator);
-            getResource().setCopyrightHolder(entityService.findOrSaveCreator(transientCreator.getCreator()));
         }
     }
 
@@ -317,22 +302,17 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return new FileProxy();
     }
 
-    private void saveInformationResourceProperties() {
-        // handle dataset availability + date made public
-        getResource().setResourceLanguage(resourceLanguage);
-        getResource().setMetadataLanguage(metadataLanguage);
-        // handle dataset availability + date made public
-        
-        saveResourceProviderInformation();
+    private void setupFileProxiesForSave() {
+        getLogger().debug("setup file proxies");
         if (isBulkUpload()) {
             return;
         }
         try {
 
             FileProxy processTextInput = null;
-            
+
             AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(), isEditor());
-            
+
             if (!isMultipleFileUploadEnabled() && isTextInput()) {
                 if (StringUtils.isBlank(getFileTextInput())) {
                     addActionError(this.getText("abstractSupportingInformationResourceController.please_enter"));
@@ -341,17 +321,19 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 processTextInput = resourceSaveControllerService.processTextInput(this, getFileTextInput(), getPersistable());
 
             }
-            
-            List<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this,getTicketId(), isMultipleFileUploadEnabled(), getFileProxies(), processTextInput, getUploadedFilesFileName(), getUploadedFiles());
-            
+
+            List<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, getTicketId(),
+                    isMultipleFileUploadEnabled(), getFileProxies(), processTextInput, getUploadedFilesFileName(), getUploadedFiles());
+
             for (FileProxy proxy : fileProxiesToProcess) {
                 if (proxy != null && proxy.getAction() != FileAction.NONE) {
-                    hasFileProxyChanges  = true;
+                    hasFileProxyChanges = true;
                 }
             }
 
-            ErrorTransferObject eto = resourceSaveControllerService.handleUploadedFiles(auth, this , getValidFileExtensions(), getTicketId(), fileProxiesToProcess);
-            processErrorObject(eto);
+            proxy.setTicketId(getTicketId());
+            proxy.setFileProxies(fileProxiesToProcess);
+            proxy.setValidFileExtensions(getValidFileExtensions());
         } catch (Exception e) {
             addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
         }
@@ -406,7 +388,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public List<Resource> getPotentialParents() {
         getLogger().debug("get potential parents");
         if (potentialParents == null) {
-            potentialParents = resourceEditControllerService.getPotentialParents(getPersistable(),getAuthenticatedUser(), getProject(), this);
+            potentialParents = resourceEditControllerService.getPotentialParents(getPersistable(), getAuthenticatedUser(), getProject(), this);
         }
         if (getLogger().isTraceEnabled()) {
             getLogger().trace("Returning all editable projects: {}", potentialParents);
@@ -414,74 +396,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return potentialParents;
     }
 
-    /**
-     * Saves keywords, full / read user access, and confidentiality.
-     */
-    @Override
-    protected void saveBasicResourceMetadata() {
-        // don't save any values at the resource level that we are inheriting
-        // from parent
-        if (getResource().isInheritingInvestigationInformation()) {
-            setInvestigationTypeIds(null);
-        }
-        if (getResource().isInheritingSiteInformation()) {
-            setSiteNameKeywords(null);
-            setApprovedSiteTypeKeywordIds(null);
-            setUncontrolledSiteTypeKeywords(null);
-        }
-        if (getResource().isInheritingMaterialInformation()) {
-            setApprovedMaterialKeywordIds(null);
-            setUncontrolledCultureKeywords(null);
-        }
-        if (getResource().isInheritingCulturalInformation()) {
-            setApprovedCultureKeywordIds(null);
-            setUncontrolledCultureKeywords(null);
-        }
-        if (getResource().isInheritingSpatialInformation()) {
-            getLatitudeLongitudeBoxes().clear();
-            setGeographicKeywords(null);
-        }
-        if (getResource().isInheritingTemporalInformation()) {
-            setTemporalKeywords(null);
-            getResource().getCoverageDates().clear();
-        }
-        if (getResource().isInheritingOtherInformation()) {
-            setOtherKeywords(null);
-        }
-
-        if (getResource().isInheritingIndividualAndInstitutionalCredit()) {
-            if (CollectionUtils.isNotEmpty(getCreditProxies())) {
-                getCreditProxies().clear();
-            }
-        }
-
-        if (getResource().isInheritingCollectionInformation()) {
-            if (CollectionUtils.isNotEmpty(getRelatedComparativeCollections())) {
-                getRelatedComparativeCollections().clear();
-            }
-            if (CollectionUtils.isNotEmpty(getSourceCollections())) {
-                getSourceCollections().clear();
-            }
-        }
-
-        if (getResource().isInheritingNoteInformation()) {
-            if (CollectionUtils.isNotEmpty(getResourceNotes())) {
-                getResourceNotes().clear();
-            }
-        }
-
-        if (getResource().isInheritingIdentifierInformation()) {
-            if (CollectionUtils.isNotEmpty(getResourceAnnotations())) {
-                getResourceAnnotations().clear();
-            }
-        }
-
-        // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
-        resolveProject();
-        getResource().setProject(getProject());
-        getLogger().debug("setting projectid: {}", getResource().getProject());
-        super.saveBasicResourceMetadata();
-    }
 
     @Autowired
     public void setFileAnalyzer(FileAnalyzer analyzer) {
@@ -528,7 +442,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;
     }
-
 
     public List<FileProxy> getFileProxies() {
         return fileProxies;
@@ -616,24 +529,17 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     /**
-     * Verifies if the resource can be allowed to add additional files. 
-     * The user may not have permission or the billing account may be over limit. 
+     * Verifies if the resource can be allowed to add additional files.
+     * The user may not have permission or the billing account may be over limit.
+     * 
      * @return boolean
      */
     public boolean isAbleToUploadFiles() {
         if (isAbleToUploadFiles == null) {
-            isAbleToUploadFiles = authorizationService.canUploadFiles(getAuthenticatedUser(), getPersistable());
-            getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, getPersistable().getAccount());
-            if(PersistableUtils.isNotNullOrTransient(getPersistable()) && getPersistable().getAccount()!=null){
-            	List<BillingAccount> _activeAccounts = getActiveAccounts();
-            	getLogger().debug("_activeAccounts:{}", _activeAccounts);
-            	//BillingAccount account = _activeAccounts.stream().filter(a -> ObjectUtils.equals(a,getPersistable().getAccount())).collect(Collectors.toList()).get(0);
-            	if(!getPersistable().getAccount().isActive()){
-            		isAbleToUploadFiles = false;
-            	}
-            }
+            isAbleToUploadFiles = resourceEditControllerService.isAbleToUploadFiles(getAuthenticatedUser(), getPersistable(), getActiveAccounts());
         }
-        
+        getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, getPersistable().getAccount());
+
         return isAbleToUploadFiles;
     }
 
@@ -720,4 +626,4 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void setFileTextInput(String fileTextInput) {
         this.fileTextInput = fileTextInput;
     }
-    }
+}

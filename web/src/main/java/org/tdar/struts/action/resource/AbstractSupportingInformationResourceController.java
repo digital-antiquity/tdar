@@ -10,7 +10,6 @@ import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.ResourceSaveControllerService;
 
 public abstract class AbstractSupportingInformationResourceController<R extends InformationResource> extends AbstractInformationResourceController<R> {
@@ -70,15 +69,8 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
     }
 
     protected void saveCategories() {
-        if (getPersistable() instanceof SupportsResource) {
-            SupportsResource supporting = (SupportsResource) getPersistable();
-            getLogger().info("Category: {} ; subcategory: {} ", categoryId, subcategoryId);
-            if (PersistableUtils.isNullOrTransient(subcategoryId)) {
-                supporting.setCategoryVariable(categoryVariableService.find(categoryId));
-            } else {
-                supporting.setCategoryVariable(categoryVariableService.find(subcategoryId));
-            }
-        }
+        proxy.setCategoryId(categoryId);
+        proxy.setSubcategoryId(subcategoryId);
     }
 
     public List<CategoryVariable> getSubcategories() {

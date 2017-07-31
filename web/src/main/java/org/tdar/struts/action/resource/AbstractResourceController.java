@@ -47,6 +47,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
@@ -87,7 +88,6 @@ import org.tdar.web.service.ResourceSaveControllerService;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
-
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
 
     private static final long serialVersionUID = 8620875853247755760L;
@@ -100,7 +100,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
     private RevisionLogType revisionType = RevisionLogType.EDIT;
     private String submit;
-    
+    protected ResourceControllerProxy<R> proxy = new ResourceControllerProxy<>(this);
+
     @Autowired
     private SerializationService serializationService;
 
@@ -172,8 +173,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private ResourceSaveControllerService saveService;
     @Autowired
     private ResourceEditControllerService editService;
-    
-
 
     protected void loadCustomMetadata() throws TdarActionException {
     }
@@ -192,14 +191,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return sw.toString();
     }
 
-    
     @Override
     public String save(Resource resource) {
         getLogger().debug("calling save");
         saveBasicResourceMetadata();
         return SUCCESS;
     }
-    
+
     @Override
     public String loadAddMetadata() {
         if (PersistableUtils.isNotNullOrTransient(getResource())) {
@@ -225,23 +223,23 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
     protected List<BillingAccount> determineActiveAccounts() {
-    	//Get all available active accounts for the user. If the resource is being edited, and its associated account is over-limit, this list will 
-    	//not contain that billing account.
+        // Get all available active accounts for the user. If the resource is being edited, and its associated account is over-limit, this list will
+        // not contain that billing account.
         List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
 
-        //If the resource has been created, e.g., not null, then check to see if the billing account needs to be added in. 
+        // If the resource has been created, e.g., not null, then check to see if the billing account needs to be added in.
         if (getResource() != null) {
 
             accountService.updateTransientAccountInfo(getResource());
-        	
-            BillingAccount resourceAccount     = getResource().getAccount();
-            boolean resourceAccountIsNotNull   = resourceAccount !=null;
-            boolean resourceAccountNotInList   = !accounts.contains(resourceAccount);
+
+            BillingAccount resourceAccount = getResource().getAccount();
+            boolean resourceAccountIsNotNull = resourceAccount != null;
+            boolean resourceAccountNotInList = !accounts.contains(resourceAccount);
             boolean hasInheritedEditPermission = authorizationService.isAllowedToEditInherited(getAuthenticatedUser(), getResource());
-            
-            //If the billing account is not in the list, but should be, then move it to the front of the list.
+
+            // If the billing account is not in the list, but should be, then move it to the front of the list.
             if (resourceAccountIsNotNull && resourceAccountNotInList &&
-            	(isEditor() || hasInheritedEditPermission)) {
+                    (isEditor() || hasInheritedEditPermission)) {
                 accounts.add(0, resourceAccount);
             }
         }
@@ -254,7 +252,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE),
-                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT,  location = "/resource/rights/${persistable.id}")
+                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT, location = "/resource/rights/${persistable.id}")
             })
     @WriteableSession
     @PostOnly
@@ -272,21 +270,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             revisionType = RevisionLogType.CREATE;
             getPersistable().getAuthorizedUsers().add(new AuthorizedUser(getAuthenticatedUser(), getAuthenticatedUser(), GeneralPermissions.ADMINISTER_SHARE));
         }
-    
+
         String save2 = super.save();
         try {
-	        if (StringUtils.equals(save2, SUCCESS) && StringUtils.equalsIgnoreCase(getAlternateSubmitAction(), ASSIGN_RIGHTS)) {
-	            return RIGHTS;
-	        }
+            if (StringUtils.equals(save2, SUCCESS) && StringUtils.equalsIgnoreCase(getAlternateSubmitAction(), ASSIGN_RIGHTS)) {
+                return RIGHTS;
+            }
         } catch (Throwable t) {
-        	getLogger().debug("{}",t,t);
+            getLogger().debug("{}", t, t);
         }
         getLogger().debug("success: {}", getSaveSuccessPath());
         return save2;
     }
 
-    
-    
     @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
@@ -385,65 +381,58 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return editable;
     }
 
-
-
     /**
      * Saves keywords, full / read user access, and confidentiality.
      */
     protected void saveBasicResourceMetadata() {
         AuthWrapper<Resource> authWrapper = new AuthWrapper<Resource>(getPersistable(), isAuthenticated(), getAuthenticatedUser(), isEditor());
 
-
-
         if (CollectionUtils.isEmpty(authWrapper.getItem().getActiveLatitudeLongitudeBoxes()) && !(this instanceof BulkUploadController)
                 && !(this instanceof AbstractSupportingInformationResourceController)) {
             addActionMessage(getText("abstractResourceController.no_map", Arrays.asList(authWrapper.getItem().getResourceType().getLabel())));
         }
 
-        ResourceControllerProxy rcp = new ResourceControllerProxy();
-        rcp.setIncomingAnnotations(resourceAnnotations);
-        rcp.setLatitudeLongitudeBoxes(latitudeLongitudeBoxes);
-        rcp.setGeographicKeywords(geographicKeywords);
-        rcp.setRelatedComparativeCollections(relatedComparativeCollections);
-        rcp.setSourceCollections(sourceCollections);
-        rcp.setSiteNameKeywords(siteNameKeywords);
-        rcp.setApprovedCultureKeywordIds(approvedCultureKeywordIds);
-        rcp.setApprovedSiteTypeKeywordIds(approvedSiteTypeKeywordIds);
-        rcp.setInvestigationTypeIds(investigationTypeIds);
-        rcp.setApprovedMaterialKeywordIds(approvedMaterialKeywordIds);
-        rcp.setOtherKeywords(otherKeywords);
-        rcp.setUncontrolledCultureKeywords(uncontrolledCultureKeywords);
-        rcp.setUncontrolledMaterialKeywords(uncontrolledMaterialKeywords);
-        rcp.setUncontrolledSiteTypeKeywords(uncontrolledSiteTypeKeywords);
-        rcp.setTemporalKeywords(temporalKeywords);
-        rcp.setSave(shouldSaveResource());
-        rcp.setCoverageDates(coverageDates);
-        rcp.setResourceNotes(resourceNotes);
-        rcp.setShares(shares);
-        rcp.setResourceCollections(resourceCollections);
-        rcp.setSubmitter(submitter);
-        List<ResourceCreatorProxy> proxies = new ArrayList<>();
-        if (authorshipProxies != null) {
-            proxies.addAll(authorshipProxies);
+        proxy.setResource(getPersistable());
+        proxy.setIncomingAnnotations(resourceAnnotations);
+        proxy.setLatitudeLongitudeBoxes(latitudeLongitudeBoxes);
+        proxy.setGeographicKeywords(geographicKeywords);
+        proxy.setRelatedComparativeCollections(relatedComparativeCollections);
+        proxy.setSourceCollections(sourceCollections);
+        proxy.setSiteNameKeywords(siteNameKeywords);
+        proxy.setApprovedCultureKeywordIds(approvedCultureKeywordIds);
+        proxy.setApprovedSiteTypeKeywordIds(approvedSiteTypeKeywordIds);
+        proxy.setInvestigationTypeIds(investigationTypeIds);
+        proxy.setApprovedMaterialKeywordIds(approvedMaterialKeywordIds);
+        proxy.setOtherKeywords(otherKeywords);
+        proxy.setUncontrolledCultureKeywords(uncontrolledCultureKeywords);
+        proxy.setUncontrolledMaterialKeywords(uncontrolledMaterialKeywords);
+        proxy.setUncontrolledSiteTypeKeywords(uncontrolledSiteTypeKeywords);
+        proxy.setTemporalKeywords(temporalKeywords);
+        proxy.setSave(shouldSaveResource());
+        proxy.setCoverageDates(coverageDates);
+        proxy.setResourceNotes(resourceNotes);
+        proxy.setShares(shares);
+        proxy.setResourceCollections(resourceCollections);
+        proxy.setSubmitter(submitter);
+        proxy.setCreditProxies(creditProxies);
+        proxy.setAuthorshipProxies(authorshipProxies);
+        try {
+            ErrorTransferObject eto = saveService.save(authWrapper, proxy);
+            processErrorObject(eto);
+        } catch (Throwable t) {
+            addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), t);
         }
-        if (creditProxies != null) {
-            proxies.addAll(creditProxies);
-        }
-        rcp.setResourceCreatorProxies(proxies);
-        saveService.save(authWrapper, rcp);
 
     }
-
 
     protected void logModification(String message, RevisionLogType type) {
         resourceService.logResourceModification(getPersistable(), getAuthenticatedUser(), message, null, type, getStartTime());
     }
 
-
     public void loadBasicMetadata() {
         // load all keywords
         AuthWrapper<Resource> authWrapper = new AuthWrapper<Resource>(getPersistable(), isAuthenticated(), getAuthenticatedUser(), isEditor());
-        
+
         setApprovedMaterialKeywordIds(toIdList(getResource().getMaterialKeywords()));
         setInvestigationTypeIds(toIdList(getResource().getInvestigationTypes()));
 
@@ -480,7 +469,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedResourceCollections()) {
-            if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+            if (authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
                 getShares().add(rc);
             } else {
                 retainedSharedCollections.add(rc);
@@ -488,7 +477,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             }
         }
         for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
-            if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+            if (authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
                 getResourceCollections().add(rc);
             } else {
                 retainedListCollections.add(rc);
@@ -497,8 +486,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
     }
-
-    
 
     public List<String> getSiteNameKeywords() {
         if (CollectionUtils.isEmpty(siteNameKeywords)) {
@@ -859,7 +846,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.effectiveShares = effectiveResourceCollections;
     }
 
-
     public Long getAccountId() {
         return accountId;
     }
@@ -959,10 +945,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public String getSubmitterProperName() {
-        if(getSubmitter() == null) return null;
+        if (getSubmitter() == null)
+            return null;
         return getSubmitter().getProperName();
     }
-
 
     public Boolean isSelect2Enabled() {
         return select2Enabled;

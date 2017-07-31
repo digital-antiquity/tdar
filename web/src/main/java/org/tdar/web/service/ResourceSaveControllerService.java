@@ -14,7 +14,6 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.ontology.OntClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +22,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Sequenceable;
+import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -57,12 +59,15 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.OntologyService;
@@ -76,8 +81,9 @@ import com.opensymphony.xwork2.TextProvider;
 
 @Service
 public class ResourceSaveControllerService {
-    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String TXT = ".txt";
 
@@ -92,11 +98,14 @@ public class ResourceSaveControllerService {
     @Autowired
     public ResourceCollectionService resourceCollectionService;
 
-
     @Autowired
     private GenericKeywordService genericKeywordService;
     @Autowired
     private GenericService genericService;
+
+    @Autowired
+    private transient CategoryVariableService categoryVariableService;
+
 
     @Autowired
     private transient FileProxyService fileProxyService;
@@ -119,7 +128,7 @@ public class ResourceSaveControllerService {
             throw new TdarValidationException(provider.getText("abstractResourceController.bad_extension"));
         }
     }
-    
+
     protected InformationResourceFileVersion getLatestUploadedTextVersion(InformationResource persistable) {
         InformationResourceFileVersion version = null;
         Collection<InformationResourceFileVersion> versions = persistable.getLatestVersions(VersionType.UPLOADED_TEXT);
@@ -129,7 +138,6 @@ public class ResourceSaveControllerService {
         }
         return version;
     }
-
 
     public FileProxy processTextInput(TextProvider provider, String fileTextInput, InformationResource persistable) {
         logger.debug("textInput {}", fileTextInput);
@@ -170,7 +178,7 @@ public class ResourceSaveControllerService {
     };
 
     /**
-     * @param persistable 
+     * @param persistable
      * @throws IOException
      *             If there was an IO error
      */
@@ -191,9 +199,6 @@ public class ResourceSaveControllerService {
         throw new UnsupportedOperationException(provider.getText("abstractInformationResourceController.didnt_override", getClass().getSimpleName()));
     }
 
-
-
-
     public String getLatestUploadedTextVersionText(InformationResource persistable) {
         // in order for this to work we need to be generating text versions
         // of these files for both text input and file uploads
@@ -201,13 +206,14 @@ public class ResourceSaveControllerService {
         InformationResourceFileVersion version = getLatestUploadedTextVersion(persistable);
         if (version != null) {
             try {
-                versionText = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
+                versionText = FileUtils.readFileToString(CONFIG.getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
             } catch (IOException e) {
                 logger.debug("an error occurred when trying to load the text version of a file", e);
             }
         }
         return versionText;
     }
+
     /**
      * Returns a List<FileProxy> representing the final set of fully initialized FileProxy objects
      * to be processed by the service layer.
@@ -216,19 +222,20 @@ public class ResourceSaveControllerService {
      * 
      * @return a List<FileProxy> representing the final set of fully initialized FileProxy objects
      */
-    @Transactional(readOnly=false)
-    public List<FileProxy> getFileProxiesToProcess(AuthWrapper<InformationResource> auth, TextProvider provider,Long ticketId, boolean multipleFileUploadEnabled, List<FileProxy> fileProxies, FileProxy textInputFileProxy,
+    @Transactional(readOnly = false)
+    public List<FileProxy> getFileProxiesToProcess(AuthWrapper<InformationResource> auth, TextProvider provider, Long ticketId,
+            boolean multipleFileUploadEnabled, List<FileProxy> fileProxies, FileProxy textInputFileProxy,
             List<String> filenames, List<File> files) {
         List<FileProxy> fileProxiesToProcess = new ArrayList<>();
         logger.debug("getFileProxiesToProcess: {}, {}, {} ({})", ticketId, files, fileProxies, multipleFileUploadEnabled);
         // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
         if (textInputFileProxy != null) {
             fileProxiesToProcess.add(textInputFileProxy);
-        } else 
+        } else
 
         // 2. async uploads for Image or Document or ...
-         if (multipleFileUploadEnabled) {
-            fileProxiesToProcess =  fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(fileProxies, ticketId);
+        if (multipleFileUploadEnabled) {
+            fileProxiesToProcess = fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(fileProxies, ticketId);
 
         } else
         // 3. single file upload (dataset|coding sheet|ontology)
@@ -241,50 +248,54 @@ public class ResourceSaveControllerService {
         return fileProxiesToProcess;
     }
 
-
     /**
      * One-size-fits-all method for handling uploaded InformationResource files.
      * 
      * Handles text input files for coding sheets and ontologies,
      * async uploads, and single-file dataset uploads.
-     * @return 
+     * 
+     * @return
      * 
      * @throws TdarActionException
-     * @throws IOException 
+     * @throws IOException
      */
-    @Transactional(readOnly=false)
-    public ErrorTransferObject handleUploadedFiles(AuthWrapper<InformationResource> auth, TextProvider provider,Collection<String> validFileNames, Long ticketId, List<FileProxy> proxies) throws TdarActionException, IOException {
+    @Transactional(readOnly = false)
+    public ErrorTransferObject handleUploadedFiles(AuthWrapper<Resource> auth, TextProvider provider, Collection<String> validFileNames, Long ticketId,
+            List<FileProxy> proxies) throws TdarActionException, IOException {
         // need to call getFileProxiesToProcess() before
-            logger.debug("handling uploaded files for {}", auth.getItem());
-            validateFileExtensions(proxies, validFileNames, provider);
-            logger.debug("Final proxy set: {}", proxies);
-            if (CollectionUtils.isEmpty(proxies)) {
-                return null;
-            }
-            
-        if (!authorizationService.canDo(auth.getAuthenticatedUser(), auth.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
-                        GeneralPermissions.MODIFY_RECORD)) {
+        InformationResource item = (InformationResource) auth.getItem();
+        if (CollectionUtils.isEmpty(proxies)) {
+            return null;
+        }
+        logger.debug("handling uploaded files for {}", item);
+        validateFileExtensions(proxies, validFileNames, provider);
+        logger.debug("Final proxy set: {}", proxies);
+        if (CollectionUtils.isEmpty(proxies)) {
+            return null;
+        }
+
+        if (!authorizationService.canDo(auth.getAuthenticatedUser(), item, InternalTdarRights.EDIT_ANY_RESOURCE,
+                GeneralPermissions.MODIFY_RECORD)) {
             throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
         }
         // abstractInformationResourceController.didnt_override=%s didn't override properly
         // abstractInformationResourceController.didnt_override=%s didn't override properly
 
-            ErrorTransferObject errors = informationResourceService.importFileProxiesAndProcessThroughWorkflow(auth.getItem(), auth.getAuthenticatedUser(),
-                    ticketId, proxies);
-        genericService.saveOrUpdate(auth.getItem());
+        ErrorTransferObject errors = informationResourceService.importFileProxiesAndProcessThroughWorkflow(item, auth.getAuthenticatedUser(),
+                ticketId, proxies);
+        genericService.saveOrUpdate(item);
         logger.trace("done processing upload files");
         return errors;
     }
-    
-    
 
-    protected List<FileProxy> handleSingleFileUpload(List<FileProxy> toProcess, InformationResource persistable, List<String> uploadedFilesFileNames, List<File> uploadedFiles, List<FileProxy> fileProxies) {
+    protected List<FileProxy> handleSingleFileUpload(List<FileProxy> toProcess, InformationResource persistable, List<String> uploadedFilesFileNames,
+            List<File> uploadedFiles, List<FileProxy> fileProxies) {
         /*
          * FIXME: in Jar, hopefully, this goes away
          */
 
         FileProxy singleFileProxy = CollectionUtils.isEmpty(fileProxies) ? new FileProxy() : fileProxies.get(0);
-        if (CollectionUtils.isEmpty(uploadedFiles) || // test for init state 
+        if (CollectionUtils.isEmpty(uploadedFiles) || // test for init state
                 CollectionUtils.isEmpty(uploadedFilesFileNames) && uploadedFiles.contains(null) && uploadedFiles.size() == 1) {
             // check for metadata change iff this resource has an existing file.
             InformationResourceFile file = persistable.getFirstInformationResourceFile();
@@ -302,7 +313,6 @@ public class ResourceSaveControllerService {
         }
         return toProcess;
     }
-    
 
     protected void setFileProxyAction(InformationResource persistable, FileProxy proxy) {
         if (persistable.hasFiles()) {
@@ -315,8 +325,6 @@ public class ResourceSaveControllerService {
         }
     }
 
-
-
     public <T extends Sequenceable<T>> void prepSequence(List<T> list) {
         if (list == null) {
             return;
@@ -328,11 +336,13 @@ public class ResourceSaveControllerService {
         AbstractSequenced.applySequence(list);
     }
 
-    public void save(AuthWrapper<Resource> authWrapper, ResourceControllerProxy rcp) {
-        
+    public <R extends Resource> ErrorTransferObject save(AuthWrapper<Resource> authWrapper, ResourceControllerProxy<R> rcp) throws TdarActionException, IOException {
+
         if (rcp.shouldSaveResource()) {
             genericService.saveOrUpdate(authWrapper.getItem());
         }
+
+        rcp.handleInheritance();
 
         if (PersistableUtils.isNotNullOrTransient(rcp.getSubmitter())) {
             TdarUser uploader = genericService.find(TdarUser.class, rcp.getSubmitter().getId());
@@ -340,16 +350,24 @@ public class ResourceSaveControllerService {
         }
 
         saveKeywords(authWrapper, rcp);
-        saveTemporalContext(authWrapper,rcp);
-        saveSpatialContext(authWrapper,rcp);
-        saveCitations(authWrapper,rcp);
+        saveTemporalContext(authWrapper, rcp);
+        saveSpatialContext(authWrapper, rcp);
+        saveCitations(authWrapper, rcp);
 
         prepSequence(rcp.getResourceNotes());
-        
+
         resourceService.saveHasResources(authWrapper.getItem(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, rcp.getResourceNotes(),
                 authWrapper.getItem().getResourceNotes(), ResourceNote.class);
 
-        resourceService.saveResourceCreatorsFromProxies(rcp.getResourceCreatorProxies(), authWrapper.getItem(), rcp.shouldSaveResource());
+        List<ResourceCreatorProxy> proxies = new ArrayList<>();
+        if (rcp.getAuthorshipProxies() != null) {
+            proxies.addAll(rcp.getAuthorshipProxies());
+        }
+        if (rcp.getCreditProxies() != null) {
+            proxies.addAll(rcp.getCreditProxies());
+        }
+
+        resourceService.saveResourceCreatorsFromProxies(proxies, authWrapper.getItem(), rcp.shouldSaveResource());
 
         resolveAnnotations(authWrapper, rcp);
         List<SharedCollection> retainedSharedCollections = new ArrayList<>();
@@ -362,16 +380,16 @@ public class ResourceSaveControllerService {
         logger.debug("retained list collections:{}", retainedListCollections);
         shares.addAll(retainedSharedCollections);
         resourceCollections.addAll(retainedListCollections);
-        
+
         if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
             resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getSharedCollections(),
                     authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
 
             if (!authorizationService.canEdit(authWrapper.getAuthenticatedUser(), authWrapper.getItem())) {
-//                addActionError("abstractResourceController.cannot_remove_collection");
+                // addActionError("abstractResourceController.cannot_remove_collection");
                 logger.error("user is trying to remove themselves from the collection that granted them rights");
-//                addActionMessage("abstractResourceController.collection_rights_remove");
+                // addActionMessage("abstractResourceController.collection_rights_remove");
             }
         } else {
             logger.debug("ignoring changes to rights as user doesn't have sufficient permissions");
@@ -379,13 +397,30 @@ public class ResourceSaveControllerService {
         resourceCollectionService.saveResourceCollections(authWrapper.getItem(), resourceCollections, authWrapper.getItem().getUnmanagedResourceCollections(),
                 authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, ListCollection.class);
 
+        if (rcp.getResource() instanceof SupportsResource) {
+            SupportsResource supporting = (SupportsResource) rcp.getResource();
+            logger.info("Category: {} ; subcategory: {} ", rcp.getCategoryId(), rcp.getSubcategoryId());
+            if (PersistableUtils.isNullOrTransient(rcp.getSubcategoryId())) {
+                supporting.setCategoryVariable(categoryVariableService.find(rcp.getCategoryId()));
+            } else {
+                supporting.setCategoryVariable(categoryVariableService.find(rcp.getSubcategoryId()));
+            }
+        }
 
-        
-        
+        if (rcp.getResource() instanceof InformationResource) {
+            InformationResource ir = (InformationResource) rcp.getResource();
+            saveResourceProviderInformation(ir, rcp.getResourceProviderInstitutionName(), rcp.getCopyrightHolderProxies(), rcp.getPublisherName());
+
+            ErrorTransferObject eto = handleUploadedFiles(authWrapper, rcp.getProvider(), rcp.getValidFileExtensions(), rcp.getTicketId(),
+                    rcp.getFileProxiesToProcess());
+            return eto;
+        }
+        return null;
+
     }
-    
-    
-    private void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections, List<ListCollection> retainedListCollections) {
+
+    private void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections,
+            List<ListCollection> retainedListCollections) {
         logger.debug("loadEffective...");
         for (SharedCollection rc : auth.getItem().getSharedCollections()) {
             if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser())) {
@@ -399,11 +434,10 @@ public class ResourceSaveControllerService {
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
-        //effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(auth.getItem()));
+        // effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(auth.getItem()));
     }
 
-
-    private void saveTemporalContext(AuthWrapper<Resource> auth, ResourceControllerProxy rcp) {
+    private <R extends Resource> void saveTemporalContext(AuthWrapper<Resource> auth, ResourceControllerProxy<R> rcp) {
         // calendar and radiocarbon dates are null for Ontologies
         resourceService.saveHasResources(auth.getItem(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, rcp.getCoverageDates(),
                 auth.getItem().getCoverageDates(), CoverageDate.class);
@@ -411,14 +445,13 @@ public class ResourceSaveControllerService {
                 genericKeywordService.findOrCreateByLabels(TemporalKeyword.class, rcp.getTemporalKeywords()));
     }
 
-
     // return a persisted annotation based on incoming pojo
-    private void resolveAnnotations(AuthWrapper<Resource> auth, ResourceControllerProxy rcp) {
+    private <R extends Resource> void resolveAnnotations(AuthWrapper<Resource> auth, ResourceControllerProxy<R> rcp) {
         // fixme: check that this is right
         if (rcp.getIncomingAnnotations() == null) {
             rcp.setIncomingAnnotations(new ArrayList<>());
         }
-        
+
         List<ResourceAnnotation> toAdd = new ArrayList<>();
         for (ResourceAnnotation incomingAnnotation : rcp.getIncomingAnnotations()) {
             if (incomingAnnotation == null) {
@@ -443,13 +476,13 @@ public class ResourceSaveControllerService {
             }
         }
         rcp.getIncomingAnnotations().addAll(toAdd);
-        
+
         resourceService.saveHasResources((Resource) auth.getItem(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, rcp.getIncomingAnnotations(),
                 auth.getItem().getResourceAnnotations(), ResourceAnnotation.class);
 
     }
 
-    protected void saveSpatialContext(AuthWrapper<Resource> auth, ResourceControllerProxy rcp) {
+    protected <R extends Resource> void saveSpatialContext(AuthWrapper<Resource> auth, ResourceControllerProxy<R> rcp) {
         // it won't add a null or incomplete lat-long box.
 
         resourceService.saveHasResources(auth.getItem(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, rcp.getLatitudeLongitudeBoxes(),
@@ -461,7 +494,7 @@ public class ResourceSaveControllerService {
         resourceService.processManagedKeywords(auth.getItem(), auth.getItem().getLatitudeLongitudeBoxes());
     }
 
-    protected void saveCitations(AuthWrapper<Resource> auth, ResourceControllerProxy rcp) {
+    private <R extends Resource> void saveCitations(AuthWrapper<Resource> auth, ResourceControllerProxy<R> rcp) {
         resourceService.saveHasResources(auth.getItem(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS,
                 rcp.getRelatedComparativeCollections(),
                 auth.getItem().getRelatedComparativeCollections(), RelatedComparativeCollection.class);
@@ -469,38 +502,38 @@ public class ResourceSaveControllerService {
                 auth.getItem().getSourceCollections(), SourceCollection.class);
 
     }
-    private void saveKeywords(AuthWrapper<Resource> authWrapper,ResourceControllerProxy rcp) {
 
-            logger.debug("siteNameKeywords=" + rcp.getSiteNameKeywords());
-            logger.debug("materialKeywords=" + rcp.getApprovedMaterialKeywordIds());
-            logger.debug("otherKeywords=" + rcp.getOtherKeywords());
-            logger.debug("investigationTypes=" + rcp.getInvestigationTypeIds());
-            Resource res = authWrapper.getItem();
+    private <R extends Resource> void saveKeywords(AuthWrapper<Resource> authWrapper, ResourceControllerProxy<R> rcp) {
 
-            cleanupKeywords(rcp.getUncontrolledCultureKeywords());
-            cleanupKeywords(rcp.getUncontrolledMaterialKeywords());
-            cleanupKeywords(rcp.getUncontrolledSiteTypeKeywords());
-            cleanupKeywords(rcp.getSiteNameKeywords());
-            cleanupKeywords(rcp.getOtherKeywords());
-            cleanupKeywords(rcp.getTemporalKeywords());
+        logger.debug("siteNameKeywords=" + rcp.getSiteNameKeywords());
+        logger.debug("materialKeywords=" + rcp.getApprovedMaterialKeywordIds());
+        logger.debug("otherKeywords=" + rcp.getOtherKeywords());
+        logger.debug("investigationTypes=" + rcp.getInvestigationTypeIds());
+        Resource res = authWrapper.getItem();
 
-            Set<CultureKeyword> culKeys = genericKeywordService.findOrCreateByLabels(CultureKeyword.class, rcp.getUncontrolledCultureKeywords());
-            culKeys.addAll(genericService.findAll(CultureKeyword.class, rcp.getApprovedCultureKeywordIds()));
-            Set<MaterialKeyword> matKeys = genericKeywordService.findOrCreateByLabels(MaterialKeyword.class, rcp.getUncontrolledMaterialKeywords());
-            matKeys.addAll(genericService.findAll(MaterialKeyword.class, rcp.getApprovedMaterialKeywordIds()));
+        cleanupKeywords(rcp.getUncontrolledCultureKeywords());
+        cleanupKeywords(rcp.getUncontrolledMaterialKeywords());
+        cleanupKeywords(rcp.getUncontrolledSiteTypeKeywords());
+        cleanupKeywords(rcp.getSiteNameKeywords());
+        cleanupKeywords(rcp.getOtherKeywords());
+        cleanupKeywords(rcp.getTemporalKeywords());
 
-            Set<SiteTypeKeyword> siteTypeKeys = genericKeywordService.findOrCreateByLabels(SiteTypeKeyword.class, rcp.getUncontrolledSiteTypeKeywords());
-            siteTypeKeys.addAll(genericService.findAll(SiteTypeKeyword.class, rcp.getApprovedSiteTypeKeywordIds()));
+        Set<CultureKeyword> culKeys = genericKeywordService.findOrCreateByLabels(CultureKeyword.class, rcp.getUncontrolledCultureKeywords());
+        culKeys.addAll(genericService.findAll(CultureKeyword.class, rcp.getApprovedCultureKeywordIds()));
+        Set<MaterialKeyword> matKeys = genericKeywordService.findOrCreateByLabels(MaterialKeyword.class, rcp.getUncontrolledMaterialKeywords());
+        matKeys.addAll(genericService.findAll(MaterialKeyword.class, rcp.getApprovedMaterialKeywordIds()));
 
-            PersistableUtils.reconcileSet(res.getSiteNameKeywords(), genericKeywordService.findOrCreateByLabels(SiteNameKeyword.class, rcp.getSiteNameKeywords()));
-            PersistableUtils.reconcileSet(res.getOtherKeywords(), genericKeywordService.findOrCreateByLabels(OtherKeyword.class, rcp.getOtherKeywords()));
-            PersistableUtils.reconcileSet(res.getInvestigationTypes(), genericService.findAll(InvestigationType.class, rcp.getInvestigationTypeIds()));
+        Set<SiteTypeKeyword> siteTypeKeys = genericKeywordService.findOrCreateByLabels(SiteTypeKeyword.class, rcp.getUncontrolledSiteTypeKeywords());
+        siteTypeKeys.addAll(genericService.findAll(SiteTypeKeyword.class, rcp.getApprovedSiteTypeKeywordIds()));
 
-            PersistableUtils.reconcileSet(res.getCultureKeywords(), culKeys);
-            PersistableUtils.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
-            PersistableUtils.reconcileSet(res.getMaterialKeywords(), matKeys);
+        PersistableUtils.reconcileSet(res.getSiteNameKeywords(), genericKeywordService.findOrCreateByLabels(SiteNameKeyword.class, rcp.getSiteNameKeywords()));
+        PersistableUtils.reconcileSet(res.getOtherKeywords(), genericKeywordService.findOrCreateByLabels(OtherKeyword.class, rcp.getOtherKeywords()));
+        PersistableUtils.reconcileSet(res.getInvestigationTypes(), genericService.findAll(InvestigationType.class, rcp.getInvestigationTypeIds()));
+
+        PersistableUtils.reconcileSet(res.getCultureKeywords(), culKeys);
+        PersistableUtils.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
+        PersistableUtils.reconcileSet(res.getMaterialKeywords(), matKeys);
     }
-    
 
     private void cleanupKeywords(List<String> kwds) {
 
@@ -527,6 +560,32 @@ public class ResourceSaveControllerService {
             }
         }
         kwds.addAll(toAdd);
+    }
+
+    @Autowired
+    EntityService entityService;
+
+    public void saveResourceProviderInformation(InformationResource resource, String resourceProviderInstitutionName,
+            ResourceCreatorProxy copyrightHolderProxies, String publisherName) {
+        logger.debug("Saving resource provider information: {}", resourceProviderInstitutionName);
+        // save resource provider institution and contact information
+        if (StringUtils.isNotBlank(resourceProviderInstitutionName)) {
+            resource.setResourceProviderInstitution(entityService.findOrSaveCreator(new Institution(resourceProviderInstitutionName)));
+        } else {
+            resource.setResourceProviderInstitution(null);
+        }
+
+        if (StringUtils.isNotBlank(publisherName)) {
+            resource.setPublisher(entityService.findOrSaveCreator(new Institution(publisherName)));
+        } else {
+            resource.setPublisher(null);
+        }
+
+        if (CONFIG.getCopyrightMandatory() && copyrightHolderProxies != null) {
+            ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
+            logger.debug("setting copyright holder to:  {} ", transientCreator);
+            resource.setCopyrightHolder(entityService.findOrSaveCreator(transientCreator.getCreator()));
+        }
     }
 
 }
