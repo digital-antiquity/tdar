@@ -132,8 +132,15 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
                 if (c instanceof Resource) {
                     invite.setResource((Resource) c);
                 }
-                genericDao.saveOrUpdate(invite);
-                emailService.sendUserInviteEmail(invite, authenticatedUser);
+                // if the user is already a tDAR user, delete the invite, otherwise save it
+                if (invite.getUser() instanceof TdarUser) {
+                    logger.debug("adding existing user: {}", invite.getUser());
+                    c.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, (TdarUser) invite.getUser(), invite.getPermissions(), invite.getDateExpires()));
+                    genericDao.delete(invite);
+                } else {
+                    genericDao.saveOrUpdate(invite);
+                    emailService.sendUserInviteEmail(invite, authenticatedUser);
+                }
             }
         }
         Collection<UserInvite> toDelete = createIdMap.values();

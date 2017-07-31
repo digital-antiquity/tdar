@@ -14,6 +14,7 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceNote;
@@ -29,6 +30,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
         this.provider = provider;
     }
     private R resource;
+    private Ontology ontology;
     List<ResourceAnnotation> incomingAnnotations;
     List<LatitudeLongitudeBox> latitudeLongitudeBoxes;
     List<String> geographicKeywords;
@@ -406,6 +408,14 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Ontology getOntology() {
+        return ontology;
+    }
+
+    public void setOntology(Ontology ontology) {
+        this.ontology = ontology;
     }
     
 

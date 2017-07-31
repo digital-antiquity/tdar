@@ -68,7 +68,6 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
      * Check that draft and normal rights can be applied properly
      * @throws Exception
      */
-    @Ignore
     public void testDraftResourceIssue() throws Exception {
         String email = System.currentTimeMillis() + "a243@basda.com";
         entityService.delete(entityService.findByEmail(email));
@@ -77,6 +76,8 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         final TdarUser testPerson = createAndSaveNewPerson(email, "1234");
         String name = "test collection";
         String description = "test description";
+        
+        // create a collection
         SharedCollection collection = new SharedCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
         collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
@@ -87,28 +88,32 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         resourceCollectionService.saveCollectionForController(cso);
         genericService.synchronize();
 
+        SharedCollection myCollection = genericService.find(SharedCollection.class, id);
+
+        // grant basic user and admin user rights on the collection
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
                 
-        SharedCollection myCollection = genericService.find(SharedCollection.class, id);
         List<UserRightsProxy> aus = new ArrayList<>();
+        for (AuthorizedUser user : users) {
+            aus.add(new UserRightsProxy(user));
+        }
+
+        // invite our test person too
         UserInvite invite = new UserInvite();
         invite.setPerson(testPerson);
         invite.setPermissions(GeneralPermissions.VIEW_ALL);
         aus.add(new UserRightsProxy(invite));
-        for (AuthorizedUser user : users) {
-            aus.add(new UserRightsProxy(user));
-        }
-                
 
         resourceCollectionService.saveCollectionForRightsController(myCollection, getBasicUser(), aus, SharedCollection.class, -1L);
+        myCollection = null;
         genericService.synchronize();
         myCollection = genericService.find(SharedCollection.class, id);
         logger.debug("au: {}", myCollection.getAuthorizedUsers());
         AuthorizedUser user = null;
         logger.debug("{}", testPerson);
         for (AuthorizedUser au : myCollection.getAuthorizedUsers()) {
-            logger.debug(" {} - {}", au, au.getUser().getId());
+            logger.debug("  : {} - {}", au, au.getUser().getId());
             if (Objects.equal(au.getUser().getId(), testPerson.getId())) {
                     user = au;
             }

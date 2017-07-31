@@ -55,18 +55,14 @@ public class CodingSheetController extends AbstractSupportingInformationResource
      */
     @Override
     protected String save(CodingSheet codingSheet) throws TdarActionException {
-        String save2 = super.save(codingSheet);
+        super.saveCategories();
 
         if (!PersistableUtils.isNullOrTransient(ontology)) {
             // load the full hibernate entity and set it back on the incoming column
             ontology = getGenericService().find(Ontology.class, ontology.getId());
         }
-
-        codingSheetService.reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, ontology);
-
-        super.saveCategories();
-
-        return save2;
+        proxy.setOntology(ontology);
+        return  super.save(codingSheet);
     }
 
     /**

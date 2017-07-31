@@ -68,6 +68,7 @@ import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
+import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.OntologyService;
@@ -89,6 +90,8 @@ public class ResourceSaveControllerService {
 
     @Autowired
     private ResourceService resourceService;
+    @Autowired
+    private CodingSheetService codingSheetService;
     @Autowired
     private OntologyService ontologyService;
     @Autowired
@@ -407,15 +410,21 @@ public class ResourceSaveControllerService {
             }
         }
 
+        ErrorTransferObject eto = null;
         if (rcp.getResource() instanceof InformationResource) {
             InformationResource ir = (InformationResource) rcp.getResource();
             saveResourceProviderInformation(ir, rcp.getResourceProviderInstitutionName(), rcp.getCopyrightHolderProxies(), rcp.getPublisherName());
 
-            ErrorTransferObject eto = handleUploadedFiles(authWrapper, rcp.getProvider(), rcp.getValidFileExtensions(), rcp.getTicketId(),
+            eto = handleUploadedFiles(authWrapper, rcp.getProvider(), rcp.getValidFileExtensions(), rcp.getTicketId(),
                     rcp.getFileProxiesToProcess());
-            return eto;
         }
-        return null;
+        
+        if (rcp.getResource() instanceof CodingSheet) {
+            CodingSheet codingSheet = (CodingSheet) rcp.getResource();
+            codingSheetService.reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, rcp.getOntology());
+        }
+        
+        return eto;
 
     }
 
