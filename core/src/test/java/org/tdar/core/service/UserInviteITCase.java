@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -67,6 +68,7 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
      * Check that draft and normal rights can be applied properly
      * @throws Exception
      */
+    @Ignore
     public void testDraftResourceIssue() throws Exception {
         String email = System.currentTimeMillis() + "a243@basda.com";
         entityService.delete(entityService.findByEmail(email));
