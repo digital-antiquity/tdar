@@ -269,7 +269,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             setSearchTitle(descr);
             setRecordsPerPage(50);
             try {
-                setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+                setProjectionModel(ProjectionModel.LUCENE);
                 getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
                 getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, InvestigationType.class);
                 getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, MaterialKeyword.class);

@@ -645,7 +645,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         // we need this for tests to be able to change the projection model so
         // we get full objects
         if (getProjectionModel() == null) {
-            setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+            setProjectionModel(ProjectionModel.LUCENE);
         }
 
         if (explore) {
