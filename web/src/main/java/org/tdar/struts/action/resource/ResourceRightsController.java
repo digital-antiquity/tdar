@@ -45,12 +45,12 @@ import com.opensymphony.xwork2.Preparable;
 public class ResourceRightsController extends AbstractRightsController implements
         Preparable, PersistableLoadingAction<Resource> {
 
+    private static final String RIGHTS_FTL = "../rights.ftl";
+
     private static final long serialVersionUID = 120530285741022465L;
 
     private static final String RIGHTS = "{id}";
 
-    private static final String SUCCESS_INVITE = "invite";
-    private static final String INVITE = "invite.ftl";
 
     private Resource resource;
 
@@ -86,7 +86,7 @@ public class ResourceRightsController extends AbstractRightsController implement
 
     @SkipValidation
     @Action(value = RIGHTS, results = {
-            @Result(name = SUCCESS, location = "../rights.ftl")
+            @Result(name = SUCCESS, location = RIGHTS_FTL)
     })
     public String edit() throws TdarActionException {
         setupEdit();
@@ -101,8 +101,7 @@ public class ResourceRightsController extends AbstractRightsController implement
     @SkipValidation
     @Action(value = SAVE, results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${resource.detailUrl}"),
-            @Result(name = SUCCESS_INVITE, location = INVITE),
-            @Result(name = INPUT, location = RIGHTS)
+            @Result(name = INPUT, location = RIGHTS_FTL)
     })
     @PostOnly
     public String save() {
