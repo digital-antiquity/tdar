@@ -24,6 +24,8 @@ import com.opensymphony.xwork2.Preparable;
 public abstract class AbstractCollectionRightsController<C extends HierarchicalCollection<C>> extends AbstractRightsController
         implements Preparable, PersistableLoadingAction<C> {
 
+    private static final String COLLECTION_RIGHTS_FTL = "../collection/rights.ftl";
+
     private static final String RIGHTS = "rights";
 
     private static final long serialVersionUID = -8140980937049864587L;
@@ -81,8 +83,7 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
 
     @SkipValidation
     @Action(value = RIGHTS, results = {
-            @Result(name = SUCCESS, location = "../collection/rights.ftl"),
-            @Result(name = INPUT, location = ADD, type = TDAR_REDIRECT)
+            @Result(name = SUCCESS, location = COLLECTION_RIGHTS_FTL),
     })
     public String edit() throws TdarActionException {
         return super.edit();
@@ -108,7 +109,7 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
     @SkipValidation
     @Action(value = RIGHTS_SAVE, results = {
             @Result(name = SUCCESS, type=TDAR_REDIRECT, location = "${persistable.detailUrl}"),
-            @Result(name = INPUT, location =  "../collection/rights.ftl")
+            @Result(name = INPUT, location =  COLLECTION_RIGHTS_FTL)
     })
     
     @WriteableSession

@@ -52,7 +52,7 @@
         <#list resources as resource>
         <td>
             <#list resource.primaryCreators as it>
-                <#if creators?seq_contains(it) >
+                <#if creators?seq_contains(it.id) >
                 <a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a>
                 <#else>
                     <b><a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a></b>
@@ -67,7 +67,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeIndividualAndInstitutionalCredit as it>
-                <#if individualRoles?seq_contains(it) >
+                <#if individualRoles?seq_contains(it.id) >
 	                <a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a>
                 <#else>
                     <b><a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a></b>
@@ -90,7 +90,7 @@
         <#list resources as resource>
         <td>
             <#list resource.sharedResourceCollections as it>
-                <#if collections?seq_contains(it) >
+                <#if collections?seq_contains(it.id) >
                     <a href="${it.detailUrl}">${it.name}</a>
                 <#else>
                     <b><a href="${it.detailUrl}">${it.name}</a></b>
@@ -119,7 +119,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeInvestigationTypes as it>
-                <#if investigationTypes?seq_contains(it) >
+                <#if investigationTypes?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -134,7 +134,7 @@
         <#list resources as resource>
     <td>
             <#list resource.activeMaterialKeywords as it>
-                <#if material?seq_contains(it) >
+                <#if material?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -149,7 +149,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeCultureKeywords as it>
-                <#if cultures?seq_contains(it) >
+                <#if cultures?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -164,7 +164,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeSiteNameKeywords as it>
-                <#if siteNames?seq_contains(it) >
+                <#if siteNames?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -179,7 +179,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeSiteTypeKeywords as it>
-                <#if siteTypes?seq_contains(it) >
+                <#if siteTypes?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -194,7 +194,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeGeographicKeywords as it>
-                <#if geographic?seq_contains(it) >
+                <#if geographic?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -209,7 +209,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeTemporalKeywords as it>
-                <#if temporal?seq_contains(it) >
+                <#if temporal?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -224,7 +224,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeResourceNotes as it>
-                <#if notes?seq_contains(it) >
+                <#if notes?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -239,7 +239,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeCoverageDates as it>
-                <#if coverage?seq_contains(it) >
+                <#if coverage?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -254,7 +254,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeLatitudeLongitudeBoxes as it>
-                <#if latitudeLongitude?seq_contains(it) >
+                <#if latitudeLongitude?seq_contains(it.id) >
                     ${it}
                 <#else>
                     <b>${it}</b>
@@ -269,7 +269,7 @@
         <#list resources as resource>
         <td>
             <#list resource.activeResourceAnnotations as it>
-                <#if annotations?seq_contains(it) >
+                <#if annotations?seq_contains(it.id) >
                     ${it.resourceAnnotationKey.key}: ${it.value}
                 <#else>
                     <b>${it.resourceAnnotationKey.key}: ${it.value}</b>
