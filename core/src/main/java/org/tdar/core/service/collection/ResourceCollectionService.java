@@ -107,8 +107,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         CollectionRightsComparator comparator = new CollectionRightsComparator(resource.getAuthorizedUsers(), authorizedUsers);
         if (comparator.rightsDifferent()) {
             RightsResolver rco = authorizationService.getRightsResolverFor(resource, actor, InternalTdarRights.EDIT_ANYTHING);
-            rco.logDebug(actor, null);
             if (!rco.canModifyUsersOnResource()) {
+                rco.logDebug(actor, null);
                 throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
             }
 
