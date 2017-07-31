@@ -2,6 +2,7 @@ package org.tdar.oai;
 
 import static org.junit.Assert.fail;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -31,12 +32,12 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.service.OaiPmhConfiguration;
-import org.tdar.test.web.AbstractGeneicWebTest;
+import org.tdar.test.web.AbstractGenericWebTest;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class OAIWebITCase extends AbstractGeneicWebTest {
+public class OAIWebITCase extends AbstractGenericWebTest {
 
     private static final OaiPmhConfiguration CONFIG = OaiPmhConfiguration.getInstance();
 
@@ -177,12 +178,12 @@ public class OAIWebITCase extends AbstractGeneicWebTest {
 
     // http://xmlunit.sourceforge.net/userguide/html/
 
-    private void testValidOAIResponse() throws ConfigurationException, SAXException {
+    private void testValidOAIResponse() throws ConfigurationException, SAXException, FileNotFoundException {
         testValidXMLResponse(new StringInputStream(getPageCode(), "utf8"), "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd");
     }
 
     @Test
-    public void testIdentify() throws ConfigurationException, SAXException {
+    public void testIdentify() throws ConfigurationException, SAXException, FileNotFoundException {
         gotoPage(getBase() + "Identify");
         logger.debug(getPageCode());
         testValidOAIResponse();
@@ -194,7 +195,7 @@ public class OAIWebITCase extends AbstractGeneicWebTest {
     }
 
     @Test
-    public void testListMetadataFormats() throws ConfigurationException, SAXException {
+    public void testListMetadataFormats() throws ConfigurationException, SAXException, FileNotFoundException {
         gotoPage(getBase() + "ListMetadataFormats");
         testValidOAIResponse();
 
@@ -206,7 +207,7 @@ public class OAIWebITCase extends AbstractGeneicWebTest {
     }
 
     @Test
-    public void testListSets() throws ConfigurationException, SAXException, XpathException, IOException {
+    public void testListSets() throws ConfigurationException, SAXException, XpathException, IOException, FileNotFoundException {
         gotoPage(getBase() + "ListSets");
         testValidOAIResponse();
         // assertXpathExists("oai:OAI-PMH/oai:error[@code='noSetHierarchy']");
@@ -266,7 +267,7 @@ public class OAIWebITCase extends AbstractGeneicWebTest {
 
     }
 
-    private void getRecord(String metadataPrefix, String identifier) throws ConfigurationException, SAXException {
+    private void getRecord(String metadataPrefix, String identifier) throws ConfigurationException, SAXException, FileNotFoundException {
         gotoPage(getBase() + "GetRecord&metadataPrefix=" + metadataPrefix + "&identifier=" + identifier);
         testValidOAIResponse();
     }

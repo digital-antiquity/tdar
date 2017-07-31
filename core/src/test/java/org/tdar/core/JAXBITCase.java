@@ -111,21 +111,6 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Autowired
     GenericKeywordService genericKeywordService;
 
-
-    private static Validator v;
-
-    @Before
-    public void setupSchemaMap() {
-        String base = TestConstants.TEST_ROOT_DIR + "schemaCache";
-        schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
-        schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
-        schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));
-        schemaMap.put("http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(base, "oaipmh.xsd"));
-        schemaMap.put("http://www.loc.gov/standards/xlink/xlink.xsd", new File(base, "xlink.xsd"));
-        schemaMap.put("http://www.w3.org/XML/2008/06/xlink.xsd", new File(base, "xlink.xsd"));
-        schemaMap.put("http://www.w3.org/2001/03/xml.xsd", new File(base, "xml.xsd"));
-        schemaMap.put("http://dublincore.org/schemas/xmls/simpledc20021212.xsd", new File(base, "simpledc20021212.xsd"));
-    }
     
     @Test
     @Rollback
@@ -476,42 +461,6 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
 
 
 
-    private static Map<String, File> schemaMap = new HashMap<String, File>();
-
-    private void addSchemaToValidatorWithLocalFallback(Validator v, String url, File schemaFile) {
-        File schema = null;
-        if (schemaMap.containsKey(url)) {
-            schema = schemaMap.get(url);
-            logger.debug("using cache of: {}", url);
-        } else {
-            logger.debug("attempting to add schema to validation list: " + url);
-            try {
-                File tmpFile = File.createTempFile(schemaFile.getName(), ".temp.xsd");
-                FileUtils.writeStringToFile(tmpFile, IOUtils.toString(new URI(url)));
-                schema = tmpFile;
-            } catch (Throwable e) {
-                logger.debug("could not validate against remote schema, attempting to use cached fallback:" + schemaFile);
-            }
-            if (schema == null) {
-                try {
-                    schema = schemaFile;
-                } catch (Exception e) {
-                    logger.debug("could not validate against local schema");
-                }
-            } else {
-                schemaMap.put(url, schema);
-            }
-        }
-        if (schema != null) {
-            v.addSchemaSource(new StreamSource(schema));
-            for (Object err : v.getSchemaErrors()) {
-                logger.error("*=> schema error: {} ", err.toString());
-            }
-            assertTrue("Schema is invalid! Error count: " + v.getSchemaErrors().size(), v.isSchemaValid());
-        }
-    }
-
-
     /**
      * Validate that a response is a valid XML schema
      * 
@@ -520,45 +469,16 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
      * @throws IOException
      */
     public void testValidXMLSchemaResponse(String code) throws ConfigurationException, SAXException, IOException {
-        Validator setupValidator = setupValidator(false);
+        JaxbSchemaValidator setupValidator = new JaxbSchemaValidator();
         // cleanup -- this is lazy
         File tempFile = File.createTempFile("test-schema", "xsd");
         FileUtils.writeStringToFile(tempFile, code);
-        addSchemaToValidatorWithLocalFallback(setupValidator, null, tempFile);
+        setupValidator.addSchemaToValidatorWithLocalFallback( null, tempFile);
     }
 
-    private Validator setupValidator(boolean extra) throws FileNotFoundException {
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        if (v != null) {
-            return v;
-        }
-        v = new Validator(factory);
-        // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
-        // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
-        // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
-//        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", TestConstants.getFile(TestConstants.TEST_SCHEMA_DIR , "xlink.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://dublincore.org/schemas/xmls/simpledc20021212.xsd", TestConstants.getFile(TestConstants.TEST_SCHEMA_DIR ,
-                "simpledc20021212.xsd"));
-        // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", TestConstants.getFile(TestConstants.TEST_SCHEMA_DIR ,
-                "oaipmh.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
-                TestConstants.getFile(TestConstants.TEST_SCHEMA_DIR , "oaidc.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", TestConstants.getFile(TestConstants.TEST_SCHEMA_DIR ,
-                "mods3.3.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", TestConstants.getFile(TestConstants.TEST_SCHEMA_DIR ,
-                "oai-identifier.xsd"));
-
-        try {
-            addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", serializationService.generateSchema());
-        } catch (Exception e) {
-            logger.error("an error occured creating the schema", e);
-            assertTrue(false);
-        }
-        return v;
-    }
     private void testValidXML(InputStream code, String schema, boolean loadSchemas) throws FileNotFoundException {
-        Validator v = setupValidator(loadSchemas);
+        JaxbSchemaValidator v = new JaxbSchemaValidator();
+        
 
         if (schema != null) {
             v.addSchemaSource(new StreamSource(schema));

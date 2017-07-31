@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -57,6 +58,7 @@ import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
+import org.tdar.core.JaxbSchemaValidator;
 import org.tdar.core.service.SerializationService;
 import org.tdar.utils.TestConfiguration;
 import org.xml.sax.SAXException;
@@ -79,7 +81,7 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
-public abstract class AbstractGeneicWebTest {
+public abstract class AbstractGenericWebTest {
 
     protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
     protected boolean skipHtmlValidation = false;
@@ -113,7 +115,7 @@ public abstract class AbstractGeneicWebTest {
 
         @Override
         protected void failed(Throwable e, Description description) {
-            AbstractGeneicWebTest.this.onFail(e, description);
+            AbstractGenericWebTest.this.onFail(e, description);
         }
 
     };
@@ -444,16 +446,13 @@ public abstract class AbstractGeneicWebTest {
      *            the URL of the schema to use to validate the document
      * @throws ConfigurationException
      * @throws SAXException
+     * @throws FileNotFoundException 
      */
-    public void testValidXMLResponse(InputStream code, String schemaLocation) throws ConfigurationException, SAXException {
-        testValidXML(code, schemaLocation, true);
-    }
-
-    private void testValidXML(InputStream code, String schema, boolean loadSchemas) {
-        Validator v = setupValidator(loadSchemas);
-
-        if (schema != null) {
-            v.addSchemaSource(new StreamSource(schema));
+    public void testValidXMLResponse(InputStream code, String schemaLocation) throws ConfigurationException, SAXException, FileNotFoundException {
+        JaxbSchemaValidator v = new JaxbSchemaValidator();
+        
+        if (schemaLocation != null) {
+            v.addSchemaSource(new StreamSource(schemaLocation));
         }
         InputStream rereadableStream = null;
         try {

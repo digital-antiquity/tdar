@@ -24,7 +24,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.dataone.bean.EntryType;
-import org.tdar.test.web.AbstractGeneicWebTest;
+import org.tdar.test.web.AbstractGenericWebTest;
 import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.dom.Document;
@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
-public class DataOneWebITCase extends AbstractGeneicWebTest {
+public class DataOneWebITCase extends AbstractGenericWebTest {
 
     private static final String TEST_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META;
     private static final String BASE = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT;
