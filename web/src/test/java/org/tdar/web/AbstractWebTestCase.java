@@ -897,6 +897,7 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
     }
 
     public void logout() {
+        logger.debug("~~~~~~~ LOGOUT ~~~~~~~");
         webClient.getOptions().setJavaScriptEnabled(false);
         if (internalPage instanceof HtmlPage && 
                 getHtmlPage().getElementById("logout-button") != null) {
@@ -910,6 +911,8 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
             }
         }
         webClient.getCookieManager().clearCookies();
+        assertCurrentUrlEquals("/");
+        assertTextPresentIgnoreCase("log in");
     }
 
 
