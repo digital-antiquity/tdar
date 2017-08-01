@@ -71,12 +71,19 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
     @Rollback(true)
     public void testGeoJson() throws InstantiationException, IllegalAccessException, TdarActionException, IOException, SearchIndexException {
         InformationResource document = generateDocumentWithUser();
-        document.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(84.37156598282918, 57.89149735271034, -131.484375, 27.0703125));
+        LatitudeLongitudeBox box = new LatitudeLongitudeBox();
+        box.setEast(-100.78792202517137);
+        box.setWest(-107.78792202517137);
+        box.setNorth(46.08765565625065);
+        box.setSouth(36.08765565625065);
+
+        document.getLatitudeLongitudeBoxes().add(box);
+        genericService.saveOrUpdate(document.getLatitudeLongitudeBoxes());
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
         String xml = setupGeoJsonCall(document, GeoRssMode.ENVELOPE);
         logger.debug(xml);
-        assertTrue(xml.contains("\"coordinates\" : [ [ [ 84.37156598282918, 57.89149735271034 ], [ 84.37156598282918, 27.0703125 ], [ -131.484375, 27.0703125 ], [ -131.484375, 57.89149735271034 ], [ 84.37156598282918, 57.89149735271034 ] ] ]"));
+        assertTrue(xml.contains("\"coordinates\" : [ [ [ -107.78792202517137, 36.08765565625065 ], [ -107.78792202517137, 46.08765565625065 ], [ -100.78792202517137, 46.08765565625065 ], [ -100.78792202517137, 36.08765565625065 ], [ -107.78792202517137, 36.08765565625065 ] ] ]"));
     }
 
     @Test
