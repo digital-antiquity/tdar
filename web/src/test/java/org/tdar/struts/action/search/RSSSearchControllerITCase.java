@@ -122,18 +122,27 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     @Rollback(true)
     public void testGeoRSS() throws InstantiationException, IllegalAccessException, TdarActionException, IOException, SearchIndexException {
         InformationResource document = generateDocumentWithUser();
-        document.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(84.37156598282918, 57.89149735271034, -131.484375, 27.0703125));
+        LatitudeLongitudeBox box = new LatitudeLongitudeBox();
+        box.setEast(-100.78792202517137);
+        box.setWest(-107.78792202517137);
+        box.setNorth(46.08765565625065);
+        box.setSouth(36.08765565625065);
+        logger.debug("valid:{}",box.isValid());
+        assertTrue(box.isValid());
+        document.getLatitudeLongitudeBoxes().add(box);
+        genericService.saveOrUpdate(document.getLatitudeLongitudeBoxes());
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
+
         String xml = setupGeoRssCall(document, GeoRssMode.POINT);
         logger.debug(xml);
-        assertTrue(xml.contains("<georss:point>42.480904926355166 156.44359549141458</georss:point>"));
+        assertTrue(xml.contains("<georss:point>41.08765565625065 -104.28792202517137</georss:point>"));
         xml = setupGeoRssCall(document, GeoRssMode.NONE);
         logger.debug(xml);
         assertTrue(!xml.contains("<georss"));
         xml = setupGeoRssCall(document, GeoRssMode.ENVELOPE);
         logger.debug(xml);
-        assertTrue(xml.contains("<georss:box>57.89149735271034 84.37156598282918 27.0703125 -131.484375</georss:box>"));
+        assertTrue(xml.contains("<georss:box>36.08765565625065 -107.78792202517137 46.08765565625065 -100.78792202517137</georss:box>"));
     }
 
     @Test
@@ -174,7 +183,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         logger.debug(viewRss);
         String string = IOUtils.toString(controller.getInputStream());
         logger.debug(string);
-        assertTrue(string.contains("aa"));
+        assertTrue(string.contains("a#1;a"));
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         boolean exceptions = false;
