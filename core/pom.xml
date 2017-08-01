@@ -19,7 +19,12 @@
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
-        <dependencies></dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>${commons-compress.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
 	</dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
@@ -734,6 +739,10 @@
                     <groupId>org.apache.poi</groupId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.apache.tika</groupId>
+                    <artifactId>tika-core</artifactId>
+                </exclusion>
+                <exclusion>
                     <artifactId>poi</artifactId>
                     <groupId>org.apache.poi</groupId>
                 </exclusion>
@@ -768,6 +777,10 @@
                 <exclusion>
                     <artifactId>ehcache-core</artifactId>
                     <groupId>net.sf.ehcache</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
