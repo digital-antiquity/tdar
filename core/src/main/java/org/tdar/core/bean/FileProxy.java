@@ -25,6 +25,8 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * $Id$
  * 
@@ -262,6 +264,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.description = description;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/YYYY")
     public Date getFileCreatedDate() {
         if(fileCreatedDate == null) {
             return null;
