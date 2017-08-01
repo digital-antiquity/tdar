@@ -114,6 +114,8 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         String viewJson = controller.viewJson();
         logger.debug(viewJson);
         logger.debug("{}", controller.getActionErrors());
+        String string = IOUtils.toString(controller.getJsonInputStream());
+        logger.debug(string);
         // the record we created should be the absolute first record
         assertEquals(0, controller.getActionErrors().size());
     }

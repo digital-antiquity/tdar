@@ -169,6 +169,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     @Override
     public void prepare() throws Exception {
+        getLogger().trace("begin prepare");
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             creator = getGenericService().find(Creator.class, getId());
         } else {
@@ -189,6 +190,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
 
         if (isEditor() && getPersistable() instanceof TdarUser) {
+            getLogger().trace("find collections");
             getOwnerCollections().addAll(resourceCollectionService.findParentOwnerCollections((TdarUser) getPersistable(), SharedCollection.class));
             getOwnerCollections().addAll(entityService.findAccessibleResourceCollections((TdarUser) getPersistable()));
 
@@ -199,8 +201,10 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
         
         if(creator instanceof Institution){
+            getLogger().trace("find institutions");
         	people.addAll(entityService.findPersonsByInstitution((Institution) creator));
         }
+        getLogger().trace("done prepare");
     }
 
     @Actions(value = {
@@ -212,7 +216,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         if (isRedirectBadSlug()) {
             return BAD_SLUG;
         }
-
+        getLogger().trace("schema_org ld");
         try {
             setSchemaOrgJsonLD(entityService.getSchemaOrgJson(getCreator(), logoUrl));
         } catch (Exception e) {
@@ -220,6 +224,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
 
         if (isEditor()) {
+            getLogger().trace("editor setup");
             if ((creator instanceof TdarUser) && StringUtils.isNotBlank(((TdarUser) creator).getUsername())) {
                 TdarUser person = (TdarUser) creator;
                 try {
@@ -231,6 +236,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                         accountService.listAvailableAccountsForUser(person, Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
             }
             try {
+                getLogger().trace("uploaded stats");
                 setUploadedResourceAccessStatistic(resourceService.getResourceSpaceUsageStatisticsForUser(Arrays.asList(getId()), null));
             } catch (Exception e) {
                 getLogger().error("unable to set resource access statistics", e);
@@ -239,11 +245,13 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
 
         if (!isEditor() && !PersistableUtils.isEqual(creator, getAuthenticatedUser())) {
+            getLogger().trace("log view stat");
             CreatorViewStatistic cvs = new CreatorViewStatistic(new Date(), creator, isBot());
             getGenericService().saveOrUpdate(cvs);
         }
 
         // reset fields which can be broken by the searching hydration obfuscating things
+        getLogger().trace("find creator");
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
@@ -255,12 +263,13 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         setMode("browseCreators");
         setSortField(SortOption.RESOURCE_TYPE);
         if (PersistableUtils.isNotNullOrTransient(creator)) {
+            getLogger().trace("begin solr");
             String descr = getText("browseController.all_resource_from", creator.getProperName());
             setSearchDescription(descr);
             setSearchTitle(descr);
             setRecordsPerPage(50);
             try {
-                setProjectionModel(ProjectionModel.RESOURCE_PROXY);
+                setProjectionModel(ProjectionModel.LUCENE);
                 getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
                 getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, InvestigationType.class);
                 getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, MaterialKeyword.class);
@@ -286,7 +295,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                 ignoreIds.addAll(PersistableUtils.extractIds(creator.getSynonyms()));
                 summarizeFacets(getCreatorFacetMap(), roles, ignoreIds);
                 summarizeFacets(getKeywordFacetMap(), kwds, null);
-
+                getLogger().trace("apply bookmarks");
                 bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
             } catch (SearchPaginationException spe) {
@@ -308,6 +317,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             return;
         }
         for (String role : roles) {
+            getLogger().trace("summarize facets: {}", role);
             if (CollectionUtils.isEmpty(getFacetWrapper().getFacetResults().get(role))) {
                 continue;
             }
