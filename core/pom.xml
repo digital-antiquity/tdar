@@ -20,12 +20,11 @@
     </parent>
     <dependencyManagement>
         <dependencies>
-            <dependency>
+<!--             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
                 <version>${commons-compress.version}</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
+            </dependency> -->
         </dependencies>
     </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
