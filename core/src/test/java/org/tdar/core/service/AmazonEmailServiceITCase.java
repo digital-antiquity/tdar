@@ -1,52 +1,82 @@
 package org.tdar.core.service;
 
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.Status;
+import org.tdar.core.bean.notification.EmailType;
+import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.service.email.AwsEmailService;
-import org.tdar.core.service.external.MockMailSender;
-
-import com.amazonaws.services.simpleemail.model.SendEmailResult;
 
 public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired 
     protected AwsEmailService awsEmailService;
     
+    
+    @Test
+    public void testTestAwsEmail(){
+    	assertNotEquals(EmailType.TEST_EMAIL.getFromAddress(), "test@tdar.org");
+    }
+    
     @Test
     @Rollback
-    public void testMockMailSender() {
-    	String toEmailAddress = "bcastel1@asu.edu";
-        Person to = new Person(null, null, toEmailAddress);
-        String mailBody = "this is a message body";
-        String subject = "this is a subject";
-        
-        Email email = new Email();
-        email.setMessage(mailBody);
-        email.setSubject(subject);
-        email.addToAddress(to.getEmail());
-        assertEquals(toEmailAddress, email.getTo());
-        
-        getLogger().debug("To Email is: {}",email.getTo());
-        SendEmailResult result = awsEmailService.sendMessage(email);
-        
-        assertNotNull(result.getMessageId());
+    public void testSendAwsMail() throws IOException {
+        AwsMessage message = awsEmailService.createMessage(EmailType.TEST_EMAIL, "bcastel1@asu.edu");
+        message.getEmail().setSubject("Subject");
+    	message.getEmail().setMessage("This is a test message");
+    	message.addData("foo", "foo");
+    	message.addData("bar", "bar");
+    	message.addData("firstName", "Brian");
+    	message.addData("lastName", "Castellanos");
+		message.getAttachments().add(new File("src/test/resources/asu_map_tempe_2008.pdf"));
+
+    	awsEmailService.updateEmailContent(message);
+        awsEmailService.updateEmailSubject(message);
+    	
+        MimeMessage mimeMessage;
+		try {
+			mimeMessage = awsEmailService.createMimeMessage(message);
+			awsEmailService.sendMultiPartMessage(mimeMessage);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+    }
+
+    
+    @Test 
+    public void testBounceMessage(){
+    	try {
+	    	AwsMessage message = awsEmailService.createMessage(EmailType.TEST_EMAIL,"noone@thinkkreative.com");
+	    	message.getEmail().setMessage("This is a bounce message");
+	    	awsEmailService.updateEmailSubject(message);
+	    	
+    		MimeMessage mimeMessage = awsEmailService.createMimeMessage(message);
+    		
+    		ByteArrayOutputStream os = new ByteArrayOutputStream();
+    		mimeMessage.writeTo(os);
+    		byte[] mimeContents = os.toByteArray();
+    		
+    		OutputStream out = System.out;
+    		
+    		mimeMessage.writeTo(out);
+    		assertNotEquals(mimeContents,"");
+    		
+    		awsEmailService.sendMultiPartMessage(mimeMessage);
+    	}
+    	catch(MessagingException | IOException e ){
+    		fail(e.getMessage());
+    	}
     }
    
 
