@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
@@ -24,6 +25,8 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * $Id$
@@ -269,6 +272,27 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         //implicitly convert java.sql.Date to java.util.Date
         this.fileCreatedDate = new Date(fileCreatedDate.getTime());
         return fileCreatedDate;
+    }
+
+    public Integer getYear() {
+        if(fileCreatedDate == null) {
+            return null;
+        }
+        return new DateTime(fileCreatedDate.getTime()).getYear();
+    }
+
+    public Integer getMonth() {
+        if(fileCreatedDate == null) {
+            return null;
+        }
+        return new DateTime(fileCreatedDate.getTime()).getMonthOfYear();
+    }
+
+    public Integer getDay() {
+        if(fileCreatedDate == null) {
+            return null;
+        }
+        return new DateTime(fileCreatedDate.getTime()).getDayOfMonth();
     }
 
     public void setFileCreatedDate(Date fileCreatedDate) {
