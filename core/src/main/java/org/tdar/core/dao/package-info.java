@@ -36,10 +36,9 @@
                 query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId) and resCol.status='ACTIVE' and (:perm is null or authUser.effectiveGeneralPermission > :perm )"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_RESOURCE, 
-                query = "SELECT au from AuthorizedUser au LEFT JOIN ResourceCollection c on au.collectionId=c.id "
-                        + "left join c.resources r left join c.parentIds parentId "
-                        + "left join ResourceCollection p on parentId=p.id left join p.resources r2 "
-                        + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and ( au.resourceId =:id or (c.status='ACTIVE' and r.id=:id) or (p.status='ACTIVE' and r2.id=:id))"),
+                query = "SELECT au from AuthorizedUser au where (exists (select c.id from ResourceCollection c where c.id=au.collectionId and c.id in (select p.id from Resource r left join r.resourceCollections as p where r.id=:id ) "
+                        + " or c.id in (select parentId from Resource r left join r.resourceCollections as p left join p.parentIds parentId where r.id=:id )) or au.resourceId=:id) "
+                        + " and au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm)"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_COLLECTION, 
                 query = "SELECT au from AuthorizedUser au LEFT JOIN ResourceCollection c on au.collectionId=c.id "

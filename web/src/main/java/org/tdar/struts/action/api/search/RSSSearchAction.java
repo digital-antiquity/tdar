@@ -12,6 +12,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FeedSearchHelper;
@@ -56,6 +57,7 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
                 setSecondarySortField(SortOption.TITLE);
             }
             setMode("rss");
+            setOrientation(DisplayOrientation.MAP);
             performResourceSearch();
             setSearchTitle(getSearchSubtitle() + ": " + StringEscapeUtils.escapeXml11(getSearchPhrase()));
             setSearchDescription(getText("advancedSearchController.rss_subtitle", TdarConfiguration.getInstance().getSiteAcronym(),

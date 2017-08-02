@@ -27,8 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -36,7 +34,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.UserNotificationDisplayType;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.InstitutionDao;
@@ -224,6 +221,14 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return result;
     }
 
+    @Transactional(readOnly=false)
+    public void disableAccount(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse, TdarUser user) {
+        user.setStatus(Status.DELETED);
+        personDao.saveOrUpdate(user);
+        getAuthenticationProvider().updateBasicUserInformation(user);
+        logout(sessionData, servletRequest, servletResponse, user);
+    }
+    
     private void setupAuthenticatedUser(TdarUser tdarUser, SessionData sessionData, HttpServletRequest request) {
 
         if (!tdarUser.isActive()) {

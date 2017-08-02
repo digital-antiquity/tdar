@@ -19,14 +19,20 @@
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
-        <dependencies></dependencies>
-	</dependencyManagement>
+        <dependencies>
+<!--             <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${commons-compress.version}</version>
+            </dependency> -->
+        </dependencies>
+    </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
         <dependency>
             <groupId>com.joestelmach</groupId>
             <artifactId>natty</artifactId>
-            <version>0.12</version>
+            <version>0.13</version>
             <!-- LICENSE: MIT -->
         </dependency>
         <dependency>
@@ -75,7 +81,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.10</version>
+            <version>0.9.11</version>
         </dependency>
         <dependency>
             <groupId>com.ibm.icu</groupId>
@@ -92,7 +98,7 @@
         <dependency>
             <groupId>net.imagej</groupId>
             <artifactId>ij</artifactId>
-            <version>1.50i</version>
+            <version>1.51k</version>
             <!-- LICENSE: PUBLIC DOMAIN -->
             <exclusions>
                 <exclusion>
@@ -468,7 +474,7 @@
 		<dependency>
 		  <groupId>org.freemarker</groupId>
 		  <artifactId>freemarker</artifactId>
-		  <version>2.3.25-incubating</version>
+		  <version>2.3.26-incubating</version>
           <!-- LICENSE: BSD -->
 		</dependency>
 <!--         <dependency>
@@ -734,6 +740,10 @@
                     <groupId>org.apache.poi</groupId>
                 </exclusion>
                 <exclusion>
+                    <groupId>org.apache.tika</groupId>
+                    <artifactId>tika-core</artifactId>
+                </exclusion>
+                <exclusion>
                     <artifactId>poi</artifactId>
                     <groupId>org.apache.poi</groupId>
                 </exclusion>
@@ -768,6 +778,10 @@
                 <exclusion>
                     <artifactId>ehcache-core</artifactId>
                     <groupId>net.sf.ehcache</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

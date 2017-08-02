@@ -176,4 +176,6 @@ public interface AuthenticationService {
 
     void requestPasswordReset(String usernameOrEmail);
 
+    public void disableAccount(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse, TdarUser user);
+
 }

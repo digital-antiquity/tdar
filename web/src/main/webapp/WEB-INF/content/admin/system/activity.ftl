@@ -66,7 +66,7 @@
             </#if>
         <tr class="${highlight?string('highlightrow-yellow','')} ${highlightPost?string('highlightrow-green','')}">
             <td>${activity.startDate?datetime}</td>
-            <td><#if activity.user?has_content>${activity.user.properName}</#if></td>
+            <td><#if activity.username?has_content>${activity.username}</#if></td>
             <td>${(activity.totalTime?c)!default("-")}</td>
             <td>${(activity.actionTime!0?c)!default("-")}</td>
             <td>${(activity.resultTime!0?c)!default("-")}</td>

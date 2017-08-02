@@ -245,6 +245,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         if (item instanceof InformationResourceFile) {
             document = ContentDocumentConverter.convert((InformationResourceFile) item);
         }
+        
         return document;
     }
 
