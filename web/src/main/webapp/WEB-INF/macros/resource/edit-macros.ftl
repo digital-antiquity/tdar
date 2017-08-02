@@ -835,11 +835,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <br/>
                 <#local val = ""/>
                 <#if (fileProxies[0].fileCreatedDate)?has_content>
-                    <#local val = fileProxies[0].fileCreatedDate?string("MM/dd/yyyy") />
+                    <#local val = fileProxies[0].fileCreatedDate?string["MM/dd/yyyy"] />
                 </#if>
                 Date             
                         <div class="input-append">
-   						  <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="datepicker input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
+   						  <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="datepicker input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yyyy"} />
                           <span class="add-on"><i class="icon-th"></i></span>
                         </div>
                 Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
@@ -995,7 +995,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;" />
                 <#local val = ""/>
                 <#if (proxy.fileCreatedDate)?has_content>
-                        <#local val = proxy.fileCreatedDate?string("MM/dd/yyyy")>
+                        <#local val = proxy.fileCreatedDate?string["MM/dd/yyyy"]>
                     </#if>
                 <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                 <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" cols="80" />
@@ -1328,7 +1328,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <div class="controls controls-row">
                          <div class="span5">
 	                         <div class="input-append">
-	                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="datepicker" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}" data-date-format="mm/dd/yy" >
+	                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="datepicker" placeholder="mm/dd/yyyy" value="{% if (file['year']) { %}{%=file['month']%}/{%=file['day']%}/{%=file['year'] %}{% } %}" data-date-format="mm/dd/yyyy" >
 	                            <span class="add-on"><i class="icon-th"></i></span>
 	                        </div>
 	                         
@@ -1557,7 +1557,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     <#macro datefield date name="" id=name cssClass="" label="" format="MM/dd/yyyy" placeholder="mm/dd/yyyy" >
         <#local val = "">
         <#if date?has_content>
-            <#local val = date?string(format)>
+            <#local val = date?string[format]>
         </#if>
         <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" dynamicAttributes={"data-date-format":"${placeholder}"}/>
     </#macro>
@@ -1601,7 +1601,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <label class="control-label" for="inputPassword">Until:</label>
                         <div class="controls">
                             <div class="input-append">
-                                <input class="span2 datepicker" size="16" type="text" value="12-02-2016" id="dp3" data-date-format="mm-dd-yyyy" >
+                                <input class="span2 datepicker" size="16" type="text" value="12-02-2016" id="dp3" data-date-format="mm/dd/yyyy" >
                                 <span class="add-on"><i class="icon-th"></i></span>
                             </div>
                         </div>

@@ -10,6 +10,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.GeoRssMode;
@@ -41,6 +42,7 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
             if (getSortField() == null) {
                 setSecondarySortField(SortOption.TITLE);
             }
+            setOrientation(DisplayOrientation.MAP);
             setMode("json");
             performResourceSearch();
             jsonifyResult(JsonLookupFilter.class);

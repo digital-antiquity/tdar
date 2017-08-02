@@ -137,13 +137,16 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextNotPresent("/img/sm");
 
         assertLoginPrompt(irFileIds, irFileVersionIds);
-
+        logger.debug(getCurrentUrlPath());
         gotoPage(editPage);
         // LOG IN, BUT AS A USER THAT SHOULDN'T HAVE RIGHTS TO THE RESOURCE. NO THUMBNAIL.
+        logger.debug(getCurrentUrlPath());
         int statusCode = login(CONFIG.getUsername(), CONFIG.getPassword(), true);
-        logger.debug(getPageCode());
+        logger.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         logger.debug(getCurrentUrlPath());
         logger.debug("statusCode: {} ", statusCode);
+        logger.debug(getPageCode());
+        logger.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), statusCode);
         // FIXME: change from Gone->Forbidden changed how tDAR responds and thus
         // redirects to a different page... current URL is null?
