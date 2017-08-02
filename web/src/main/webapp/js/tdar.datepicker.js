@@ -10,7 +10,7 @@
     };
 
     var _bind = function(el) {
-        $(el).datepicker({autoclose:true}).on('changeDate', _handleEvent);
+        $(el).datepicker({autoclose:true, dateFormat: "mm/dd/yyyy"}).on('changeDate', _handleEvent);
     }
 
     var _apply = function(el) {
