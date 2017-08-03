@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -24,7 +23,6 @@ import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.SupportsResource;
-import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ListCollection;
@@ -50,7 +48,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -68,7 +65,6 @@ import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
@@ -112,7 +108,6 @@ public class ResourceSaveControllerService {
 
     @Autowired
     private transient CategoryVariableService categoryVariableService;
-
 
     @Autowired
     private transient FileProxyService fileProxyService;
@@ -163,7 +158,7 @@ public class ResourceSaveControllerService {
             // process the String uploaded via the fileTextInput box verbatim as the UPLOADED_TEXT version
             // 2013-22-04 AB: if our validation rules for Struts are working, this is not needed as the title already is checked way before this
             // if (StringUtils.isBlank(getPersistable().getTitle())) {
-            // getLogger().error("Resource title was empty, client side validation failed for {}", getPersistable());
+            // logger.error("Resource title was empty, client side validation failed for {}", getPersistable());
             // addActionError("Please enter a title for your " + getPersistable().getResourceType().getLabel());
             // return null;
             // }
@@ -230,9 +225,13 @@ public class ResourceSaveControllerService {
      * @return a List<FileProxy> representing the final set of fully initialized FileProxy objects
      */
     @Transactional(readOnly = false)
-    public List<FileProxy> getFileProxiesToProcess(AuthWrapper<InformationResource> auth, TextProvider provider, Long ticketId,
-            boolean multipleFileUploadEnabled, List<FileProxy> fileProxies, FileProxy textInputFileProxy,
-            List<String> filenames, List<File> files) {
+    public List<FileProxy> getFileProxiesToProcess(AuthWrapper<InformationResource> auth, TextProvider provider, FileSaveWrapper fsw, FileProxy textInputFileProxy) {
+        Long ticketId = fsw.getTicketId();
+        List<String> filenames = fsw.getUploadedFilesFileName();
+        List<File> files = fsw.getUploadedFiles();
+        boolean multipleFileUploadEnabled = fsw.isMultipleFileUploadEnabled();
+        List<FileProxy> fileProxies = fsw.getFileProxies();
+        
         List<FileProxy> fileProxiesToProcess = new ArrayList<>();
         logger.debug("getFileProxiesToProcess: {}, {}, {} ({})", ticketId, files, fileProxies, multipleFileUploadEnabled);
         // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
@@ -343,7 +342,8 @@ public class ResourceSaveControllerService {
         AbstractSequenced.applySequence(list);
     }
 
-    public <R extends Resource> ErrorTransferObject save(AuthWrapper<Resource> authWrapper, ResourceControllerProxy<R> rcp) throws TdarActionException, IOException {
+    public <R extends Resource> ErrorTransferObject save(AuthWrapper<Resource> authWrapper, ResourceControllerProxy<R> rcp)
+            throws TdarActionException, IOException {
 
         if (rcp.shouldSaveResource()) {
             genericService.saveOrUpdate(authWrapper.getItem());
@@ -422,17 +422,18 @@ public class ResourceSaveControllerService {
             eto = handleUploadedFiles(authWrapper, rcp.getProvider(), rcp.getValidFileExtensions(), rcp.getTicketId(),
                     rcp.getFileProxiesToProcess());
         }
-        
+
         if (rcp.getResource() instanceof CodingSheet) {
             CodingSheet codingSheet = (CodingSheet) rcp.getResource();
             codingSheetService.reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, rcp.getOntology());
         }
-        
+
         return eto;
 
     }
 
-    private void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections,
+    @Transactional(readOnly = true)
+    public void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections,
             List<ListCollection> retainedListCollections) {
         logger.debug("loadEffective...");
         for (SharedCollection rc : auth.getItem().getSharedCollections()) {
@@ -600,8 +601,41 @@ public class ResourceSaveControllerService {
             resource.setCopyrightHolder(entityService.findOrSaveCreator(transientCreator.getCreator()));
         }
     }
-    
 
+    public <R extends InformationResource> void setupFileProxiesForSave(ResourceControllerProxy<R> proxy, AuthWrapper<InformationResource> auth,
+            FileSaveWrapper fsw, TextProvider provider) {
+        InformationResource resource = auth.getItem();
+        logger.debug("setup file proxies");
+        if (fsw.isBulkUpload()) {
+            return;
+        }
+        try {
 
+            FileProxy processTextInput = null;
+
+            if (!fsw.isMultipleFileUploadEnabled() && fsw.isTextInput()) {
+                if (StringUtils.isBlank(fsw.getFileTextInput())) {
+                    throw new TdarRecoverableRuntimeException("abstractSupportingInformationResourceController.please_enter");
+                }
+                // processTextInput(TextProvider provider, String fileTextInput, InformationResource persistable) {
+                processTextInput = processTextInput(provider, fsw.getFileTextInput(), resource);
+
+            }
+
+            List<FileProxy> fileProxiesToProcess = getFileProxiesToProcess(auth, provider, fsw,processTextInput);
+
+            for (FileProxy fproxy : fileProxiesToProcess) {
+                if (fproxy != null && fproxy.getAction() != FileAction.NONE) {
+                    fsw.setFileProxyChanges(true);
+                }
+            }
+            proxy.setTicketId(fsw.getTicketId());
+            proxy.setFileProxies(fileProxiesToProcess);
+
+        } catch (Exception e) {
+            throw new TdarRecoverableRuntimeException("abstractResourceController.we_were_unable_to_process_the_uploaded_content", e);
+        }
+
+    }
 
 }

@@ -1,5 +1,7 @@
 package org.tdar.web.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -10,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -21,11 +25,13 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -42,6 +48,8 @@ public class ResourceEditControllerService {
 
     @Autowired
     private ObfuscationService obfuscationService;
+    @Autowired
+    private SerializationService serializationService;
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
@@ -78,7 +86,7 @@ public class ResourceEditControllerService {
         }
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Resource> getPotentialParents(InformationResource persistable, TdarUser submitter, Project project, TextProvider provider) {
         List<Resource> potentialParents = new LinkedList<>();
         boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, submitter);
@@ -93,7 +101,7 @@ public class ResourceEditControllerService {
         return potentialParents;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public <R extends Resource> Boolean isAbleToUploadFiles(TdarUser authenticatedUser, R persistable, List<BillingAccount> activeAccounts) {
 
         boolean isAbleToUploadFiles = authorizationService.canUploadFiles(authenticatedUser, persistable);
@@ -112,19 +120,18 @@ public class ResourceEditControllerService {
         }
         return isAbleToUploadFiles;
     }
-    
 
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<BillingAccount> determineActiveAccounts(TdarUser authenticatedUser, Resource resource) {
         // Get all available active accounts for the user. If the resource is being edited, and its associated account is over-limit, this list will
         // not contain that billing account.
         List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(authenticatedUser, Status.ACTIVE));
 
         // If the resource has been created, e.g., not null, then check to see if the billing account needs to be added in.
-        if (resource!= null) {
+        if (resource != null) {
 
             accountService.updateTransientAccountInfo(resource);
 
@@ -141,10 +148,12 @@ public class ResourceEditControllerService {
         }
         return accounts;
     }
-    
-    @Transactional(readOnly=true)
-    public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<SharedCollection> effectiveShares, List<SharedCollection> retainedSharedCollections,
-            List<ListCollection> effectiveResourceCollections, List<ListCollection> retainedListCollections, List<SharedCollection> shares, List<ListCollection> resourceCollections) {
+
+    @Transactional(readOnly = true)
+    public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<SharedCollection> effectiveShares,
+            List<SharedCollection> retainedSharedCollections,
+            List<ListCollection> effectiveResourceCollections, List<ListCollection> retainedListCollections, List<SharedCollection> shares,
+            List<ListCollection> resourceCollections) {
         effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(resource));
         effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(resource));
 
@@ -166,5 +175,28 @@ public class ResourceEditControllerService {
             }
         }
 
+    }
+
+    public String loadFilesJson(InformationResource persistable) {
+        if (PersistableUtils.isNullOrTransient(persistable)) {
+            return null;
+        }
+        String filesJson = "[]";
+        List<FileProxy> fileProxies = new ArrayList<>();
+        // FIXME: this is the same logic as the initialization of the fileProxy... could use that instead, but causes a sesion issue
+        for (InformationResourceFile informationResourceFile : persistable.getInformationResourceFiles()) {
+            if (!informationResourceFile.isDeleted()) {
+                fileProxies.add(new FileProxy(informationResourceFile));
+            }
+        }
+
+        try {
+            filesJson = serializationService.convertToJson(fileProxies);
+            logger.debug(filesJson);
+        } catch (IOException e) {
+            logger.error("could not convert file list to json", e);
+
+        }
+        return filesJson;
     }
 }

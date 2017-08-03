@@ -24,6 +24,7 @@ import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.FileSaveWrapper;
 import org.tdar.web.service.ResourceSaveControllerService;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -80,12 +81,20 @@ public class BulkUploadController extends AbstractInformationResourceController<
         super.save(image);
         getLogger().debug("ticketId: {} ", getTicketId());
         getLogger().debug("proxy:    {}", getFileProxies());
-//        saveBasicResourceMetadata();
-//        saveInformationResourceProperties();
         getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
 
         AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getImage(), isAuthenticated(), getAuthenticatedUser(), isEditor());
-        Collection<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, getTicketId(), isMultipleFileUploadEnabled(), getFileProxies(), null, getUploadedFilesFileName(), getUploadedFiles());
+        
+        fsw.setBulkUpload(isBulkUpload());
+        fsw.setFileProxies(getFileProxies());
+        fsw.setTextInput(false);
+        fsw.setMultipleFileUploadEnabled(isMultipleFileUploadEnabled());
+        fsw.setTicketId(getTicketId());
+        fsw.setUploadedFilesFileName(getUploadedFilesFileName());
+        fsw.setUploadedFiles(getUploadedFiles());
+
+        Collection<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, fsw, null);
+        
         setupAccountForSaving();
         getCreditProxies().clear();
         getGenericService().detachFromSession(getPersistable());

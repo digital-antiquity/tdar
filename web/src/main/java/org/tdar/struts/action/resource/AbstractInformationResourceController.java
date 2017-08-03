@@ -1,7 +1,6 @@
 package org.tdar.struts.action.resource;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,11 +22,9 @@ import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
-import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ProjectService;
@@ -39,6 +36,7 @@ import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.FileSaveWrapper;
 import org.tdar.web.service.ResourceEditControllerService;
 import org.tdar.web.service.ResourceSaveControllerService;
 import org.tdar.web.service.ResourceViewControllerService;
@@ -67,8 +65,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     @Autowired
     private transient ProjectService projectService;
-    @Autowired
-    private transient SerializationService serializationService;
 
     @Autowired
     private transient CategoryVariableService categoryVariableService;
@@ -97,6 +93,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private Long projectId;
     private String fileInputMethod;
     private String fileTextInput;
+    protected FileSaveWrapper fsw = new FileSaveWrapper();
 
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = null;
@@ -147,8 +144,19 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         proxy.setResourceProviderInstitutionName(resourceProviderInstitutionName);
         proxy.setPublisherName(publisherName);
         proxy.setCopyrightHolder(copyrightHolderProxies);
+        proxy.setValidFileExtensions(getValidFileExtensions());
 
-        setupFileProxiesForSave();
+        fsw.setBulkUpload(isBulkUpload());
+        fsw.setFileProxies(getFileProxies());
+        fsw.setFileTextInput(fileTextInput);
+        fsw.setTextInput(isTextInput());
+        fsw.setMultipleFileUploadEnabled(isMultipleFileUploadEnabled());
+        fsw.setTicketId(getTicketId());
+        fsw.setUploadedFilesFileName(getUploadedFilesFileName());
+        fsw.setUploadedFiles(getUploadedFiles());
+        AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(), isEditor());
+        resourceSaveControllerService.setupFileProxiesForSave(proxy, authWrapper, fsw, this);
+        setHasFileProxyChanges(fsw.isFileProxyChanges());
         super.save(document);
         return SUCCESS;
 
@@ -233,28 +241,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
     }
 
-    private void loadFilesJson() {
-        if (PersistableUtils.isNullOrTransient(getResource())) {
-            return;
-        }
-
-        List<FileProxy> fileProxies = new ArrayList<>();
-        // FIXME: this is the same logic as the initialization of the fileProxy... could use that instead, but causes a sesion issue
-        for (InformationResourceFile informationResourceFile : getResource().getInformationResourceFiles()) {
-            if (!informationResourceFile.isDeleted()) {
-                fileProxies.add(new FileProxy(informationResourceFile));
-            }
-        }
-
-        try {
-            filesJson = serializationService.convertToJson(fileProxies);
-            getLogger().debug(filesJson);
-        } catch (IOException e) {
-            getLogger().error("could not convert file list to json", e);
-            filesJson = "[]";
-        }
-    }
-
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         setProject(getPersistable().getProject());
@@ -300,44 +286,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public FileProxy getBlankFileProxy() {
         return new FileProxy();
-    }
-
-    private void setupFileProxiesForSave() {
-        getLogger().debug("setup file proxies");
-        if (isBulkUpload()) {
-            return;
-        }
-        try {
-
-            FileProxy processTextInput = null;
-
-            AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(), isEditor());
-
-            if (!isMultipleFileUploadEnabled() && isTextInput()) {
-                if (StringUtils.isBlank(getFileTextInput())) {
-                    addActionError(this.getText("abstractSupportingInformationResourceController.please_enter"));
-                    return;
-                }
-                processTextInput = resourceSaveControllerService.processTextInput(this, getFileTextInput(), getPersistable());
-
-            }
-
-            List<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, getTicketId(),
-                    isMultipleFileUploadEnabled(), getFileProxies(), processTextInput, getUploadedFilesFileName(), getUploadedFiles());
-
-            for (FileProxy proxy : fileProxiesToProcess) {
-                if (proxy != null && proxy.getAction() != FileAction.NONE) {
-                    hasFileProxyChanges = true;
-                }
-            }
-
-            proxy.setTicketId(getTicketId());
-            proxy.setFileProxies(fileProxiesToProcess);
-            proxy.setValidFileExtensions(getValidFileExtensions());
-        } catch (Exception e) {
-            addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), e);
-        }
-
     }
 
     public Integer getEmbargoPeriodInYears() {
@@ -552,7 +500,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public String getFilesJson() {
-        loadFilesJson();
+        filesJson = resourceEditControllerService.loadFilesJson(getPersistable());
         return filesJson;
     }
 
