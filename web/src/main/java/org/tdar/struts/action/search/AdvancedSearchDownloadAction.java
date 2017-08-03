@@ -51,7 +51,8 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
     private Long contentLength;
     private InputStream inputStream;
 
-    @Action(value = "download", results = { @Result(name = SUCCESS, type = "stream", params = {
+    @Action(value = "download", results = { @Result(name=INPUT, location=ERROR),
+            @Result(name = SUCCESS, type = "stream", params = {
             "contentType", "application/vnd.ms-excel", "inputName",
             "inputStream", "contentDisposition",
             "attachment;filename=\"report.xlsx\"", "contentLength",
@@ -84,7 +85,7 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                     fieldNames.add("date_added");
                     fieldNames.add("submitted_by");
                     fieldNames.add("date_last_updated");
-                    fieldNames.add("updated_by");
+//                    fieldNames.add("updated_by");
                 }
 
                 // ADD HEADER ROW THAT SHOWS URL and SEARCH PHRASE
@@ -168,7 +169,7 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                             data.add(r.getDateCreated());
                             data.add(r.getSubmitter().getProperName());
                             data.add(r.getDateUpdated());
-                            data.add(r.getUpdatedBy().getProperName());
+//                            data.add(r.getUpdatedBy().getProperName());
                         }
 
                         excelWriter.addDataRow(sheet, rowNum, 0, data);
