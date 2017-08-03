@@ -173,8 +173,27 @@ public class ResourceEditControllerService {
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
+        logger.debug(" shares          : {}", shares);
+        logger.debug(" shares retained : {}", retainedSharedCollections);
+        logger.debug(" shares effective: {}", effectiveShares);
 
+    }/*
+    blic void loadEffectiveResourceCollectionsForEdit() {
+        getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
+
+        getLogger().debug("loadEffective...");
+        for (SharedCollection rc : getResource().getSharedResourceCollections()) {
+            if (authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
+                getShares().add(rc);
+            } else {
+                getRetainedSharedCollections().add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        getLogger().debug("Shares: {}", getShares());
     }
+
+*/
 
     @Transactional(readOnly = true)
     public String loadFilesJson(InformationResource persistable) {

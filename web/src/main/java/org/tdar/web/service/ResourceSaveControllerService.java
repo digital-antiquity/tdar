@@ -439,10 +439,25 @@ public class ResourceSaveControllerService {
 
     }
 
+    /**
+     *     public void loadEffectiveResourceCollectionsForSave() {
+        getLogger().debug("loadEffective...");
+        for (SharedCollection rc : getResource().getSharedCollections()) {
+            if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
+                getRetainedSharedCollections().add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+    }
+
+     * @param auth
+     * @param retainedSharedCollections
+     * @param retainedListCollections
+     */
     @Transactional(readOnly = true)
     public void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections,
             List<ListCollection> retainedListCollections) {
-        logger.debug("loadEffective...");
+        logger.debug("loadEffective... (save)");
         for (SharedCollection rc : auth.getItem().getSharedCollections()) {
             if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser())) {
                 retainedSharedCollections.add(rc);
@@ -456,6 +471,8 @@ public class ResourceSaveControllerService {
             }
         }
         // effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(auth.getItem()));
+        logger.debug(" shares retained : {}", retainedSharedCollections);
+
     }
 
     private <R extends Resource> void saveTemporalContext(AuthWrapper<Resource> auth, ResourceControllerProxy<R> rcp) {
