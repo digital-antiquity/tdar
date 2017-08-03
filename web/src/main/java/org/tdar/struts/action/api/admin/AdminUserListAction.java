@@ -1,4 +1,4 @@
-package org.tdar.struts.action.admin;
+package org.tdar.struts.action.api.admin;
 
 import static com.opensymphony.xwork2.Action.SUCCESS;
 
@@ -28,7 +28,7 @@ import org.tdar.struts_base.action.TdarActionSupport;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
-@Namespace("/admin")
+@Namespace("/api/admin")
 @Component
 @Scope("prototype")
 @Results({
