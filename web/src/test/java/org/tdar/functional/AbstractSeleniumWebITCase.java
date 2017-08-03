@@ -1447,6 +1447,13 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public String switchToWindow(String url) {
+        for (int i=0; i < 10; i++) {
+            waitFor(1);
+            if (getDriver().getWindowHandles().size() > 1) {
+                continue;
+            }
+        }
+
         List<String> handles = new ArrayList<>();
         handles.addAll(driver.getWindowHandles());
         Collections.sort(handles);
