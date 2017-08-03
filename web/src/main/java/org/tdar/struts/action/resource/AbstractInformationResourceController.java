@@ -129,7 +129,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected String save(InformationResource document) throws TdarActionException {
         // save basic metadata
         getLogger().debug("save ir");
-        saveBasicResourceMetadata();
+//        saveBasicResourceMetadata();
         
         // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();

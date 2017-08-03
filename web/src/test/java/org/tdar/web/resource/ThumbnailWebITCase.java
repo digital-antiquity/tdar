@@ -51,20 +51,8 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String ticketId = getPersonalFilestoreTicketId();
         uploadFileToPersonalFilestore(ticketId, TEST_IMAGE);
 
-        gotoPage("/image/add");
-        setInput(PROJECT_ID_FIELDNAME, PROJECT_ID);
-        setInput("ticketId", ticketId);
-        setInput(IMAGE_TITLE_FIELDNAME, IMAGE_TITLE);
-        setInput(DESCRIPTION_FIELDNAME, DESCRIPTION);
-        setInput("image.date", "1984");
-        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
-            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
-        }
-        // FIXME: need to create input
-        addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, TEST_IMAGE_NAME);
-        // setInput("resourceAvailability", "Public");
-        submitForm();
+        // ADMIN
+        createImageAndAddConfidentialFile(ticketId);
 
         // the logged in creator should be able to see the image
         String path = internalPage.getUrl().getPath().toLowerCase();
@@ -104,12 +92,8 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         logout();
         // LOGIN, CHANGE FROM CONFIDENTIAL TO PUBLIC THEN LOGOUT... WE SHOULD SEE THE THUMBNAIL
-        loginAdmin();
-        gotoPage(editPage);
-        setInput("fileProxies[0].action", FileAction.MODIFY_METADATA.name());
-        setInput("fileProxies[0].restriction", FileAccessRestriction.PUBLIC.name());
-        submitForm();
-        logout();
+        makeFilePublic(editPage);
+        
         gotoPage(viewPage);
         assertTextNotPresent("/img/sm");
 
@@ -126,13 +110,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         logout();
 
-        // NOW MAKE THE PAGE EMBARGED -- THE THUMBNAIL SHOULD NOT BE VISIBLE
-        loginAdmin();
-        gotoPage(editPage);
-        setInput("fileProxies[0].action", FileAction.MODIFY_METADATA.name());
-        setInput("fileProxies[0].restriction", FileAccessRestriction.EMBARGOED_FIVE_YEARS.name());
-        submitForm();
-        logout();
+        makeFileEmbargoed(editPage);
         gotoPage(viewPage);
         assertTextNotPresent("/img/sm");
 
@@ -161,18 +139,43 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertDeniedAccess(irFileIds, irFileVersionIds);
 
-//        // compile irfileversion ids in a different way and try again.
-//        irFileVersionIds.clear();
-//        Image image = genericService.find(Image.class, imageId);
-//        for (InformationResourceFile irfile : image.getInformationResourceFiles()) {
-//            for (InformationResourceFileVersion irv : irfile.getInformationResourceFileVersions()) {
-//                if (irv != null) {
-//                    irFileVersionIds.add(irv.getId());
-//                }
-//            }
-//        }
-//        assertDeniedAccess(irFileIds, irFileVersionIds);
 
+    }
+
+    private void makeFileEmbargoed(String editPage) {
+        // NOW MAKE THE PAGE EMBARGED -- THE THUMBNAIL SHOULD NOT BE VISIBLE
+        loginAdmin();
+        gotoPage(editPage);
+        setInput("fileProxies[0].action", FileAction.MODIFY_METADATA.name());
+        setInput("fileProxies[0].restriction", FileAccessRestriction.EMBARGOED_FIVE_YEARS.name());
+        submitForm();
+        logout();
+    }
+
+    private void makeFilePublic(String editPage) {
+        loginAdmin();
+        gotoPage(editPage);
+        setInput("fileProxies[0].action", FileAction.MODIFY_METADATA.name());
+        setInput("fileProxies[0].restriction", FileAccessRestriction.PUBLIC.name());
+        submitForm();
+        logout();
+    }
+
+    private void createImageAndAddConfidentialFile(String ticketId) {
+        gotoPage("/image/add");
+        setInput(PROJECT_ID_FIELDNAME, PROJECT_ID);
+        setInput("ticketId", ticketId);
+        setInput(IMAGE_TITLE_FIELDNAME, IMAGE_TITLE);
+        setInput(DESCRIPTION_FIELDNAME, DESCRIPTION);
+        setInput("image.date", "1984");
+        if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
+            // setInput(TestConstants.COPYRIGHT_HOLDER_TYPE, "Institution");
+            setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
+        }
+        // FIXME: need to create input
+        addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, TEST_IMAGE_NAME);
+        // setInput("resourceAvailability", "Public");
+        submitForm();
     }
 
     @Test
