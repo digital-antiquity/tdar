@@ -34,7 +34,6 @@ import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -628,8 +627,8 @@ public class ImportServiceImpl implements ImportService  {
         Long id = property.getId();
         @SuppressWarnings("unchecked")
         P toReturn = (P) findById(cls, id);
-        if (toReturn instanceof RightsBasedResourceCollection && resource instanceof Resource) {
-            RightsBasedResourceCollection collection = (RightsBasedResourceCollection) toReturn;
+        if (toReturn instanceof SharedCollection && resource instanceof Resource) {
+            SharedCollection collection = (SharedCollection) toReturn;
             // making sure that the collection's creators and other things are on the sessions properly too
             resetOwnerOnSession((ResourceCollection)collection);
             collection.getResources().add((Resource) resource);
@@ -715,7 +714,7 @@ private void validateInvalidImportFields(ResourceCollection incomingResource, Td
 //            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
 //        }
 
-        if (incomingResource instanceof RightsBasedResourceCollection && CollectionUtils.isNotEmpty(((RightsBasedResourceCollection)incomingResource).getResources())) {
+        if (incomingResource instanceof SharedCollection && CollectionUtils.isNotEmpty(((SharedCollection)incomingResource).getResources())) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
         }
 

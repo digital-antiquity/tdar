@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -49,15 +48,13 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
-    @Autowired
     private transient UserRightsProxyService userRightsProxyService;
     @Autowired
     private transient SearchIndexService searchIndexService;
 
     private List<SharedCollection> shares = new ArrayList<>();
     private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
-    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
+    private List<SharedCollection> effectiveShares = new ArrayList<>();
 
     private List<UserRightsProxy> proxies = new ArrayList<>();
     private List<UserRightsProxy> invites = new ArrayList<>();
@@ -206,11 +203,11 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         this.retainedSharedCollections = retainedSharedCollections;
     }
 
-    public List<RightsBasedResourceCollection> getEffectiveShares() {
+    public List<SharedCollection> getEffectiveShares() {
         return effectiveShares;
     }
 
-    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveShares) {
+    public void setEffectiveShares(List<SharedCollection> effectiveShares) {
         this.effectiveShares = effectiveShares;
     }
 

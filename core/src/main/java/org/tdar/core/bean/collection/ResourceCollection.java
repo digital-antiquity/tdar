@@ -542,8 +542,8 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.setType(resource.getType());
         this.setAuthorizedUsers(new HashSet<>(resource.getAuthorizedUsers()));
         this.setSystemManaged(resource.isSystemManaged());
-        if (resource instanceof RightsBasedResourceCollection && this instanceof RightsBasedResourceCollection) {
-            ((RightsBasedResourceCollection)this).getResources().addAll(((RightsBasedResourceCollection) resource).getResources());
+        if (resource instanceof SharedCollection && this instanceof SharedCollection) {
+            ((SharedCollection)this).getResources().addAll(((SharedCollection) resource).getResources());
         }
     }
 

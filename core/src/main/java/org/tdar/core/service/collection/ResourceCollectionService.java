@@ -9,7 +9,6 @@ import java.util.TreeSet;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -234,11 +233,11 @@ public interface ResourceCollectionService {
 
     void addUserToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission);
 
-    Set<RightsBasedResourceCollection> getEffectiveSharesForResource(Resource resource);
+    Set<SharedCollection> getEffectiveSharesForResource(Resource resource);
 
     Set<ListCollection> getEffectiveResourceCollectionsForResource(Resource resource);
 
-    void reconcileIncomingResourcesForCollection(RightsBasedResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
+    void reconcileIncomingResourcesForCollection(SharedCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove);
 
     void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser);

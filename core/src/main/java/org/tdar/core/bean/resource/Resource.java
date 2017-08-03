@@ -83,7 +83,6 @@ import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -1273,14 +1272,14 @@ public class Resource implements Persistable,
 
 
     @Transient
-    public Set<RightsBasedResourceCollection> getRightsBasedResourceCollections() {
-        Set<RightsBasedResourceCollection> collections = new HashSet<>();
+    public Set<SharedCollection> getRightsBasedResourceCollections() {
+        Set<SharedCollection> collections = new HashSet<>();
         if (CollectionUtils.isNotEmpty(getSharedCollections())) {
             collections.addAll(getSharedCollections());
         }
-        Iterator<RightsBasedResourceCollection> iterator = collections.iterator();
+        Iterator<SharedCollection> iterator = collections.iterator();
         while (iterator.hasNext()) {
-            RightsBasedResourceCollection next = iterator.next();
+            SharedCollection next = iterator.next();
             if (next == null) {
                 iterator.remove();
             }

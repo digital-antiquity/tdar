@@ -33,7 +33,6 @@ import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -227,8 +226,8 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
     @Transactional
     public void delete(ResourceCollection resourceCollection) {
         getDao().delete(resourceCollection.getAuthorizedUsers());
-        if (resourceCollection instanceof RightsBasedResourceCollection) {
-            for (Resource resource : ((RightsBasedResourceCollection) resourceCollection).getResources()) {
+        if (resourceCollection instanceof SharedCollection) {
+            for (Resource resource : ((SharedCollection)resourceCollection).getResources()) {
                 publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
             }
         }
@@ -395,8 +394,8 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
 
         }
         current.remove(collection);
-        if (collection instanceof RightsBasedResourceCollection) {
-            ((RightsBasedResourceCollection) collection).getResources().remove(resource);
+        if (collection instanceof SharedCollection) {
+            ((SharedCollection)collection).getResources().remove(resource);
             if (collection instanceof SharedCollection) {
                 resource.getSharedCollections().remove(collection);
             }
@@ -450,8 +449,8 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
             }
 
             // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
-            if (collectionToAdd instanceof RightsBasedResourceCollection) {
-                addToCollection(resource, (RightsBasedResourceCollection) collectionToAdd);
+            if (collectionToAdd instanceof SharedCollection) {
+                addToCollection(resource, (SharedCollection) collectionToAdd);
             } else {
                 ((ListCollection) collectionToAdd).getUnmanagedResources().add(resource);
                 resource.getUnmanagedResourceCollections().add((ListCollection) collectionToAdd);
@@ -476,12 +475,12 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
         return name;
     }
 
-    private void addToCollection(Resource resource, RightsBasedResourceCollection collectionToAdd) {
+    private void addToCollection(Resource resource, SharedCollection collectionToAdd) {
 
         if (collectionToAdd instanceof SharedCollection) {
             resource.getSharedCollections().add((SharedCollection) collectionToAdd);
         }
-        ((RightsBasedResourceCollection) collectionToAdd).getResources().add(resource);
+        ((SharedCollection) collectionToAdd).getResources().add(resource);
     }
 
     private <C extends ResourceCollection> C findOrCreateCollection(Resource resource, TdarUser authenticatedUser, C collection, Class<C> cls) {
@@ -740,8 +739,8 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      */
     @Override
     @Transactional(readOnly = true)
-    public Set<RightsBasedResourceCollection> getEffectiveSharesForResource(Resource resource) {
-        Set<RightsBasedResourceCollection> tempSet = new HashSet<>();
+    public Set<SharedCollection> getEffectiveSharesForResource(Resource resource) {
+        Set<SharedCollection> tempSet = new HashSet<>();
         for (SharedCollection collection : resource.getSharedResourceCollections()) {
             if (collection != null) {
                 tempSet.addAll(collection.getHierarchicalResourceCollections());
@@ -780,7 +779,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
      */
     @Override
     @Transactional(readOnly = false)
-    public void reconcileIncomingResourcesForCollection(RightsBasedResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
+    public void reconcileIncomingResourcesForCollection(SharedCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove) {
         Set<Resource> resources = persistable.getResources();
         List<Resource> ineligibleToAdd = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
@@ -878,7 +877,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
     public void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser) {
         // should I do something special?
         if (persistable instanceof SharedCollection) {
-            for (Resource resource : ((RightsBasedResourceCollection) persistable).getResources()) {
+            for (Resource resource : ((SharedCollection) persistable).getResources()) {
                 removeFromCollection(resource, persistable);
                 getDao().saveOrUpdate(resource);
                 publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));

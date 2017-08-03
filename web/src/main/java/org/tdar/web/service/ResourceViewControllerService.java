@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -140,7 +139,7 @@ public class ResourceViewControllerService {
     }
 
     @Transactional(readOnly= true)
-    public void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<RightsBasedResourceCollection> effectiveShares, List<ListCollection> effectiveResourceCollections,
+    public void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<SharedCollection> effectiveShares, List<ListCollection> effectiveResourceCollections,
             List<AuthorizedUser> authorizedUsers) {
         authorizedUsers.addAll(resourceCollectionService.getAuthorizedUsersForResource(auth.getItem(), auth.getAuthenticatedUser()));
         effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(auth.getItem()));

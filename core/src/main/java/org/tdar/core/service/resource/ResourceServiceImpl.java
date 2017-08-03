@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.RequestCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -49,8 +48,6 @@ import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
-import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.cache.Caches;
 import org.tdar.core.cache.HomepageGeographicCache;
@@ -64,7 +61,6 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.dao.resource.ResourceTypeStatusInfo;
-import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
@@ -474,7 +470,7 @@ public class ResourceServiceImpl implements ResourceService  {
                 resource.getAuthorizedUsers().add(newAuthorizedUser);
 
             }
-            for (RightsBasedResourceCollection collection : proxy.getRightsBasedResourceCollections()) {
+            for (SharedCollection collection : proxy.getRightsBasedResourceCollections()) {
                  if (collection instanceof SharedCollection){
                      SharedCollection shared = (SharedCollection)collection;
                      logger.info("adding to shared collection : {} ", collection);

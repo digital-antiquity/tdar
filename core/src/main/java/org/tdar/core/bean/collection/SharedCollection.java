@@ -33,7 +33,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Entity
 @XmlRootElement(name = "resourceCollection")
 public class SharedCollection extends HierarchicalCollection<SharedCollection>
-        implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName, Sortable {
+        implements Comparable<SharedCollection>, HasName, Sortable {
     private static final long serialVersionUID = 7900346272773477950L;
 
     public SharedCollection(String title, String description, boolean hidden, SortOption sortOption, DisplayOrientation displayOrientation, TdarUser creator) {

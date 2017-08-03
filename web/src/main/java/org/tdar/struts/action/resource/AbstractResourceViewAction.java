@@ -17,14 +17,9 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.AbstractSequenced;
-import org.tdar.core.bean.Sequenceable;
-import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -96,7 +91,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private ResourceService resourceService;
 
     // private List<RightsBasedResourceCollection> shares = new ArrayList<>();
-    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
+    private List<SharedCollection> effectiveShares = new ArrayList<>();
     // private List<ListCollection> resourceCollections = new ArrayList<>();
     private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
 
@@ -350,11 +345,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return true;
     }
 
-    public List<RightsBasedResourceCollection> getEffectiveShares() {
+    public List<SharedCollection> getEffectiveShares() {
         return effectiveShares;
     }
 
-    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveShares) {
+    public void setEffectiveShares(List<SharedCollection> effectiveShares) {
         this.effectiveShares = effectiveShares;
     }
 

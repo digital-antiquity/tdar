@@ -35,7 +35,6 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -670,7 +669,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         controller.setServletRequest(getServletPostRequest());
         controller.getShares().add(fakeIncoming);
         assertEquals(Action.SUCCESS, controller.save());
-        RightsBasedResourceCollection first = document.getRightsBasedResourceCollections().iterator().next();
+        SharedCollection first = document.getRightsBasedResourceCollections().iterator().next();
         assertEquals(1, document.getRightsBasedResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());
@@ -1134,7 +1133,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         List<SharedCollection> allCollections = genericService.findAll(SharedCollection.class);
         assertThat("sample data set size", allCollections.size(), greaterThan(1));
 
-        for (RightsBasedResourceCollection collection : allCollections) {
+        for (SharedCollection collection : allCollections) {
             // get map of persisted resources
             Map<Long, Resource> persistedResourceMap = PersistableUtils.createIdMap(collection.getResources());
 

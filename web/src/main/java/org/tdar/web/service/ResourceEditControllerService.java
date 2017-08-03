@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -18,11 +20,14 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.billing.BillingAccountService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.struts.data.AuthWrapper;
@@ -40,9 +45,13 @@ public class ResourceEditControllerService {
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
     private transient GenericService genericService;
     @Autowired
     private transient ProjectService projectService;
+    @Autowired
+    private BillingAccountService accountService;
 
     @Transactional(readOnly = true)
     public void initializeResourceCreatorProxyLists(AuthWrapper<Resource> auth, List<ResourceCreatorProxy> authorshipProxies,
@@ -102,5 +111,60 @@ public class ResourceEditControllerService {
             }
         }
         return isAbleToUploadFiles;
+    }
+    
+
+    // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
+    // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
+    // and maintain original billing account).
+    @Transactional(readOnly=true)
+    public List<BillingAccount> determineActiveAccounts(TdarUser authenticatedUser, Resource resource) {
+        // Get all available active accounts for the user. If the resource is being edited, and its associated account is over-limit, this list will
+        // not contain that billing account.
+        List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(authenticatedUser, Status.ACTIVE));
+
+        // If the resource has been created, e.g., not null, then check to see if the billing account needs to be added in.
+        if (resource!= null) {
+
+            accountService.updateTransientAccountInfo(resource);
+
+            BillingAccount resourceAccount = resource.getAccount();
+            boolean resourceAccountIsNotNull = resourceAccount != null;
+            boolean resourceAccountNotInList = !accounts.contains(resourceAccount);
+            boolean hasInheritedEditPermission = authorizationService.isAllowedToEditInherited(authenticatedUser, resource);
+
+            // If the billing account is not in the list, but should be, then move it to the front of the list.
+            if (resourceAccountIsNotNull && resourceAccountNotInList &&
+                    (authorizationService.isEditor(authenticatedUser) || hasInheritedEditPermission)) {
+                accounts.add(0, resourceAccount);
+            }
+        }
+        return accounts;
+    }
+    
+    @Transactional(readOnly=true)
+    public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<SharedCollection> effectiveShares, List<SharedCollection> retainedSharedCollections,
+            List<ListCollection> effectiveResourceCollections, List<ListCollection> retainedListCollections, List<SharedCollection> shares, List<ListCollection> resourceCollections) {
+        effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(resource));
+        effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(resource));
+
+        logger.debug("loadEffective...");
+        for (SharedCollection rc : resource.getSharedResourceCollections()) {
+            if (authorizationService.canViewCollection(authenticatedUser, rc)) {
+                shares.add(rc);
+            } else {
+                retainedSharedCollections.add(rc);
+                logger.debug("adding: {} to retained collections", rc);
+            }
+        }
+        for (ListCollection rc : resource.getUnmanagedResourceCollections()) {
+            if (authorizationService.canViewCollection(authenticatedUser, rc)) {
+                resourceCollections.add(rc);
+            } else {
+                retainedListCollections.add(rc);
+                logger.debug("adding: {} to retained collections", rc);
+            }
+        }
+
     }
 }

@@ -28,7 +28,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -234,10 +233,8 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
     public boolean isAllowedToEditInherited(TdarUser person, Resource resource) {
         GeneralPermissions permission = GeneralPermissions.MODIFY_METADATA;
         List<Long> ids = new ArrayList<>();
-        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-            if (collection instanceof SharedCollection) {
-                ids.addAll(((SharedCollection)collection).getParentIds());
-            }
+        for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
+            ids.addAll(((SharedCollection)collection).getParentIds());
             ids.add(collection.getId());
         }
         return authorizedUserDao.isAllowedTo(person, permission, ids);

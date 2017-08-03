@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -23,6 +24,7 @@ import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.SupportsResource;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ListCollection;
@@ -48,6 +50,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -65,6 +68,7 @@ import org.tdar.core.service.FileProxyService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
@@ -596,5 +600,8 @@ public class ResourceSaveControllerService {
             resource.setCopyrightHolder(entityService.findOrSaveCreator(transientCreator.getCreator()));
         }
     }
+    
+
+
 
 }

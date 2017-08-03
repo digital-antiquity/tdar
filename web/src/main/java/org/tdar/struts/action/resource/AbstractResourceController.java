@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +22,6 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -129,7 +127,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<SharedCollection> shares = new ArrayList<>();
-    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
+    private List<SharedCollection> effectiveShares = new ArrayList<>();
     private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
     private List<ListCollection> retainedListCollections = new ArrayList<>();
 
@@ -208,7 +206,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateTransientAccountInfo(getResource());
-            setActiveAccounts(new ArrayList<>(determineActiveAccounts()));
+//            setActiveAccounts(new ArrayList<>(editService.determineActiveAccounts(getAuthenticatedUser(), getResource())));
             if (PersistableUtils.isNotNullOrTransient(getResource()) && PersistableUtils.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
@@ -217,33 +215,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             }
         }
         return SUCCESS;
-    }
-
-    // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
-    // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
-    // and maintain original billing account).
-    protected List<BillingAccount> determineActiveAccounts() {
-        // Get all available active accounts for the user. If the resource is being edited, and its associated account is over-limit, this list will
-        // not contain that billing account.
-        List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
-
-        // If the resource has been created, e.g., not null, then check to see if the billing account needs to be added in.
-        if (getResource() != null) {
-
-            accountService.updateTransientAccountInfo(getResource());
-
-            BillingAccount resourceAccount = getResource().getAccount();
-            boolean resourceAccountIsNotNull = resourceAccount != null;
-            boolean resourceAccountNotInList = !accounts.contains(resourceAccount);
-            boolean hasInheritedEditPermission = authorizationService.isAllowedToEditInherited(getAuthenticatedUser(), getResource());
-
-            // If the billing account is not in the list, but should be, then move it to the front of the list.
-            if (resourceAccountIsNotNull && resourceAccountNotInList &&
-                    (isEditor() || hasInheritedEditPermission)) {
-                accounts.add(0, resourceAccount);
-            }
-        }
-        return accounts;
     }
 
     @Action(value = SAVE,
@@ -351,7 +322,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected void setupAccountForSaving() {
-        List<BillingAccount> accounts = determineActiveAccounts();
+        List<BillingAccount> accounts = getActiveAccounts();
         if (accounts.size() == 1) {
             setAccountId(accounts.get(0).getId());
         }
@@ -461,31 +432,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
         editService.initializeResourceCreatorProxyLists(authWrapper, getAuthorshipProxies(), getCreditProxies());
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
-        loadEffectiveResourceCollectionsForEdit();
+        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), effectiveShares, retainedSharedCollections, effectiveResourceCollections, retainedListCollections, shares, effectiveResourceCollections);
     }
 
-    private void loadEffectiveResourceCollectionsForEdit() {
-        getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
-
-        getLogger().debug("loadEffective...");
-        for (SharedCollection rc : getResource().getSharedResourceCollections()) {
-            if (authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
-                getShares().add(rc);
-            } else {
-                retainedSharedCollections.add(rc);
-                getLogger().debug("adding: {} to retained collections", rc);
-            }
-        }
-        for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
-            if (authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
-                getResourceCollections().add(rc);
-            } else {
-                retainedListCollections.add(rc);
-                getLogger().debug("adding: {} to retained collections", rc);
-            }
-        }
-        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
-    }
 
     public List<String> getSiteNameKeywords() {
         if (CollectionUtils.isEmpty(siteNameKeywords)) {
@@ -834,7 +783,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     /**
      * @return the effectiveResourceCollections
      */
-    public List<RightsBasedResourceCollection> getEffectiveShares() {
+    public List<SharedCollection> getEffectiveShares() {
         return effectiveShares;
     }
 
@@ -842,7 +791,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @param effectiveResourceCollections
      *            the effectiveResourceCollections to set
      */
-    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveResourceCollections) {
+    public void setEffectiveShares(List<SharedCollection> effectiveResourceCollections) {
         this.effectiveShares = effectiveResourceCollections;
     }
 
@@ -856,7 +805,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<BillingAccount> getActiveAccounts() {
         if (activeAccounts == null) {
-            activeAccounts = new ArrayList<>(determineActiveAccounts());
+            activeAccounts = new ArrayList<>(editService.determineActiveAccounts(getAuthenticatedUser(), getResource()));
         }
         return activeAccounts;
     }
