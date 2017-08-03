@@ -89,6 +89,8 @@ public class ResourceSaveControllerService {
     private static final String TXT = ".txt";
 
     @Autowired
+    EntityService entityService;
+    @Autowired
     private ResourceService resourceService;
     @Autowired
     private CodingSheetService codingSheetService;
@@ -141,6 +143,7 @@ public class ResourceSaveControllerService {
         return version;
     }
 
+    @Transactional(readOnly = false)
     public FileProxy processTextInput(TextProvider provider, String fileTextInput, InformationResource persistable) {
         logger.debug("textInput {}", fileTextInput);
         InformationResourceFileVersion latestUploadedTextVersion = getLatestUploadedTextVersion(persistable);
@@ -184,7 +187,7 @@ public class ResourceSaveControllerService {
      * @throws IOException
      *             If there was an IO error
      */
-    protected FileProxy createUploadedFileProxy(TextProvider provider, String fileTextInput, InformationResource persistable) throws IOException {
+    private FileProxy createUploadedFileProxy(TextProvider provider, String fileTextInput, InformationResource persistable) throws IOException {
         if (persistable instanceof CodingSheet) {
             String filename = persistable.getTitle() + ".csv";
             // ensure csv conversion
@@ -201,6 +204,7 @@ public class ResourceSaveControllerService {
         throw new UnsupportedOperationException(provider.getText("abstractInformationResourceController.didnt_override", getClass().getSimpleName()));
     }
 
+    @Transactional(readOnly = true)
     public String getLatestUploadedTextVersionText(InformationResource persistable) {
         // in order for this to work we need to be generating text versions
         // of these files for both text input and file uploads
@@ -225,13 +229,14 @@ public class ResourceSaveControllerService {
      * @return a List<FileProxy> representing the final set of fully initialized FileProxy objects
      */
     @Transactional(readOnly = false)
-    public List<FileProxy> getFileProxiesToProcess(AuthWrapper<InformationResource> auth, TextProvider provider, FileSaveWrapper fsw, FileProxy textInputFileProxy) {
+    public List<FileProxy> getFileProxiesToProcess(AuthWrapper<InformationResource> auth, TextProvider provider, FileSaveWrapper fsw,
+            FileProxy textInputFileProxy) {
         Long ticketId = fsw.getTicketId();
         List<String> filenames = fsw.getUploadedFilesFileName();
         List<File> files = fsw.getUploadedFiles();
         boolean multipleFileUploadEnabled = fsw.isMultipleFileUploadEnabled();
         List<FileProxy> fileProxies = fsw.getFileProxies();
-        
+
         List<FileProxy> fileProxiesToProcess = new ArrayList<>();
         logger.debug("getFileProxiesToProcess: {}, {}, {} ({})", ticketId, files, fileProxies, multipleFileUploadEnabled);
         // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
@@ -331,6 +336,7 @@ public class ResourceSaveControllerService {
         }
     }
 
+    @Transactional(readOnly = true)
     public <T extends Sequenceable<T>> void prepSequence(List<T> list) {
         if (list == null) {
             return;
@@ -342,6 +348,7 @@ public class ResourceSaveControllerService {
         AbstractSequenced.applySequence(list);
     }
 
+    @Transactional(readOnly = false)
     public <R extends Resource> ErrorTransferObject save(AuthWrapper<Resource> authWrapper, ResourceControllerProxy<R> rcp)
             throws TdarActionException, IOException {
 
@@ -576,9 +583,7 @@ public class ResourceSaveControllerService {
         kwds.addAll(toAdd);
     }
 
-    @Autowired
-    EntityService entityService;
-
+    @Transactional(readOnly = false)
     public void saveResourceProviderInformation(InformationResource resource, String resourceProviderInstitutionName,
             ResourceCreatorProxy copyrightHolderProxies, String publisherName) {
         logger.debug("Saving resource provider information: {}", resourceProviderInstitutionName);
@@ -602,6 +607,7 @@ public class ResourceSaveControllerService {
         }
     }
 
+    @Transactional(readOnly = true)
     public <R extends InformationResource> void setupFileProxiesForSave(ResourceControllerProxy<R> proxy, AuthWrapper<InformationResource> auth,
             FileSaveWrapper fsw, TextProvider provider) {
         InformationResource resource = auth.getItem();
@@ -622,7 +628,7 @@ public class ResourceSaveControllerService {
 
             }
 
-            List<FileProxy> fileProxiesToProcess = getFileProxiesToProcess(auth, provider, fsw,processTextInput);
+            List<FileProxy> fileProxiesToProcess = getFileProxiesToProcess(auth, provider, fsw, processTextInput);
 
             for (FileProxy fproxy : fileProxiesToProcess) {
                 if (fproxy != null && fproxy.getAction() != FileAction.NONE) {

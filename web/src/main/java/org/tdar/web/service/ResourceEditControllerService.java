@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -177,6 +176,7 @@ public class ResourceEditControllerService {
 
     }
 
+    @Transactional(readOnly = true)
     public String loadFilesJson(InformationResource persistable) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return null;

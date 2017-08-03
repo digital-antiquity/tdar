@@ -26,7 +26,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.UserRightsProxyService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -45,7 +44,7 @@ public class ResourceViewControllerService {
 
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;
-    
+
     @Autowired
     private ResourceService resourceService;
 
@@ -56,12 +55,9 @@ public class ResourceViewControllerService {
     private transient AuthorizationService authorizationService;
 
     @Autowired
-    private transient UserRightsProxyService userRightsProxyService;
-
-    @Autowired
     private transient InformationResourceFileService informationResourceFileService;
 
-    
+    @Transactional(readOnly = true)
     public void initializeResourceCreatorProxyLists(AuthWrapper<Resource> auth, List<ResourceCreatorProxy> authorshipProxies,
             List<ResourceCreatorProxy> creditProxies, List<ResourceCreatorProxy> contactProxies) {
 
@@ -94,17 +90,17 @@ public class ResourceViewControllerService {
         Collections.sort(creditProxies);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void updateResourceInfo(AuthWrapper<Resource> auth, boolean isBot) {
         // don't count if we're an admin
         if (!PersistableUtils.isEqual(auth.getItem().getSubmitter(), auth.getAuthenticatedUser()) && !auth.isEditor()) {
             resourceService.incrementAccessCounter(auth.getItem(), isBot);
         }
         updateInfoReadOnly(auth);
-        
+
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void updateInfoReadOnly(AuthWrapper<Resource> auth) {
         // only showing access count when logged in (speeds up page loads)
         if (auth.isAuthenticated()) {
@@ -112,18 +108,17 @@ public class ResourceViewControllerService {
         }
         accountService.updateTransientAccountInfo((List<Resource>) Arrays.asList(auth.getItem()));
         bookmarkedResourceService.applyTransientBookmarked(Arrays.asList(auth.getItem()), auth.getAuthenticatedUser());
-    
-    
+
         if (auth.getItem() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) auth.getItem();
             setTransientViewableStatus(informationResource, auth.getAuthenticatedUser());
         }
     }
-        
+
     /*
      * Creating a simple transient boolean to handle visibility here instead of freemarker
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public boolean setTransientViewableStatus(InformationResource ir, TdarUser p) {
         boolean hasDeleted = false;
         authorizationService.applyTransientViewableFlag(ir, p);
@@ -131,49 +126,48 @@ public class ResourceViewControllerService {
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 informationResourceFileService.updateTransientDownloadCount(irf);
                 if (irf.isDeleted()) {
-                    hasDeleted=true;
+                    hasDeleted = true;
                 }
             }
         }
         return hasDeleted;
     }
 
-    @Transactional(readOnly= true)
-    public void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<SharedCollection> effectiveShares, List<ListCollection> effectiveResourceCollections,
+    @Transactional(readOnly = true)
+    public void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<SharedCollection> effectiveShares,
+            List<ListCollection> effectiveResourceCollections,
             List<AuthorizedUser> authorizedUsers) {
         authorizedUsers.addAll(resourceCollectionService.getAuthorizedUsersForResource(auth.getItem(), auth.getAuthenticatedUser()));
         effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(auth.getItem()));
         effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(auth.getItem()));
-        
+
     }
 
-
-    @Transactional(readOnly=true)
-    public List<ResourceCollection> getVisibleCollections(AuthWrapper<Resource> auth ) {
+    @Transactional(readOnly = true)
+    public List<ResourceCollection> getVisibleCollections(AuthWrapper<Resource> auth) {
         List<ResourceCollection> visibleCollections = new ArrayList<>();
         visibleCollections.addAll(getViewableListResourceCollections(auth));
         visibleCollections.addAll(getViewableSharedResourceCollections(auth));
         return visibleCollections;
     }
 
-
     private Set<SharedCollection> getViewableSharedResourceCollections(AuthWrapper<Resource> auth) {
 
         // if nobody logged in, just get the shared+visible collections
         Set<SharedCollection> collections = new HashSet<>(auth.getItem().getVisibleSharedResourceCollections());
-        addViewableCollections(collections, auth.getItem().getSharedCollections(),auth);
+        addViewableCollections(collections, auth.getItem().getSharedCollections(), auth);
         return collections;
     }
-    
+
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
     // shared+invisible+canEdit
-    private  Set<ListCollection> getViewableListResourceCollections(AuthWrapper<Resource> auth) {
+    private Set<ListCollection> getViewableListResourceCollections(AuthWrapper<Resource> auth) {
 
         // if nobody logged in, just get the shared+visible collections
         Set<ListCollection> collections = new HashSet<>();
         collections.addAll(auth.getItem().getVisibleUnmanagedResourceCollections());
         // if authenticated, also add the collections that the user can modify
-        addViewableCollections(collections,auth.getItem().getUnmanagedResourceCollections(), auth);
+        addViewableCollections(collections, auth.getItem().getUnmanagedResourceCollections(), auth);
 
         return collections;
     }
@@ -187,7 +181,5 @@ public class ResourceViewControllerService {
             }
         }
     }
-
-    
 
 }
