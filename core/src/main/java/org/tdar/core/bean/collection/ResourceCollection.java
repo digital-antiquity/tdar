@@ -129,23 +129,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus , HasAuthorizedUsers, Sortable,
         OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Hideable {
 
-    /**
-
-     //fixme: is this snippet needed?  Remove otherwise.
-
-     @XmlTransient
-     @Override
-     public boolean isViewable() {
-     return viewable;
-     }
-
-     @Override
-     public void setViewable(boolean viewable) {
-     this.viewable = viewable;
-     }
-
-
-     */
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
 
     @Transient
@@ -307,8 +290,8 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Override
     public boolean isValid() {
         logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName());
-        if (isValidForController()) {
-            return ((getOwner() != null) && (getOwner().getId() != null) && (getOwner().getId() > -1));
+        if (!isValidForController()) {
+            return false;
         }
         
         if (sortBy == null) {

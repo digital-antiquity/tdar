@@ -376,8 +376,12 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
         }
 
         for (C collection : helper.getToAdd()) {
-            logger.debug("adding: {} ", collection);
-            addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection, cls);
+            if (collection.isValid()) {
+                logger.debug("adding: {} ", collection);
+                addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection, cls);
+            } else {
+                logger.warn("skipping invalid collection: {}", collection);
+            }
         }
         logger.debug("after save: {} ({})", current, current.size());
 
