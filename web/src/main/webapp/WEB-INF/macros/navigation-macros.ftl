@@ -39,7 +39,9 @@ navigation freemarker macros
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
 			        </#if>
-					<@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
+			        <#if ((billingAccounts![])?size > 0)>
+					   <@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
+					</#if>
 			        <#if editable>
 						<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
 <#--						<@makeLink "resource" "share/${resource.id?c}" "share" "share" "" false /> -->
