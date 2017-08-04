@@ -234,9 +234,8 @@ public abstract class ResourceCollection extends AbstractPersistable
     private transient boolean viewable;
 
     @JsonView(JsonLookupFilter.class)
-    @Length(max = FieldLength.FIELD_LENGTH_500)
+    @Length(max = FieldLength.FIELD_LENGTH_500, min=1)
     @NotNull
-    @Min(value=1)
     private String name;
 
     @Lob
