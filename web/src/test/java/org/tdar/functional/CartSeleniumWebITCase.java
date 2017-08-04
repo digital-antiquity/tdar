@@ -108,8 +108,6 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_PROCESS_PAYMENT_REQUEST));
         // open the popup window
         find("#btnOpenPaymentWindow").click();
-        waitFor(ExpectedConditions.numberOfWindowsToBe(2), Duration.of(5, SECONDS));
-        waitFor(ExpectedConditions.numberOfWindowsToBe(2), Duration.of(5, SECONDS));
         switchToWindow("test/nelnet");
         waitFor("[type=submit]");
         submitForm();

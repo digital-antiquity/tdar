@@ -1447,6 +1447,14 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public String switchToWindow(String url) {
+        // for 10 seconds see if the window size is > 1, then try and find the associated window
+        for (int i=0; i < 10; i++) {
+            waitFor(1);
+            if (getDriver().getWindowHandles().size() > 1) {
+                continue;
+            }
+        }
+
         List<String> handles = new ArrayList<>();
         handles.addAll(driver.getWindowHandles());
         Collections.sort(handles);
