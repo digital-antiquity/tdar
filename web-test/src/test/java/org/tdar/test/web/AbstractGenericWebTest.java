@@ -448,8 +448,7 @@ public abstract class AbstractGenericWebTest {
      * @throws SAXException
      * @throws FileNotFoundException 
      */
-    public void testValidXMLResponse(InputStream code, String schemaLocation) throws ConfigurationException, SAXException, FileNotFoundException {
-        JaxbSchemaValidator v = new JaxbSchemaValidator();
+    public void testValidXMLResponse(InputStream code, String schemaLocation, JaxbSchemaValidator v) throws ConfigurationException, SAXException, FileNotFoundException {
         
         if (schemaLocation != null) {
             v.addSchemaSource(new StreamSource(schemaLocation));

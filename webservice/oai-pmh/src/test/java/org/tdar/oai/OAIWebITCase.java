@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.JaxbSchemaValidator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
@@ -49,6 +50,7 @@ public class OAIWebITCase extends AbstractGenericWebTest {
     private String firstPersonIdentifier;
     private String firstInstitutionIdentifier;
     private String firstResourceIdentifier;
+    static  JaxbSchemaValidator v = new JaxbSchemaValidator();
 
     static boolean indexed = false;
 
@@ -179,7 +181,7 @@ public class OAIWebITCase extends AbstractGenericWebTest {
     // http://xmlunit.sourceforge.net/userguide/html/
 
     private void testValidOAIResponse() throws ConfigurationException, SAXException, FileNotFoundException {
-        testValidXMLResponse(new StringInputStream(getPageCode(), "utf8"), "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd");
+        testValidXMLResponse(new StringInputStream(getPageCode(), "utf8"), "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd",v);
     }
 
     @Test

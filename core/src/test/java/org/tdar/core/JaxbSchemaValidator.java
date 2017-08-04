@@ -19,6 +19,7 @@ import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 
 public class JaxbSchemaValidator {
@@ -33,9 +34,13 @@ public class JaxbSchemaValidator {
         setupValidator();
         }
     
-    public JaxbSchemaValidator() throws FileNotFoundException {
+    public JaxbSchemaValidator()  {
+        try {
         setupSchemaMap();
         setupValidator();
+        } catch (FileNotFoundException nfn) {
+            throw new TdarRecoverableRuntimeException(nfn);
+        }
     }
 
     
