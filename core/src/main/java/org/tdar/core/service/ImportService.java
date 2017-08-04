@@ -461,7 +461,7 @@ public class ImportService {
         for (Field fld : findAnnotatedFieldsOfClass) {
             Collection<Persistable> actual = (Collection<Persistable>) reflectionService.callFieldGetter(rec, fld);
             if (CollectionUtils.isEmpty(actual)) {
-                return;
+                continue;
             }
             Collection<Persistable> values = new ArrayList<>(actual);
             actual.clear();
