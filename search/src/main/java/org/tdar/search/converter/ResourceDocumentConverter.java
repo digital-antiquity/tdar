@@ -412,6 +412,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
         replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS);
+        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS);
         replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_NAME);
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_IDS);
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_NAME);

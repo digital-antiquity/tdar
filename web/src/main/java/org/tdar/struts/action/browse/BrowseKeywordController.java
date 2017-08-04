@@ -27,6 +27,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.geosearch.GeoSearchService;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
@@ -106,6 +107,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     @Override
     public void prepare() throws Exception {
+        setProjectionModel(ProjectionModel.LUCENE);
         if (PersistableUtils.isNullOrTransient(getId())) {
             addActionError(getText("simpleKeywordAction.id_required"));
         }

@@ -460,6 +460,9 @@ public class ImportService {
         List<Field> findAnnotatedFieldsOfClass = ReflectionService.findAnnotatedFieldsOfClass(rec.getClass(), OneToMany.class);
         for (Field fld : findAnnotatedFieldsOfClass) {
             Collection<Persistable> actual = (Collection<Persistable>) reflectionService.callFieldGetter(rec, fld);
+            if (CollectionUtils.isEmpty(actual)) {
+                continue;
+            }
             Collection<Persistable> values = new ArrayList<>(actual);
             actual.clear();
             for (Persistable value : values) {
