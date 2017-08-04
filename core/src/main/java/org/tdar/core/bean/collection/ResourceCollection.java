@@ -41,6 +41,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -235,6 +236,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     @JsonView(JsonLookupFilter.class)
     @Length(max = FieldLength.FIELD_LENGTH_500)
     @NotNull
+    @Min(value=1)
     private String name;
 
     @Lob
