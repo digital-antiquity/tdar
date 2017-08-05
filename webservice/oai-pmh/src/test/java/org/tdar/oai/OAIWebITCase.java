@@ -31,6 +31,7 @@ import org.tdar.core.JaxbSchemaValidator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.SerializationServiceImpl;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.service.OaiPmhConfiguration;
 import org.tdar.test.web.AbstractGenericWebTest;
@@ -50,12 +51,15 @@ public class OAIWebITCase extends AbstractGenericWebTest {
     private String firstPersonIdentifier;
     private String firstInstitutionIdentifier;
     private String firstResourceIdentifier;
-    static  JaxbSchemaValidator v = new JaxbSchemaValidator();
+    static  JaxbSchemaValidator v;
 
     static boolean indexed = false;
 
     @Before
-    public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {
+    public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException, ClassNotFoundException {
+        if ( v == null) {
+            v = new JaxbSchemaValidator(new SerializationServiceImpl());
+        }
         // establish namespace bindings for the XPath tests
         HashMap<String, String> namespaceBindings = new HashMap<>();
         namespaceBindings.put("oai", "http://www.openarchives.org/OAI/2.0/");
