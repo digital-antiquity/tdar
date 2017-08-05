@@ -20,27 +20,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
-import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.joda.time.DateTime;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -469,7 +462,8 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
      * @throws IOException
      */
     public void testValidXMLSchemaResponse(String code) throws ConfigurationException, SAXException, IOException {
-        JaxbSchemaValidator setupValidator = new JaxbSchemaValidator();
+        JaxbSchemaValidator setupValidator =  new JaxbSchemaValidator(serializationService);
+
         // cleanup -- this is lazy
         File tempFile = File.createTempFile("test-schema", "xsd");
         FileUtils.writeStringToFile(tempFile, code);
@@ -477,7 +471,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     }
 
     private void testValidXML(InputStream code, String schema, boolean loadSchemas) throws FileNotFoundException {
-        JaxbSchemaValidator v = new JaxbSchemaValidator();
+        JaxbSchemaValidator v = new JaxbSchemaValidator(serializationService);
         
 
         if (schema != null) {

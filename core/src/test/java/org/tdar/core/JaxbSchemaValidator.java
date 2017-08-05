@@ -36,14 +36,6 @@ public class JaxbSchemaValidator {
         setupValidator();
     }
 
-    public JaxbSchemaValidator() {
-        try {
-            setupSchemaMap();
-            setupValidator();
-        } catch (FileNotFoundException nfn) {
-            throw new TdarRecoverableRuntimeException(nfn);
-        }
-    }
 
     public void setupSchemaMap() throws FileNotFoundException {
         String base = TestConstants.TEST_ROOT_DIR + "schemaCache";
