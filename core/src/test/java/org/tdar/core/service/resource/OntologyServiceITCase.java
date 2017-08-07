@@ -42,6 +42,9 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
     private OntologyService ontologyService;
     @Autowired
     private OntologyNodeDao ontologyNodeDao;
+    
+    @Autowired
+    private OntologyNodeService ontologyNodeService;
 
     @Test
     public void testDuplicateNodeToSynonym() throws IOException {
@@ -210,6 +213,20 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
             exception = successException;
         }
         assertNotNull("expecting an exception", exception);
+    }
+    
+    @Test 
+    public void testNoParentNodeFound(){
+    	logger.info("Shouldn't throw an exception when no parent node found");
+    	OntologyNode node = new OntologyNode();
+    	Ontology ontology = new Ontology();
+    	ontology.setId(3656L);
+    	node.setOntology(ontology);
+    	node.setIndex("1.2.3.1.76.77.78.79");
+    	
+    	OntologyNode parent = ontologyNodeService.getParent(node);
+    	assertNull(parent);
+    	
     }
 
 }
