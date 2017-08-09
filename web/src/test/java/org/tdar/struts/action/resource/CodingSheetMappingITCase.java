@@ -35,6 +35,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -58,6 +62,7 @@ import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.action.download.DownloadController;
 import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.ExcelUnit;
 
 /**
@@ -391,6 +396,39 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         assertTrue(found);
     }
 
+    
+    
+    
+
+    @Test
+    @Rollback
+    public void testCodingSheetMappingRights() throws Exception {
+        Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);        
+        CodingSheet codingSheet = setupCodingSheet(EXCEL_FILE_NAME, EXCEL_FILE_PATH, ontology, null);
+        SharedCollection sharedCollection = createAndSaveNewResourceCollection("test");
+        TdarUser person = createAndSaveNewPerson("aas23@.com", "asdasff");
+        sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, GeneralPermissions.ADMINISTER_SHARE));
+        sharedCollection.getResources().add(codingSheet);
+        genericService.saveOrUpdate(sharedCollection);
+        genericService.saveOrUpdate(sharedCollection.getAuthorizedUsers());
+        codingSheet.getSharedCollections().add(sharedCollection);
+        codingSheet.getAuthorizedUsers().clear();
+        genericService.saveOrUpdate(codingSheet);
+        
+        CodingSheetController csc = generateNewInitializedController(CodingSheetController.class, person);
+        csc.setId(codingSheet.getId());
+        csc.prepare();
+        boolean authorize = csc.authorize();
+        assertTrue(authorize);
+        assertEquals(TdarActionSupport.SUCCESS, csc.edit());
+        logger.debug("authorized: {}", authorize);
+        
+    }
+
+    
+    
+    
+    
     @SuppressWarnings("unused")
     @Test
     @Rollback

@@ -416,7 +416,7 @@ public class ImportService {
                 latLong.obfuscate();
             }
             rec.getSharedCollections().clear();
-            rec.setAuthorizedUsers(null);
+            rec.getAuthorizedUsers().clear();
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
@@ -426,6 +426,7 @@ public class ImportService {
                 rc.getResources().add(rec);
             }
         }
+        rec.getAuthorizedUsers().add(new AuthorizedUser(user, user, GeneralPermissions.MODIFY_RECORD));
         genericService.detachFromSession(rec);
 
         // reset one-to-many IDs so that new versions are generated for this resource and not the orignal clone

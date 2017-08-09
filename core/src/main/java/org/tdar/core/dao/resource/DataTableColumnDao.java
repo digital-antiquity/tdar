@@ -10,7 +10,9 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -74,8 +76,7 @@ public class DataTableColumnDao extends HibernateBase<DataTableColumn> {
     public CodingSheet setupGeneratedCodingSheet(DataTableColumn column, Dataset dataset, TdarUser user, TextProvider provider, Ontology ontology) {
         CodingSheet codingSheet = new CodingSheet();
         codingSheet.markUpdated(user);
-        codingSheet
-                .setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName(), dataset.getTitle())));
+        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName(), dataset.getTitle())));
         if (ontology != null) {
             codingSheet.setCategoryVariable(ontology.getCategoryVariable());
             codingSheet.setDefaultOntology(ontology);
@@ -88,6 +89,8 @@ public class DataTableColumnDao extends HibernateBase<DataTableColumn> {
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
         codingSheet.setGenerated(true);
         codingSheet.setAccount(dataset.getAccount());
+        codingSheet.getAuthorizedUsers().add(new AuthorizedUser(user, user, GeneralPermissions.MODIFY_RECORD));
+
         save(codingSheet);
         if (dataset != null) {
             codingSheet.setProject(dataset.getProject());

@@ -31,7 +31,6 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -217,7 +216,7 @@ public class AuthorizationService implements Accessible {
             return true;
         }
         
-        if (CollectionUtils.isEmpty(resource.getAuthorizedUsers())) {
+        if (CollectionUtils.isEmpty(resource.getAuthorizedUsers()) && CollectionUtils.isEmpty(resource.getSharedCollections())) {
             return false;
         }
 
