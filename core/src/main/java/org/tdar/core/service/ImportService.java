@@ -172,7 +172,11 @@ public class ImportService {
         processFiles(blessedAuthorizedUser, proxies, incomingResource);
         geoSearchService.processManagedGeographicKeywords(incomingResource, incomingResource.getLatitudeLongitudeBoxes());
         if (created == true) {
-            incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, GeneralPermissions.ADMINISTER_SHARE));
+            GeneralPermissions administerShare = GeneralPermissions.ADMINISTER_SHARE;
+            if ( incomingResource instanceof Resource) {
+                administerShare = GeneralPermissions.MODIFY_RECORD;
+            }
+            incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, administerShare));
         }
         incomingResource.setCreated(created);
         genericService.saveOrUpdate(incomingResource);
@@ -426,7 +430,6 @@ public class ImportService {
                 rc.getResources().add(rec);
             }
         }
-        rec.getAuthorizedUsers().add(new AuthorizedUser(user, user, GeneralPermissions.MODIFY_RECORD));
         genericService.detachFromSession(rec);
 
         // reset one-to-many IDs so that new versions are generated for this resource and not the orignal clone
