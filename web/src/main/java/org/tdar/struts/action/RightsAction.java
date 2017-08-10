@@ -129,7 +129,7 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(Set<SharedCollection> resourceCollections) {
+    public void setAllResourceCollections(TreeSet<SharedCollection> resourceCollections) {
         this.allResourceCollections = resourceCollections;
     }
 
