@@ -335,10 +335,12 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         // setColumnDataType(column.getColumnDataType());
         // }
 
-        if (column.getColumnEncodingType() != null) { // NOT NULLABLE FIELD
-            setColumnEncodingType(column.getColumnEncodingType());
+        if (getColumnDataType().isNumeric()) {
+            if (column.getColumnEncodingType() != null) { // NOT NULLABLE FIELD
+                setColumnEncodingType(column.getColumnEncodingType());
+            }
+            setMeasurementUnit(column.getMeasurementUnit());
         }
-        setMeasurementUnit(column.getMeasurementUnit());
     }
 
     public void copyMappingMetadataFrom(DataTableColumn column) {
