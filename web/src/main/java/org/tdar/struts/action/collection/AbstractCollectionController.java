@@ -441,22 +441,6 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     }
 
     
-//    /**
-//     * @return the authorizedUsers
-//     */
-//    public List<AuthorizedUser> getAuthorizedUsers() {
-//        if (authorizedUsers == null) {
-//            authorizedUsers = new ArrayList<AuthorizedUser>();
-//        }
-//        return authorizedUsers;
-//    }
-
-    public AuthorizedUser getBlankAuthorizedUser() {
-        AuthorizedUser user = new AuthorizedUser();
-        user.setUser(new TdarUser());
-        return user;
-    }
-
     public C getAlternateParentCollection() {
         return alternateParentCollection;
     }

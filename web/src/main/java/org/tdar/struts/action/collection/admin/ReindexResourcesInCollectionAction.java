@@ -31,7 +31,7 @@ public class ReindexResourcesInCollectionAction extends AbstractCollectionAdminA
     @Autowired
     private SearchIndexService searchIndexService;
 
-    private boolean async;
+    private boolean async = true;
 
     @Override
     @PostOnly

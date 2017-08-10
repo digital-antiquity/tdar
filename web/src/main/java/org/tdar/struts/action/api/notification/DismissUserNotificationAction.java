@@ -1,4 +1,4 @@
-package org.tdar.struts.action.notification;
+package org.tdar.struts.action.api.notification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
-@Namespace("/notification")
+@Namespace("/api/notification")
 @Component
 @Scope("prototype")
 public class DismissUserNotificationAction extends AbstractAuthenticatableAction implements Preparable {

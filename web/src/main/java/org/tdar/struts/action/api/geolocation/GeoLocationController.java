@@ -1,4 +1,4 @@
-package org.tdar.struts.action.geolocation;
+package org.tdar.struts.action.api.geolocation;
 
 import java.io.InputStream;
 import java.util.Set;
@@ -20,7 +20,7 @@ import org.tdar.struts.action.TdarBaseActionSupport;
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@Namespace("/geolocation")
+@Namespace("/api/geolocation")
 public class GeoLocationController extends TdarBaseActionSupport {
 
     private static final long serialVersionUID = -7316298111150245236L;

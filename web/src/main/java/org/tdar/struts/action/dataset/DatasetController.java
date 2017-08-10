@@ -30,14 +30,6 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
 
     private static final long serialVersionUID = 2874916865886637108L;
 
-    @Actions({ @Action("citations") })
-    @Override
-    public String execute() {
-        if (isNullOrNew()) {
-            return REDIRECT_HOME;
-        }
-        return SUCCESS;
-    }
 
     @Override
     protected String save(Dataset dataset) throws TdarActionException {

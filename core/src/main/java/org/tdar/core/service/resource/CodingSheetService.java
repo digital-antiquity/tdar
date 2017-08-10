@@ -29,4 +29,6 @@ public interface CodingSheetService {
 
     List<CodingSheet> findAll();
 
+    List<CodingRule> addSpecialCodingRules(CodingSheet codingSheet, List<CodingRule> codingRules);
+
 }

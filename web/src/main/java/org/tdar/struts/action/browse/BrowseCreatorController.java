@@ -101,11 +101,11 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
      * 
      */
     private static final long serialVersionUID = 7004124945674660779L;
-    public static final String FOAF_XML = ".foaf.xml";
-    public static final String SLASH = "/";
-    public static final String XML = ".xml";
-    public static final String CREATORS = "creators";
-    public static final String EXPLORE = "explore";
+//    public static final String FOAF_XML = ".foaf.xml";
+//    public static final String SLASH = "/";
+//    public static final String XML = ".xml";
+//    public static final String CREATORS = "creators";
+//    public static final String EXPLORE = "explore";
     private String logoUrl;
     private Creator creator;
     private Long viewCount = 0L;
