@@ -1,9 +1,11 @@
 package org.tdar.core.service.billing;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -471,6 +473,53 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             return deleteIssue;
         }
         return null;
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public List<Invoice> getInvoicesForAccount(BillingAccount account) {
+        List<Invoice> invoices = new ArrayList<>(account.getInvoices());
+        Iterator<Invoice> iter = invoices.iterator();
+        
+        while (iter.hasNext()) {
+            Invoice inv = iter.next();
+            if (inv.isModifiable()) {
+                iter.remove();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional(readOnly=false)
+    public void saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser, List<TdarUser> authorizedMembers) {
+        // if we're coming from "choose" and we want a "new account"
+        if (PersistableUtils.isTransient(account) && StringUtils.isNotBlank(name)) {
+            account.setName(name);
+            account.setDescription(description);
+        }
+
+        if (PersistableUtils.isNotNullOrTransient(owner)) {
+            TdarUser uploader = getDao().find(TdarUser.class, owner.getId());
+            account.setOwner(uploader);
+        }
+
+        if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
+            getLogger().info("attaching invoice: {} ", invoice);
+            // if we have rights
+            if (PersistableUtils.isTransient(account)) {
+                account.setOwner(invoice.getOwner());
+            }
+            checkThatInvoiceBeAssigned(invoice, account); // throw exception if you cannot
+            // make sure you add back all of the valid account holders
+            account.getInvoices().add(invoice);
+            getDao().saveOrUpdate(invoice);
+            saveOrUpdate(account);
+            getDao().updateQuota(account, account.getResources(), authenticatedUser);
+        }
+    List<TdarUser> members = getDao().loadFromSparseEntities(authorizedMembers, TdarUser.class);
+    authorizationService.updateAuthorizedMembers(account,members);
+
     }
 
 }

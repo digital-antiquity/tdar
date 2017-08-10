@@ -190,4 +190,8 @@ public interface BillingAccountService {
 
     Collection<? extends BillingAccount> findAll();
 
+    List<Invoice> getInvoicesForAccount(BillingAccount account);
+
+    void saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser, List<TdarUser> authorizedMembers);
+
 }

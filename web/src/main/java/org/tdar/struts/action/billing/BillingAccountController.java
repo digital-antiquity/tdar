@@ -84,33 +84,8 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         getLogger().info("invoiceId {}", getInvoiceId());
         setSaveSuccessPath("billing");
         setupOwnerField();
-        // if we're coming from "choose" and we want a "new account"
-        if (PersistableUtils.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
-            getAccount().setName(getName());
-            getAccount().setDescription(getDescription());
-        }
-
-        if (PersistableUtils.isNotNullOrTransient(getOwner())) {
-            TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
-            getPersistable().setOwner(uploader);
-        }
-
-        if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
-            Invoice invoice = getInvoice();
-            getLogger().info("attaching invoice: {} ", invoice);
-            // if we have rights
-            if (PersistableUtils.isTransient(getAccount())) {
-                getAccount().setOwner(invoice.getOwner());
-            }
-            accountService.checkThatInvoiceBeAssigned(invoice, getAccount()); // throw exception if you cannot
-            // make sure you add back all of the valid account holders
-            getAccount().getInvoices().add(invoice);
-            getGenericService().saveOrUpdate(invoice);
-            getGenericService().saveOrUpdate(getAccount());
-            updateQuotas();
-        }
-        List<TdarUser> members = getGenericService().loadFromSparseEntities(getAuthorizedMembers(), TdarUser.class);
-        authorizationService.updateAuthorizedMembers(getAccount(),members);
+        //saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser)
+        accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), authorizedMembers );
         return SUCCESS;
     }
 
