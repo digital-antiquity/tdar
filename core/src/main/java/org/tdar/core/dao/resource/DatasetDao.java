@@ -600,8 +600,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 }
             };
             dataTable.getDataTableColumns().forEach(dataTableColumn -> {
-                getLogger().debug("\t{}", dataTableColumn);
-                getLogger().debug("\t{}", dataTableColumn.getDefaultCodingSheet());
+                getLogger().debug("\t{} (sheet: {})", dataTableColumn, dataTableColumn.getDefaultCodingSheet());
             });
             tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, excelExtractor, true);
         }
