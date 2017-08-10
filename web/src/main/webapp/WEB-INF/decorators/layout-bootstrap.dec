@@ -22,7 +22,8 @@
      This is a less-than ideal solution, but seems to be the best that we have. -->
 <#if !(protocol?has_content)>
     <#include "/500.html" />
-<#else>
+    <#stop/>
+</#if>
     <#import "/WEB-INF/macros/common.ftl" as common><#t>
     <#import "/WEB-INF/macros/common-auth.ftl" as auth><#t>
     <#import "/WEB-INF/macros/header.ftl" as header>
@@ -279,7 +280,6 @@ ${head}
         </script>
     </#if>
 
-</#if>
     <#import "/${config.themeDir}/settings.ftl" as settings />
 <script id="c3colors">
  [<#list config.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 

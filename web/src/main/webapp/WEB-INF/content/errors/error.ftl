@@ -1,7 +1,9 @@
+<html>
 <head>
     <title>Error Occurred</title>
 <#import "/WEB-INF/macros/common-auth.ftl" as common><#t>
 </head>
+<body>
 
 
 <ul class="inline-menu hidden-desktop"><@common.loginMenu false/></ul>
@@ -13,3 +15,5 @@
 <@s.actionerror />
 </p>
 
+</body>
+</html>
