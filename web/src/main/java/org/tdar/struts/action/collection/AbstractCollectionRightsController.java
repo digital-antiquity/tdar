@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.service.index.SearchIndexService;
@@ -55,6 +56,11 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.EDIT);
+        if (getPersistable() == null) {
+            // persistable is null, so the lookup failed (aka not found)
+            abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
+        }
+
 
     }
 
