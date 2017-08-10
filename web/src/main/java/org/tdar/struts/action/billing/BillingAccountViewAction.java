@@ -35,11 +35,7 @@ import org.tdar.utils.PersistableUtils;
 public class BillingAccountViewAction extends AbstractPersistableViewableAction<BillingAccount> {
 
     private static final long serialVersionUID = 3896385613294762404L;
-//    public static final String UPDATE_QUOTAS = "updateQuotas";
-//    public static final String FIX_FOR_DELETE_ISSUE = "fix";
-//    public static final String CHOOSE = "choose";
-//    public static final String VIEW_ID = "view?id=${id}";
-//    public static final String NEW_ACCOUNT = "new_account";
+
     private Long invoiceId;
     private List<BillingAccount> accounts = new ArrayList<>();
     private List<Invoice> invoices = new ArrayList<>();
@@ -47,13 +43,10 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     private List<Coupon> coupons = new ArrayList<>();
 //    private BillingAccountGroup accountGroup;
     private List<TdarUser> authorizedMembers = new ArrayList<>();
-//    private Long accountGroupId;
-//    private String name;
-//    private Integer quantity = 1;
-//    private String description;
+    private Integer quantity = 1;
 
-//    private Long numberOfFiles = 0L;
-//    private Long numberOfMb = 0L;
+    private Long numberOfFiles = 0L;
+    private Long numberOfMb = 0L;
     private Date expires = new DateTime().plusYears(1).toDate();
 
     @Autowired
@@ -126,22 +119,6 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         this.accounts = accounts;
     }
 
-//    public BillingAccountGroup getAccountGroup() {
-//        return accountGroup;
-//    }
-//
-//    public void setAccountGroup(BillingAccountGroup accountGroup) {
-//        this.accountGroup = accountGroup;
-//    }
-//
-//    public Long getAccountGroupId() {
-//        return accountGroupId;
-//    }
-//
-//    public void setAccountGroupId(Long accountGroupId) {
-//        this.accountGroupId = accountGroupId;
-//    }
-
     public Person getBlankPerson() {
         return new Person();
     }
@@ -162,22 +139,6 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     public BillingActivityModel getBillingActivityModel() {
         return accountService.getLatestActivityModel();
     }
-//
-//    public String getDescription() {
-//        return description;
-//    }
-//
-//    public void setDescription(String description) {
-//        this.description = description;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
 
     public List<Resource> getResources() {
         return resources;
@@ -186,38 +147,38 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     public void setResources(List<Resource> resources) {
         this.resources = resources;
     }
-//
-//    public Long getNumberOfFiles() {
-//        return numberOfFiles;
-//    }
-//
-//    public void setNumberOfFiles(Long numberOfFiles) {
-//        this.numberOfFiles = numberOfFiles;
-//    }
-//
-//    public Long getNumberOfMb() {
-//        return numberOfMb;
-//    }
-//
-//    public void setNumberOfMb(Long numberOfMb) {
-//        this.numberOfMb = numberOfMb;
-//    }
-//
-//    public Date getExipres() {
-//        return getExpires();
-//    }
-//
-//    public void setExipres(Date exipres) {
-//        this.setExpires(exipres);
-//    }
-//
-//    public Integer getQuantity() {
-//        return quantity;
-//    }
-//
-//    public void setQuantity(Integer quantity) {
-//        this.quantity = quantity;
-//    }
+
+   public Long getNumberOfFiles() {
+       return numberOfFiles;
+   }
+
+   public void setNumberOfFiles(Long numberOfFiles) {
+       this.numberOfFiles = numberOfFiles;
+   }
+
+   public Long getNumberOfMb() {
+       return numberOfMb;
+   }
+
+   public void setNumberOfMb(Long numberOfMb) {
+       this.numberOfMb = numberOfMb;
+   }
+
+   public Date getExipres() {
+       return getExpires();
+   }
+
+   public void setExipres(Date exipres) {
+       this.setExpires(exipres);
+   }
+
+   public Integer getQuantity() {
+       return quantity;
+   }
+
+   public void setQuantity(Integer quantity) {
+       this.quantity = quantity;
+   }
 
     public List<Invoice> getInvoices() {
         return invoices;
