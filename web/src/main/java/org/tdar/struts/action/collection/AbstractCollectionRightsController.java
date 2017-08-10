@@ -98,7 +98,6 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
     public void handleLocalSave() {
 
         resourceCollectionService.saveCollectionForRightsController(getPersistable(), getAuthenticatedUser(), getProxies(), getPersistableClass(), null);
-        indexPersistable();
 
     }
 
