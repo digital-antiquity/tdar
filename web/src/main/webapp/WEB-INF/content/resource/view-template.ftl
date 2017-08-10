@@ -140,7 +140,7 @@
                 <form>
                     <label for="table_select">Choose Table:</label>
                     <select id="table_select" name="dataTableId">
-                        <#list resource.sortedDataTables as dataTable_>
+                        <#list resource.importSortedDataTables as dataTable_>
                             <option value="${dataTable_.id?c}" <#if dataTable_.id == dataTable.id>selected </#if>
                                     >${dataTable_.displayName}</option>
                         </#list>

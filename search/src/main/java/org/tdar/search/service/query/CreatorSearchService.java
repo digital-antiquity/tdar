@@ -84,10 +84,19 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
         		PersonQueryPart personQueryPart = new PersonQueryPart();
         		
         		boolean searchAllFields = personSearchOption == PersonSearchOption.ALL_FIELDS;
+        		
         		if(personSearchOption == PersonSearchOption.ALL_FIELDS){
         			Person p_ = Person.fromName(query);
-           		person.setFirstName(p_.getFirstName()); 
-           		person.setLastName(p_.getLastName()); 
+        			person.setFirstName(p_.getFirstName()); 
+        			person.setLastName(p_.getLastName()); 
+        		}
+        		
+        		if(personSearchOption == PersonSearchOption.FIRST_NAME){
+        			person.setFirstName(query); 
+        		}
+        		
+        		if(personSearchOption == PersonSearchOption.LAST_NAME){
+        			person.setLastName(query); 
         		}
         		
         		if(personSearchOption == PersonSearchOption.EMAIL || searchAllFields){
@@ -103,6 +112,7 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
         			person.setInstitution(new Institution(query));
         		}
         		
+        	
         		personQueryPart.add(person);
         		personQueryPart.setOperator(Operator.OR);
         		group.append(personQueryPart);

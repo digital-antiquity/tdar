@@ -78,7 +78,24 @@ public class Dataset extends InformationResource {
         });
         return tables;
     }
-    
+
+    @XmlTransient
+    @Transient
+    public List<DataTable> getImportSortedDataTables() {
+        List<DataTable> tables = new ArrayList<>(dataTables);
+        Collections.sort(tables, new Comparator<DataTable>() {
+
+            @Override
+            public int compare(DataTable o1, DataTable o2) {
+                if (o1.getImportOrder() != null && o2.getImportOrder() != null) {
+                return o1.getImportOrder().compareTo(o2.getImportOrder());
+                } 
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        return tables;
+    }
+
     public void setDataTables(Set<DataTable> dataTables) {
         this.dataTables = dataTables;
     }

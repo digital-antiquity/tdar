@@ -820,10 +820,12 @@ TDAR.inheritance = (function () {
         var array2 = $.map($creditRows.toArray(), function(row){
             var el = $(row).find("[name$='person.id']").first();
             var personId = parseInt(el.val());
+            var instEl = $(row).find("[name$='institution.id']").first();
+            var institutionId = parseInt(instEl.val());
             var retid = personId;
+            
+
             if(personId === -1 || isNaN(personId)) {
-                var instEl = $(row).find("[name$='institutionId.id']").first();
-                var institutionId = parseInt(instEl.val());
                 if(institutionId !== -1 && !isNaN(institutionId)) {
                     retid = institutionId;
                 }

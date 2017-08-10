@@ -217,7 +217,7 @@ public class AuthorizationService implements Accessible {
             return true;
         }
         
-        if (CollectionUtils.isEmpty(resource.getAuthorizedUsers())) {
+        if (CollectionUtils.isEmpty(resource.getAuthorizedUsers()) && CollectionUtils.isEmpty(resource.getSharedCollections())) {
             return false;
         }
 

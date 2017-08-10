@@ -119,7 +119,7 @@ public class ExcelConverter extends AbstractDatabaseConverter {
 
         List<Exception> exceptions = new ArrayList<Exception>();
         int numberOfActualSheets = 0;
-        for (int sheetIndex = numberOfSheets - 1; sheetIndex >= 0; sheetIndex--) {
+        for (int sheetIndex = 0; sheetIndex < numberOfSheets; sheetIndex++) {
             // skip empty sheets
             Sheet currentSheet = workbook.getSheetAt(sheetIndex);
             String sheetName = workbook.getSheetName(sheetIndex);

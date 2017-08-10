@@ -172,7 +172,11 @@ public class ImportService {
         processFiles(blessedAuthorizedUser, proxies, incomingResource);
         geoSearchService.processManagedGeographicKeywords(incomingResource, incomingResource.getLatitudeLongitudeBoxes());
         if (created == true) {
-            incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, GeneralPermissions.ADMINISTER_SHARE));
+            GeneralPermissions administerShare = GeneralPermissions.ADMINISTER_SHARE;
+            if ( incomingResource instanceof Resource) {
+                administerShare = GeneralPermissions.MODIFY_RECORD;
+            }
+            incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, administerShare));
         }
         incomingResource.setCreated(created);
         genericService.saveOrUpdate(incomingResource);
@@ -416,7 +420,7 @@ public class ImportService {
                 latLong.obfuscate();
             }
             rec.getSharedCollections().clear();
-            rec.setAuthorizedUsers(null);
+            rec.getAuthorizedUsers().clear();
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
