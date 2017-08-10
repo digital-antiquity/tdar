@@ -17,6 +17,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -351,6 +352,10 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     public void setEffectiveShares(List<SharedCollection> effectiveShares) {
         this.effectiveShares = effectiveShares;
+    }
+
+    public List<BillingAccount> getBillingAccounts() {
+        return accountService.listAvailableAccountsForUser(getAuthenticatedUser());
     }
 
     // public List<ListCollection> getResourceCollections() {
