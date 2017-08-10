@@ -1415,7 +1415,6 @@ ul .header-auto {
 
 #divIntegrationHeader {
     padding-top: 2em
-<<<<<<< mine
 }
 
 .disabled {
@@ -1464,4 +1463,8 @@ ul .header-auto {
 
 .bottom-margin-20 {
 	margin-bottom:20px;
+}
+
+.ui-autocomplete {
+	z-index:1000;
 }

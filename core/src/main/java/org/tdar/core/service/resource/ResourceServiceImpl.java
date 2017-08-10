@@ -749,6 +749,7 @@ public class ResourceServiceImpl implements ResourceService  {
         if (StringUtils.isNotEmpty(reason)) {
             ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, reason);
             resource.getResourceNotes().add(note);
+            genericDao.save(resource);
             genericDao.save(note);
         } else {
             reason = "reason not specified";

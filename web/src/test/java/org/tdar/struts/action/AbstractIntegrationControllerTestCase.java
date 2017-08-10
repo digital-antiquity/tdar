@@ -205,7 +205,6 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         assertEquals(MessageHelper.getMessage("project.no_associated_project"), instance.findDefaultText("project.no_associated_project", Locale.getDefault()));
 
         if (controller instanceof ActionSupport) {
-            logger.debug("setting container");
             ((ActionSupport) controller).setContainer(container);
         }
         context.setValueStack(factory.createValueStack());

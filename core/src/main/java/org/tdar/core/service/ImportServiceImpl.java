@@ -155,7 +155,11 @@ public class ImportServiceImpl implements ImportService  {
         processFiles(blessedAuthorizedUser, proxies, incomingResource);
         geoSearchService.processManagedGeographicKeywords(incomingResource, incomingResource.getLatitudeLongitudeBoxes());
         if (created == true) {
-            incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, GeneralPermissions.ADMINISTER_SHARE));
+            GeneralPermissions administerShare = GeneralPermissions.ADMINISTER_SHARE;
+            if ( incomingResource instanceof Resource) {
+                administerShare = GeneralPermissions.MODIFY_RECORD;
+            }
+            incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, administerShare));
         }
         incomingResource.setCreated(created);
         genericService.saveOrUpdate(incomingResource);
@@ -394,7 +398,7 @@ public class ImportServiceImpl implements ImportService  {
                 latLong.obfuscate();
             }
             rec.getSharedCollections().clear();
-            rec.setAuthorizedUsers(null);
+            rec.getAuthorizedUsers().clear();
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
@@ -442,6 +446,9 @@ public class ImportServiceImpl implements ImportService  {
         List<Field> findAnnotatedFieldsOfClass = ReflectionServiceImpl.findAnnotatedFieldsOfClass(rec.getClass(), OneToMany.class);
         for (Field fld : findAnnotatedFieldsOfClass) {
             Collection<Persistable> actual = (Collection<Persistable>) reflectionService.callFieldGetter(rec, fld);
+            if (CollectionUtils.isEmpty(actual)) {
+                continue;
+            }
             Collection<Persistable> values = new ArrayList<>(actual);
             actual.clear();
             for (Persistable value : values) {

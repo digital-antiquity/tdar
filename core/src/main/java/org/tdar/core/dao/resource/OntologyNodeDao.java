@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
+
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
@@ -67,7 +69,14 @@ public class OntologyNodeDao extends HibernateBase<OntologyNode> {
         if (node.getIndex().indexOf(".") != -1) {
             String index = node.getIndex().substring(0, node.getIndex().lastIndexOf("."));
             query.setParameter("index", index);
-            return (OntologyNode) query.getSingleResult();
+
+            try {
+            	return (OntologyNode) query.getSingleResult();
+            }
+            catch(NoResultException e){
+            	getLogger().debug("No parent node was found for {} with index {}",node.getOntology().getId(), index);
+            	return null;
+            }
         }
         return null;
     }

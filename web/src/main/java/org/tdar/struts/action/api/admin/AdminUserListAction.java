@@ -27,8 +27,8 @@ import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Preparable;
 
-@ParentPackage("secured")
-@Namespace("/api/admin")
+//@ParentPackage("secured")
+@Namespace("/admin")
 @Component
 @Scope("prototype")
 @Results({

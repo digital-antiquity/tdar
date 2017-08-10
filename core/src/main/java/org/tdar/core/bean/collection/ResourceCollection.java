@@ -391,7 +391,7 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.type = type;
     }
 
-    @XmlTransient
+//    @XmlTransient
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }
