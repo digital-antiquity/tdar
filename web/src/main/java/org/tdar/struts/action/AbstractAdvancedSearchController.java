@@ -102,13 +102,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     private AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
 
-    // FIXME: "explore" results belong in a separate controller.
-    public String exploreSearch() throws TdarActionException, SolrServerException, IOException {
-        processExploreRequest();
-        advancedSearch();
-        return SUCCESS;
-    }
-
     /**
      * There are certain types of requests that require special processing
      * before we execute our search. For example: results?id=5
@@ -294,12 +287,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         }
     }
 
-    private String basicSearch() throws TdarActionException, SolrServerException, IOException {
-        // translate basic search field(s) so that they can be processed by
-        // advancedSearch()
-        processBasicSearchParameters();
-        return advancedSearch();
-    }
 
     @DoNotObfuscate(reason = "user submitted map")
     public LatitudeLongitudeBox getMap() {
@@ -474,20 +461,13 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setSearchTitle(getText("advancedSearchController.title_by_tdar_id")); // accurate
         } else if (StringUtils.isNotBlank(getQuery())) {
             setSearchTitle(getQuery());
-        } else if (isExplore()) {
-            // FIXME -- Why can't we delegate this to the searchParameter
-            // object?
-            if (getExploreKeyword() != null) {
-                setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword",
-                        Arrays.asList(getExploreKeyword().getLabel())));
-            } else if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
-                setSearchTitle(getText("advancedSearchController.title_beginning_with_s",
-                        Arrays.asList(getFirstGroup().getStartingLetter())));
-                // FIXME: only supports 1
-            } else if (CollectionUtils.isNotEmpty(getFirstGroup().getCreationDecades())) {
-                setSearchTitle(getText("advancedSearchController.created_in_the_decade_s",
-                        Arrays.asList(getFirstGroup().getCreationDecades().get(0))));
-            }
+        } else if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
+            setSearchTitle(getText("advancedSearchController.title_beginning_with_s",
+                    Arrays.asList(getFirstGroup().getStartingLetter())));
+            // FIXME: only supports 1
+        } else if (CollectionUtils.isNotEmpty(getFirstGroup().getCreationDecades())) {
+            setSearchTitle(getText("advancedSearchController.created_in_the_decade_s",
+                    Arrays.asList(getFirstGroup().getCreationDecades().get(0))));
         } else if (isKeywordSearch()) {
             setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword"));
         }
@@ -532,56 +512,14 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         this.letter = letter;
     }
 
-    // 'explore' is a more tailored/guided search experience. for example if
-    // searching by keyword then we want to look up the definition of a keyword
-    // and
-    // display it on the search results page.
-    private void processExploreRequest() {
-        if (groups.isEmpty()) {
-            return;
-        }
-        SearchParameters firstGroup = getFirstGroup();
 
-        // was it a keyword lookup? if so show the definition of the keyword
-        if (CollectionUtils.isNotEmpty(firstGroup.getInvestigationTypeIdLists())) {
-            setExploreKeyword(InvestigationType.class, firstGroup.getInvestigationTypeIdLists());
-        } else if (CollectionUtils.isNotEmpty(firstGroup.getApprovedSiteTypeIdLists())) {
-            setExploreKeyword(SiteTypeKeyword.class, firstGroup.getApprovedSiteTypeIdLists());
-        } else if (CollectionUtils.isNotEmpty(firstGroup.getApprovedCultureKeywordIdLists())) {
-            setExploreKeyword(CultureKeyword.class, firstGroup.getApprovedCultureKeywordIdLists());
-        } else if (CollectionUtils.isNotEmpty(firstGroup.getMaterialKeywordIdLists())) {
-            setExploreKeyword(MaterialKeyword.class, firstGroup.getMaterialKeywordIdLists());
-        }
-
-    }
-
-    private SearchParameters getFirstGroup() {
+    protected SearchParameters getFirstGroup() {
         if (groups.size() > 0) {
             return groups.get(0);
         }
         throw new TdarRecoverableRuntimeException(getText("advancedSearchController.try_again"));
     }
 
-    private <K extends Keyword> void setExploreKeyword(Class<K> type, List<List<String>> listOfLists) {
-        final String id = listOfLists.get(0).get(0);
-        try {
-            exploreKeyword = getGenericService().find(type, NumberFormat.getInstance().parse(id).longValue());
-        } catch (java.text.ParseException e) {
-            throw new TdarRecoverableRuntimeException(getText("advancedSearchController.bad_id", id), e);
-        }
-    }
-
-    public boolean isExplore() {
-        return explore;
-    }
-
-    public void setExplore(boolean explore) {
-        this.explore = explore;
-    }
-
-    public Keyword getExploreKeyword() {
-        return exploreKeyword;
-    }
 
     @Override
     public DisplayOrientation getOrientation() {
@@ -648,17 +586,13 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setProjectionModel(ProjectionModel.LUCENE);
         }
 
-        if (explore) {
-            return exploreSearch();
-        }
         boolean resetSearch = processLegacySearchParameters();
 
         if (StringUtils.isNotBlank(query) && !resetSearch) {
             getLogger().trace("running basic search");
-            return basicSearch();
-        } else {
-            return advancedSearch();
-        }
+            processBasicSearchParameters();
+        } 
+        return advancedSearch();
 
     }
 
