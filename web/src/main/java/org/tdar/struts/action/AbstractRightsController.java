@@ -41,7 +41,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     private static final long serialVersionUID = 8551222659351457637L;
 
     private static final String RIGHTS = "{id}";
-    private boolean asyncSave;
+    private boolean asyncSave = true;
     private static final String SUCCESS_INVITE = "invite";
     private static final String INVITE = "invite.ftl";
 
