@@ -69,7 +69,11 @@ public class StatsResultObject implements Serializable {
                 order.add(key);
             }
             map.get(key).put("date", v[0]);
-            map.get(key).put(v[1], totals[i]);
+            if (v[1] ==null) {
+                logger.error("v[1] is null {} {}",rowLabels.get(i), v.toString());
+            } else {
+                map.get(key).put(v[1], totals[i]);
+            }
         }
         List<Map<String,Object>> toReturn = new ArrayList<>();
         for (String key : order) {
