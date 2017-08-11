@@ -487,7 +487,7 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
                 iter.remove();
             }
         }
-        return null;
+        return invoices;
     }
 
     @Override
