@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -42,9 +40,6 @@ public class ResourceController extends AbstractAuthenticatableAction {
     // incoming data from /resource/add
     private ResourceType resourceType;
     private Long projectId;
-    private Resource resource;
-
-    private Long resourceId;
 
     /**
      * Passthrough action, just loads add.ftl via conventions plugin.
@@ -78,31 +73,7 @@ public class ResourceController extends AbstractAuthenticatableAction {
         return BILLING;
     }
 
-    /**
-     * Used to edit an existing resource's resource type / document type / etc.
-     * 
-     * @return
-     */
-    @Action(value = "{resourceId}/edit",
-            results = {
-                    @Result(name = INPUT, location = "add.ftl"),
-                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "/${resource.urlNamespace}/edit?id=${resource.id}")
-            })
-    public String edit() {
-        resource = getGenericService().find(InformationResource.class, resourceId);
-        if (resource == null) {
-            getLogger().error("trying to edit information resource but it was null.");
-            addActionError(getText("resourceController.invalid"));
-            return INPUT;
-        }
-        if (resourceType == null) {
-            addFieldError("resourceType", "Please enter a resource type.");
-            return INPUT;
-        }
-
-        return SUCCESS;
-    }
-
+    
     public boolean isAllowedToCreateResource() {
         getLogger().trace("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
         return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), null));
@@ -124,20 +95,5 @@ public class ResourceController extends AbstractAuthenticatableAction {
         this.projectId = projectId;
     }
 
-    public void setResourceId(Long resourceId) {
-        this.resourceId = resourceId;
-    }
-
-    public Long getResourceId() {
-        return resourceId;
-    }
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    } 
 
 }
