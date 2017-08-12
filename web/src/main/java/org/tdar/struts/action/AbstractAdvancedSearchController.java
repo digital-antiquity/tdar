@@ -461,13 +461,15 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setSearchTitle(getText("advancedSearchController.title_by_tdar_id")); // accurate
         } else if (StringUtils.isNotBlank(getQuery())) {
             setSearchTitle(getQuery());
-        } else if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
+        } else if (groups.size() > 0) {
+            if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
             setSearchTitle(getText("advancedSearchController.title_beginning_with_s",
                     Arrays.asList(getFirstGroup().getStartingLetter())));
-            // FIXME: only supports 1
-        } else if (CollectionUtils.isNotEmpty(getFirstGroup().getCreationDecades())) {
-            setSearchTitle(getText("advancedSearchController.created_in_the_decade_s",
-                    Arrays.asList(getFirstGroup().getCreationDecades().get(0))));
+                // FIXME: only supports 1
+            } else if (CollectionUtils.isNotEmpty(getFirstGroup().getCreationDecades())) {
+                setSearchTitle(getText("advancedSearchController.created_in_the_decade_s",
+                        Arrays.asList(getFirstGroup().getCreationDecades().get(0))));
+            }
         } else if (isKeywordSearch()) {
             setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword"));
         }
@@ -517,7 +519,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         if (groups.size() > 0) {
             return groups.get(0);
         }
-        throw new TdarRecoverableRuntimeException(getText("advancedSearchController.try_again"));
+        return null;
     }
 
 
