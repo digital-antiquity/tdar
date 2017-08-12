@@ -62,7 +62,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
             }
 
             if (name.contains("Document")) {
-                gotoPage("/resource/view?id=4292");
+                gotoPage("/resource/4292");
                 //FIXME: need image
                 gotoPage(COLLECTION_2580);
             }

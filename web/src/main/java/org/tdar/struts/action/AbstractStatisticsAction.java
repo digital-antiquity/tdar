@@ -42,7 +42,7 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
 
     
     protected void setupJson() {
-        if (getStatsForAccount() == null) {
+        if (getStatsForAccount() == null || getStatsForAccount().empty()) {
             addActionError("abstractStatisticsAction.no_data");
             return;
         }
