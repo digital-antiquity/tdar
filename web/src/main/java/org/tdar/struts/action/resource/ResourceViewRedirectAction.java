@@ -35,7 +35,7 @@ public class ResourceViewRedirectAction extends AbstractAuthenticatableAction {
      * 
      * @return
      */
-    @Action(value = "view",
+    @Action(value = "{id}",
             results = {
                     @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "${resource.detailUrl}"),
                     @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.FREEMARKERHTTP,

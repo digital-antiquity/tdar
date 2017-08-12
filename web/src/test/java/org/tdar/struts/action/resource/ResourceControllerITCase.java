@@ -126,37 +126,5 @@ public class ResourceControllerITCase extends AbstractControllerITCase implement
        assertEquals(Status.ACTIVE,billingAccount.getStatus());
        assertEquals(resource.getStatus(),Status.ACTIVE);
     }
-    
-    @Test
-    @Rollback
-    public void testEdit() {
-        setIgnoreActionErrors(true);
-        for (ResourceType type : ResourceType.values()) {
-            try {
-                Resource resource = type.getResourceClass().newInstance();
-                if (resource instanceof InformationResource) {
-                    InformationResource cast = (InformationResource) resource;
-                    InformationResource createAndSaveNewInformationResource = createAndSaveNewInformationResource(cast.getClass());
-                    ResourceController controller = generateNewInitializedController(ResourceController.class);
-                    controller.setResourceType(type);
-                    controller.setResourceId(createAndSaveNewInformationResource.getId());
-                    String selectResult = controller.edit();
-                    assertEquals(TdarActionSupport.SUCCESS, selectResult);
-                } else {
-                    resource.markUpdated(getUser());
-                    resource.setTitle("test");
-                    resource.setDescription("test");
-                    genericService.save(resource);
-                    ResourceController controller = generateNewInitializedController(ResourceController.class);
-                    controller.setResourceType(type);
-                    controller.setResourceId(resource.getId());
-                    String selectResult = controller.edit();
-                    assertEquals(TdarActionSupport.INPUT, selectResult);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
  }
