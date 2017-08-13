@@ -114,7 +114,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
      * @return true if this method translated a legacy search, false if this is
      *         not a legacy search
      */
-    protected boolean processLegacySearchParameters() {
+    private boolean processLegacySearchParameters() {
         // assumption: it's okay to wipe out the groups[] if we detect a legacy
         // request, and that you can't combine two different types (for
         // example: an id search combined with a uncontrolledCultureKeyword
@@ -231,60 +231,49 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     protected void updateDisplayOrientationBasedOnSearchResults() {
     }
 
-    // this is a no-op if basic search not detected
-    protected void processBasicSearchParameters() {
-        SearchParameters terms = new SearchParameters();
-        boolean valid = false;
-        if (StringUtils.isNotBlank(query)) {
-            terms.setOperator(Operator.AND);
-            terms.getAllFields().add(query);
-            terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
-            valid = true;
-        }
-        processCollectionProjectLimit();
-
-        if (valid) {
-            groups.add(terms);
-        }
-    }
 
     private boolean processedLimits = false;
 
     public void processCollectionProjectLimit() {
-        SearchParameters terms = new SearchParameters();
+        if (StringUtils.isNotBlank(query) && !resetSearch) {
+            SearchParameters terms = new SearchParameters();
+            terms.setOperator(Operator.AND);
+            terms.getAllFields().add(query);
+            terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
+            groups.add(terms);
+        }
+        
         if (processedLimits) {
             return;
         }
 
         processedLimits = true;
-        boolean valid = false;
 
         // contextual search: resource collection
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
+            SearchParameters terms_ = new SearchParameters();
             getLogger().debug("contextual search: collection {}", collectionId);
             ResourceCollection rc = getGenericService().find(ResourceCollection.class, collectionId);
-            terms.getFieldTypes().add(0, SearchFieldType.COLLECTION);
+            terms_.getFieldTypes().add(0, SearchFieldType.COLLECTION);
             if (rc instanceof ListCollection) {
-                terms.getCollections().add((ListCollection)rc);
+                terms_.getCollections().add((ListCollection)rc);
             } else {
-                terms.getShares().add((SharedCollection)rc);
+                terms_.getShares().add((SharedCollection)rc);
             }
-            terms.getAllFields().add(0, null);
-            valid = true;
+            terms_.getAllFields().add(0, null);
+            groups.add(terms_);
 
             // contextual search: project
         } else if (PersistableUtils.isNotNullOrTransient(projectId)) {
+            SearchParameters terms_ = new SearchParameters();
             getLogger().debug("contextual search: project {}", projectId);
             Project project = getGenericService().find(Project.class, projectId);
-            terms.getFieldTypes().add(0, SearchFieldType.PROJECT);
-            terms.getProjects().add(project);
-            terms.getAllFields().add(0, null);
-            valid = true;
+            terms_.getFieldTypes().add(0, SearchFieldType.PROJECT);
+            terms_.getProjects().add(project);
+            terms_.getAllFields().add(0, null);
+            groups.add(terms_);
         }
 
-        if (valid) {
-            groups.add(terms);
-        }
     }
 
 
@@ -317,6 +306,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     }
 
     private Keyword exploreKeyword;
+
+    private boolean resetSearch = false;
 
     public List<SearchParameters> getGroups() {
         return groups;
@@ -588,12 +579,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setProjectionModel(ProjectionModel.LUCENE);
         }
 
-        boolean resetSearch = processLegacySearchParameters();
+        resetSearch  = processLegacySearchParameters();
 
-        if (StringUtils.isNotBlank(query) && !resetSearch) {
-            getLogger().trace("running basic search");
-            processBasicSearchParameters();
-        } 
         return advancedSearch();
 
     }

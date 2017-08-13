@@ -194,8 +194,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     public String advanced() {
         getLogger().trace("greetings from advanced search");
         // process query paramter or legacy parameters, if present.
-        processBasicSearchParameters();
-        processLegacySearchParameters();
+        processCollectionProjectLimit();
         processWhitelabelSearch();
 
         // if refining a search, make sure we inflate any deflated terms
