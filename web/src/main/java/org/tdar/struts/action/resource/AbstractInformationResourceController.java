@@ -37,7 +37,7 @@ import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.FileSaveWrapper;
-import org.tdar.web.service.ResourceEditControllerService;
+import org.tdar.web.service.ResourceEditControllerServiceImpl;
 import org.tdar.web.service.ResourceSaveControllerService;
 import org.tdar.web.service.ResourceViewControllerService;
 
@@ -123,7 +123,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private boolean hasFileProxyChanges = false;
 
     @Autowired
-    private ResourceEditControllerService resourceEditControllerService;
+    private ResourceEditControllerServiceImpl resourceEditControllerService;
 
     @Override
     protected String save(InformationResource document) throws TdarActionException {
