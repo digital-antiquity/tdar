@@ -426,6 +426,10 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
             ErrorHandling errorHandling, C collection, Class<C> cls) {
         C collectionToAdd = null;
         logger.trace("addResourceCollectionToResource({}) {} - {}", cls, collection, resource);
+        if (!collection.isValidForController()) {
+            logger.debug("skipping invalid: {}", collection);
+            return;
+        }
 
         if (collection.isTransient()) {
             if (collection instanceof SharedCollection) {

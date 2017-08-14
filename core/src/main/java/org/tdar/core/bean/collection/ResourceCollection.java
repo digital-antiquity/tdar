@@ -450,7 +450,7 @@ public abstract class ResourceCollection extends AbstractPersistable
         if (owner != null) {
             own = owner.getProperName() + " " + owner.getId();
         }
-        return String.format("%s collection %s  (creator: %s)", getType(), getId(), own);
+        return String.format("%s | %s | collection %s  (creator: %s)", getName(),  getType(), getId(), own);
     }
 
 
