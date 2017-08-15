@@ -1,0 +1,35 @@
+.default-color0 {
+    -fx-bar-fill:#2c4d56;
+}
+
+.default-color1 {
+    -fx-bar-fill:#ead590;
+}
+
+.default-color2 {
+    -fx-bar-fill:#49504c;
+}
+
+.chart {
+    -fx-fill: transparent;
+    -fx-background-color: transparent;
+    -fx-legend-side: "right"
+}
+
+
+.chart-vertical-grid-lines {
+    -fx-stroke: none;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: none;
+}
+
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
+    -fx-background-color: transparent;
+    -fx-stroke: transparent;
+}
+.chart-plot-background {
+    -fx-fill: transparent;
+    -fx-background-color: transparent;
+}
