@@ -939,12 +939,6 @@
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <dependency>
-            <groupId>org.tdar</groupId>
-            <artifactId>tdar-charts</artifactId>
-            <!-- FIXME: replace with 1.0 when available -->
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
 
     </dependencies>
 
