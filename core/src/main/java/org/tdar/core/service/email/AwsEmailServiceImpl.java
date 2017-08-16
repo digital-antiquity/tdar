@@ -1,24 +1,20 @@
 package org.tdar.core.service.email;
 
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.mail.internet.MimeMessage.RecipientType;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.notification.Email;
@@ -29,6 +25,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.email.AwsEmailService;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
@@ -41,15 +39,19 @@ import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 
 @Service
 public class AwsEmailServiceImpl implements AwsEmailService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+    private static final TdarConfiguration config = TdarConfiguration.getInstance();
 
 	@Autowired
 	private FreemarkerService freemarkerService;
 
+	private Regions awsRegion = Regions.US_WEST_2;
 	
 	@Override
 	public MimeMessage createMimeMessage(AwsMessage message) throws MessagingException {
@@ -64,13 +66,17 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 		messageHelper.setText(message.getEmail().getMessage(), true);
 
 		for(File file : message.getAttachments()){
-			FileSystemResource attachment = new FileSystemResource(file);
 			messageHelper.addAttachment(file.getName(), file);
 		}
 		
+		//InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream("tdar-logo170x50.gif")));
+		ClassPathResource logo =  new ClassPathResource("tdar-logo170x50.gif");
+		messageHelper.addInline("logo", logo);
 		
 		return messageHelper.getMimeMessage();
 	}
+	
+
 
 	/**
 	 * 
@@ -84,7 +90,7 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 		Email message = new Email();
 		
 		if(emailType.getFromAddress()==null){
-			message.setFrom(CONFIG.getDefaultFromEmail());
+			message.setFrom(config.getDefaultFromEmail());
 		}
 		else {
 			message.setFrom(emailType.getFromAddress());
@@ -140,9 +146,6 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 		logger.debug("sendMessage() message={}", message);
 
 		Email email = message.getEmail();
-		AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.US_EAST_1)
-				.build();
-
 		SendEmailRequest request = new SendEmailRequest()
 				.withDestination(new Destination().withToAddresses(email.getTo()))
 				.withMessage(new Message()
@@ -151,21 +154,36 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 						.withSubject(new Content().withCharset("UTF-8").withData(email.getSubject())))
 				.withSource(message.getEmail().getFrom());
 
-		SendEmailResult response = client.sendEmail(request);
+		SendEmailResult response = getSesClient().sendEmail(request);
 		return response;
 	}
 
 	@Override
-	public SendRawEmailResult sendMultiPartMessage(MimeMessage message) throws IOException, MessagingException {
-		AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        message.writeTo(outputStream);
-
-        RawMessage 			rawMessage 	= new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
-		SendRawEmailRequest request  	= new SendRawEmailRequest().withRawMessage(rawMessage);
-		SendRawEmailResult  response 	= client.sendRawEmail(request);
-		
+	public SendRawEmailResult sendMultiPartMessage(MimeMessage message) throws IOException, MessagingException  {
+		SendRawEmailRequest request  	= new SendRawEmailRequest().withRawMessage(createRawMimeMessage(message));
+		SendRawEmailResult  response 	= getSesClient().sendRawEmail(request);
 		return response;
 	}
+	
+	private RawMessage createRawMimeMessage(MimeMessage message) throws IOException, MessagingException {
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        message.writeTo(outputStream);
+        return new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+	}
 
+	private BasicAWSCredentials getAwsCredentials(){
+		return new BasicAWSCredentials(config.getAwsAccessKey(), config.getAwsSecretKey());
+	}
+	
+	private AmazonSimpleEmailService getSesClient(){
+		AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().
+				withCredentials(new AWSStaticCredentialsProvider(getAwsCredentials())).
+				withRegion(awsRegion).build();
+		return client;
+	}
+	
+	@Override
+	public void setAwsRegion(Regions region){
+		this.awsRegion = region;
+	}
 }

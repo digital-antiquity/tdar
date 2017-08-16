@@ -9,6 +9,7 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
@@ -25,4 +26,6 @@ public interface AwsEmailService {
 	SendRawEmailResult sendMultiPartMessage(MimeMessage message) throws IOException, MessagingException;
 
 	void updateEmailSubject(AwsMessage message);
+
+	void setAwsRegion(Regions region);
 }

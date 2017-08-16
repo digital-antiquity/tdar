@@ -8,7 +8,7 @@ public enum EmailType {
 	INVITE_ACCEPTED("inite/invite-accepted.ftl"),
 	NEW_USER_NOTIFY("email_new_users.ftl"),
 	NEW_USER_WELCOME("email-welcome.ftl"),
-	TEST_EMAIL("test-email.ftl", "brian@thinkkreative.com", "This is a test email %2$s %1$s",TestAwsMessage.class);
+	TEST_EMAIL("test-email.ftl", "test@tdar.org", "This is a test email %2$s %1$s",TestAwsMessage.class);
 	
 	/**
 	 * a string representation of the .ftl template to use

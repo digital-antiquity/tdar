@@ -1005,4 +1005,12 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean isListCollectionsEnabled() {
         return false;
     }
+    
+    public String getAwsAccessKey(){
+    	return assistant.getStringProperty("aws.accesskey.id");
+    }
+    
+    public String getAwsSecretKey(){
+    	return assistant.getStringProperty("aws.accesskey.secret");
+    }
 }
