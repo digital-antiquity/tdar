@@ -69,8 +69,9 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 			messageHelper.addAttachment(file.getName(), file);
 		}
 		
-		//InputStreamSource imageSource = new ByteArrayResource(IOUtils.toByteArray(getClass().getResourceAsStream("tdar-logo170x50.gif")));
-		ClassPathResource logo =  new ClassPathResource("tdar-logo170x50.gif");
+		
+		
+		ClassPathResource logo =  new ClassPathResource("tdar-logo.png");
 		messageHelper.addInline("logo", logo);
 		
 		return messageHelper.getMimeMessage();

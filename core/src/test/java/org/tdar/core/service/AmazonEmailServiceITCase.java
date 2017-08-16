@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -38,7 +39,7 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     }
     @Test
     public void testTestAwsEmail(){
-    	assertNotEquals(EmailType.TEST_EMAIL.getFromAddress(), "test@tdar.org");
+    	assertEquals(EmailType.TEST_EMAIL.getFromAddress(), "test@tdar.org");
     }
     
     @Test
