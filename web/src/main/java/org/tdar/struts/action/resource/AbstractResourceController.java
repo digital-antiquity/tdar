@@ -262,7 +262,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             BillingAccount resourceAccount     = getResource().getAccount();
             boolean resourceAccountIsNotNull   = resourceAccount !=null;
             boolean resourceAccountNotInList   = !accounts.contains(resourceAccount);
-            boolean hasInheritedEditPermission = authorizationService.isAllowedToEditInherited(getAuthenticatedUser(), getResource());
+            boolean hasInheritedEditPermission = authorizationService.canEdit(getAuthenticatedUser(), getResource());
             
             //If the billing account is not in the list, but should be, then move it to the front of the list.
             if (resourceAccountIsNotNull && resourceAccountNotInList &&
