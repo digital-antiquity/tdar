@@ -66,7 +66,8 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Length(max = FieldLength.FIELD_LENGTH_255)
+    @Length(max = FieldLength.FIELD_LENGTH_255, min=1)
+    @NotNull
     private String name;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
