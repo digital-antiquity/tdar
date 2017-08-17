@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <!-- PatternLayout Gallery: start -->
+
+    <!--
+        name:   Minimal
+        desc:   Only displays level, epoch time, category, and message. Use  when you need max efficiency or when logdata seldom used.
+        <pattern>%-5p[%d{UNIX_MILLIS}|%c] %m%n</pattern>
+    -->
+
+    <!--
+        name:   Balanced
+        desc:   Adds date, context stack, short category, and line number (but no class name). Retains essential info for triage but not as readable as
+                dev layout.
+        <pattern>%-5p[%d %-4r|t:%t p:%X{tag_path} u:%X{tag_ua}|%c{1.}:%L] %m%n</pattern>
+    -->
+
+    <!--
+        name: Descriptive
+        desc: More human readable than others and IDE friendly,  but bloated and uses expensive conversion patterns.
+                <pattern>%-5p [%d %-4r|t:%t p:%X{tag_path} u:%X{tag_ua}|%c|%F:%L] %m%n</pattern>
+    -->
+
+
+    <!-- PatternLayout Gallery: end -->
+
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%-5p %d %-4r [t:%t p:%X{tag_path} u:%X{tag_ua}] (%F:%L) %c - %m%n" />
+		</Console>
+		<Routing name="File">
+			<Routes pattern="$${sd:type}">
+				<Route>
+                    <RollingFile name="Rolling-${sd:type}" fileName="logs/tdar-${date:yyyy-MM-dd}.log"
+						filePattern="logs/tdar.%d{yyyy-MM-dd-HH-mm}.log.gz">
+						<PatternLayout>
+							<pattern>%d %p %c{1.} [t:%t p:%X{tag_path} u:%X{tag_ua}] %m%n</pattern>
+						</PatternLayout>
+						<TimeBasedTriggeringPolicy />
+					</RollingFile>
+				</Route>
+			</Routes>
+		</Routing>
+	</Appenders>
+	<Loggers>
+		<Root level="error">
+			<AppenderRef ref="Console" />
+			<AppenderRef ref="File" />
+		</Root>
+		<Logger name="org.hibernate.util.JDBCExceptionReporter" level="debug" />
+		<Logger name="org.liquibase" level="error" />
+		<Logger name="org.tdar" level="DEBUG" />
+		<Logger name="uk.org" level="debug" />
+
+		<!--// log parameterized SQL statements -->
+
+		<!-- <Logger name="org.hibernate.SQL" level="debug" /> -->
+
+		<!--// log the parameter bindings for above SQL statements -->
+		<!-- <Logger name="org.hibernate.type" level="debug" /> -->
+
+		<!--// details w.r.t. action lifecycle (interceptors, mappings, action 
+			results, etc.) -->
+		<!-- <Logger name="com.opensymphony.xwork2" level="debug" /> -->
+		<!--// ognl errors (type conversion errors, umnmapped form field names) 
+			are pretty common, so they are logged at TRACE. Uncomment next line to see 
+			them -->
+		<!-- <Logger name="com.opensymphony.xwork2.ognl.OgnlValueStack" level="debug" 
+			/> -->
+	</Loggers>
+</Configuration>
