@@ -62,6 +62,7 @@ public interface TestBillingAccountHelper {
 
     default BillingAccount setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, TdarUser user) {
         BillingAccount account = new BillingAccount();
+        account.setName("test account");
         initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
