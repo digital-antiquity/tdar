@@ -22,6 +22,7 @@ public interface TestBillingAccountHelper {
      */
     default BillingAccount setupAccountWithInvoiceForSpecifiedMb(BillingActivityModel model, TdarUser user, Long size) {
     	BillingAccount account = new BillingAccount();
+    	account.setName("test with " + size.toString()  + " mb" );
     	BillingActivity activity = new BillingActivity(size.toString()+" mb", 10f, 0, 0L, 0L, size, model);
     	initAccount(account, activity, getUser());
     	getGenericService().saveOrUpdate(account);
@@ -31,6 +32,7 @@ public interface TestBillingAccountHelper {
 
     default BillingAccount setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
         BillingAccount account = new BillingAccount();
+        account.setName("test with 6 mb");
         BillingActivity activity = new BillingActivity("6 mb", 10f, 0, 0L, 0L, 6L, model);
         initAccount(account, activity, getUser());
         getGenericService().saveOrUpdate(account);
@@ -39,6 +41,7 @@ public interface TestBillingAccountHelper {
 
     default BillingAccount setupAccountWithInvoiceForOneFile(BillingActivityModel model, TdarUser user) {
         BillingAccount account = new BillingAccount();
+        account.setName("test with 1 file");
         initAccount(account, new BillingActivity("1 file", 10f, 0, 0L, 1L, 0L, model), user);
         getGenericService().saveOrUpdate(account);
         return account;
@@ -46,6 +49,7 @@ public interface TestBillingAccountHelper {
 
     default BillingAccount setupAccountWithInvoiceForOneResource(BillingActivityModel model, TdarUser user) {
         BillingAccount account = new BillingAccount();
+        account.setName("test with 1 resource");
         initAccount(account, new BillingActivity("1 resource", 10f, 0, 1L, 0L, 0L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -55,6 +59,7 @@ public interface TestBillingAccountHelper {
 
     default BillingAccount setupAccountWithInvoiceSomeResourcesAndSpace(BillingActivityModel model, TdarUser user) {
         BillingAccount account = new BillingAccount();
+        account.setName("test with 10 resources");
         initAccount(account, new BillingActivity("10 resource", 100f, 0, 10L, 10L, 100L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -64,6 +69,7 @@ public interface TestBillingAccountHelper {
 
     default BillingAccount setupAccountWithInvoiceFiveResourcesAndSpace(BillingActivityModel model, TdarUser user) {
         BillingAccount account = new BillingAccount();
+        account.setName("test account with 10 resources");
         initAccount(account, new BillingActivity("10 resource", 5f, 0, 5L, 5L, 50L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -73,6 +79,7 @@ public interface TestBillingAccountHelper {
 
     default BillingAccount setupAccountWithInvoiceTenOfEach(BillingActivityModel model, TdarUser user) {
         BillingAccount account = new BillingAccount();
+        account.setName("test with 10 resources");
         initAccount(account, new BillingActivity("10 resource", 10f, 10, 10L, 10L, 10L, model), user);
         /* add one resource */
         // account.resetTransientTotals();
@@ -106,6 +113,7 @@ public interface TestBillingAccountHelper {
     default BillingAccount setupAccountForPerson(TdarUser p) {
         BillingAccount account = new BillingAccount("my account");
         account.setOwner(p);
+        account.setName("test for " + p.getProperName());
         account.setStatus(Status.ACTIVE);
         account.markUpdated(getUser());
         getGenericService().saveOrUpdate(account);

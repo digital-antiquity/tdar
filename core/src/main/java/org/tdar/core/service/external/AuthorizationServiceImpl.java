@@ -248,24 +248,6 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     /*
      * (non-Javadoc)
      * 
-     * @see org.tdar.core.service.external.AuthorizationService#isAllowedToEditInherited(org.tdar.core.bean.entity.TdarUser,
-     * org.tdar.core.bean.resource.Resource)
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public boolean isAllowedToEditInherited(TdarUser person, Resource resource) {
-        GeneralPermissions permission = GeneralPermissions.MODIFY_METADATA;
-        List<Long> ids = new ArrayList<>();
-        for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
-            ids.addAll(((SharedCollection) collection).getParentIds());
-            ids.add(collection.getId());
-        }
-        return authorizedUserDao.isAllowedTo(person, permission, ids);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.tdar.core.service.external.AuthorizationService#canEditCollection(org.tdar.core.bean.entity.TdarUser,
      * org.tdar.core.bean.collection.ResourceCollection)
      */

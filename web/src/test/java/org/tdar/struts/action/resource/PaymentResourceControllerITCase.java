@@ -53,19 +53,21 @@ import com.opensymphony.xwork2.Action;
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class PaymentResourceControllerITCase extends AbstractControllerITCase implements TestBillingAccountHelper, TestResourceCollectionHelper {
 
-    private DocumentController controller;
+//    private 
     
     @Autowired
     private BillingAccountService accountService;
 
-    public void initControllerFields() throws TdarActionException {
+    public DocumentController initControllerFields() throws TdarActionException {
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
+        return controller;
     }
 
-    public void setController(DocumentController controller) {
-        this.controller = controller;
-    }
+//    public void setController(DocumentController controller) {
+//        this.controller = controller;
+//    }
 
     @SuppressWarnings("deprecation")
     @Test
@@ -140,7 +142,11 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         BillingAccount adminAccount = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), getEditorUser());
         BillingAccount basicAccount = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), getBasicUser());
         Dataset dataset = createAndSaveNewDataset();
+        adminAccount.setName("admin account");
+        basicAccount.setName("basic account");
         dataset.setSubmitter(getBasicUser());
+        
+        // dataset being set to admin account
         adminAccount.getResources().add(dataset);
         genericService.saveOrUpdate(adminAccount);
         genericService.saveOrUpdate(dataset);
@@ -155,19 +161,20 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         logger.debug("accountId:{}", dc.getAccountId());
         assertTrue(dc.getActiveAccounts().contains(basicAccount));
         assertEquals(adminAccount.getId(), dc.getAccountId());
+        //asserting we're still admin account
         dc.setServletRequest(getServletPostRequest());
         dc.save();
         assertFalse(getActionErrors().size() > 0);
         genericService.synchronize();
         Dataset ds = genericService.find(Dataset.class, id);
         accountService.updateTransientAccountInfo(ds);
-        assertEquals(basicAccount, ds.getAccount());
+        assertEquals(adminAccount, ds.getAccount());
     }
 
     @Test
     @Rollback()
     public void testCreateWithoutValidAccount() throws Exception {
-        controller = generateNewInitializedController(DocumentController.class, createAndSaveNewUser());
+        DocumentController controller = generateNewInitializedController(DocumentController.class, createAndSaveNewUser());
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         Assert.assertTrue(CollectionUtils.isEmpty(controller.getActiveAccounts()));
         initControllerFields();
@@ -231,8 +238,8 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
     @Rollback()
     public void testInitialSaveWithoutValidAccount() throws Exception {
         setIgnoreActionErrors(true);
-        controller = generateNewInitializedController(DocumentController.class);
-        Pair<String, Exception> tdae = setupResource(setupDocument());
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
+        Pair<String, Exception> tdae = setupResource(controller, setupDocument());
         assertEquals(Action.INPUT, tdae.getFirst());
         Long newId = controller.getResource().getId();
 
@@ -247,7 +254,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
     @Test
     @Rollback()
     public void testSecondarySaveWithoutValidAccount() throws Exception {
-        controller = generateNewInitializedController(DocumentController.class);
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
         Document d = setupDocument();
         // Account account = createAccount(getBasicUser());
         // d.setAccount(account);
@@ -256,7 +263,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         genericService.saveOrUpdate(d);
         logger.info("account: {}", d.getAccount());
         setIgnoreActionErrors(true);
-        Pair<String, Exception> tdae = setupResource(d);
+        Pair<String, Exception> tdae = setupResource(controller, d);
         assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
         logger.info("errors {}", controller.getActionErrors());
         assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.account_is_null")));
@@ -298,7 +305,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
     }
 
     private void extracted(String title, BillingAccount expectedAccount) throws TdarActionException, FileNotFoundException {
-        controller = generateNewInitializedController(DocumentController.class);
+        DocumentController controller = generateNewInitializedController(DocumentController.class);
         Document d = setupDocument();
         d.setStatus(Status.DRAFT);
         controller.setDocument(d);
@@ -331,7 +338,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         assertEquals(title + ": resource should be in draft", Status.DRAFT, controller.getResource().getStatus());
     }
 
-    private Pair<String, Exception> setupResource(Document d) throws TdarActionException {
+    private Pair<String, Exception> setupResource(DocumentController controller, Document d) throws TdarActionException {
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
         if ((d != null) && (d.getId() != null)) {
             controller.setId(d.getId());
