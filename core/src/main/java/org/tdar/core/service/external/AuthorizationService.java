@@ -84,17 +84,6 @@ public interface AuthorizationService {
     boolean canEditResource(TdarUser person, Resource resource, GeneralPermissions basePermission);
 
     /**
-     * Avoid using in general, but this allows us to ask whether a User has the "inherited" rights to do something as opposed to being granted direct rights to
-     * it.
-     * 
-     * @param person
-     * @param permission
-     * @param ids
-     * @return
-     */
-    boolean isAllowedToEditInherited(TdarUser person, Resource resource);
-
-    /**
      * Checks whether a @link Person has the rights to edit a @link ResourceCollection. First, checking whether the person's @link TdarGroup permissions grant
      * them
      * additional rights, for example if ADMIN; or if their @link ResourceCollection permissions include GeneralPermission.ADMINISTER_GROUP or greater

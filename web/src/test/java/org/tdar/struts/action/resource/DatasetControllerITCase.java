@@ -33,7 +33,10 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -41,6 +44,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.PostgresIntegrationDatabase;
@@ -70,16 +74,14 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     private static final String TRUNCATED_HARP_EXCEL_FILENAME = "heshfaun-truncated.xls";
     private static final String BELEMENT_COL = "belement";
 
-    private DatasetController controller;
+//    private DatasetController controller;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DataTableService dataTableService;
 
-    @Before
-    public void setUp() {
-        controller = generateNewInitializedController(DatasetController.class);
-    }
+    @Autowired
+    private BillingAccountService accountService;
 
     @Test
     @Rollback
@@ -88,8 +90,37 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         Dataset dataset = genericService.findRandom(Dataset.class, 1).get(0);
         dataset.setTitle("test");
         dataset.setSubmitter(p);
-        dataset.markUpdated(controller.getAuthenticatedUser());
+        dataset.markUpdated(getUser());
         genericService.merge(dataset);
+    }
+
+    @Test
+    @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD})    
+    public void testAccountListExistsInDatasetController() throws TdarActionException {
+        // setup new dataset with authorized user (direct) and grant EDIT rights
+        // associate resource with billing account
+        TdarUser p = genericService.find(TdarUser.class, getUser().getId());
+        Dataset dataset = createAndSaveNewDataset();
+        List<BillingAccount> findAll = genericService.findAll(BillingAccount.class);
+        BillingAccount account = findAll.get(0);
+        dataset.setAccount(account);
+        accountService.updateQuota(account, p, dataset);
+        TdarUser createAndSaveNewPerson = createAndSaveNewPerson("a@bcasdasd.com", "aa");
+        dataset.getAuthorizedUsers().add(new AuthorizedUser(p, createAndSaveNewPerson, GeneralPermissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(dataset);
+        genericService.synchronize();
+        
+        // done setup
+        Long datasetId = dataset.getId();
+        DatasetController c = generateNewInitializedController(DatasetController.class, createAndSaveNewPerson);
+        c.setId(datasetId);
+        c.prepare();
+        c.edit();
+        // assert that "activeAccounts" contains our billing account
+        List<BillingAccount> activeAccounts = c.getActiveAccounts();
+        logger.debug("active Accounts:{}", activeAccounts);
+        assertTrue("account list contains one account", activeAccounts.contains(account));
     }
 
     @Autowired
@@ -100,6 +131,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     public void testTranslatedGeneratedCodingSheet() throws Exception {
         //test for TDAR-5038 ;; issue is that the translated values are being pushed into coding sheets.
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
+        DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         Ontology bElementOntology = setupAndLoadResource("fauna-element-updated---default-ontology-draft.owl", Ontology.class);
         DataTableColumn elementColumn = new DataTableColumn();
@@ -129,6 +161,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     @Rollback
     public void testOntologyMappingCaseSensitivity() throws Exception {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
+        DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         Ontology bElementOntology = setupAndLoadResource("fauna-element-updated---default-ontology-draft.owl", Ontology.class);
         DataTableColumn elementColumn = new DataTableColumn();
@@ -189,7 +222,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         List<String> successActions = Arrays.asList("add", "list", "edit");
         // grab all methods on DatasetController annotated with a conventions plugin @Action
         for (Method method : DatasetController.class.getMethods()) {
-            controller = generateNewInitializedController(DatasetController.class);
+            DatasetController controller = generateNewInitializedController(DatasetController.class);
             controller.prepare();
             if (method.isAnnotationPresent(Action.class)) {
                 logger.debug("Invoking action method: " + method.getName());
@@ -293,7 +326,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     @Rollback
     public void testDatasetReplaceWithMappings() throws Exception {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
-        controller = generateNewInitializedController(DatasetController.class);
+        DatasetController controller = generateNewInitializedController(DatasetController.class);
 
         Ontology bElementOntology = setupAndLoadResource("fauna-element-updated---default-ontology-draft.owl", Ontology.class);
         DataTable alexandriaTable = dataset.getDataTables().iterator().next();
@@ -329,7 +362,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     @Rollback
     public void testDatasetReplaceDifferentExcel() throws TdarActionException, FileNotFoundException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
-        controller = generateNewInitializedController(DatasetController.class);
+        DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
@@ -357,7 +390,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     @Rollback
     public void testDatasetReplaceDifferentMdb() throws TdarActionException, FileNotFoundException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
-        controller = generateNewInitializedController(DatasetController.class);
+        DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
@@ -385,7 +418,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         }
         verifyDataTable(dataTable, originalNumberOfRows, originalColumnData);
         InformationResourceFile file = dataset.getFirstInformationResourceFile();
-        controller = generateNewInitializedController(DatasetController.class);
+        DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
