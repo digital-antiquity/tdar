@@ -20,21 +20,28 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.InvoiceDao;
 import org.tdar.core.dao.ResourceEvaluator;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DeleteIssue;
+import org.tdar.core.service.RightsResolver;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.UserRightsProxyService;
 import org.tdar.core.service.billing.PricingOption.PricingType;
+import org.tdar.core.service.collection.CollectionRightsComparator;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.utils.PersistableUtils;
 
@@ -47,6 +54,9 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
     @Autowired
     private AuthorizationService authorizationService;
 
+    @Autowired
+    UserRightsProxyService proxyService;
+    
     @Autowired
     InvoiceDao invoiceDao;
     
@@ -492,7 +502,7 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
 
     @Override
     @Transactional(readOnly=false)
-    public void saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser, List<TdarUser> authorizedMembers) {
+    public void saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser,List<UserRightsProxy> proxies) {
         // if we're coming from "choose" and we want a "new account"
         if (PersistableUtils.isTransient(account) && StringUtils.isNotBlank(name)) {
             account.setName(name);
@@ -517,9 +527,17 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             saveOrUpdate(account);
             getDao().updateQuota(account, account.getResources(), authenticatedUser);
         }
-    List<TdarUser> members = getDao().loadFromSparseEntities(authorizedMembers, TdarUser.class);
-    authorizationService.updateAuthorizedMembers(account,members);
-
+        
+        
+        List<AuthorizedUser> authorizedUsers = new ArrayList<>();
+        proxyService.convertProxyToItems(proxies, authenticatedUser, authorizedUsers, null);
+        CollectionRightsComparator comparator = new CollectionRightsComparator(account.getAuthorizedUsers(), authorizedUsers);
+        if (comparator.rightsDifferent()) {
+            RightsResolver rco = authorizationService.getRightsResolverFor(account, authenticatedUser, InternalTdarRights.EDIT_BILLING_INFO);
+            comparator.makeChanges(rco, account, authenticatedUser);
+        }
+        comparator = null;        
+        getDao().saveOrUpdate(account);
     }
 
 }

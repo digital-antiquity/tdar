@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.exception.TdarAuthorizationException;
 
 /**
  * Helper class to take a list of AuthorizedUsers and get the Maximum permissions allotted based on the rights available to the user
@@ -161,14 +163,14 @@ public class RightsResolver {
         // in increasing level or permission... check that we have the rights to do XYZ
         for (GeneralPermissions perm : toEval) {
             Date date = lookup.get(perm);
-            // if the date we have rights for is INFINITE, then we're fine 
+            // if the date we have rights for is INFINITE, then we're fine
             if (date == INFINITE) {
                 return false;
             }
             if (logger.isTraceEnabled()) {
                 logger.trace("{} <--> {} ({})", date, expiry, date.compareTo(expiry));
             }
-            // if the AU's date is <= date then we're ok too 
+            // if the AU's date is <= date then we're ok too
             if (date.compareTo(expiry) >= 0) {
                 return false;
             }
@@ -183,6 +185,16 @@ public class RightsResolver {
         logger.debug("  map: {}", lookup);
         logger.debug("  all:{}", getAuthorizedUsers());
         logger.debug(" user:{}", userToAdd);
+    }
+
+    public void checkEscalation(TdarUser actor, AuthorizedUser userToAdd) {
+        // check escalation of permissions
+        if (hasPermissionsEscalation(userToAdd)) {
+            logDebug(actor, userToAdd);
+            throw new TdarAuthorizationException("resourceCollectionService.could_not_add_user", Arrays.asList(userToAdd,
+                    userToAdd.getGeneralPermission()));
+        }
+
     }
 
 }

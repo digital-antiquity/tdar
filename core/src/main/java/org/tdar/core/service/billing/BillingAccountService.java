@@ -15,6 +15,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.service.DeleteIssue;
@@ -192,6 +193,6 @@ public interface BillingAccountService {
 
     List<Invoice> getInvoicesForAccount(BillingAccount account);
 
-    void saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser, List<TdarUser> authorizedMembers);
+    void saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser, List<UserRightsProxy> proxies);
 
 }

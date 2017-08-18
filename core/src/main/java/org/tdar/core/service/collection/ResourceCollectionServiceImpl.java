@@ -12,11 +12,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -101,28 +99,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
         CollectionRightsComparator comparator = new CollectionRightsComparator(resource.getAuthorizedUsers(), authorizedUsers);
         if (comparator.rightsDifferent()) {
             RightsResolver rco = authorizationService.getRightsResolverFor(resource, actor, InternalTdarRights.EDIT_ANYTHING);
-            if (!rco.canModifyUsersOnResource()) {
-                rco.logDebug(actor, null);
-                throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
-            }
-
-            for (AuthorizedUser user : comparator.getDeletions()) {
-                resource.getAuthorizedUsers().remove(user);
-            }
-
-            for (AuthorizedUser user : comparator.getAdditions()) {
-                rco.logDebug(actor, user);
-                if (rco.hasPermissionsEscalation(user)) {
-                    throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
-                }
-
-                if (PersistableUtils.isNullOrTransient(user.getCreatedBy())) {
-                    user.setCreatedBy(actor);
-                }
-                resource.getAuthorizedUsers().add(user);
-            }
-
-            handleDifferences(resource, actor, comparator, rco);
+            comparator.makeChanges(rco, resource, actor);
         }
         comparator = null;
 
@@ -134,32 +111,32 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
 
     }
 
-    private void handleDifferences(HasAuthorizedUsers resource, TdarUser actor, CollectionRightsComparator comparator, RightsResolver rco) {
-        if (CollectionUtils.isNotEmpty(comparator.getChanges())) {
-            Map<Long, AuthorizedUser> idMap2 = null;
-
-            Map<Long, AuthorizedUser> idMap = PersistableUtils.createIdMap(resource.getAuthorizedUsers());
-            for (AuthorizedUser user : comparator.getChanges()) {
-                AuthorizedUser actual = idMap.get(user.getId());
-                if (actual == null) {
-                    // it's possible that the authorizedUserId was not passed back from the client
-                    // if so, build a secondary map using the TdarUser (authorizedUser.user) id.
-                    if (idMap2 == null) {
-                        idMap2 = new HashMap<>();
-                        for (AuthorizedUser au : resource.getAuthorizedUsers()) {
-                            idMap2.put(au.getUser().getId(), au);
-                        }
-                    }
-
-                    actual = idMap2.get(user.getUser().getId());
-                    logger.debug("actual was null, now: {}", actual);
-                }
-                checkEscalation(actor, user, rco);
-                actual.setGeneralPermission(user.getGeneralPermission());
-                actual.setDateExpires(user.getDateExpires());
-            }
-        }
-    }
+//    private void handleDifferences(HasAuthorizedUsers resource, TdarUser actor, CollectionRightsComparator comparator, RightsResolver rco) {
+//        if (CollectionUtils.isNotEmpty(comparator.getChanges())) {
+//            Map<Long, AuthorizedUser> idMap2 = null;
+//
+//            Map<Long, AuthorizedUser> idMap = PersistableUtils.createIdMap(resource.getAuthorizedUsers());
+//            for (AuthorizedUser user : comparator.getChanges()) {
+//                AuthorizedUser actual = idMap.get(user.getId());
+//                if (actual == null) {
+//                    // it's possible that the authorizedUserId was not passed back from the client
+//                    // if so, build a secondary map using the TdarUser (authorizedUser.user) id.
+//                    if (idMap2 == null) {
+//                        idMap2 = new HashMap<>();
+//                        for (AuthorizedUser au : resource.getAuthorizedUsers()) {
+//                            idMap2.put(au.getUser().getId(), au);
+//                        }
+//                    }
+//
+//                    actual = idMap2.get(user.getUser().getId());
+//                    logger.debug("actual was null, now: {}", actual);
+//                }
+//                checkEscalation(actor, user, rco);
+//                actual.setGeneralPermission(user.getGeneralPermission());
+//                actual.setDateExpires(user.getDateExpires());
+//            }
+//        }
+//    }
 
     /* (non-Javadoc)
      * @see org.tdar.core.service.collection.ResourceCollectionService#getAuthorizedUsersForResource(org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.TdarUser)
@@ -264,7 +241,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
 
             resourceCollection.getAuthorizedUsers().removeAll(comparator.getDeletions());
 
-            handleDifferences(resourceCollection, actor, comparator, rightsResolver);
+            comparator.handleDifferences(resourceCollection, actor, rightsResolver);
         }
         comparator = null;
 
@@ -275,15 +252,6 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
         logger.trace("------------------------------------------------------");
     }
 
-    private void checkEscalation(TdarUser actor, AuthorizedUser userToAdd, RightsResolver rco) {
-
-        // check escalation of permissions
-        if (rco.hasPermissionsEscalation(userToAdd)) {
-            rco.logDebug(actor, userToAdd);
-            throw new TdarAuthorizationException("resourceCollectionService.could_not_add_user", Arrays.asList(userToAdd,
-                    userToAdd.getGeneralPermission()));
-        }
-    }
 
     /**
      * Add a @link AuthorizedUser to the @link ResourceCollection if it's valid
@@ -315,7 +283,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
                 return;
             }
             if (PersistableUtils.isNotNullOrTransient(source) && RevisionLogType.EDIT == type) {
-                checkEscalation(actor, incomingUser, rightsResolver);
+                rightsResolver.checkEscalation(actor, incomingUser);
             }
             currentUsers.add(incomingUser);
             if (shouldSaveResource) {

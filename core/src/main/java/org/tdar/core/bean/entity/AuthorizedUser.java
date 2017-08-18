@@ -99,8 +99,8 @@ public class AuthorizedUser extends AbstractPersistable {
     public AuthorizedUser() {
     }
 
-    public AuthorizedUser(TdarUser authenticatedUser, TdarUser person, GeneralPermissions permission) {
-        this.createdBy = authenticatedUser;
+    public AuthorizedUser(TdarUser createdBy, TdarUser person, GeneralPermissions permission) {
+        this.createdBy = createdBy;
         this.user = person;
         setGeneralPermission(permission);
     }
