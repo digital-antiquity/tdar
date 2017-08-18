@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.dao.integration.IntegrationWorkflowDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
@@ -18,6 +20,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -72,6 +75,9 @@ public class IntegrationWorkflowServiceImpl  extends ServiceInterface.TypedDaoBa
             logger.debug("{}",data);
             validateWorkflow(data, provider);
             persistable.markUpdated(authUser);
+            if (PersistableUtils.isTransient(persistable)) {
+                persistable.getAuthorizedUsers().add(new AuthorizedUser(authUser, authUser, GeneralPermissions.EDIT_INTEGRATION));
+            }
             data.copyValuesToBean(persistable, json);
             ontologyNodeDao.saveOrUpdate(persistable);
             result.setStatus(IntegrationSaveResult.SUCCESS);

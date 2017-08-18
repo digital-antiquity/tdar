@@ -919,8 +919,11 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-        if (account.getAuthorizedUsers().contains(authenticatedUser)) {
-            return true;
+        for (AuthorizedUser au : account.getAuthorizedUsers()) {
+            logger.debug("au: {}", au);
+            if (au.getUser().equals(authenticatedUser) && (GeneralPermissions.EDIT_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
+                return true;
+            }
         }
 
         return false;

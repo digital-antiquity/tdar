@@ -90,4 +90,17 @@
         SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
         </sql>
     </changeSet>
+    <changeSet id="integration-setup-auth" author="abrin">
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="EDIT_INTEGRATION"/>
+            <column name="general_permission_int" valueNumeric="2000"/>
+            <column name="user_id" valueNumeric="8092"/>
+            <column name="creator_id" valueNumeric="8092"/>
+            <column name="integration_id" valueNumeric="1000"/>
+        </insert>
+        <sql>
+        SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
+        SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
+        </sql>
+    </changeSet>
 </databaseChangeLog>
