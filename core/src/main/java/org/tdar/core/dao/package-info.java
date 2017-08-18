@@ -360,7 +360,7 @@
         ),
         @NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
-                query = "from BillingAccount act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
+                query = "from BillingAccount act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.user.id from act.authorizedUsers as authmem where authmem.user.id = :personid))"
         ),
         @NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON,
@@ -528,7 +528,7 @@
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
         @NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER,
-                query = "from DataIntegrationWorkflow w where submitter.id=:userId or w.hidden is false or exists (select authmem.id from w.authorizedMembers as authmem where authmem.id = :userId)"),
+                query = "from DataIntegrationWorkflow w where submitter.id=:userId or w.hidden is false or exists (select authmem.user.id from w.authorizedUsers as authmem where authmem.user.id = :userId)"),
         @NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER_ADMIN,
                 query = "from DataIntegrationWorkflow"),

@@ -8,10 +8,12 @@ import java.util.Set;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
@@ -103,5 +105,7 @@ public interface DataIntegrationService {
     PersonalFilestoreTicket storeResult(ModernIntegrationDataResult result);
 
     TableDetailsProxy getTableDetails(List<Long> dataTableIds);
+
+    void saveSettingsForController(DataIntegrationWorkflow persistable, TdarUser authenticatedUser, List<UserRightsProxy> proxies);
 
 }

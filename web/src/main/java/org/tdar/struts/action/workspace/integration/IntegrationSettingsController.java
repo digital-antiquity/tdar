@@ -12,7 +12,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -30,11 +32,12 @@ public class IntegrationSettingsController extends AbstractPersistableController
     private List<TdarUser> authorizedMembers = new ArrayList<>();
     private List<String> authorizedUsersFullNames = new ArrayList<String>();
 
-    
-    
     @Autowired
     private transient AuthorizationService authorizationService;
 
+    @Autowired
+    private transient DataIntegrationService integrationService;
+    
     @Override
     public boolean authorize() {
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
@@ -45,8 +48,8 @@ public class IntegrationSettingsController extends AbstractPersistableController
 
     @Override
     protected String save(DataIntegrationWorkflow persistable) throws TdarActionException {
-        List<TdarUser> members = getGenericService().loadFromSparseEntities(getAuthorizedMembers(), TdarUser.class);
-        authorizationService.updateAuthorizedMembers(getPersistable(), members);
+        List<UserRightsProxy> proxies = new ArrayList<>();
+        integrationService.saveSettingsForController(persistable, getAuthenticatedUser(), proxies);
         return SUCCESS_WORKSPACE;
     }
 

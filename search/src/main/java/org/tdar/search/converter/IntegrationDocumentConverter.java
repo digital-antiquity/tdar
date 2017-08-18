@@ -32,8 +32,11 @@ public class IntegrationDocumentConverter extends AbstractSolrDocumentConverter 
         doc.setField(QueryFieldNames.ALL, sb.toString());
         doc.setField(QueryFieldNames.SUBMITTER_ID, integration.getSubmitter().getId());
 
-        Set<TdarUser> users = new HashSet<>(integration.getAuthorizedMembers());
+        Set<TdarUser> users = new HashSet<>();
         users.add(integration.getSubmitter());
+        integration.getAuthorizedUsers().forEach(au -> {
+            users.add(au.getUser());
+        });
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, PersistableUtils.extractIds(users));
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, PersistableUtils.extractIds(users));
         doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.INTEGRATION.name());

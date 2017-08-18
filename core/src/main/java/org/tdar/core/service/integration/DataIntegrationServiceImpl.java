@@ -25,18 +25,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.dao.resource.DataTableColumnDao;
@@ -44,7 +48,10 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.core.service.RightsResolver;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.UserRightsProxyService;
+import org.tdar.core.service.collection.CollectionRightsComparator;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.FileProxyWrapper;
@@ -70,6 +77,10 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+
+    @Autowired
+    UserRightsProxyService proxyService;
+    
     @Autowired
     private IntegrationDatabase tdarDataImportDatabase;
 
@@ -518,5 +529,20 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         Map<Ontology, List<DataTable>> suggestions = getIntegrationSuggestions(proxy.getDataTables(), false);
         proxy.getMappedOntologies().addAll(suggestions.keySet());
         return proxy;
+    }
+    
+    @Override
+    @Transactional(readOnly=false)
+    public void saveSettingsForController(DataIntegrationWorkflow persistable, TdarUser authenticatedUser, List<UserRightsProxy> proxies){
+        List<AuthorizedUser> authorizedUsers = new ArrayList<>();
+        proxyService.convertProxyToItems(proxies, authenticatedUser, authorizedUsers, null);
+        CollectionRightsComparator comparator = new CollectionRightsComparator(persistable.getAuthorizedUsers(), authorizedUsers);
+        if (comparator.rightsDifferent()) {
+            RightsResolver rco = authorizationService.getRightsResolverFor(persistable, authenticatedUser, InternalTdarRights.EDIT_ANYTHING);
+            comparator.makeChanges(rco, persistable, authenticatedUser);
+        }
+        comparator = null;        
+
+        genericDao.saveOrUpdate(persistable);
     }
 }

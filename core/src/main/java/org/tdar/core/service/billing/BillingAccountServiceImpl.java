@@ -34,7 +34,6 @@ import org.tdar.core.dao.InvoiceDao;
 import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.RightsResolver;
