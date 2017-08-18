@@ -217,8 +217,8 @@ public class CollectionRightsComparator {
         }
 
         for (AuthorizedUser user : getAdditions()) {
-            rco.logDebug(authenticatedUser, user);
             if (rco.hasPermissionsEscalation(user)) {
+                rco.logDebug(authenticatedUser, user);
                 throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
             }
 

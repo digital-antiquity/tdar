@@ -216,7 +216,7 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
             au.setUser(user);
             au.setGeneralPermission(proxy.getPermission());
             au.setDateExpires(proxy.getUntilDate());
-            logger.debug("  {} ({})", au, proxy.getDisplayName());
+            logger.trace("  {} ({})", au, proxy.getDisplayName());
         return au;
         } catch (WrongClassException e) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
