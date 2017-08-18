@@ -23,6 +23,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -138,11 +139,7 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
     @Transactional(readOnly=true)
     public boolean checkThatInvoiceBeAssigned(Invoice find, BillingAccount account) {
 
-        if (authorizationService.isMember(find.getTransactedBy(), TdarGroup.TDAR_BILLING_MANAGER)) {
-            return true;
-        }
-
-        if (account.getAuthorizedUsers().contains(find.getTransactedBy())) {
+        if (authorizationService.isMember(find.getTransactedBy(), TdarGroup.TDAR_BILLING_MANAGER) || authorizationService.canEditAccount(find.getTransactedBy(), account)) {
             return true;
         }
         throw new TdarRecoverableRuntimeException("accountService.cannot_assign");
@@ -199,6 +196,7 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             account = new BillingAccount();
             account.setName("Generated account for " + user.getProperName());
             account.markUpdated(user);
+            account.getAuthorizedUsers().add(new AuthorizedUser(user,user, GeneralPermissions.EDIT_ACCOUNT));
             getDao().saveOrUpdate(account);
         }
         return account;
@@ -410,6 +408,8 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         }
 
         TdarUser owner = invoice.getOwner() == null ? invoice.getOwner() : authenticatedUser;
+        account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, GeneralPermissions.EDIT_ACCOUNT));
+
         account.setName("Default account for " + owner.getProperName());
         return account;
     }
@@ -503,7 +503,8 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
     @Transactional(readOnly=false)
     public void saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser,List<UserRightsProxy> proxies) {
         // if we're coming from "choose" and we want a "new account"
-        if (PersistableUtils.isTransient(account) && StringUtils.isNotBlank(name)) {
+        boolean isTransient = PersistableUtils.isTransient(account);
+        if (isTransient && StringUtils.isNotBlank(name)) {
             account.setName(name);
             account.setDescription(description);
         }
@@ -513,10 +514,15 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             account.setOwner(uploader);
         }
 
+        if (isTransient) {
+            account.getAuthorizedUsers().add(new AuthorizedUser(account.getOwner(), account.getOwner(), GeneralPermissions.EDIT_ACCOUNT));
+            getDao().saveOrUpdate(account);
+        }
+
         if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
             getLogger().info("attaching invoice: {} ", invoice);
             // if we have rights
-            if (PersistableUtils.isTransient(account)) {
+            if (isTransient) {
                 account.setOwner(invoice.getOwner());
             }
             checkThatInvoiceBeAssigned(invoice, account); // throw exception if you cannot

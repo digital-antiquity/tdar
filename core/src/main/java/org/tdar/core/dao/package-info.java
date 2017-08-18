@@ -45,6 +45,14 @@
                         + "left join c.parentIds parentId "
                         + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and ( au.collectionId =:id or parentId=:id)"),
         @NamedQuery(
+                name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_ACCOUNT, 
+                query = "SELECT au from AuthorizedUser au JOIN BillingAccount c on au.accountId=c.id "
+                        + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and c.id=:id"),
+        @NamedQuery(
+                name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_WORKFLOW, 
+                query = "SELECT au from AuthorizedUser au JOIN DataIntegrationWorkflow c on au.integrationId=c.id "
+                        + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and c.id=:id"),
+        @NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
                 query = "SELECT distinct 1 from " +
                         " ResourceCollection as rescol inner join rescol.authorizedUsers " +

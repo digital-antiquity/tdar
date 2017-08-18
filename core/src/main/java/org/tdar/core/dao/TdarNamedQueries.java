@@ -181,6 +181,8 @@ public interface TdarNamedQueries {
     String FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION = "query.expiring_auth_users_collection";
     String QUERY_RIGHTS_EXPIRY_RESOURCE = "query.expiry_authuser";
     String QUERY_RIGHTS_EXPIRY_COLLECTION = "query.expiry_authuser_collection";
+    String QUERY_RIGHTS_EXPIRY_ACCOUNT = "query.expiry_account";
+    String QUERY_RIGHTS_EXPIRY_WORKFLOW = "query.expiry_authuser_workflow";
             // raw SQL/HQL queries
 
     /**

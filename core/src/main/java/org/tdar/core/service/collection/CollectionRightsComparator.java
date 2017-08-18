@@ -42,6 +42,7 @@ public class CollectionRightsComparator {
         this.currentUsers = new HashSet<>();
         this.incomingUsers = new HashSet<>();
         if (CollectionUtils.isNotEmpty(currentUsers)) {
+            logger.debug("current users {}", currentUsers);
             this.currentUsers.addAll(currentUsers);
         }
         if (CollectionUtils.isNotEmpty(incomingUsers)) {
@@ -206,7 +207,7 @@ public class CollectionRightsComparator {
 
     public void makeChanges(RightsResolver rco, HasAuthorizedUsers account, TdarUser authenticatedUser) {
 
-        if (!rco.canModifyUsersOnResource()) {
+        if (!rco.canModifyUsersOn(account)) {
             rco.logDebug(authenticatedUser, null);
             throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
         }

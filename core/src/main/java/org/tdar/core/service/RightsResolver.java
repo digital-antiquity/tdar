@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.exception.TdarAuthorizationException;
 
 /**
@@ -78,51 +79,6 @@ public class RightsResolver {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
-    }
-
-    /**
-     * Do we have MODIFY_RECORD or greater
-     * 
-     * @return
-     */
-    public boolean canModifyUsersOnResource() {
-
-        if (isAdmin()) {
-            return true;
-        }
-
-        if (lookup.isEmpty()) {
-            return false;
-        }
-
-        for (GeneralPermissions perm : lookup.keySet()) {
-            if (perm.ordinal() >= GeneralPermissions.MODIFY_RECORD.ordinal()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Do we have ADMINISTER_SHARE or greater
-     * 
-     * @return
-     */
-    public boolean canModifyUsersOnShare() {
-        if (isAdmin()) {
-            return true;
-        }
-
-        if (lookup.isEmpty()) {
-            return false;
-        }
-
-        for (GeneralPermissions perm : lookup.keySet()) {
-            if (perm.ordinal() >= GeneralPermissions.ADMINISTER_SHARE.ordinal()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -195,6 +151,25 @@ public class RightsResolver {
                     userToAdd.getGeneralPermission()));
         }
 
+    }
+
+    public boolean canModifyUsersOn(HasAuthorizedUsers account) {
+        GeneralPermissions minPerm = GeneralPermissions.getEditPermissionFor(account);
+        
+        if (isAdmin()) {
+            return true;
+        }
+
+        if (lookup.isEmpty()) {
+            return false;
+        }
+
+        for (GeneralPermissions perm : lookup.keySet()) {
+            if (perm.ordinal() >= minPerm.ordinal()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

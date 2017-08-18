@@ -29,6 +29,7 @@ import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -57,7 +58,7 @@ import org.tdar.utils.PersistableUtils;
  * (c) getting file access and resource access permissions
  */
 @Service
-public class AuthorizationServiceImpl implements  Accessible, AuthorizationService {
+public class AuthorizationServiceImpl implements Accessible, AuthorizationService {
 
     /*
      * we use a weak hashMap of the group permissions to prevent tDAR from constantly hammering the auth system with the group permissions. The hashMap will
@@ -77,7 +78,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#findEditableResources(org.tdar.core.bean.entity.TdarUser, boolean, java.util.List)
      */
     @Override
@@ -85,7 +88,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return authorizedUserDao.findEditableResources(person, resourceTypes, isAdmin);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#isMemberOfAny(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.TdarGroup)
      */
     @Override
@@ -102,7 +107,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#isMember(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.TdarGroup)
      */
     @Override
@@ -111,7 +118,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return authenticationService.isMember(person, group);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#isAdministrator(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -120,7 +129,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return isMember(person, TdarGroup.TDAR_ADMIN);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#isBillingManager(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -129,7 +140,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return isMember(person, TdarGroup.TDAR_BILLING_MANAGER);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#isEditor(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -143,7 +156,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
      * A user
      * should be able to see their own DRAFTs, but never DELETED statuss unless they're an admin, for example
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#getAllowedSearchStatuses(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -172,7 +187,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return allowed;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#canViewResource(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource)
      */
     @Override
@@ -196,8 +213,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.VIEW_ALL);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canEditResource(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.permissions.GeneralPermissions)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canEditResource(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource,
+     * org.tdar.core.bean.entity.permissions.GeneralPermissions)
      */
     @Override
     @Transactional(readOnly = true)
@@ -215,7 +235,7 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
             logger.trace("checking if person can edit any resource");
             return true;
         }
-        
+
         if (CollectionUtils.isEmpty(resource.getAuthorizedUsers()) && CollectionUtils.isEmpty(resource.getSharedCollections())) {
             return false;
         }
@@ -225,8 +245,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return authorizedUserDao.isAllowedTo(person, resource, basePermission);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#isAllowedToEditInherited(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#isAllowedToEditInherited(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.Resource)
      */
     @Override
     @Transactional(readOnly = true)
@@ -234,14 +257,17 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         GeneralPermissions permission = GeneralPermissions.MODIFY_METADATA;
         List<Long> ids = new ArrayList<>();
         for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
-            ids.addAll(((SharedCollection)collection).getParentIds());
+            ids.addAll(((SharedCollection) collection).getParentIds());
             ids.add(collection.getId());
         }
         return authorizedUserDao.isAllowedTo(person, permission, ids);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canEditCollection(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.collection.ResourceCollection)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canEditCollection(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.collection.ResourceCollection)
      */
     @Override
     @Transactional(readOnly = true)
@@ -261,8 +287,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_SHARE);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canAdministerCollection(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.collection.ResourceCollection)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canAdministerCollection(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.collection.ResourceCollection)
      */
     @Override
     @Transactional(readOnly = true)
@@ -284,7 +313,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, permission);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#can(org.tdar.core.dao.external.auth.InternalTdarRights, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -299,7 +330,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#cannot(org.tdar.core.dao.external.auth.InternalTdarRights, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -308,8 +341,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return !can(rights, person);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#removeIfNotAllowed(java.util.Collection, E, org.tdar.core.dao.external.auth.InternalTdarRights, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#removeIfNotAllowed(java.util.Collection, E, org.tdar.core.dao.external.auth.InternalTdarRights,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     public <E> void removeIfNotAllowed(Collection<E> list, E item, InternalTdarRights permission, TdarUser person) {
@@ -322,7 +358,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#canEdit(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.Persistable)
      */
     @Override
@@ -334,8 +372,8 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
             return canEditCollection(authenticatedUser, (ResourceCollection) item);
         } else if (item instanceof Institution) {
             return canEditInstitution(authenticatedUser, (Institution) item);
-        } else if (item instanceof DataIntegrationWorkflow){
-            return canEditWorkflow(authenticatedUser,(DataIntegrationWorkflow) item);
+        } else if (item instanceof DataIntegrationWorkflow) {
+            return canEditWorkflow(authenticatedUser, (DataIntegrationWorkflow) item);
         } else {
             return can(InternalTdarRights.EDIT_ANYTHING, authenticatedUser);
         }
@@ -358,7 +396,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return institutionDao.canEditInstitution(authenticatedUser, item);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#canView(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.Persistable)
      */
     @Override
@@ -367,16 +407,19 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
         } else if (item instanceof ResourceCollection) {
-            return canViewCollection( authenticatedUser, (ResourceCollection) item);
+            return canViewCollection(authenticatedUser, (ResourceCollection) item);
         } else if (item instanceof DataIntegrationWorkflow) {
-            return canViewWorkflow(authenticatedUser,(DataIntegrationWorkflow) item);
+            return canViewWorkflow(authenticatedUser, (DataIntegrationWorkflow) item);
         } else {
             return can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser);
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canViewConfidentialInformation(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canViewConfidentialInformation(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.Resource)
      */
     @Override
     @Transactional(readOnly = true)
@@ -388,7 +431,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#canUploadFiles(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource)
      */
     @Override
@@ -397,8 +442,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canDo(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.HasAuthorizedUsers, org.tdar.core.dao.external.auth.InternalTdarRights, org.tdar.core.bean.entity.permissions.GeneralPermissions)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canDo(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.HasAuthorizedUsers,
+     * org.tdar.core.dao.external.auth.InternalTdarRights, org.tdar.core.bean.entity.permissions.GeneralPermissions)
      */
     @Override
     @Transactional(readOnly = true)
@@ -445,12 +493,15 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
     /*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFileVersion
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canDownload(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.file.InformationResourceFileVersion)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canDownload(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.file.InformationResourceFileVersion)
      */
     @Override
     @Transactional(readOnly = true)
-    public boolean canDownload( TdarUser person, InformationResourceFileVersion irFileVersion) {
+    public boolean canDownload(TdarUser person, InformationResourceFileVersion irFileVersion) {
         if (irFileVersion == null) {
             return false;
         }
@@ -460,8 +511,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
     /*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFile
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canDownload(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.file.InformationResourceFile)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canDownload(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.file.InformationResourceFile)
      */
     @Override
     @Transactional(readOnly = true)
@@ -482,8 +536,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
      * Checks whether a person has the rights to view a collection based on their @link GeneralPermission on the @link ResourceCollection; filters by Shared
      * Visible collections
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canViewCollection(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.collection.VisibleCollection)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canViewCollection(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.collection.VisibleCollection)
      */
     @Override
     @Transactional(readOnly = true)
@@ -513,7 +570,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
      * (c) if it's a collection, make sure it's public and shared
      * (d) otherwise, it's probably not
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#applyTransientViewableFlag(org.tdar.core.bean.Indexable, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -532,7 +591,7 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
             boolean viewable = setupViewable(authenticatedUser, item);
             if (item instanceof ResourceCollection) {
                 logger.trace("item is resource collection: {}", p);
-                if (item instanceof ResourceCollection  && !((ResourceCollection) item).isHidden()) {
+                if (item instanceof ResourceCollection && !((ResourceCollection) item).isHidden()) {
                     viewable = true;
                 }
             }
@@ -596,7 +655,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
      * with the
      * Invoive itself
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#canAssignInvoice(org.tdar.core.bean.billing.Invoice, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -611,7 +672,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#isResourceViewable(org.tdar.core.bean.entity.TdarUser, R)
      */
     @Override
@@ -629,7 +692,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#isResourceEditable(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource)
      */
     @Override
@@ -638,8 +703,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_METADATA);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#applyTransientViewableFlag(org.tdar.core.bean.resource.file.InformationResourceFileVersion, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#applyTransientViewableFlag(org.tdar.core.bean.resource.file.InformationResourceFileVersion,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = true)
@@ -649,7 +717,7 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
             return;
         }
         InformationResourceFile irFile = informationResourceFileVersion.getInformationResourceFile();
-        if (irFile.isPublic() || canDownload( authenticatedUser,irFile)) {
+        if (irFile.isPublic() || canDownload(authenticatedUser, irFile)) {
             visible = true;
         }
         for (InformationResourceFileVersion vers : irFile.getLatestVersions()) {
@@ -657,8 +725,12 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#checkValidUnauthenticatedDownload(org.tdar.core.bean.resource.file.InformationResourceFileVersion, java.lang.String, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.tdar.core.service.external.AuthorizationService#checkValidUnauthenticatedDownload(org.tdar.core.bean.resource.file.InformationResourceFileVersion,
+     * java.lang.String, java.lang.String)
      */
     @Override
     @Transactional(readOnly = true)
@@ -685,8 +757,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return errors;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canEditWorkflow(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.integration.DataIntegrationWorkflow)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canEditWorkflow(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.integration.DataIntegrationWorkflow)
      */
     @Override
     @Transactional(readOnly = true)
@@ -699,15 +774,19 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
             return true;
         }
 
-        if (PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser) ||
-                workflow.getAuthorizedUsers().contains(authenticatedUser)) {
-            return true;
+        for (AuthorizedUser au : workflow.getAuthorizedUsers()) {
+            if (au.getUser().equals(authenticatedUser) && (GeneralPermissions.EDIT_INTEGRATION.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
+                return true;
+            }
         }
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canViewWorkflow(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.integration.DataIntegrationWorkflow)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canViewWorkflow(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.integration.DataIntegrationWorkflow)
      */
     @Override
     @Transactional(readOnly = true)
@@ -720,34 +799,46 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#canEditAccount(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.billing.BillingAccount)
      */
     @Override
     @Transactional(readOnly = true)
     public boolean canEditAccount(TdarUser authenticatedUser, BillingAccount account) {
+        logger.debug("can edit account: {} ({})", account, authenticatedUser);
         if (can(InternalTdarRights.EDIT_BILLING_INFO, authenticatedUser)) {
             return true;
         }
 
-        if (account.getAuthorizedUsers().contains(authenticatedUser)) {
-            return true;
+        for (AuthorizedUser au : account.getAuthorizedUsers()) {
+            logger.debug("au: {}", au);
+            if (au.getUser().equals(authenticatedUser) && (GeneralPermissions.EDIT_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
+                return true;
+            }
         }
         return false;
 
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canAdministerAccount(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.billing.BillingAccount)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canAdministerAccount(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.billing.BillingAccount)
      */
     @Override
     @Transactional(readOnly = true)
     public boolean canAdministerAccount(TdarUser authenticatedUser, BillingAccount account) {
-        return canEditAccount(authenticatedUser,account);
+        return canEditAccount(authenticatedUser, account);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#applyTransientViewableFlag(org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.TdarUser, java.util.Collection)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#applyTransientViewableFlag(org.tdar.core.bean.resource.Resource,
+     * org.tdar.core.bean.entity.TdarUser, java.util.Collection)
      */
     @Override
     @Transactional(readOnly = true)
@@ -795,8 +886,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
 
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canAdminiserUsersOn(org.tdar.core.bean.resource.HasAuthorizedUsers, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canAdminiserUsersOn(org.tdar.core.bean.resource.HasAuthorizedUsers,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = true)
@@ -811,7 +905,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#updateAuthorizedMembers(org.tdar.core.bean.billing.HasUsers, java.util.List)
      */
     @Override
@@ -824,12 +920,15 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         institutionDao.saveOrUpdate(entity);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canViewBillingAccount(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.billing.BillingAccount)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canViewBillingAccount(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.billing.BillingAccount)
      */
     @Override
     @Transactional(readOnly = true)
-    public boolean canViewBillingAccount(TdarUser authenticatedUser,BillingAccount account) {
+    public boolean canViewBillingAccount(TdarUser authenticatedUser, BillingAccount account) {
         if (PersistableUtils.isNullOrTransient(authenticatedUser)) {
             return false;
         }
@@ -845,7 +944,9 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthorizationService#canEditCreator(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.entity.Creator)
      */
     @Override
@@ -854,19 +955,22 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         if (PersistableUtils.isNullOrTransient(tdarUser)) {
             return false;
         }
-        
+
         if (persistable instanceof Institution) {
             return canEdit(tdarUser, persistable);
         }
-        
+
         if (Objects.equals(persistable, tdarUser) || can(InternalTdarRights.EDIT_PERSONAL_ENTITES, tdarUser)) {
             return true;
         }
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canAddToCollection(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.collection.ResourceCollection)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canAddToCollection(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.collection.ResourceCollection)
      */
     @Override
     public boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd) {
@@ -880,8 +984,11 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return authorizedUserDao.isAllowedTo(user, collectionToAdd, permission);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#canRemoveFromCollection(org.tdar.core.bean.collection.ResourceCollection, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canRemoveFromCollection(org.tdar.core.bean.collection.ResourceCollection,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     public <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user) {
@@ -889,7 +996,6 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
             return true;
         }
 
-        
         GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
         if (collection instanceof SharedCollection) {
             permission = GeneralPermissions.REMOVE_FROM_SHARE;
@@ -897,12 +1003,14 @@ public class AuthorizationServiceImpl implements  Accessible, AuthorizationServi
         return authorizedUserDao.isAllowedTo(user, collection, permission);
     }
 
-
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthorizationService#getRightsResolverFor(org.tdar.core.bean.resource.HasAuthorizedUsers, org.tdar.core.bean.entity.TdarUser, org.tdar.core.dao.external.auth.InternalTdarRights)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#getRightsResolverFor(org.tdar.core.bean.resource.HasAuthorizedUsers,
+     * org.tdar.core.bean.entity.TdarUser, org.tdar.core.dao.external.auth.InternalTdarRights)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public RightsResolver getRightsResolverFor(HasAuthorizedUsers resource, TdarUser actor, InternalTdarRights rights) {
         RightsResolver resolver = new RightsResolver();
         if (can(rights, actor)) {

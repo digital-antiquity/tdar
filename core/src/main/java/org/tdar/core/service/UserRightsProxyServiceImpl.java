@@ -208,16 +208,15 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
     public AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
         try {
             AuthorizedUser au = new AuthorizedUser();
-            logger.debug("{} {} ", proxy, proxy.getId());
             TdarUser user = genericDao.find(TdarUser.class, proxy.getId());
+            logger.debug("{} {} {}", proxy, proxy.getId(), user);
             if (user == null && PersistableUtils.isNotNullOrTransient(proxy.getId() )) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
             }
-            logger.debug("{} {}", user.getClass() , user);
             au.setUser(user);
             au.setGeneralPermission(proxy.getPermission());
             au.setDateExpires(proxy.getUntilDate());
-            logger.debug("{} ({})", au, proxy.getDisplayName());
+            logger.debug("  {} ({})", au, proxy.getDisplayName());
         return au;
         } catch (WrongClassException e) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
