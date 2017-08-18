@@ -188,12 +188,13 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
     private Long setupAccountWithUsers() throws TdarActionException {
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
         controller.prepare();
+        controller.add();
         controller.setName("my test account");
-        controller.validate();
         controller.getAuthorizedMembers().add(getAdminUser());
         controller.getAuthorizedMembers().add(getBillingUser());
         controller.getAuthorizedMembers().add(getEditorUser());
         controller.setServletRequest(getServletPostRequest());
+//        controller.validate();
         String save = controller.save();
         Long id = controller.getAccount().getId();
         assertEquals(Action.SUCCESS, save);
