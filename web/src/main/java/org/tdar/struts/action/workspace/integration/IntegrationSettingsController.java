@@ -9,8 +9,10 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.external.AuthorizationService;
@@ -49,6 +51,9 @@ public class IntegrationSettingsController extends AbstractPersistableController
     @Override
     protected String save(DataIntegrationWorkflow persistable) throws TdarActionException {
         List<UserRightsProxy> proxies = new ArrayList<>();
+        for (TdarUser user : authorizedMembers) {
+            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, GeneralPermissions.EDIT_INTEGRATION)));
+        }
         integrationService.saveSettingsForController(persistable, getAuthenticatedUser(), proxies);
         return SUCCESS_WORKSPACE;
     }
@@ -75,9 +80,10 @@ public class IntegrationSettingsController extends AbstractPersistableController
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        for (TdarUser user : getPersistable().getAuthorizedMembers()) {
-            getAuthorizedUsersFullNames().add(user.getProperName());
-        }
+        getPersistable().getAuthorizedUsers().forEach(au -> {
+            getAuthorizedMembers().add(au.getUser());
+            getAuthorizedUsersFullNames().add(au.getUser().getProperName());
+        });
 
     }
 

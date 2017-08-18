@@ -1,5 +1,6 @@
 package org.tdar.struts.action.billing;
 
+import java.security.URIParameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -21,10 +22,13 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -84,8 +88,12 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         getLogger().info("invoiceId {}", getInvoiceId());
         setSaveSuccessPath("billing");
         setupOwnerField();
+        List<UserRightsProxy> proxies = new ArrayList<>();
+        for (TdarUser user : authorizedMembers) {
+            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, GeneralPermissions.EDIT_ACCOUNT)));
+        }
         //saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser)
-        accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), authorizedMembers );
+        accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), proxies );
         return SUCCESS;
     }
 
@@ -233,9 +241,10 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        for (TdarUser user : getAccount().getAuthorizedMembers()) {
-            getAuthorizedUsersFullNames().add(user.getProperName());
-        }
+        getAccount().getAuthorizedUsers().forEach(au -> {
+            getAuthorizedMembers().add(au.getUser());
+            getAuthorizedUsersFullNames().add(au.getUser().getProperName());
+        });
     }
 
     public List<Status> getStatuses() {

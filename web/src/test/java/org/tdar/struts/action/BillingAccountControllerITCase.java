@@ -182,8 +182,8 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         Long id = setupAccountWithUsers();
 
         BillingAccount account = genericService.find(BillingAccount.class, id);
-        assertEquals(3, account.getAuthorizedMembers().size());
-        assertTrue(account.getAuthorizedMembers().contains(getAdminUser()));
+        assertEquals(3, account.getAuthorizedUsers().size());
+        assertTrue(account.getAuthorizedUsers().contains(getAdminUser()));
     }
 
     private Long setupAccountWithUsers() throws TdarActionException {
@@ -207,15 +207,17 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
         controller.setId(id);
         controller.prepare();
-        int size = controller.getAccount().getAuthorizedMembers().size();
-        controller.getAuthorizedMembers().addAll(controller.getAccount().getAuthorizedMembers());
+        int size = controller.getAccount().getAuthorizedUsers().size();
+        controller.getAccount().getAuthorizedUsers().forEach(au -> {
+            controller.getAuthorizedMembers().add(au.getUser());
+        });
         controller.getAuthorizedMembers().remove(getBillingUser());
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         assertEquals(Action.SUCCESS, save);
         BillingAccount account = genericService.find(BillingAccount.class, id);
-        assertEquals(size - 1, account.getAuthorizedMembers().size());
-        assertFalse(account.getAuthorizedMembers().contains(getBillingUser()));
+        assertEquals(size - 1, account.getAuthorizedUsers().size());
+        assertFalse(account.getAuthorizedUsers().contains(getBillingUser()));
 
     }
 

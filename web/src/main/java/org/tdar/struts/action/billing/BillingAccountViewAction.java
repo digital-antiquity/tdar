@@ -82,7 +82,9 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         }
         setAccounts(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
 //        setAccountGroup(accountService.getAccountGroup(getAccount()));
-        getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
+        getAccount().getAuthorizedUsers().forEach(au -> {
+            getAuthorizedMembers().add(au.getUser());
+        });
         getResources().addAll(getAccount().getResources());
         PersistableUtils.sortByUpdatedDate(getResources());
         setInvoices(accountService.getInvoicesForAccount(getAccount()));
