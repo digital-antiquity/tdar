@@ -850,6 +850,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
             setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
         }
         submitForm();
+        
         assertAccountPageCorrect(users, userIds, accountName);
         clickLinkOnPage("edit");
         String id = getInput("id").getAttribute("value");

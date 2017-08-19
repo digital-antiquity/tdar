@@ -84,6 +84,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
 
     @Override
     protected String save(BillingAccount persistable) {
+        try {
         getLogger().info("invoiceId {}", getInvoiceId());
         setSaveSuccessPath("billing");
         setupOwnerField();
@@ -93,6 +94,10 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         }
         //saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser)
         accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), proxies );
+        } catch (Exception e) {
+            getLogger().debug("{}",e,e);
+            addActionErrorWithException("cannot save", e);;
+        }
         return SUCCESS;
     }
 

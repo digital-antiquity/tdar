@@ -515,10 +515,26 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         }
 
         if (isTransient) {
-            account.getAuthorizedUsers().add(new AuthorizedUser(account.getOwner(), account.getOwner(), GeneralPermissions.EDIT_ACCOUNT));
-            getDao().saveOrUpdate(account);
+            AuthorizedUser au = new AuthorizedUser(authenticatedUser, authenticatedUser, GeneralPermissions.EDIT_ACCOUNT);
+            if (account.getOwner() != null) {
+                au = new AuthorizedUser(account.getOwner(), account.getOwner(), GeneralPermissions.EDIT_ACCOUNT);
+            } 
+            proxies.add(new UserRightsProxy(au));
+            account.getAuthorizedUsers().add(au);
         }
 
+        getDao().saveOrUpdate(account);
+
+        List<AuthorizedUser> authorizedUsers = new ArrayList<>();
+        proxyService.convertProxyToItems(proxies, authenticatedUser, authorizedUsers, null);
+        CollectionRightsComparator comparator = new CollectionRightsComparator(account.getAuthorizedUsers(), authorizedUsers);
+        if (comparator.rightsDifferent()) {
+            RightsResolver rco = authorizationService.getRightsResolverFor(account, authenticatedUser, InternalTdarRights.EDIT_BILLING_INFO);
+            comparator.makeChanges(rco, account, authenticatedUser);
+        }
+        comparator = null;        
+
+        getDao().saveOrUpdate(account);
         if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
             getLogger().info("attaching invoice: {} ", invoice);
             // if we have rights
@@ -533,15 +549,6 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             getDao().updateQuota(account, account.getResources(), authenticatedUser);
         }
         
-        
-        List<AuthorizedUser> authorizedUsers = new ArrayList<>();
-        proxyService.convertProxyToItems(proxies, authenticatedUser, authorizedUsers, null);
-        CollectionRightsComparator comparator = new CollectionRightsComparator(account.getAuthorizedUsers(), authorizedUsers);
-        if (comparator.rightsDifferent()) {
-            RightsResolver rco = authorizationService.getRightsResolverFor(account, authenticatedUser, InternalTdarRights.EDIT_BILLING_INFO);
-            comparator.makeChanges(rco, account, authenticatedUser);
-        }
-        comparator = null;        
         getDao().saveOrUpdate(account);
     }
 
