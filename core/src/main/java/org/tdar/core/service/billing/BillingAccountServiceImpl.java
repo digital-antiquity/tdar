@@ -49,31 +49,36 @@ import com.opensymphony.xwork2.TextProvider;
 
 @Transactional(readOnly = true)
 @Service
-public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<BillingAccount, BillingAccountDao> implements BillingAccountService {
+public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<BillingAccount, BillingAccountDao> implements BillingAccountService {
 
     @Autowired
     private AuthorizationService authorizationService;
 
     @Autowired
     UserRightsProxyService proxyService;
-    
+
     @Autowired
     InvoiceDao invoiceDao;
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#getAccountForInvoice(org.tdar.core.bean.billing.Invoice)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public BillingAccount getAccountForInvoice(Invoice invoice) {
         return getDao().getAccountForInvoice(invoice);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#listAvailableAccountsForUser(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Status)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#listAvailableAccountsForUser(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.Status)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<BillingAccount> listAvailableAccountsForUser(TdarUser user, Status... statuses) {
         if (PersistableUtils.isNullOrTransient(user)) {
             return Collections.emptyList();
@@ -81,11 +86,13 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return getDao().findAccountsForUser(user, statuses);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#listUnassignedInvoicesForUser(org.tdar.core.bean.entity.Person)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Invoice> listUnassignedInvoicesForUser(Person user) {
         if (PersistableUtils.isNullOrTransient(user)) {
             return Collections.emptyList();
@@ -93,7 +100,9 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return getDao().findUnassignedInvoicesForUser(user);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#getLatestActivityModel()
      */
     @Override
@@ -102,7 +111,9 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return getDao().getLatestActivityModel();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#getResourceEvaluator(org.tdar.core.bean.resource.Resource)
      */
     @Override
@@ -111,20 +122,24 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return getDao().getResourceEvaluator(resources);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#getResourceEvaluator(java.util.Collection)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ResourceEvaluator getResourceEvaluator(Collection<Resource> resources) {
         return getDao().getResourceEvaluator(resources);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#getAccountGroup(org.tdar.core.bean.billing.BillingAccount)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public BillingAccountGroup getAccountGroup(BillingAccount account) {
         if (PersistableUtils.isNullOrTransient(account)) {
             return null;
@@ -132,21 +147,28 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return getDao().getAccountGroup(account);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#checkThatInvoiceBeAssigned(org.tdar.core.bean.billing.Invoice, org.tdar.core.bean.billing.BillingAccount)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#checkThatInvoiceBeAssigned(org.tdar.core.bean.billing.Invoice,
+     * org.tdar.core.bean.billing.BillingAccount)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public boolean checkThatInvoiceBeAssigned(Invoice find, BillingAccount account) {
 
-        if (authorizationService.isMember(find.getTransactedBy(), TdarGroup.TDAR_BILLING_MANAGER) || authorizationService.canEditAccount(find.getTransactedBy(), account)) {
+        if (authorizationService.isMember(find.getTransactedBy(), TdarGroup.TDAR_BILLING_MANAGER)
+                || authorizationService.canEditAccount(find.getTransactedBy(), account)) {
             return true;
         }
         throw new TdarRecoverableRuntimeException("accountService.cannot_assign");
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#hasSpaceInAnAccount(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.ResourceType)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#hasSpaceInAnAccount(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.ResourceType)
      */
     @Override
     @Transactional(readOnly = false)
@@ -163,7 +185,9 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#assignOrphanInvoicesIfNecessary(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -182,7 +206,9 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return !unassignedInvoices.isEmpty();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#createAccountForUserIfNeeded(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -196,32 +222,40 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             account = new BillingAccount();
             account.setName("Generated account for " + user.getProperName());
             account.markUpdated(user);
-            account.getAuthorizedUsers().add(new AuthorizedUser(user,user, GeneralPermissions.EDIT_ACCOUNT));
+            account.getAuthorizedUsers().add(new AuthorizedUser(user, user, GeneralPermissions.EDIT_ACCOUNT));
             getDao().saveOrUpdate(account);
         }
         return account;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#updateQuota(org.tdar.core.bean.billing.BillingAccount, org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#updateQuota(org.tdar.core.bean.billing.BillingAccount, org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.Resource)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public AccountAdditionStatus updateQuota(BillingAccount account, TdarUser user, Resource... resources) {
         return updateQuota(account, Arrays.asList(resources), user);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#updateAccountInfo(org.tdar.core.bean.billing.BillingAccount)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void updateAccountInfo(BillingAccount account) {
         getDao().updateAccountInfo(account, getResourceEvaluator());
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#updateQuota(org.tdar.core.bean.billing.BillingAccount, java.util.Collection, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#updateQuota(org.tdar.core.bean.billing.BillingAccount, java.util.Collection,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = false)
@@ -229,20 +263,24 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return getDao().updateQuota(account, resourcesToEvaluate, user);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#updateTransientAccountInfo(java.util.Collection)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void updateTransientAccountInfo(Collection<Resource> resources) {
         getDao().updateTransientAccountOnResources(resources);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#updateTransientAccountInfo(org.tdar.core.bean.resource.Resource)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void updateTransientAccountInfo(Resource resource) {
         // TODO: add hql/sql for account lookup by resource
         if (resource == null) {
@@ -250,15 +288,17 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         }
         updateTransientAccountInfo(Arrays.asList(resource));
     }
-    
-    
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#transferBalanace(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.billing.BillingAccount, org.tdar.core.bean.billing.BillingAccount, java.lang.Long)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#transferBalanace(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.billing.BillingAccount,
+     * org.tdar.core.bean.billing.BillingAccount, java.lang.Long)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void transferBalanace(TdarUser user, BillingAccount from, BillingAccount to, Long numberOfFiles) {
-        if (PersistableUtils.isEqual(from,  to)) {
+        if (PersistableUtils.isEqual(from, to)) {
             return;
         }
         Coupon coupon = new Coupon();
@@ -278,7 +318,8 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
 
         Invoice invoice = new Invoice();
         invoice.setPaymentMethod(PaymentMethod.MANUAL);
-        invoice.setOtherReason(String.format("%s transfered credit from account (%s: %s) to account (%s : %s)", user.getProperName(), from.getId(),from.getName(),to.getId(), to.getName()));
+        invoice.setOtherReason(String.format("%s transfered credit from account (%s: %s) to account (%s : %s)", user.getProperName(), from.getId(),
+                from.getName(), to.getId(), to.getName()));
         invoice.setNumberOfFiles(coupon.getNumberOfFiles());
         PricingOption calculateActivities = invoiceDao.calculateActivities(invoice, PricingType.SIZED_BY_FILE_ONLY);
         invoice.getItems().addAll(calculateActivities.getItems());
@@ -295,11 +336,14 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         updateQuota(to, to.getResources(), user);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#generateCouponCode(org.tdar.core.bean.billing.BillingAccount, java.lang.Long, java.lang.Long, java.util.Date)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#generateCouponCode(org.tdar.core.bean.billing.BillingAccount, java.lang.Long, java.lang.Long,
+     * java.util.Date)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public Coupon generateCouponCode(BillingAccount account, Long numberOfFiles, Long numberOfMb, Date dateExpires) {
         Coupon coupon = new Coupon();
         coupon.setDateCreated(new Date());
@@ -315,7 +359,8 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             throw new TdarRecoverableRuntimeException("accountService.specify_either_space_or_files");
         }
 
-        if ((PersistableUtils.isNullOrTransient(numberOfFiles) || (numberOfFiles < 1)) && (PersistableUtils.isNullOrTransient(numberOfMb) || (numberOfMb < 1))) {
+        if ((PersistableUtils.isNullOrTransient(numberOfFiles) || (numberOfFiles < 1))
+                && (PersistableUtils.isNullOrTransient(numberOfMb) || (numberOfMb < 1))) {
             throw new TdarRecoverableRuntimeException("accountService.cannot_generate_a_coupon_for_nothing");
         }
 
@@ -343,11 +388,14 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return coupon;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#resetAccountTotalsToHaveOneFileLeft(org.tdar.core.bean.billing.BillingAccount, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#resetAccountTotalsToHaveOneFileLeft(org.tdar.core.bean.billing.BillingAccount,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void resetAccountTotalsToHaveOneFileLeft(BillingAccount account, TdarUser user) {
         getDao().markWritableOnExistingSession(account);
         getLogger().debug(">>>>> F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
@@ -376,11 +424,14 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
 
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#processBillingAccountChoice(org.tdar.core.bean.billing.BillingAccount, org.tdar.core.bean.billing.Invoice, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#processBillingAccountChoice(org.tdar.core.bean.billing.BillingAccount,
+     * org.tdar.core.bean.billing.Invoice, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void processBillingAccountChoice(BillingAccount acct, Invoice invoice, TdarUser authenticatedUser) {
         if (invoice.getOwner() == null) {
             invoice.setOwner(authenticatedUser);
@@ -397,28 +448,33 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
     }
 
     /**
-     * If an invoice is not assigned to a billing account,  reate a billing account with a default name and
+     * If an invoice is not assigned to a billing account, reate a billing account with a default name and
      * assign it to the specified invoice.
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     private BillingAccount processBillingAccountChoice(Invoice invoice, TdarUser authenticatedUser) {
         BillingAccount account = getAccountForInvoice(invoice);
-        if(account == null) {
+        if (account == null) {
             account = new BillingAccount();
+            TdarUser owner = invoice.getOwner();
+            if (owner == null) {
+                owner = authenticatedUser;
+            }
+            account.setOwner(owner);
+            account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, GeneralPermissions.EDIT_ACCOUNT));
+            account.setName("Default account for " + owner.getProperName());
         }
-
-        TdarUser owner = invoice.getOwner() == null ? invoice.getOwner() : authenticatedUser;
-        account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, GeneralPermissions.EDIT_ACCOUNT));
-
-        account.setName("Default account for " + owner.getProperName());
         return account;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#reconcileSelectedAccount(long, org.tdar.core.bean.billing.Invoice, org.tdar.core.bean.billing.BillingAccount, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#reconcileSelectedAccount(long, org.tdar.core.bean.billing.Invoice,
+     * org.tdar.core.bean.billing.BillingAccount, java.util.List)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public BillingAccount reconcileSelectedAccount(long id, Invoice invoice, BillingAccount account, List<BillingAccount> accounts) {
         BillingAccount selectedAccount = null;
         if (id == -1L) {
@@ -434,27 +490,35 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
         return selectedAccount;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#updateQuotas(org.tdar.core.bean.billing.BillingAccount, org.tdar.core.dao.ResourceEvaluator, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#updateQuotas(org.tdar.core.bean.billing.BillingAccount, org.tdar.core.dao.ResourceEvaluator,
+     * java.util.List)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     @Deprecated
     public void updateQuotas(BillingAccount account, ResourceEvaluator re, List<Resource> resources) {
         getDao().updateQuotas(account, re, resources);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.BillingAccountService#canAddResource(org.tdar.core.bean.billing.BillingAccount, org.tdar.core.dao.ResourceEvaluator)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public AccountAdditionStatus canAddResource(BillingAccount account, ResourceEvaluator re) {
         return getDao().canAddResource(account, re);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#deleteForController(com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.billing.BillingAccount, java.lang.String, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#deleteForController(com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.billing.BillingAccount, java.lang.String, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = false)
@@ -469,8 +533,11 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
 
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.BillingAccountService#getDeletionIssues(com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.billing.BillingAccount)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.BillingAccountService#getDeletionIssues(com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.billing.BillingAccount)
      */
     @Override
     @Transactional(readOnly = false)
@@ -485,11 +552,11 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
     }
 
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Invoice> getInvoicesForAccount(BillingAccount account) {
         List<Invoice> invoices = new ArrayList<>(account.getInvoices());
         Iterator<Invoice> iter = invoices.iterator();
-        
+
         while (iter.hasNext()) {
             Invoice inv = iter.next();
             if (inv.isModifiable()) {
@@ -500,8 +567,9 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
     }
 
     @Override
-    @Transactional(readOnly=false)
-    public void saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser,List<UserRightsProxy> proxies) {
+    @Transactional(readOnly = false)
+    public void saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner,
+            TdarUser authenticatedUser, List<UserRightsProxy> proxies) {
         // if we're coming from "choose" and we want a "new account"
         boolean isTransient = PersistableUtils.isTransient(account);
         if (isTransient && StringUtils.isNotBlank(name)) {
@@ -518,7 +586,7 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             AuthorizedUser au = new AuthorizedUser(authenticatedUser, authenticatedUser, GeneralPermissions.EDIT_ACCOUNT);
             if (account.getOwner() != null) {
                 au = new AuthorizedUser(account.getOwner(), account.getOwner(), GeneralPermissions.EDIT_ACCOUNT);
-            } 
+            }
             proxies.add(new UserRightsProxy(au));
             account.getAuthorizedUsers().add(au);
         }
@@ -532,7 +600,7 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             RightsResolver rco = authorizationService.getRightsResolverFor(account, authenticatedUser, InternalTdarRights.EDIT_BILLING_INFO);
             comparator.makeChanges(rco, account, authenticatedUser);
         }
-        comparator = null;        
+        comparator = null;
 
         getDao().saveOrUpdate(account);
         if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
@@ -548,7 +616,7 @@ public class BillingAccountServiceImpl  extends ServiceInterface.TypedDaoBase<Bi
             saveOrUpdate(account);
             getDao().updateQuota(account, account.getResources(), authenticatedUser);
         }
-        
+
         getDao().saveOrUpdate(account);
     }
 
