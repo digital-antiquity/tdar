@@ -64,7 +64,7 @@ navigation freemarker macros
                     <@makeLink resourceCollection.type.urlNamespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true editable />
+                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true false />
                     <@makeLink "resource" "compare?collectionId=${persistable.id?c}" "review" "review" "" false />
                     <@makeLink "export" "request?collectionId=${persistable.id}" "export" "export" current true _deleteable />
 
