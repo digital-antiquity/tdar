@@ -2,9 +2,11 @@ package org.tdar.struts.action.resource;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -83,12 +85,15 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 resources.addAll(((RightsBasedResourceCollection)rc).getResources());
             }
         }
-        resources.forEach(resource -> {
+        
+        
+        for(Resource resource : resources) {
                 if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD)) {
                     addActionError(getText("abstractPersistableController.unable_to_view_edit"));
+                    break;
                 }
-            }
-        );
+        }
+        
         setupSharedKeywords();
     }
 
@@ -111,26 +116,41 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 coverage.addAll(PersistableUtils.extractIds(r.getActiveCoverageDates()));
                 collections.addAll(PersistableUtils.extractIds(r.getSharedResourceCollections()));
                 annotations.addAll(PersistableUtils.extractIds(r.getActiveResourceAnnotations()));
-                first = false;
+                first = false; 
             } else {
-                cultures = SetUtils.intersection(cultures, toSet(r.getActiveCultureKeywords()));
-                investigationTypes = SetUtils.intersection(investigationTypes, toSet(r.getActiveInvestigationTypes()));
-                temporal = SetUtils.intersection(temporal, toSet(r.getActiveTemporalKeywords()));
-                material = SetUtils.intersection(material, toSet(r.getActiveMaterialKeywords()));
-                other = SetUtils.intersection(other, toSet(r.getActiveOtherKeywords()));
-                geographic = SetUtils.intersection(geographic, toSet(r.getActiveGeographicKeywords()));
-                siteNames = SetUtils.intersection(siteNames, toSet(r.getActiveSiteNameKeywords()));
-                siteTypes = SetUtils.intersection(siteTypes, toSet(r.getActiveSiteTypeKeywords()));
-                creators = SetUtils.intersection( creators, new HashSet<>(toSet(r.getPrimaryCreators())));
-                individualRoles = SetUtils.intersection(individualRoles , toSet(r.getActiveIndividualAndInstitutionalCredit()));
-                latitudeLongitude = SetUtils.intersection(latitudeLongitude , toSet(r.getActiveLatitudeLongitudeBoxes()));
-                notes = SetUtils.intersection( notes, toSet(r.getActiveResourceNotes()));
-                coverage = SetUtils.intersection( coverage, toSet(r.getActiveCoverageDates()));
-                collections = SetUtils.intersection( collections, toSet(r.getSharedResourceCollections()));
-                annotations = SetUtils.intersection( annotations, toSet(r.getActiveResourceAnnotations()));
+                cultures 		 	= intersection(cultures, 			toSet(r.getActiveCultureKeywords()));
+                investigationTypes 	= intersection(investigationTypes, 	toSet(r.getActiveInvestigationTypes()));
+                temporal 			= intersection(temporal, 			toSet(r.getActiveTemporalKeywords()));
+                material 			= intersection(material, 			toSet(r.getActiveMaterialKeywords()));
+                other 				= intersection(other, 				toSet(r.getActiveOtherKeywords()));
+                geographic 			= intersection(geographic, 			toSet(r.getActiveGeographicKeywords()));
+                siteNames 			= intersection(siteNames, 			toSet(r.getActiveSiteNameKeywords()));
+                siteTypes 			= intersection(siteTypes, 			toSet(r.getActiveSiteTypeKeywords()));
+                
+            	creators 			= intersection(creators, 			new HashSet<>(toSet(r.getPrimaryCreators())));
+                individualRoles 	= intersection(individualRoles , 	toSet(r.getActiveIndividualAndInstitutionalCredit()));
+                latitudeLongitude 	= intersection(latitudeLongitude , 	toSet(r.getActiveLatitudeLongitudeBoxes()));
+                notes 				= intersection(notes, 				toSet(r.getActiveResourceNotes()));
+            	
+        		coverage 			= intersection(coverage, 			toSet(r.getActiveCoverageDates()));
+                collections 		= intersection(collections, 		toSet(r.getSharedResourceCollections()));
+                annotations 		= intersection(annotations, 		toSet(r.getActiveResourceAnnotations()));
             }
         }
     }
+    
+    private Set<Long> intersection(Set<Long> a, Set<Long> b){
+    	Set<Long> c = a;
+    	if(a.size()==0 || b.size()==0){
+    		c.clear();
+    		return c;
+    	}
+    	else {
+    		c.removeIf(el -> !b.contains(el));
+    		return c;
+    	}
+    }
+    
     
     private <R extends Persistable> Set<Long> toSet(Collection<R> collection) {
         return new HashSet<>(PersistableUtils.extractIds(collection));
