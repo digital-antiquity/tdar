@@ -36,10 +36,9 @@
                 query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId) and resCol.status='ACTIVE' and (:perm is null or authUser.effectiveGeneralPermission > :perm )"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_RESOURCE, 
-                query = "SELECT au from AuthorizedUser au LEFT JOIN ResourceCollection c on au.collectionId=c.id "
-                        + "left join c.resources r left join c.parentIds parentId "
-                        + "left join ResourceCollection p on parentId=p.id left join p.resources r2 "
-                        + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and ( au.resourceId =:id or (c.status='ACTIVE' and r.id=:id) or (p.status='ACTIVE' and r2.id=:id))"),
+                query = "SELECT au from AuthorizedUser au where (exists (select c.id from ResourceCollection c where c.id=au.collectionId and c.id in (select p.id from Resource r left join r.resourceCollections as p where r.id=:id ) "
+                        + " or c.id in (select parentId from Resource r left join r.resourceCollections as p left join p.parentIds parentId where r.id=:id )) or au.resourceId=:id) "
+                        + " and au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm)"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_COLLECTION, 
                 query = "SELECT au from AuthorizedUser au LEFT JOIN ResourceCollection c on au.collectionId=c.id "
@@ -497,10 +496,10 @@
 
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGO_EXIPRED,
-                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic <= :dateStart and irf_.restriction like 'EMBARGO%' )"),
+                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic < :dateStart and irf_.restriction like 'EMBARGO%' )"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW,
-                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic <= :dateStart and irf_.dateMadePublic >=:dateEnd  and irf_.restriction like 'EMBARGO%' )"),
+                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic < :dateStart and irf_.dateMadePublic >:dateEnd  and irf_.restriction like 'EMBARGO%' )"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
                 query = "select distinct dt, ds.title " + TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX
@@ -571,7 +570,7 @@
                 query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col"),
         @NamedQuery(
                 name=TdarNamedQueries.CHECK_INVITES,
-                query = "from UserInvite ui inner join ui.user as user where lower(user.email) like lower(:email)"),
+                query = "select ui from UserInvite ui inner join ui.user as user where lower(user.email) like lower(:email)"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_DOWNLOAD_AUTHORIZATION,
                 query = "from DownloadAuthorization da where da.sharedCollection.id=:collectionId"),

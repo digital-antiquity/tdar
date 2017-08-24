@@ -26,24 +26,30 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
                 if (key == null) {
                     continue;
                 }
-                SolrInputDocument doc = new SolrInputDocument();
-                doc.setField(QueryFieldNames.ID, ir.getId());
-                doc.setField(QueryFieldNames.CLASS, ir.getClass().getName());
-                doc.setField(QueryFieldNames._ID, SearchUtils.createKey(ir) + "-" + key.getId());
-                String keyName = key.getName();
-                doc.setField(QueryFieldNames.NAME, keyName);
-                doc.setField(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
-                doc.setField(QueryFieldNames.COLUMN_ID, key.getId());
                 String mapValue = data.get(key);
-                if (keyName == null || StringUtils.isBlank(mapValue)) {
+                if (key.getName() == null || StringUtils.isBlank(mapValue)) {
                     continue;
                 }
-                doc.setField(QueryFieldNames.VALUE, mapValue);
+
+                SolrInputDocument doc = createDocument(key, ir, mapValue);
                 docs.add(doc);
             }
 
         }
         return docs;
 
+    }
+
+    public static SolrInputDocument createDocument(DataTableColumn key, InformationResource ir, String mapValue) {
+        SolrInputDocument doc = new SolrInputDocument();
+        doc.setField(QueryFieldNames.ID, ir.getId());
+        doc.setField(QueryFieldNames.CLASS, ir.getClass().getName());
+        doc.setField(QueryFieldNames._ID, SearchUtils.createKey(ir) + "-" + key.getId());
+        String keyName = key.getName();
+        doc.setField(QueryFieldNames.NAME, keyName);
+        doc.setField(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
+        doc.setField(QueryFieldNames.COLUMN_ID, key.getId());
+        doc.setField(QueryFieldNames.VALUE, mapValue);
+        return doc;
     }
 }

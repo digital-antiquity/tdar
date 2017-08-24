@@ -39,7 +39,9 @@ navigation freemarker macros
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
 			        </#if>
-					<@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
+			        <#if ((billingAccounts![])?size > 0)>
+					   <@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
+					</#if>
 			        <#if editable>
 						<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
 <#--						<@makeLink "resource" "share/${resource.id?c}" "share" "share" "" false /> -->
@@ -62,7 +64,7 @@ navigation freemarker macros
                     <@makeLink resourceCollection.type.urlNamespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true bigCollection />
+                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true false />
                     <@makeLink "resource" "compare?collectionId=${persistable.id?c}" "review" "review" "" false />
                     <@makeLink "export" "request?collectionId=${persistable.id}" "export" "export" current true _deleteable />
 

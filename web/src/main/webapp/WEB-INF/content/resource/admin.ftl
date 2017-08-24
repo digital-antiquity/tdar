@@ -88,7 +88,7 @@
 		</thead>
 		<tbody>
 			<#list xmlFiles as file>
-				<tr><td><a href="<@s.url value="/resource/admin/xml?id=${id?c}&filename=${file.name}"/>">${file.name}</a></td><td></td><td>${file.totalSpace}</td></tr>
+                <tr><td><a href="<@s.url value="/resource/admin/xml?id=${id?c}&filename=${file.name}"/>">${file.name}</a></td><td>${(file.lastModified())?number_to_datetime}</td><td>${file?length}</td></tr>
 			</#list>
 		</tbody>
 	</table>

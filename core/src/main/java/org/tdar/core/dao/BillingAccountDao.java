@@ -275,10 +275,10 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
         Collection<Resource> resourcesToEvaluate = resourcesToEvaluate_;
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         logger.trace("model {}", getLatestActivityModel());
-
         if (PersistableUtils.isNullOrTransient(account)) {
             throw new TdarRecoverableRuntimeException("accountService.account_is_null");
         }
+        Status initialAccountStatus = account.getStatus();
         /* evaluate resources based on the model, and update their counts of files and space */
         ResourceEvaluator resourceEvaluator = getResourceEvaluator(resourcesToEvaluate);
         // saveOrUpdate(resourcesToEvaluate);
@@ -289,7 +289,7 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
 
         /* check if any of the resources have been modified (ie. resource.markUpdated() has been called */
         boolean hasUpdates = updateAccountAssociations(account, resourcesToEvaluate, helper);
-
+        logger.warn("has updatees was false, why was this called??");
         /* update the account info in the database */
         updateAccountInfo(account, resourceEvaluator);
 
@@ -302,7 +302,32 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
         boolean overdrawn = isOverdrawn(account, getResourceEvaluator());
         logger.info("overdrawn: {} hasUpdates: {} hasDeletedStatusChange: {}", overdrawn, hasUpdates, resourceEvaluator.isHasDeletedResources());
 
+        // IF WE WERE OVERDRAWN BEFORE, AND WE STILL ARE NOW, NO NEED TO REEVALUATE EVERYTHING!
+        if (initialAccountStatus == Status.FLAGGED_ACCOUNT_BALANCE && overdrawn) {
+            // don't need to do anything, right???
+            logger.debug("fast-tracking 'update' because we're still overdrawn ");
+            logger.debug("    new: {}", helper.getNewItems());
+            logger.debug("updated: {}", helper.getUpdatedItems());
+            
+            helper.updateAccount();
+            if (helper.getAvailableNumberOfFiles() < 0) { 
+                status = AccountAdditionStatus.NOT_ENOUGH_FILES;
+            }
+            if (helper.getAvailableSpaceInBytes() < 0) { 
+                status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
+            }
+            boolean fullEvaluate = helper.requireFullEvaluationOfFlaggedAccount();
+            
+            if (fullEvaluate == false) {
+                saveOrUpdate(account);
+                helper = null;
+                logger.trace(account.usedString());
+                return status;
+            }
+        } 
+
         if (!hasUpdates || overdrawn || resourceEvaluator.isHasDeletedResources()) {
+            logger.debug("re-evaluating all resources in account");
             /*
              * If we don't have anything to update (no resource has been marked as "changed" or the account has been overdrawn, then we need to start from
              * scratch with this account. We set it back to the normal state, and we re-evaluate ALL of the resources in the account
@@ -567,6 +592,7 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
 
             if (resource.isUpdated()) {
                 hasUpdates = true;
+                helper.getUpdatedItems().add(resource);
             }
             account.getResources().add(resource);
 

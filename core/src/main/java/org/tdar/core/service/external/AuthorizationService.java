@@ -31,7 +31,6 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -217,35 +216,13 @@ public class AuthorizationService implements Accessible {
             return true;
         }
         
-        if (CollectionUtils.isEmpty(resource.getAuthorizedUsers())) {
+        if (CollectionUtils.isEmpty(resource.getAuthorizedUsers()) && CollectionUtils.isEmpty(resource.getSharedCollections())) {
             return false;
         }
 
         // finally, check if user has been granted permission
         // FIXME: technically the dao layer is doing some stuff that we should be, but I don't want to mess w/ it right now.
         return authorizedUserDao.isAllowedTo(person, resource, basePermission);
-    }
-
-    /**
-     * Avoid using in general, but this allows us to ask whether a User has the "inherited" rights to do something as opposed to being granted direct rights to
-     * it.
-     * 
-     * @param person
-     * @param permission
-     * @param ids
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public boolean isAllowedToEditInherited(TdarUser person, Resource resource) {
-        GeneralPermissions permission = GeneralPermissions.MODIFY_METADATA;
-        List<Long> ids = new ArrayList<>();
-        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-            if (collection instanceof SharedCollection) {
-                ids.addAll(((SharedCollection)collection).getParentIds());
-            }
-            ids.add(collection.getId());
-        }
-        return authorizedUserDao.isAllowedTo(person, permission, ids);
     }
 
     /**
@@ -854,7 +831,7 @@ public class AuthorizationService implements Accessible {
         return authorizedUserDao.isAllowedTo(user, collectionToAdd, permission);
     }
 
-    public boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user) {
+    public <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user) {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }

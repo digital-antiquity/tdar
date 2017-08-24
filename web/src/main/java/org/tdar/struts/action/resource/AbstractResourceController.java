@@ -262,7 +262,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             BillingAccount resourceAccount     = getResource().getAccount();
             boolean resourceAccountIsNotNull   = resourceAccount !=null;
             boolean resourceAccountNotInList   = !accounts.contains(resourceAccount);
-            boolean hasInheritedEditPermission = authorizationService.isAllowedToEditInherited(getAuthenticatedUser(), getResource());
+            boolean hasInheritedEditPermission = authorizationService.canEdit(getAuthenticatedUser(), getResource());
             
             //If the billing account is not in the list, but should be, then move it to the front of the list.
             if (resourceAccountIsNotNull && resourceAccountNotInList &&
@@ -670,13 +670,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private void loadEffectiveResourceCollectionsForSave() {
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedCollections()) {
-            if (!authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+            if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 retainedSharedCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }
         }
         for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
-            if (!authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+            if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 retainedListCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }

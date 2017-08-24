@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,11 @@ public class StatsResultObject implements Serializable {
                 order.add(key);
             }
             map.get(key).put("date", v[0]);
-            map.get(key).put(v[1], totals[i]);
+            if (v[1] ==null) {
+                logger.error("v[1] is null {} {}",rowLabels.get(i), v.toString());
+            } else {
+                map.get(key).put(v[1], totals[i]);
+            }
         }
         List<Map<String,Object>> toReturn = new ArrayList<>();
         for (String key : order) {
@@ -84,5 +89,9 @@ public class StatsResultObject implements Serializable {
             results.add(total);
         }
         return results;
+    }
+
+    public boolean empty() {
+        return CollectionUtils.isEmpty(rowData);
     }
 }

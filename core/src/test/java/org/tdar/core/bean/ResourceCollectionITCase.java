@@ -209,8 +209,9 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testFindSharedResources() {
+        TdarUser user = createAndSaveNewPerson("rightsUser@asba.asd", "rights-user");
         Dataset dataset = createAndSaveNewDataset();
-        dataset.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        dataset.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), user, GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(dataset);
         SharedCollection collection = createAndSaveNewResourceCollection("test collection");
         collection.getAuthorizedUsers().clear();
@@ -219,12 +220,20 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(collection);
         dataset.getSharedCollections().add(collection);
         genericService.saveOrUpdate(dataset);
-        List<SharedCollection> list = resourceCollectionService.findCollectionsSharedWith(getBillingUser(), getBasicUser(), SharedCollection.class);
-        List<Resource> resources = resourceCollectionService.findResourcesSharedWith(getBillingUser(), getBasicUser());
-        logger.debug("c:{}", list);
+        genericService.synchronize();
+        List<SharedCollection> list = resourceCollectionService.findCollectionsSharedWith(getBillingUser(), user, SharedCollection.class);
+        List<Resource> resources = resourceCollectionService.findResourcesSharedWith(getBillingUser(), user);
+//        logger.debug("c:{}", list);
+        list.forEach(c -> {
+            logger.debug("c: {}", c);
+            logger.debug("  au: {}", c.getAuthorizedUsers());
+        });
         logger.debug("r:{}", resources);
         assertTrue("should not have shared any collections with user", CollectionUtils.isEmpty(list));
         assertTrue("should have at least one resource", CollectionUtils.isNotEmpty(resources));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), user, GeneralPermissions.MODIFY_RECORD));
+        list = resourceCollectionService.findCollectionsSharedWith(getBillingUser(), user, SharedCollection.class);
+        assertTrue("should have 1 shared any collections with user", CollectionUtils.isNotEmpty(list));
     }
     
     
@@ -435,31 +444,5 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         
         
     }
-
-    @Test
-    @Rollback(true)
-    //make a collection w/ three authusers, and confirm those users found via findUsersSharedWith()
-    public void testFindUsersSharedWith() {
-        final String collectionName = "the best collection ever";
-        List<TdarUser> users = new ArrayList<>(Arrays.asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
-
-        SharedCollection collection = createAndSaveNewResourceCollection(collectionName, SharedCollection.class);
-        users.remove(collection.getOwner());
-
-        // sanity checks
-//        assertThat("collection should have no authusers", collection.getAuthorizedUsers(), is( empty()));
-        assertThat("test requires at least one user that is not the same as the current user", users, not( empty()));
-
-        // now add some authusers
-        collection.getAuthorizedUsers().addAll(
-                users.stream().map(user -> new AuthorizedUser(getAdminUser(), user, GeneralPermissions.MODIFY_RECORD)).collect(Collectors.toList()));
-
-        genericService.saveOrUpdate(collection);
-        genericService.saveOrUpdate(collection.getAuthorizedUsers());
-        genericService.synchronize();
-        List<TdarUser> grantees = resourceCollectionDao.findUsersSharedWith(collection.getOwner());
-        for (TdarUser grantee : users) {
-            assertTrue(String.format("grantees should contain: %s", grantee),grantees.contains(grantee));
-        }
-    }
+    
 }

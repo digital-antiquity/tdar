@@ -119,7 +119,7 @@ public class MultiObjectSearchITCase extends AbstractWithIndexIntegrationTestCas
         SearchResult<Resource> result = new SearchResult<>(max);
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         asqo.setMultiCore(true);
-
+        asqo.setQuery(term);
         resourceSearchService.buildAdvancedSearch(asqo, user, result, MessageHelper.getInstance());
         // (TdarUser user, ResourceLookupObject look, LuceneSearchResultHandler<Resource> result,
         // TextProvider support) throws SearchException, IOE

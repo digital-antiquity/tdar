@@ -1,9 +1,12 @@
 package org.tdar.struts.action.resource;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -12,6 +15,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
@@ -53,26 +57,26 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
     @Autowired
     private AuthorizationService authorizationService;
     
-    private Set<CultureKeyword> cultures = new HashSet<>();
-    private Set<InvestigationType> investigationTypes = new HashSet<>();
-    private Set<TemporalKeyword> temporal = new HashSet<>();
-    private Set<MaterialKeyword> material = new HashSet<>();
-    private Set<OtherKeyword> other = new HashSet<>();
-    private Set<GeographicKeyword> geographic = new HashSet<>();
-    private Set<SiteNameKeyword> siteNames = new HashSet<>();
-    private Set<SiteTypeKeyword> siteTypes = new HashSet<>();
-    private Set<ResourceCreator> creators = new HashSet<>(); 
-    private Set<ResourceCreator> individualRoles = new HashSet<>(); 
-    private Set<LatitudeLongitudeBox> latitudeLongitude = new HashSet<>(); 
-    private Set<ResourceNote> notes = new HashSet<>();
-    private Set<CoverageDate> coverage = new HashSet<>(); 
-    private Set<ResourceCollection> collections = new HashSet<>(); 
-    private Set<ResourceAnnotation> annotations = new HashSet<>(); 
+    private Set<Long> cultures = new HashSet<>();
+    private Set<Long> investigationTypes = new HashSet<>();
+    private Set<Long> temporal = new HashSet<>();
+    private Set<Long> material = new HashSet<>();
+    private Set<Long> other = new HashSet<>();
+    private Set<Long> geographic = new HashSet<>();
+    private Set<Long> siteNames = new HashSet<>();
+    private Set<Long> siteTypes = new HashSet<>();
+    private Set<Long> creators = new HashSet<>(); 
+    private Set<Long> individualRoles = new HashSet<>(); 
+    private Set<Long> latitudeLongitude = new HashSet<>(); 
+    private Set<Long> notes = new HashSet<>();
+    private Set<Long> coverage = new HashSet<>(); 
+    private Set<Long> collections = new HashSet<>(); 
+    private Set<Long> annotations = new HashSet<>(); 
 
 
     @Override
     public void prepare() throws Exception {
-        resources.addAll( genericService.findAll(Resource.class, ids));
+        resources.addAll(genericService.findAll(Resource.class, ids));
         if (PersistableUtils.isNotNullOrTransient(getCollectionId())) {
             ResourceCollection rc = genericService.find(ResourceCollection.class, getCollectionId());
             if (rc instanceof ListCollection) {
@@ -81,12 +85,15 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 resources.addAll(((RightsBasedResourceCollection)rc).getResources());
             }
         }
-        resources.forEach(resource -> {
+        
+        
+        for(Resource resource : resources) {
                 if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD)) {
                     addActionError(getText("abstractPersistableController.unable_to_view_edit"));
+                    break;
                 }
-            }
-        );
+        }
+        
         setupSharedKeywords();
     }
 
@@ -94,42 +101,61 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         boolean first = true;
         for (Resource r : resources) {
             if (first) {
-                cultures.addAll(r.getActiveCultureKeywords());
-                investigationTypes.addAll(r.getActiveInvestigationTypes());
-                temporal.addAll(r.getActiveTemporalKeywords());
-                material.addAll(r.getActiveMaterialKeywords());
-                other.addAll(r.getActiveOtherKeywords());
-                geographic.addAll(r.getActiveGeographicKeywords());
-                siteNames.addAll(r.getActiveSiteNameKeywords());
-                siteTypes.addAll(r.getActiveSiteTypeKeywords());
-                creators.addAll(r.getPrimaryCreators());
-                individualRoles.addAll(r.getActiveIndividualAndInstitutionalCredit());
-                latitudeLongitude.addAll(r.getActiveLatitudeLongitudeBoxes());
-                notes.addAll(r.getActiveResourceNotes());
-                coverage.addAll(r.getActiveCoverageDates());
-                collections.addAll(r.getSharedResourceCollections());
-                annotations.addAll(r.getActiveResourceAnnotations());
-                first = false;
+                cultures.addAll(PersistableUtils.extractIds(r.getActiveCultureKeywords()));
+                investigationTypes.addAll(PersistableUtils.extractIds(r.getActiveInvestigationTypes()));
+                temporal.addAll(PersistableUtils.extractIds(r.getActiveTemporalKeywords()));
+                material.addAll(PersistableUtils.extractIds(r.getActiveMaterialKeywords()));
+                other.addAll(PersistableUtils.extractIds(r.getActiveOtherKeywords()));
+                geographic.addAll(PersistableUtils.extractIds(r.getActiveGeographicKeywords()));
+                siteNames.addAll(PersistableUtils.extractIds(r.getActiveSiteNameKeywords()));
+                siteTypes.addAll(PersistableUtils.extractIds(r.getActiveSiteTypeKeywords()));
+                creators.addAll(PersistableUtils.extractIds(r.getPrimaryCreators()));
+                individualRoles.addAll(PersistableUtils.extractIds(r.getActiveIndividualAndInstitutionalCredit()));
+                latitudeLongitude.addAll(PersistableUtils.extractIds(r.getActiveLatitudeLongitudeBoxes()));
+                notes.addAll(PersistableUtils.extractIds(r.getActiveResourceNotes()));
+                coverage.addAll(PersistableUtils.extractIds(r.getActiveCoverageDates()));
+                collections.addAll(PersistableUtils.extractIds(r.getSharedResourceCollections()));
+                annotations.addAll(PersistableUtils.extractIds(r.getActiveResourceAnnotations()));
+                first = false; 
             } else {
-                cultures = SetUtils.intersection(cultures, r.getActiveCultureKeywords());
-                investigationTypes = SetUtils.intersection(investigationTypes, r.getActiveInvestigationTypes());
-                temporal = SetUtils.intersection(temporal, r.getActiveTemporalKeywords());
-                material = SetUtils.intersection(material, r.getActiveMaterialKeywords());
-                other = SetUtils.intersection(other, r.getActiveOtherKeywords());
-                geographic = SetUtils.intersection(geographic, r.getActiveGeographicKeywords());
-                siteNames = SetUtils.intersection(siteNames, r.getActiveSiteNameKeywords());
-                siteTypes = SetUtils.intersection(siteTypes, r.getActiveSiteTypeKeywords());
-                creators = SetUtils.intersection( creators, new HashSet<>(r.getPrimaryCreators()));
-                individualRoles = SetUtils.intersection(individualRoles , r.getActiveIndividualAndInstitutionalCredit());
-                latitudeLongitude = SetUtils.intersection(latitudeLongitude , r.getActiveLatitudeLongitudeBoxes());
-                notes = SetUtils.intersection( notes, r.getActiveResourceNotes());
-                coverage = SetUtils.intersection( coverage, r.getActiveCoverageDates());
-                collections = SetUtils.intersection( collections, r.getSharedResourceCollections());
-                annotations = SetUtils.intersection( annotations, r.getActiveResourceAnnotations());
+                cultures 		 	= intersection(cultures, 			toSet(r.getActiveCultureKeywords()));
+                investigationTypes 	= intersection(investigationTypes, 	toSet(r.getActiveInvestigationTypes()));
+                temporal 			= intersection(temporal, 			toSet(r.getActiveTemporalKeywords()));
+                material 			= intersection(material, 			toSet(r.getActiveMaterialKeywords()));
+                other 				= intersection(other, 				toSet(r.getActiveOtherKeywords()));
+                geographic 			= intersection(geographic, 			toSet(r.getActiveGeographicKeywords()));
+                siteNames 			= intersection(siteNames, 			toSet(r.getActiveSiteNameKeywords()));
+                siteTypes 			= intersection(siteTypes, 			toSet(r.getActiveSiteTypeKeywords()));
+                
+            	creators 			= intersection(creators, 			new HashSet<>(toSet(r.getPrimaryCreators())));
+                individualRoles 	= intersection(individualRoles , 	toSet(r.getActiveIndividualAndInstitutionalCredit()));
+                latitudeLongitude 	= intersection(latitudeLongitude , 	toSet(r.getActiveLatitudeLongitudeBoxes()));
+                notes 				= intersection(notes, 				toSet(r.getActiveResourceNotes()));
+            	
+        		coverage 			= intersection(coverage, 			toSet(r.getActiveCoverageDates()));
+                collections 		= intersection(collections, 		toSet(r.getSharedResourceCollections()));
+                annotations 		= intersection(annotations, 		toSet(r.getActiveResourceAnnotations()));
             }
         }
     }
     
+    private Set<Long> intersection(Set<Long> a, Set<Long> b){
+    	Set<Long> c = a;
+    	if(a.size()==0 || b.size()==0){
+    		c.clear();
+    		return c;
+    	}
+    	else {
+    		c.removeIf(el -> !b.contains(el));
+    		return c;
+    	}
+    }
+    
+    
+    private <R extends Persistable> Set<Long> toSet(Collection<R> collection) {
+        return new HashSet<>(PersistableUtils.extractIds(collection));
+    }
+
     @Action(value = "compare", results = {
             @Result(name = SUCCESS, location = "compare.ftl")
     })
@@ -154,123 +180,123 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         this.resources = resources;
     }
 
-    public Set<CultureKeyword> getCultures() {
+    public Set<Long> getCultures() {
         return cultures;
     }
 
-    public void setCultures(HashSet<CultureKeyword> cultures) {
+    public void setCultures(HashSet<Long> cultures) {
         this.cultures = cultures;
     }
 
-    public Set<InvestigationType> getInvestigationTypes() {
+    public Set<Long> getInvestigationTypes() {
         return investigationTypes;
     }
 
-    public void setInvestigationTypes(HashSet<InvestigationType> investigationTypes) {
+    public void setInvestigationTypes(HashSet<Long> investigationTypes) {
         this.investigationTypes = investigationTypes;
     }
 
-    public Set<TemporalKeyword> getTemporal() {
+    public Set<Long> getTemporal() {
         return temporal;
     }
 
-    public void setTemporal(HashSet<TemporalKeyword> temporal) {
+    public void setTemporal(HashSet<Long> temporal) {
         this.temporal = temporal;
     }
 
-    public Set<MaterialKeyword> getMaterial() {
+    public Set<Long> getMaterial() {
         return material;
     }
 
-    public void setMaterial(HashSet<MaterialKeyword> material) {
+    public void setMaterial(HashSet<Long> material) {
         this.material = material;
     }
 
-    public Set<OtherKeyword> getOther() {
+    public Set<Long> getOther() {
         return other;
     }
 
-    public void setOther(HashSet<OtherKeyword> other) {
+    public void setOther(HashSet<Long> other) {
         this.other = other;
     }
 
-    public Set<GeographicKeyword> getGeographic() {
+    public Set<Long> getGeographic() {
         return geographic;
     }
 
-    public void setGeographic(HashSet<GeographicKeyword> geographic) {
+    public void setGeographic(HashSet<Long> geographic) {
         this.geographic = geographic;
     }
 
-    public Set<SiteNameKeyword> getSiteNames() {
+    public Set<Long> getSiteNames() {
         return siteNames;
     }
 
-    public void setSiteNames(HashSet<SiteNameKeyword> siteNames) {
+    public void setSiteNames(HashSet<Long> siteNames) {
         this.siteNames = siteNames;
     }
 
-    public Set<SiteTypeKeyword> getSiteTypes() {
+    public Set<Long> getSiteTypes() {
         return siteTypes;
     }
 
-    public void setSiteTypes(HashSet<SiteTypeKeyword> siteTypes) {
+    public void setSiteTypes(HashSet<Long> siteTypes) {
         this.siteTypes = siteTypes;
     }
 
-    public Set<ResourceCreator> getCreators() {
+    public Set<Long> getCreators() {
         return creators;
     }
 
-    public void setCreators(Set<ResourceCreator> creators) {
+    public void setCreators(Set<Long> creators) {
         this.creators = creators;
     }
 
-    public Set<ResourceCreator> getIndividualRoles() {
+    public Set<Long> getIndividualRoles() {
         return individualRoles;
     }
 
-    public void setIndividualRoles(Set<ResourceCreator> individualRoles) {
+    public void setIndividualRoles(Set<Long> individualRoles) {
         this.individualRoles = individualRoles;
     }
 
-    public Set<LatitudeLongitudeBox> getLatitudeLongitude() {
+    public Set<Long> getLatitudeLongitude() {
         return latitudeLongitude;
     }
 
-    public void setLatitudeLongitude(Set<LatitudeLongitudeBox> latitudeLongitude) {
+    public void setLatitudeLongitude(Set<Long> latitudeLongitude) {
         this.latitudeLongitude = latitudeLongitude;
     }
 
-    public Set<ResourceNote> getNotes() {
+    public Set<Long> getNotes() {
         return notes;
     }
 
-    public void setNotes(Set<ResourceNote> notes) {
+    public void setNotes(Set<Long> notes) {
         this.notes = notes;
     }
 
-    public Set<CoverageDate> getCoverage() {
+    public Set<Long> getCoverage() {
         return coverage;
     }
 
-    public void setCoverage(Set<CoverageDate> coverage) {
+    public void setCoverage(Set<Long> coverage) {
         this.coverage = coverage;
     }
 
-    public Set<ResourceCollection> getCollections() {
+    public Set<Long> getCollections() {
         return collections;
     }
 
-    public void setCollections(Set<ResourceCollection> collections) {
+    public void setCollections(Set<Long> collections) {
         this.collections = collections;
     }
 
-    public Set<ResourceAnnotation> getAnnotations() {
+    public Set<Long> getAnnotations() {
         return annotations;
     }
 
-    public void setAnnotations(Set<ResourceAnnotation> annotations) {
+    public void setAnnotations(Set<Long> annotations) {
         this.annotations = annotations;
     }
 

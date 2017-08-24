@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Length;
@@ -39,6 +40,7 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Updatable;
+import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
@@ -59,14 +61,15 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "pos_account")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.billing.Account")
-public class BillingAccount extends AbstractPersistable implements Updatable, HasStatus, Addressable, HasUsers, HasName {
+public class BillingAccount extends AbstractPersistable implements Updatable, HasStatus, Addressable, HasUsers, HasName, Validatable {
 
     private static final long serialVersionUID = -1728904030701477101L;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Length(max = FieldLength.FIELD_LENGTH_255)
+    @Length(max = FieldLength.FIELD_LENGTH_255, min=1)
+    @NotNull
     private String name;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -490,6 +493,16 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @XmlTransient
     public boolean isFlagged() {
         return status == Status.FLAGGED;
+    }
+
+    @Override
+    public boolean isValidForController() {
+        return isValid();
+    }
+
+    @Override
+    public boolean isValid() {
+        return StringUtils.isNotBlank(name);
     }
 
 }

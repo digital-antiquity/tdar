@@ -3,8 +3,11 @@ package org.tdar.search.service.query;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -14,12 +17,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
@@ -53,6 +58,7 @@ import org.tdar.search.query.part.resource.CategoryTermQueryPart;
 import org.tdar.search.query.part.resource.ProjectIdLookupQueryPart;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.range.DateRange;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -332,12 +338,34 @@ public class ResourceSearchService extends AbstractSearchService {
         if (CollectionUtils.isEmpty(statuses)) {
             statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
         }
-
-        statuses.retainAll(allowedSearchStatuses);
+        for (Iterator<Status> iterator = statuses.iterator(); iterator.hasNext();) {
+            Status status = iterator.next();
+            if (!allowedSearchStatuses.contains(status)) {
+                iterator.remove();
+            }
+        }
         reservedSearchParameters.setStatuses(statuses);
         if (statuses.isEmpty()) {
             throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    public LuceneSearchResultHandler<Resource> findByTdarYear(int year, LuceneSearchResultHandler<Resource> result, TextProvider support)
+            throws SearchException, IOException {
+        ResourceQueryBuilder q = new ResourceQueryBuilder();
+        q.setOperator(Operator.AND);
+        ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
+        reservedSearchParameters.setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE)));
+        initializeReservedSearchParameters(reservedSearchParameters, null);
+        SearchParameters params = new SearchParameters();
+        DateTime dt = new DateTime().withYear(year).withMonthOfYear(1).withDayOfMonth(1).withTimeAtStartOfDay();
+        params.getRegisteredDates().add(new DateRange(dt.toDate(), dt.plusYears(1).toDate()));
+        q.append(params.toQueryPartGroup(support));
+        q.append(reservedSearchParameters.toQueryPartGroup(support));
+        result.setSortField(SortOption.DATE);
+        searchService.handleSearch(q, result, support);
+        return result;
     }
 }

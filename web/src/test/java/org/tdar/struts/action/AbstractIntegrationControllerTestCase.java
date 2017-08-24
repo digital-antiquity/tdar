@@ -2,19 +2,16 @@ package org.tdar.struts.action;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.StrutsStatics;
 import org.hibernate.SessionFactory;
@@ -27,15 +24,17 @@ import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
@@ -65,26 +64,29 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.DefaultLocaleProviderFactory;
-import com.opensymphony.xwork2.LocaleProvider;
-import com.opensymphony.xwork2.LocaleProviderFactory;
 import com.opensymphony.xwork2.LocalizedTextProvider;
-import com.opensymphony.xwork2.StrutsTextProviderFactory;
-import com.opensymphony.xwork2.TextProviderFactory;
 import com.opensymphony.xwork2.config.ConfigurationManager;
 import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
 import com.opensymphony.xwork2.inject.Container;
-import com.opensymphony.xwork2.inject.Context;
 import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
-import com.opensymphony.xwork2.util.GlobalLocalizedTextProvider;
-import com.opensymphony.xwork2.util.StrutsLocalizedTextProvider;
-//import com.opensymphony.xwork2.util.LocalizedTextUtil;
-import com.opensymphony.xwork2.util.ValueStack;
 
-@ContextConfiguration(classes = TdarSearchAppConfiguration.class)
+@ContextConfiguration(classes = {TdarSearchAppConfiguration.class, AbstractIntegrationControllerTestCase.SimpleCacheConfig.class})
 @SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationControllerTestCase extends AbstractIntegrationTestCase implements ErrorListener {
 
+
+    @Configuration
+    @EnableCaching
+    static class SimpleCacheConfig {
+
+      // Simulating your caching configuration
+      @Bean
+      CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("popularResources");
+      }
+
+    }
+    
     protected HttpServletRequest defaultHttpServletRequest = new MockHttpServletRequest();
 
     protected HttpServletRequest httpServletRequest = defaultHttpServletRequest;
@@ -203,7 +205,6 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         assertEquals(MessageHelper.getMessage("project.no_associated_project"), instance.findDefaultText("project.no_associated_project", Locale.getDefault()));
 
         if (controller instanceof ActionSupport) {
-            logger.debug("setting container");
             ((ActionSupport) controller).setContainer(container);
         }
         context.setValueStack(factory.createValueStack());

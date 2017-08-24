@@ -26,6 +26,7 @@ import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.manager.ProcessManager;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
+import org.tdar.core.service.processes.weekly.WeeklyUserNotificationCleanup;
 
 @Service
 public class WebScheduledProcessService {
@@ -144,6 +145,12 @@ public class WebScheduledProcessService {
         scheduledProcessService.queue(OccurranceStatisticsUpdateProcess.class);
     }
 
+    
+    @Scheduled(cron = "50 0 0 * * SAT")
+    public void removeOldNotifications() throws IOException {
+        scheduledProcessService.queue(WeeklyUserNotificationCleanup.class);
+    }
+    
     /**
      * Once a week, on Sundays, generate some static, cached stats for use by
      * the admin area and general system

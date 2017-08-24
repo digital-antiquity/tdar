@@ -35,7 +35,7 @@ import org.tdar.dataone.service.ObjectResponseContainer;
 @Component
 public class DataOneDao {
     private static final String TDAR_DATAONE_MERGE = "select id, externalId, dateUpdated from Resource where resourceType not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and" +
-             "(externalId is not null and trim(externalId) != '') and (dateUpdated > (select max(sysMetadataModified) from DataOneObject) or dateCreated  > (select max(sysMetadataModified) from DataOneObject) or (select max(sysMetadataModified) from DataOneObject) is null )";
+             "(externalId is not null and externalId != '') and (dateUpdated > (select max(sysMetadataModified) from DataOneObject) or dateCreated  > (select max(sysMetadataModified) from DataOneObject) or (select max(sysMetadataModified) from DataOneObject) is null )";
 
     private static final String DATONE_FIND_BY_IDENTIFIER = "from DataOneObject where identifier=:identifier";
     private static final String DATAONE_FIND_LAST_HARVESTED = "from DataOneObject where seriesId=:seriesId and (obsoletedBy is null or obsoletedBy='') and identifier !=:identifier";  // and type=:type

@@ -24,7 +24,7 @@
     <div id="sidebar-right" parse="true">
         <br/><br/>
         <#if !minimal>
-            <#if (logoAvailable && (resourceCollection.whiteLabelCollection || (resourceCollection.customHeaderEnabled!false) == false)) >
+            <#if (logoAvailable && ((resourceCollection.properties.whitelabel)!false || ((resourceCollection.properties.customHeaderEnabled)!false) == false)) >
                 <img class="collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
             </#if>
             <#if results?has_content>
@@ -250,8 +250,8 @@
                 <@view.kvp key="Sort By" val=resourceCollection.sortBy.label />
             </div>
             <div class="span4">
-                <#assign viewed>${viewCount} times</#assign>
-                <@view.kvp key="Viewed" val=viewed />
+<#--                <#assign viewed>${viewCount} times</#assign>
+                <@view.kvp key="Viewed" val=viewed /> -->
             </div>
         </div>
         <div class="row">

@@ -108,14 +108,13 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_PROCESS_PAYMENT_REQUEST));
         // open the popup window
         find("#btnOpenPaymentWindow").click();
-        waitFor(ExpectedConditions.numberOfWindowsToBe(2), Duration.of(2, SECONDS));
         switchToWindow("test/nelnet");
         waitFor("[type=submit]");
         submitForm();
 
         // close the popup window
         waitFor("#btnCloseWindow").click();
-        waitFor(ExpectedConditions.numberOfWindowsToBe(1), Duration.of(2, SECONDS));
+        waitFor(ExpectedConditions.numberOfWindowsToBe(1), Duration.of(20, SECONDS));
         assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
         Set<String> windowHandles = getDriver().getWindowHandles();
         switchToWindow("dashboard");

@@ -9,12 +9,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.utils.PersistableUtils;
@@ -27,6 +29,11 @@ public class OverdrawnAccountUpdate extends AbstractScheduledBatchProcess<Billin
     public static final String SUBJECT_USER = CONFIG.getSiteAcronym() + ": Overdrawn Account";
 
     private static final long serialVersionUID = 1198012881593988016L;
+
+    @Autowired
+    @Qualifier("genericDao")
+    // this seems really weird to have @Autowired fields in beans...
+    protected GenericDao genericDao;
 
     @Autowired
     private transient EmailService emailService;

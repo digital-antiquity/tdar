@@ -33,7 +33,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/")
-@Results(@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.TDAR_REDIRECT, location = TdarActionSupport.UNKNOWN_ERROR))
+@Results(@Result(name = TdarActionSupport.INPUT, location = TdarActionSupport.UNKNOWN_ERROR))
 public abstract class AbstractDeleteAction<P extends Persistable & Addressable> extends AbstractAuthenticatableAction implements Preparable {
 
     public final static String msg = "%s is %s %s (%s): %s";

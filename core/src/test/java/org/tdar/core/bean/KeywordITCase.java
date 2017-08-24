@@ -70,7 +70,7 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         assertNotNull(e.getId());
         e = null;
         CultureKeyword cultureKeyword = genericService.find(CultureKeyword.class, id);
-        assertNotEmpty(cultureKeyword.getAssertions());
+        assertNotEmpty("should ahve culture keyword assertions", cultureKeyword.getAssertions());
 
     }
 

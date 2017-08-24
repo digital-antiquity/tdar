@@ -32,8 +32,9 @@ public class DashboardWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/dashboard");
         clickLinkOnPage("Collections");
         logger.debug(getPageText());
-        assertTrue("page contains Michelle", getPageText().contains(MICHELLE_ELLIOT));
-        clickElementWithId("p121");
+        assertTrue("page contains margeret", getPageText().toLowerCase().contains("margeret"));
+        assertTrue("page contains beatrice", getPageText().toLowerCase().contains("beatrice"));
+        clickElementWithId("p12550");
     }
 
     @Test

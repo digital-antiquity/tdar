@@ -57,7 +57,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
     @Test
     @Rollback
     public void testAccountControllerChoicesOkNewAccount() throws TdarActionException {
-        TdarUser user = createAndSaveNewPerson();
+        TdarUser user = createAndSaveNewUser();
         Invoice invoice = new Invoice(user, PaymentMethod.INVOICE, 10L, 0L, null);
         genericService.saveOrUpdate(invoice);
 
@@ -76,7 +76,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         BillingAccountSelectionAction controller = generateNewController(BillingAccountSelectionAction.class);
         Invoice invoice = createTrivialInvoice();
         String msg = null;
-        init(controller, createAndSaveNewPerson());
+        init(controller, createAndSaveNewUser());
         controller.setInvoiceId(invoice.getId());
         controller.prepare();
         try {
@@ -135,7 +135,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
     @Test
     @Rollback
     public void testReEvaluationAppropriateWithUncountedThings() throws TdarActionException, InstantiationException, IllegalAccessException {
-        TdarUser person = createAndSaveNewPerson();
+        TdarUser person = createAndSaveNewUser();
         BillingAccount invoice = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), person);
         Project project = createAndSaveNewProject("title");
         Document doc = createAndSaveNewInformationResource(Document.class, person);
@@ -188,11 +188,13 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
     private Long setupAccountWithUsers() throws TdarActionException {
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
         controller.prepare();
-        controller.validate();
+        controller.add();
+        controller.setName("my test account");
         controller.getAuthorizedMembers().add(getAdminUser());
         controller.getAuthorizedMembers().add(getBillingUser());
         controller.getAuthorizedMembers().add(getEditorUser());
         controller.setServletRequest(getServletPostRequest());
+//        controller.validate();
         String save = controller.save();
         Long id = controller.getAccount().getId();
         assertEquals(Action.SUCCESS, save);
@@ -298,7 +300,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         }
         assertFalse(seen);
         Set<Coupon> coupons = controller.getAccount().getCoupons();
-        assertNotEmpty(coupons);
+        assertNotEmpty("should have coupons", coupons);
         Coupon coupon = coupons.iterator().next();
         logger.info(coupon.getCode());
         assertNotNull(coupon.getCode());

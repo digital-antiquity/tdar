@@ -10,6 +10,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
@@ -20,6 +21,7 @@ import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.ResourceEvaluator;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
@@ -44,6 +46,11 @@ public class SetupBillingAccountsProcess extends AbstractScheduledBatchProcess<T
 
     private static final String INVOICE_NOTE = "This invoice was generated on %s to cover %s resources, %s (MB) , and %s files created by %s prior to tDAR charging for usage.  Thank you for your support of tDAR.";
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    @Qualifier("genericDao")
+    // this seems really weird to have @Autowired fields in beans...
+    protected GenericDao genericDao;
 
     final long EXTRA_MB = 10l;
     final long EXTRA_FILES = 1l;

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.service.index.SearchIndexService;
@@ -23,6 +24,8 @@ import com.opensymphony.xwork2.Preparable;
 
 public abstract class AbstractCollectionRightsController<C extends HierarchicalCollection<C>> extends AbstractRightsController
         implements Preparable, PersistableLoadingAction<C> {
+
+    private static final String COLLECTION_RIGHTS_FTL = "../collection/rights.ftl";
 
     private static final String RIGHTS = "rights";
 
@@ -53,6 +56,11 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.EDIT);
+        if (getPersistable() == null) {
+            // persistable is null, so the lookup failed (aka not found)
+            abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
+        }
+
 
     }
 
@@ -81,8 +89,7 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
 
     @SkipValidation
     @Action(value = RIGHTS, results = {
-            @Result(name = SUCCESS, location = "../collection/rights.ftl"),
-            @Result(name = INPUT, location = ADD, type = TDAR_REDIRECT)
+            @Result(name = SUCCESS, location = COLLECTION_RIGHTS_FTL),
     })
     public String edit() throws TdarActionException {
         return super.edit();
@@ -97,7 +104,6 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
     public void handleLocalSave() {
 
         resourceCollectionService.saveCollectionForRightsController(getPersistable(), getAuthenticatedUser(), getProxies(), getPersistableClass(), null);
-        indexPersistable();
 
     }
 
@@ -108,7 +114,7 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
     @SkipValidation
     @Action(value = RIGHTS_SAVE, results = {
             @Result(name = SUCCESS, type=TDAR_REDIRECT, location = "${persistable.detailUrl}"),
-            @Result(name = INPUT, location =  "../collection/rights.ftl")
+            @Result(name = INPUT, location =  COLLECTION_RIGHTS_FTL)
     })
     
     @WriteableSession

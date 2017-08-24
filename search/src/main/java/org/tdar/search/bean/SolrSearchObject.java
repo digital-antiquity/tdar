@@ -139,8 +139,8 @@ public class SolrSearchObject<I extends Indexable> {
                             exclude = String.format(", domain:{excludeTags:%s}", facet);
                         }
                         String limit = "";
-                        if (getFacetLimit() != null) {
-                            limit = String.format(", limit: %s",getFacetLimit());
+                        if (facetLimit != null) {
+                            limit = String.format(", limit: %s", facetLimit);
                         }
                         facetText.append(String.format("%s:{field:%s, type:terms %s %s}", facet, facet, exclude, limit));
                     }
@@ -149,7 +149,7 @@ public class SolrSearchObject<I extends Indexable> {
                     facetText.insert(0, "{");
                     facetText.append("}");
                 }
-
+                logger.trace(facetText.toString());
             }
         }
     }
@@ -246,6 +246,9 @@ public class SolrSearchObject<I extends Indexable> {
             solrQuery.setFacetMinCount(facetMinCount);
         }
 
+        if (facetLimit != null) {
+            solrQuery.setFacetLimit(facetLimit);
+        }
         // solrQuery.setFacetSort(sort)
 
         if (StringUtils.isNotBlank(sortParam)) {

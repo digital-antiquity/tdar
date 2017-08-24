@@ -40,6 +40,24 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         assertPageTitleEquals("add a new resource");
         logout();
     }
+    
+    @Test
+    public void testRegisterNonContributor() {
+    	Map<String, String> personmap = new HashMap<String, String>();
+    	setupBasicUser(personmap, "contributor" + System.currentTimeMillis());
+        personmap.remove("registration.contributorReason");
+    	testRegister(personmap, TERMS.TOS, true);
+
+    	assertCurrentUrlContains("dashboard");
+    	assertTextNotPresentIgnoreCase("Start a new Project");
+    	
+    	//clickLinkWithText("UPLOAD");
+    	//assertPageTitleEquals("add a new resource");
+    	
+    	logger.debug(getPageText());
+    	
+    	logout();
+    }
 
     @Test
     public void testRegisterContributorInvalid() {
