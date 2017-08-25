@@ -27,7 +27,7 @@
     <constant name="struts.url.includeParams" value="none" />
     <constant name="struts.action.extension" value="," />
     
-<!--       <constant name="struts.multipart.validationRegex" value="^multipart\/form-data(; boundary=[a-zA-Z0-9\-\(\)\+\_\,\-\.\/\:\=\?]{1,70})?"/>-->
+       <constant name="struts.multipart.validationRegex" value="^multipart\/form-data(; boundary=[a-zA-Z0-9\-\(\)\+\_\,\-\.\/\:\=\?]{1,70})?"/>
      <constant name="struts.action.excludePattern" value="/hosted/.*,/404.html,/wro/.*" />
     <constant name="struts.additional.excludedPatterns" value="^(action|method):.*"/>
     <constant name="struts.custom.i18n.resources"

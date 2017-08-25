@@ -76,7 +76,7 @@
         <#if editor>
             <h4>Admin Options</h4>
             <div class="control-group" id="divSubmitter">
-                <label class="control-label">Owner</label>
+                <label class="control-label">Submitter</label>
 
                 <div class="controls controls-row">
                     <#if owner?has_content>
