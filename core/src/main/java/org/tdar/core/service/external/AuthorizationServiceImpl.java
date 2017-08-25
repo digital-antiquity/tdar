@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.BillingAccount;
@@ -38,6 +39,7 @@ import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.ConfidentialViewable;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -406,11 +408,14 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     @Override
     @Transactional(readOnly = true)
     public boolean canViewConfidentialInformation(TdarUser person, Resource resource) {
-        if (resource instanceof InformationResource) {
-            return ((InformationResource) resource).isPublicallyAccessible()
-                    || canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
+            
+        if (resource instanceof Project || resource instanceof SupportsResource) {
+            return true;
         }
-        return true;
+        if (((InformationResource) resource).isPublicallyAccessible()){
+            return true;
+        }
+        return canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
     }
 
     /*
@@ -453,6 +458,10 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
+        if (isMember(person, TdarGroup.TDAR_RPA_MEMBER) && false) {
+            return true;
+        }
+        
         if (authorizedUserDao.isAllowedTo(person, resource, permission)) {
             logger.trace("person is an authorized user");
             return true;

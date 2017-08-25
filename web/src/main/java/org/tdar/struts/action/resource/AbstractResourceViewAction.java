@@ -17,6 +17,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -72,9 +73,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     private static final long serialVersionUID = 896347341133309643L;
 
-    // public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
-
-    private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -91,9 +89,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private ResourceService resourceService;
 
-    // private List<RightsBasedResourceCollection> shares = new ArrayList<>();
     private List<SharedCollection> effectiveShares = new ArrayList<>();
-    // private List<ListCollection> resourceCollections = new ArrayList<>();
     private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceCreatorProxy> authorshipProxies = new ArrayList<>();
@@ -101,8 +97,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> contactProxies = new ArrayList<>();
     private ResourceCitationFormatter resourceCitation;
 
-    private List<ListCollection> viewableListCollections;
-    private List<SharedCollection> viewableSharedCollections;
 
     private String schemaOrgJsonLD;
 
@@ -261,22 +255,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     public boolean isUserAbleToViewUnobfuscatedMap() {
-        return isEditor();
-    }
-
-
-    public List<EmailMessageType> getEmailTypes() {
-        if (getResource() instanceof InformationResource) {
-            InformationResource informationResource = (InformationResource) getResource();
-            if (informationResource.hasConfidentialFiles()) {
-                emailTypes = Arrays.asList(EmailMessageType.values());
-            }
-        }
-        return emailTypes;
-    }
-
-    public void setEmailTypes(List<EmailMessageType> emailTypes) {
-        this.emailTypes = emailTypes;
+        return isEditor() && authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_RPA_MEMBER);
     }
 
 
@@ -358,13 +337,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return accountService.listAvailableAccountsForUser(getAuthenticatedUser());
     }
 
-    // public List<ListCollection> getResourceCollections() {
-    // return resourceCollections;
-    // }
-    //
-    // public void setResourceCollections(List<ListCollection> resourceCollections) {
-    // this.resourceCollections = resourceCollections;
-    // }
 
     public List<ListCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
