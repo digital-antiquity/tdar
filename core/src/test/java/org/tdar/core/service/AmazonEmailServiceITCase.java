@@ -54,7 +54,7 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     	message.addData("lastName", "Castellanos");
 		message.getAttachments().add(new File("src/test/resources/asu_map_tempe_2008.pdf"));
 
-    	awsEmailService.updateEmailContent(message);
+    	awsEmailService.renderAndUpdateEmailContent(message);
         awsEmailService.updateEmailSubject(message);
     	
         MimeMessage mimeMessage;
@@ -77,7 +77,7 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     	message.addData("lastName", "Castellanos");
 		message.getAttachments().add(new File("src/test/resources/asu_map_tempe_2008.pdf"));
 
-    	awsEmailService.updateEmailContent(message);
+    	awsEmailService.renderAndUpdateEmailContent(message);
         awsEmailService.updateEmailSubject(message);
     	
         getLogger().debug(message.getEmail().getMessage());

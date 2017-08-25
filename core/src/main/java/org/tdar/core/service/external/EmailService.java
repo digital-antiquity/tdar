@@ -37,6 +37,7 @@ import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
+import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.RevisionLogType;
@@ -44,6 +45,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.FreemarkerService;
+import org.tdar.core.service.email.AwsEmailService;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.MessageHelper;
 
@@ -75,9 +77,29 @@ public class EmailService {
     @Autowired
     private FreemarkerService freemarkerService;
 
+    @Autowired
+    private AwsEmailService awsEmailService;
+    
     public static String ATTACHMENTS = "ATTACHMENTS";
     public static String INLINE = "INLINE";
 
+    
+    @Transactional(readOnly = true)
+    public void queueAwsMessage(AwsMessage message){
+		//This will force rendering the entire message with attachments and mime boundaries. 
+		//The result will be a string which gets queued. 
+    	try {
+    		awsEmailService.renderAndUpdateEmailContent(message);
+        	awsEmailService.updateEmailSubject(message);
+			MimeMessage mimeMessage = awsEmailService.createMimeMessage(message);
+			String body = awsEmailService.getByteArray(mimeMessage).toString();
+			message.getEmail().setMessage(body);
+			queue(message.getEmail());
+		} catch (MessagingException | IOException e) {
+			 logger.error("Could not create MIME message {} {} ", e);
+		}
+    }
+    
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
      */
@@ -90,6 +112,10 @@ public class EmailService {
             logger.error("Email template file not found (" + templateName + ")", fnf);
         }
     }
+    
+    
+    
+    
 
     @Transactional(readOnly = false)
     public void sendUserInviteEmail(UserInvite invite, TdarUser from) {
@@ -105,48 +131,7 @@ public class EmailService {
         queueWithFreemarkerTemplate("invite/invite.ftl", map, email);
 
     }
-
-    @Transactional(readOnly = true)
-    public void sendMimeMessage(String templateName, Map<String, ?> dataModel, Email email, List<File> attachments, List<File> inline) {
-
-        try {
-            email.setMessage(freemarkerService.render(templateName, dataModel));
-        } catch (IOException fnf) {
-            logger.error("Email template file not found (" + templateName + ")", fnf);
-        }
-        enforceFromAndTo(email);
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-
-            // Message message = new MimeMessage(session);
-            MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom(email.getFrom());
-            helper.setSubject(email.getSubject());
-            helper.setTo(email.getToAsArray());
-            message.setText(email.getMessage(), "utf8", "html");
-
-            if (CollectionUtils.isNotEmpty(attachments)) {
-                for (File file_ : attachments) {
-                    FileSystemResource file = new FileSystemResource(file_);
-                    helper.addAttachment(file_.getName(), file);
-                }
-            }
-
-            if (CollectionUtils.isNotEmpty(inline)) {
-                for (File file_ : inline) {
-                    FileSystemResource file = new FileSystemResource(file_);
-                    helper.addInline(file_.getName(), file);
-                }
-            }
-
-            mailSender.send(message);
-        } catch (MailException | MessagingException me) {
-            email.setNumberOfTries(email.getNumberOfTries() - 1);
-            email.setErrorMessage(me.getMessage());
-            logger.error("email error: {} {}", email, me);
-        }
-    }
-
+    
     /**
      * Sends an email message to the given recipients. If no recipients are passed in, defaults to TdarConfiguration.getSystemAdminEmail().
      * 

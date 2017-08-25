@@ -69,8 +69,6 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 			messageHelper.addAttachment(file.getName(), file);
 		}
 		
-		
-		
 		ClassPathResource logo =  new ClassPathResource("tdar-logo.png");
 		messageHelper.addInline("logo", logo);
 		
@@ -122,7 +120,7 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 	 * email bean
 	 */
 	@Override
-	public void updateEmailContent(AwsMessage message) {
+	public void renderAndUpdateEmailContent(AwsMessage message) {
 		String templateName = null;
 		try {
 			templateName = message.getEmailType().getTemplateLocation();
@@ -167,11 +165,17 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 	}
 	
 	private RawMessage createRawMimeMessage(MimeMessage message) throws IOException, MessagingException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        message.writeTo(outputStream);
-        return new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+		byte[] byteArray = getByteArray(message);
+        return new RawMessage(ByteBuffer.wrap(byteArray));
 	}
 
+	@Override
+	public byte[] getByteArray(MimeMessage message) throws IOException, MessagingException{
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        message.writeTo(outputStream);
+        return outputStream.toByteArray();
+	}
+	
 	private BasicAWSCredentials getAwsCredentials(){
 		return new BasicAWSCredentials(config.getAwsAccessKey(), config.getAwsSecretKey());
 	}
@@ -186,5 +190,19 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 	@Override
 	public void setAwsRegion(Regions region){
 		this.awsRegion = region;
+	}
+
+
+	/**
+	 * This method is used in the job scheduler to convert a queued email object back to an AwsMessage object
+	 * so that it can be sent as a mime message.
+	 */
+	@Override
+	public AwsMessage convertEmailToAwsMessage(Email email) {
+		// TODO Auto-generated method stub
+		return null;
+		
+		
+		
 	}
 }

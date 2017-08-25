@@ -8,6 +8,19 @@ public enum EmailType {
 	INVITE_ACCEPTED("inite/invite-accepted.ftl"),
 	NEW_USER_NOTIFY("email_new_users.ftl"),
 	NEW_USER_WELCOME("email-welcome.ftl"),
+	TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl"),
+	PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl"),
+	PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl"),
+	PERMISSION_REQUEST_CUSTOM("email-form/custom-accept.ftl"),
+	OVERDRAWN_NOTIFICATION("overdrawn-user.ftl"),
+	RESOURCE_EXPORT("resource-export-email.ftl"),
+	
+	ADMIN_NOTIFICATION("auth-report.ftl"),
+	ADMIN_NEW_USER_REPORT("email_new_users.ftl"),
+	ADMIN_QUARANTINE_REVIEW("email_review_message.ftl"),
+	ADMIN_EMBARGO_EXPIRE("embargo/expiration-admin.ftl"),
+	ADMIN_OVERDRAWN_NOTIFICATION("overdrawn-admin.ftl"),
+	
 	TEST_EMAIL("test-email.ftl", "test@tdar.org", "This is a test email %2$s %1$s",TestAwsMessage.class);
 	
 	/**
