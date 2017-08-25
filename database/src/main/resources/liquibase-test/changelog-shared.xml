@@ -14,4 +14,5 @@
     <include file="../liquibase/prehistoric.xml"  relativeToChangelogFile="true"/> 
     <include file="additional-obsidian-test-setup.xml" relativeToChangelogFile="true"/>
     <include file="additional-prehistoric-test-setup.xml" relativeToChangelogFile="true"/>
+    <include file="../liquibase/quartz.xml"  relativeToChangelogFile="true"/> 
 </databaseChangeLog>
