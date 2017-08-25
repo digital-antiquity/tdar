@@ -66,6 +66,12 @@ public class DocumentCitationFormatTestCase {
         ResourceCitationFormatter formatter = setupDocumentWithAllFields(doc, DocumentType.OTHER);
         assertEquals("1234", formatter.getFormattedSourceInformation());
     }
+    @Test
+    public void testReport() {
+        Document doc = new Document();
+        ResourceCitationFormatter formatter = setupDocumentWithAllFields(doc, DocumentType.REPORT);
+        assertEquals("1234", formatter.getFormattedSourceInformation());
+    }
 
     @Test
     public void testThesis() {

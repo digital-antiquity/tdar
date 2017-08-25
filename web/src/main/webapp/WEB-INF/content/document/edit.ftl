@@ -49,7 +49,7 @@
         <@s.select label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
     </div>
 
-    <div class="doctypeToggle journal_article other control-group" id="t-vol">
+    <div class="doctypeToggle journal_article other report control-group" id="t-vol">
         <label class="control-label">Volume Information</label>
 
         <div class="controls controls-row">
@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    <div class='doctypeToggle book_section book other control-group' id="t-series">
+    <div class='doctypeToggle book_section book other report control-group' id="t-series">
         <label class="control-label">Series Information</label>
 
         <div class="controls controls-row">
@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <div class="doctypeToggle book_section journal_article other" id="t-start-end">
+    <div class="doctypeToggle book_section journal_article other report" id="t-start-end">
         <div class="control-group">
             <label class="control-label">Start/End Page</label>
 
@@ -84,7 +84,7 @@
     </div>
 
     <div id="t-isbn" placeholder="XXXX-XXXX" data-tiplabel="ISBN" data-tooltipcontent="International Standard Book Number."
-         class="book_section book other doctypeToggle">
+         class="book_section book other report doctypeToggle">
         <@s.textfield labelposition='left' id='isbn' title="please add a valid ISBN" label='ISBN' name='document.isbn' cssClass="isbn "  maxlength=25 />
     </div>
 

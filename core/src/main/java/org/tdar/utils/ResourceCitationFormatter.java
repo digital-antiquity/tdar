@@ -111,6 +111,7 @@ public class ResourceCitationFormatter implements Serializable {
                     appendIfNotBlank(sb, getPageRange(doc), ":", "");
                     break;
                 case OTHER:
+                case REPORT:
                     break;
                 case THESIS:
                     String degreetext = "";

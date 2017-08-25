@@ -15,14 +15,14 @@ import org.tdar.utils.MessageHelper;
  */
 public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
 
-    BOOK("book", "book", "Book"),
-    BOOK_SECTION("chapter", "bookitem", "Book"),
-    JOURNAL_ARTICLE("article", "article", "Article"),
-    THESIS("thesis", "thesis", "Institution", "Department", "Book"),
-    CONFERENCE_PRESENTATION("conference", "conference", "Conference", "Conference Location", "Book"),
-    OTHER("other", "unknown", "Book");
+    BOOK("book", "Book"),
+    BOOK_SECTION("bookitem", "Book"),
+    JOURNAL_ARTICLE( "article", "Article"),
+    THESIS( "thesis", "Institution", "Department", "Book"),
+    CONFERENCE_PRESENTATION("conference", "Conference", "Conference Location", "Book"),
+    REPORT( "unknown", "Book"),
+    OTHER( "unknown", "Book");
 
-    private final String label;
     private final String openUrlGenre;
     private String publisherName;
     private String publisherLocationName;
@@ -39,23 +39,25 @@ public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
         }
     }
 
-    private DocumentType(String label, String genre, String schema) {
-        this.label = label;
+    private DocumentType( String genre, String schema) {
         this.openUrlGenre = genre;
         this.schema = schema;
     }
 
-    private DocumentType(String label, String genre, String pubName, String pubLoc, String schema) {
-        this.label = label;
+    private DocumentType( String genre, String pubName, String pubLoc, String schema) {
         this.openUrlGenre = genre;
         this.publisherName = pubName;
         this.publisherLocationName = pubLoc;
         this.schema = schema;
     }
 
+    public String getPlural() {
+        return MessageHelper.getMessage(getPluralLocaleKey());
+    }
+
     @Override
     public String getLabel() {
-        return label;
+        return MessageHelper.getMessage(getLocaleKey());
     }
 
     @Override
@@ -108,10 +110,6 @@ public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
 
     public String getOpenUrlGenre() {
         return openUrlGenre;
-    }
-
-    public String getPlural() {
-        return MessageHelper.getMessage(getLocaleKey() + "_PLURAL");
     }
 
     public String getPublisherLocationName() {
