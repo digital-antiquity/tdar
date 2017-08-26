@@ -33,4 +33,6 @@ public interface AwsEmailService {
 	void setAwsRegion(Regions region);
 
 	AwsMessage convertEmailToAwsMessage(Email email);
+
+	SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException;
 }

@@ -156,6 +156,18 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 		SendEmailResult response = getSesClient().sendEmail(request);
 		return response;
 	}
+	
+	/**
+	 * Takes an AWS message, renders the Freemarker template to update the HTML body, renders the subject line,
+	 * then creates an MIME version and sends it via AWS.
+	 */
+	@Override
+	public SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException{
+		updateEmailSubject(message);
+		renderAndUpdateEmailContent(message);
+		MimeMessage mimeMessage = createMimeMessage(message);
+		return sendMultiPartMessage(mimeMessage);
+	}
 
 	@Override
 	public SendRawEmailResult sendMultiPartMessage(MimeMessage message) throws IOException, MessagingException  {

@@ -1,5 +1,7 @@
 package org.tdar.core.service.external;
 
+import static org.junit.Assert.assertNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.resource.Resource;
@@ -92,7 +95,7 @@ public class EmailService {
     		awsEmailService.renderAndUpdateEmailContent(message);
         	awsEmailService.updateEmailSubject(message);
 			MimeMessage mimeMessage = awsEmailService.createMimeMessage(message);
-			String body = awsEmailService.getByteArray(mimeMessage).toString();
+			String body = new String(awsEmailService.getByteArray(mimeMessage));
 			message.getEmail().setMessage(body);
 			queue(message.getEmail());
 		} catch (MessagingException | IOException e) {
@@ -119,16 +122,21 @@ public class EmailService {
 
     @Transactional(readOnly = false)
     public void sendUserInviteEmail(UserInvite invite, TdarUser from) {
-        Email email = new Email();
-        email.setUserGenerated(false);
-        email.setTo(invite.getUser().getEmail());
-        email.setSubject(String.format("%s has invited you to %s", from.getProperName(), TdarConfiguration.getInstance().getSiteAcronym()));
-        Map<String, Object> map = new HashMap<>();
-        map.put("invite", invite);
-        map.put("from", from);
-        map.put("to", invite.getUser());
-        setupBasicComponents(map);
-        queueWithFreemarkerTemplate("invite/invite.ftl", map, email);
+    	AwsMessage message = awsEmailService.createMessage(EmailType.INVITE, invite.getUser().getEmail());
+    	message.getEmail().setUserGenerated(false);
+    	message.addData("invite", 	invite);
+    	message.addData("from", 	from);
+        message.addData("to", 		invite.getUser());
+        setupBasicComponents(message.getMap());
+        
+        queueAwsMessage(message);
+        /*try {
+        	awsEmailService.renderAndUpdateEmailContent(message);
+        	awsEmailService.updateEmailSubject(message);
+			awsEmailService.sendMultiPartMessage(message);
+		} catch (MessagingException | IOException e) {
+			logger.debug("Error happened: {} ",e,e);
+		}*/
 
     }
     
@@ -363,18 +371,17 @@ public class EmailService {
     @Transactional(readOnly = false)
     public void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person) {
         for (Entry<TdarUser, List<HasName>> entry : notices.entrySet()) {
-            Email email = new Email();
-            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + ": invite accepted");
-            email.setTo(entry.getKey().getEmail());
-            Map<String, Object> map = new HashMap<>();
-            map.put("owner", entry.getKey());
-            map.put("items", entry.getValue());
-            map.put("user", person);
-            setupBasicComponents(map);
-            String template = "invite/invite-accepted.ftl";
-            queueWithFreemarkerTemplate(template, map, email);
-            email.setUserGenerated(false);
-            send(email);
+        	AwsMessage message = awsEmailService.createMessage(EmailType.INVITE_ACCEPTED, entry.getKey().getEmail());
+            message.addData("owner", entry.getKey());
+            message.addData("items", entry.getValue());
+            message.addData("user", person);
+            setupBasicComponents(message.getMap());
+            //queueAwsMessage(message);
+            try {
+				awsEmailService.renderAndSendMessage(message);
+			} catch (MessagingException | IOException e) {
+				logger.debug("Could not send the email: {} ",e,e);
+			}
         }
     }
 

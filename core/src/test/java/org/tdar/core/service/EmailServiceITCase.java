@@ -15,8 +15,11 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.MockMailSender;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
@@ -43,6 +46,22 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         assertEquals(email.getStatus(), Status.SENT);
         // implicit assumption that something that is marked sent has a sent-date
         assertThat(email.getDateSent(), is(not(nullValue())));
+    }
+    
+    
+    @Test
+    public void testSendInviteEmail(){
+    	 Person to 	   = new Person("To", "Person", "bcastel1@asu.edu");
+    	 Person from 	   = new Person("From", "Somone", "toguy@tdar.net");
+    	 TdarUser fromUser = new TdarUser(from, "from");
+    	 UserInvite invite = new UserInvite();
+    	 invite.setPerson(to);
+    	 
+    	 Resource project = createAndSaveNewProject("Test Project");
+    	 assertEquals(project.getTitle(), "Test Project");
+    	 
+    	 invite.setResource(project);
+    	 emailService.sendUserInviteEmail(invite, fromUser);
     }
 
     @Test

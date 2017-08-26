@@ -1,11 +1,13 @@
 package org.tdar.core.bean.notification;
 
 import org.tdar.core.bean.notification.aws.AwsMessage;
+import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
+import org.tdar.core.bean.notification.aws.InviteMessage;
 import org.tdar.core.bean.notification.aws.TestAwsMessage;
 
 public enum EmailType {
-	INVITE("invite/invite.ftl"),
-	INVITE_ACCEPTED("inite/invite-accepted.ftl"),
+	INVITE("invite/invite.ftl","test@tdar.org",null,InviteMessage.class),
+	INVITE_ACCEPTED("invite/invite-accepted.ftl","test@tdar.org",null,InviteAcceptedMessage.class),
 	NEW_USER_NOTIFY("email_new_users.ftl"),
 	NEW_USER_WELCOME("email-welcome.ftl"),
 	TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl"),
