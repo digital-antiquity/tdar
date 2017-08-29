@@ -30,7 +30,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
-public class AddRemoveResourceAction extends AbstractJsonApiAction implements Preparable {
+public class RemoveResourceAction extends AbstractJsonApiAction implements Preparable {
 
     /**
      * 
@@ -61,18 +61,6 @@ public class AddRemoveResourceAction extends AbstractJsonApiAction implements Pr
         }
     }
     
-    @PostOnly
-    @Action(value="addResource")
-    public String add() throws Exception {
-        if (collection instanceof SharedCollection) {
-            resourceCollectionService.addResourceCollectionToResource(resource, resource.getSharedCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, SharedCollection.class);
-        }
-        if (collection instanceof ListCollection) {
-            resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, (ListCollection)collection, ListCollection.class);            
-        }
-        setJsonInputStream(new ByteArrayInputStream("SUCCESS".getBytes()));
-        return super.execute();
-    }
 
     @PostOnly
     @Action(value="removeResource")
