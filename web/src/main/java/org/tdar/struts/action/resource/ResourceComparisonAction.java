@@ -19,6 +19,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -35,6 +36,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.utils.PersistableUtils;
@@ -51,12 +53,14 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
     private List<Long> ids;
     private Long collectionId;
     private Set<Resource> resources = new HashSet<>();
-    
+
     @Autowired
     private GenericService genericService;
     @Autowired
     private AuthorizationService authorizationService;
-    
+    @Autowired
+    private ResourceCollectionService resourceCollectionService;
+
     private Set<Long> cultures = new HashSet<>();
     private Set<Long> investigationTypes = new HashSet<>();
     private Set<Long> temporal = new HashSet<>();
@@ -65,14 +69,13 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
     private Set<Long> geographic = new HashSet<>();
     private Set<Long> siteNames = new HashSet<>();
     private Set<Long> siteTypes = new HashSet<>();
-    private Set<Long> creators = new HashSet<>(); 
-    private Set<Long> individualRoles = new HashSet<>(); 
-    private Set<Long> latitudeLongitude = new HashSet<>(); 
+    private Set<Long> creators = new HashSet<>();
+    private Set<Long> individualRoles = new HashSet<>();
+    private Set<Long> latitudeLongitude = new HashSet<>();
     private Set<Long> notes = new HashSet<>();
-    private Set<Long> coverage = new HashSet<>(); 
-    private Set<Long> collections = new HashSet<>(); 
-    private Set<Long> annotations = new HashSet<>(); 
-
+    private Set<Long> coverage = new HashSet<>();
+    private Set<Long> collections = new HashSet<>();
+    private Set<Long> annotations = new HashSet<>();
 
     @Override
     public void prepare() throws Exception {
@@ -80,20 +83,22 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         if (PersistableUtils.isNotNullOrTransient(getCollectionId())) {
             ResourceCollection rc = genericService.find(ResourceCollection.class, getCollectionId());
             if (rc instanceof ListCollection) {
-            resources.addAll(((ListCollection) rc).getUnmanagedResources());
+                resources.addAll(((ListCollection) rc).getUnmanagedResources());
             } else {
-                resources.addAll(((RightsBasedResourceCollection)rc).getResources());
+                resources.addAll(((RightsBasedResourceCollection) rc).getResources());
+                for (SharedCollection sc :resourceCollectionService.findAllChildCollectionsOnly((SharedCollection)rc, SharedCollection.class)) {
+                    resources.addAll(sc.getResources());
+                }
             }
         }
-        
-        
-        for(Resource resource : resources) {
-                if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD)) {
-                    addActionError(getText("abstractPersistableController.unable_to_view_edit"));
-                    break;
-                }
+
+        for (Resource resource : resources) {
+            if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD)) {
+                addActionError(getText("abstractPersistableController.unable_to_view_edit"));
+                break;
+            }
         }
-        
+
         setupSharedKeywords();
     }
 
@@ -116,42 +121,40 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 coverage.addAll(PersistableUtils.extractIds(r.getActiveCoverageDates()));
                 collections.addAll(PersistableUtils.extractIds(r.getSharedResourceCollections()));
                 annotations.addAll(PersistableUtils.extractIds(r.getActiveResourceAnnotations()));
-                first = false; 
+                first = false;
             } else {
-                cultures 		 	= intersection(cultures, 			toSet(r.getActiveCultureKeywords()));
-                investigationTypes 	= intersection(investigationTypes, 	toSet(r.getActiveInvestigationTypes()));
-                temporal 			= intersection(temporal, 			toSet(r.getActiveTemporalKeywords()));
-                material 			= intersection(material, 			toSet(r.getActiveMaterialKeywords()));
-                other 				= intersection(other, 				toSet(r.getActiveOtherKeywords()));
-                geographic 			= intersection(geographic, 			toSet(r.getActiveGeographicKeywords()));
-                siteNames 			= intersection(siteNames, 			toSet(r.getActiveSiteNameKeywords()));
-                siteTypes 			= intersection(siteTypes, 			toSet(r.getActiveSiteTypeKeywords()));
-                
-            	creators 			= intersection(creators, 			new HashSet<>(toSet(r.getPrimaryCreators())));
-                individualRoles 	= intersection(individualRoles , 	toSet(r.getActiveIndividualAndInstitutionalCredit()));
-                latitudeLongitude 	= intersection(latitudeLongitude , 	toSet(r.getActiveLatitudeLongitudeBoxes()));
-                notes 				= intersection(notes, 				toSet(r.getActiveResourceNotes()));
-            	
-        		coverage 			= intersection(coverage, 			toSet(r.getActiveCoverageDates()));
-                collections 		= intersection(collections, 		toSet(r.getSharedResourceCollections()));
-                annotations 		= intersection(annotations, 		toSet(r.getActiveResourceAnnotations()));
+                cultures = intersection(cultures, toSet(r.getActiveCultureKeywords()));
+                investigationTypes = intersection(investigationTypes, toSet(r.getActiveInvestigationTypes()));
+                temporal = intersection(temporal, toSet(r.getActiveTemporalKeywords()));
+                material = intersection(material, toSet(r.getActiveMaterialKeywords()));
+                other = intersection(other, toSet(r.getActiveOtherKeywords()));
+                geographic = intersection(geographic, toSet(r.getActiveGeographicKeywords()));
+                siteNames = intersection(siteNames, toSet(r.getActiveSiteNameKeywords()));
+                siteTypes = intersection(siteTypes, toSet(r.getActiveSiteTypeKeywords()));
+
+                creators = intersection(creators, new HashSet<>(toSet(r.getPrimaryCreators())));
+                individualRoles = intersection(individualRoles, toSet(r.getActiveIndividualAndInstitutionalCredit()));
+                latitudeLongitude = intersection(latitudeLongitude, toSet(r.getActiveLatitudeLongitudeBoxes()));
+                notes = intersection(notes, toSet(r.getActiveResourceNotes()));
+
+                coverage = intersection(coverage, toSet(r.getActiveCoverageDates()));
+                collections = intersection(collections, toSet(r.getSharedResourceCollections()));
+                annotations = intersection(annotations, toSet(r.getActiveResourceAnnotations()));
             }
         }
     }
-    
-    private Set<Long> intersection(Set<Long> a, Set<Long> b){
-    	Set<Long> c = a;
-    	if(a.size()==0 || b.size()==0){
-    		c.clear();
-    		return c;
-    	}
-    	else {
-    		c.removeIf(el -> !b.contains(el));
-    		return c;
-    	}
+
+    private Set<Long> intersection(Set<Long> a, Set<Long> b) {
+        Set<Long> c = a;
+        if (a.size() == 0 || b.size() == 0) {
+            c.clear();
+            return c;
+        } else {
+            c.removeIf(el -> !b.contains(el));
+            return c;
+        }
     }
-    
-    
+
     private <R extends Persistable> Set<Long> toSet(Collection<R> collection) {
         return new HashSet<>(PersistableUtils.extractIds(collection));
     }
@@ -163,7 +166,7 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
     public String execute() {
         return SUCCESS;
     }
-    
+
     public List<Long> getIds() {
         return ids;
     }
