@@ -17,9 +17,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
+import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.email.AwsEmailService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 
@@ -46,6 +49,9 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
     @Autowired
     private transient EmailService emailService;
 
+    @Autowired
+    private transient AwsEmailService awsEmailService;
+    
     @Autowired
     private transient EntityService entityService;
 
@@ -87,16 +93,14 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(people)) {
-            Email email = new Email();
-            email.setDate(new Date());
-            email.setFrom(config.getDefaultFromEmail());
-            email.setTo(config.getContactEmail());
-            email.setSubject(String.format("%s New User Report: %s new users", config.getSiteAcronym().toUpperCase(), people.size()));
-            email.setUserGenerated(false);
-            Map<String, Object> dataModel = initDataModel();
-            dataModel.put("users", people);
-            dataModel.put("totalUsers", people.size());
-            emailService.queueWithFreemarkerTemplate("email_new_users.ftl", dataModel, email);
+        	AwsMessage message = awsEmailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getContactEmail());
+        	message.setMap(initDataModel());
+        	message.addData("users", people);
+            message.addData("totalUsers", people.size());
+            message.getEmail().setUserGenerated(false);
+        	message.getEmail().setDate(new Date());
+        	
+        	emailService.queueAwsMessage(message);
         }
     }
 
@@ -104,18 +108,18 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
     private void sendQuarrantineEmail() {
         List<Email> emails = emailService.findEmailsWithStatus(Status.IN_REVIEW);
         if (CollectionUtils.isNotEmpty(emails)) {
-            Map<String, Object> dataModel = initDataModel();
-            dataModel.put("emails", emails);
-            dataModel.put("totalEmails", emails.size());
-            Email email = new Email();
-            email.setUserGenerated(false);
-            email.setDate(new Date());
-            email.setFrom(config.getDefaultFromEmail());
-            email.setTo(config.getContactEmail());
-            email.setSubject(String.format("There are %s user emails to review ", emails.size()));
-            emailService.queueWithFreemarkerTemplate("email_review_message.ftl", dataModel, email);
+        	AwsMessage message = awsEmailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getContactEmail());
+        	message.setMap(initDataModel());
+        	message.addData("emails", emails);
+        	message.addData("totalEmails",emails.size());
+        	message.getEmail().setUserGenerated(false);
+        	message.getEmail().setDate(new Date());
+        	
+        	emailService.queueAwsMessage(message);
         }
     }
+    
+    
 
     /**
      * This ScheduledProcess is finished to completion after execute().

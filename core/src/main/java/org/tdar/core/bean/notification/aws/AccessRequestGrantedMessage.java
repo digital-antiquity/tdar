@@ -1,6 +1,5 @@
 package org.tdar.core.bean.notification.aws;
 
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 

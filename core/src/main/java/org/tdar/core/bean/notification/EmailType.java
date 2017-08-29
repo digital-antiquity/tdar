@@ -3,6 +3,8 @@ package org.tdar.core.bean.notification;
 import org.tdar.core.bean.notification.aws.AccessRequestCustomMessage;
 import org.tdar.core.bean.notification.aws.AccessRequestGrantedMessage;
 import org.tdar.core.bean.notification.aws.AccessRequestRejectedMessage;
+import org.tdar.core.bean.notification.aws.AdminQuarantineReviewMessage;
+import org.tdar.core.bean.notification.aws.AdminReportNewUsersMessage;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
 import org.tdar.core.bean.notification.aws.InviteMessage;
@@ -23,8 +25,8 @@ public enum EmailType {
 	RESOURCE_EXPORT("resource-export-email.ftl"),
 	
 	ADMIN_NOTIFICATION("auth-report.ftl"),
-	ADMIN_NEW_USER_REPORT("email_new_users.ftl"),
-	ADMIN_QUARANTINE_REVIEW("email_review_message.ftl"),
+	ADMIN_NEW_USER_REPORT("email_new_users.ftl",null,"%s New User Report: %s new users",AdminReportNewUsersMessage.class),
+	ADMIN_QUARANTINE_REVIEW("email_review_message.ftl",null,"There are %s user emails to review ",AdminQuarantineReviewMessage.class),
 	ADMIN_EMBARGO_EXPIRE("embargo/expiration-admin.ftl"),
 	ADMIN_OVERDRAWN_NOTIFICATION("overdrawn-admin.ftl"),
 	
