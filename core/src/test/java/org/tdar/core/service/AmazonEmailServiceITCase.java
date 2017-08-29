@@ -35,7 +35,6 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     	
     	assertNotNull(accessKey);
     	assertNotNull(secretKey);
-    	
     }
     @Test
     public void testTestAwsEmail(){
@@ -52,7 +51,8 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     	message.addData("bar", "bar");
     	message.addData("firstName", "Brian");
     	message.addData("lastName", "Castellanos");
-		message.getAttachments().add(new File("src/test/resources/asu_map_tempe_2008.pdf"));
+		
+    	//message.getAttachments().add(new File("src/test/resources/asu_map_tempe_2008.pdf"));
 
     	awsEmailService.renderAndUpdateEmailContent(message);
         awsEmailService.updateEmailSubject(message);

@@ -1,5 +1,8 @@
 package org.tdar.core.bean.notification;
 
+import org.tdar.core.bean.notification.aws.AccessRequestCustomMessage;
+import org.tdar.core.bean.notification.aws.AccessRequestGrantedMessage;
+import org.tdar.core.bean.notification.aws.AccessRequestRejectedMessage;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
 import org.tdar.core.bean.notification.aws.InviteMessage;
@@ -11,9 +14,11 @@ public enum EmailType {
 	NEW_USER_NOTIFY("email_new_users.ftl"),
 	NEW_USER_WELCOME("email-welcome.ftl"),
 	TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl"),
-	PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl"),
-	PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl"),
-	PERMISSION_REQUEST_CUSTOM("email-form/custom-accept.ftl"),
+	
+	PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl","test@tdar.org",null,AccessRequestGrantedMessage.class),
+	PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl","test@tdar.org",null,AccessRequestRejectedMessage.class),
+	PERMISSION_REQUEST_CUSTOM("email-form/custom-accept.ftl","test@tdar.org",null,AccessRequestCustomMessage.class),
+	
 	OVERDRAWN_NOTIFICATION("overdrawn-user.ftl"),
 	RESOURCE_EXPORT("resource-export-email.ftl"),
 	

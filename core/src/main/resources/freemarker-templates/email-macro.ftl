@@ -95,17 +95,20 @@
               <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
     
                 <!-- START CENTERED WHITE CONTAINER -->
-                <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">This is preheader text. Some clients will show this text as a preview.</span>
+                <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">
+                </span>
+                    
                 <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
-    
                   <!-- START MAIN CONTENT AREA -->
                   <tr>
                     <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
                       <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
                         <tr>
                           <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                                        <img src="cid:logo" /><br />
-                                        <#nested />
+                            <div style="text-align:center"><img src="cid:logo" /></div>
+                            <br />
+                            <br />
+                            <#nested />
                           </td>
                         </tr>
                       </table>
@@ -116,7 +119,16 @@
                 </table>
     
                 <!-- START FOOTER -->
-                <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+                <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%; color:grey;font-size:12px;">
+                Visit <a href="https://www.tdar.org">tDAR</a> <span style="padding-left:30px;padding-right:30px;">|</span> 
+                Contact us at <a href="mailto:comments@tdar.org">comments@tdar.org</a>
+                <br />
+                <br />
+                tDAR (the Digital Archaeological Record) is the digital repository of the Center for Digital Antiquity, 
+                a collaborative organization and university Center at Arizona State University. 
+                Digital Antiquity extends our knowledge of the human past and improves the management 
+                of our cultural heritage by permanently preserving digital archaeological 
+                data and supporting their discovery, access, and reuse.    
 
                 </div>  
                 <!-- END FOOTER -->

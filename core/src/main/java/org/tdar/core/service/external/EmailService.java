@@ -319,47 +319,52 @@ public class EmailService {
     @Transactional(readOnly = false)
     public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
             EmailMessageType type, GeneralPermissions permission, Date expires) {
-        Email email = new Email();
-        email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + ": " + resource.getTitle());
-        email.setTo(requestor.getEmail());
-        email.setResource(resource);
-        Map<String, Object> map = new HashMap<>();
-        map.put("requestor", requestor);
-        map.put("resource", resource);
-        map.put("expires", expires);
-        map.put("authorizedUser", authenticatedUser);
-        if (type == EmailMessageType.CUSTOM) {
+        
+    	EmailType emailType = null;
+    	if(reject){
+    		emailType = EmailType.PERMISSION_REQUEST_REJECTED;
+    	}
+    	else {
+    		if(type == EmailMessageType.CUSTOM){
+    			emailType = EmailType.PERMISSION_REQUEST_CUSTOM;
+    		}
+    		else {
+    			emailType = EmailType.PERMISSION_REQUEST_ACCEPTED;
+    		}
+    	}
+    	
+    	AwsMessage message = awsEmailService.createMessage(emailType, requestor.getEmail());
+    	message.addData("requestor", requestor);
+    	message.addData("resource", resource);
+    	message.addData("expires", expires);
+    	message.addData("authorizedUser", authenticatedUser);
+    	if (type == EmailMessageType.CUSTOM) {
             RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
-            map.put("customName", customRequest.getName());
-            map.put("descriptionResponse", customRequest.getDescriptionResponse());
+            message.addData("customName", customRequest.getName());
+            message.addData("descriptionResponse", customRequest.getDescriptionResponse());
         }
-        setupBasicComponents(map);
         if (StringUtils.isNotBlank(comment)) {
-            map.put("message", comment);
+        	message.addData("message", comment);
         }
-        String template = "email-form/access-request-granted.ftl";
-        if (reject) {
-            template = "email-form/access-request-rejected.ftl";
-        } else {
-            if (type != null) {
-                switch (type) {
-                    case CUSTOM:
-                        template = "email-form/custom-accept.ftl";
-                        break;
-                    default:
-                        break;
-                }
-            }
+    	
+        setupBasicComponents(message.getMap());
+    	
+
+        if(!reject){
             resource.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, requestor, permission, expires));
             genericDao.saveOrUpdate(resource.getAuthorizedUsers());
             genericDao.saveOrUpdate(resource);
-            // resourceCollectionDao.addToInternalCollection(resource, authenticatedUser, requestor, permission, expires);
-
         }
-        queueWithFreemarkerTemplate(template, map, email);
-        email.setUserGenerated(false);
-        send(email);
-
+        
+        //email.setResource(resource);
+        message.getEmail().setUserGenerated(false);
+        queueAwsMessage(message);
+        
+        try {
+			awsEmailService.renderAndSendMessage(message);
+		} catch (MessagingException | IOException e) {
+			logger.debug("Couldn't send email: {}",e,e);
+		}
     }
 
     private void setupBasicComponents(Map<String, Object> map) {
