@@ -2,12 +2,9 @@ package org.tdar.struts.action.resource;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.SetUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -19,11 +16,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.coverage.CoverageDate;
-import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
@@ -76,14 +68,10 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
             if (rc instanceof ListCollection) {
                 resources.addAll(((ListCollection) rc).getUnmanagedResources());
             } else {
-<<<<<<< mine
                 resources.addAll(((SharedCollection)rc).getResources());
-=======
-                resources.addAll(((RightsBasedResourceCollection) rc).getResources());
                 for (SharedCollection sc :resourceCollectionService.findAllChildCollectionsOnly((SharedCollection)rc, SharedCollection.class)) {
                     resources.addAll(sc.getResources());
                 }
->>>>>>> theirs
             }
         }
 
