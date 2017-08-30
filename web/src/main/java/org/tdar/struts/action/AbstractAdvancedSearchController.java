@@ -209,6 +209,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             getAsqo().getSearchParameters().addAll(groups);
             getAsqo().setReservedParams(getReservedSearchParameters());
             resourceSearchService.buildAdvancedSearch(getAsqo(), getAuthenticatedUser(), this, this);
+            addActionMessages();
             updateDisplayOrientationBasedOnSearchResults();
         } catch (SearchPaginationException spe) {
             getLogger().debug("pagination issue: {}", spe.getMessage() );
@@ -226,6 +227,19 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             return INPUT;
         }
 
+    }
+
+    private void addActionMessages() {
+        for (SearchParameters sp: groups) {
+            for (String msg : sp.getActionMessages()) {
+                getLogger().debug("adding actionMessage:{}",msg);
+                addActionMessage(msg);
+            }
+        }
+        for (String msg : getReservedSearchParameters().getActionMessages()) {
+            getLogger().debug("adding actionMessage:{}",msg);
+            addActionMessage(msg);
+        }
     }
 
     protected void updateDisplayOrientationBasedOnSearchResults() {

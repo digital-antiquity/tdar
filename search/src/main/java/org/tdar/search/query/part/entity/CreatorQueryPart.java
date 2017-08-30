@@ -13,7 +13,6 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
@@ -21,6 +20,7 @@ import org.tdar.search.query.part.FieldJoinQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -39,6 +39,7 @@ public class CreatorQueryPart<C extends Creator<?>> extends AbstractHydrateableQ
     private List<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private List<ResourceCreator> userInput = new ArrayList<>();
+    private List<String> actionMessages = new ArrayList<>();
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator, List<ResourceCreatorProxy> proxyList) {
@@ -66,10 +67,11 @@ public class CreatorQueryPart<C extends Creator<?>> extends AbstractHydrateableQ
                     for (Creator<?> creator_ : creators) {
                         if (PersistableUtils.isTransient(creator_)) {
                             // user entered a complete-ish creator record but autocomplete callback did fire successfully
-                            throw new TdarRecoverableRuntimeException("creatorQueryPart.use_autocomplete", Arrays.asList(creator_.toString()));
+                            getActionMessages().add(MessageHelper.getMessage("creatorQueryPart.use_autocomplete", Arrays.asList(creator_.toString())));
+                        } else {
+                            this.roles.add(rc.getRole());
+                            this.getFieldValues().add((C) creator_);
                         }
-                        this.roles.add(rc.getRole());
-                        this.getFieldValues().add((C) creator_);
                     }
                 }
             } catch (NullPointerException npe) {
@@ -153,6 +155,14 @@ public class CreatorQueryPart<C extends Creator<?>> extends AbstractHydrateableQ
     @Override
     public String getDescriptionHtml(TextProvider provider) {
         return StringEscapeUtils.escapeHtml4(getDescription(provider));
+    }
+
+    public List<String> getActionMessages() {
+        return actionMessages;
+    }
+
+    public void setActionMessages(List<String> actionMessages) {
+        this.actionMessages = actionMessages;
     }
 
 }

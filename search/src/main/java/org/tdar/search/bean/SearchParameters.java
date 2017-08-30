@@ -316,6 +316,7 @@ public class SearchParameters {
     }
 
     TextProvider support = MessageHelper.getInstance();
+    private List<String> actionMessages = new ArrayList<>();
 
     // FIXME: where appropriate need to make sure we pass along the operator to any sub queryPart groups
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -424,7 +425,9 @@ public class SearchParameters {
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
                 SharedCollection.class, getOperator(), getShares()));
-        queryPartGroup.append(new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
+        CreatorQueryPart<Creator> cqp = new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies);
+        getActionMessages().addAll(cqp.getActionMessages());
+        queryPartGroup.append(cqp);
 
         // explore: decade
         queryPartGroup.append(new FieldQueryPart<>(QueryFieldNames.DATE_CREATED_DECADE, Operator.OR, getCreationDecades()));
@@ -712,6 +715,14 @@ public class SearchParameters {
 
     public void setAnnotations(List<StringPair> annotations) {
         this.annotations = annotations;
+    }
+
+    public List<String> getActionMessages() {
+        return actionMessages;
+    }
+
+    public void setActionMessages(List<String> actionMessages) {
+        this.actionMessages = actionMessages;
     }
 
 }
