@@ -178,7 +178,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
 
         logger.debug("loadEffective...");
         for (SharedCollection rc : resource.getSharedResourceCollections()) {
-            if (authorizationService.canViewCollection(authenticatedUser, rc)) {
+            if (authorizationService.canRemoveFromCollection( rc, authenticatedUser)) {
                 shares.add(rc);
             } else {
                 retainedSharedCollections.add(rc);
@@ -186,7 +186,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
             }
         }
         for (ListCollection rc : resource.getUnmanagedResourceCollections()) {
-            if (authorizationService.canViewCollection(authenticatedUser, rc)) {
+            if (authorizationService.canRemoveFromCollection(rc,authenticatedUser)) {
                 resourceCollections.add(rc);
             } else {
                 retainedListCollections.add(rc);
@@ -197,23 +197,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
         logger.debug(" shares retained : {}", retainedSharedCollections);
         logger.debug(" shares effective: {}", effectiveShares);
 
-    }/*
-    blic void loadEffectiveResourceCollectionsForEdit() {
-        getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
-
-        getLogger().debug("loadEffective...");
-        for (SharedCollection rc : getResource().getSharedResourceCollections()) {
-            if (authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
-                getShares().add(rc);
-            } else {
-                getRetainedSharedCollections().add(rc);
-                getLogger().debug("adding: {} to retained collections", rc);
-            }
-        }
-        getLogger().debug("Shares: {}", getShares());
     }
-
-*/
 
     /* (non-Javadoc)
      * @see org.tdar.web.service.ResourceEditControllerService#loadFilesJson(org.tdar.core.bean.resource.InformationResource)
