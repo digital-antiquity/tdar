@@ -104,7 +104,8 @@
     <li><a class="sml" data-size="${collection.resources?size!0}" data-hidden="${collection.hidden?c}" 
     		data-submitter="${collection.submitter.properName}" 
     		data-submitterId="${collection.submitter.id?c}" 
-    		data-description="${collection.description}" 
+    		data-description="${collection.description!''}" 
+    		data-name="${collection.name!''}" 
     		
     		href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
         <#sep>&nbsp;&nbsp;&bull;</#sep></li>
