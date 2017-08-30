@@ -101,7 +101,12 @@
     <p>
     <ul class="inline">
         <#items as collection>
-    <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+    <li><a class="sml" data-size="${collection.resources?size!0}" data-hidden="${collection.hidden?c}" 
+    		data-submitter="${collection.submitter.properName}" 
+    		data-submitterId="${collection.submitter.id?c}" 
+    		data-description="${collection.description}" 
+    		
+    		href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
         <#sep>&nbsp;&nbsp;&bull;</#sep></li>
 </#items>
 </ul>
