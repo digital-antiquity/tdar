@@ -241,7 +241,6 @@ public class ResourceSearchService extends AbstractSearchService {
         }
         queryBuilder.append(topLevelQueryPart);
 
-        asqo.setSearchPhrase(topLevelQueryPart.getDescription(provider));
 
         if (topLevelQueryPart.isEmpty() || CollectionUtils.isNotEmpty(asqo.getAllGeneralQueryFields())) {
             asqo.setCollectionSearchBoxVisible(true);
@@ -252,6 +251,8 @@ public class ResourceSearchService extends AbstractSearchService {
 
         queryBuilder.setDeemphasizeSupporting(true);
         searchService.handleSearch(queryBuilder, result, provider);
+        // dependent on handle search to hydrate 
+        asqo.setSearchPhrase(topLevelQueryPart.getDescription(provider));
         return result;
     }
 
