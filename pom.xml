@@ -83,7 +83,7 @@
         <bouncycastle.version>1.56</bouncycastle.version>        
         <http-components.version>4.4.6</http-components.version>
         <http-client.version>4.5.3</http-client.version>
-        <guava.version>21.0</guava.version>
+        <guava.version>23.0</guava.version>
         <jackcess.version>2.1.8</jackcess.version>
         <jt-utils.version>1.4.0</jt-utils.version>
         <commons-io.version>2.5</commons-io.version>
@@ -271,6 +271,11 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
                 <!-- LICENSE: MIT -->
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>2.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
