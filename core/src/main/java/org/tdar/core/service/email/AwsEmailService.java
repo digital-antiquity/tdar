@@ -15,24 +15,19 @@ import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 public interface AwsEmailService {
-
 	SendEmailResult sendMessage(AwsMessage message);
-
 	AwsMessage createMessage(EmailType emailType, String to);
-
 	void renderAndUpdateEmailContent(AwsMessage message);
-
 	MimeMessage createMimeMessage(AwsMessage message) throws MessagingException;
-
-	SendRawEmailResult sendMultiPartMessage(MimeMessage message) throws IOException, MessagingException;
-
 	byte[] getByteArray(MimeMessage message) throws IOException, MessagingException;
-
 	void updateEmailSubject(AwsMessage message);
-
+	AwsMessage convertEmailToAwsMessage(Email email);
+	
+	
+	SendRawEmailResult sendMultiPartMessage(MimeMessage message) throws IOException, MessagingException;
+	SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException;
 	void setAwsRegion(Regions region);
 
-	AwsMessage convertEmailToAwsMessage(Email email);
 
-	SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException;
+
 }

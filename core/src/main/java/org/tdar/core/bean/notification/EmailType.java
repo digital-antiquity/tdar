@@ -9,6 +9,7 @@ import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
 import org.tdar.core.bean.notification.aws.InviteMessage;
 import org.tdar.core.bean.notification.aws.TestAwsMessage;
+import org.tdar.utils.MessageHelper;
 
 public enum EmailType {
 	INVITE("invite/invite.ftl","test@tdar.org",null,InviteMessage.class),
@@ -25,12 +26,12 @@ public enum EmailType {
 	RESOURCE_EXPORT("resource-export-email.ftl"),
 	
 	ADMIN_NOTIFICATION("auth-report.ftl"),
-	ADMIN_NEW_USER_REPORT("email_new_users.ftl",null,"%s New User Report: %s new users",AdminReportNewUsersMessage.class),
-	ADMIN_QUARANTINE_REVIEW("email_review_message.ftl",null,"There are %s user emails to review ",AdminQuarantineReviewMessage.class),
+	ADMIN_NEW_USER_REPORT("email_new_users.ftl",null,getSubject("AdminNewUserReview"),AdminReportNewUsersMessage.class),
+	ADMIN_QUARANTINE_REVIEW("email_review_message.ftl",null,getSubject("AdminQuarantineReview"),AdminQuarantineReviewMessage.class),
 	ADMIN_EMBARGO_EXPIRE("embargo/expiration-admin.ftl"),
 	ADMIN_OVERDRAWN_NOTIFICATION("overdrawn-admin.ftl"),
 	
-	TEST_EMAIL("test-email.ftl", "test@tdar.org", "This is a test email %2$s %1$s",TestAwsMessage.class);
+	TEST_EMAIL("test-email.ftl", "test@tdar.org", getSubject("TestEmail"),TestAwsMessage.class);
 	
 	/**
 	 * a string representation of the .ftl template to use
@@ -78,12 +79,17 @@ public enum EmailType {
 		this.emailClass = emailClass;
 	}
 
+	
 	public String getFromAddress() {
 		return fromAddress;
 	}
 
 	public void setFromAddress(String fromAddress) {
 		this.fromAddress = fromAddress;
+	}
+	
+	private static String getSubject(String key){
+		return MessageHelper.getInstance().getText("emailType."+key+".subject");
 	}
 
 	/**

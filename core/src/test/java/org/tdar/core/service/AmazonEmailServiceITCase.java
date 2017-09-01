@@ -75,7 +75,6 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     	message.addData("bar", "bar");
     	message.addData("firstName", "Brian");
     	message.addData("lastName", "Castellanos");
-		message.getAttachments().add(new File("src/test/resources/asu_map_tempe_2008.pdf"));
 
     	awsEmailService.renderAndUpdateEmailContent(message);
         awsEmailService.updateEmailSubject(message);
@@ -83,7 +82,7 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
         getLogger().debug(message.getEmail().getMessage());
     }
     
-    @Test 
+    /*@Test 
     public void testBounceMessage(){
     	try {
 	    	AwsMessage message = awsEmailService.createMessage(EmailType.TEST_EMAIL,"bounce@simulator.amazonses.com");
@@ -106,7 +105,7 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     	catch(MessagingException | IOException e ){
     		fail(e.getMessage());
     	}
-    }
+    }*/
    
 
 }

@@ -144,17 +144,29 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 	public SendEmailResult sendMessage(AwsMessage message) {
 		logger.debug("sendMessage() message={}", message);
 
-		Email email = message.getEmail();
-		SendEmailRequest request = new SendEmailRequest()
-				.withDestination(new Destination().withToAddresses(email.getTo()))
-				.withMessage(new Message()
-						.withBody(
-								new Body().withHtml(new Content().withCharset("UTF-8").withData(email.getMessage())))
-						.withSubject(new Content().withCharset("UTF-8").withData(email.getSubject())))
-				.withSource(message.getEmail().getFrom());
+		Email 		email 		= message.getEmail();
+		Destination toEmail 	= new Destination().withToAddresses(email.getTo());
+		String 		fromEmail 	= message.getEmail().getFrom();
+
+		Body body = new Body().withHtml(createContent(email.getMessage()));
+		
+		Message message1 = new Message();
+		message1.withBody(body);
+		message1.withSubject(createContent(email.getSubject()));
+		
+		SendEmailRequest request = new SendEmailRequest();
+		request.withDestination(toEmail);
+		request.withMessage(message1);
+		request.withSource(fromEmail);
 
 		SendEmailResult response = getSesClient().sendEmail(request);
+		
 		return response;
+	}
+	
+	private Content createContent(String content){
+		String characterSet = TdarConfiguration.getInstance().getCharacterSet();
+		return new Content().withCharset(characterSet).withData(content);
 	}
 	
 	/**
@@ -213,8 +225,6 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 	public AwsMessage convertEmailToAwsMessage(Email email) {
 		// TODO Auto-generated method stub
 		return null;
-		
-		
 		
 	}
 }

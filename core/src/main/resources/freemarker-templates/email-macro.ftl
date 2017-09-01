@@ -78,11 +78,11 @@
             text-decoration: none !important;
           }
           .btn-primary table td:hover {
-            background-color: #34495e !important;
+            background-color: #7a1501 !important;
           }
           .btn-primary a:hover {
-            background-color: #34495e !important;
-            border-color: #34495e !important;
+            background-color: #7a1501 !important;
+            border-color: #7a1501 !important;
           }
         }
         </style>

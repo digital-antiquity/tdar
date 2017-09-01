@@ -9,7 +9,7 @@ public class InviteMessage extends AwsMessage {
 	public String createSubjectLine() {
 		String properName = ((TdarUser) getMap().get("from")).getProperName();
 		String tdar = TdarConfiguration.getInstance().getSiteAcronym();
-		return String.format("%s has invited you to %s",properName,tdar);
+		return String.format(getEmailType().getSubject(),properName,tdar);
 	}
 
 }

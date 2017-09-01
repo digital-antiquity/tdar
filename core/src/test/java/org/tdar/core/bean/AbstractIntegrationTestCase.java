@@ -80,7 +80,7 @@ import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.email.AwsEmailService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.external.EmailServiceImpl;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.integration.DataIntegrationService;
@@ -148,7 +148,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public SendEmailProcess sendEmailProcess;
 
     @Autowired
-    protected EmailService emailService;
+    protected EmailServiceImpl emailService;
     
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());

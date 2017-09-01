@@ -52,7 +52,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     private List<String> couponCodes = new ArrayList<>();
 
     private String configurationFile;
-
+    
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
     public static final String PRODUCTION = "production";
     private static final int USE_DEFAULT_EXCEL_ROWS = -1;
@@ -1013,4 +1013,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public String getAwsSecretKey(){
     	return assistant.getStringProperty("aws.accesskey.secret");
     }
+
+	public String getCharacterSet() {
+		return assistant.getStringProperty("aws.characterset");
+	}
 }
