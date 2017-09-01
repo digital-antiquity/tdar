@@ -1,12 +1,14 @@
 package org.tdar.core.bean.notification.aws;
 
-import org.tdar.core.bean.entity.TdarUser;
+import java.util.Arrays;
+
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.utils.MessageHelper;
 
 public class InviteAcceptedMessage extends AwsMessage {
 
 	@Override
 	public String createSubjectLine() {
-		return String.format(getEmailType().getSubject(), TdarConfiguration.getInstance().getSiteAcronym());
+		return MessageHelper.getInstance().getText("EmailType."+getEmailType().name(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
 	}
 }

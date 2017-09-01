@@ -63,4 +63,6 @@ public interface EmailService {
 
 	void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person);
 
+	String getFromEmail();
+
 }

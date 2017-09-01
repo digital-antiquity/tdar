@@ -199,6 +199,7 @@ public class EmailServiceImpl implements EmailService {
         genericDao.saveOrUpdate(email);
     }
 
+    @Override
     public String getFromEmail() {
         return CONFIG.getDefaultFromEmail();
     }

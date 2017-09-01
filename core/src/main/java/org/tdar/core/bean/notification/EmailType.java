@@ -9,29 +9,28 @@ import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
 import org.tdar.core.bean.notification.aws.InviteMessage;
 import org.tdar.core.bean.notification.aws.TestAwsMessage;
-import org.tdar.utils.MessageHelper;
 
 public enum EmailType {
-	INVITE("invite/invite.ftl","test@tdar.org",null,InviteMessage.class),
-	INVITE_ACCEPTED("invite/invite-accepted.ftl","test@tdar.org",null,InviteAcceptedMessage.class),
+	INVITE("invite/invite.ftl","test@tdar.org",InviteMessage.class),
+	INVITE_ACCEPTED("invite/invite-accepted.ftl","test@tdar.org",InviteAcceptedMessage.class),
 	NEW_USER_NOTIFY("email_new_users.ftl"),
 	NEW_USER_WELCOME("email-welcome.ftl"),
 	TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl"),
 	
-	PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl","test@tdar.org",null,AccessRequestGrantedMessage.class),
-	PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl","test@tdar.org",null,AccessRequestRejectedMessage.class),
-	PERMISSION_REQUEST_CUSTOM("email-form/custom-accept.ftl","test@tdar.org",null,AccessRequestCustomMessage.class),
+	PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl","test@tdar.org",AccessRequestGrantedMessage.class),
+	PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl","test@tdar.org",AccessRequestRejectedMessage.class),
+	PERMISSION_REQUEST_CUSTOM("email-form/custom-accept.ftl","test@tdar.org",AccessRequestCustomMessage.class),
 	
 	OVERDRAWN_NOTIFICATION("overdrawn-user.ftl"),
 	RESOURCE_EXPORT("resource-export-email.ftl"),
 	
 	ADMIN_NOTIFICATION("auth-report.ftl"),
-	ADMIN_NEW_USER_REPORT("email_new_users.ftl",null,getSubject("AdminNewUserReview"),AdminReportNewUsersMessage.class),
-	ADMIN_QUARANTINE_REVIEW("email_review_message.ftl",null,getSubject("AdminQuarantineReview"),AdminQuarantineReviewMessage.class),
+	ADMIN_NEW_USER_REPORT("email_new_users.ftl",null,AdminReportNewUsersMessage.class),
+	ADMIN_QUARANTINE_REVIEW("email_review_message.ftl",null,AdminQuarantineReviewMessage.class),
 	ADMIN_EMBARGO_EXPIRE("embargo/expiration-admin.ftl"),
 	ADMIN_OVERDRAWN_NOTIFICATION("overdrawn-admin.ftl"),
 	
-	TEST_EMAIL("test-email.ftl", "test@tdar.org", getSubject("TestEmail"),TestAwsMessage.class);
+	TEST_EMAIL("test-email.ftl", "test@tdar.org", TestAwsMessage.class);
 	
 	/**
 	 * a string representation of the .ftl template to use
@@ -41,11 +40,7 @@ public enum EmailType {
 	 * The sending address to populate on the email
 	 */
 	private String fromAddress;
-	/**
-	 * The subject line to populate on the email
-	 */
-	private String subject;
-	
+		
 	private Class<? extends AwsMessage> emailClass;
 	
 	private EmailType(String template){
@@ -57,13 +52,8 @@ public enum EmailType {
 		this.setFromAddress(fromAddress);
 	}
 	
-	private EmailType(String template, String fromAddress, String subject) {
+	private EmailType(String template,  String fromAddress, Class<? extends AwsMessage> emailClass) {
 		this(template, fromAddress);
-		this.setSubject(subject);
-    }
-	
-	private EmailType(String template,  String fromAddress, String subject, Class<? extends AwsMessage> emailClass) {
-		this(template, fromAddress, subject);
 		this.setEmailClass(emailClass);
     }
 
@@ -86,21 +76,5 @@ public enum EmailType {
 
 	public void setFromAddress(String fromAddress) {
 		this.fromAddress = fromAddress;
-	}
-	
-	private static String getSubject(String key){
-		return MessageHelper.getInstance().getText("emailType."+key+".subject");
-	}
-
-	/**
-	 * Returns the subject line text or the formatter pattern to replace. 
-	 * @return the subject line
-	 */
-	public String getSubject() {
-		return subject==null?"":subject;
-	}
-
-	public void setSubject(String subject) {
-		this.subject = subject;
 	}
 }

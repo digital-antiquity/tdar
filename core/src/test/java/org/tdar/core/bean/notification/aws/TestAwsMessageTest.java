@@ -2,9 +2,13 @@ package org.tdar.core.bean.notification.aws;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.notification.EmailType;
+import org.tdar.utils.MessageHelper;
+
 
 public class TestAwsMessageTest {
 	
@@ -44,7 +48,7 @@ public class TestAwsMessageTest {
 		assertNotNull(message.getMap().get("firstName"));
 		assertNotNull(message.getMap().get("lastName"));
 		
-		String subject = String.format(EmailType.TEST_EMAIL.getSubject(), lastName, firstName);
+		String subject = MessageHelper.getInstance().getText("EmailType.TEST_EMAIL",Arrays.asList(lastName, firstName));
 		
 		System.out.printf("Message is : %s",subject);
 		assertEquals(message.createSubjectLine(), subject);

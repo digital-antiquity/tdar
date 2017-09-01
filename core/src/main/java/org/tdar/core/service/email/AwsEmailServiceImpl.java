@@ -95,7 +95,7 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 			message.setFrom(emailType.getFromAddress());
 		}
 		
-		message.setSubject(emailType.getSubject());
+		message.setSubject("");
 		message.setTo(to);
 		AwsMessage awsEmail = null;
 		if(emailType.getEmailClass()!=null){
