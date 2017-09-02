@@ -8,7 +8,7 @@ import org.tdar.utils.MessageHelper;
 public class AdminReportNewUsersMessage extends AwsMessage {
 	@Override
 	public String createSubjectLine() {
-		return MessageHelper.getMessage("EmailType."+getEmailType().name(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym().toUpperCase(), getMap().get("totalUsers")));
+		return MessageHelper.getMessage(getSubjectKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym().toUpperCase(), getMap().get("totalUsers")));
 	}
 
 }

@@ -54,8 +54,5 @@ public class TestAwsMessageTest {
 		
 		System.out.printf("Message is : %s",subject);
 		assertEquals(message.createSubjectLine(), subject);
-		
 	}
-
-
 }
