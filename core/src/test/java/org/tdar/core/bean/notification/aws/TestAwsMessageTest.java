@@ -26,6 +26,8 @@ public class TestAwsMessageTest {
 		assertEquals(message.getEmailType(),EmailType.TEST_EMAIL);
 	}
 	
+	
+	
 	@Test(expected=NullPointerException.class)
 	public void testEmailSubject(){
 		assertNotNull(message.createSubjectLine());

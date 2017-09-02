@@ -1,11 +1,14 @@
 package org.tdar.core.bean.notification.aws;
 
+import java.util.Arrays;
+
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.utils.MessageHelper;
 
 public class AdminReportNewUsersMessage extends AwsMessage {
 	@Override
 	public String createSubjectLine() {
-		return String.format("%s New User Report: %s new users", TdarConfiguration.getInstance().getSiteAcronym().toUpperCase(), getMap().get("totalUsers"));
+		return MessageHelper.getMessage("EmailType."+getEmailType().name(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym().toUpperCase(), getMap().get("totalUsers")));
 	}
 
 }

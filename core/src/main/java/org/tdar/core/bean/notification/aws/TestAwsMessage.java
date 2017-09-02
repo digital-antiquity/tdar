@@ -14,6 +14,6 @@ public class TestAwsMessage extends AwsMessage {
 		firstName = (String) getMap().get("firstName");
 		lastName  = (String) getMap().get("lastName");
 		
-		return MessageHelper.getInstance().getText("EmailType."+getEmailType().name(), Arrays.asList(lastName, firstName));
+		return MessageHelper.getMessage("EmailType."+getEmailType().name(), Arrays.asList(lastName, firstName));
 	}
 }
