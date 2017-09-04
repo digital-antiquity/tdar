@@ -82,8 +82,14 @@
                         <#items as account>
                         <tr>
                             <td><a href="${account.detailUrl}">${account.name}</a>
-                            <#local pspace= (account.totalSpaceInMb - account.availableSpaceInMb) / account.totalSpaceInMb * 100.0 >
-                            <#local pfiles= (account.totalNumberOfFiles - account.availableNumberOfFiles) / account.totalNumberOfFiles * 100.0 >
+                            <#local pspace =0>
+                            <#if (account.totalSpaceInMb > 0)>
+	                            <#local pspace= (account.totalSpaceInMb - account.availableSpaceInMb) / account.totalSpaceInMb * 100.0 >
+                            </#if>
+                            <#local pfiles= 0>
+                            <#if (account.totalNumberOfFiles > 0)>
+	                            <#local pfiles= (account.totalNumberOfFiles - account.availableNumberOfFiles) / account.totalNumberOfFiles * 100.0 >
+                            </#if>
                             <#local perc = pfiles />
                             <#if (pspace > pfiles) >
                             	<#local perc = pfiles>
