@@ -41,46 +41,7 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     	assertEquals(EmailType.TEST_EMAIL.getFromAddress(), "test@tdar.org");
     }
     
-    @Test
-    @Rollback
-    public void testSendAwsMail() throws IOException {
-        AwsMessage message = awsEmailService.createMessage(EmailType.TEST_EMAIL, "bcastel1@asu.edu");
-        message.getEmail().setSubject("Subject");
-    	message.getEmail().setMessage("This is a test message");
-    	message.addData("foo", "foo");
-    	message.addData("bar", "bar");
-    	message.addData("firstName", "Brian");
-    	message.addData("lastName", "Castellanos");
-		
-    	//message.getAttachments().add(new File("src/test/resources/asu_map_tempe_2008.pdf"));
-
-    	awsEmailService.renderAndUpdateEmailContent(message);
-        awsEmailService.updateEmailSubject(message);
-    	
-        MimeMessage mimeMessage;
-		try {
-			mimeMessage = awsEmailService.createMimeMessage(message);
-			awsEmailService.sendMultiPartMessage(mimeMessage);
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		}
-    }   
    
-    @Test
-    public void testEmailContent() throws IOException {    
-        AwsMessage message = awsEmailService.createMessage(EmailType.TEST_EMAIL, "success@simulator.amazonses.com");
-        message.getEmail().setSubject("Subject");
-    	message.getEmail().setMessage("This is a test message");
-    	message.addData("foo", "foo");
-    	message.addData("bar", "bar");
-    	message.addData("firstName", "Brian");
-    	message.addData("lastName", "Castellanos");
-
-    	awsEmailService.renderAndUpdateEmailContent(message);
-        awsEmailService.updateEmailSubject(message);
-    	
-        getLogger().debug(message.getEmail().getMessage());
-    }
     
     /*@Test 
     public void testBounceMessage(){

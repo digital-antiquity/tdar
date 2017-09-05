@@ -1,8 +1,12 @@
 package org.tdar.core.service.external;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasName;
@@ -12,10 +16,13 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.EmailMessageType;
+
+import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 public interface EmailService {
 
@@ -64,5 +71,17 @@ public interface EmailService {
 	void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person);
 
 	String getFromEmail();
+
+	MimeMessage createMimeMessage(AwsMessage message) throws MessagingException;
+
+	AwsMessage createMessage(EmailType emailType, String to);
+
+	void renderAndUpdateEmailContent(AwsMessage message);
+
+	void updateEmailSubject(AwsMessage message);
+
+	byte[] getByteArray(MimeMessage message) throws IOException, MessagingException;
+
+	SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException;
 
 }

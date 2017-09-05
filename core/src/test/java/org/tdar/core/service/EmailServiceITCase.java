@@ -7,8 +7,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.mail.MessagingException;
 
 import org.junit.Test;
 import org.springframework.mail.SimpleMailMessage;
@@ -18,7 +21,9 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
+import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.MockMailSender;
 
@@ -75,7 +80,47 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
         sendEmailProcess.execute();
         assertTrue("expecting a mail in in the inbox", ((MockMailSender) emailService.getMailSender()).getMessages().size() > 0);
-
     }
+    
+    
+    @Test
+    @Rollback
+    public void testSendAwsMail() throws IOException {
+        AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bcastel1@asu.edu");
+        message.getEmail().setSubject("Subject");
+    	message.getEmail().setMessage("This is a test message");
+    	message.addData("foo", "foo");
+    	message.addData("bar", "bar");
+    	message.addData("firstName", "Brian");
+    	message.addData("lastName", "Castellanos");
+		
+    	//message.getAttachments().add(new File("src/test/resources/asu_map_tempe_2008.pdf"));
+
+    	emailService.renderAndUpdateEmailContent(message);
+    	emailService.updateEmailSubject(message);
+    	
+		try {
+			emailService.renderAndSendMessage(message);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+    }   
+   
+    @Test
+    public void testEmailContent() throws IOException {    
+        AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "success@simulator.amazonses.com");
+        message.getEmail().setSubject("Subject");
+    	message.getEmail().setMessage("This is a test message");
+    	message.addData("foo", "foo");
+    	message.addData("bar", "bar");
+    	message.addData("firstName", "Brian");
+    	message.addData("lastName", "Castellanos");
+
+    	emailService.renderAndUpdateEmailContent(message);
+    	emailService.updateEmailSubject(message);
+    	
+        getLogger().debug(message.getEmail().getMessage());
+    }
+    
 
 }

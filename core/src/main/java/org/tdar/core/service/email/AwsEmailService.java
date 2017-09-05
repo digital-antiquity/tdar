@@ -16,16 +16,9 @@ import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 public interface AwsEmailService {
 	SendEmailResult sendMessage(AwsMessage message);
-	AwsMessage createMessage(EmailType emailType, String to);
-	void renderAndUpdateEmailContent(AwsMessage message);
-	MimeMessage createMimeMessage(AwsMessage message) throws MessagingException;
-	byte[] getByteArray(MimeMessage message) throws IOException, MessagingException;
-	void updateEmailSubject(AwsMessage message);
+	SendRawEmailResult sendMultiPartMessage(RawMessage message) throws IOException, MessagingException;
+
 	AwsMessage convertEmailToAwsMessage(Email email);
-	
-	
-	SendRawEmailResult sendMultiPartMessage(MimeMessage message) throws IOException, MessagingException;
-	SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException;
 	void setAwsRegion(Regions region);
 
 

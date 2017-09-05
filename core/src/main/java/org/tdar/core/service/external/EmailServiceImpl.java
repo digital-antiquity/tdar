@@ -1,15 +1,20 @@
 package org.tdar.core.service.external;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Map.Entry;
 
 import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.collections4.MapUtils;
@@ -18,10 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasName;
@@ -36,6 +43,7 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.notification.aws.AwsMessage;
+import org.tdar.core.bean.notification.aws.BasicAwsMessage;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.RevisionLogType;
@@ -46,6 +54,10 @@ import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.email.AwsEmailService;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.MessageHelper;
+
+import com.amazonaws.services.simpleemail.model.Content;
+import com.amazonaws.services.simpleemail.model.RawMessage;
+import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 /**
  * $Id$
@@ -91,10 +103,10 @@ public class EmailServiceImpl implements EmailService {
 		//This will force rendering the entire message with attachments and mime boundaries. 
 		//The result will be a string which gets queued. 
     	try {
-    		awsEmailService.renderAndUpdateEmailContent(message);
-        	awsEmailService.updateEmailSubject(message);
-			MimeMessage mimeMessage = awsEmailService.createMimeMessage(message);
-			String body = new String(awsEmailService.getByteArray(mimeMessage));
+    		renderAndUpdateEmailContent(message);
+        	updateEmailSubject(message);
+			MimeMessage mimeMessage = createMimeMessage(message);
+			String body = new String(getByteArray(mimeMessage));
 			message.getEmail().setMessage(body);
 			queue(message.getEmail());
 		} catch (MessagingException | IOException e) {
@@ -126,7 +138,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
 	@Transactional(readOnly = false)
     public void sendUserInviteEmail(UserInvite invite, TdarUser from) {
-    	AwsMessage message = awsEmailService.createMessage(EmailType.INVITE, invite.getUser().getEmail());
+    	AwsMessage message = createMessage(EmailType.INVITE, invite.getUser().getEmail());
     	message.getEmail().setUserGenerated(false);
     	message.addData("invite", 	invite);
     	message.addData("from", 	from);
@@ -350,7 +362,7 @@ public class EmailServiceImpl implements EmailService {
     		}
     	}
     	
-    	AwsMessage message = awsEmailService.createMessage(emailType, requestor.getEmail());
+    	AwsMessage message = createMessage(emailType, requestor.getEmail());
     	message.addData("requestor", requestor);
     	message.addData("resource", resource);
     	message.addData("expires", expires);
@@ -378,7 +390,7 @@ public class EmailServiceImpl implements EmailService {
         queueAwsMessage(message);
         
         try {
-			awsEmailService.renderAndSendMessage(message);
+			renderAndSendMessage(message);
 		} catch (MessagingException | IOException e) {
 			logger.debug("Couldn't send email: {}",e,e);
 		}
@@ -397,18 +409,134 @@ public class EmailServiceImpl implements EmailService {
 	@Transactional(readOnly = false)
     public void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person) {
         for (Entry<TdarUser, List<HasName>> entry : notices.entrySet()) {
-        	AwsMessage message = awsEmailService.createMessage(EmailType.INVITE_ACCEPTED, entry.getKey().getEmail());
+        	AwsMessage message = createMessage(EmailType.INVITE_ACCEPTED, entry.getKey().getEmail());
             message.addData("owner", entry.getKey());
             message.addData("items", entry.getValue());
             message.addData("user", person);
             setupBasicComponents(message.getMap());
             //queueAwsMessage(message);
             try {
-				awsEmailService.renderAndSendMessage(message);
+				renderAndSendMessage(message);
 			} catch (MessagingException | IOException e) {
 				logger.debug("Could not send the email: {} ",e,e);
 			}
         }
     }
 
+    
+	@Override
+	public MimeMessage createMimeMessage(AwsMessage message) throws MessagingException {
+		Session session = Session.getInstance(new Properties());
+		MimeMessage mimeMessage = new MimeMessage(session);
+
+		MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
+
+		messageHelper.setTo(message.getEmail().getTo());
+		messageHelper.setFrom(message.getEmail().getFrom());
+		messageHelper.setSubject(message.getEmail().getSubject());
+		messageHelper.setText(message.getEmail().getMessage(), true);
+
+		for(File file : message.getAttachments()){
+			messageHelper.addAttachment(file.getName(), file);
+		}
+		
+		ClassPathResource logo =  new ClassPathResource("tdar-logo.png");
+		messageHelper.addInline("logo", logo);
+		
+		return messageHelper.getMimeMessage();
+	}
+	
+
+
+	/**
+	 * 
+	 * 
+	 * @param EmailType
+	 *            the type of email to be created
+	 * @return AwsEmail a new instance
+	 */
+	@Override
+	public AwsMessage createMessage(EmailType emailType, String to) {
+		Email message = new Email();
+		
+		if(emailType.getFromAddress()==null){
+			message.setFrom(CONFIG.getDefaultFromEmail());
+		}
+		else {
+			message.setFrom(emailType.getFromAddress());
+		}
+		
+		message.setSubject("");
+		message.setTo(to);
+		AwsMessage awsEmail = null;
+		if(emailType.getEmailClass()!=null){
+			try {
+				awsEmail = emailType.getEmailClass().newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			awsEmail = new BasicAwsMessage();
+		}
+		
+		awsEmail.setEmailType(emailType);
+		awsEmail.setEmail(message);
+
+		return awsEmail;
+	}
+
+	/**
+	 * Renders the template for the email and stores the content within the
+	 * email bean
+	 */
+	@Override
+	public void renderAndUpdateEmailContent(AwsMessage message) {
+		String templateName = null;
+		try {
+			templateName = message.getEmailType().getTemplateLocation();
+			String content = freemarkerService.render(templateName, message.getMap());
+			message.getEmail().setMessage(content);
+		}
+		catch(IOException e) {
+            logger.error("Email template file not found (" + templateName + ")", e);
+		}
+	}
+	
+	/**
+	 * Forces the message to re-render dynamically created subject line.
+	 */
+	@Override
+	public void updateEmailSubject(AwsMessage message){
+		message.getEmail().setSubject(message.createSubjectLine());
+	}
+    
+	private RawMessage createRawMimeMessage(MimeMessage message) throws IOException, MessagingException {
+		byte[] byteArray = getByteArray(message);
+        return new RawMessage(ByteBuffer.wrap(byteArray));
+	}
+
+	@Override
+	public byte[] getByteArray(MimeMessage message) throws IOException, MessagingException{
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        message.writeTo(outputStream);
+        return outputStream.toByteArray();
+	}
+    
+	/**
+	 * Takes an AWS message, renders the Freemarker template to update the HTML body, renders the subject line,
+	 * then creates an MIME version and sends it via AWS.
+	 */
+	@Override
+	public SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException{
+		updateEmailSubject(message);
+		renderAndUpdateEmailContent(message);
+		MimeMessage mimeMessage = createMimeMessage(message);
+		RawMessage  rawMessage  = createRawMimeMessage(mimeMessage);
+		return awsEmailService.sendMultiPartMessage(rawMessage);
+	}
+	
+
+    
+    
 }

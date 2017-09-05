@@ -54,93 +54,6 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 	private Regions awsRegion = Regions.US_WEST_2;
 	
 	@Override
-	public MimeMessage createMimeMessage(AwsMessage message) throws MessagingException {
-		Session session = Session.getInstance(new Properties());
-		MimeMessage mimeMessage = new MimeMessage(session);
-
-		MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
-
-		messageHelper.setTo(message.getEmail().getTo());
-		messageHelper.setFrom(message.getEmail().getFrom());
-		messageHelper.setSubject(message.getEmail().getSubject());
-		messageHelper.setText(message.getEmail().getMessage(), true);
-
-		for(File file : message.getAttachments()){
-			messageHelper.addAttachment(file.getName(), file);
-		}
-		
-		ClassPathResource logo =  new ClassPathResource("tdar-logo.png");
-		messageHelper.addInline("logo", logo);
-		
-		return messageHelper.getMimeMessage();
-	}
-	
-
-
-	/**
-	 * 
-	 * 
-	 * @param EmailType
-	 *            the type of email to be created
-	 * @return AwsEmail a new instance
-	 */
-	@Override
-	public AwsMessage createMessage(EmailType emailType, String to) {
-		Email message = new Email();
-		
-		if(emailType.getFromAddress()==null){
-			message.setFrom(config.getDefaultFromEmail());
-		}
-		else {
-			message.setFrom(emailType.getFromAddress());
-		}
-		
-		message.setSubject("");
-		message.setTo(to);
-		AwsMessage awsEmail = null;
-		if(emailType.getEmailClass()!=null){
-			try {
-				awsEmail = emailType.getEmailClass().newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
-		else {
-			awsEmail = new BasicAwsMessage();
-		}
-		
-		awsEmail.setEmailType(emailType);
-		awsEmail.setEmail(message);
-
-		return awsEmail;
-	}
-
-	/**
-	 * Renders the template for the email and stores the content within the
-	 * email bean
-	 */
-	@Override
-	public void renderAndUpdateEmailContent(AwsMessage message) {
-		String templateName = null;
-		try {
-			templateName = message.getEmailType().getTemplateLocation();
-			String content = freemarkerService.render(templateName, message.getMap());
-			message.getEmail().setMessage(content);
-		}
-		catch(IOException e) {
-            logger.error("Email template file not found (" + templateName + ")", e);
-		}
-	}
-	
-	/**
-	 * Forces the message to re-render dynamically created subject line.
-	 */
-	@Override
-	public void updateEmailSubject(AwsMessage message){
-		message.getEmail().setSubject(message.createSubjectLine());
-	}
-	
-	@Override
 	public SendEmailResult sendMessage(AwsMessage message) {
 		logger.debug("sendMessage() message={}", message);
 
@@ -163,43 +76,21 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 		
 		return response;
 	}
-	
-	private Content createContent(String content){
-		String characterSet = TdarConfiguration.getInstance().getCharacterSet();
-		return new Content().withCharset(characterSet).withData(content);
-	}
-	
-	/**
-	 * Takes an AWS message, renders the Freemarker template to update the HTML body, renders the subject line,
-	 * then creates an MIME version and sends it via AWS.
-	 */
-	@Override
-	public SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException{
-		updateEmailSubject(message);
-		renderAndUpdateEmailContent(message);
-		MimeMessage mimeMessage = createMimeMessage(message);
-		return sendMultiPartMessage(mimeMessage);
-	}
+
 
 	@Override
-	public SendRawEmailResult sendMultiPartMessage(MimeMessage message) throws IOException, MessagingException  {
-		SendRawEmailRequest request  	= new SendRawEmailRequest().withRawMessage(createRawMimeMessage(message));
+	public SendRawEmailResult sendMultiPartMessage(RawMessage message) throws IOException, MessagingException  {
+		SendRawEmailRequest request  	= new SendRawEmailRequest().withRawMessage(message);
 		SendRawEmailResult  response 	= getSesClient().sendRawEmail(request);
 		return response;
 	}
 	
-	private RawMessage createRawMimeMessage(MimeMessage message) throws IOException, MessagingException {
-		byte[] byteArray = getByteArray(message);
-        return new RawMessage(ByteBuffer.wrap(byteArray));
+		private Content createContent(String content){
+		String characterSet = TdarConfiguration.getInstance().getCharacterSet();
+		return new Content().withCharset(characterSet).withData(content);
 	}
-
-	@Override
-	public byte[] getByteArray(MimeMessage message) throws IOException, MessagingException{
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        message.writeTo(outputStream);
-        return outputStream.toByteArray();
-	}
-	
+    
+    
 	private BasicAWSCredentials getAwsCredentials(){
 		return new BasicAWSCredentials(config.getAwsAccessKey(), config.getAwsSecretKey());
 	}
@@ -215,7 +106,6 @@ public class AwsEmailServiceImpl implements AwsEmailService {
 	public void setAwsRegion(Regions region){
 		this.awsRegion = region;
 	}
-
 
 	/**
 	 * This method is used in the job scheduler to convert a queued email object back to an AwsMessage object
