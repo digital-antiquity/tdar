@@ -54,6 +54,7 @@ web/phantomjsdriver.log
 
 core/src/main/resources/rebel.xml
 web/src/main/resources/rebel.xml
+docker/postgres
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 webservice/([^\/]+)/build/.*
