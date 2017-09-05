@@ -50,9 +50,6 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
     private transient EmailService emailService;
 
     @Autowired
-    private transient AwsEmailService awsEmailService;
-    
-    @Autowired
     private transient EntityService entityService;
 
     @Override
@@ -93,7 +90,7 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(people)) {
-        	AwsMessage message = awsEmailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getContactEmail());
+        	AwsMessage message = emailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getContactEmail());
         	message.setMap(initDataModel());
         	message.addData("users", people);
             message.addData("totalUsers", people.size());
@@ -108,7 +105,7 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
     private void sendQuarrantineEmail() {
         List<Email> emails = emailService.findEmailsWithStatus(Status.IN_REVIEW);
         if (CollectionUtils.isNotEmpty(emails)) {
-        	AwsMessage message = awsEmailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getContactEmail());
+        	AwsMessage message = emailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getContactEmail());
         	message.setMap(initDataModel());
         	message.addData("emails", emails);
         	message.addData("totalEmails",emails.size());
