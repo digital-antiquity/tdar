@@ -68,7 +68,6 @@ public enum EmailType {
 	public void setEmailClass(Class<? extends AwsMessage> emailClass) {
 		this.emailClass = emailClass;
 	}
-
 	
 	public String getFromAddress() {
 		return fromAddress;

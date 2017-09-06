@@ -14,7 +14,6 @@ import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
-@Service
 public class MockAwsEmailServiceImpl implements AwsEmailService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private Regions awsRegion;
