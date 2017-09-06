@@ -9,6 +9,6 @@ public class InviteAcceptedMessage extends AwsMessage {
 
 	@Override
 	public String createSubjectLine() {
-		return MessageHelper.getInstance().getText(getSubjectKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
+		return MessageHelper.getInstance().getText("EmailType.INVITE_ACCEPTED", Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
 	}
 }

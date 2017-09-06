@@ -62,10 +62,6 @@ public abstract class AwsMessage {
 		return this;
 	}
 	
-	protected String getSubjectKey(){
-		return "EmailType."+getEmailType().name();
-	}
-	
 	public void addAttachment(File file){
 		this.attachments.add(file);
 	}

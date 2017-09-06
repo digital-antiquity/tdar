@@ -22,5 +22,5 @@
     <!-- <import resource="spring-tag-ahad.xml" /> -->
     
     <bean name="mailSender" class="org.tdar.core.service.external.MockMailSender" />
-
+    <bean name="awsEmailService" class="org.tdar.core.service.external.MockAwsEmailServiceImpl" />
 </beans>
