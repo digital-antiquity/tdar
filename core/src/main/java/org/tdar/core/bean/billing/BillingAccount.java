@@ -3,6 +3,7 @@ package org.tdar.core.bean.billing;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,9 +41,11 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Updatable;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.utils.MathUtils;
@@ -61,7 +64,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "pos_account")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.billing.Account")
-public class BillingAccount extends AbstractPersistable implements Updatable, HasStatus, Addressable, HasUsers, HasName, Validatable {
+public class BillingAccount extends AbstractPersistable implements Updatable, HasStatus, Addressable, HasAuthorizedUsers, HasName, Validatable {
 
     private static final long serialVersionUID = -1728904030701477101L;
 
@@ -112,11 +115,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Coupon> coupons = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
-    @JoinTable(name = "pos_members", joinColumns = { @JoinColumn(nullable = false, name = "account_id") }, inverseJoinColumns = { @JoinColumn(
-            nullable = false, name = "user_id") })
-    private Set<TdarUser> authorizedMembers = new HashSet<>();
-
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
     @JoinColumn(nullable = true, updatable = true, name = "account_id")
     private Set<Resource> resources = new HashSet<>();
@@ -125,6 +123,11 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @JoinColumn(nullable = false, updatable = false, name = "account_id")
     @OrderBy("date_created DESC")
     private List<AccountUsageHistory> usageHistory = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "account_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.billing.billingAccount.authorizedUsers")
+    private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
     private transient Long totalResources = 0L;
     private transient Long totalFiles = 0L;
@@ -353,15 +356,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         this.status = status;
     }
 
-    @Override
-    public Set<TdarUser> getAuthorizedMembers() {
-        return authorizedMembers;
-    }
-
-    @Override
-    public void setAuthorizedMembers(Set<TdarUser> authorizedMembers) {
-        this.authorizedMembers = authorizedMembers;
-    }
 
     public Long getFilesUsed() {
         return filesUsed;
@@ -493,6 +487,14 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @XmlTransient
     public boolean isFlagged() {
         return status == Status.FLAGGED;
+    }
+
+    public Set<AuthorizedUser> getAuthorizedUsers() {
+        return authorizedUsers;
+    }
+
+    public void setAuthorizedUsers(Set<AuthorizedUser> authorizedUsers) {
+        this.authorizedUsers = authorizedUsers;
     }
 
     @Override

@@ -175,8 +175,9 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
             if (persistable instanceof Updatable) {
                 ((Updatable) persistable).markUpdated(getAuthenticatedUser());
             }
-
+            getLogger().trace("before sve");
             actionReturnStatus = save(persistable);
+            getLogger().trace("after sve");
 
             try {
                 postSaveCallback(actionReturnStatus);

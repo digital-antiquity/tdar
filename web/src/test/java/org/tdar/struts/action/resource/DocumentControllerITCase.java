@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -47,6 +48,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.junit.IgnoreActionErrors;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TestFileUploadHelper;
 import org.tdar.struts.action.document.DocumentController;
@@ -225,7 +227,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
     @Ignore("Ignoring because this is an internal performance test, not really a unit-test")
     @Test
     @Rollback
-    public void testPerformance() throws InstantiationException, IllegalAccessException, TdarActionException {
+    public void testPerformance() throws InstantiationException, IllegalAccessException, TdarActionException, FileNotFoundException {
         // 42s -- reconcileSet + indexInterceptor @100docs
         // 52s -- reconcileSet + w/o indexInterceptor @100docs
         // 43s -- setter model + w/o indexInterceptor @100docs
@@ -267,7 +269,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
                 doc.getResourceCreators().add(rc);
                 genericService.saveOrUpdate(rc);
             }
-            File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+            File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
             addFileToResource(doc, file);
             genericService.saveOrUpdate(doc);
         }
@@ -659,6 +661,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
 
     @Test
     @Rollback
+    @IgnoreActionErrors
     public void testUserPermIssUpload() throws Exception {
         // setup document
         TdarUser newUser = createAndSaveNewUser();
@@ -689,7 +692,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         uc.grabTicket();
         Long ticketId = uc.getPersonalFilestoreTicket().getId();
         uc.setTicketId(ticketId);
-        uc.getUploadFile().add(new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
+        uc.getUploadFile().add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
         uc.upload();
         
@@ -703,6 +706,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         dc.setId(id);
         dc.prepare();
         boolean seenException = false;
+        setIgnoreActionErrors(true);
         try {
             dc.edit();
             FileProxy fileProxy = new FileProxy();
@@ -711,15 +715,16 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
             fileProxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
             dc.getFileProxies().add(fileProxy);
             dc.setTicketId(ticketId);
-            dc.save();
+            String save = dc.save();
+            assertEquals(TdarActionSupport.INPUT, save);
         } catch (TdarActionException e) {
             logger.error("{}",e,e);
             assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
             seenException = true;
         }
-        assertTrue(seenException);
-        // assertNotEmpty(dc.getActionErrors());
-        // setIgnoreActionErrors(true);
+        
+        assertFalse(seenException);
+        assertNotEmpty("should have action errors", dc.getActionErrors());
 
     }
 

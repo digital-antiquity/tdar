@@ -22,14 +22,18 @@
     <tdar:resourceType>PROJECT</tdar:resourceType>
     <tdar:resourceCollections>
         <tdar:resourceCollection hidden="false">
+            <tdar:description>description</tdar:description>
+            <tdar:name>1234</tdar:name>
             <tdar:resources>
                 <tdar:resourceId>4232</tdar:resourceId>
             </tdar:resources>
-            <tdar:name>1234</tdar:name>
+            <tdar:sortBy>TITLE</tdar:sortBy>
         </tdar:resourceCollection>
         <tdar:resourceCollection hidden="true"  parentIdRef="NULL_REF">
             <tdar:description>description</tdar:description>
             <tdar:name>abcd</tdar:name>
+            <tdar:orientation>LIST</tdar:orientation>
+            <tdar:sortBy>TITLE</tdar:sortBy>
         </tdar:resourceCollection>
     </tdar:resourceCollections>
     

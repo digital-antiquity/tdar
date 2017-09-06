@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,8 +48,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -206,10 +207,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     /*
      * deprecated, use generateInformationResourceWithFileAndUser() or generateInformationResourceWithUser() instead
      */
-    public InformationResource generateInformationResourceWithFile() throws InstantiationException, IllegalAccessException {
+    public InformationResource generateInformationResourceWithFile() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, true);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
         ir = (Document) addFileToResource(ir, file);
         return ir;
@@ -240,10 +241,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    public Document generateDocumentWithFileAndUseDefaultUser() throws InstantiationException, IllegalAccessException {
+    public Document generateDocumentWithFileAndUseDefaultUser() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, false);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
         ir = (Document) addFileToResource(ir, file);
         return ir;
@@ -254,10 +255,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException {
+    public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, true);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
         ir = (Document) addFileToResource(ir, file);
         return ir;
@@ -353,7 +354,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             iResource.setCopyrightHolder(persistentPerson);
         }
 //        iResource.getAuthorizedUsers().add(new AuthorizedUser(persistentPerson, persistentPerson, GeneralPermissions.MODIFY_RECORD));
-        informationResourceService.saveOrUpdate(iResource);
+        genericService.saveOrUpdate(iResource);
         genericService.saveOrUpdate(iResource.getAuthorizedUsers());
         return iResource;
     }
@@ -363,8 +364,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         Dataset dataset = createAndSaveNewInformationResource(Dataset.class, null, getUser(), title);
         dataset.setDescription("Test dataset description");
         dataset.setDate(1999);
-        datasetService.saveOrUpdate(dataset);
-        informationResourceService.saveOrUpdate(dataset);
+        genericService.saveOrUpdate(dataset);
         genericService.saveOrUpdate(dataset.getAuthorizedUsers());
         return dataset;
     }
@@ -404,7 +404,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     // create new, public, collection with the getUser() as the owner and no resources
-    public <C extends VisibleCollection> C createAndSaveNewResourceCollection(String name, Class<C> class1) {
+    public <C extends ResourceCollection> C createAndSaveNewResourceCollection(String name, Class<C> class1) {
         try {
             return init(class1.newInstance(), name);
         } catch (InstantiationException | IllegalAccessException e) {
@@ -427,7 +427,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return wlc;
     }
 
-    protected <C extends VisibleCollection> C init(C resourceCollection, String name) {
+    protected <C extends ResourceCollection> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
         resourceCollection.setViewable(true);

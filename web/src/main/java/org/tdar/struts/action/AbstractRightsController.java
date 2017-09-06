@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -49,15 +48,13 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
-    @Autowired
     private transient UserRightsProxyService userRightsProxyService;
     @Autowired
     private transient SearchIndexService searchIndexService;
 
-    private List<SharedCollection> shares = new ArrayList<>();
-    private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
-    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
+//    private List<SharedCollection> shares = new ArrayList<>();
+//    private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
+//    private List<SharedCollection> effectiveShares = new ArrayList<>();
 
     private List<UserRightsProxy> proxies = new ArrayList<>();
     private List<UserRightsProxy> invites = new ArrayList<>();
@@ -118,10 +115,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     public String save() throws TdarActionException {
         try {
             getLogger().debug("proxies:{}", proxies);
-            loadEffectiveResourceCollectionsForSave();
-            getLogger().debug("retained collections:{}", getRetainedSharedCollections());
-            getShares().addAll(getRetainedSharedCollections());
-            getLogger().debug("shares:{}", getShares());
 
             handleCollectionSave();
 
@@ -172,7 +165,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         
         setupOwnerField();
         Collection<AuthorizedUser> users  = getLocalRightsCollection();
-        loadEffectiveResourceCollectionsForEdit();
             users.forEach(au -> {
                 proxies.add(new UserRightsProxy(au));
             });
@@ -190,37 +182,11 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         this.id = id;
     }
 
-    public void loadEffectiveResourceCollectionsForEdit() {}
-
-    public void loadEffectiveResourceCollectionsForSave() {}
 
     public SharedCollection getBlankShare() {
         return new SharedCollection();
     }
 
-    public List<SharedCollection> getRetainedSharedCollections() {
-        return retainedSharedCollections;
-    }
-
-    public void setRetainedSharedCollections(List<SharedCollection> retainedSharedCollections) {
-        this.retainedSharedCollections = retainedSharedCollections;
-    }
-
-    public List<RightsBasedResourceCollection> getEffectiveShares() {
-        return effectiveShares;
-    }
-
-    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveShares) {
-        this.effectiveShares = effectiveShares;
-    }
-
-    public List<SharedCollection> getShares() {
-        return shares;
-    }
-
-    public void setShares(List<SharedCollection> shares) {
-        this.shares = shares;
-    }
 
     public ListCollection getBlankResourceCollection() {
         return new ListCollection();

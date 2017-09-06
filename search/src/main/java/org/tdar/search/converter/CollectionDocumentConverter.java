@@ -5,20 +5,20 @@ import java.util.HashSet;
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 
 public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
 
-    public static SolrInputDocument convert(VisibleCollection collection) {
+    public static SolrInputDocument convert(ResourceCollection collection) {
 
     /*
      * See solr/configsets/default/conf/collections-schema.xml
      */
         SolrInputDocument doc = convertPersistable(collection);
-        VisibleCollection props = collection;
+        ResourceCollection props = collection;
         doc.setField(QueryFieldNames.NAME, props.getName());
         doc.setField(QueryFieldNames.NAME_SORT, Sortable.getTitleSort(props.getTitle()));
         doc.setField(QueryFieldNames.DESCRIPTION, props.getDescription());

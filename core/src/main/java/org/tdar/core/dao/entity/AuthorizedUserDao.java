@@ -15,14 +15,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -51,7 +51,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
 
     public boolean isAllowedTo(TdarUser person, HasAuthorizedUsers resource, GeneralPermissions permission) {
         if (resource instanceof ResourceCollection) {
-            return isAllowedTo(person, (VisibleCollection) resource, permission);
+            return isAllowedTo(person, (ResourceCollection) resource, permission);
         } else {
             return isAllowedTo(person, (Resource) resource, permission);
         }
@@ -85,7 +85,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         }
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
-        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
             if (collection instanceof SharedCollection) {
                 ids.addAll(((SharedCollection)collection).getParentIds());
             }
@@ -291,6 +291,10 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         String q = QUERY_RIGHTS_EXPIRY_COLLECTION;
         if (source instanceof Resource) {
             q = QUERY_RIGHTS_EXPIRY_RESOURCE;
+        } else if (source instanceof BillingAccount) {
+            q = QUERY_RIGHTS_EXPIRY_ACCOUNT;
+        } else if (source instanceof DataIntegrationWorkflow) {
+            q = QUERY_RIGHTS_EXPIRY_WORKFLOW;
         }
         Query<AuthorizedUser> query = getCurrentSession().createNamedQuery(q, AuthorizedUser.class);// QUERY_PROJECT_EDITABLE
         query.setParameter("userId", actor.getId());

@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.ReflectionHelper;
 
 @ContextConfiguration(classes = TdarAppConfiguration.class)
 public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
@@ -24,7 +24,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
     private Description describeTest(FrameworkMethod method) {
         Description description = Description.createSuiteDescription(testName(method), method.getAnnotations());
         try {
-            RunWithTdarConfiguration annotation = ReflectionService.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
+            RunWithTdarConfiguration annotation = ReflectionHelper.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
 
             if (annotation == null) {
                 return description;
@@ -48,7 +48,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         Description description = describeTest(method);
         String testName = testName(method);
         final String currentConfig = TdarConfiguration.getInstance().getConfigurationFile();
-        RunWithTdarConfiguration annotation = ReflectionService.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
+        RunWithTdarConfiguration annotation = ReflectionHelper.getAnnotationFromMethodOrClass(method.getMethod(), RunWithTdarConfiguration.class);
 
         if ((annotation != null) &&
                 (method.getAnnotation(Ignore.class) == null)) {

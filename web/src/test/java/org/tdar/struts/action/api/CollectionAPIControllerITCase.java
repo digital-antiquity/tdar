@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
@@ -42,7 +41,7 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
         logger.debug("{}", controller.getImportedRecord());
         childXml = serializationService.convertToXML(controller.getImportedRecord());
         logger.info(childXml);
-        assertEquals("another name", ((VisibleCollection) controller.getImportedRecord()).getName());
+        assertEquals("another name", controller.getImportedRecord().getName());
     }
 
     @Test

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,7 +69,7 @@ public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase 
         genericService.detachFromSession(dataset);
         // do search for something in another column
         sharedImageIds = Arrays.asList(image1_id, image2_id);
-
+        genericService.synchronize();
         assertEquals(3, projectService.findAllResourcesInProject(project).size());
 
         ResourceMappingMetadataController columnController = generateNewInitializedController(ResourceMappingMetadataController.class);
@@ -130,7 +131,7 @@ public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase 
         });
     }
 
-    public Image uploadImage(String filename, Project p) throws TdarActionException {
+    public Image uploadImage(String filename, Project p) throws TdarActionException, FileNotFoundException {
         ImageController controller = generateNewInitializedController(ImageController.class);
         controller.prepare();
         Image image = controller.getImage();
@@ -138,7 +139,7 @@ public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase 
         image.setDescription(filename);
         controller.setProjectId(p.getId());
         image.markUpdated(getSessionUser());
-        File file = new File(TestConstants.TEST_IMAGE_DIR + "/" + filename);
+        File file = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR , filename);
         addFileToResource(image, file);
         // controller.setUploadedFiles(Arrays.asList(file));
         // controller.setUploadedFilesFileName(Arrays.asList(filename));

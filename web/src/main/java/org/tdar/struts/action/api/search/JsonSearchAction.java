@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.service.FeedSearchHelper;
-import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.core.service.GeoRssMode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts_base.action.TdarActionException;

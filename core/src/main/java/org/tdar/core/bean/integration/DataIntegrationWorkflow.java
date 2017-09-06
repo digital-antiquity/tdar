@@ -2,6 +2,7 @@ package org.tdar.core.bean.integration;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -13,12 +14,15 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
@@ -28,15 +32,17 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.HasUsers;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.core.bean.resource.HasAuthorizedUsers;
 
 /**
  * Created by jim on 12/8/14.
  */
 @Entity
 @Table(name = "data_integration_workflow")
-public class DataIntegrationWorkflow extends AbstractPersistable implements HasSubmitter, Updatable, Addressable, HasUsers, Indexable, Viewable, Hideable {
+public class DataIntegrationWorkflow extends AbstractPersistable implements HasSubmitter, Updatable, Addressable, HasAuthorizedUsers, Indexable, Viewable, Hideable {
 
     private static final long serialVersionUID = -3687383363452908687L;
     private transient boolean viewable;
@@ -76,10 +82,11 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
     @NotNull
     private TdarUser submitter;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
-    @JoinTable(name = "data_integration_users", joinColumns = { @JoinColumn(nullable = false, name = "integration_id") }, inverseJoinColumns = { @JoinColumn(
-            nullable = false, name = "user_id") })
-    private Set<TdarUser> authorizedMembers = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = false, name = "integration_id")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean,integration.dataIntegrationWorkflow.authorizedUsers")
+    private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
+
 
     public DataIntegrationWorkflow(String string, boolean b, TdarUser adminUser) {
         this.title=string;
@@ -173,17 +180,6 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
         this.hidden = hidden;
     }
 
-    @Override
-    public Set<TdarUser> getAuthorizedMembers() {
-        return authorizedMembers;
-    }
-
-    @Override
-    public void setAuthorizedMembers(Set<TdarUser> authorizedMembers) {
-        this.authorizedMembers = authorizedMembers;
-    }
-
-
     @XmlTransient
     @Override
     public boolean isViewable() {
@@ -193,6 +189,14 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
     @Override
     public void setViewable(boolean viewable) {
         this.viewable = viewable;
+    }
+
+    public Set<AuthorizedUser> getAuthorizedUsers() {
+        return authorizedUsers;
+    }
+
+    public void setAuthorizedUsers(Set<AuthorizedUser> authorizedUsers) {
+        this.authorizedUsers = authorizedUsers;
     }
 
 }

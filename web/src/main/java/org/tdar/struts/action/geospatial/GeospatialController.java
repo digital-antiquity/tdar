@@ -36,14 +36,9 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
     @Override
     protected String save(Geospatial persistable) throws TdarActionException {
-        super.saveBasicResourceMetadata();
-
-        super.saveInformationResourceProperties();
-
-        handleUploadedFiles();
-
+        String save2 = super.save(persistable);
         resolvePostSaveAction(getPersistable());
-        return SUCCESS;
+        return save2;
     }
 
     @Override

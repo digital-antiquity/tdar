@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource;
 
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -200,7 +201,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testFindSimple() throws InterruptedException, InstantiationException, IllegalAccessException {
+    public void testFindSimple() throws InterruptedException, InstantiationException, IllegalAccessException, FileNotFoundException {
         int trials = 10;
 
         StopWatch stopwatch = new StopWatch();
@@ -232,7 +233,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
         logstats("new1 way", newstats1);
     }
 
-    private Long setupDoc() throws InstantiationException, IllegalAccessException {
+    private Long setupDoc() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document doc = generateDocumentWithFileAndUseDefaultUser();
         doc.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.AUTHOR));
         doc.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.AUTHOR));

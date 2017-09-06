@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,7 +107,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     @Rollback
     public void testCreate() throws Exception {
         setupValidLogin();
-        String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/newDocument.xml"));
+        String docXml = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/newDocument.xml"));
         ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
@@ -119,7 +118,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     @Rollback
     public void testHiddenCollection() throws Exception {
         setupValidLogin();
-        String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/hidden-collection.xml"));
+        String docXml = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR,"/xml/hidden-collection.xml"));
         ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
@@ -150,7 +149,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     @Rollback
     public void testInvalid() throws Exception {
         setupValidLogin();
-        String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/invalid.xml"));
+        String docXml = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/invalid.xml"));
         ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
@@ -165,9 +164,8 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         String filesUed = getFilesUsed(true);
         logger.debug("used: {}", filesUed);
 
-        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
-        ApiClientResponse response = apiClient.uploadRecord(text, null, 1L, new File(TestConstants.TEST_IMAGE),
-                new File(TestConstants.TEST_IMAGE2));
+        String text = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/confidentialImage.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(text, null, 1L, TestConstants.getFile(TestConstants.TEST_IMAGE), TestConstants.getFile(TestConstants.TEST_IMAGE2));
 
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
@@ -181,8 +179,8 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     public void testReplaceFile() throws Exception {
         setupValidLogin();
 
-        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
-        ApiClientResponse response = apiClient.uploadRecord(text, null, null, new File(TestConstants.TEST_IMAGE));
+        String text = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/confidentialImage.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(text, null, null, TestConstants.getFile(TestConstants.TEST_IMAGE));
         logger.debug("status:{} ", response.getStatusLine());
         String resp = response.getBody();
         logger.debug("response: {}", resp);
@@ -193,11 +191,11 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         String fileId = viewRecord.getXmlDocument().getElementsByTagName("tdar:informationResourceFile").item(0)
                 .getAttributes().getNamedItem("id").getNodeValue();
         logger.debug("fileId::{}", fileId);
-        text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
+        text = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
         text = text.replace("{{FILE_ID}}", fileId);
         text = text.replace("{{FILENAME}}", TestConstants.TEST_IMAGE_NAME2);
         logger.debug(text);
-        response = apiClient.updateFiles(text, id, null, new File(TestConstants.TEST_IMAGE2));
+        response = apiClient.updateFiles(text, id, null, TestConstants.getFile(TestConstants.TEST_IMAGE2));
 
         logger.debug("status:{} ", response.getStatusLine());
         assertEquals(HttpStatus.SC_ACCEPTED, response.getStatusLine().getStatusCode());
@@ -216,12 +214,25 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         return filesUed;
     }
 
+    /**
+     *  at java.lang.Thread.run(Thread.java:745) [?:1.8.0_25]
+DEBUG 2017-07-24 09:42:55,522 106019 [qtp90647349-57 []] (ActivityLoggingInterceptor.java:81) org.tdar.struts_base.interceptor.ActivityLoggingInterceptor - e» 948 ms | a: 807 ms; r: 141 ms
+DEBUG 2017-07-24 09:42:55,523 5812 [main []] (APIControllerWebITCase.java:226) org.tdar.utils.SimpleHttpUtils - status:HTTP/1.1 400 Bad Request 
+DEBUG 2017-07-24 09:42:55,523 5812 [main []] (APIControllerWebITCase.java:227) org.tdar.utils.SimpleHttpUtils - response: <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tdar:resultContainer xsi:schemaLocation="https://localhost:8143/schema/current schema.xsd" xmlns:tdar="http://www.tdar.org/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <tdar:errors>[FATAL ERROR] cvc-complex-type.2.4.a: Invalid content was found starting with element 'tdar:name'. One of '{"http://www.tdar.org/namespace":secondarySortBy, "http://www.tdar.org/namespace":sortBy, "http://www.tdar.org/namespace":status, "http://www.tdar.org/namespace":type, "http://www.tdar.org/namespace":alternateParentIds, "http://www.tdar.org/namespace":alternateParent}' is expected. line: 28 column: 24  {             &lt;tdar:name&gt;1234&lt;/tdar:name&gt; } cvc-complex-type.2.4.a: Invalid content was found starting with element 'tdar:name'. One of '{"http://www.tdar.org/namespace":secondarySortBy, "http://www.tdar.org/namespace":sortBy, "http://www.tdar.org/namespace":status, "http://www.tdar.org/namespace":type, "http://www.tdar.org/namespace":alternateParentIds, "http://www.tdar.org/namespace":alternateParent}' is expected. </tdar:errors>
+    <tdar:message></tdar:message>
+    <tdar:statusCode>400</tdar:statusCode>
+    <tdar:status>HTTP 400 BAD REQUEST</tdar:status>
+</tdar:resultContainer>
+     * @throws Exception
+     */
     @Test
     @Rollback
     public void testProjectWithCollection() throws Exception {
         setupValidLogin();
         String text = FileUtils
-                .readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/record-with-collections.xml"));
+                .readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/record-with-collections.xml"));
         ApiClientResponse response = apiClient.uploadRecord(text, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());

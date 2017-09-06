@@ -21,9 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -330,7 +328,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         Project loadedProject = genericService.find(Project.class, id);
         assertNotNull(loadedProject);
         Collection<ResourceCollection> cols = new HashSet<>();
-        for (RightsBasedResourceCollection rrc : loadedProject.getRightsBasedResourceCollections()) {
+        for (SharedCollection rrc : loadedProject.getRightsBasedResourceCollections()) {
             cols.add((ResourceCollection)rrc);
         }
         assertUniqueCollections(cols, name1, name2);
@@ -341,8 +339,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         // the collections should appear in the list, though we aren't sure of the order.
         ArrayList<String> names = new ArrayList<String>();
         for (ResourceCollection rc : resourceCollections) {
-            if (rc instanceof VisibleCollection)
-            names.add(((VisibleCollection) rc).getName());
+            names.add(rc.getName());
         }
 
         assertTrue(names.contains(name1));

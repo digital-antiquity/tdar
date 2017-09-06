@@ -20,7 +20,8 @@ public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
     JOURNAL_ARTICLE("article", "article", "Article"),
     THESIS("thesis", "thesis", "Institution", "Department", "Book"),
     CONFERENCE_PRESENTATION("conference", "conference", "Conference", "Conference Location", "Book"),
-    OTHER("other", "unknown", "Book");
+    OTHER("other", "unknown", "Book"),
+    REPORT("report", "unknown", "Book");
 
     private final String label;
     private final String openUrlGenre;

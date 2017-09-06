@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Set;
 
 import org.junit.Test;
@@ -18,6 +18,7 @@ import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
@@ -134,25 +135,25 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
 
     @Test
     @Rollback
-    public void testReEvaluationAppropriateWithUncountedThings() throws TdarActionException, InstantiationException, IllegalAccessException {
-        TdarUser person = createAndSaveNewUser();
-        BillingAccount invoice = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), person);
+    public void testReEvaluationAppropriateWithUncountedThings() throws TdarActionException, InstantiationException, IllegalAccessException, FileNotFoundException {
+        TdarUser person = createAndSaveNewPerson("aa@bbasdas.com", "suffix");
+        BillingAccount account = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), person);
         Project project = createAndSaveNewProject("title");
         Document doc = createAndSaveNewInformationResource(Document.class, person);
-        addFileToResource(doc, new File(TestConstants.TEST_DOCUMENT));
+        addFileToResource(doc, TestConstants.getFile(TestConstants.TEST_DOCUMENT));
         doc.setStatus(Status.DELETED);
         Document doc2 = createAndSaveNewInformationResource(Document.class, person);
-        addFileToResource(doc2, new File(TestConstants.TEST_DOCUMENT));
-        invoice.getResources().add(doc);
-        invoice.getResources().add(doc2);
-        invoice.getResources().add(project);
+        addFileToResource(doc2, TestConstants.getFile(TestConstants.TEST_DOCUMENT));
+        account.getResources().add(doc);
+        account.getResources().add(doc2);
+        account.getResources().add(project);
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class, person);
-        controller.setId(invoice.getId());
+        controller.setId(account.getId());
         controller.prepare();
         controller.updateQuotas();
-        assertEquals(1, invoice.getFilesUsed().intValue());
-        assertEquals(4, invoice.getAvailableNumberOfFiles().intValue());
-        assertEquals(1506924, invoice.getSpaceUsedInBytes().longValue());
+        assertEquals(1, account.getFilesUsed().intValue());
+        assertEquals(4, account.getAvailableNumberOfFiles().intValue());
+        assertEquals(1506924, account.getSpaceUsedInBytes().longValue());
         // controller.setServletRequest(getServletPostRequest());
         // String save = controller.save();
         // assertEquals(BillingAccountController.SUCCESS, save);
@@ -181,8 +182,15 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         Long id = setupAccountWithUsers();
 
         BillingAccount account = genericService.find(BillingAccount.class, id);
-        assertEquals(3, account.getAuthorizedMembers().size());
-        assertTrue(account.getAuthorizedMembers().contains(getAdminUser()));
+        assertEquals(4, account.getAuthorizedUsers().size());
+        logger.debug("users: {}", account.getAuthorizedUsers());
+        Boolean seenAdmin = false;
+        for (AuthorizedUser au : account.getAuthorizedUsers()) {
+            if (au.getUser().equals(getAdminUser())) {
+                seenAdmin = true;
+            }
+        }
+        assertTrue(seenAdmin);
     }
 
     private Long setupAccountWithUsers() throws TdarActionException {
@@ -208,15 +216,18 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
         controller.setId(id);
         controller.prepare();
-        int size = controller.getAccount().getAuthorizedMembers().size();
-        controller.getAuthorizedMembers().addAll(controller.getAccount().getAuthorizedMembers());
+        int size = controller.getAccount().getAuthorizedUsers().size();
+        controller.getAccount().getAuthorizedUsers().forEach(au -> {
+            controller.getAuthorizedMembers().add(au.getUser());
+        });
         controller.getAuthorizedMembers().remove(getBillingUser());
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         assertEquals(Action.SUCCESS, save);
         BillingAccount account = genericService.find(BillingAccount.class, id);
-        assertEquals(size - 1, account.getAuthorizedMembers().size());
-        assertFalse(account.getAuthorizedMembers().contains(getBillingUser()));
+        // no change because of admin user
+        assertEquals(size, account.getAuthorizedUsers().size());
+        assertFalse(account.getAuthorizedUsers().contains(getBillingUser()));
 
     }
 

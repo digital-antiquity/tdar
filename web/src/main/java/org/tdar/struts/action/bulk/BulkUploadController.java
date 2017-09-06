@@ -14,13 +14,20 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.bulk.BulkUploadService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
+import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.FileSaveWrapper;
+import org.tdar.web.service.ResourceSaveControllerService;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$
@@ -48,15 +55,19 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Autowired
     private transient BulkUploadService bulkUploadService;
 
+    @Autowired
+    private transient ResourceSaveControllerService resourceSaveControllerService;
+
     private String bulkFileName;
     private long bulkContentLength;
 
     /**
      * Save basic metadata of the registering concept.
+     * @throws TdarActionException 
      * 
      */
     @Override
-    protected String save(Image image) {
+    protected String save(Image image) throws TdarActionException {
         Status oldStatus = getPersistable().getStatus();
         getPersistable().setStatus(Status.DELETED);
         getGenericService().markReadOnly(getPersistable());
@@ -67,15 +78,23 @@ public class BulkUploadController extends AbstractInformationResourceController<
             return INPUT;
         }
         
-        
+        super.save(image);
         getLogger().debug("ticketId: {} ", getTicketId());
         getLogger().debug("proxy:    {}", getFileProxies());
-        saveBasicResourceMetadata();
-        saveInformationResourceProperties();
         getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
 
-        handleAsyncUploads();
-        Collection<FileProxy> fileProxiesToProcess = getFileProxiesToProcess();
+        AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getImage(), isAuthenticated(), getAuthenticatedUser(), isEditor());
+        
+        fsw.setBulkUpload(isBulkUpload());
+        fsw.setFileProxies(getFileProxies());
+        fsw.setTextInput(false);
+        fsw.setMultipleFileUploadEnabled(isMultipleFileUploadEnabled());
+        fsw.setTicketId(getTicketId());
+        fsw.setUploadedFilesFileName(getUploadedFilesFileName());
+        fsw.setUploadedFiles(getUploadedFiles());
+
+        Collection<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, fsw, null);
+        
         setupAccountForSaving();
         getCreditProxies().clear();
         getGenericService().detachFromSession(getPersistable());

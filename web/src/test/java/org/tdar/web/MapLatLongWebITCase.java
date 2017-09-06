@@ -1,6 +1,7 @@
 package org.tdar.web;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,7 +29,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     // FIXME:Break into two tests
     @Test
-    public void testAddingInformationResourceToProject() {
+    public void testAddingInformationResourceToProject() throws FileNotFoundException {
         TestConfiguration config = TestConfiguration.getInstance();
         String collectionUrl = null;
         if (TdarConfiguration.getInstance().isListCollectionsEnabled()) {
@@ -68,7 +69,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         detailedLatLong.setSouth(40.2115886265213);
         detailedLatLong.setEast(-106.38383388519287);
         detailedLatLong.setWest(-106.38091564178467);
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
         Long confidentialFile = setupDocumentWithProject(RESOURCE_WITH_NORMAL_LAT_LONG_AND_CONFIDENTIAL_FILE, latLong, Status.ACTIVE, file,
                 FileAccessRestriction.CONFIDENTIAL);
         Long obfuscatedMap = setupDocumentWithProject(RESOURCE_WITH_OBFUSCATED_LAT_LONG, detailedLatLong, Status.ACTIVE, null, null);

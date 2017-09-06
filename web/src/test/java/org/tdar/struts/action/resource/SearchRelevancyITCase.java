@@ -63,7 +63,7 @@ public class SearchRelevancyITCase extends AbstractControllerITCase  {
 
         iResource.markUpdated(submitter);
         iResource.setProject(project);
-        informationResourceService.save(iResource);
+        genericService.save(iResource);
         return iResource;
     }
 

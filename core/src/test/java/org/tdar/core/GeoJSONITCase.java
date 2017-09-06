@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,7 +89,7 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
     }
 
     @SuppressWarnings("deprecation")
-    private Resource[] setupDocs() throws InstantiationException, IllegalAccessException {
+    private Resource[] setupDocs() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Resource[] resources = new Resource[2];
         Document document = generateDocumentWithFileAndUseDefaultUser();
 //        document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));

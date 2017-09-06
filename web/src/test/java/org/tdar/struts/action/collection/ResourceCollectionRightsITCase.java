@@ -19,7 +19,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -327,7 +326,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, controller.save());
         evictCache();
-        RightsBasedResourceCollection first = document.getRightsBasedResourceCollections().iterator().next();
+        SharedCollection first = document.getRightsBasedResourceCollections().iterator().next();
         assertEquals(1, document.getRightsBasedResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());

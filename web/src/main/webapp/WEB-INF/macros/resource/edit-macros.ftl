@@ -1418,7 +1418,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
     <#-- emit a repeatrow table of @registeredUserRow controls -->
     <#macro listMemberUsers >
-        <#local _authorizedUsers=persistable.authorizedMembers />
+        <#local _authorizedUsers=authorizedMembers />
         <#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
 
     <div id="accessRightsRecords" class="repeatLastRow" data-addAnother="add another user">

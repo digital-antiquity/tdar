@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.MultipleWebTdarConfigurationRunner;
-import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
+import org.tdar.core.dao.external.auth.AuthenticationResultType;
 import org.tdar.junit.RunWithTdarConfiguration;
 
 /**

@@ -13,6 +13,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -85,7 +86,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
     @SuppressWarnings("unused")
     @Test
-    public void testUploadShapefile() {
+    public void testUploadShapefile() throws FileNotFoundException {
         gotoPage("/geospatial/add");
         WebElement form = find("#metadataForm").first();
         prepIndexedFields();
@@ -102,7 +103,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         }
 
         FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
-        File dir = new File(TestConstants.TEST_SHAPEFILE_DIR);
+        File dir = TestConstants.getFile(TestConstants.TEST_SHAPEFILE_DIR);
         for (File file : dir.listFiles()) {
             uploadFileAsync(restriction, file);
         }
@@ -139,7 +140,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
     @SuppressWarnings("unused")
     @Test
-    public void testUploadGeotiff() throws InterruptedException {
+    public void testUploadGeotiff() throws InterruptedException, FileNotFoundException {
         gotoPage("/geospatial/add");
         WebElement form = find("#metadataForm").first();
         prepIndexedFields();
@@ -156,8 +157,8 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         }
 
         FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
-        uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF));
-        uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF_TFW));
+        uploadFileAsync(restriction, TestConstants.getFile(TestConstants.TEST_GEOTIFF));
+        uploadFileAsync(restriction, TestConstants.getFile(TestConstants.TEST_GEOTIFF_TFW));
         String path = submitGISForm("/add");
         logger.trace(find("body").getText());
         assertFalse("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));

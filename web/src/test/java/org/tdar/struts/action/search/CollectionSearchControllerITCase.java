@@ -12,7 +12,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -108,7 +107,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
         if (collection instanceof ListCollection) {
             ((ListCollection) collection).getUnmanagedResources().add(doc);
         } else {
-            ((RightsBasedResourceCollection) collection).getResources().add(doc);
+            ((SharedCollection) collection).getResources().add(doc);
         }
         collection.markUpdated(getUser());
         genericService.saveOrUpdate(collection);

@@ -37,7 +37,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -61,8 +60,6 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceAnnotation;
-import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.EntityService;
@@ -82,10 +79,9 @@ import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.search.service.query.CreatorSearchInterface;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.StringPair;
 import org.tdar.utils.range.DateRange;
 
 public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
@@ -93,7 +89,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
 
     @Autowired
-    CreatorSearchInterface<Creator<?>> creatorSearchService;
+    CreatorSearchService<Creator<?>> creatorSearchService;
 
     @Autowired
     ResourceService resourceService;
@@ -782,7 +778,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         // skeleton lists should have been loaded w/ sparse records...
         assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
         logger.debug("c's:{}",sp.getCollections());
-        assertEquals(colname, ((VisibleCollection)sp.getShares().get(1)).getName());
+        assertEquals(colname, ((SharedCollection)sp.getShares().get(1)).getName());
     }
 
     @Test
@@ -807,7 +803,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         
         // skeleton lists should have been loaded w/ sparse records...
         // assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
-        assertEquals(colname, ((VisibleCollection)sp.getShares().get(0)).getName());
+        assertEquals(colname, ((SharedCollection)sp.getShares().get(0)).getName());
         assertTrue(result.getResults().contains(proj));
         // assertEquals(proj.getId(), sp.getProjects().get(0).getId());
         // assertEquals(coll.getId(), sp.getCollections().get(1).getId());
@@ -872,7 +868,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         sp.getCollections().add(sparseCollection);
         SearchResult<Resource> result = doSearch(null, null, sp, null);
 
-        assertThat(((VisibleCollection)sp.getCollections().get(0)).getTitle(), is("Mega Collection"));
+        assertThat(((ListCollection)sp.getCollections().get(0)).getTitle(), is("Mega Collection"));
     }
 
     private void assertOnlyResultAndProject(SearchResult<Resource> result, InformationResource informationResource) {

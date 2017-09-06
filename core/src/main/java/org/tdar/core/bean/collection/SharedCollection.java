@@ -29,8 +29,8 @@ import org.tdar.core.bean.resource.Resource;
 @DiscriminatorValue(value = "SHARED")
 @Entity
 @XmlRootElement(name = "resourceCollection")
-public class SharedCollection extends CustomizableCollection<SharedCollection>
-        implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName, Sortable {
+public class SharedCollection extends HierarchicalCollection<SharedCollection>
+        implements Comparable<SharedCollection>, HasName, Sortable {
     private static final long serialVersionUID = 7900346272773477950L;
 
     public SharedCollection(String title, String description, boolean hidden, SortOption sortOption, DisplayOrientation displayOrientation, TdarUser creator) {
@@ -88,6 +88,7 @@ public class SharedCollection extends CustomizableCollection<SharedCollection>
     @JoinColumn(name = "alternate_parent_id")
     private SharedCollection alternateParent;
     
+    @Override
     public SharedCollection getParent() {
         return parent;
     }
@@ -141,6 +142,7 @@ public class SharedCollection extends CustomizableCollection<SharedCollection>
         return getVisibleParents(SharedCollection.class);
     }
 
+    @Override
     public SharedCollection getAlternateParent() {
         return alternateParent;
     }
@@ -149,4 +151,11 @@ public class SharedCollection extends CustomizableCollection<SharedCollection>
         this.alternateParent = alternateParent;
     }
 
+    @Override
+    public void copyImmutableFieldsFrom(ResourceCollection resource) {
+        super.copyImmutableFieldsFrom(resource);
+        if (resource instanceof SharedCollection ) {
+            this.setParent(((SharedCollection) resource).getParent());
+        }
+    }
 }

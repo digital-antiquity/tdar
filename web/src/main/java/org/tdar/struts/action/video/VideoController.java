@@ -32,12 +32,7 @@ public class VideoController extends AbstractInformationResourceController<Video
 
     @Override
     protected String save(Video video) throws TdarActionException {
-        saveBasicResourceMetadata();
-        saveInformationResourceProperties();
-        getGenericService().saveOrUpdate(video);
-        handleUploadedFiles();
-        getGenericService().saveOrUpdate(video);
-        return SUCCESS;
+        return super.save(video);
     }
 
     @Override

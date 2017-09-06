@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.ConfigurationAssistant;
-import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.exception.TdarAuthorizationException;
 
 import com.atlassian.crowd.embedded.api.PasswordCredential;

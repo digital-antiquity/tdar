@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.StatisticsService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 
 /**
@@ -30,7 +30,7 @@ public class DailyStatisticsUpdate extends AbstractScheduledProcess {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private transient StatisticService statisticService;
+    private transient StatisticsService statisticService;
 
     @Autowired
     private transient GenericService genericService;

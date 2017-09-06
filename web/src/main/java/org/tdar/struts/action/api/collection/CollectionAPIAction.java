@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
@@ -97,8 +97,8 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
             }
 
             String title = "no title";
-            if (loadedRecord instanceof VisibleCollection) {
-                title = ((VisibleCollection) loadedRecord).getTitle();
+            if (loadedRecord instanceof ResourceCollection) {
+                title = ((ResourceCollection) loadedRecord).getTitle();
             }
             logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), title);
 

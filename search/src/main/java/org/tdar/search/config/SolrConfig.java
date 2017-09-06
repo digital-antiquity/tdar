@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.tdar.core.configuration.SimpleAppConfiguration;
+import org.tdar.core.configuration.TdarConfiguration;
 
 @Configuration
 @PropertySource(value = SolrConfig.SEARCH_PROPERTIES, ignoreResourceNotFound = true)
@@ -104,8 +105,14 @@ public class SolrConfig {
                 path = dir.toPath();
             }
         }
+        File testPath = path.toFile();
+        if (!testPath.exists() && TdarConfiguration.getInstance().isTest()) {
+            File file = new File("../search/src/main/resources/solr");
+            if (file.exists()) {
+                path = file.toPath();
+            }
+        }
         logger.debug("solr server path: {}", path);
-        
         CoreContainer container = CoreContainer.createAndLoad(path);
         
         logger.debug("core names: {}", container.getAllCoreNames());

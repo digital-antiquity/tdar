@@ -92,7 +92,7 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         WebElement form = find("#metadataForm").first();
         expandAllTreeviews();
         prepIndexedFields();
-        //uploadFileAsync(FileAccessRestriction.PUBLIC, new File(TestConstants.TEST_IMAGE));
+        //uploadFileAsync(FileAccessRestriction.PUBLIC, TestConstants.getFile(TestConstants.TEST_IMAGE));
         // fill in various text fields
         for (Map.Entry<String, String> entry : docValMap.entrySet()) {
             find(By.name(entry.getKey())).val(entry.getValue());

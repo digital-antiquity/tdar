@@ -17,6 +17,7 @@ import org.apache.struts2.dispatcher.HttpParameters;
 import org.apache.struts2.dispatcher.Parameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.service.ReflectionHelper;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -101,10 +102,10 @@ public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticati
             return evaluateRightsOnAction(invocation, sessionData, action, methodName, method);
         }
 
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpForbiddenErrorResponseOnly.class)) {
+        if (ReflectionHelper.methodOrActionContainsAnnotation(invocation, HttpForbiddenErrorResponseOnly.class)) {
             return FORBIDDEN_STATUS_ONLY;
         }
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpNotFoundErrorOnly.class)) {
+        if (ReflectionHelper.methodOrActionContainsAnnotation(invocation, HttpNotFoundErrorOnly.class)) {
             return NOT_FOUND_STATUS_ONLY;
         }
 

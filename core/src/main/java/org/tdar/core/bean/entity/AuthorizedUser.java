@@ -80,6 +80,13 @@ public class AuthorizedUser extends AbstractPersistable {
     @Column(name="resource_collection_id", insertable=false, updatable=false)
     private Long collectionId;
 
+    
+    @Column(name="account_id", insertable=false, updatable=false)
+    private Long accountId;
+
+    @Column(name="integration_id", insertable=false, updatable=false)
+    private Long integrationId;
+
     @Column(name="resource_id", insertable=false, updatable=false)
     private Long resourceId;
 
@@ -92,8 +99,8 @@ public class AuthorizedUser extends AbstractPersistable {
     public AuthorizedUser() {
     }
 
-    public AuthorizedUser(TdarUser authenticatedUser, TdarUser person, GeneralPermissions permission) {
-        this.createdBy = authenticatedUser;
+    public AuthorizedUser(TdarUser createdBy, TdarUser person, GeneralPermissions permission) {
+        this.createdBy = createdBy;
         this.user = person;
         setGeneralPermission(permission);
     }

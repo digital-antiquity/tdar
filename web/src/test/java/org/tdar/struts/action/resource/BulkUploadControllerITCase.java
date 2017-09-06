@@ -28,7 +28,7 @@ import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -79,7 +79,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.prepare();
 
         // setup images to upload
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
@@ -198,7 +198,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     // @Ignore
     public void testDatasetBulkUpload() throws Exception {
         List<File> files = new ArrayList<>();
-        File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
+        File file = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
         files.add(file);
         assertTrue(file.exists());
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest( TdarActionSupport.SUCCESS_ASYNC, files);
@@ -260,7 +260,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
 
     private BulkUploadController setupBasicBulkUploadTest( String successAsync) throws Exception {
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
@@ -436,7 +436,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.prepare();
 
         // setup images to upload
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
@@ -477,15 +477,15 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
         List<Pair<Long, String>> details = basa.getDetails();
         logger.info("{}", details);
-        Set<RightsBasedResourceCollection> collections = new HashSet<>();
+        Set<SharedCollection> collections = new HashSet<>();
         evictCache();
         logger.debug("inspecting collections created:");
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
             genericService.refresh(resource);
-            Set<RightsBasedResourceCollection> resourceCollections = resource.getRightsBasedResourceCollections();
+            Set<SharedCollection> resourceCollections = resource.getSharedCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
-            for (RightsBasedResourceCollection rc : resourceCollections) {
+            for (SharedCollection rc : resourceCollections) {
                 logger.debug("\t\t {}", rc);
             }
 
@@ -493,7 +493,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         }
         assertEquals("we should have a total of 3 collections (0 internal +2 shared)", 2, collections.size());
 //        int internalCount = 0;
-        for (RightsBasedResourceCollection col : collections) {
+        for (SharedCollection col : collections) {
             logger.debug("{} : {}", col, col.getResources());
 //            if (col instanceof InternalCollection) {
 //                assertEquals(1, col.getResources().size());

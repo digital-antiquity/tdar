@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.FeedSearchHelper;
-import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.core.service.GeoRssMode;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 

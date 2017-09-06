@@ -45,6 +45,14 @@
                         + "left join c.parentIds parentId "
                         + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and ( au.collectionId =:id or parentId=:id)"),
         @NamedQuery(
+                name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_ACCOUNT, 
+                query = "SELECT au from AuthorizedUser au JOIN BillingAccount c on au.accountId=c.id "
+                        + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and c.id=:id"),
+        @NamedQuery(
+                name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_WORKFLOW, 
+                query = "SELECT au from AuthorizedUser au JOIN DataIntegrationWorkflow c on au.integrationId=c.id "
+                        + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and c.id=:id"),
+        @NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
                 query = "SELECT distinct 1 from " +
                         " ResourceCollection as rescol inner join rescol.authorizedUsers " +
@@ -360,7 +368,7 @@
         ),
         @NamedQuery(
                 name = TdarNamedQueries.ACCOUNTS_FOR_PERSON,
-                query = "from BillingAccount act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.id from act.authorizedMembers as authmem where authmem.id = :personid))"
+                query = "from BillingAccount act where act.status in (:statuses) and (act.owner.id = :personid or exists (select authmem.user.id from act.authorizedUsers as authmem where authmem.user.id = :personid))"
         ),
         @NamedQuery(
                 name = TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON,
@@ -486,7 +494,7 @@
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
                 query = "select count(distinct res.id) from SharedCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
         @NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
-                query = "from HierarchicalCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
+                query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
                 query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv"),
@@ -528,7 +536,7 @@
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
         @NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER,
-                query = "from DataIntegrationWorkflow w where submitter.id=:userId or w.hidden is false or exists (select authmem.id from w.authorizedMembers as authmem where authmem.id = :userId)"),
+                query = "from DataIntegrationWorkflow w where submitter.id=:userId or w.hidden is false or exists (select authmem.user.id from w.authorizedUsers as authmem where authmem.user.id = :userId)"),
         @NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER_ADMIN,
                 query = "from DataIntegrationWorkflow"),

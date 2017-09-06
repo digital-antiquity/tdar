@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.tdar.core.LoggingConstants;
 import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.ReflectionHelper;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
@@ -54,7 +55,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
 
         Activity activity = null;
         setupMDC(ServletActionContext.getRequest());
-        if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
+        if (!ReflectionHelper.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
             activity = new Activity(ServletActionContext.getRequest(), null);
             if ((getSessionData() != null) && getSessionData().isAuthenticated()) {
                 activity.setUser(getSessionData().getUsername(), getSessionData().getTdarUserId());

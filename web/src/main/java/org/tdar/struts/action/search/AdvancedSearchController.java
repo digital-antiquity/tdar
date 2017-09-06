@@ -1,5 +1,6 @@
 package org.tdar.struts.action.search;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -153,6 +154,8 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         return result;
     }
 
+
+    
     @DoNotObfuscate(reason = "user submitted map")
     public LatitudeLongitudeBox getMap() {
         if (CollectionUtils.isNotEmpty(getReservedSearchParameters()
@@ -191,8 +194,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     public String advanced() {
         getLogger().trace("greetings from advanced search");
         // process query paramter or legacy parameters, if present.
-        processBasicSearchParameters();
-        processLegacySearchParameters();
+        processCollectionProjectLimit();
         processWhitelabelSearch();
 
         // if refining a search, make sure we inflate any deflated terms

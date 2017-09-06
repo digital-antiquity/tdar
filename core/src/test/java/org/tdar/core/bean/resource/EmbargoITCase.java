@@ -2,6 +2,7 @@ package org.tdar.core.bean.resource;
 
 import static org.junit.Assert.*;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +29,7 @@ public class EmbargoITCase extends AbstractIntegrationTestCase {
     
     @Test
     @Rollback
-    public void testEmbargoWarning() throws InstantiationException, IllegalAccessException {
+    public void testEmbargoWarning() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document doc = generateDocumentWithFileAndUser();
         Document doc2 = generateDocumentWithFileAndUseDefaultUser();
         long id = doc.getId();

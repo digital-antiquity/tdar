@@ -45,7 +45,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testBrokenImageStatus() throws Exception {
         String filename = "volume1-encrypted-test.pdf";
-        File f = new File(TestConstants.TEST_DOCUMENT_DIR + "/sample_pdf_formats/", filename);
+        File f = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR + "/sample_pdf_formats/", filename);
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
 
         Document doc = generateAndStoreVersion(Document.class, filename, f, store);
@@ -65,7 +65,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testRTFTextExtraction() throws Exception {
         String filename = "test-file.rtf";
-        File f = new File(TestConstants.TEST_DOCUMENT_DIR, filename);
+        File f = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, filename);
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
 
         Document doc = generateAndStoreVersion(Document.class, filename, f, store);

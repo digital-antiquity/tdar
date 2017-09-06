@@ -22,8 +22,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.Table;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.dbutils.ResultSetIterator;
 import org.apache.commons.io.FilenameUtils;

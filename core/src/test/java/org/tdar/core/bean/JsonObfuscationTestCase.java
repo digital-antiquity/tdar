@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.SerializationServiceImpl;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
@@ -28,7 +29,7 @@ public class JsonObfuscationTestCase {
 
     public JsonObfuscationTestCase() throws ClassNotFoundException {
         // TODO Auto-generated constructor stub
-        serializationService = new SerializationService();
+        serializationService = new SerializationServiceImpl();
     }
 
     @Test

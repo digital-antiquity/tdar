@@ -31,7 +31,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -233,8 +233,8 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         if (item instanceof DataIntegrationWorkflow) {
             document = IntegrationDocumentConverter.convert((DataIntegrationWorkflow) item);
         }
-        if (item instanceof VisibleCollection) {
-            document = CollectionDocumentConverter.convert((VisibleCollection) item);
+        if (item instanceof ResourceCollection) {
+            document = CollectionDocumentConverter.convert((ResourceCollection) item);
         }
         if (item instanceof Keyword) {
             document = KeywordDocumentConverter.convert((Keyword) item);

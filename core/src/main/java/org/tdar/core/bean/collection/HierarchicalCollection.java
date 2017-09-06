@@ -10,22 +10,30 @@ import java.util.TreeSet;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.tdar.core.bean.FieldLength;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+@MappedSuperclass
 @XmlType(name = "hierCollBase")
-@Entity
-public abstract class HierarchicalCollection<C extends VisibleCollection> extends VisibleCollection implements Comparable<C> {
+//@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
+public abstract class HierarchicalCollection<C extends HierarchicalCollection<C>> extends ResourceCollection implements Comparable<C>, HasParent<C>, HasAlternateParent<C> {
 
     private static final long serialVersionUID = -4518328095223743894L;
 
@@ -39,7 +47,6 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
     @CollectionTable(name = "collection_alternate_parents", joinColumns = @JoinColumn(name = "collection_id") )
     @Column(name = "parent_id")
     private Set<Long> alternateParentIds = new HashSet<>();
-
 
     /**
      * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
@@ -97,8 +104,8 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
         return getParent() != null;
     }
 
-    @SuppressWarnings({ "unchecked", "hiding" })
-    public <C extends HierarchicalCollection> List<C> getHierarchicalResourceCollections(Class<C> class1, C collection_) {
+    @SuppressWarnings("hiding")
+    public <C extends HierarchicalCollection<C>> List<C> getHierarchicalResourceCollections(Class<C> class1, C collection_) {
         ArrayList<C> parentTree = new ArrayList<>();
         parentTree.add(collection_);
         C collection = collection_;
@@ -163,7 +170,8 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
     /*
      * Default to sorting by name, but grouping by parentId, used for sorting int he tree
      */
-    public <C extends HierarchicalCollection> int compareTo(C self, C o) {
+    @SuppressWarnings("hiding")
+    public <C extends HierarchicalCollection<C>> int compareTo(C self, C o) {
         List<String> tree = self.getParentNameList();
         List<String> tree_ = o.getParentNameList();
         while (!tree.isEmpty() && !tree_.isEmpty() && (tree.get(0) == tree_.get(0))) {

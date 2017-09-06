@@ -18,8 +18,8 @@ import org.tdar.core.bean.resource.SensoryData.RgbCapture;
 import org.tdar.core.bean.resource.sensory.ScannerTechnologyType;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
+import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts_base.action.TdarActionException;
 
@@ -65,15 +65,12 @@ public class SensoryDataController extends AbstractInformationResourceController
      */
     @Override
     protected String save(SensoryData sensoryData) throws TdarActionException {
-        saveBasicResourceMetadata();
-        saveInformationResourceProperties();
+        String result = super.save(sensoryData); 
 
         saveCustomMetadata();
 
         getGenericService().saveOrUpdate(sensoryData);
-        handleUploadedFiles();
-        getGenericService().saveOrUpdate(sensoryData);
-        return SUCCESS;
+        return result;
     }
 
     private void saveCustomMetadata() {

@@ -9,10 +9,10 @@
 
 <div id="titlebar" parse="true">
     <h1>
-        <#if searchPhrase?? && !explore>
-            Search Results: <span>${searchPhrase}</span>
-        <#elseif explore && exploreKeyword?? && exploreKeyword.definition?has_content >
+        <#if exploreKeyword?? && exploreKeyword.definition?has_content >
         ${exploreKeyword.label?html}
+        <#elseif searchPhrase??>
+            Search Results: <span>${searchPhrase}</span>
         <#elseif query?has_content>
         ${lookupSource.proper} Search Results: <span>${query?html}</span>
         <#else>
@@ -22,7 +22,7 @@
             <span class="smaller">; sorted by ${sortField.label}</span>
         </#if>
     </h1>
-    <#if explore && exploreKeyword?? && exploreKeyword.definition?has_content >
+    <#if exploreKeyword?? && exploreKeyword.definition?has_content >
         <div class="glide">
             <#if exploreKeyword.definition??>
                 <p>${exploreKeyword.definition?html}</p>

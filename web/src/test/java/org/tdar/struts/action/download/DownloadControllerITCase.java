@@ -36,7 +36,7 @@ import com.opensymphony.xwork2.Action;
 
 public class DownloadControllerITCase extends AbstractAdminControllerITCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
-//    private static final File ROOT_SRC = new File(TestConstants.TEST_ROOT_DIR);
+//    private static final File ROOT_SRC = TestConstants.getFile(TestConstants.TEST_ROOT_DIR);
 
     // don't need injection (yet)
     @Autowired
@@ -71,7 +71,7 @@ public class DownloadControllerITCase extends AbstractAdminControllerITCase {
         DownloadTransferObject dto = new DownloadTransferObject(downloadService);
         dto.setAuthenticatedUser(getBillingUser());
         List<File> files = new ArrayList<>();
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + "sample_pdf_formats/volume1-encrypted-test.pdf");
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR + "sample_pdf_formats/volume1-encrypted-test.pdf");
         Document document = generateAndStoreVersion(Document.class, file.getName(), file, filestore);
         InformationResourceFileVersion version = document.getLatestUploadedVersion();
         document.setTitle("test");
@@ -100,9 +100,9 @@ public class DownloadControllerITCase extends AbstractAdminControllerITCase {
     public void testDownloadArchiveController() throws Exception {
 
         List<File> files = new ArrayList<>();
-        File file1 = new File(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
+        File file1 = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
         files.add(file1);
-        files.add(new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME));
+        files.add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME));
         Document document = generateDocumentWithUser();
         for (File file : files) {
             addFileToResource(document, file);
@@ -133,9 +133,9 @@ public class DownloadControllerITCase extends AbstractAdminControllerITCase {
     public void testDownloadArchiveControllerWithDeleted() throws IOException, InstantiationException, IllegalAccessException {
 
         List<File> files = new ArrayList<>();
-        File file1 = new File(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
+        File file1 = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR + "/a2-15.pdf");
         files.add(file1);
-        // files.add(new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME));
+        // files.add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME));
         Document document = generateDocumentWithUser();
         for (File file : files) {
             addFileToResource(document, file);

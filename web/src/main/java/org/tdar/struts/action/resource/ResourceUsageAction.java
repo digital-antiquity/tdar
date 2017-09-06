@@ -1,43 +1,24 @@
 package org.tdar.struts.action.resource;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
-import org.tdar.core.bean.statistics.DailyTotal;
-import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.ResourceStatisticsObject;
-import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.StatisticsService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts_base.action.PersistableLoadingAction;
@@ -57,7 +38,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
     private Long id;
 
     @Autowired
-    private StatisticService statisticService;
+    private StatisticsService statisticService;
 
     @Autowired
     private AuthorizationService authorizationService;

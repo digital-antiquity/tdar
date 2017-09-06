@@ -1,6 +1,5 @@
 package org.tdar.struts.action.codingSheet;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,10 +9,8 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts_base.action.TdarActionException;
@@ -58,27 +55,14 @@ public class CodingSheetController extends AbstractSupportingInformationResource
      */
     @Override
     protected String save(CodingSheet codingSheet) throws TdarActionException {
+        super.saveCategories();
+
         if (!PersistableUtils.isNullOrTransient(ontology)) {
             // load the full hibernate entity and set it back on the incoming column
             ontology = getGenericService().find(Ontology.class, ontology.getId());
         }
-
-        codingSheetService.reconcileOntologyReferencesOnRulesAndDataTableColumns(codingSheet, ontology);
-
-        super.saveBasicResourceMetadata();
-        super.saveInformationResourceProperties();
-        super.saveCategories();
-
-        // getGenericService().saveOrUpdate(codingSheet);
-        handleUploadedFiles();
-        return SUCCESS;
-    }
-
-    @Override
-    protected FileProxy createUploadedFileProxy(String fileTextInput) throws IOException {
-        String filename = getPersistable().getTitle() + ".csv";
-        // ensure csv conversion
-        return new FileProxy(filename, FileProxy.createTempFileFromString(fileTextInput), VersionType.UPLOADED);
+        proxy.setOntology(ontology);
+        return  super.save(codingSheet);
     }
 
     /**

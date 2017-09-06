@@ -6,7 +6,9 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
 
@@ -87,6 +89,7 @@ public interface TestBillingAccountHelper {
 
     default Invoice initAccount(BillingAccount account, BillingActivity activity, TdarUser user) {
         account.markUpdated(user);
+        account.getAuthorizedUsers().add(new AuthorizedUser(user,user, GeneralPermissions.EDIT_ACCOUNT));
         Invoice invoice = setupInvoice(activity, user);
         account.getInvoices().add(invoice);
         return invoice;

@@ -1,0 +1,38 @@
+.default-color0 {
+    -fx-bar-color:#2c4d56;
+    -fx-pie-color:#2c4d56;
+}
+
+.default-color1 {
+    -fx-bar-color:#ead590;
+    -fx-pie-color:#ead590;
+}
+
+.default-color2 {
+    -fx-bar-color:#49504c;
+    -fx-pie-color:#49504c;
+}
+
+.chart {
+    -fx-fill: transparent;
+    -fx-background-color: transparent;
+    -fx-legend-side: "right"
+}
+
+
+.chart-vertical-grid-lines {
+    -fx-stroke: none;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: none;
+}
+
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
+    -fx-background-color: transparent;
+    -fx-stroke: transparent;
+}
+.chart-plot-background {
+    -fx-fill: transparent;
+    -fx-background-color: transparent;
+}

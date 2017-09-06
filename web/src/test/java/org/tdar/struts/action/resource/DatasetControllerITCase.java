@@ -8,6 +8,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -339,7 +340,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
-        controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_EXCEL_FILENAME)));
+        controller.setUploadedFiles(Arrays.asList(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_EXCEL_FILENAME)));
         controller.setUploadedFilesFileName(Arrays.asList(ALEXANDRIA_EXCEL_FILENAME));
         controller.setServletRequest(getServletPostRequest());
         assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
@@ -359,14 +360,14 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentExcel() throws TdarActionException {
+    public void testDatasetReplaceDifferentExcel() throws TdarActionException, FileNotFoundException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
         String filename = "evmpp-fauna.xls";
-        controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
+        controller.setUploadedFiles(Arrays.asList(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());
         assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
@@ -387,14 +388,14 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentMdb() throws TdarActionException {
+    public void testDatasetReplaceDifferentMdb() throws TdarActionException, FileNotFoundException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
         String filename = TestConstants.SPITAL_DB_NAME;
-        controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
+        controller.setUploadedFiles(Arrays.asList(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR , filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());
         assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());

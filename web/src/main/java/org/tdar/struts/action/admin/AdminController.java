@@ -31,7 +31,7 @@ import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ScheduledProcessService;
-import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.StatisticsService;
 import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
@@ -67,7 +67,7 @@ public class AdminController extends AbstractAuthenticatableAction {
     private transient ResourceService resourceService;
 
     @Autowired
-    private transient StatisticService statisticService;
+    private transient StatisticsService StatisticsService;
 
     @Autowired
     private transient GenericKeywordService genericKeywordService;
@@ -107,8 +107,8 @@ public class AdminController extends AbstractAuthenticatableAction {
     })
     @Override
     public String execute() {
-        setCurrentResourceStats(statisticService.getCurrentResourceStats());
-        setHistoricalRepositorySizes(statisticService.getRepositorySizes());
+        setCurrentResourceStats(StatisticsService.getCurrentResourceStats());
+        setHistoricalRepositorySizes(StatisticsService.getRepositorySizes());
         setRecentlyUpdatedResources(resourceService.findRecentlyUpdatedItemsInLastXDays(7));
         setRecentLogins(getEntityService().showRecentLogins());
         return SUCCESS;
@@ -116,9 +116,9 @@ public class AdminController extends AbstractAuthenticatableAction {
 
     @Action("resource")
     public String resourceInfo() {
-        setHistoricalResourceStats(statisticService.getResourceStatistics());
-        setHistoricalResourceStatsWithFiles(statisticService.getResourceStatisticsWithFiles());
-        setHistoricalCollectionStats(statisticService.getCollectionStatistics());
+        setHistoricalResourceStats(StatisticsService.getResourceStatistics());
+        setHistoricalResourceStatsWithFiles(StatisticsService.getResourceStatisticsWithFiles());
+        setHistoricalCollectionStats(StatisticsService.getCollectionStatistics());
         return SUCCESS;
     }
 

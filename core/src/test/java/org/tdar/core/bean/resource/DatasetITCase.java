@@ -28,11 +28,11 @@ public class DatasetITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testFindAllSorted() {
-        List<Dataset> allSortedDatasets = datasetService.findAllSorted();
+        List<Dataset> allSortedDatasets = datasetService.findAll();
         assertEquals(allSortedDatasets.size(), datasetService.count().intValue());
-        assertEquals("default sort order for datasets is title asc", allSortedDatasets, datasetService.findAllSorted("title asc"));
-        List<Dataset> ascendingIdDatasets = datasetService.findAllSorted("id asc");
-        List<Dataset> descendingIdDatasets = datasetService.findAllSorted("id desc");
+        assertEquals("default sort order for datasets is title asc", allSortedDatasets, datasetService.findAll("title asc"));
+        List<Dataset> ascendingIdDatasets = datasetService.findAll("id asc");
+        List<Dataset> descendingIdDatasets = datasetService.findAll("id desc");
         assertEquals(allSortedDatasets.size(), ascendingIdDatasets.size());
         assertEquals(allSortedDatasets.size(), descendingIdDatasets.size());
         // test ordering

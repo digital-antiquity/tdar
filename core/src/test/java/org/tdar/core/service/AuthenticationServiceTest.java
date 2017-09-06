@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.core.service.external.AuthenticationServiceImpl;
 
 /**
  * Created by jim on 8/19/15.
@@ -25,7 +26,7 @@ import org.tdar.core.service.external.AuthenticationService;
  */
 public class AuthenticationServiceTest {
 
-    AuthenticationService service = new AuthenticationService();
+    AuthenticationService service = new AuthenticationServiceImpl();
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 

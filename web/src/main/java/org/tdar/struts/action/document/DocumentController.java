@@ -45,18 +45,6 @@ public class DocumentController extends AbstractInformationResourceController<Do
         return true;
     }
 
-    @Override
-    protected String save(Document document) throws TdarActionException {
-        // save basic metadata
-        super.saveBasicResourceMetadata();
-        super.saveInformationResourceProperties();
-        // getGenericService().saveOrUpdate(document);
-        handleUploadedFiles();
-        // handleLinkedInformationResource();
-        // getGenericService().saveOrUpdate(document);
-        return SUCCESS;
-
-    }
 
     public DocumentType getDocumentType() {
         return documentType;

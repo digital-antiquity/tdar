@@ -64,7 +64,7 @@
 
             <ul class="unstyled-list">
             <li>
-                <strong>Owner</strong><br>
+                <strong>Submitter</strong><br>
                     <a href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
             </li>
         <li>

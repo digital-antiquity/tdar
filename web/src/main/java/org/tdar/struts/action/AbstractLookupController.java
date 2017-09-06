@@ -38,7 +38,7 @@ import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.SearchUtils;
-import org.tdar.search.service.query.CreatorSearchInterface;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -77,10 +77,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     @Autowired
     private transient ResourceService resourceService;
-
-    @SuppressWarnings("rawtypes")
-    @Autowired
-    private CreatorSearchInterface creatorSearchService;
 
     @Autowired
     ObfuscationService obfuscationService;
@@ -179,14 +175,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         return results;
     }
 
-    /*
-     * 
-     */
-    @SuppressWarnings("unchecked")
-    public List<Creator<?>> getCreatorResults() {
-        return (List<Creator<?>>) results;
-    }
-
     /**
      * @return the debug
      */
@@ -261,7 +249,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
      * @param mode
      *            the mode to set
      */
-    // TODO: method needs better name... this is just metadata used to describe the caller of handleSearch()
     @Override
     public void setMode(String mode) {
         this.mode = mode;
@@ -341,24 +328,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         getReservedSearchParameters().setResourceTypes(resourceTypes);
     }
 
-    @SuppressWarnings("unchecked")
-    public String findPerson(String term, Person person, boolean registered) throws SolrServerException, IOException {
-        this.setLookupSource(LookupSource.PERSON);
-        // TODO Auto-generated method stub
-            try {
-                creatorSearchService.findPerson(person, term, registered, this, this, getMinLookupLength());
-                // sanitize results if the user is not logged in
-            } catch (SearchException e) {
-                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
-                return ERROR;
-            }
-            if (isEditor()) {
-                jsonifyResult(JsonAdminLookupFilter.class);
-            } else {
-                jsonifyResult(JsonLookupFilter.class);
-            }
-        return SUCCESS;
-    }
 
     @Autowired
     SerializationService serializationService;
@@ -390,21 +359,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     protected String getResultsKey() {
         return getLookupSource().getCollectionName();
-    }
-
-    @SuppressWarnings("unchecked")
-    public String findInstitution(String institution) throws SolrServerException, IOException {
-        this.setLookupSource(LookupSource.INSTITUTION);
-        if (SearchUtils.checkMinString(institution, getMinLookupLength())) {
-            try {
-                creatorSearchService.findInstitution(institution, this, this, getMinLookupLength());
-            } catch (SearchException e) {
-                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
-                return ERROR;
-            }
-        }
-        jsonifyResult(JsonLookupFilter.class);
-        return SUCCESS;
     }
 
     public LookupSource getLookupSource() {

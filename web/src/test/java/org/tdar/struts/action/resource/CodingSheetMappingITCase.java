@@ -77,8 +77,6 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
     private static final String EXCEL_FILE_NAME = "periods-modified-sm-01182011.xlsx";
     private static final String EXCEL_FILE_NAME2 = "periods-modified-sm-01182011-2.xlsx";
     private static final String EXCEL_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME;
-    private static final File PERIOD_1 = new File(TestConstants.TEST_CODING_SHEET_DIR + "period.csv");
-    private static final File PERIOD_2 = new File(TestConstants.TEST_CODING_SHEET_DIR + "period2.csv");
     private static final String EXCEL_FILE_PATH2 = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME2;
     private String codingSheetFileName = TestConstants.TEST_ROOT_DIR + "/coding sheet/csvCodingSheetText.csv";
 
@@ -441,6 +439,8 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testCodingSheetMappingReplace2() throws Exception {
+        File PERIOD_1 = TestConstants.getFile(TestConstants.TEST_CODING_SHEET_DIR , "period.csv");
+        File PERIOD_2 = TestConstants.getFile(TestConstants.TEST_CODING_SHEET_DIR , "period2.csv");
         CodingSheet codingSheet = setupCodingSheet(null, null, null, PERIOD_1);
         Long codingId = codingSheet.getId();
         Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
@@ -506,7 +506,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
             rules.add(createRule("3", "three", codingSheet));
             genericService.save(codingSheet);
 
-            // File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
+            // File bigFile = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
 
             Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx", Dataset.class);
             Long datasetId = dataset.getId();

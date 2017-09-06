@@ -75,7 +75,7 @@ public class PdfServiceITCase extends AbstractIntegrationWebTestCase {
     }
 
     private void setupAndTest(String title) throws InstantiationException, IllegalAccessException, IOException, FileNotFoundException {
-        File f = new File(TestConstants.TEST_DOCUMENT_DIR, "1-01.PDF");
+        File f = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, "1-01.PDF");
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         Document document = generateAndStoreVersion(Document.class, "1-01.PDF", f, store);
         InformationResourceFileVersion originalVersion = document.getLatestUploadedVersion();

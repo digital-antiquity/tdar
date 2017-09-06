@@ -102,6 +102,7 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
         ServletRegistration.Dynamic freemarker = container.addServlet("sitemesh-freemarker",
                 FreemarkerDecoratorServlet.class);
         freemarker.setInitParameter("default_encoding", "UTF-8");
+        freemarker.setInitParameter("incompatible_improvements", "2.3.26");
         freemarker.setLoadOnStartup(1);
         freemarker.addMapping("*.dec");
     }

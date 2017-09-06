@@ -60,7 +60,7 @@ public class ProjectController extends AbstractResourceController<Project> {
         getLogger().trace("saving a project");
         saveBasicResourceMetadata();
         getLogger().trace("saved metadata -- about to call saveOrUPdate");
-        projectService.saveOrUpdate(resource);
+        getGenericService().saveOrUpdate(resource);
         getLogger().trace("finished calling saveorupdate");
         return SUCCESS;
     }

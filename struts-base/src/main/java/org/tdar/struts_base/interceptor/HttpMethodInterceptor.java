@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.service.ReflectionHelper;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
@@ -21,7 +22,7 @@ public class HttpMethodInterceptor implements Interceptor {
 
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, PostOnly.class)) {
+        if (ReflectionHelper.methodOrActionContainsAnnotation(invocation, PostOnly.class)) {
             return doPostIntercept(invocation);
         } else {
             return invocation.invoke();
