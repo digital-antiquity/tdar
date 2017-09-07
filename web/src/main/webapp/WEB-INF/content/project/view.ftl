@@ -30,7 +30,7 @@
         <div id="divResultsSortControl">
             <div class="row">
                 <div class="span12">
-                    <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
+                    <@search.totalRecordsSection tag="h2" helper=paginationHelper header="Inside this Project" />
                 </div>
             </div>
         </div>

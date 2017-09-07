@@ -189,7 +189,7 @@
             </#if>
 </#macro>
 
-<#macro resultsSection header="Resources Inside This Collection">
+<#macro resultsSection header="Inside This Collection">
 
         <#if results?has_content>
         <div id="divResultsSortControl">

@@ -181,11 +181,14 @@
                 <#assign defaultKeyLabel="No Resource Type"/>
             </#if>
             <#if sortfield?contains('PROJECT')>
-                <#if resource.project??>
+                <#if resource.project?? && resource.project.id != -1>
                     <#assign key = resource.project.title />
                 <#elseif resource.resourceType.project >
                     <#assign key = resource.title!'' />
+                <#else>
+                    <#assign key= defaultKeyLabel />
                 </#if>
+
             </#if>
         <#-- print special header and group/list tag -->
             <#if first || (prev != key) && key?has_content>
