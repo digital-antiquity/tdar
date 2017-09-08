@@ -9,11 +9,11 @@ import javafx.scene.chart.PieChart;
 import javafx.stage.Stage;
 
 @SuppressWarnings("restriction")
-public class PieChartGenerator extends AbstractGraphGenerator {
+public class TdarPieChart extends AbstractChart {
 
     private Map<String, Number> data;
 
-    public PieChartGenerator(String title, int width, int height, String filename, Map<String,Number> data) {
+    public TdarPieChart(String title, int width, int height, String filename, Map<String,Number> data) {
         setTitle(title);
         setWidth(width);
         setHeight(height);
@@ -21,7 +21,8 @@ public class PieChartGenerator extends AbstractGraphGenerator {
         this.data = data;
     }
     
-    public File start(Stage stage) {
+    @Override
+    public File createChart(Stage stage) {
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
         data.entrySet().forEach(row -> {
             pieChartData.add(new PieChart.Data(row.getKey(), row.getValue().doubleValue()));

@@ -11,14 +11,14 @@ import javafx.stage.Stage;
 
 
 @SuppressWarnings("restriction")
-public class BarChartGenerator extends AbstractGraphGenerator  {
+public class TdarBarChart extends AbstractChart  {
 
     private Map<String, Map<String, Number>> data;
     private String xAxisLabel;
     private String yAxisLabel;
 
 
-    public BarChartGenerator(String title, String xAxis, String yAxis, Map<String,Map<String,Number>> data, int width, int height, String filename) {
+    public TdarBarChart(String title, String xAxis, String yAxis, Map<String,Map<String,Number>> data, int width, int height, String filename) {
         super();
         this.xAxisLabel = xAxis; // 
         this.yAxisLabel = yAxis;
@@ -31,11 +31,10 @@ public class BarChartGenerator extends AbstractGraphGenerator  {
 
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public File start(Stage stage) {
+    public File createChart(Stage stage) {
         final CategoryAxis xAxis = new CategoryAxis();
         final NumberAxis yAxis = new NumberAxis();
         final BarChart<String, Number> bc = new BarChart<>(xAxis, yAxis);
-//        bc.setTitle("Country Summary");
         xAxis.setLabel(xAxisLabel);
         yAxis.setLabel(yAxisLabel);
 
