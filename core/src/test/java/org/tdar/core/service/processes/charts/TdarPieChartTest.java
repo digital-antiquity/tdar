@@ -30,19 +30,8 @@ public class TdarPieChartTest {
         JavaFxChartRunnable wrapper = new JavaFxChartRunnable();
         wrapper.setGraph(sample);
         logger.debug("starting to create chart");
-        Thread thread = new Thread(wrapper);
-        thread.start();
-        // would make sense to add a timeout
-
-        while (wrapper.getResult() == null) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        wrapper.getResult();
+        ChartGenerator cg = new ChartGenerator();
+        cg.execute(sample);
     }
 
     @Test
@@ -68,20 +57,10 @@ public class TdarPieChartTest {
 
         data.put("2003", r3);
         TdarBarChart sample = new TdarBarChart("test", "time", "more time", data, 1000, 1000, "testBar");
-        JavaFxChartRunnable wrapper = new JavaFxChartRunnable();
-        wrapper.setGraph(sample);
-        logger.debug("starting to create chart");
-        Thread thread = new Thread(wrapper);
-        thread.start();
-        while (wrapper.getResult() == null) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        wrapper.getResult();
+        ChartGenerator cg = new ChartGenerator();
+        cg.execute(sample);
+        
+
     }
 
 }
