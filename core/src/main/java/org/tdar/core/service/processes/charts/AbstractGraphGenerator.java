@@ -1,5 +1,6 @@
 package org.tdar.core.service.processes.charts;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,7 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 @SuppressWarnings("restriction")
-public abstract class AbstractGraphGenerator extends Application {
+public abstract class AbstractGraphGenerator  {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private int width;
@@ -27,10 +28,11 @@ public abstract class AbstractGraphGenerator extends Application {
     private String title;
     private String filename;
 
-    void renderAndExport(Stage stage, Chart bc) {
+    File renderAndExport(Stage stage, Chart bc) {
         render(stage, bc);
-        exportChart(bc, Paths.get("./target/" + getFilename() + ".png"));
+        File file  = exportChart(bc, Paths.get("./target/" + getFilename() + ".png"));
         stage.close();
+        return file;
     }
 
     public void render(Stage stage, Chart chart) {
@@ -43,7 +45,7 @@ public abstract class AbstractGraphGenerator extends Application {
         stage.show();
     }
 
-    public void exportChart(Chart chart, Path path_) {
+    public File exportChart(Chart chart, Path path_) {
         Path path = path_.normalize();
         String filename = path.getFileName().toString();
         String ext = filename.substring(filename.indexOf(".") + 1);
@@ -52,10 +54,13 @@ public abstract class AbstractGraphGenerator extends Application {
         params.setFill(Color.TRANSPARENT);
         WritableImage image = chart.snapshot(params, null);
         try {
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), ext, path.toFile());
+            File file = path.toFile();
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), ext, file);
+            return file;
         } catch (IOException e) {
             logger.error("Could not save file: {}", e.getMessage());
         }
+        return null;
     }
 
     public int getHeight() {
