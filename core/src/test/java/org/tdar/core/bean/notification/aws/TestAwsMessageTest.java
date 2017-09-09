@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.utils.MessageHelper;
 
@@ -26,9 +27,7 @@ public class TestAwsMessageTest {
 		assertEquals(message.getEmailType(),EmailType.TEST_EMAIL);
 	}
 	
-	
-	
-	@Test(expected=NullPointerException.class)
+	@Test
 	public void testEmailSubject(){
 		assertNotNull(message.createSubjectLine());
 	}

@@ -22,14 +22,14 @@ public class MockAwsEmailServiceImpl implements AwsEmailService {
 	
 	@Override
 	public SendEmailResult sendMessage(AwsMessage message) {
-		logger.debug("sendMessage() message={}", message);
-		
+		logger.debug("Mock object sending message message={}", message);
 		return new SendEmailResult();
 	}
 
 
 	@Override
 	public SendRawEmailResult sendMultiPartMessage(RawMessage message) throws IOException, MessagingException  {
+		logger.debug("Mock object sending multipart message message={}", message);
 		return null;
 	}
 	

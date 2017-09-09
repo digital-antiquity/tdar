@@ -14,6 +14,7 @@ public abstract class AwsMessage {
 	private Email email;
 	private Map<String, Object> map = new HashMap<>();
 	private List<File> attachments = new ArrayList<File>();
+	private Map<String, File> inlineAttachments = new HashMap<String, File>();
 	
 	public EmailType getEmailType() {
 		return emailType;
@@ -65,7 +66,16 @@ public abstract class AwsMessage {
 	public void addAttachment(File file){
 		this.attachments.add(file);
 	}
+	
+	public void addInlineAttachment(String contentId, File file){
+		this.inlineAttachments.put(contentId, file);
+	}
+	
 
 	public abstract String createSubjectLine();
+
+	public Map<String, File> getInlineAttachments() {
+		return inlineAttachments;
+	}
 	
 }

@@ -25,6 +25,7 @@ import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.email.MockAwsEmailServiceImpl;
 import org.tdar.core.service.external.MockMailSender;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
@@ -123,4 +124,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     }
     
 
+    @Test
+    public void testAwsMockObject(){
+    	assertTrue(emailService.getAwsEmailService() instanceof MockAwsEmailServiceImpl);
+    }
+    
 }

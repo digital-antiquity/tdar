@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.mail.MessagingException;
@@ -32,6 +33,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.HasEmail;
@@ -58,6 +60,7 @@ import org.tdar.utils.MessageHelper;
 import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
+import com.mchange.v1.util.SetUtils;
 
 /**
  * $Id$
@@ -90,7 +93,8 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private AwsEmailService awsEmailService;
     
-    public static String ATTACHMENTS = "ATTACHMENTS";
+
+	public static String ATTACHMENTS = "ATTACHMENTS";
     public static String INLINE = "INLINE";
 
     
@@ -440,12 +444,16 @@ public class EmailServiceImpl implements EmailService {
 			messageHelper.addAttachment(file.getName(), file);
 		}
 		
+		for( String contentId : message.getInlineAttachments().keySet()){
+			File file = message.getInlineAttachments().get(contentId);
+			messageHelper.addInline(contentId, file);
+		}
+		
 		ClassPathResource logo =  new ClassPathResource("tdar-logo.png");
 		messageHelper.addInline("logo", logo);
 		
 		return messageHelper.getMimeMessage();
 	}
-	
 
 
 	/**
@@ -536,7 +544,21 @@ public class EmailServiceImpl implements EmailService {
 		return awsEmailService.sendMultiPartMessage(rawMessage);
 	}
 	
+	public void createUserStatEmail(TdarUser user){
+		//given a user, retrieve their billing account information.
+		//Given a billign account, retrieve all the resources. 
+		
+	}
+	
+	public AwsEmailService getAwsEmailService() {
+		return awsEmailService;
+	}
 
-    
+	public void setAwsEmailService(AwsEmailService awsEmailService) {
+		this.awsEmailService = awsEmailService;
+	}
+	
+
+
     
 }

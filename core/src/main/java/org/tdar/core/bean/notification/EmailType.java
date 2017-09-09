@@ -8,6 +8,7 @@ import org.tdar.core.bean.notification.aws.AdminReportNewUsersMessage;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
 import org.tdar.core.bean.notification.aws.InviteMessage;
+import org.tdar.core.bean.notification.aws.MonthlyUserStatisticsMessage;
 import org.tdar.core.bean.notification.aws.TestAwsMessage;
 
 public enum EmailType {
@@ -30,6 +31,7 @@ public enum EmailType {
 	ADMIN_EMBARGO_EXPIRE("embargo/expiration-admin.ftl"),
 	ADMIN_OVERDRAWN_NOTIFICATION("overdrawn-admin.ftl"),
 	
+	MONTHLY_USER_STATISTICS("monthly_user_statistics.ftl","test@tdar.org",MonthlyUserStatisticsMessage.class),
 	TEST_EMAIL("test-email.ftl", "test@tdar.org", TestAwsMessage.class);
 	
 	/**

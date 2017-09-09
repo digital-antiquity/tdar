@@ -41,7 +41,6 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     	assertEquals(EmailType.TEST_EMAIL.getFromAddress(), "test@tdar.org");
     }
     
-   
     
     /*@Test 
     public void testBounceMessage(){

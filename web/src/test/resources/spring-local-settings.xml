@@ -17,10 +17,9 @@
      <bean id="DoiProvider" class="org.tdar.core.dao.external.pid.EZIDDao" />
 
  -->
- 
   
     <!-- <import resource="spring-tag-ahad.xml" /> -->
     
     <bean name="mailSender" class="org.tdar.core.service.external.MockMailSender" />
-
+    <bean name="awsEmailService" class="org.tdar.core.service.email.MockAwsEmailServiceImpl" />
 </beans>
