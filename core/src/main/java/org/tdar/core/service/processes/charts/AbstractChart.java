@@ -1,5 +1,6 @@
 package org.tdar.core.service.processes.charts;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,18 +9,20 @@ import javax.imageio.ImageIO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javafx.application.Application;
+import org.tdar.core.configuration.TdarConfiguration;
+
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.chart.BarChart;
 import javafx.scene.chart.Chart;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 @SuppressWarnings("restriction")
-public abstract class AbstractGraphGenerator extends Application {
+public abstract class AbstractChart  {
+    
+    private String outputDir = TdarConfiguration.getInstance().getTempDirectory().getAbsolutePath();
     Logger logger = LoggerFactory.getLogger(getClass());
 
     private int width;
@@ -27,11 +30,14 @@ public abstract class AbstractGraphGenerator extends Application {
     private String title;
     private String filename;
 
-    void renderAndExport(Stage stage, Chart bc) {
+    File renderAndExport(Stage stage, Chart bc) {
         render(stage, bc);
-        exportChart(bc, Paths.get("./target/" + getFilename() + ".png"));
+        File file  = exportChart(bc, Paths.get(getOutputDir() + getFilename() + ".png"));
         stage.close();
+        return file;
     }
+
+    public abstract File createChart(Stage stage);
 
     public void render(Stage stage, Chart chart) {
         Scene scene = new Scene(chart, width, height);
@@ -43,7 +49,7 @@ public abstract class AbstractGraphGenerator extends Application {
         stage.show();
     }
 
-    public void exportChart(Chart chart, Path path_) {
+    public File exportChart(Chart chart, Path path_) {
         Path path = path_.normalize();
         String filename = path.getFileName().toString();
         String ext = filename.substring(filename.indexOf(".") + 1);
@@ -52,12 +58,16 @@ public abstract class AbstractGraphGenerator extends Application {
         params.setFill(Color.TRANSPARENT);
         WritableImage image = chart.snapshot(params, null);
         try {
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), ext, path.toFile());
+            File file = path.toFile();
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), ext, file);
+            return file;
         } catch (IOException e) {
             logger.error("Could not save file: {}", e.getMessage());
         }
+        return null;
     }
 
+    
     public int getHeight() {
         return height;
     }
@@ -88,5 +98,13 @@ public abstract class AbstractGraphGenerator extends Application {
 
     public void setFilename(String filename) {
         this.filename = filename;
+    }
+
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    public void setOutputDir(String outputDir) {
+        this.outputDir = outputDir;
     }
 }
