@@ -93,6 +93,7 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.utils.EmailStatisticsHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
@@ -150,6 +151,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     @Autowired
     protected EmailServiceImpl emailService;
+    
+    @Autowired
+    protected EmailStatisticsHelper emailStatsHelper;
     
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());

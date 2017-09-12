@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
@@ -106,6 +107,32 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 			e.printStackTrace();
 		}
     }   
+    
+    
+    @Test
+    public void testSendUserStats() throws MessagingException, IOException{
+    		TdarUser user = new TdarUser("Test", "User", getTdarConfiguration().getDefaultFromEmail());
+    	
+    		Long billingAccountId = 418L;
+    		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
+    		Map<String, Number> pieChartData = emailStatsHelper.generateUserResourcesPieChartData(billingAccount);
+    		
+    		emailStatsHelper.generateTotalDownloadsChartData(billingAccount);
+    		
+    		
+    		AwsMessage message = emailService.createMessage(EmailType.MONTHLY_USER_STATISTICS, "bcastel1@asu.edu");
+    		message.addData("resources",billingAccount.getResources());
+    		message.addData("user", user);
+    		
+    		
+    	
+    		//emailService.renderAndSendMessage(message);
+        	emailService.renderAndUpdateEmailContent(message);
+        	emailService.updateEmailSubject(message);
+        	
+        	logger.debug("Email content is {}",message.getEmail().getMessage());
+    }
+    
    
     @Test
     public void testEmailContent() throws IOException {    
@@ -119,7 +146,6 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
     	emailService.renderAndUpdateEmailContent(message);
     	emailService.updateEmailSubject(message);
-    	
         getLogger().debug(message.getEmail().getMessage());
     }
     

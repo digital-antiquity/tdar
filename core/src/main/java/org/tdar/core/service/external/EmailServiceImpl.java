@@ -55,6 +55,7 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.email.AwsEmailService;
 import org.tdar.utils.EmailMessageType;
+import org.tdar.utils.EmailStatisticsHelper;
 import org.tdar.utils.MessageHelper;
 
 import com.amazonaws.services.simpleemail.model.Content;
@@ -93,11 +94,14 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private AwsEmailService awsEmailService;
     
+    @Autowired
+    private	EmailStatisticsHelper emailStatsHelper;
+    
 
 	public static String ATTACHMENTS = "ATTACHMENTS";
     public static String INLINE = "INLINE";
 
-    
+     
     /* (non-Javadoc)
 	 * @see org.tdar.core.service.external.EmailService#queueAwsMessage(org.tdar.core.bean.notification.aws.AwsMessage)
 	 */
@@ -557,8 +561,12 @@ public class EmailServiceImpl implements EmailService {
 	public void setAwsEmailService(AwsEmailService awsEmailService) {
 		this.awsEmailService = awsEmailService;
 	}
-	
 
+	public EmailStatisticsHelper getEmailStatsHelper() {
+		return emailStatsHelper;
+	}
 
-    
+	public void setEmailStatsHelper(EmailStatisticsHelper emailStatsHelper) {
+		this.emailStatsHelper = emailStatsHelper;
+	}
 }

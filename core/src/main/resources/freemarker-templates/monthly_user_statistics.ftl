@@ -3,7 +3,7 @@
 <@mail.content>
      
      <div>
-        Dear {user.firstName},
+        Dear ${user.firstName},
         We're so glad that you've entrusted your archaeological to tDAR. 
         We'd love to give you an update on what's new, and what's been most popular.
         
@@ -26,7 +26,7 @@
         </span>
         <ul>
         <#list resources as resource>
-            <li> resource.title</li>
+            <li> ${resource.title}</li>
         </#list>
         </ul>
         
