@@ -122,7 +122,6 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
     		
     		emailService.sendUserStatisticEmail(user, billingAccount);
-    		
         	//logger.debug("Email content is {}",message.getEmail().getMessage());
     }
     

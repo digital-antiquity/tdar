@@ -1,5 +1,6 @@
 package org.tdar.utils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -24,6 +25,8 @@ import org.tdar.core.service.processes.charts.AbstractChart;
 import org.tdar.core.service.processes.charts.JavaFxChartRunnable;
 import org.tdar.core.service.processes.charts.TdarBarChart;
 import org.tdar.core.service.processes.charts.TdarPieChart;
+import org.tdar.core.service.resource.ResourceService;
+
 
 @Component
 public class EmailStatisticsHelper {
@@ -31,6 +34,9 @@ public class EmailStatisticsHelper {
 
 	@Autowired
 	private StatisticsService statisticsService;
+	
+	@Autowired
+	private ResourceService resourceService;
 
 	public Map<String, Number> generateUserResourcesPieChartData(BillingAccount billingAccount) {
 		Set<Resource> resources = billingAccount.getResources();
@@ -83,6 +89,11 @@ public class EmailStatisticsHelper {
 		return map;
 	}
 	
+	public List<Resource> getTopResources(BillingAccount billingAccount){
+		return resourceService.getMostPopularResourcesForBillingAccount(billingAccount, 10);
+	}
+	
+	
 	/**
 	 * Calculate the start and end dates of the range from a set of resources.
 	 * Used to determine the granularity of
@@ -105,8 +116,9 @@ public class EmailStatisticsHelper {
 	}
 
 	/**
-	 * Given a start date and end date, determine the granularity that
-	 * statistics should aggregate to.
+	 * Compares the start date to the current date to determine the interval that should be used for date granularity.
+	 * If the start date is in the current month, the granularity is by day. If it is the same year, it is by month,
+	 * otherwise it is by year. 
 	 * 
 	 * @param startDate
 	 * @param endDate
@@ -152,5 +164,13 @@ public class EmailStatisticsHelper {
 
 	public void setStatisticsService(StatisticsService statisticsService) {
 		this.statisticsService = statisticsService;
+	}
+
+	public ResourceService getResourceService() {
+		return resourceService;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 }

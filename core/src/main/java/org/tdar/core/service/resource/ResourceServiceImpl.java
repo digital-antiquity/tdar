@@ -670,6 +670,13 @@ public class ResourceServiceImpl implements ResourceService  {
         List<Resource> popular = aggregateStatisticsDao.getWeeklyPopularResources(count);
         return popular;
     }
+    
+    @Override
+    @Transactional(readOnly=true)
+    public List<Resource> getMostPopularResourcesForBillingAccount(BillingAccount billingAccount, int limit){
+    	return aggregateStatisticsDao.getMostPopularResourcesForBillingAccount(billingAccount, limit);
+    }
+    
 
     /* (non-Javadoc)
      * @see org.tdar.core.service.resource.ResourceService#saveResourceCreatorsFromProxies(java.util.Collection, org.tdar.core.bean.resource.Resource, boolean)

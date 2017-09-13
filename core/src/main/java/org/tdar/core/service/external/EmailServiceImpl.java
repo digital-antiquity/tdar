@@ -465,27 +465,39 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	
-	
+	/**
+	 * Generates a summary of the user's resources by billing account and immediately sends the email
+	 * @param user
+	 * @param billingAccount
+	 */
 	public void sendUserStatisticEmail(TdarUser user, BillingAccount billingAccount) {
+		logger.debug("Starting sending statistics email to {}",user);
+
+		//Get the date granularity.
+		Date date = emailStatsHelper.getStartDate(billingAccount.getResources());
+		DateGranularity granularity = emailStatsHelper.getDateGranularity(date);
+		StatsResultObject stats = emailStatsHelper.getAccountStatistics(billingAccount, granularity);
+
+		//Generate temporary file names
 		String piechartFileName  = System.currentTimeMillis() + "_resource-piechart";
 		String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart";
 		String viewsFileName 	 = System.currentTimeMillis() + "_views-barchart";
-		
+
+		//Generate the resources pie graph.
 		Map<String, Number> pieChartData = emailStatsHelper.generateUserResourcesPieChartData(billingAccount);
 		File piechart = chartGenerator.generateResourcesPieChart(pieChartData, piechartFileName);
 		
-		Date date = emailStatsHelper.getStartDate(billingAccount.getResources());
-		DateGranularity granularity = emailStatsHelper.getDateGranularity(date);
-
-		StatsResultObject stats = emailStatsHelper.getAccountStatistics(billingAccount, granularity);
+		//Generate the downloads graph
 		Map<String, Map<String, Number>> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount, stats);
 		File barchart1 = chartGenerator.generateTotalDownloadsBarChart(totalDownloadsData, downloadsFileName);
 		
+		//Generate the total views graph
 		Map<String, Map<String, Number>> totalViewsData 	  = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
 		File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
 		
+		//Construct the message and attach the graphs.
 		AwsMessage message = createMessage(EmailType.MONTHLY_USER_STATISTICS, user.getEmail());
-		message.addData("resources",billingAccount.getResources());
+		message.addData("resources",emailStatsHelper.getTopResources(billingAccount));
 		message.addData("user", user);
 		message.addInlineAttachment("resources", piechart);
 		message.addInlineAttachment("totalviews", barchart1);
