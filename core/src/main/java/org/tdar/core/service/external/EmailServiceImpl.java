@@ -50,13 +50,16 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.email.AwsEmailService;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.EmailStatisticsHelper;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.StatsChartGenerator;
 
 import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.RawMessage;
@@ -97,6 +100,8 @@ public class EmailServiceImpl implements EmailService {
     @Autowired
     private	EmailStatisticsHelper emailStatsHelper;
     
+    @Autowired
+    private StatsChartGenerator chartGenerator;
 
 	public static String ATTACHMENTS = "ATTACHMENTS";
     public static String INLINE = "INLINE";
@@ -459,6 +464,40 @@ public class EmailServiceImpl implements EmailService {
 		return messageHelper.getMimeMessage();
 	}
 
+	
+	
+	public void sendUserStatisticEmail(TdarUser user, BillingAccount billingAccount) {
+		String piechartFileName  = System.currentTimeMillis() + "_resource-piechart";
+		String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart";
+		String viewsFileName 	 = System.currentTimeMillis() + "_views-barchart";
+		
+		Map<String, Number> pieChartData = emailStatsHelper.generateUserResourcesPieChartData(billingAccount);
+		File piechart = chartGenerator.generateResourcesPieChart(pieChartData, piechartFileName);
+		
+		Date date = emailStatsHelper.getStartDate(billingAccount.getResources());
+		DateGranularity granularity = emailStatsHelper.getDateGranularity(date);
+
+		StatsResultObject stats = emailStatsHelper.getAccountStatistics(billingAccount, granularity);
+		Map<String, Map<String, Number>> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount, stats);
+		File barchart1 = chartGenerator.generateTotalDownloadsBarChart(totalDownloadsData, downloadsFileName);
+		
+		Map<String, Map<String, Number>> totalViewsData 	  = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
+		File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
+		
+		AwsMessage message = createMessage(EmailType.MONTHLY_USER_STATISTICS, user.getEmail());
+		message.addData("resources",billingAccount.getResources());
+		message.addData("user", user);
+		message.addInlineAttachment("resources", piechart);
+		message.addInlineAttachment("totalviews", barchart1);
+		message.addInlineAttachment("totaldownloads", barchart2);
+		
+    	try {
+			renderAndSendMessage(message);
+		} catch (MessagingException | IOException e) {
+			logger.error("Couldn't send userStatisticsEmail: {} {}",e,e);
+		}
+	}
+	
 
 	/**
 	 * 
@@ -568,5 +607,13 @@ public class EmailServiceImpl implements EmailService {
 
 	public void setEmailStatsHelper(EmailStatisticsHelper emailStatsHelper) {
 		this.emailStatsHelper = emailStatsHelper;
+	}
+
+	public StatsChartGenerator getChartGenerator() {
+		return chartGenerator;
+	}
+
+	public void setChartGenerator(StatsChartGenerator chartGenerator) {
+		this.chartGenerator = chartGenerator;
 	}
 }

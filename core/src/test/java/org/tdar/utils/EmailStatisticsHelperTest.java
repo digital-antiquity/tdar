@@ -2,7 +2,6 @@ package org.tdar.utils;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -18,15 +17,15 @@ public class EmailStatisticsHelperTest extends AbstractIntegrationTestCase{
 	
 	@Test
 	public void testBillingAccountResources(){
+		
+		createAndSaveNewUser();
+		
 		Long id = 418L;
 		BillingAccount billingAccount = genericService.find(BillingAccount.class, id);
 		assertNotNull(billingAccount);
 		
-		logger.debug("Billing account: {} ", billingAccount);
-		
 		logger.debug("Resource count is {}",billingAccount.getResources().size());
 		assertNotNull(billingAccount.getResources());
-		
 		
 		Map<String, Number> data = statsHelper.generateUserResourcesPieChartData(billingAccount);
 		

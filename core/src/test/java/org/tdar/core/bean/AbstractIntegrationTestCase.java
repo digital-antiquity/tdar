@@ -96,6 +96,7 @@ import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.EmailStatisticsHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.StatsChartGenerator;
 import org.tdar.utils.TestConfiguration;
 // 
 @ContextConfiguration(classes = TdarAppConfiguration.class)
@@ -154,6 +155,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     
     @Autowired
     protected EmailStatisticsHelper emailStatsHelper;
+    
+    @Autowired
+	protected StatsChartGenerator chartGenerator;
     
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -722,4 +726,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public EntityService getEntityService() {
         return entityService;
     }
+
+	public StatsChartGenerator getChartGenerator() {
+		return chartGenerator;
+	}
+
+	public void setChartGenerator(StatsChartGenerator chartGenerator) {
+		this.chartGenerator = chartGenerator;
+	}
 }

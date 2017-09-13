@@ -20,6 +20,10 @@ import org.tdar.core.dao.ResourceStatWrapper;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.StatisticsService;
+import org.tdar.core.service.processes.charts.AbstractChart;
+import org.tdar.core.service.processes.charts.JavaFxChartRunnable;
+import org.tdar.core.service.processes.charts.TdarBarChart;
+import org.tdar.core.service.processes.charts.TdarPieChart;
 
 @Component
 public class EmailStatisticsHelper {
@@ -44,26 +48,41 @@ public class EmailStatisticsHelper {
 		}
 		return map;
 	}
-
-	public Map<String, Map<String, Number>> generateTotalViewsChartData(BillingAccount billingAccount) {
-		Map<String, Map<String, Number>> map = new HashMap<String, Map<String, Number>>();
-		
-		
-		return map;
+	
+	public StatsResultObject getAccountStatistics(BillingAccount billingAccount, DateGranularity granularity){
+		 return  statisticsService.getStatsForAccount(billingAccount, MessageHelper.getInstance(), granularity);
 	}
+	
 
-	public Map<String, Map<String, Number>> generateTotalDownloadsChartData(BillingAccount billingAccount) {
+	public Map<String, Map<String, Number>> generateTotalViewsChartData(BillingAccount billingAccount, StatsResultObject stats ) {
 		Map<String, Map<String, Number>> map = new HashMap<String, Map<String, Number>>();
-		Date date = getStartDate(billingAccount.getResources());
-		DateGranularity granularity = getDateGranularity(date);
-		
 		//Gets the download information.
-		StatsResultObject stats = statisticsService.getStatsForAccount(billingAccount, MessageHelper.getInstance(), granularity);
 		Collection<Map<String, Object>> data = stats.getObjectForJson();
-		logger.debug("Data is {}",data);
+		
+		for(Map<String, Object> row : data){
+			Map<String, Number> r = new HashMap<String, Number>();
+			r.put((String) row.get("date"), (Number) row.get("Views")); 
+			map.put((String) row.get("date"), r);
+		}
+		
+		logger.debug("Map is {}", map);
 		return map;
 	}
 
+	public Map<String, Map<String, Number>> generateTotalDownloadsChartData(BillingAccount billingAccount, StatsResultObject stats) {
+		Map<String, Map<String, Number>> map = new HashMap<String, Map<String, Number>>();
+		Collection<Map<String, Object>> data = stats.getObjectForJson();
+		
+		for(Map<String, Object> row : data){
+			Map<String, Number> r = new HashMap<String, Number>();
+			r.put((String) row.get("date"), (Number) row.get("Downloads")); 
+			map.put((String) row.get("date"), r);
+		}
+		
+		logger.debug("Map is {}", map);
+		return map;
+	}
+	
 	/**
 	 * Calculate the start and end dates of the range from a set of resources.
 	 * Used to determine the granularity of
@@ -96,7 +115,6 @@ public class EmailStatisticsHelper {
 	public DateGranularity getDateGranularity(Date startDate) {
 		GregorianCalendar calendar = new GregorianCalendar();
 
-		
 		logger.debug("Start date is {}",startDate);
 		
 		calendar.setTime(startDate);

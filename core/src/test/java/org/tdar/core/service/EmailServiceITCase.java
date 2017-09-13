@@ -7,7 +7,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +28,11 @@ import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.dao.StatsResultObject;
+import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.email.MockAwsEmailServiceImpl;
 import org.tdar.core.service.external.MockMailSender;
+import org.tdar.utils.MockStatsChartGenerator;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
@@ -111,26 +116,14 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     
     @Test
     public void testSendUserStats() throws MessagingException, IOException{
-    		TdarUser user = new TdarUser("Test", "User", getTdarConfiguration().getDefaultFromEmail());
-    	
+    		assertTrue(chartGenerator instanceof MockStatsChartGenerator);
+    		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
     		Long billingAccountId = 418L;
     		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
-    		Map<String, Number> pieChartData = emailStatsHelper.generateUserResourcesPieChartData(billingAccount);
     		
-    		emailStatsHelper.generateTotalDownloadsChartData(billingAccount);
+    		emailService.sendUserStatisticEmail(user, billingAccount);
     		
-    		
-    		AwsMessage message = emailService.createMessage(EmailType.MONTHLY_USER_STATISTICS, "bcastel1@asu.edu");
-    		message.addData("resources",billingAccount.getResources());
-    		message.addData("user", user);
-    		
-    		
-    	
-    		//emailService.renderAndSendMessage(message);
-        	emailService.renderAndUpdateEmailContent(message);
-        	emailService.updateEmailSubject(message);
-        	
-        	logger.debug("Email content is {}",message.getEmail().getMessage());
+        	//logger.debug("Email content is {}",message.getEmail().getMessage());
     }
     
    
