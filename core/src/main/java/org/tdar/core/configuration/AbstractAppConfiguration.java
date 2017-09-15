@@ -70,7 +70,14 @@ public abstract class AbstractAppConfiguration implements Serializable {
          */
         System.setProperty("org.jboss.logging.provider", "slf4j");
         System.setProperty("pdfbox.fontcache",System.getProperty("java.io.tmpdir") + File.separatorChar);
-        System.setProperty("java.awt.headless", "true");
+//        System.setProperty("java.awt.headless", "true");
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+        System.setProperty("glass.platform","Monocle");
+        System.setProperty("monocle.platform","Headless");
+        System.setProperty("prism.order", "sw");
+        System.setProperty("prism.text", "t2k");
+
         ImageIO.scanForPlugins();
     }
 

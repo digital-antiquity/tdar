@@ -22,6 +22,8 @@ public class TdarPieChartTest {
     @Test
     @SuppressWarnings("restriction")
     public void testPie() throws Exception {
+        System.setProperty("java.awt.headless", "true");
+        System.setProperty("javafx.macosx.embedded", "true");
         Map<String, Number> data = new HashMap<String, Number>();
         data.put("a", 50);
         data.put("b", 50);
