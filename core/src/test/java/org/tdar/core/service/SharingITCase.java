@@ -102,7 +102,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
         final String collectionName = "the best collection ever";
         List<TdarUser> users = new ArrayList<>(Arrays.asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
 
-        SharedCollection collection = createAndSaveNewResourceCollection(collectionName, SharedCollection.class);
+        SharedCollection collection = createAndSaveNewResourceCollection(collectionName);
         users.remove(collection.getOwner());
 
         // sanity checks

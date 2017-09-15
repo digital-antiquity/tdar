@@ -33,11 +33,4 @@ public class GeneralPermissionsTestCase {
         assertTrue(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_SHARE));
     }
 
-    @Test
-    public void getAvailableForHierarchicalCollection() {
-        List<GeneralPermissions> availablePermissionsFor = GeneralPermissions.getAvailablePermissionsFor(HierarchicalCollection.class);
-        logger.debug("sharedperm: {}", availablePermissionsFor);
-        assertTrue(availablePermissionsFor.contains(GeneralPermissions.MODIFY_METADATA));
-        assertTrue(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_SHARE));
-    }
 }

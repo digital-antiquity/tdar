@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -45,7 +44,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     }
 
     private Long setup() {
-        ListCollection rc = new ListCollection();
+        SharedCollection rc = new SharedCollection();
         rc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
@@ -72,9 +71,9 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     public void testLoad() {
         Long id = setup();
 
-        List<ListCollection> rcs = new ArrayList<>();
+        List<SharedCollection> rcs = new ArrayList<>();
         // if configured correctly, hibernate should know to construct sql that includes both ResourceCollection & WhiteLabelCollection objects.
-        for (ListCollection rc : genericService.findAll(ListCollection.class)) {
+        for (SharedCollection rc : genericService.findAll(SharedCollection.class)) {
             if (rc != null && rc.getProperties() != null && rc.getProperties().getWhitelabel()) {
                 if (id.equals(rc.getId())) {
                     rcs.add(rc);
@@ -124,8 +123,8 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     }
 
     @SuppressWarnings("unused")
-    private ListCollection createAndSaveWhiteLabelCollection() {
-        ListCollection rc = new ListCollection();
+    private SharedCollection createAndSaveWhiteLabelCollection() {
+        SharedCollection rc = new SharedCollection();
         rc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
@@ -141,8 +140,8 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testConvertToWhitelabelCollection() {
-        ListCollection resourceCollection = createAndSaveNewResourceCollection("normal collection", ListCollection.class);
-        ListCollection whitelabelCollection = resourceCollectionDao.convertToWhitelabelCollection(resourceCollection);
+        SharedCollection resourceCollection = createAndSaveNewResourceCollection("normal collection");
+        SharedCollection whitelabelCollection = resourceCollectionDao.convertToWhitelabelCollection(resourceCollection);
 
         assertThat(whitelabelCollection, is(not(nullValue())));
         assertThat(resourceCollection.getId(), is(whitelabelCollection.getId()));
@@ -153,7 +152,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testWhitelabelsetup() {
         CollectionDisplayProperties props = new CollectionDisplayProperties(false,false,false,false,false,false);
-        ListCollection c = new ListCollection();
+        SharedCollection c = new SharedCollection();
         c.setName("test");
         c.markUpdated(getAdminUser());
         c.setProperties(props);
@@ -164,8 +163,8 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testConvertToResourceCollection() {
-        ListCollection wlc = createAndSaveNewWhiteLabelCollection("fancy collection");
-        ListCollection rc = resourceCollectionDao.convertToResourceCollection(wlc);
+        SharedCollection wlc = createAndSaveNewWhiteLabelCollection("fancy collection");
+        SharedCollection rc = resourceCollectionDao.convertToResourceCollection(wlc);
 
         assertThat(rc, is(not(nullValue())));
         assertThat(rc, hasProperty("title", is("fancy collection")));

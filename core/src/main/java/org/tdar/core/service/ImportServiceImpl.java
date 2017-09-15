@@ -33,7 +33,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -594,11 +593,11 @@ public class ImportServiceImpl implements ImportService  {
 
             }
             //FIXME???
-            if (collection instanceof ListCollection) {
-                resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getUnmanagedResourceCollections(),
-                        authenticatedUser, true,
-                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, CollectionType.LIST);
-            }
+//            if (collection instanceof ListCollection) {
+//                resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getUnmanagedResourceCollections(),
+//                        authenticatedUser, true,
+//                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, CollectionType.LIST);
+//            }
             toReturn = null;
         }
 
@@ -721,10 +720,6 @@ private void validateInvalidImportFields(ResourceCollection incomingResource, Td
             throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
         }
 
-        if (incomingResource instanceof ListCollection && CollectionUtils.isNotEmpty(((ListCollection) incomingResource).getUnmanagedResources())) {
-            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
-        }
-
         if (CollectionUtils.isNotEmpty(incomingResource.getAuthorizedUsers()) && !authenticationAndAuthorizationService.isAdministrator(user)) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
         }
@@ -745,7 +740,7 @@ private void validateInvalidImportFields(ResourceCollection incomingResource, Td
                 throw new APIException(MessageHelper.getMessage("error.permission_denied"), StatusCode.UNAUTHORIZED);
             }
 
-            incomingResource.copyImmutableFieldsFrom(existing);
+            incomingResource.copyImmutableFieldsFrom((SharedCollection) existing);
             // FIXME: could be trouble: the next line implicitly detaches the submitter we just copied to incomingResource
             genericService.detachFromSession(existing);
             created = false;

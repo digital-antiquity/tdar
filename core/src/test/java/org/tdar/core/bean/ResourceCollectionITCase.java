@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -192,7 +191,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         SharedCollection test = new SharedCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
         genericService.saveOrUpdate(test);
 
         SharedCollection c1 = new SharedCollection();
@@ -252,10 +251,8 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         process(child2);
         SharedCollection child22 = new SharedCollection("child22", "child2", getBasicUser());
         process(child22);
-        ListCollection list = new ListCollection("child22", "child2", SortOption.TITLE, false, getBasicUser());
-        process(list);
 
-        genericService.saveOrUpdate(parent, child1, child2, child11, child22, parent2, parent3, list, access);
+        genericService.saveOrUpdate(parent, child1, child2, child11, child22, parent2, parent3, access);
         access.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child1, parent);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child2, parent);
@@ -271,7 +268,6 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         assertTrue("should contain visbile child", parentCollections.contains(child2));
         assertTrue("should contain normal child", parentCollections.contains(child1));
         assertTrue("should contain visbile child ofhidden parent", parentCollections.contains(child22));
-        assertFalse(parentCollections.contains(list));
         getLogger().trace("accessible collections");
         List<ResourceCollection> accessibleResourceCollections = entityService.findAccessibleResourceCollections(getBasicUser());
         logger.debug("accessible:{}", accessibleResourceCollections);
@@ -292,11 +288,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
     private void process(ResourceCollection list) {
         list.markUpdated(getAdminUser());
-        if (list instanceof SharedCollection) {
-            list.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),list.getOwner(),GeneralPermissions.ADMINISTER_SHARE));
-        } else {
-            list.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),list.getOwner(),GeneralPermissions.ADMINISTER_GROUP));
-        }
+        list.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),list.getOwner(),GeneralPermissions.ADMINISTER_SHARE));
         genericService.saveOrUpdate(list);
         genericService.saveOrUpdate(list.getAuthorizedUsers());
     }

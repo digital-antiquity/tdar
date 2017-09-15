@@ -23,4 +23,8 @@
         SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
         </sql>
     </changeSet>
+    <changeSet id="quartz-collections-1" author="abrin">
+        <sql>update authorized_users set general_permission_int=5000, general_permission'=ADMINISTER_SHARE' where general_permission='ADMINISTER_GROUP'</sql>
+        <sql>update resource_collection set collection_type='SHARED' where collection_type='LIST'</sql>
+    </changeSet>
 </databaseChangeLog>

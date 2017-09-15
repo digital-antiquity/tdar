@@ -28,9 +28,7 @@ import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.DownloadAuthorization;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -266,9 +264,9 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-        if (persistable instanceof ListCollection) {
-            return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_COLLECTION);
-        }
+//        if (persistable instanceof ListCollection) {
+//            return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_COLLECTION);
+//        }
         return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_SHARE);
     }
 
@@ -291,9 +289,9 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         }
 
         GeneralPermissions permission = GeneralPermissions.ADMINISTER_SHARE;
-        if (persistable instanceof ListCollection) {
-            permission = GeneralPermissions.ADMINISTER_GROUP;
-        }
+//        if (persistable instanceof ListCollection) {
+//            permission = GeneralPermissions.ADMINISTER_GROUP;
+//        }
 
         return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, permission);
     }

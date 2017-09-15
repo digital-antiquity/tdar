@@ -17,7 +17,6 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
@@ -36,9 +35,9 @@ public enum GeneralPermissions implements HasLabel, Localizable {
     VIEW_ALL( 100, Resource.class, SharedCollection.class),
     MODIFY_METADATA(400, Resource.class, SharedCollection.class),
     MODIFY_RECORD(500, Resource.class, SharedCollection.class),
-    ADD_TO_COLLECTION(40, ListCollection.class),
-    REMOVE_FROM_COLLECTION(50, ListCollection.class),
-    ADMINISTER_GROUP(80,ListCollection.class),
+    ADD_TO_COLLECTION(40, SharedCollection.class),
+    REMOVE_FROM_COLLECTION(50, SharedCollection.class),
+//    ADMINISTER_GROUP(80,SharedCollection.class),
     ADD_TO_SHARE(4000,SharedCollection.class),
     REMOVE_FROM_SHARE(4500, SharedCollection.class),
     ADMINISTER_SHARE( 5000,SharedCollection.class),
@@ -99,7 +98,6 @@ public enum GeneralPermissions implements HasLabel, Localizable {
 
     public static List<GeneralPermissions> resourcePermissions() {
         List<GeneralPermissions> permissions = new ArrayList<>(Arrays.asList(GeneralPermissions.values()));
-        permissions.remove(GeneralPermissions.ADMINISTER_GROUP);
         permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
         permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
         permissions.remove(GeneralPermissions.ADMINISTER_SHARE);
@@ -150,9 +148,6 @@ public enum GeneralPermissions implements HasLabel, Localizable {
         }
         if (account instanceof SharedCollection) {
             return GeneralPermissions.ADMINISTER_SHARE;
-        }
-        if (account instanceof ListCollection) {
-            return GeneralPermissions.ADMINISTER_GROUP;
         }
         if (account instanceof Resource) {
             return GeneralPermissions.MODIFY_RECORD;

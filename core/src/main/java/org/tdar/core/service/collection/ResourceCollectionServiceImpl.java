@@ -29,8 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -63,8 +61,6 @@ import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
 
 import com.opensymphony.xwork2.TextProvider;
-
-import opennlp.tools.formats.muc.SgmlParser;
 
 /**
  * @author Adam Brin

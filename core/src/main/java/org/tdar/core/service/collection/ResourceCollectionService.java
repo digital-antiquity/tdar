@@ -8,7 +8,6 @@ import java.util.TreeSet;
 
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -160,7 +159,7 @@ public interface ResourceCollectionService {
      * @param generalPermissions
      * @return
      */
-    <C extends HierarchicalCollection<?>> Set<SharedCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions);
+     Set<SharedCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions);
 
     /**
      * Return the root resource collection of the provided resource collection. This method also populates the
@@ -224,7 +223,7 @@ public interface ResourceCollectionService {
      */
     Long getCollectionViewCount(ResourceCollection persistable);
 
-    <C extends HierarchicalCollection<SharedCollection>> void updateCollectionParentTo(TdarUser authorizedUser, SharedCollection persistable, SharedCollection parent);
+    void updateCollectionParentTo(TdarUser authorizedUser, SharedCollection persistable, SharedCollection parent);
 
     void updateAlternateCollectionParentTo(TdarUser authorizedUser, SharedCollection persistable,
             SharedCollection hierarchicalCollection);

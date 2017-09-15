@@ -47,7 +47,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -401,30 +400,20 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewResource(cls, persistentPerson, resourceTitle);
     }
 
-    // create new, public, collection with the getUser() as the owner and no resources
-    public <C extends ResourceCollection> C createAndSaveNewResourceCollection(String name, Class<C> class1) {
-        try {
-            return init(class1.newInstance(), name);
-        } catch (InstantiationException | IllegalAccessException e) {
-            logger.error("{}",e,e);
-        }
-        return null;
-    }
 
     // create new, public, collection with the getUser() as the owner and no resources
     public SharedCollection createAndSaveNewResourceCollection(String name) {
         return init(new SharedCollection(), name);
     }
 
-    public ListCollection createAndSaveNewWhiteLabelCollection(String name) {
-        ListCollection wlc = new ListCollection();
+    public SharedCollection createAndSaveNewWhiteLabelCollection(String name) {
+        SharedCollection wlc = new SharedCollection();
         wlc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().setSubtitle("This is a fancy whitelabel collection");
         init(wlc, name);
         return wlc;
     }
-
     protected <C extends ResourceCollection> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);

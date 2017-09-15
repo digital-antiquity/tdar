@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Localizable;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Institution;
@@ -35,7 +34,7 @@ public enum LookupSource implements HasLabel,Localizable {
             OtherKeyword.class, TemporalKeyword.class, SiteNameKeyword.class,
             SiteTypeKeyword.class),
     RESOURCE("resources", Resource.class),
-    COLLECTION("collections", SharedCollection.class, ListCollection.class),
+    COLLECTION("collections", SharedCollection.class),
     INTEGRATION("integrations", DataIntegrationWorkflow.class),
     RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class),
     CONTENTS("content",InformationResourceFile.class),

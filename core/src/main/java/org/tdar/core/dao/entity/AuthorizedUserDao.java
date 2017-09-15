@@ -86,9 +86,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
         for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
-            if (collection instanceof SharedCollection) {
-                ids.addAll(((SharedCollection)collection).getParentIds());
-            }
+                ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
         }
         getLogger().trace("allowed to rights collection ids: {}", ids);
@@ -97,11 +95,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
 
     public boolean isAllowedTo(TdarUser person, ResourceCollection collection, GeneralPermissions permission) {
 
-        List<Long> ids = new ArrayList<>();
-        if (collection instanceof HierarchicalCollection) {
-            HierarchicalCollection<?> hierarchicalCollection = (HierarchicalCollection<?>)collection;
-            ids.addAll(hierarchicalCollection.getParentIds());
-        }
+        List<Long> ids = new ArrayList<>(collection.getParentIds());
 
         ids.add(collection.getId());
         return isAllowedTo(person, permission, ids);

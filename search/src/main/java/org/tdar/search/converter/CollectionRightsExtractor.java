@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -63,9 +62,6 @@ public class CollectionRightsExtractor {
     }
 
     public List<Long> getUsersWhoCanAdminister() {
-        if (collection instanceof ListCollection) {
-            return toUserList(GeneralPermissions.ADMINISTER_GROUP);
-        } 
         return toUserList(GeneralPermissions.ADMINISTER_SHARE);
     }
 

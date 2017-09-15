@@ -160,7 +160,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         resourceCreator.setSequenceNumber(1);
         d1.getResourceCreators().add(resourceCreator);
 
-        AuthorizedUser user1 = new AuthorizedUser(getAdminUser(), authority, GeneralPermissions.ADMINISTER_GROUP);
+        AuthorizedUser user1 = new AuthorizedUser(getAdminUser(), authority, GeneralPermissions.ADMINISTER_SHARE);
         ResourceCollection resourceCollection = genericService.findAll(ResourceCollection.class).iterator().next();
         resourceCollection.getAuthorizedUsers().add(user1);
         genericService.save(user1);

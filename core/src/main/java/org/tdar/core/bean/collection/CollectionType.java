@@ -21,9 +21,6 @@ public enum CollectionType implements Localizable, PluralLocalizable {
         if (cls.isAssignableFrom(SharedCollection.class)) {
             return SHARED;
         }
-        if (cls.isAssignableFrom(ListCollection.class)) {
-            return LIST;
-        }
         return null;
     }
 
@@ -39,8 +36,6 @@ public enum CollectionType implements Localizable, PluralLocalizable {
 
     public Class<? extends ResourceCollection> getClassForType() {
         switch (this) {
-            case LIST:
-                return ListCollection.class;
             case SHARED:
                 return SharedCollection.class;
         }

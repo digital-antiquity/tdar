@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.keyword.KeywordType;
@@ -82,7 +81,6 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
         List<ResourceCollection> findAllResourceCollections = new ArrayList<>();
-        findAllResourceCollections.addAll(genericService.findAll(ListCollection.class));
         int numListCollections = findAllResourceCollections.size();
         List<SharedCollection> shareCollections = genericService.findAll(SharedCollection.class);
         int numSharedCollections = shareCollections.size();

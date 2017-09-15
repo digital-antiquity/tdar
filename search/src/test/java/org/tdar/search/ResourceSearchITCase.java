@@ -29,13 +29,11 @@ import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.purl.dc.terms.MESH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -858,8 +856,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Rollback
     public void testRefineSearchWithSparseCollection() throws ParseException, SearchException, SearchIndexException, IOException {
 
-        ListCollection rc = createAndSaveNewResourceCollection("Mega Collection", ListCollection.class);
-        ListCollection sparseCollection = new ListCollection();
+        SharedCollection rc = createAndSaveNewResourceCollection("Mega Collection");
+        SharedCollection sparseCollection = new SharedCollection();
         evictCache();
         long collectionId = rc.getId();
         assertThat(collectionId, greaterThan(0L));
@@ -868,7 +866,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         sp.getCollections().add(sparseCollection);
         SearchResult<Resource> result = doSearch(null, null, sp, null);
 
-        assertThat(((ListCollection)sp.getCollections().get(0)).getTitle(), is("Mega Collection"));
+        assertThat((sp.getCollections().get(0)).getTitle(), is("Mega Collection"));
     }
 
     private void assertOnlyResultAndProject(SearchResult<Resource> result, InformationResource informationResource) {

@@ -11,7 +11,6 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -102,10 +101,9 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         seen = false;
         for (ResourceCollection c : result.getResults()) {
             logger.debug("{} {}", c.getId(), c);
-            if (c.getId().equals(1002L) && c instanceof ListCollection) {
-                ListCollection shared = (ListCollection)c;
-                logger.debug("parent: {}", shared.getParent());
-                logger.debug("parent: {}", shared.isTopLevel());
+            if (c.getId().equals(1002L)) {
+                logger.debug("parent: {}", c.getParent());
+                logger.debug("parent: {}", c.isTopLevel());
                 seen = true;
             }
         }

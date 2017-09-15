@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -110,8 +109,7 @@ public class SearchParameters {
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
     private List<Resource> sparseProjects = new ArrayList<Resource>();
-    private List<ListCollection> collections = new ArrayList<>();
-    private List<SharedCollection> shares = new ArrayList<>();
+    private List<SharedCollection> collections = new ArrayList<>();
 
     private List<Long> resourceIds = new ArrayList<Long>();
 
@@ -420,8 +418,8 @@ public class SearchParameters {
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS,
-                support.getText("searchParameter.list_collection"), "listCollections.",
-                ListCollection.class, getOperator(), getCollections()));
+                support.getText("searchParameter.list_collection"), "resourceCollections.",
+                SharedCollection.class, getOperator(), getCollections()));
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
                 SharedCollection.class, getOperator(), getShares()));
@@ -574,20 +572,16 @@ public class SearchParameters {
         sparseProjects = projects;
     }
 
-    public List<ListCollection> getCollections() {
+    public List<SharedCollection> getCollections() {
         return collections;
     }
 
-    public void setCollections(List<ListCollection> resourceCollections) {
+    public void setCollections(List<SharedCollection> resourceCollections) {
         collections = resourceCollections;
     }
 
     public List<SharedCollection> getShares() {
-        return shares;
-    }
-
-    public void setShares(List<SharedCollection> resourceCollections) {
-        shares = resourceCollections;
+        return collections;
     }
 
     public List<String> getContents() {
