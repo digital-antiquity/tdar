@@ -1,14 +1,13 @@
 package org.tdar.core.service.processes.charts;
 
+import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.chart.PieChart;
-import javafx.stage.Stage;
+import org.knowm.xchart.PieChart;
+import org.knowm.xchart.PieChartBuilder;
 
-@SuppressWarnings("restriction")
 public class TdarPieChart extends AbstractChart {
 
     private Map<String, Number> data;
@@ -22,14 +21,17 @@ public class TdarPieChart extends AbstractChart {
     }
     
     @Override
-    public File createChart(Stage stage) {
-        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
-        data.entrySet().forEach(row -> {
-            pieChartData.add(new PieChart.Data(row.getKey(), row.getValue().doubleValue()));
-        });
-        final PieChart chart = new PieChart(pieChartData);
+    public File createChart() throws IOException {
+        PieChart chart = new PieChartBuilder().width(getWidth()).height(getHeight()).title(getTitle()).build();
+        chart.getStyler().setChartBackgroundColor(Color.WHITE);
+        chart.getStyler().setPlotBorderVisible(false);
+        chart.getStyler().setLegendBorderColor(Color.WHITE);
 
-        return renderAndExport(stage, chart);
+        data.entrySet().forEach(row -> {
+            chart.addSeries(row.getKey(), row.getValue().doubleValue());
+        });
+
+        return renderAndExport(chart);
     }
 
 }

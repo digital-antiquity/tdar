@@ -161,11 +161,13 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         for (Class<T> cls : lookupMap.keySet()) {
             List<T> hydrated = new ArrayList<>();
             if (DeHydratable.class.isAssignableFrom(cls)) {
+                logger.debug("dehydrat");
                 hydrated = genericService.populateSparseObjectsById(new ArrayList<>(lookupMap.get(cls)), cls);
             } else {
+                logger.debug("sprse");
                 hydrated = genericService.loadFromSparseEntities(lookupMap.get(cls), cls);
             }
-            logger.trace("toLookup: {} {} result: {}", cls, lookupMap.get(cls), hydrated);
+            logger.debug("toLookup: {} {} result: {}", cls, lookupMap.get(cls), hydrated);
 
             idLookupMap.put(cls, (Map<Long, Persistable>) PersistableUtils.createIdMap(hydrated));
         }

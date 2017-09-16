@@ -153,13 +153,13 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
             q.append(new GeneralSearchResourceQueryPart(look.getGeneralQuery()));
         }
 
-        String colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS;
+//        String colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS;
         String shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
         if (look.getIncludeParent() == Boolean.FALSE || look.getIncludeParent() == null) {
-            colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS;
+//            colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS;
             shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
         }
-        setupCollectionLookup(look, q, colQueryField, look.getCollectionIds());
+//        setupCollectionLookup(look, q, colQueryField, look.getCollectionIds());
         setupCollectionLookup(look, q, shareQueryField, look.getShareIds());
 
         ReservedSearchParameters reservedSearchParameters = look.getReservedSearchParameters();

@@ -226,7 +226,7 @@ public class GenericDao {
             return Collections.emptyList();
         }
         Query<P> query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP);
-        if (cls.isAssignableFrom(ResourceCollection.class)) {
+        if (ResourceCollection.class.isAssignableFrom(cls)) {
             query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_SHARED_COLLECTION_LOOKUP);
         }
         query.setParameter("ids", ids);

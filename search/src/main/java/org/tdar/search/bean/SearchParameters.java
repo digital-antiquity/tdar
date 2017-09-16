@@ -417,12 +417,9 @@ public class SearchParameters {
         queryPartGroup.append(spatialQueryPart);
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS,
-                support.getText("searchParameter.list_collection"), "resourceCollections.",
-                SharedCollection.class, getOperator(), getCollections()));
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                SharedCollection.class, getOperator(), getShares()));
+                SharedCollection.class, getOperator(), getCollections()));
         CreatorQueryPart<Creator> cqp = new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies);
         getActionMessages().addAll(cqp.getActionMessages());
         queryPartGroup.append(cqp);
@@ -445,7 +442,7 @@ public class SearchParameters {
     private <P extends Persistable> SkeletonPersistableQueryPart constructSkeletonQueryPart(String fieldName, String label, String prefix, Class<P> cls,
             Operator operator, List<P> values) {
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);
-        logger.trace("{} {} {} ", cls, prefix, values);
+        logger.debug("{} {} {} ", cls, prefix, values);
         if ((HasName.class.isAssignableFrom(cls) || ResourceCollection.class.isAssignableFrom(cls)) && StringUtils.isNotBlank(prefix)) {
             TitleQueryPart tqp = new TitleQueryPart();
             tqp.setPrefix(prefix);

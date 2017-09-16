@@ -397,9 +397,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         map.put(QueryFieldNames.RESOURCE_COLLECTION_IDS, rightsExtractor.getAllCollectionIds());
         map.put(QueryFieldNames.RESOURCE_COLLECTION_NAME, rightsExtractor.getCollectionNames());
 
-        map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, rightsExtractor.getListCollectionIds());
-        map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS, rightsExtractor.getDirectListCollectionIds());
-        map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_NAME, rightsExtractor.getListCollectionNames());
+//        map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, rightsExtractor.getListCollectionIds());
+//        map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS, rightsExtractor.getDirectListCollectionIds());
+//        map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_NAME, rightsExtractor.getListCollectionNames());
 
         return map;
     }
@@ -411,9 +411,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         addRequiredField(r, doc);
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
-        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS);
-        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS);
-        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_NAME);
+//        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS);
+//        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS);
+//        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_NAME);
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_IDS);
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_NAME);
         replaceField(doc, map, QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY);
