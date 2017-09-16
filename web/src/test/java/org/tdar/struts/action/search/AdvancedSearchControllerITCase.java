@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -333,7 +332,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testWhitelabelAdvancedSearch() {
         String collectionTitle = "The History Channel Presents: Ancient Ceramic Bowls That Resemble Elvis";
-        ListCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
+        SharedCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
 
         getLogger().debug("collection saved. Id:{}  obj:{}", rc.getId(), rc);
         controller.setCollectionId(rc.getId());

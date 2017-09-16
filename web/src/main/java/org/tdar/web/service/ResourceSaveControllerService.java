@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Sequenceable;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -70,7 +68,7 @@ public interface ResourceSaveControllerService {
      * @param retainedListCollections
      */
     void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections,
-            List<ListCollection> retainedListCollections);
+            List<SharedCollection> retainedListCollections);
 
     void saveResourceProviderInformation(InformationResource resource, String resourceProviderInstitutionName,
             ResourceCreatorProxy copyrightHolderProxies, String publisherName);

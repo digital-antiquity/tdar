@@ -1,7 +1,6 @@
 package org.tdar.struts.action;
 
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,16 +15,11 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.core.bean.keyword.MaterialKeyword;
-import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -269,11 +263,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             getLogger().debug("contextual search: collection {}", collectionId);
             ResourceCollection rc = getGenericService().find(ResourceCollection.class, collectionId);
             terms_.getFieldTypes().add(0, SearchFieldType.COLLECTION);
-            if (rc instanceof ListCollection) {
-                terms_.getCollections().add((ListCollection)rc);
-            } else {
-                terms_.getShares().add((SharedCollection)rc);
-            }
+            terms_.getCollections().add((SharedCollection)rc);
             terms_.getAllFields().add(0, null);
             groups.add(terms_);
 

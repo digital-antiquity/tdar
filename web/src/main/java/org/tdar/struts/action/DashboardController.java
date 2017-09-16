@@ -172,8 +172,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
         TreeSet<SharedCollection> colls = new TreeSet<>(new TitleSortComparator());
-        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
-                SharedCollection.class)) {
+        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
             colls.add(rc);
         }
 

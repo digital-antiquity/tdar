@@ -14,7 +14,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -24,7 +23,6 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.UserRightsProxyService;
-import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.service.index.SearchIndexService;
@@ -184,12 +182,12 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
 
 
     public SharedCollection getBlankShare() {
-        return new SharedCollection();
+        return getBlankResourceCollection();
     }
 
 
-    public ListCollection getBlankResourceCollection() {
-        return new ListCollection();
+    public SharedCollection getBlankResourceCollection() {
+        return new SharedCollection();
     }
 
     public boolean isRightsPage() {

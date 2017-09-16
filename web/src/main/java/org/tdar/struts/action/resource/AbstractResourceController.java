@@ -21,7 +21,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -123,13 +122,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
 
-    private List<ListCollection> resourceCollections = new ArrayList<>();
-    private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<SharedCollection> resourceCollections = new ArrayList<>();
+    private List<SharedCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<SharedCollection> shares = new ArrayList<>();
     private List<SharedCollection> effectiveShares = new ArrayList<>();
     private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
-    private List<ListCollection> retainedListCollections = new ArrayList<>();
+    private List<SharedCollection> retainedListCollections = new ArrayList<>();
 
     private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
 
@@ -741,8 +740,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return new ResourceAnnotation(new ResourceAnnotationKey(), "");
     }
 
-    public ListCollection getBlankResourceCollection() {
-        return new ListCollection();
+    public SharedCollection getBlankResourceCollection() {
+        return new SharedCollection();
     }
 
     public SharedCollection getBlankShare() {
@@ -915,19 +914,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.select2SingleEnabled = select2SingleEnabled;
     }
 
-    public List<ListCollection> getEffectiveResourceCollections() {
+    public List<SharedCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
     }
 
-    public void setEffectiveResourceCollections(List<ListCollection> effectiveResourceCollections) {
+    public void setEffectiveResourceCollections(List<SharedCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
     }
 
-    public List<ListCollection> getResourceCollections() {
+    public List<SharedCollection> getResourceCollections() {
         return resourceCollections;
     }
 
-    public void setResourceCollections(List<ListCollection> resourceCollections) {
+    public void setResourceCollections(List<SharedCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 

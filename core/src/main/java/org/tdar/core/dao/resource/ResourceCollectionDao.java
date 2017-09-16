@@ -318,7 +318,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
      * @param rc
      * @return
      */
-    public <C extends ResourceCollection> C convertToWhitelabelCollection(C rc) {
+    public SharedCollection convertToWhitelabelCollection(SharedCollection rc) {
         if (rc.getProperties() == null) {
             rc.setProperties(new CollectionDisplayProperties(false, false, false, false, false, false));
         }
@@ -333,7 +333,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
      * @param wlc
      * @return
      */
-    public <C extends ResourceCollection> C convertToResourceCollection(C wlc) {
+    public SharedCollection convertToResourceCollection(SharedCollection wlc) {
         if (wlc.getProperties() == null) {
             return wlc;
         }

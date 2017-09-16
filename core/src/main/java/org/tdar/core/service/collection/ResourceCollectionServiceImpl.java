@@ -1080,7 +1080,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
      * @param rc
      * @return
      */
-    public ResourceCollection convertToWhitelabelCollection(ResourceCollection rc) {
+    public SharedCollection convertToWhitelabelCollection(SharedCollection rc) {
         if (rc.getProperties() != null && rc.getProperties().getWhitelabel()) {
             return rc;
         }
@@ -1100,7 +1100,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
      * @param wlc
      * @return
      */
-    public ResourceCollection convertToResourceCollection(ResourceCollection wlc) {
+    public SharedCollection convertToResourceCollection(SharedCollection wlc) {
         return getDao().convertToResourceCollection(wlc);
     }
 

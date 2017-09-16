@@ -33,9 +33,9 @@ public class OrganizeCollectionAction extends AbstractCollectionAdminAction {
             @Result(name = SUCCESS, type = FREEMARKER, location = "../organize.ftl"),
     })
     public String execute() throws Exception {
-        setTree(resourceCollectionService.findAllChildCollectionsOnly((SharedCollection)getCollection(), SharedCollection.class));
+        setTree(resourceCollectionService.findAllChildCollectionsOnly((SharedCollection)getCollection()));
         getTree().add((SharedCollection)getCollection());
-        resourceCollectionService.reconcileCollectionTree(getTree(), getAuthenticatedUser(), PersistableUtils.extractIds(getTree()), SharedCollection.class);
+        resourceCollectionService.reconcileCollectionTree(getTree(), getAuthenticatedUser(), PersistableUtils.extractIds(getTree()));
         return SUCCESS;
     }
 

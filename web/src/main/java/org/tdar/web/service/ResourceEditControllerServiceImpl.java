@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -171,22 +171,22 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
     @Transactional(readOnly = true)
     public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<SharedCollection> effectiveShares,
             List<SharedCollection> retainedSharedCollections,
-            List<ListCollection> effectiveResourceCollections, List<ListCollection> retainedListCollections, List<SharedCollection> shares,
-            List<ListCollection> resourceCollections) {
+            List<SharedCollection> effectiveResourceCollections, List<SharedCollection> retainedListCollections, List<SharedCollection> shares,
+            List<SharedCollection> resourceCollections) {
         effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(resource));
         effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(resource));
 
         logger.debug("loadEffective...");
         for (SharedCollection rc : resource.getSharedResourceCollections()) {
-            if (authorizationService.canRemoveFromCollection( rc, authenticatedUser)) {
+            if (authorizationService.canRemoveFromCollection( rc, authenticatedUser, CollectionType.SHARED)) {
                 shares.add(rc);
             } else {
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
-        for (ListCollection rc : resource.getUnmanagedResourceCollections()) {
-            if (authorizationService.canRemoveFromCollection(rc,authenticatedUser)) {
+        for (SharedCollection rc : resource.getUnmanagedResourceCollections()) {
+            if (authorizationService.canRemoveFromCollection(rc,authenticatedUser, CollectionType.LIST)) {
                 resourceCollections.add(rc);
             } else {
                 retainedListCollections.add(rc);

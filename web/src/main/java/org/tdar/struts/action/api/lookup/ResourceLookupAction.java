@@ -17,9 +17,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.bean.ResourceLookupObject;
@@ -83,12 +81,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         if (CollectionUtils.isNotEmpty(collectionId)) {
             for (Long id : collectionId) {
                 ResourceCollection rc = getGenericService().find(ResourceCollection.class, id);
-                if (rc instanceof SharedCollection) {
-                    look.getShareIds().add(id);
-                } 
-                if (rc instanceof ListCollection) {
-                    look.getCollectionIds().add(id);                    
-                }
+                look.getCollectionIds().add(id);                    
             }
         }
         look.setCategoryId(sortCategoryId);

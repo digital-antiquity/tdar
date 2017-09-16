@@ -27,7 +27,7 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     public static final String PERMISSIONS = "permissions";
-    private static final String LISTCOLLECTION = "/listcollection/";
+    private static final String LISTCOLLECTION = "/collection/";
 
 
     private void gotoEdit(String url_) {
@@ -345,7 +345,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long id = extractTdarIdFromCurrentURL();
         gotoPage(LISTCOLLECTION + id + "/rights");
         setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_GROUP.toString());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_SHARE.toString());
         submitForm();
         logout();
         

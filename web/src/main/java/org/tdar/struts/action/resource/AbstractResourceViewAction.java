@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -46,7 +45,6 @@ import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.transform.OpenUrlFormatter;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.ResourceCitationFormatter;
 import org.tdar.web.service.ResourceViewControllerService;
 
@@ -90,7 +88,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private ResourceService resourceService;
 
     private List<SharedCollection> effectiveShares = new ArrayList<>();
-    private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<SharedCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceCreatorProxy> authorshipProxies = new ArrayList<>();
     private List<ResourceCreatorProxy> creditProxies = new ArrayList<>();
@@ -338,11 +336,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
 
-    public List<ListCollection> getEffectiveResourceCollections() {
+    public List<SharedCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
     }
 
-    public void setEffectiveResourceCollections(List<ListCollection> effectiveResourceCollections) {
+    public void setEffectiveResourceCollections(List<SharedCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
     }
 

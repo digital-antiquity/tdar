@@ -25,7 +25,7 @@ import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -390,9 +390,9 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
 
         resolveAnnotations(authWrapper, rcp);
         List<SharedCollection> retainedSharedCollections = new ArrayList<>();
-        List<ListCollection> retainedListCollections = new ArrayList<>();
+        List<SharedCollection> retainedListCollections = new ArrayList<>();
         List<SharedCollection> shares = rcp.getShares();
-        List<ListCollection> resourceCollections = rcp.getResourceCollections();
+        List<SharedCollection> resourceCollections = rcp.getResourceCollections();
 
         loadEffectiveResourceCollectionsForSave(authWrapper, retainedSharedCollections, retainedListCollections);
         logger.debug("retained collections:{}", retainedSharedCollections);
@@ -403,7 +403,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
             resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getSharedCollections(),
-                    authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+                    authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.SHARED);
 
             if (!authorizationService.canEdit(authWrapper.getAuthenticatedUser(), authWrapper.getItem())) {
                 // addActionError("abstractResourceController.cannot_remove_collection");
@@ -414,7 +414,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             logger.debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }
         resourceCollectionService.saveResourceCollections(authWrapper.getItem(), resourceCollections, authWrapper.getItem().getUnmanagedResourceCollections(),
-                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, ListCollection.class);
+                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.LIST);
 
         if (rcp.getResource() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) rcp.getResource();
@@ -450,16 +450,16 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
     @Override
     @Transactional(readOnly = true)
     public void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections,
-            List<ListCollection> retainedListCollections) {
+            List<SharedCollection> retainedListCollections) {
         logger.debug("loadEffective... (save)");
         for (SharedCollection rc : auth.getItem().getSharedCollections()) {
-            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser())) {
+            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionType.SHARED)) {
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
-        for (ListCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
-            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser())) {
+        for (SharedCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
+            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionType.LIST)) {
                 retainedListCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }

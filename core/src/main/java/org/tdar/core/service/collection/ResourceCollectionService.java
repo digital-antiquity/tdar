@@ -275,7 +275,7 @@ public interface ResourceCollectionService {
      * @param rc
      * @return
      */
-    ResourceCollection convertToWhitelabelCollection(ResourceCollection rc);
+    SharedCollection convertToWhitelabelCollection(SharedCollection rc);
 
     /**
      * Detach the provided white-label collection and return a persisted resource collection object.
@@ -283,7 +283,7 @@ public interface ResourceCollectionService {
      * @param wlc
      * @return
      */
-    ResourceCollection convertToResourceCollection(ResourceCollection wlc);
+    SharedCollection convertToResourceCollection(SharedCollection wlc);
 
     void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser);
 

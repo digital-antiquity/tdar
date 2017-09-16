@@ -58,7 +58,7 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     public void prepare() throws Exception {
         this.user = genericService.find(TdarUser.class, id);
         getLogger().debug("find collections");
-        setFindCollectionsSharedWith(resourceCollectionService.findCollectionsSharedWith(getAuthenticatedUser(), getUser(), SharedCollection.class));
+        setFindCollectionsSharedWith(resourceCollectionService.findCollectionsSharedWith(getAuthenticatedUser(), getUser()));
         getLogger().debug("find resources");
         setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), user));
         getLogger().debug("find accounts");

@@ -1,6 +1,5 @@
 package org.tdar.struts.action.search;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,10 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -227,12 +224,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         }
         getGroups().add(sp);
         sp.getFieldTypes().addAll(Arrays.asList(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
-        if (rc instanceof SharedCollection) {
-            sp.getShares().addAll(Arrays.asList((SharedCollection)rc, null));
-        } else {
-            sp.getCollections().addAll(Arrays.asList((ListCollection)rc, null));
-            
-        }
+        sp.getCollections().addAll(Arrays.asList((SharedCollection)rc, null));
         sp.getAllFields().addAll(Arrays.asList(null, ""));
     }
 

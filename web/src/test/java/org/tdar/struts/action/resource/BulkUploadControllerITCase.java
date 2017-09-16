@@ -429,7 +429,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     public void testAddingAdHocCollectionToBulkUpload() throws Exception {
         // start by getting the original count of public/private collections
         // int origInternalCount = getCollectionCount(CollectionType.INTERNAL);
-        int origSharedCount = getCollectionCount(CollectionType.SHARED, SharedCollection.class);
+        int origSharedCount = getCollectionCount(CollectionType.SHARED);
         int origImageCount = genericService.findAll(Image.class).size();
 
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
@@ -468,7 +468,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(new Float(100), basa.getPercentDone());
 
         // int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
-        int newSharedCount = getCollectionCount(CollectionType.SHARED, SharedCollection.class);
+        int newSharedCount = getCollectionCount(CollectionType.SHARED);
         int newImageCount = genericService.findAll(Image.class).size();
         Assert.assertNotSame(origImageCount, newImageCount);
         assertTrue((newImageCount - origImageCount) > 0);
@@ -509,8 +509,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // assertEquals(msg, uploadFiles.size(), newInternalCount - origInternalCount );
     }
 
-    private <C extends HierarchicalCollection> int getCollectionCount(CollectionType type, Class<C> cls) {
-        List<C> col = resourceCollectionDao.findCollectionsOfParent(null, null, cls);
+    private int getCollectionCount(CollectionType type) {
+        List<SharedCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null);
         return col.size();
     }
 

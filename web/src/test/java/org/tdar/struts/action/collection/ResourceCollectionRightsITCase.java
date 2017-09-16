@@ -267,7 +267,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         // authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
         SharedCollection find = genericService.find(SharedCollection.class, childId);
         logger.debug("parent:{}",find.getParent());
-        assertTrue(authenticationAndAuthorizationService.canAddToCollection(testPerson, find));
+        assertTrue(authenticationAndAuthorizationService.canAddToCollection(testPerson, find, CollectionType.SHARED));
         authorizedUserDao.clearUserPermissionsCache();
         find = null;
         controller = generateNewInitializedController(ShareCollectionController.class, testPerson);

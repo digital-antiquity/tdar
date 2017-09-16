@@ -8,14 +8,12 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
@@ -39,7 +37,8 @@ public class RemoveResourceAction extends AbstractJsonApiAction implements Prepa
     private Long resourceId;
     private Long collectionId;
     private Resource resource;
-    private ResourceCollection collection;
+    private CollectionType type;
+    private SharedCollection collection;
 
     @Autowired
     protected transient SerializationService serializationService;
@@ -65,7 +64,8 @@ public class RemoveResourceAction extends AbstractJsonApiAction implements Prepa
     @PostOnly
     @Action(value="removeResource")
     public String remove() throws Exception {
-        resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser());
+        
+        resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser(), getType());
         setJsonInputStream(new ByteArrayInputStream("SUCCESS".getBytes()));
         return super.execute();
     }
@@ -73,7 +73,7 @@ public class RemoveResourceAction extends AbstractJsonApiAction implements Prepa
     @Override
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
-        this.collection = getGenericService().find(ResourceCollection.class, collectionId);
+        this.collection = getGenericService().find(SharedCollection.class, collectionId);
         
     }
 
@@ -91,6 +91,16 @@ public class RemoveResourceAction extends AbstractJsonApiAction implements Prepa
 
     public void setCollectionId(Long collectionId) {
         this.collectionId = collectionId;
+    }
+
+
+    public CollectionType getType() {
+        return type;
+    }
+
+
+    public void setType(CollectionType type) {
+        this.type = type;
     }
     
 }

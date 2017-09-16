@@ -2,8 +2,6 @@ package org.tdar.struts.action;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -79,9 +77,8 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
     @SuppressWarnings("Duplicates")
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
-        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
-                SharedCollection.class)) {
-            if (rc.isTopCollection()) {
+        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
+            if (rc.isTopLevel()) {
                 getAllResourceCollections().add((SharedCollection) rc);
             }
         }

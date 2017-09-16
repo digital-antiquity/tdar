@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -34,8 +35,8 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
     private Long fromCollectionId;
     private Long toCollectionId;
     private Resource resource;
-    private HierarchicalCollection fromCollection;
-    private HierarchicalCollection toCollection;
+    private SharedCollection fromCollection;
+    private SharedCollection toCollection;
 
     @Autowired
     protected transient SerializationService serializationService;
@@ -65,6 +66,7 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
     @PostOnly
     @Action(value="moveResource")
     public String execute() throws Exception {
+        //FIXME: suoport types / placement
         resourceCollectionService.moveResource(resource, fromCollection, toCollection, getAuthenticatedUser());
         setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
         return super.execute();
@@ -78,8 +80,8 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
     @Override
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
-        this.fromCollection = getGenericService().find(HierarchicalCollection.class, fromCollectionId);
-        this.toCollection = getGenericService().find(HierarchicalCollection.class, toCollectionId);
+        this.fromCollection = getGenericService().find(SharedCollection.class, fromCollectionId);
+        this.toCollection = getGenericService().find(SharedCollection.class, toCollectionId);
         
     }
 

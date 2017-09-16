@@ -11,7 +11,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -155,7 +154,7 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
     @Override
     @Transactional(readOnly = true)
     public void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<SharedCollection> effectiveShares,
-            List<ListCollection> effectiveResourceCollections,
+            List<SharedCollection> effectiveResourceCollections,
             List<AuthorizedUser> authorizedUsers) {
         authorizedUsers.addAll(resourceCollectionService.getAuthorizedUsersForResource(auth.getItem(), auth.getAuthenticatedUser()));
         effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(auth.getItem()));
@@ -185,10 +184,10 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
 
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
     // shared+invisible+canEdit
-    private Set<ListCollection> getViewableListResourceCollections(AuthWrapper<Resource> auth) {
+    private Set<SharedCollection> getViewableListResourceCollections(AuthWrapper<Resource> auth) {
 
         // if nobody logged in, just get the shared+visible collections
-        Set<ListCollection> collections = new HashSet<>();
+        Set<SharedCollection> collections = new HashSet<>();
         collections.addAll(auth.getItem().getVisibleUnmanagedResourceCollections());
         // if authenticated, also add the collections that the user can modify
         addViewableCollections(collections, auth.getItem().getUnmanagedResourceCollections(), auth);

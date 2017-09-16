@@ -63,7 +63,7 @@ public class ShareCollectionController extends AbstractCollectionController<Shar
      */
     public List<SharedCollection> getCandidateParentResourceCollections() {
         List<SharedCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
-                getPersistable(), SharedCollection.class);
+                getPersistable());
         return publicResourceCollections;
     }
 
@@ -73,7 +73,7 @@ public class ShareCollectionController extends AbstractCollectionController<Shar
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
 
-        CollectionSaveObject<SharedCollection> cso = new CollectionSaveObject<SharedCollection>(persistable, getAuthenticatedUser(), getStartTime(),SharedCollection.class);
+        CollectionSaveObject cso = new CollectionSaveObject(persistable, getAuthenticatedUser(), getStartTime());
         cso.setParent(getParentCollection());
         cso.setAlternateParent(getAlternateParentCollection());
         cso.setParentId(getParentId());

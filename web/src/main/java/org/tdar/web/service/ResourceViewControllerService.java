@@ -2,8 +2,6 @@ package org.tdar.web.service;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -28,7 +26,7 @@ public interface ResourceViewControllerService {
     boolean setTransientViewableStatus(InformationResource ir, TdarUser p);
 
     void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<SharedCollection> effectiveShares,
-            List<ListCollection> effectiveResourceCollections,
+            List<SharedCollection> effectiveResourceCollections,
             List<AuthorizedUser> authorizedUsers);
 
     List<ResourceCollection> getVisibleCollections(AuthWrapper<Resource> auth);

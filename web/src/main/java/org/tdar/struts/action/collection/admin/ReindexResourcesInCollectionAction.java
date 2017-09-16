@@ -41,9 +41,9 @@ public class ReindexResourcesInCollectionAction extends AbstractCollectionAdminA
     })
     public String execute() throws Exception {
         if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync((HierarchicalCollection)getCollection());
+            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getCollection());
         } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree((HierarchicalCollection)getCollection());
+            searchIndexService.indexAllResourcesInCollectionSubTree(getCollection());
         }
         return SUCCESS;
     }

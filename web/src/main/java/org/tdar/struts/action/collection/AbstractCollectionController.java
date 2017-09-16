@@ -18,6 +18,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Project;
@@ -39,7 +40,7 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
-public abstract class AbstractCollectionController<C extends HierarchicalCollection<C>> extends AbstractPersistableController<C> implements DataTableResourceDisplay {
+public abstract class AbstractCollectionController<C extends SharedCollection> extends AbstractPersistableController<C> implements DataTableResourceDisplay {
 
     /**
      * Threshold that defines a "big" collection (based on imperieal evidence by highly-trained tDAR staff). This number
@@ -63,7 +64,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     private static final long serialVersionUID = 5710621983240752457L;
 
     private static final String RIGHTS = "rights";
-    private List<C> allResourceCollections = new LinkedList<>();
+    private List<SharedCollection> allResourceCollections = new LinkedList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
     private List<Resource> fullUserProjects;
@@ -83,8 +84,8 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     private String alternateParentCollectionName;
     private Long parentId;
     private Long alternateParentId;
-    private C parentCollection;
-    private C alternateParentCollection;
+    private SharedCollection parentCollection;
+    private SharedCollection alternateParentCollection;
 
     //    private ArrayList<AuthorizedUser> authorizedUsers;
 
@@ -102,9 +103,9 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
      * 
      * @return
      */
-    public abstract List<C> getCandidateParentResourceCollections();
+    public abstract List<SharedCollection> getCandidateParentResourceCollections();
 
-    public abstract <C> C getResourceCollection();
+    public abstract <SharedCollection> C getResourceCollection();
 
     @Override
     public void prepare() throws TdarActionException {
@@ -134,15 +135,14 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     
     
 
-    private C prepareParent(Long pid, String parentName) {
-        C parentC = null;
+    private SharedCollection prepareParent(Long pid, String parentName) {
+        SharedCollection parentC = null;
         if(PersistableUtils.isNotNullOrTransient(pid)) {
             parentC = getGenericService().find(getPersistableClass(), pid);
             getLogger().debug("lookup parent collection by id:{}  result:{}", pid, parentC);
         }
         else if(StringUtils.isNotBlank(parentName)) {
-            parentC = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(),
-                    parentName, getPersistableClass());
+            parentC = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(), parentName);
             getLogger().debug("lookup parent collection by name:{}  results:{}", parentName, parentC);
         }
         return parentC;
@@ -157,7 +157,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     }
 
 
-    private Long evaluteParent(Long _pid, C _currentParent, C _incomingParent) {
+    private Long evaluteParent(Long _pid, SharedCollection _currentParent, SharedCollection _incomingParent) {
         Long _parentId = _pid;
         if(PersistableUtils.isNotNullOrTransient(_incomingParent)) {
             _parentId = _incomingParent.getId();
@@ -299,7 +299,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
         fullUserProjects.removeAll(getAllSubmittedProjects());
-        for (C c : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(), getPersistableClass())) {
+        for (SharedCollection c : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
             getAllResourceCollections().add(c);
         }
         // always place current resource collection as the first option
@@ -383,11 +383,11 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         this.viewCount = viewCount;
     }
 
-    public List<C> getAllResourceCollections() {
+    public List<SharedCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(List<C> allResourceCollections) {
+    public void setAllResourceCollections(List<SharedCollection> allResourceCollections) {
         this.allResourceCollections = allResourceCollections;
     }
 
@@ -432,7 +432,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     }
 
 
-    public C getParentCollection() {
+    public SharedCollection getParentCollection() {
         return parentCollection;
     }
 
@@ -441,7 +441,7 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     }
 
     
-    public C getAlternateParentCollection() {
+    public SharedCollection getAlternateParentCollection() {
         return alternateParentCollection;
     }
 

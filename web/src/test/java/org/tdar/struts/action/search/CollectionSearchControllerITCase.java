@@ -10,8 +10,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -40,21 +39,21 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testSearchForPublicReosurceCollection() throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
-        ListCollection collection = setupCollection(false, null);
+        SharedCollection collection = setupCollection(false, null);
         assertTrue(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAnonymous() throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
-        ListCollection collection = setupCollection(true, null);
+        SharedCollection collection = setupCollection(true, null);
         assertFalse(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateSharedCollectionAnonymous() throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
-        SharedCollection collection = setupCollection(true, null, false, SharedCollection.class);
+        SharedCollection collection = setupCollection(true, null, false, CollectionType.LIST);
         assertFalse(controller.getResults().contains(collection));
     }
 
@@ -62,7 +61,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithRights()
             throws InstantiationException, IllegalAccessException, SearchIndexException, SearchException, IOException {
-        ListCollection collection = setupCollection(true, getBasicUser(), true, ListCollection.class);
+        SharedCollection collection = setupCollection(true, getBasicUser(), true, CollectionType.LIST);
         searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
     }
@@ -71,7 +70,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateSharedCollectionAsBasicUserWithRights()
             throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
-        SharedCollection collection = setupCollection(true, getBasicUser(), true, SharedCollection.class);
+        SharedCollection collection = setupCollection(true, getBasicUser(), true, CollectionType.LIST);
         searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
     }
@@ -80,7 +79,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithoutRights()
             throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
-        ListCollection collection = setupCollection(true, getBasicUser());
+        SharedCollection collection = setupCollection(true, getBasicUser());
         assertFalse(controller.getResults().contains(collection));
     }
 
@@ -88,26 +87,26 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateCollectionAsAdmin() throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
         // searchIndexService.purgeAll();
-        ListCollection collection = setupCollection(true, getAdminUser());
+        SharedCollection collection = setupCollection(true, getAdminUser());
         assertTrue(controller.getResults().contains(collection));
     }
 
-    private ListCollection setupCollection(boolean visible, TdarUser user) throws SearchIndexException, IOException {
-        return setupCollection(visible, user, false, ListCollection.class);
+    private SharedCollection setupCollection(boolean visible, TdarUser user) throws SearchIndexException, IOException {
+        return setupCollection(visible, user, false, CollectionType.LIST);
     }
 
-    private <C extends HierarchicalCollection> C setupCollection(boolean visible, TdarUser user, boolean createAuthUser, Class<C> cls)
+    private SharedCollection setupCollection(boolean visible, TdarUser user, boolean createAuthUser, CollectionType type)
             throws SearchIndexException, IOException {
         assertEquals(getUser(), getAdminUser());
-        C collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project", cls);
+        SharedCollection collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project");
         Document doc = createAndSaveNewResource(Document.class);
 
         collection.setDescription("test");
         collection.setHidden(visible);
-        if (collection instanceof ListCollection) {
-            ((ListCollection) collection).getUnmanagedResources().add(doc);
+        if (type == CollectionType.LIST) {
+            collection.getUnmanagedResources().add(doc);
         } else {
-            ((SharedCollection) collection).getResources().add(doc);
+            collection.getResources().add(doc);
         }
         collection.markUpdated(getUser());
         genericService.saveOrUpdate(collection);
