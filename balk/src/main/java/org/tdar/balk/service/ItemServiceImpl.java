@@ -342,7 +342,7 @@ public class ItemServiceImpl implements ItemService {
             SharedCollection rc = new SharedCollection();
             rc.setHidden(true);
             if (StringUtils.isNotBlank(username)) {
-                rc.getAuthorizedUsers().add(new AuthorizedUser(null, new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
+                rc.getAuthorizedUsers().add(new AuthorizedUser(null, new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_SHARE));
             }
             rc.setName(collection);
             rc.setDescription("(from dropbox)");
