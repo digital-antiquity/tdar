@@ -492,12 +492,12 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     public Collection<HasAuthorizedUsers> findExpiringUsers(Date date) {
         ArrayList<HasAuthorizedUsers> toReturn = new ArrayList<>();
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION,SharedCollection.class);
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION,ResourceCollection.class);
         query.setParameter("date", date);
         toReturn.addAll(query.list());
-        query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE,SharedCollection.class);
-        query.setParameter("date", date);
-        toReturn.addAll(query.list());
+        Query<Resource> query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE,Resource.class);
+        query2.setParameter("date", date);
+        toReturn.addAll(query2.list());
 
         return toReturn;
     }

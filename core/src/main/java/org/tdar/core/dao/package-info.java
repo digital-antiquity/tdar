@@ -212,17 +212,17 @@
         ),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE,
-                query = "SELECT id from ResourceCollection as col where col.type not in ('INTERNAL') and col.hidden is false and col.status='ACTIVE'"
+                query = "SELECT id from ResourceCollection as col where col.hidden is false and col.status='ACTIVE'"
         ),
 
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER,
                 query = "select col from SharedCollection as col left join col.authorizedUsers as authorizedUser where "
-                        + "col.type in (:collectionTypes) and (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm) and col.status='ACTIVE' order by col.name"
+                        + "(authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm) and col.status='ACTIVE' order by col.name"
         ),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
-                query = "select distinct col from SharedCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=true and col.hidden=false and col.type!='INTERNAL' and col.status='ACTIVE' "
+                query = "select distinct col from SharedCollection as col left join col.parent as parent where parent.hidden=true and col.hidden=false and col.status='ACTIVE' "
         ),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,
