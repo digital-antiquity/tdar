@@ -23,7 +23,7 @@
         // NOTE QUERY below was modified, will need to confirm performance impact
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_NEW, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK
-                query = "SELECT distinct 1 from ResourceCollection as rescol inner join rescol.authorizedUsers as authuser where authuser.user.id=:userId and authuser.effectiveGeneralPermission > :effectivePermission and "
+                query = "SELECT distinct 1 from SharedCollection as rescol inner join rescol.authorizedUsers as authuser where authuser.user.id=:userId and authuser.effectiveGeneralPermission > :effectivePermission and "
                         + " rescol.id in (:resourceCollectionIds) and rescol.status='ACTIVE' "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
@@ -33,12 +33,12 @@
                 query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId) and resCol.status='ACTIVE' and (:perm is null or authUser.effectiveGeneralPermission > :perm )"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_RESOURCE, 
-                query = "SELECT au from AuthorizedUser au where (exists (select c.id from ResourceCollection c where c.id=au.collectionId and c.id in (select p.id from Resource r left join r.resourceCollections as p where r.id=:id ) "
+                query = "SELECT au from AuthorizedUser au where (exists (select c.id from SharedCollection c where c.id=au.collectionId and c.id in (select p.id from Resource r left join r.resourceCollections as p where r.id=:id ) "
                         + " or c.id in (select parentId from Resource r left join r.resourceCollections as p left join p.parentIds parentId where r.id=:id )) or au.resourceId=:id) "
                         + " and au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm)"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_COLLECTION, 
-                query = "SELECT au from AuthorizedUser au LEFT JOIN ResourceCollection c on au.collectionId=c.id "
+                query = "SELECT au from AuthorizedUser au LEFT JOIN SharedCollection c on au.collectionId=c.id "
                         + "left join c.parentIds parentId "
                         + "where au.user.id=:userId and (:perm is null or au.effectiveGeneralPermission > :perm) and ( au.collectionId =:id or parentId=:id)"),
         @NamedQuery(
@@ -52,7 +52,7 @@
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
                 query = "SELECT distinct 1 from " +
-                        " ResourceCollection as rescol inner join rescol.authorizedUsers " +
+                        " SharedCollection as rescol inner join rescol.authorizedUsers " +
                         " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
                         " rescol.id in (:resourceCollectionIds) and rescol.status='ACTIVE' "),
         @NamedQuery(
@@ -212,7 +212,7 @@
         ),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE,
-                query = "SELECT id from ResourceCollection as col where col.hidden is false and col.status='ACTIVE'"
+                query = "SELECT id from SharedCollection as col where col.hidden is false and col.status='ACTIVE'"
         ),
 
         @NamedQuery(
@@ -336,7 +336,7 @@
         ),
         @NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_COLLECTION,
-                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.resources as res "
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from SharedCollection coll left join coll.resources as res "
                         + " where coll.id in (:collectionIds)) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
@@ -433,7 +433,7 @@
                 query = " SELECT distinct new Resource(res.id, res.title, res.resourceType) FROM Resource as res  where " +
                         " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
                         " (res.submitter.id=:userId or exists (" +
-                        " from ResourceCollection rescol  " +
+                        " from SharedCollection rescol  " +
                         " join rescol.resources as colres " +
                         " where " +
                         " colres.id = res.id and colres.status='ACTIVE'  and " +
@@ -472,7 +472,7 @@
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
                 query = "select count(distinct res.id) from SharedCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
         @NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
-                query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
+                query = "from SharedCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
                 query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv"),
@@ -538,13 +538,13 @@
                 query = "from InformationResource where lower(externalId)=trim(lower(:doi))"),
         @NamedQuery(
                 name = TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE,
-                query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and rescol.status='ACTIVE' and res.status='DRAFT'"),
+                query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from SharedCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and rescol.status='ACTIVE' and res.status='DRAFT'"),
         @NamedQuery(
                 name = TdarNamedQueries.ALL_RESOURCES_IN_COLLECTION,
-                query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and rescol.status='ACTIVE' and res.status!='DELETED'"),
+                query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from SharedCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and rescol.status='ACTIVE' and res.status!='DELETED'"),
         @NamedQuery(
                 name = TdarNamedQueries.USERS_IN_COLLECTION,
-                query = "select au from ResourceCollection rc inner join rc.authorizedUsers as au where rc.id=:id"),
+                query = "select au from SharedCollection rc inner join rc.authorizedUsers as au where rc.id=:id"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SIMILAR_PEOPLE,
                 query = "select p from Person p where lower(lastName) like lower(:lastName) and (lower(firstName) like lower(:firstName) or lower(firstName) like lower(:initial) or lower(firstName) like lower(:initial2) ) and status='ACTIVE' and p.id not in (select id from TdarUser)"),
@@ -596,7 +596,7 @@
         ),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_ALTERNATE_CHILDRENS,
-                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds"),
+                query = "from SharedCollection rc where rc.alternateParent.id in :collectionIds"),
         @NamedQuery(
         		name=TdarNamedQueries.QUERY_INSTITUTION_PEOPLE,
         		query = "from Person p where p.status in ('ACTIVE','DUPLICATE') and p.institution.id in :id"),
@@ -605,7 +605,7 @@
                 query = "from AuthorizedUser au where au.resourceId=:id"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION,
-                query = "select r from ResourceCollection r join r.authorizedUsers au where au.dateExpires < :date and status='ACTIVE'"),
+                query = "select r from SharedCollection r join r.authorizedUsers au where au.dateExpires < :date and status='ACTIVE'"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE,
                 query = "select r from Resource r join r.authorizedUsers au where au.dateExpires < :date and status in ('ACTIVE', 'DRAFT')"),
