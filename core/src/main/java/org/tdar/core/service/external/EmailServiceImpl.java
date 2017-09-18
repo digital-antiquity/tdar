@@ -477,7 +477,7 @@ public class EmailServiceImpl implements EmailService {
 		Date date = emailStatsHelper.getStartDate(billingAccount.getResources());
 		DateGranularity granularity = emailStatsHelper.getDateGranularity(date);
 		StatsResultObject stats = emailStatsHelper.getAccountStatistics(billingAccount, granularity);
-
+		
 		//Generate temporary file names
 		String piechartFileName  = System.currentTimeMillis() + "_resource-piechart";
 		String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart";
@@ -499,6 +499,8 @@ public class EmailServiceImpl implements EmailService {
 		AwsMessage message = createMessage(EmailType.MONTHLY_USER_STATISTICS, user.getEmail());
 		message.addData("resources",emailStatsHelper.getTopResources(billingAccount));
 		message.addData("user", user);
+		message.addData("availableSpace",  billingAccount.getAvailableSpaceInBytes());
+		message.addData("availableFiles", billingAccount.getAvailableNumberOfFiles());
 		message.addInlineAttachment("resources", piechart);
 		message.addInlineAttachment("totalviews", barchart1);
 		message.addInlineAttachment("totaldownloads", barchart2);

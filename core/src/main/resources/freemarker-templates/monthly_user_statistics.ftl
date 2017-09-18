@@ -44,7 +44,7 @@
         <span style="font-weight:bold;font-size:14px;text-decoration:underline">
             Your Account Balance:
         </span>
-        You currently have space for 500 files or up to 1000 MB of space available in tDAR.  
+        You currently have space for ${availableFiles} files or up to ${availableSpace} MB of space available in tDAR.  
         <a href="https://www.tdar.org">Check your balance now</a> or, 
         <a href="https://www.tdar.org">upload something now</a>.
     </div>        

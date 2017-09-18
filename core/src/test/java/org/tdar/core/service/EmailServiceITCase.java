@@ -62,6 +62,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     
     
     @Test
+    @Rollback
     public void testSendInviteEmail(){
     	 Person to 	   = new Person("To", "Person", "bcastel1@asu.edu");
     	 Person from 	   = new Person("From", "Somone", "toguy@tdar.net");
@@ -77,6 +78,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testSendTemplate() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("foo", "Hieronymous");
@@ -115,18 +117,50 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     
     
     @Test
+    @Rollback
     public void testSendUserStats() throws MessagingException, IOException{
-    		assertTrue(chartGenerator instanceof MockStatsChartGenerator);
     		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
-    		Long billingAccountId = 418L;
+    		Long billingAccountId = 1L;
     		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
     		
     		emailService.sendUserStatisticEmail(user, billingAccount);
         	//logger.debug("Email content is {}",message.getEmail().getMessage());
     }
     
-   
+    
     @Test
+    @Rollback
+    public void testCreateImages(){
+    	TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
+		Long billingAccountId = 1L;
+		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
+		
+		
+		//Get the date granularity.
+		Date date = emailStatsHelper.getStartDate(billingAccount.getResources());
+		DateGranularity granularity = emailStatsHelper.getDateGranularity(date);
+		StatsResultObject stats = emailStatsHelper.getAccountStatistics(billingAccount, granularity);
+		
+		//Generate temporary file names
+		String piechartFileName  = System.currentTimeMillis() + "_resource-piechart";
+		String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart";
+		String viewsFileName 	 = System.currentTimeMillis() + "_views-barchart";
+
+		//Generate the resources pie graph.
+		Map<String, Number> pieChartData = emailStatsHelper.generateUserResourcesPieChartData(billingAccount);
+		File piechart = chartGenerator.generateResourcesPieChart(pieChartData, piechartFileName);
+		
+		//Generate the downloads graph
+		Map<String, Map<String, Number>> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount, stats);
+		File barchart1 = chartGenerator.generateTotalDownloadsBarChart(totalDownloadsData, downloadsFileName);
+		
+		//Generate the total views graph
+		Map<String, Map<String, Number>> totalViewsData 	  = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
+		File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
+    }
+
+    @Test
+    @Rollback
     public void testEmailContent() throws IOException {    
         AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "success@simulator.amazonses.com");
         message.getEmail().setSubject("Subject");
@@ -143,6 +177,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     
 
     @Test
+    @Rollback
     public void testAwsMockObject(){
     	assertTrue(emailService.getAwsEmailService() instanceof MockAwsEmailServiceImpl);
     }

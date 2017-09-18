@@ -10,7 +10,6 @@ import org.tdar.core.service.processes.charts.TdarBarChart;
 import org.tdar.core.service.processes.charts.TdarPieChart;
 
 
-@Component
 public class MockStatsChartGenerator implements StatsChartGenerator {
 	public File generateResourcesPieChart(Map<String, Number> data, String filename){
 		return new File("src/test/resources/charts/pie-sample.png");
