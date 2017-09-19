@@ -405,6 +405,8 @@ public class ResourceCollection extends AbstractPersistable
         return hierarchicalResourceCollections;
     }
 
+    @XmlAttribute(name = "altParentIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public ResourceCollection getAlternateParent() {
         return alternateParent;
     }
@@ -423,6 +425,9 @@ public class ResourceCollection extends AbstractPersistable
         this.setParent(resource.getParent());
     }
 
+    
+    @XmlAttribute(name = "parentIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public ResourceCollection getParent() {
         return parent;
     }
@@ -792,6 +797,7 @@ public class ResourceCollection extends AbstractPersistable
 
     @Transient
     @ElementCollection
+    @XmlTransient
     public Set<Long> getAlternateParentIds() {
         return alternateParentIds;
     }

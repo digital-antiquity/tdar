@@ -587,17 +587,17 @@ public class ImportServiceImpl implements ImportService  {
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
             if (collection instanceof ResourceCollection) {
                 logger.debug("field:: {} , {}", fieldName, collection);
+                if (StringUtils.equals("sharedCollections", fieldName)) {
                 resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
                         authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.SHARED);
-
+                } else {
+                    resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
+                            authenticatedUser, true,
+                            ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.LIST);
+                    
+                }
             }
-            //FIXME???
-//            if (collection instanceof ListCollection) {
-//                resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getUnmanagedResourceCollections(),
-//                        authenticatedUser, true,
-//                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, CollectionType.LIST);
-//            }
             toReturn = null;
         }
 
