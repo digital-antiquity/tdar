@@ -488,11 +488,11 @@ public class EmailServiceImpl implements EmailService {
 		File piechart = chartGenerator.generateResourcesPieChart(pieChartData, piechartFileName);
 		
 		//Generate the downloads graph
-		Map<String, Map<String, Number>> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount, stats);
+		Map<String, Number> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount, stats);
 		File barchart1 = chartGenerator.generateTotalDownloadsBarChart(totalDownloadsData, downloadsFileName);
 		
 		//Generate the total views graph
-		Map<String, Map<String, Number>> totalViewsData 	  = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
+		Map<String, Number> totalViewsData 	  = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
 		File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
 		
 		//Construct the message and attach the graphs.

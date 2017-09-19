@@ -852,6 +852,11 @@
             </exclusions>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
+              <dependency>
+           <groupId>org.knowm.xchart</groupId>
+           <artifactId>xchart</artifactId>
+           <version>3.5.0</version>
+       </dependency>
     </dependencies>
     <profiles>
         <profile>

@@ -1,11 +1,11 @@
 package org.tdar.utils;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,25 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.ResourceStatWrapper;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.StatisticsService;
-import org.tdar.core.service.processes.charts.AbstractChart;
-import org.tdar.core.service.processes.charts.JavaFxChartRunnable;
-import org.tdar.core.service.processes.charts.TdarBarChart;
-import org.tdar.core.service.processes.charts.TdarPieChart;
 import org.tdar.core.service.resource.ResourceService;
-
 
 @Component
 public class EmailStatisticsHelper {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private StatisticsService statisticsService;
-	
+
 	@Autowired
 	private ResourceService resourceService;
 
@@ -54,46 +47,58 @@ public class EmailStatisticsHelper {
 		}
 		return map;
 	}
-	
-	public StatsResultObject getAccountStatistics(BillingAccount billingAccount, DateGranularity granularity){
-		 return  statisticsService.getStatsForAccount(billingAccount, MessageHelper.getInstance(), granularity);
-	}
-	
 
-	public Map<String, Map<String, Number>> generateTotalViewsChartData(BillingAccount billingAccount, StatsResultObject stats ) {
-		Map<String, Map<String, Number>> map = new HashMap<String, Map<String, Number>>();
-		//Gets the download information.
+	public StatsResultObject getAccountStatistics(BillingAccount billingAccount, DateGranularity granularity) {
+		return statisticsService.getStatsForAccount(billingAccount, MessageHelper.getInstance(), granularity);
+	}
+
+	public Map<String, Number> generateTotalViewsChartData(BillingAccount billingAccount, StatsResultObject stats) {
+		/*
+		 * Map<String, Map<String, Number>> map = new HashMap<String,
+		 * Map<String, Number>>(); //Gets the download information.
+		 * Collection<Map<String, Object>> data = stats.getObjectForJson();
+		 * 
+		 * for(Map<String, Object> row : data){ Map<String, Number> r = new
+		 * HashMap<String, Number>(); r.put((String) row.get("date"), (Number)
+		 * row.get("Views")); map.put((String) row.get("date"), r); }
+		 */
+		Map<String, Number> map = new LinkedHashMap<String, Number>();
 		Collection<Map<String, Object>> data = stats.getObjectForJson();
-		
-		for(Map<String, Object> row : data){
-			Map<String, Number> r = new HashMap<String, Number>();
-			r.put((String) row.get("date"), (Number) row.get("Views")); 
-			map.put((String) row.get("date"), r);
+		for (Map<String, Object> row : data) {
+			String date = (String) row.get("date");
+			Number value = (Number) row.get("Views");
+			map.put(date, value);
 		}
-		
+
 		logger.debug("Map is {}", map);
 		return map;
 	}
 
-	public Map<String, Map<String, Number>> generateTotalDownloadsChartData(BillingAccount billingAccount, StatsResultObject stats) {
-		Map<String, Map<String, Number>> map = new HashMap<String, Map<String, Number>>();
+	public Map<String, Number> generateTotalDownloadsChartData(BillingAccount billingAccount, StatsResultObject stats) {
+		Map<String, Number> map = new LinkedHashMap<String, Number>();
 		Collection<Map<String, Object>> data = stats.getObjectForJson();
-		
-		for(Map<String, Object> row : data){
-			Map<String, Number> r = new HashMap<String, Number>();
-			r.put((String) row.get("date"), (Number) row.get("Downloads")); 
-			map.put((String) row.get("date"), r);
+		for (Map<String, Object> row : data) {
+			String date = (String) row.get("date");
+			Number value = (Number) row.get("Downloads");
+			map.put(date, value);
 		}
-		
+
+		/*
+		 * Collection<Map<String, Object>> data = stats.getObjectForJson();
+		 * 
+		 * for(Map<String, Object> row : data){ Map<String, Number> r = new
+		 * HashMap<String, Number>(); r.put((String) row.get("date"), (Number)
+		 * row.get("Downloads")); map.put((String) row.get("date"), r); }
+		 */
+
 		logger.debug("Map is {}", map);
 		return map;
 	}
-	
-	public List<Resource> getTopResources(BillingAccount billingAccount){
+
+	public List<Resource> getTopResources(BillingAccount billingAccount) {
 		return resourceService.getMostPopularResourcesForBillingAccount(billingAccount, 10);
 	}
-	
-	
+
 	/**
 	 * Calculate the start and end dates of the range from a set of resources.
 	 * Used to determine the granularity of
@@ -116,9 +121,10 @@ public class EmailStatisticsHelper {
 	}
 
 	/**
-	 * Compares the start date to the current date to determine the interval that should be used for date granularity.
-	 * If the start date is in the current month, the granularity is by day. If it is the same year, it is by month,
-	 * otherwise it is by year. 
+	 * Compares the start date to the current date to determine the interval
+	 * that should be used for date granularity. If the start date is in the
+	 * current month, the granularity is by day. If it is the same year, it is
+	 * by month, otherwise it is by year.
 	 * 
 	 * @param startDate
 	 * @param endDate
@@ -127,8 +133,8 @@ public class EmailStatisticsHelper {
 	public DateGranularity getDateGranularity(Date startDate) {
 		GregorianCalendar calendar = new GregorianCalendar();
 
-		logger.debug("Start date is {}",startDate);
-		
+		logger.debug("Start date is {}", startDate);
+
 		calendar.setTime(startDate);
 		int minYear = calendar.get(Calendar.YEAR);
 		int minMonth = calendar.get(Calendar.MONTH);
@@ -138,10 +144,10 @@ public class EmailStatisticsHelper {
 		int maxMonth = calendar.get(Calendar.MONTH);
 
 		if (minYear == maxYear) {
-			logger.debug("Years are the same ({})",maxYear);
+			logger.debug("Years are the same ({})", maxYear);
 			// If the stats are for the same month, then aggregate by day.
 			if (minMonth == maxMonth) {
-				logger.debug("Months are the same ({})",maxMonth);
+				logger.debug("Months are the same ({})", maxMonth);
 				return DateGranularity.DAY;
 			}
 			// If the data available is for one year, then aggregate by month.
@@ -153,7 +159,7 @@ public class EmailStatisticsHelper {
 		// If there's more than one year of data available, then aggregate by
 		// year.
 		else {
-			logger.debug("Years are different. {}, {}",minYear, maxYear);
+			logger.debug("Years are different. {}, {}", minYear, maxYear);
 			return DateGranularity.YEAR;
 		}
 	}

@@ -1,23 +1,18 @@
 package org.tdar.core.service.processes.charts;
 
+import java.awt.Color;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.imageio.ImageIO;
-
+import org.knowm.xchart.BitmapEncoder;
+import org.knowm.xchart.BitmapEncoder.BitmapFormat;
+import org.knowm.xchart.internal.chartpart.Chart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
-
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.chart.Chart;
-import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 
 @SuppressWarnings("restriction")
 public abstract class AbstractChart  {
@@ -30,41 +25,42 @@ public abstract class AbstractChart  {
     private String title;
     private String filename;
 
-    File renderAndExport(Stage stage, Chart bc) {
-        render(stage, bc);
-        File file  = exportChart(bc, Paths.get(getOutputDir() + getFilename() + ".png"));
-        stage.close();
+    // Customize Chart
+    Color[] sliceColors = new Color[] { new Color(235,215,144),
+    new Color(214,184,75),
+    new Color(195,170,114),
+    new Color(160,157,91),
+    new Color(144,157,91),
+    new Color(220,118,18),
+    new Color(189,50,0),
+    new Color(102,0,0)};
+    
+    File renderAndExport(Chart bc) throws IOException {
+        render(bc);
+        File file  = exportChart(bc, Paths.get(getOutputDir() + getFilename()));
         return file;
     }
 
-    public abstract File createChart(Stage stage);
+    public abstract File createChart() throws IOException;
 
-    public void render(Stage stage, Chart chart) {
-        Scene scene = new Scene(chart, width, height);
-        stage.setTitle(title);
+    public void render(Chart chart) {
         chart.setTitle(title);
-        scene.getStylesheets().add("tdar-charts.css");
-
-        stage.setScene(scene);
-        stage.show();
+        chart.getStyler().setSeriesColors(sliceColors);
+        chart.getStyler().setChartBackgroundColor(Color.WHITE);
+        chart.getStyler().setPlotBorderVisible(false);
+        chart.getStyler().setLegendBorderColor(Color.WHITE);
     }
 
-    public File exportChart(Chart chart, Path path_) {
+    public File exportChart(Chart chart, Path path_) throws IOException {
         Path path = path_.normalize();
-        String filename = path.getFileName().toString();
-        String ext = filename.substring(filename.indexOf(".") + 1);
-        logger.debug("exporting: {}\t type:{}", path.toAbsolutePath(), ext);
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(Color.TRANSPARENT);
-        WritableImage image = chart.snapshot(params, null);
-        try {
-            File file = path.toFile();
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), ext, file);
-            return file;
-        } catch (IOException e) {
-            logger.error("Could not save file: {}", e.getMessage());
-        }
-        return null;
+        String filename = path.toAbsolutePath().toString()+".png";
+        logger.debug("exporting: {}\t type:{}", path.toAbsolutePath());
+        File outputFile = new File(filename);
+        BitmapEncoder.saveBitmap(chart, new FileOutputStream(outputFile), BitmapFormat.PNG);
+       
+        return outputFile;
+        
+//      VectorGraphicsEncoder.saveVectorGraphic(chart, "./Sample_Chart", VectorGraphicsFormat.EPS);
     }
 
     

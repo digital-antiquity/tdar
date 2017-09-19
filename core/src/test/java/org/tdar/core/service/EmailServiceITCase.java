@@ -120,7 +120,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testSendUserStats() throws MessagingException, IOException{
     		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
-    		Long billingAccountId = 1L;
+    		Long billingAccountId = 76L;
     		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
     		
     		emailService.sendUserStatisticEmail(user, billingAccount);
@@ -151,11 +151,11 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		File piechart = chartGenerator.generateResourcesPieChart(pieChartData, piechartFileName);
 		
 		//Generate the downloads graph
-		Map<String, Map<String, Number>> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount, stats);
+		Map<String, Number> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount, stats);
 		File barchart1 = chartGenerator.generateTotalDownloadsBarChart(totalDownloadsData, downloadsFileName);
 		
 		//Generate the total views graph
-		Map<String, Map<String, Number>> totalViewsData 	  = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
+		Map<String, Number> totalViewsData 	  = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
 		File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
     }
 
