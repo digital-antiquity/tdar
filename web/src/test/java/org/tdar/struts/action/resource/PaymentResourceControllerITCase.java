@@ -23,7 +23,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -100,7 +100,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         genericService.saveOrUpdate(account);
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
-        SharedCollection rCollection = generateResourceCollection("test", "test", true,
+        ResourceCollection rCollection = generateResourceCollection("test", "test", true,
                 Arrays.asList(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
                 getAdminUser(), Arrays.asList(dataset), null);
         dataset.getSharedCollections().add(rCollection);

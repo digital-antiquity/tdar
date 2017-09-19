@@ -3,7 +3,7 @@ package org.tdar.web.service;
 import java.util.List;
 
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
@@ -25,8 +25,8 @@ public interface ResourceViewControllerService {
      */
     boolean setTransientViewableStatus(InformationResource ir, TdarUser p);
 
-    void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<SharedCollection> effectiveShares,
-            List<SharedCollection> effectiveResourceCollections,
+    void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<ResourceCollection> effectiveShares,
+            List<ResourceCollection> effectiveResourceCollections,
             List<AuthorizedUser> authorizedUsers);
 
     List<ResourceCollection> getVisibleCollections(AuthWrapper<Resource> auth);

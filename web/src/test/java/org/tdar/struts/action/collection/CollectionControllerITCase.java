@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -75,7 +75,7 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
                 new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.ADD_TO_COLLECTION)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        SharedCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null);
+        ResourceCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null);
         final Long id = collection.getId();
         String slug = collection.getSlug();
         collection = null;
@@ -110,13 +110,13 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
                 new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
-        SharedCollection collection = 
-                generateResourceCollection(name, description, true, users, getUser(), resources, null, ShareCollectionController.class, SharedCollection.class);
+        ResourceCollection collection = 
+                generateResourceCollection(name, description, true, users, getUser(), resources, null, ShareCollectionController.class, ResourceCollection.class);
         Long collectionid = collection.getId();
         logger.info("{}", collection.getResources());
         assertFalse(collectionid.equals(-1L));
         collection = null;
-        SharedCollection foundCollection = genericService.find(SharedCollection.class, collectionid);
+        ResourceCollection foundCollection = genericService.find(ResourceCollection.class, collectionid);
         assertNotNull(foundCollection);
         assertEquals(3, foundCollection.getAuthorizedUsers().size());
         assertEquals(2, foundCollection.getResources().size());

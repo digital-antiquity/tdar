@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -33,8 +33,8 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
 
     private Long collectionId;
     private Long toCollectionId;
-    private SharedCollection collection;
-    private SharedCollection toCollection;
+    private ResourceCollection collection;
+    private ResourceCollection toCollection;
 
     @Autowired
     protected transient SerializationService serializationService;
@@ -77,8 +77,8 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
 
     @Override
     public void prepare() throws Exception {
-        this.collection = getGenericService().find(SharedCollection.class, collectionId);
-        this.toCollection = getGenericService().find(SharedCollection.class, toCollectionId);
+        this.collection = getGenericService().find(ResourceCollection.class, collectionId);
+        this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
         
     }
 

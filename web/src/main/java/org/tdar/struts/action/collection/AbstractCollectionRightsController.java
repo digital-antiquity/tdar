@@ -6,8 +6,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
@@ -23,7 +22,7 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
-public abstract class AbstractCollectionRightsController<C extends SharedCollection> extends AbstractRightsController
+public abstract class AbstractCollectionRightsController<C extends ResourceCollection> extends AbstractRightsController
         implements Preparable, PersistableLoadingAction<C> {
 
     private static final String COLLECTION_RIGHTS_FTL = "../collection/rights.ftl";

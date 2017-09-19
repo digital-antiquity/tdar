@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -40,7 +37,7 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
-public abstract class AbstractCollectionController<C extends SharedCollection> extends AbstractPersistableController<C> implements DataTableResourceDisplay {
+public abstract class AbstractCollectionController<C extends ResourceCollection> extends AbstractPersistableController<C> implements DataTableResourceDisplay {
 
     /**
      * Threshold that defines a "big" collection (based on imperieal evidence by highly-trained tDAR staff). This number
@@ -64,7 +61,7 @@ public abstract class AbstractCollectionController<C extends SharedCollection> e
     private static final long serialVersionUID = 5710621983240752457L;
 
     private static final String RIGHTS = "rights";
-    private List<SharedCollection> allResourceCollections = new LinkedList<>();
+    private List<ResourceCollection> allResourceCollections = new LinkedList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
     private List<Resource> fullUserProjects;
@@ -84,8 +81,8 @@ public abstract class AbstractCollectionController<C extends SharedCollection> e
     private String alternateParentCollectionName;
     private Long parentId;
     private Long alternateParentId;
-    private SharedCollection parentCollection;
-    private SharedCollection alternateParentCollection;
+    private ResourceCollection parentCollection;
+    private ResourceCollection alternateParentCollection;
 
     //    private ArrayList<AuthorizedUser> authorizedUsers;
 
@@ -103,9 +100,9 @@ public abstract class AbstractCollectionController<C extends SharedCollection> e
      * 
      * @return
      */
-    public abstract List<SharedCollection> getCandidateParentResourceCollections();
+    public abstract List<ResourceCollection> getCandidateParentResourceCollections();
 
-    public abstract <SharedCollection> C getResourceCollection();
+    public abstract <ResourceCollection> C getResourceCollection();
 
     @Override
     public void prepare() throws TdarActionException {
@@ -135,8 +132,8 @@ public abstract class AbstractCollectionController<C extends SharedCollection> e
     
     
 
-    private SharedCollection prepareParent(Long pid, String parentName) {
-        SharedCollection parentC = null;
+    private ResourceCollection prepareParent(Long pid, String parentName) {
+        ResourceCollection parentC = null;
         if(PersistableUtils.isNotNullOrTransient(pid)) {
             parentC = getGenericService().find(getPersistableClass(), pid);
             getLogger().debug("lookup parent collection by id:{}  result:{}", pid, parentC);
@@ -157,7 +154,7 @@ public abstract class AbstractCollectionController<C extends SharedCollection> e
     }
 
 
-    private Long evaluteParent(Long _pid, SharedCollection _currentParent, SharedCollection _incomingParent) {
+    private Long evaluteParent(Long _pid, ResourceCollection _currentParent, ResourceCollection _incomingParent) {
         Long _parentId = _pid;
         if(PersistableUtils.isNotNullOrTransient(_incomingParent)) {
             _parentId = _incomingParent.getId();
@@ -299,7 +296,7 @@ public abstract class AbstractCollectionController<C extends SharedCollection> e
         boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
         fullUserProjects.removeAll(getAllSubmittedProjects());
-        for (SharedCollection c : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
+        for (ResourceCollection c : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
             getAllResourceCollections().add(c);
         }
         // always place current resource collection as the first option
@@ -383,11 +380,11 @@ public abstract class AbstractCollectionController<C extends SharedCollection> e
         this.viewCount = viewCount;
     }
 
-    public List<SharedCollection> getAllResourceCollections() {
+    public List<ResourceCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(List<SharedCollection> allResourceCollections) {
+    public void setAllResourceCollections(List<ResourceCollection> allResourceCollections) {
         this.allResourceCollections = allResourceCollections;
     }
 
@@ -432,7 +429,7 @@ public abstract class AbstractCollectionController<C extends SharedCollection> e
     }
 
 
-    public SharedCollection getParentCollection() {
+    public ResourceCollection getParentCollection() {
         return parentCollection;
     }
 
@@ -441,7 +438,7 @@ public abstract class AbstractCollectionController<C extends SharedCollection> e
     }
 
     
-    public SharedCollection getAlternateParentCollection() {
+    public ResourceCollection getAlternateParentCollection() {
         return alternateParentCollection;
     }
 

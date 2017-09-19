@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.service.EntityService;
@@ -43,8 +43,8 @@ import com.opensymphony.xwork2.Preparable;
 public class RightsAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 5576550365349636811L;
-    private TreeSet<SharedCollection> allResourceCollections = new TreeSet<>(new TitleSortComparator());
-    private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
+    private TreeSet<ResourceCollection> allResourceCollections = new TreeSet<>(new TitleSortComparator());
+    private List<ResourceCollection> sharedResourceCollections = new ArrayList<>();
     
 
     @Autowired
@@ -77,15 +77,15 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
     @SuppressWarnings("Duplicates")
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
-        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
+        for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
             if (rc.isTopLevel()) {
-                getAllResourceCollections().add((SharedCollection) rc);
+                getAllResourceCollections().add((ResourceCollection) rc);
             }
         }
         getLogger().trace("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-            if (rc instanceof SharedCollection) {
-                getSharedResourceCollections().add((SharedCollection) rc);
+            if (rc instanceof ResourceCollection) {
+                getSharedResourceCollections().add((ResourceCollection) rc);
             }
         }
         List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
@@ -93,10 +93,10 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         /*
         getLogger().trace("reconcile tree1");
          resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
+                collectionIds, ResourceCollection.class);
         getLogger().trace("reconcile tree2");
         resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
+                collectionIds, ResourceCollection.class);
          */
 
 //        getLogger().trace("removing duplicates");
@@ -122,11 +122,11 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
 
 
     @DoNotObfuscate(reason = "not needed / performance test")
-    public Set<SharedCollection> getAllResourceCollections() {
+    public Set<ResourceCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(TreeSet<SharedCollection> resourceCollections) {
+    public void setAllResourceCollections(TreeSet<ResourceCollection> resourceCollections) {
         this.allResourceCollections = resourceCollections;
     }
 
@@ -134,7 +134,7 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
      * @return the sharedResourceCollections
      */
     @DoNotObfuscate(reason = "not needed / performance test")
-    public List<SharedCollection> getSharedResourceCollections() {
+    public List<ResourceCollection> getSharedResourceCollections() {
         return sharedResourceCollections;
     }
 
@@ -142,7 +142,7 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
      * @param sharedResourceCollections
      *            the sharedResourceCollections to set
      */
-    public void setSharedResourceCollections(List<SharedCollection> sharedResourceCollections) {
+    public void setSharedResourceCollections(List<ResourceCollection> sharedResourceCollections) {
         this.sharedResourceCollections = sharedResourceCollections;
     }
 

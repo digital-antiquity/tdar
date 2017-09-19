@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -174,7 +174,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), testResource, GeneralPermissions.MODIFY_METADATA));
 
         // create a new collection with an owner and three users that have each permission type (view, modify, admin)
-        SharedCollection testCollection = new SharedCollection();
+        ResourceCollection testCollection = new ResourceCollection();
         TdarUser testModify = createAndSaveNewPerson("a@b", "1234");
         TdarUser testOwner = createAndSaveNewPerson("a@b1", "12341");
         TdarUser testView = createAndSaveNewPerson("a@b2", "12341");
@@ -240,7 +240,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
     // create a new project and add it to a collection
     @Rollback
     public void testAddingToExistingCollection() throws Exception {
-        SharedCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
+        ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
         setIgnoreActionErrors(true);
         evictCache();
         assertNotNull(rc);
@@ -270,7 +270,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         evictCache();
     }
 
-    private ProjectController tryAndSaveCollectionToController(SharedCollection rc) throws TdarActionException {
+    private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) throws TdarActionException {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
         controller.setAsync(false);
@@ -281,7 +281,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         project.setTitle("testing adding collection");
         project.setDescription("test");
         // controller expects incoming list of resource collections to be detached, so lets create one
-        SharedCollection detachedCollection = new SharedCollection();
+        ResourceCollection detachedCollection = new ResourceCollection();
         detachedCollection.setName(rc.getName());
         detachedCollection.setId(rc.getId());
         detachedCollection.setHidden(false);
@@ -311,11 +311,11 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         String name1 = "testing adhoc collection creation";
         String name2 = "yet another collection";
 
-        SharedCollection collection = new SharedCollection();
+        ResourceCollection collection = new ResourceCollection();
         collection.setName(name1);
         controller.getShares().add(collection);
 
-        collection = new SharedCollection();
+        collection = new ResourceCollection();
         collection.setName(name2);
         controller.getShares().add(collection);
 
@@ -328,7 +328,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         Project loadedProject = genericService.find(Project.class, id);
         assertNotNull(loadedProject);
         Collection<ResourceCollection> cols = new HashSet<>();
-        for (SharedCollection rrc : loadedProject.getRightsBasedResourceCollections()) {
+        for (ResourceCollection rrc : loadedProject.getRightsBasedResourceCollections()) {
             cols.add((ResourceCollection)rrc);
         }
         assertUniqueCollections(cols, name1, name2);
@@ -347,8 +347,8 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
 
     }
 
-    private SharedCollection createNewEmptyCollection(String name) {
-        SharedCollection rc = new SharedCollection();
+    private ResourceCollection createNewEmptyCollection(String name) {
+        ResourceCollection rc = new ResourceCollection();
         Date date = new Date();
         TdarUser owner = new TdarUser("bob", "loblaw", "createNewEmptyCollection" + date.getTime() + "@tdar.net");
         genericService.save(owner);

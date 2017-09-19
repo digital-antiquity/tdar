@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
@@ -35,7 +35,7 @@ public interface TestResourceCollectionHelper {
 
     Logger logger_ = LoggerFactory.getLogger(TestResourceCollectionHelper.class);
 
-    default SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
+    default ResourceCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             List<? extends Resource> resources, Long parentId)
             throws Exception {
         return generateResourceCollection(name, description, visible, users, getUser(), resources, parentId);
@@ -43,10 +43,10 @@ public interface TestResourceCollectionHelper {
 
     TdarUser getUser();
 
-    default SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
+    default ResourceCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
         return generateResourceCollection(name, description, visible, users, owner, resources, parentId, ShareCollectionController.class,
-                SharedCollection.class);
+                ResourceCollection.class);
     }
 
     @SuppressWarnings("deprecation")
@@ -59,7 +59,7 @@ public interface TestResourceCollectionHelper {
         // controller.setSessionData(getSessionData());
         logger_.info("{}", getUser());
         assertEquals(controller.getAuthenticatedUser(), owner);
-        SharedCollection resourceCollection = controller.getResourceCollection();
+        ResourceCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName(name);
 
         controller.setAsync(false);
@@ -112,15 +112,15 @@ public interface TestResourceCollectionHelper {
         }
 
         resourceCollection = null;
-        resourceCollection = getGenericService().find(SharedCollection.class, id);
+        resourceCollection = getGenericService().find(ResourceCollection.class, id);
         logger_.debug("parentId: {}", parentId);
         logger_.debug("Resources: {}", resources);
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
             assertEquals(parentId, resourceCollection.getParent().getId());
         }
         if (CollectionUtils.isNotEmpty(resources)) {
-            if (resourceCollection instanceof SharedCollection) {
-                assertThat(((SharedCollection) resourceCollection).getResources(), containsInAnyOrder(resources.toArray()));
+            if (resourceCollection instanceof ResourceCollection) {
+                assertThat(((ResourceCollection) resourceCollection).getResources(), containsInAnyOrder(resources.toArray()));
             }
         }
         return (C) resourceCollection;

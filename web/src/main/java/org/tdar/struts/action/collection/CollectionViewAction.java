@@ -22,7 +22,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -74,7 +74,7 @@ import org.tdar.web.service.HomepageService;
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction<C extends SharedCollection> extends AbstractPersistableViewableAction<C>
+public class CollectionViewAction<C extends ResourceCollection> extends AbstractPersistableViewableAction<C>
         implements FacetedResultHandler<Resource>, SlugViewAction,
         ResourceFacetedAction {
 
@@ -135,7 +135,7 @@ public class CollectionViewAction<C extends SharedCollection> extends AbstractPe
      * 
      * @return
      */
-    public List<SharedCollection> getCandidateParentResourceCollections() {
+    public List<ResourceCollection> getCandidateParentResourceCollections() {
         return resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(), getPersistable());
     }
 
@@ -159,7 +159,7 @@ public class CollectionViewAction<C extends SharedCollection> extends AbstractPe
         return false;
     }
 
-    public SharedCollection getResourceCollection() {
+    public ResourceCollection getResourceCollection() {
         return getPersistable();
     }
 
@@ -202,7 +202,7 @@ public class CollectionViewAction<C extends SharedCollection> extends AbstractPe
             resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser());
             findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
-            for (SharedCollection c : resourceCollectionService.findDirectChildCollections(getId(), false)) {
+            for (ResourceCollection c : resourceCollectionService.findDirectChildCollections(getId(), false)) {
                 findAllChildCollections.add((ResourceCollection) c);
             }
         }
@@ -442,7 +442,7 @@ public class CollectionViewAction<C extends SharedCollection> extends AbstractPe
      * @return
      */
     public boolean isBigCollection() {
-            return (((SharedCollection) getPersistable()).getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+            return (((ResourceCollection) getPersistable()).getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 
     public Long getViewCount() {

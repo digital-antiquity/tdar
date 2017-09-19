@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -52,7 +51,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     private Long projectId;
     private Project project;
     private Long collectionId;
-    private SharedCollection collectionToAdd;
+    private ResourceCollection collectionToAdd;
 
     private List<Long> ids = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
@@ -78,12 +77,12 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     public void prepare() throws Exception {
         super.prepare();
         
-        if (!(getCollection() instanceof SharedCollection)) {
+        if (!(getCollection() instanceof ResourceCollection)) {
             addActionError("makeWhiteLableAction.invalid_collection_type");
         }
 
         // COMMENTED OUT UNTIL WE FIGURE OUT What sort of collection should support this
-        setResources(new ArrayList<>(((SharedCollection) getCollection()).getResources()));
+        setResources(new ArrayList<>(((ResourceCollection) getCollection()).getResources()));
         Collections.sort(resources , new Comparator<Resource>() {
             @Override
             public int compare(Resource o1, Resource o2) {
@@ -104,7 +103,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
             account = billingAccountService.find(accountId);
         }
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-            collectionToAdd = genericService.find(SharedCollection.class, collectionId);
+            collectionToAdd = genericService.find(ResourceCollection.class, collectionId);
         }
     }
 
@@ -251,7 +250,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
         return collectionToAdd;
     }
 
-    public void setCollectionToAdd(SharedCollection collectionToAdd) {
+    public void setCollectionToAdd(ResourceCollection collectionToAdd) {
         this.collectionToAdd = collectionToAdd;
     }
 

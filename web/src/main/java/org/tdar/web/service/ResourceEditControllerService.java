@@ -3,7 +3,7 @@ package org.tdar.web.service;
 import java.util.List;
 
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -27,10 +27,10 @@ public interface ResourceEditControllerService {
     // and maintain original billing account).
     List<BillingAccount> determineActiveAccounts(TdarUser authenticatedUser, Resource resource);
 
-    void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<SharedCollection> effectiveShares,
-            List<SharedCollection> retainedSharedCollections,
-            List<SharedCollection> effectiveResourceCollections, List<SharedCollection> retainedListCollections, List<SharedCollection> shares,
-            List<SharedCollection> resourceCollections);
+    void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<ResourceCollection> effectiveShares,
+            List<ResourceCollection> retainedSharedCollections,
+            List<ResourceCollection> effectiveResourceCollections, List<ResourceCollection> retainedListCollections, List<ResourceCollection> shares,
+            List<ResourceCollection> resourceCollections);
 
     String loadFilesJson(InformationResource persistable);
 

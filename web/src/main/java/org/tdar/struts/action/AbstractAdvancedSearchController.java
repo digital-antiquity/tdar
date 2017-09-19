@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.Keyword;
@@ -263,7 +263,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             getLogger().debug("contextual search: collection {}", collectionId);
             ResourceCollection rc = getGenericService().find(ResourceCollection.class, collectionId);
             terms_.getFieldTypes().add(0, SearchFieldType.COLLECTION);
-            terms_.getCollections().add((SharedCollection)rc);
+            terms_.getCollections().add((ResourceCollection)rc);
             terms_.getAllFields().add(0, null);
             groups.add(terms_);
 

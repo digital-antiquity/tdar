@@ -23,7 +23,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
@@ -93,13 +93,13 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         project.setDescription(project.getTitle());
         project.markUpdated(getAdminUser());
         genericService.saveOrUpdate(project);
-        SharedCollection collection = createResourceCollectionWithAdminRights();
+        ResourceCollection collection = createResourceCollectionWithAdminRights();
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(collection);
         collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
         genericService.saveOrUpdate(collection);
 
-        SharedCollection collectionChild = new SharedCollection();
+        ResourceCollection collectionChild = new ResourceCollection();
         collectionChild.setName("child collection with project");
 //        collectionChild.setSortBy(SortOption.RELEVANCE);
         collectionChild.setParent(collection);
@@ -130,7 +130,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         doc.setDescription(doc.getTitle());
         doc.markUpdated(getAdminUser());
         genericService.saveOrUpdate(doc);
-        SharedCollection collection = createResourceCollectionWithAdminRights();
+        ResourceCollection collection = createResourceCollectionWithAdminRights();
         genericService.saveOrUpdate(collection);
 //        InternalCollection internal = new InternalCollection();
 //        internal.markUpdated(getAdminUser());
@@ -163,8 +163,8 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
 
     }
 
-    private SharedCollection createResourceCollectionWithAdminRights() {
-        SharedCollection collection = new SharedCollection();
+    private ResourceCollection createResourceCollectionWithAdminRights() {
+        ResourceCollection collection = new ResourceCollection();
         collection.setName("parent collection with rights");
 //        collection.setSortBy(SortOption.RELEVANCE);
 //        collection.setOrientation(DisplayOrientation.GRID);
@@ -629,7 +629,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         d.setDescription("desc");
         d.markUpdated(getUser());
         d.setDate(1234);
-        SharedCollection collection = new SharedCollection();
+        ResourceCollection collection = new ResourceCollection();
         collection.setName(collectionname);
         controller.getShares().add(collection);
 

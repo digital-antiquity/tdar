@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.struts.action.AbstractControllerITCase;
@@ -20,7 +20,7 @@ public class ResourceRetainITCase extends AbstractControllerITCase {
     @Rollback
     public void testResourceCollectionRetain() throws InstantiationException, IllegalAccessException, TdarActionException {
         Document doc  = createAndSaveNewInformationResource(Document.class, true);
-        SharedCollection collection = createAndSaveNewResourceCollection("uneditable");
+        ResourceCollection collection = createAndSaveNewResourceCollection("uneditable");
         doc.getSharedCollections().add(collection);
         collection.getResources().add(doc);
         genericService.saveOrUpdate(doc);

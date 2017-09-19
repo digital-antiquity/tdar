@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -145,7 +145,7 @@ public class HomepageServiceImpl implements HomepageService {
         AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
         if (collectionId != null) {
             SearchParameters sp = new SearchParameters();
-            sp.getCollections().add(genericService.find(SharedCollection.class, collectionId));
+            sp.getCollections().add(genericService.find(ResourceCollection.class, collectionId));
             advancedSearchQueryObject.getSearchParameters().add(sp);
         }
         SearchResult<Resource> result = new SearchResult<>();

@@ -20,7 +20,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.DownloadAuthorization;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
@@ -150,7 +150,7 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
 
     public Long setup() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         doc = generateDocumentWithFileAndUseDefaultUser();
-        SharedCollection collection = new SharedCollection();
+        ResourceCollection collection = new ResourceCollection();
         collection.setName("authorized collection");
         collection.setDescription(collection.getName());
         collection.markUpdated(getAdminUser());

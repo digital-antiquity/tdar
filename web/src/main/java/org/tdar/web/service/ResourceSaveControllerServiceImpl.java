@@ -26,7 +26,7 @@ import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Institution;
@@ -389,10 +389,10 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         resourceService.saveResourceCreatorsFromProxies(proxies, authWrapper.getItem(), rcp.shouldSaveResource());
 
         resolveAnnotations(authWrapper, rcp);
-        List<SharedCollection> retainedSharedCollections = new ArrayList<>();
-        List<SharedCollection> retainedListCollections = new ArrayList<>();
-        List<SharedCollection> shares = rcp.getShares();
-        List<SharedCollection> resourceCollections = rcp.getResourceCollections();
+        List<ResourceCollection> retainedSharedCollections = new ArrayList<>();
+        List<ResourceCollection> retainedListCollections = new ArrayList<>();
+        List<ResourceCollection> shares = rcp.getShares();
+        List<ResourceCollection> resourceCollections = rcp.getResourceCollections();
 
         loadEffectiveResourceCollectionsForSave(authWrapper, retainedSharedCollections, retainedListCollections);
         logger.debug("retained collections:{}", retainedSharedCollections);
@@ -449,16 +449,16 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
      */
     @Override
     @Transactional(readOnly = true)
-    public void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections,
-            List<SharedCollection> retainedListCollections) {
+    public void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<ResourceCollection> retainedSharedCollections,
+            List<ResourceCollection> retainedListCollections) {
         logger.debug("loadEffective... (save)");
-        for (SharedCollection rc : auth.getItem().getSharedCollections()) {
+        for (ResourceCollection rc : auth.getItem().getSharedCollections()) {
             if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionType.SHARED)) {
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
-        for (SharedCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
+        for (ResourceCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
             if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionType.LIST)) {
                 retainedListCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);

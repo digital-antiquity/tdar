@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -169,15 +169,15 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
      */
     @Override
     @Transactional(readOnly = true)
-    public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<SharedCollection> effectiveShares,
-            List<SharedCollection> retainedSharedCollections,
-            List<SharedCollection> effectiveResourceCollections, List<SharedCollection> retainedListCollections, List<SharedCollection> shares,
-            List<SharedCollection> resourceCollections) {
+    public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<ResourceCollection> effectiveShares,
+            List<ResourceCollection> retainedSharedCollections,
+            List<ResourceCollection> effectiveResourceCollections, List<ResourceCollection> retainedListCollections, List<ResourceCollection> shares,
+            List<ResourceCollection> resourceCollections) {
         effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(resource));
         effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(resource));
 
         logger.debug("loadEffective...");
-        for (SharedCollection rc : resource.getSharedResourceCollections()) {
+        for (ResourceCollection rc : resource.getSharedResourceCollections()) {
             if (authorizationService.canRemoveFromCollection( rc, authenticatedUser, CollectionType.SHARED)) {
                 shares.add(rc);
             } else {
@@ -185,7 +185,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
-        for (SharedCollection rc : resource.getUnmanagedResourceCollections()) {
+        for (ResourceCollection rc : resource.getUnmanagedResourceCollections()) {
             if (authorizationService.canRemoveFromCollection(rc,authenticatedUser, CollectionType.LIST)) {
                 resourceCollections.add(rc);
             } else {

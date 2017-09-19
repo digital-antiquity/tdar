@@ -19,7 +19,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -80,12 +79,12 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
                 new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
-        SharedCollection collection = generateResourceCollection(name, description, true, users, resources, null);
+        ResourceCollection collection = generateResourceCollection(name, description, true, users, resources, null);
         Long collectionid = collection.getId();
         logger.info("{}", collection.getResources());
         assertFalse(collectionid.equals(-1L));
         collection = null;
-        SharedCollection foundCollection = genericService.find(SharedCollection.class, collectionid);
+        ResourceCollection foundCollection = genericService.find(ResourceCollection.class, collectionid);
         assertNotNull(foundCollection);
         assertEquals(3, foundCollection.getAuthorizedUsers().size());
         assertEquals(2, foundCollection.getResources().size());
@@ -130,7 +129,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
                 new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile2));
-        SharedCollection collection = generateResourceCollection(name, description, true, users, getEditorUser(), resources, null);
+        ResourceCollection collection = generateResourceCollection(name, description, true, users, getEditorUser(), resources, null);
         Long collectionid = collection.getId();
         logger.info("{}", collection.getResources());
         assertFalse(collectionid.equals(-1L));
@@ -265,7 +264,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         authorizedUserDao.clearUserPermissionsCache();
         // assertTrue("user can edit based on parent of parent resource collection",
         // authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
-        SharedCollection find = genericService.find(SharedCollection.class, childId);
+        ResourceCollection find = genericService.find(ResourceCollection.class, childId);
         logger.debug("parent:{}",find.getParent());
         assertTrue(authenticationAndAuthorizationService.canAddToCollection(testPerson, find, CollectionType.SHARED));
         authorizedUserDao.clearUserPermissionsCache();
@@ -314,7 +313,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
     @Test
     @Rollback
     public void testDocumentControllerAssigningResourceCollectionsWithoutLocalRights() throws Exception {
-        SharedCollection collection1 = generateResourceCollection("test 1 private", "", false, null, new ArrayList<Resource>(), null);
+        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", false, null, new ArrayList<Resource>(), null);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
@@ -326,7 +325,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, controller.save());
         evictCache();
-        SharedCollection first = document.getRightsBasedResourceCollections().iterator().next();
+        ResourceCollection first = document.getRightsBasedResourceCollections().iterator().next();
         assertEquals(1, document.getRightsBasedResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());
@@ -405,7 +404,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         ShareCollectionController controller = generateNewController(ShareCollectionController.class);
         init(controller, getBasicUser());
         controller.add();
-        SharedCollection resourceCollection = controller.getResourceCollection();
+        ResourceCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName("tst");
         resourceCollection.setDescription("tst");
         resourceCollection.markUpdated(getBasicUser());
@@ -471,7 +470,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.setId(docId);
         dc.prepare();
-        dc.getShares().add(new SharedCollection(TEST123, TEST123, getBasicUser()));
+        dc.getShares().add(new ResourceCollection(TEST123, TEST123, getBasicUser()));
         dc.setServletRequest(getServletPostRequest());
         dc.save();
         
@@ -505,7 +504,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         document = genericService.find(Document.class, docId);
         Long id = null;
         for (ResourceCollection c : document.getSharedCollections()) {
-            if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals(TEST123)) {
+            if (c instanceof ResourceCollection && ((ResourceCollection) c).getTitle().equals(TEST123)) {
                 id = c.getId();
             }
         }
@@ -536,12 +535,12 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());
         dc.setId(docId);
         dc.prepare();
-        dc.getShares().add(new SharedCollection(TEST123, TEST123, getBasicUser()));
+        dc.getShares().add(new ResourceCollection(TEST123, TEST123, getBasicUser()));
         dc.setServletRequest(getServletPostRequest());
         dc.save();
         Long id = -1L;
         for (ResourceCollection c : dc.getShares()) {
-            if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals(TEST123)) {
+            if (c instanceof ResourceCollection && ((ResourceCollection) c).getTitle().equals(TEST123)) {
                 id = c.getId();
             }
         }

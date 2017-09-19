@@ -28,8 +28,8 @@ import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -455,7 +455,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.getResource().setDate(1234);
 
         // specify an adhoc collection
-        SharedCollection adHocCollection = new SharedCollection();
+        ResourceCollection adHocCollection = new ResourceCollection();
         // NEED TO SET THE TYPE OF THE ADHOC COLLECTION
         adHocCollection.setName("collection of bulk-uploaded resource collections");
         bulkUploadController.getShares().add(adHocCollection);
@@ -477,15 +477,15 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
         List<Pair<Long, String>> details = basa.getDetails();
         logger.info("{}", details);
-        Set<SharedCollection> collections = new HashSet<>();
+        Set<ResourceCollection> collections = new HashSet<>();
         evictCache();
         logger.debug("inspecting collections created:");
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
             genericService.refresh(resource);
-            Set<SharedCollection> resourceCollections = resource.getSharedCollections();
+            Set<ResourceCollection> resourceCollections = resource.getSharedCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
-            for (SharedCollection rc : resourceCollections) {
+            for (ResourceCollection rc : resourceCollections) {
                 logger.debug("\t\t {}", rc);
             }
 
@@ -493,7 +493,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         }
         assertEquals("we should have a total of 3 collections (0 internal +2 shared)", 2, collections.size());
 //        int internalCount = 0;
-        for (SharedCollection col : collections) {
+        for (ResourceCollection col : collections) {
             logger.debug("{} : {}", col, col.getResources());
 //            if (col instanceof InternalCollection) {
 //                assertEquals(1, col.getResources().size());
@@ -510,7 +510,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     }
 
     private int getCollectionCount(CollectionType type) {
-        List<SharedCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null);
+        List<ResourceCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null);
         return col.size();
     }
 

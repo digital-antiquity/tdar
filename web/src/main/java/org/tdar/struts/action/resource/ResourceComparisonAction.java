@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
@@ -64,8 +64,8 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         resources.addAll(genericService.findAll(Resource.class, ids));
         if (PersistableUtils.isNotNullOrTransient(getCollectionId())) {
             ResourceCollection rc = genericService.find(ResourceCollection.class, getCollectionId());
-                resources.addAll(((SharedCollection)rc).getResources());
-                for (SharedCollection sc :resourceCollectionService.findAllChildCollectionsOnly((SharedCollection)rc)) {
+                resources.addAll(((ResourceCollection)rc).getResources());
+                for (ResourceCollection sc :resourceCollectionService.findAllChildCollectionsOnly((ResourceCollection)rc)) {
                     resources.addAll(sc.getResources());
                 }
         }

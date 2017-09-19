@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -87,8 +87,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private ResourceService resourceService;
 
-    private List<SharedCollection> effectiveShares = new ArrayList<>();
-    private List<SharedCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<ResourceCollection> effectiveShares = new ArrayList<>();
+    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceCreatorProxy> authorshipProxies = new ArrayList<>();
     private List<ResourceCreatorProxy> creditProxies = new ArrayList<>();
@@ -323,11 +323,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return true;
     }
 
-    public List<SharedCollection> getEffectiveShares() {
+    public List<ResourceCollection> getEffectiveShares() {
         return effectiveShares;
     }
 
-    public void setEffectiveShares(List<SharedCollection> effectiveShares) {
+    public void setEffectiveShares(List<ResourceCollection> effectiveShares) {
         this.effectiveShares = effectiveShares;
     }
 
@@ -336,11 +336,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
 
-    public List<SharedCollection> getEffectiveResourceCollections() {
+    public List<ResourceCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
     }
 
-    public void setEffectiveResourceCollections(List<SharedCollection> effectiveResourceCollections) {
+    public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
     }
 

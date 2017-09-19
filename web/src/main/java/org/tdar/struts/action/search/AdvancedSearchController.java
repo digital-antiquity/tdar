@@ -19,7 +19,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -224,7 +224,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         }
         getGroups().add(sp);
         sp.getFieldTypes().addAll(Arrays.asList(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
-        sp.getCollections().addAll(Arrays.asList((SharedCollection)rc, null));
+        sp.getCollections().addAll(Arrays.asList((ResourceCollection)rc, null));
         sp.getAllFields().addAll(Arrays.asList(null, ""));
     }
 

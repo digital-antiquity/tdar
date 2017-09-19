@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
@@ -50,9 +50,9 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     @Autowired
     private transient SearchIndexService searchIndexService;
 
-//    private List<SharedCollection> shares = new ArrayList<>();
-//    private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
-//    private List<SharedCollection> effectiveShares = new ArrayList<>();
+//    private List<ResourceCollection> shares = new ArrayList<>();
+//    private List<ResourceCollection> retainedResourceCollections = new ArrayList<>();
+//    private List<ResourceCollection> effectiveShares = new ArrayList<>();
 
     private List<UserRightsProxy> proxies = new ArrayList<>();
     private List<UserRightsProxy> invites = new ArrayList<>();
@@ -181,13 +181,13 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     }
 
 
-    public SharedCollection getBlankShare() {
+    public ResourceCollection getBlankShare() {
         return getBlankResourceCollection();
     }
 
 
-    public SharedCollection getBlankResourceCollection() {
-        return new SharedCollection();
+    public ResourceCollection getBlankResourceCollection() {
+        return new ResourceCollection();
     }
 
     public boolean isRightsPage() {

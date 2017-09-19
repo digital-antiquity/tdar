@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
@@ -87,7 +87,7 @@ public class CollectionBatchActionITCase extends AbstractControllerITCase implem
         
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft, newProject, existingProject));
 
-        SharedCollection collection = generateResourceCollection(name, description, false, users, resources, null);
+        ResourceCollection collection = generateResourceCollection(name, description, false, users, resources, null);
 
         final Long collectionId = collection.getId();
         String slug   = collection.getSlug();

@@ -26,7 +26,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
@@ -91,7 +91,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         FileProxy proxy = new FileProxy();
         String convertToXML = serializationService.convertToXML(proxy);
         logger.debug(convertToXML);
-        SharedCollection collection = new SharedCollection();
+        ResourceCollection collection = new ResourceCollection();
         collection.setHidden(true);
         String convertToXML4 = serializationService.convertToXML(collection);
         logger.debug(convertToXML4);
@@ -172,7 +172,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         assertTrue("field should be inherited", importedRecord.isInheritingNoteInformation());
         assertFalse("field should be inherited", importedRecord.isInheritingCollectionInformation());
         genericService.delete(importedRecord);
-        for (SharedCollection rc : importedRecord.getSharedResourceCollections()) {
+        for (ResourceCollection rc : importedRecord.getSharedResourceCollections()) {
             logger.debug("{} - {}", rc.getName(), rc.isHidden());
                 if (rc.getName().equals("hidden")) {
                     assertTrue(rc.isHidden());
@@ -198,12 +198,12 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         fake.setInheritingCulturalInformation(true);
         fake.setInheritingNoteInformation(true);
         fake.setInheritingMaterialInformation(true);
-        SharedCollection coll = new SharedCollection();
+        ResourceCollection coll = new ResourceCollection();
         coll.setHidden(true);
         coll.setName("hidden");
         coll.markUpdated(getAdminUser());
         fake.getSharedCollections().add(coll);
-        SharedCollection coll2 = new SharedCollection();
+        ResourceCollection coll2 = new ResourceCollection();
         coll2.setHidden(false);
         coll2.setName("visible");
         coll2.markUpdated(getAdminUser());

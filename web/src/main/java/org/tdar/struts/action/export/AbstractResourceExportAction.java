@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
@@ -58,7 +58,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         getExportProxy().setRequestor(getAuthenticatedUser());
         getExportProxy().setResources(getGenericService().findAll(Resource.class, ids));
         getExportProxy().setAccount(getGenericService().find(BillingAccount.class, accountId));
-        getExportProxy().setCollection(getGenericService().find(SharedCollection.class, collectionId));
+        getExportProxy().setCollection(getGenericService().find(ResourceCollection.class, collectionId));
     }
 
     @Override
@@ -74,7 +74,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
             }
         }
 
-        SharedCollection collection = getExportProxy().getCollection();
+        ResourceCollection collection = getExportProxy().getCollection();
         if (collection != null && !authorizationService.canEditCollection(getAuthenticatedUser(), collection)) {
             addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(collection))));
         }

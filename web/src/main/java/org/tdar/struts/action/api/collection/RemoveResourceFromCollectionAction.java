@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -43,7 +43,7 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     private Long resourceId;
     private Long collectionId;
     private Resource resource;
-    private SharedCollection collection;
+    private ResourceCollection collection;
     private CollectionType type;
 
     @Autowired
@@ -80,7 +80,7 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     @Override
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
-        this.collection = getGenericService().find(SharedCollection.class, collectionId);
+        this.collection = getGenericService().find(ResourceCollection.class, collectionId);
         
     }
 

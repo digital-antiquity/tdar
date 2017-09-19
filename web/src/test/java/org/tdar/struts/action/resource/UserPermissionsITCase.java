@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -62,7 +62,7 @@ public class UserPermissionsITCase extends AbstractControllerITCase  implements 
         // adminUser creates a a new image and assigns p as an authorized user
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
         users.add(new AuthorizedUser(getAdminUser(), p, GeneralPermissions.MODIFY_RECORD));
-        SharedCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
+        ResourceCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
         evictCache();
         ImageController imageController = generateNewInitializedController(ImageController.class);
         imageController.prepare();
@@ -154,7 +154,7 @@ public class UserPermissionsITCase extends AbstractControllerITCase  implements 
         // adminUser creates a a new image and assigns p as an authorized user
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
         users.add(new AuthorizedUser(getAdminUser(), p, GeneralPermissions.MODIFY_RECORD));
-        SharedCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
+        ResourceCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
         evictCache();
         ImageController imageController = generateNewInitializedController(ImageController.class);
         imageController.prepare();

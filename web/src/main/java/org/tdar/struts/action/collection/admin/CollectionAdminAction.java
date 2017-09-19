@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
@@ -65,7 +65,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private AuthorizationService authorizationService;
 
     private String term;
-    private TreeSet<SharedCollection> allChildCollections = new TreeSet<>(new TitleSortComparator());
+    private TreeSet<ResourceCollection> allChildCollections = new TreeSet<>(new TitleSortComparator());
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private PaginationHelper paginationHelper;
     private FacetWrapper facetWrapper = new FacetWrapper();
@@ -113,8 +113,8 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     }
 
     @Override
-    public SharedCollection getCollection() {
-        return (SharedCollection) super.getCollection();
+    public ResourceCollection getCollection() {
+        return (ResourceCollection) super.getCollection();
     }
 
 
@@ -253,11 +253,11 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         return paginationHelper;
     }
 
-    public TreeSet<SharedCollection> getAllChildCollections() {
+    public TreeSet<ResourceCollection> getAllChildCollections() {
         return allChildCollections;
     }
 
-    public void setAllChildCollections(TreeSet<SharedCollection> allChildCollections) {
+    public void setAllChildCollections(TreeSet<ResourceCollection> allChildCollections) {
         this.allChildCollections = new TreeSet<>(allChildCollections);
     }
 

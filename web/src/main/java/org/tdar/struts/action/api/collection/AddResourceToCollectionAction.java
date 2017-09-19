@@ -11,7 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -43,7 +44,7 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
     private Long resourceId;
     private Long toCollectionId;
     private Resource resource;
-    private SharedCollection toCollection;
+    private ResourceCollection toCollection;
     private CollectionType type;
     @Autowired
     protected transient SerializationService serializationService;
@@ -80,7 +81,7 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
     @Override
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
-        this.toCollection = getGenericService().find(SharedCollection.class, toCollectionId);
+        this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
         
     }
 
