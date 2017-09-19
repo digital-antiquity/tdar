@@ -3,7 +3,7 @@ package org.tdar.core.service.batch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.base.GenericDao;
 
@@ -18,7 +18,7 @@ public class BatchActionServiceImpl implements BatchActionService  {
      */
     @Override
     @Transactional(readOnly = false)
-    public <T extends AbstractBatchAction<?>> void run(T action, BatchActionType type, SharedCollection collection) {
+    public <T extends AbstractBatchAction<?>> void run(T action, BatchActionType type, ResourceCollection collection) {
         action.setGenericDao(genericDao);
         action.setup();
         for (Resource resource : collection.getResources()) {

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -85,7 +85,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         }
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
-        for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
                 ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
         }

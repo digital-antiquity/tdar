@@ -9,28 +9,28 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.utils.PersistableUtils;
 
 public class ResourceCollectionSaveHelper {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-    private Set<SharedCollection> toDelete = new HashSet<>();
-    private Set<SharedCollection> toAdd = new HashSet<>();
+    private Set<ResourceCollection> toDelete = new HashSet<>();
+    private Set<ResourceCollection> toAdd = new HashSet<>();
 
     @SuppressWarnings("unchecked")
-    public ResourceCollectionSaveHelper(Collection<SharedCollection> incoming, Collection<SharedCollection> existing_) {
+    public ResourceCollectionSaveHelper(Collection<ResourceCollection> incoming, Collection<ResourceCollection> existing_) {
 
         
-        Set<SharedCollection> existing = new HashSet<>();
-        Iterator<SharedCollection> iterator = existing_.iterator();
+        Set<ResourceCollection> existing = new HashSet<>();
+        Iterator<ResourceCollection> iterator = existing_.iterator();
         while (iterator.hasNext()) {
-            SharedCollection c = iterator.next();
+            ResourceCollection c = iterator.next();
             existing.add(c);
         }
 
-        Map<Long, SharedCollection> idMap = PersistableUtils.createIdMap(existing);
-        for (SharedCollection in : incoming) {
+        Map<Long, ResourceCollection> idMap = PersistableUtils.createIdMap(existing);
+        for (ResourceCollection in : incoming) {
             if (in == null) {
                 continue;
             }
@@ -46,19 +46,19 @@ public class ResourceCollectionSaveHelper {
         }
     }
 
-    public Set<SharedCollection> getToAdd() {
+    public Set<ResourceCollection> getToAdd() {
         return toAdd;
     }
 
-    public void setToAdd(Set<SharedCollection> toAdd) {
+    public void setToAdd(Set<ResourceCollection> toAdd) {
         this.toAdd = toAdd;
     }
 
-    public Set<SharedCollection> getToDelete() {
+    public Set<ResourceCollection> getToDelete() {
         return toDelete;
     }
 
-    public void setToDelete(Set<SharedCollection> toDelete) {
+    public void setToDelete(Set<ResourceCollection> toDelete) {
         this.toDelete = toDelete;
     }
 }

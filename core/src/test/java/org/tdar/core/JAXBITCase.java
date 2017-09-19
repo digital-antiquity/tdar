@@ -47,7 +47,7 @@ import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -130,11 +130,11 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         geos.getOtherKeywords().add(new OtherKeyword("map"));
         geos.getInvestigationTypes().add(new InvestigationType("Architectural Survey"));
         geos.getMaterialKeywords().add(new MaterialKeyword("Ceramic"));
-        geos.getUnmanagedResourceCollections().add(new SharedCollection("test", "test", true, SortOption.TITLE, DisplayOrientation.LIST, getAdminUser()));
+        geos.getUnmanagedResourceCollections().add(new ResourceCollection("test", "test", true, SortOption.TITLE, DisplayOrientation.LIST, getAdminUser()));
         geos.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "collected around the national monument"));
         geos.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(-77.05041825771332, 38.889028630817144, -77.04992473125458, 38.88953803591012));
         geos.setTitle("map of ceramics around national monument");
-        geos.getSharedCollections().add(new SharedCollection("test collection", "test description", getAdminUser()));
+        geos.getSharedCollections().add(new ResourceCollection("test collection", "test description", getAdminUser()));
         geos.setDescription("test map");
         geos.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 2010, 2015));
         geos.getFileProxies().add(new FileProxy("geotiff.tiff", null, VersionType.UPLOADED, FileAction.ADD));
@@ -160,7 +160,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void exportResourceCollection() throws Exception {
-        SharedCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
+        ResourceCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
         for (Resource r : genericService.findRandom(Resource.class, 10)) {
             collection.getResources().add(r);
             r.getSharedCollections().add(collection);
@@ -199,7 +199,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testCollectionJson() throws IOException {
-        SharedCollection rc = new SharedCollection(10000L, "test", "test", SortOption.TITLE, false);
+        ResourceCollection rc = new ResourceCollection(10000L, "test", "test", SortOption.TITLE, false);
         rc.markUpdated(getAdminUser());
         rc.setOwner(getBasicUser());
         rc.getResources().addAll(genericService.findRandom(Resource.class, 4));
@@ -207,7 +207,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         try {
         String json = serializationService.convertToJson(rc);
         logger.debug(json);
-        SharedCollection rc2 = serializationService.readObjectFromJson(json, SharedCollection.class);
+        ResourceCollection rc2 = serializationService.readObjectFromJson(json, ResourceCollection.class);
         logger.debug("{}",rc2);
         } catch (Throwable t) {
             logger.error("{}", t,t);
@@ -278,7 +278,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Rollback(false)
     public void testJaxbRoundtrip() throws Exception {
         Project project = genericService.find(Project.class, 3805l);
-        SharedCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
+        ResourceCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
         collection.getResources().add(project);
         project.getSharedCollections().add(collection);
         genericService.saveOrUpdate(project);

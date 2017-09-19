@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 
@@ -12,11 +12,11 @@ public class CollectionSaveObject implements Serializable {
 
     private static final long serialVersionUID = -8676785579332687294L;
 
-    private SharedCollection collection;
+    private ResourceCollection collection;
     private Long parentId;
     private Long alternateParentId;
-    private SharedCollection parent;
-    private SharedCollection alternateParent;
+    private ResourceCollection parent;
+    private ResourceCollection alternateParent;
     private TdarUser user;
     private List<AuthorizedUser> users;
     private List<Long> toAdd;
@@ -27,17 +27,17 @@ public class CollectionSaveObject implements Serializable {
     private List<Long> publicToAdd;
     private List<Long> publicToRemove;
 
-    public CollectionSaveObject(SharedCollection persistable, TdarUser authenticatedUser, Long startTime2) {
+    public CollectionSaveObject(ResourceCollection persistable, TdarUser authenticatedUser, Long startTime2) {
         this.collection = persistable;
         this.user = authenticatedUser;
         this.startTime = startTime2;
     }
 
-    public SharedCollection getCollection() {
+    public ResourceCollection getCollection() {
         return collection;
     }
 
-    public void setCollection(SharedCollection collection) {
+    public void setCollection(ResourceCollection collection) {
         this.collection = collection;
     }
 
@@ -57,19 +57,19 @@ public class CollectionSaveObject implements Serializable {
         this.alternateParentId = alternateParentId;
     }
 
-    public SharedCollection getParent() {
+    public ResourceCollection getParent() {
         return parent;
     }
 
-    public void setParent(SharedCollection parent) {
+    public void setParent(ResourceCollection parent) {
         this.parent = parent;
     }
 
-    public SharedCollection getAlternateParent() {
+    public ResourceCollection getAlternateParent() {
         return alternateParent;
     }
 
-    public void setAlternateParent(SharedCollection alternateParent) {
+    public void setAlternateParent(ResourceCollection alternateParent) {
         this.alternateParent = alternateParent;
     }
 

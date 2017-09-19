@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -100,7 +100,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             logger.info("({}) creators in sitemap", totalCreator);
             total += totalCreator;
 
-            ScrollableResults activeCollections = genericService.findAllScrollable(SharedCollection.class);
+            ScrollableResults activeCollections = genericService.findAllScrollable(ResourceCollection.class);
             int totalCollections = 0;
             total += processCollections(wsg, activeCollections);
 
@@ -139,7 +139,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
     private int processCollections(WebSitemapGenerator wsg, ScrollableResults activeCollections) throws MalformedURLException {
         int totalCollections = 0;
         while (activeCollections.next()) {
-            SharedCollection collection = (SharedCollection)activeCollections.get(0);
+            ResourceCollection collection = (ResourceCollection)activeCollections.get(0);
             if (collection.isHidden()) {
                 continue;
             }

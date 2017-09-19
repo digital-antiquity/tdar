@@ -15,7 +15,7 @@ import javax.xml.bind.Marshaller;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -114,7 +114,7 @@ public class TdarUploadListener implements MetadataListener {
         object.setDescription(filename);
         object.setStatus(Status.DRAFT);
         object.setDate(2016);
-        SharedCollection rc = new SharedCollection();
+        ResourceCollection rc = new ResourceCollection();
         rc.setHidden(true);
         rc.setName(collection);
         rc.setDescription("(from dropbox)");

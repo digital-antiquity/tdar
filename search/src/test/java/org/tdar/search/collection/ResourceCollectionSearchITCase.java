@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -31,7 +31,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
     public void init() {
         boolean first = true;
         for (String name : collectionNames) {
-            SharedCollection collection = new SharedCollection(name, name,  getAdminUser());
+            ResourceCollection collection = new ResourceCollection(name, name,  getAdminUser());
             collection.setDescription(name);
             collection.markUpdated(collection.getOwner());
             genericService.saveOrUpdate(collection);
@@ -46,7 +46,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
             first = false;
             logger.debug("{} {} {}", collection.getId(), collection.getTitle(), collection.isHidden());
         }
-        SharedCollection find = genericService.find(SharedCollection.class, 1003L);
+        ResourceCollection find = genericService.find(ResourceCollection.class, 1003L);
         find.setHidden(false);
         genericService.saveOrUpdate(find);
         reindex();

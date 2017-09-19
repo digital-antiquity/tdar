@@ -34,7 +34,7 @@ import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
@@ -264,11 +264,12 @@ public class ImportServiceImpl implements ImportService  {
         // knownObjects.put(makeKey(authorizedUser), authorizedUser);
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
             logger.trace("{}", pair);
-            Object content = reflectionService.callFieldGetter(incomingResource, pair.getFirst());
+            Field field = pair.getFirst();
+            Object content = reflectionService.callFieldGetter(incomingResource, field);
             if (content == null) {
                 continue;
             }
-            logger.trace("{}, {}", content, pair.getFirst());
+            logger.trace("{}, {}", content, field);
             if (Collection.class.isAssignableFrom(content.getClass())) {
                 List<Persistable> toAdd = new ArrayList<Persistable>();
                 @SuppressWarnings("unchecked")
@@ -285,7 +286,7 @@ public class ImportServiceImpl implements ImportService  {
                         isResourceCollection = true;
                     }
                     
-                    Persistable result = processIncoming(p, incomingResource, authorizedUser);
+                    Persistable result = processIncoming(p, incomingResource, field.getName() , authorizedUser);
                     if (result instanceof Sequenceable) {
                         ((Sequenceable<?>) result).setSequenceNumber(count);
                     }
@@ -300,8 +301,8 @@ public class ImportServiceImpl implements ImportService  {
                 }
                 originalList.addAll(toAdd);
             } else if (Persistable.class.isAssignableFrom(content.getClass())) {
-                logger.trace("setter: {}", pair.getFirst());
-                reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource, authorizedUser));
+                logger.trace("setter: {}", field);
+                reflectionService.callFieldSetter(incomingResource, field, processIncoming((Persistable) content, incomingResource,  field.getName() , authorizedUser));
             }
         }
         return incomingResource;
@@ -404,7 +405,7 @@ public class ImportServiceImpl implements ImportService  {
             }
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            for (SharedCollection rc : rec.getSharedCollections()) {
+            for (ResourceCollection rc : rec.getSharedCollections()) {
                 rc.getResources().add(rec);
             }
         }
@@ -501,18 +502,18 @@ public class ImportServiceImpl implements ImportService  {
     /* (non-Javadoc)
      * @see org.tdar.core.service.ImportService#processIncoming(P, R, org.tdar.core.bean.entity.TdarUser)
      */
-    @Override
-    public <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, TdarUser authenticatedUser) throws APIException {
+//    @Override
+    public <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource,  String fieldName ,TdarUser authenticatedUser) throws APIException {
         // if we're not transient, find by id...
         if (PersistableUtils.isNotNullOrTransient(property)) {
-            return processExistingNonTransientEntity(property, resource);
+            return processExistingNonTransientEntity(property, fieldName, resource);
         }
 
-        return processTransientEntity(property, resource, authenticatedUser);
+        return processTransientEntity(property, resource, fieldName, authenticatedUser);
     }
 
     @SuppressWarnings("unchecked")
-    private <P extends Persistable, R extends Persistable> P processTransientEntity(P property, R resource, TdarUser authenticatedUser) throws APIException {
+    private <P extends Persistable, R extends Persistable> P processTransientEntity(P property, R resource, String fieldName, TdarUser authenticatedUser) throws APIException {
         P toReturn = property;
         if (property instanceof Keyword) {
             Class<? extends Keyword> kwdCls = (Class<? extends Keyword>) property.getClass();
@@ -581,15 +582,14 @@ public class ImportServiceImpl implements ImportService  {
         
         
 
-
-
         if (property instanceof ResourceCollection && resource instanceof Resource) {
             ResourceCollection collection = (ResourceCollection) property;
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
-            if (collection instanceof SharedCollection) {
+            if (collection instanceof ResourceCollection) {
+                logger.debug("field:: {} , {}", fieldName, collection);
                 resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
                         authenticatedUser, true,
-                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, CollectionType.SHARED);
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.SHARED);
 
             }
             //FIXME???
@@ -624,18 +624,18 @@ public class ImportServiceImpl implements ImportService  {
         return toReturn;
     }
 
-    private <P extends Persistable, R extends Persistable> P processExistingNonTransientEntity(P property, R resource) {
+    private <P extends Persistable, R extends Persistable> P processExistingNonTransientEntity(P property,  String fieldName, R resource) {
         Class<? extends Persistable> cls = property.getClass();
         Long id = property.getId();
         @SuppressWarnings("unchecked")
         P toReturn = (P) findById(cls, id);
-        if (toReturn instanceof SharedCollection && resource instanceof Resource) {
-            SharedCollection collection = (SharedCollection) toReturn;
+        if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
+            ResourceCollection collection = (ResourceCollection) toReturn;
             // making sure that the collection's creators and other things are on the sessions properly too
             resetOwnerOnSession((ResourceCollection)collection);
             collection.getResources().add((Resource) resource);
-            if (collection instanceof SharedCollection) {
-                ((Resource) resource).getSharedCollections().add((SharedCollection)collection);
+            if (collection instanceof ResourceCollection) {
+                ((Resource) resource).getSharedCollections().add((ResourceCollection)collection);
 //            } else if (collection instanceof InternalCollection) {
 //                ((Resource) resource).getInternalCollections().add((InternalCollection)collection);
 //                
@@ -716,7 +716,7 @@ private void validateInvalidImportFields(ResourceCollection incomingResource, Td
 //            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
 //        }
 
-        if (incomingResource instanceof SharedCollection && CollectionUtils.isNotEmpty(((SharedCollection)incomingResource).getResources())) {
+        if (incomingResource instanceof ResourceCollection && CollectionUtils.isNotEmpty(((ResourceCollection)incomingResource).getResources())) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
         }
 
@@ -740,7 +740,7 @@ private void validateInvalidImportFields(ResourceCollection incomingResource, Td
                 throw new APIException(MessageHelper.getMessage("error.permission_denied"), StatusCode.UNAUTHORIZED);
             }
 
-            incomingResource.copyImmutableFieldsFrom((SharedCollection) existing);
+            incomingResource.copyImmutableFieldsFrom((ResourceCollection) existing);
             // FIXME: could be trouble: the next line implicitly detaches the submitter we just copied to incomingResource
             genericService.detachFromSession(existing);
             created = false;

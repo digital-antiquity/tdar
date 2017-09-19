@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -69,7 +69,7 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
     public void testCloneInternalCollection() throws Exception {
         Document document = genericService.find(Document.class, 4287L);
         Long id = document.getId();
-        SharedCollection rc = new SharedCollection(document,getAdminUser());
+        ResourceCollection rc = new ResourceCollection(document,getAdminUser());
         rc.setDescription("test");
         rc.setName("name");
         rc.markUpdated(getAdminUser());

@@ -10,15 +10,17 @@ import java.util.HashSet;
 import org.apache.commons.lang.ClassUtils;
 import org.junit.Test;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 
 public class ResourceEqualityTest {
 
     @Test
     public void testIsAssignable() {
-        assertFalse(ClassUtils.isAssignable(ResourceCollection.class, SharedCollection.class));
-        assertTrue(ClassUtils.isAssignable(SharedCollection.class, ResourceCollection.class));
+        assertFalse(ClassUtils.isAssignable(Resource.class, Document.class));
+        assertTrue(ClassUtils.isAssignable(Image.class, Resource.class));
     }
     
     @Test

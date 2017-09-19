@@ -41,7 +41,7 @@ public class DownloadAuthorization extends AbstractPersistable {
 
     @ManyToOne
     @JoinColumn(name = "resource_collection_id")
-    private SharedCollection sharedCollection;
+    private ResourceCollection sharedCollection;
 
     private static String generateSimpleKey() {
         return "d" + UUID.randomUUID().toString().substring(UUID_BEGIN_INDEX);
@@ -56,7 +56,7 @@ public class DownloadAuthorization extends AbstractPersistable {
      * 
      * @param resourceCollection
      */
-    public DownloadAuthorization(SharedCollection resourceCollection) {
+    public DownloadAuthorization(ResourceCollection resourceCollection) {
         this(resourceCollection, generateSimpleKey());
     }
 
@@ -66,7 +66,7 @@ public class DownloadAuthorization extends AbstractPersistable {
      * @param resourceCollection
      * @param apiKey
      */
-    public DownloadAuthorization(SharedCollection resourceCollection, String apiKey) {
+    public DownloadAuthorization(ResourceCollection resourceCollection, String apiKey) {
         this.sharedCollection = resourceCollection;
         this.apiKey = apiKey;
     }
@@ -79,11 +79,11 @@ public class DownloadAuthorization extends AbstractPersistable {
         this.apiKey = apiKey;
     }
 
-    public SharedCollection getSharedCollection() {
+    public ResourceCollection getSharedCollection() {
         return sharedCollection;
     }
 
-    public void setSharedCollection(SharedCollection resourceCollection) {
+    public void setSharedCollection(ResourceCollection resourceCollection) {
         this.sharedCollection = resourceCollection;
     }
 

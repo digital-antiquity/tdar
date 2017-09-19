@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 
@@ -27,7 +27,7 @@ public class GeneralPermissionsTestCase {
 
     @Test
     public void getAvailableForSharedCollection() {
-        List<GeneralPermissions> availablePermissionsFor = GeneralPermissions.getAvailablePermissionsFor(SharedCollection.class);
+        List<GeneralPermissions> availablePermissionsFor = GeneralPermissions.getAvailablePermissionsFor(ResourceCollection.class);
         logger.debug("sharedperm: {}", availablePermissionsFor);
         assertTrue(availablePermissionsFor.contains(GeneralPermissions.MODIFY_METADATA));
         assertTrue(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_SHARE));

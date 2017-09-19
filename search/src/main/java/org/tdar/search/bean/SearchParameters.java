@@ -15,7 +15,7 @@ import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -109,7 +109,7 @@ public class SearchParameters {
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
     private List<Resource> sparseProjects = new ArrayList<Resource>();
-    private List<SharedCollection> collections = new ArrayList<>();
+    private List<ResourceCollection> collections = new ArrayList<>();
 
     private List<Long> resourceIds = new ArrayList<Long>();
 
@@ -419,7 +419,7 @@ public class SearchParameters {
 
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                SharedCollection.class, getOperator(), getCollections()));
+                ResourceCollection.class, getOperator(), getCollections()));
         CreatorQueryPart<Creator> cqp = new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies);
         getActionMessages().addAll(cqp.getActionMessages());
         queryPartGroup.append(cqp);
@@ -569,15 +569,15 @@ public class SearchParameters {
         sparseProjects = projects;
     }
 
-    public List<SharedCollection> getCollections() {
+    public List<ResourceCollection> getCollections() {
         return collections;
     }
 
-    public void setCollections(List<SharedCollection> resourceCollections) {
+    public void setCollections(List<ResourceCollection> resourceCollections) {
         collections = resourceCollections;
     }
 
-    public List<SharedCollection> getShares() {
+    public List<ResourceCollection> getShares() {
         return collections;
     }
 

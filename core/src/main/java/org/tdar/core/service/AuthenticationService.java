@@ -8,7 +8,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.VersionType;
@@ -88,7 +88,7 @@ public interface AuthenticationService {
 
     Number countWeeklyEmails();
 
-    StatsResultObject getStatsForCollection(SharedCollection collection, TextProvider provider, DateGranularity granularity);
+    StatsResultObject getStatsForCollection(ResourceCollection collection, TextProvider provider, DateGranularity granularity);
 
     StatsResultObject getStatsForAccount(BillingAccount account, TextProvider provider, DateGranularity granularity);
 

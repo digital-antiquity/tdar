@@ -13,7 +13,7 @@ import org.hibernate.ScrollableResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -143,7 +143,7 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
     public List<Resource> findSparseTitleIdProjectListByPerson(TdarUser person, boolean isAdmin) {
         // get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
         logger.debug("p>find collections");
-        Set<SharedCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA);
+        Set<ResourceCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA);
         logger.debug("p>find project");
         // find all of the editable projects for the user (either directly assigned or via the specified collections)
         List<Long> collectionIds = PersistableUtils.extractIds(collections);

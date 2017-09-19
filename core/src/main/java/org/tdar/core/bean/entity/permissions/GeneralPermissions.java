@@ -17,7 +17,7 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
@@ -32,15 +32,15 @@ import org.tdar.utils.MessageHelper;
 @SuppressWarnings("unchecked")
 public enum GeneralPermissions implements HasLabel, Localizable {
     NONE(-1000),
-    VIEW_ALL( 100, Resource.class, SharedCollection.class),
-    MODIFY_METADATA(400, Resource.class, SharedCollection.class),
-    MODIFY_RECORD(500, Resource.class, SharedCollection.class),
-    ADD_TO_COLLECTION(40, SharedCollection.class),
-    REMOVE_FROM_COLLECTION(50, SharedCollection.class),
+    VIEW_ALL( 100, Resource.class, ResourceCollection.class),
+    MODIFY_METADATA(400, Resource.class, ResourceCollection.class),
+    MODIFY_RECORD(500, Resource.class, ResourceCollection.class),
+    ADD_TO_COLLECTION(40, ResourceCollection.class),
+    REMOVE_FROM_COLLECTION(50, ResourceCollection.class),
 //    ADMINISTER_GROUP(80,SharedCollection.class),
-    ADD_TO_SHARE(4000,SharedCollection.class),
-    REMOVE_FROM_SHARE(4500, SharedCollection.class),
-    ADMINISTER_SHARE( 5000,SharedCollection.class),
+    ADD_TO_SHARE(4000,ResourceCollection.class),
+    REMOVE_FROM_SHARE(4500, ResourceCollection.class),
+    ADMINISTER_SHARE( 5000,ResourceCollection.class),
     EDIT_ACCOUNT( 10000,BillingAccount.class),
     EDIT_INTEGRATION( 2000,DataIntegrationWorkflow.class);
 
@@ -119,7 +119,7 @@ public enum GeneralPermissions implements HasLabel, Localizable {
     public static <P extends Persistable> List<GeneralPermissions> getAvailablePermissionsFor(Class<P> persistableClass_) {
         Class<P> persistableClass = persistableClass_;
         if (persistableClass.equals(HierarchicalCollection.class)) {
-            persistableClass = (Class<P>) SharedCollection.class;
+            persistableClass = (Class<P>) ResourceCollection.class;
         }
 
         List<GeneralPermissions> toReturn = new ArrayList<>();
@@ -146,7 +146,7 @@ public enum GeneralPermissions implements HasLabel, Localizable {
         if (account instanceof DataIntegrationWorkflow) {
             return GeneralPermissions.EDIT_INTEGRATION;
         }
-        if (account instanceof SharedCollection) {
+        if (account instanceof ResourceCollection) {
             return GeneralPermissions.ADMINISTER_SHARE;
         }
         if (account instanceof Resource) {

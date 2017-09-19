@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
@@ -45,7 +45,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     @Rollback(true)
     @Ignore("not really a test, but trying to use to bind save of collections...")
     public void testFlush() {
-        SharedCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
+        ResourceCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Dataset dc = createAndSaveNewDataset();
         for (int i=0;i < 10; i++) {
             Image image = createAndSaveNewInformationResource(Image.class);
@@ -70,7 +70,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     @Rollback(true)
     public void testIndexing() throws SearchException, SearchIndexException, IOException, ParseException {
 //        sessionFactory.getCurrentSession().
-        SharedCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
+        ResourceCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Image image = createAndSaveNewInformationResource(Image.class);
         genericService.synchronize();
         logger.debug("===================");

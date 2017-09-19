@@ -23,7 +23,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
@@ -133,7 +133,7 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
             processFileProxiesIntoResources(fileProxies, resourceTemplate, submitter, asyncUpdateReceiver, resources);
             updateAccountQuotas(accountId, resources, asyncUpdateReceiver, submitter);
 
-            SharedCollection collection = logAndPersist(asyncUpdateReceiver, resources, submitterId, accountId);
+            ResourceCollection collection = logAndPersist(asyncUpdateReceiver, resources, submitterId, accountId);
             completeBulkUpload(accountId, asyncUpdateReceiver, activity, ticketId);
             asyncUpdateReceiver.setCollectionId(collection.getId());
         } catch (Throwable t) {
@@ -236,11 +236,11 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
      * Log each record to XML and put in the filestore, and persist the record
      * as needed, then let the @link AsyncUpdateReceiver know we're done
      */
-    private SharedCollection logAndPersist(AsyncUpdateReceiver receiver, List<Resource> resources, Long submitterId, Long accountId) {
+    private ResourceCollection logAndPersist(AsyncUpdateReceiver receiver, List<Resource> resources, Long submitterId, Long accountId) {
         logger.info("bulk: setting final statuses and logging");
         TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
         String title = "Bulk Upload:" + DateTime.now().toString( DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss"));
-        SharedCollection collection = new SharedCollection(title, title, submitter); 
+        ResourceCollection collection = new ResourceCollection(title, title, submitter); 
         try {
             collection.markUpdated(submitter);
             collection.setSystemManaged(true);

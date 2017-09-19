@@ -9,7 +9,7 @@ import java.util.TreeSet;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -50,13 +50,13 @@ public interface ResourceCollectionService {
      * 
      * @return
      */
-    List<SharedCollection> findAllTopLevelCollections();
+    List<ResourceCollection> findAllTopLevelCollections();
 
     /**
      * Find all direct child @link ResourceCollection entries of a @link ResourceCollection
      * 
      */
-    List<SharedCollection> findDirectChildCollections(Long id, Boolean hidden);
+    List<ResourceCollection> findDirectChildCollections(Long id, Boolean hidden);
 
     /**
      * Delete the @link ResourceCollection and it's @link AuthorizedUser entries.
@@ -83,7 +83,7 @@ public interface ResourceCollectionService {
      * @param person
      * @return
      */
-    List<SharedCollection> findParentOwnerCollections(Person person);
+    List<ResourceCollection> findParentOwnerCollections(Person person);
 
     /**
      * Find all @link ResourceCollection entries that are potential parents of the specified @link ResourceCollection
@@ -92,9 +92,9 @@ public interface ResourceCollectionService {
      * @param collection
      * @return
      */
-    List<SharedCollection> findPotentialParentCollections(Person person, SharedCollection collection);
+    List<ResourceCollection> findPotentialParentCollections(Person person, ResourceCollection collection);
 
-    void saveResourceCollections(Resource resource, Collection<SharedCollection> incoming, Set<SharedCollection> current,
+    void saveResourceCollections(Resource resource, Collection<ResourceCollection> incoming, Set<ResourceCollection> current,
             TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling, CollectionType type);
 
     /**
@@ -107,16 +107,16 @@ public interface ResourceCollectionService {
      * @param errorHandling
      * @param collection
      */
-    void addResourceCollectionToResource(Resource resource, Set<SharedCollection> current, TdarUser authenticatedUser,
+    void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, TdarUser authenticatedUser,
             boolean shouldSave,
-            ErrorHandling errorHandling, SharedCollection collection, CollectionType type);
+            ErrorHandling errorHandling, ResourceCollection collection, CollectionType type);
 
     /**
      * Find all @link ResourceCollection entries (shared only)
      * 
      * @return
      */
-    List<SharedCollection> findAllResourceCollections();
+    List<ResourceCollection> findAllResourceCollections();
 
     /**
      * Recursively build the transient child collection fields of a specified resource collection, and return a list
@@ -134,7 +134,7 @@ public interface ResourceCollectionService {
      *         this method iteratively populates the transient children resource collection fields of the specified
      *         collection.
      */
-    TreeSet<SharedCollection> buildCollectionTreeForController(SharedCollection collection, TdarUser authenticatedUser);
+    TreeSet<ResourceCollection> buildCollectionTreeForController(ResourceCollection collection, TdarUser authenticatedUser);
 
     /**
      * Recursively build the transient child collection fields of a specified resource collection, and return a list
@@ -146,7 +146,7 @@ public interface ResourceCollectionService {
      *            the type of collections to return (e.g. internal, shared, public)
      * @return a list containing the provided 'parent' collection and any descendant collections (if any).
      */
-    List<SharedCollection> findAllChildCollectionsOnly(SharedCollection collection);
+    List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection);
 
     /**
      * Return a collection of all (shared) collections that convey permissions to the specified user that are equal
@@ -159,7 +159,7 @@ public interface ResourceCollectionService {
      * @param generalPermissions
      * @return
      */
-     Set<SharedCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions);
+     Set<ResourceCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions);
 
     /**
      * Return the root resource collection of the provided resource collection. This method also populates the
@@ -168,7 +168,7 @@ public interface ResourceCollectionService {
      * @param anyNode
      * @return
      */
-    SharedCollection getFullyInitializedRootResourceCollection(SharedCollection anyNode, TdarUser authenticatedUser);
+    ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode, TdarUser authenticatedUser);
 
     /**
      * Find all @link ResourceCollection entries that were both public and shared.
@@ -203,7 +203,7 @@ public interface ResourceCollectionService {
      * @param authenticatedUser
      * @param collectionIds
      */
-    void reconcileCollectionTree(Collection<SharedCollection> collection, TdarUser authenticatedUser, List<Long> collectionIds);
+    void reconcileCollectionTree(Collection<ResourceCollection> collection, TdarUser authenticatedUser, List<Long> collectionIds);
 
     /**
      * Return a read-only list of sparse Resource objects that belong to a ResourceCollection with the specified ID
@@ -223,28 +223,28 @@ public interface ResourceCollectionService {
      */
     Long getCollectionViewCount(ResourceCollection persistable);
 
-    void updateCollectionParentTo(TdarUser authorizedUser, SharedCollection persistable, SharedCollection parent);
+    void updateCollectionParentTo(TdarUser authorizedUser, ResourceCollection persistable, ResourceCollection parent);
 
-    void updateAlternateCollectionParentTo(TdarUser authorizedUser, SharedCollection persistable,
-            SharedCollection hierarchicalCollection);
+    void updateAlternateCollectionParentTo(TdarUser authorizedUser, ResourceCollection persistable,
+            ResourceCollection hierarchicalCollection);
 
-    List<SharedCollection> getAllChildCollections(SharedCollection persistable);
+    List<ResourceCollection> getAllChildCollections(ResourceCollection persistable);
 
     void addUserToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission);
 
-    Set<SharedCollection> getEffectiveSharesForResource(Resource resource);
+    Set<ResourceCollection> getEffectiveSharesForResource(Resource resource);
 
-    Set<SharedCollection> getEffectiveResourceCollectionsForResource(Resource resource);
+    Set<ResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource);
 
-    void reconcileIncomingResourcesForCollection(SharedCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
+    void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove);
 
     void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionType type);
 
-    void reconcileIncomingResourcesForCollectionWithoutRights(SharedCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
+    void reconcileIncomingResourcesForCollectionWithoutRights(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove);
 
-    void deleteForController(SharedCollection persistable, String deletionReason, TdarUser authenticatedUser);
+    void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser);
 
     DeleteIssue getDeletionIssues(TextProvider provider, ResourceCollection persistable);
 
@@ -266,7 +266,7 @@ public interface ResourceCollectionService {
      *            name that the method will use when filtering by exact name
      * @return
      */
-    SharedCollection findCollectionsWithName(TdarUser user, String name);
+    ResourceCollection findCollectionsWithName(TdarUser user, String name);
 
     /**
      * Convert a resource collection into a persisted white-label collection with all default values.
@@ -275,7 +275,7 @@ public interface ResourceCollectionService {
      * @param rc
      * @return
      */
-    SharedCollection convertToWhitelabelCollection(SharedCollection rc);
+    ResourceCollection convertToWhitelabelCollection(ResourceCollection rc);
 
     /**
      * Detach the provided white-label collection and return a persisted resource collection object.
@@ -283,26 +283,26 @@ public interface ResourceCollectionService {
      * @param wlc
      * @return
      */
-    SharedCollection convertToResourceCollection(SharedCollection wlc);
+    ResourceCollection convertToResourceCollection(ResourceCollection wlc);
 
     void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser);
 
-    void moveResource(Resource resource, SharedCollection fromCollection, SharedCollection toCollection, TdarUser tdarUser);
+    void moveResource(Resource resource, ResourceCollection fromCollection, ResourceCollection toCollection, TdarUser tdarUser);
 
     String getSchemaOrgJsonLD(ResourceCollection resource) throws IOException;
 
-    void saveCollectionForRightsController(SharedCollection c, TdarUser authenticatedUser,
+    void saveCollectionForRightsController(ResourceCollection c, TdarUser authenticatedUser,
             List<UserRightsProxy> proxies, Long startTime);
 
     List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user);
 
-    List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user);
+    List<ResourceCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user);
 
     List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser);
 
     void saveResourceRights(List<UserRightsProxy> proxies, TdarUser authenticatedUser, Resource resource);
 
-    List<SharedCollection> findAlternateChildren(List<Long> ids, TdarUser authenticatedUser);
+    List<ResourceCollection> findAlternateChildren(List<Long> ids, TdarUser authenticatedUser);
 
     ResourceCollection find(long l);
 

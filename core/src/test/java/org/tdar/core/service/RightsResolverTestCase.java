@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -30,7 +30,7 @@ public class RightsResolverTestCase {
         RightsResolver rr = RightsResolver.evaluate(users);
 
         assertFalse(rr.canModifyUsersOn(new Document()));
-        assertFalse(rr.canModifyUsersOn(new SharedCollection()));
+        assertFalse(rr.canModifyUsersOn(new ResourceCollection()));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
         assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
         assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
@@ -49,7 +49,7 @@ public class RightsResolverTestCase {
         users.add(user2);
         RightsResolver rr = RightsResolver.evaluate(users);
         assertTrue(rr.canModifyUsersOn(new Document()));
-        assertFalse(rr.canModifyUsersOn(new SharedCollection()));
+        assertFalse(rr.canModifyUsersOn(new ResourceCollection()));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
@@ -69,7 +69,7 @@ public class RightsResolverTestCase {
         RightsResolver rr = RightsResolver.evaluate(users);
 
         assertTrue(rr.canModifyUsersOn(new Document()));
-        assertFalse(rr.canModifyUsersOn(new SharedCollection()));
+        assertFalse(rr.canModifyUsersOn(new ResourceCollection()));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
@@ -92,7 +92,7 @@ public class RightsResolverTestCase {
         users.add(user2);
         RightsResolver rr = RightsResolver.evaluate(users);
         assertTrue(rr.canModifyUsersOn(new Document()));
-        assertFalse(rr.canModifyUsersOn(new SharedCollection()));
+        assertFalse(rr.canModifyUsersOn(new ResourceCollection()));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));

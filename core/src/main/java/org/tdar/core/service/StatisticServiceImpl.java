@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -178,7 +178,7 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
      */
     @Override
     @Transactional(readOnly = true)
-    public StatsResultObject getStatsForCollection(SharedCollection collection, TextProvider provider, DateGranularity granularity) {
+    public StatsResultObject getStatsForCollection(ResourceCollection collection, TextProvider provider, DateGranularity granularity) {
         if (collection != null) {
             return getStats(collection, provider, granularity);
         }

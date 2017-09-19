@@ -31,7 +31,7 @@ import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -69,9 +69,9 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
     /**
      * @return
      */
-    public  List<SharedCollection> findCollectionsOfParent(Long parent, Boolean visible) {
+    public  List<ResourceCollection> findCollectionsOfParent(Long parent, Boolean visible) {
         String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_PARENT;
-        Query<SharedCollection> namedQuery = getCurrentSession().createNamedQuery(q, SharedCollection.class);
+        Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         namedQuery.setParameter("parent", parent);
         namedQuery.setParameter("visible", visible);
         return namedQuery.getResultList();
@@ -83,11 +83,11 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return namedQuery.getResultList();
     }
 
-    public List<SharedCollection> findParentOwnerCollections(Person person) {
+    public List<ResourceCollection> findParentOwnerCollections(Person person) {
         String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER;
         GeneralPermissions base = GeneralPermissions.ADMINISTER_SHARE;
 
-        Query<SharedCollection> namedQuery = getCurrentSession().createNamedQuery(q, SharedCollection.class);
+        Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         Long id = -1L;
         if (PersistableUtils.isNotNullOrTransient(person)) {
             id = person.getId();
@@ -95,7 +95,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         namedQuery.setParameter("authOwnerId", id);
         namedQuery.setParameter("equivPerm", base.getEffectivePermissions() - 1);
         try {
-            List<SharedCollection> list = namedQuery.getResultList();
+            List<ResourceCollection> list = namedQuery.getResultList();
             logger.trace("{}", list);
             return list;
         } catch (Exception e) {
@@ -107,18 +107,18 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
     /**
      * @return
      */
-    public List<SharedCollection> findAllSharedResourceCollections() {
-        return findAll(SharedCollection.class);
+    public List<ResourceCollection> findAllSharedResourceCollections() {
+        return findAll(ResourceCollection.class);
     }
 
-    public SharedCollection findCollectionWithName(TdarUser user, boolean isAdmin, String name) {
+    public ResourceCollection findCollectionWithName(TdarUser user, boolean isAdmin, String name) {
         String q = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
         GeneralPermissions base = GeneralPermissions.ADMINISTER_SHARE;
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(q, SharedCollection.class);
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         query.setParameter("name", name);
-        List<SharedCollection> list = query.getResultList();
+        List<ResourceCollection> list = query.getResultList();
         logger.trace("found: {} ", list);
-        for (SharedCollection coll : list) {
+        for (ResourceCollection coll : list) {
             if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, base)) {
                 return coll;
             }
@@ -138,28 +138,28 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return query.getResultList();
     }
 
-    public List<SharedCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
+    public List<ResourceCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
         if (PersistableUtils.isTransient(user)) {
-            return Collections.<SharedCollection> emptyList();
+            return Collections.<ResourceCollection> emptyList();
         }
         int permission = generalPermissions.getEffectivePermissions() - 1;
         String q = TdarNamedQueries.SHARED_COLLECTION_LIST_WITH_AUTHUSER;
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(q, SharedCollection.class);
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         query.setParameter("effectivePermission", permission);
         query.setParameter("userId", user.getId());
         return query.getResultList();
     }
 
     // @SuppressWarnings("unchecked")
-    public Set<SharedCollection> findFlattendCollections(Person user, GeneralPermissions generalPermissions) {
-        Set<SharedCollection> allCollections = new HashSet<>();
+    public Set<ResourceCollection> findFlattendCollections(Person user, GeneralPermissions generalPermissions) {
+        Set<ResourceCollection> allCollections = new HashSet<>();
 
         // get all collections that grant explicit edit permissions to person
-        List<SharedCollection> collections = findInheritedCollections(user, generalPermissions);
+        List<ResourceCollection> collections = findInheritedCollections(user, generalPermissions);
 
-        for (SharedCollection rc : collections) {
-            if (rc instanceof SharedCollection) {
-                List<SharedCollection> find = findAllChildCollectionsOnly((SharedCollection) rc);
+        for (ResourceCollection rc : collections) {
+            if (rc instanceof ResourceCollection) {
+                List<ResourceCollection> find = findAllChildCollectionsOnly((ResourceCollection) rc);
                 allCollections.addAll(find);
             }
             allCollections.add(rc);
@@ -168,8 +168,8 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return allCollections;
     }
 
-    public List<SharedCollection> findAllChildCollectionsOnly(SharedCollection collection) {
-        List<SharedCollection> allChildren = getAllChildCollections(collection);
+    public List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection) {
+        List<ResourceCollection> allChildren = getAllChildCollections(collection);
         return allChildren;
     }
 
@@ -190,7 +190,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return result.longValue();
     }
 
-    public List<SharedCollection> getAllChildCollections(SharedCollection persistable) {
+    public List<ResourceCollection> getAllChildCollections(ResourceCollection persistable) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }
@@ -213,7 +213,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
             String referrer) {
         InformationResource ir = informationResourceFileVersion.getInformationResourceFile().getInformationResource();
         Set<Long> sharedCollectionIds = new HashSet<>();
-        for (SharedCollection rc : ir.getSharedResourceCollections()) {
+        for (ResourceCollection rc : ir.getSharedResourceCollections()) {
             sharedCollectionIds.add(rc.getId());
             sharedCollectionIds.addAll(rc.getParentIds());
         }
@@ -228,7 +228,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return query.getResultList();
     }
 
-    public ScrollableResults findAllResourcesInCollectionAndSubCollectionScrollable(SharedCollection persistable) {
+    public ScrollableResults findAllResourcesInCollectionAndSubCollectionScrollable(ResourceCollection persistable) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return null;
         }
@@ -318,7 +318,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
      * @param rc
      * @return
      */
-    public SharedCollection convertToWhitelabelCollection(SharedCollection rc) {
+    public ResourceCollection convertToWhitelabelCollection(ResourceCollection rc) {
         if (rc.getProperties() == null) {
             rc.setProperties(new CollectionDisplayProperties(false, false, false, false, false, false));
         }
@@ -333,7 +333,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
      * @param wlc
      * @return
      */
-    public SharedCollection convertToResourceCollection(SharedCollection wlc) {
+    public ResourceCollection convertToResourceCollection(ResourceCollection wlc) {
         if (wlc.getProperties() == null) {
             return wlc;
         }
@@ -389,17 +389,17 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     }
 
-    public List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, GeneralPermissions perm, boolean admin) {
-        Query<SharedCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, SharedCollection.class);
+    public List<ResourceCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, GeneralPermissions perm, boolean admin) {
+        Query<ResourceCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, ResourceCollection.class);
         shared.setParameter("userId", authenticatedUser.getId());
         shared.setParameter("perm", perm.getEffectivePermissions() - 1);
-        List<SharedCollection> resultList = shared.getResultList();
+        List<ResourceCollection> resultList = shared.getResultList();
         List<Long> ids = PersistableUtils.extractIds(resultList);
         if (CollectionUtils.isEmpty(ids)) {
             return new ArrayList<>();
         }
 
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH, SharedCollection.class);
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH, ResourceCollection.class);
         query.setParameter("user", user);
         query.setParameter("admin", admin);
         query.setParameter("collectionIds", ids);
@@ -471,21 +471,21 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return null;
     }
 
-    public List<SharedCollection> findAlternateChildren(List<Long> ids) {
+    public List<ResourceCollection> findAlternateChildren(List<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.EMPTY_LIST;
         }
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS,SharedCollection.class);
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS,ResourceCollection.class);
         query.setParameterList("collectionIds", ids);
         return query.list();
     }
 
-    public  List<SharedCollection> getAlternateChildrenTrees(Collection<SharedCollection> allChildren, SharedCollection collection) {
+    public  List<ResourceCollection> getAlternateChildrenTrees(Collection<ResourceCollection> allChildren, ResourceCollection collection) {
         List<Long> ids = PersistableUtils.extractIds(allChildren);
         String qs = TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE;
 
         ids.add(collection.getId());
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(qs,SharedCollection.class);
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(qs,ResourceCollection.class);
         query.setParameterList("collectionIds", ids);
         return query.list();
     }

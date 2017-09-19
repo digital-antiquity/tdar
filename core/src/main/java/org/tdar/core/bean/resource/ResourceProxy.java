@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -134,7 +134,7 @@ public class ResourceProxy implements Serializable {
     @XmlTransient
     @Where(clause="collection_type='SHARED'")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    private Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
+    private Set<ResourceCollection> sharedCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -293,11 +293,11 @@ public class ResourceProxy implements Serializable {
         return res;
     }
 
-    public Set<SharedCollection> getSharedCollections() {
+    public Set<ResourceCollection> getSharedCollections() {
         return sharedCollections;
     }
 
-    public void setSharedCollections(Set<SharedCollection> resourceCollections) {
+    public void setSharedCollections(Set<ResourceCollection> resourceCollections) {
         this.sharedCollections = resourceCollections;
     }
 

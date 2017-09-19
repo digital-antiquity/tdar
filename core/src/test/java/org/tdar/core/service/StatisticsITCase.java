@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -146,7 +146,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testUsageStatsCollection() {
         Document document = setupDacumentWithStats();
-        SharedCollection col = new SharedCollection();
+        ResourceCollection col = new ResourceCollection();
         col.setName("test");
         col.setDescription("test");
         col.markUpdated(getAdminUser());

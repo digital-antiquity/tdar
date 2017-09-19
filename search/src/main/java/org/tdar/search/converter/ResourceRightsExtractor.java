@@ -8,7 +8,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
@@ -45,7 +45,7 @@ public class ResourceRightsExtractor {
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
-        for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, GeneralPermissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
@@ -70,7 +70,7 @@ public class ResourceRightsExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, GeneralPermissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
@@ -87,13 +87,13 @@ public class ResourceRightsExtractor {
     }
 
     public void extractCollectionHierarchy() {
-        Set<SharedCollection> collections = new HashSet<>(resource.getRightsBasedResourceCollections());
+        Set<ResourceCollection> collections = new HashSet<>(resource.getRightsBasedResourceCollections());
 //        collections.addAll(resource.getUnmanagedResourceCollections());
-        for (SharedCollection collection : collections) {
-            if (collection instanceof SharedCollection) {
+        for (ResourceCollection collection : collections) {
+            if (collection instanceof ResourceCollection) {
                 directCollectionNames.add(((ResourceCollection) collection).getName());
-                if (collection instanceof SharedCollection) {
-                SharedCollection shared = (SharedCollection)collection;
+                if (collection instanceof ResourceCollection) {
+                ResourceCollection shared = (ResourceCollection)collection;
                 collectionNames.addAll(shared.getParentNameList());
                 collectionIds.addAll(shared.getAlternateParentIds());
                 collectionNames.addAll(shared.getAlternateParentNameList());

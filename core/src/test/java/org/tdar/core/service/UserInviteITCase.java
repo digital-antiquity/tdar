@@ -14,7 +14,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -78,7 +78,7 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         String description = "test description";
         
         // create a collection
-        SharedCollection collection = new SharedCollection(name, description, getBasicUser());
+        ResourceCollection collection = new ResourceCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
         collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
         genericService.saveOrUpdate(collection);
@@ -88,7 +88,7 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         resourceCollectionService.saveCollectionForController(cso);
         genericService.synchronize();
 
-        SharedCollection myCollection = genericService.find(SharedCollection.class, id);
+        ResourceCollection myCollection = genericService.find(ResourceCollection.class, id);
 
         // grant basic user and admin user rights on the collection
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
@@ -108,7 +108,7 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         resourceCollectionService.saveCollectionForRightsController(myCollection, getBasicUser(), aus, -1L);
         myCollection = null;
         genericService.synchronize();
-        myCollection = genericService.find(SharedCollection.class, id);
+        myCollection = genericService.find(ResourceCollection.class, id);
         logger.debug("au: {}", myCollection.getAuthorizedUsers());
         AuthorizedUser user = null;
         logger.debug("{}", testPerson);

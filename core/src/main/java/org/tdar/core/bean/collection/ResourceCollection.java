@@ -25,8 +25,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ConstraintMode;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -34,8 +32,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
@@ -51,7 +47,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -87,6 +83,7 @@ import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -131,15 +128,63 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
 @JsonInclude(value = Include.NON_NULL)
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
-@XmlSeeAlso(value = { SharedCollection.class })
+//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+//@DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
+//@XmlSeeAlso(value = { ResourceCollection.class })
+@XmlRootElement(name = "resourceCollection")
 @SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
-public abstract class ResourceCollection extends AbstractPersistable
+public class ResourceCollection extends AbstractPersistable
         implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus, HasAuthorizedUsers, Sortable,
-        OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Hideable, HierarchicalCollection {
+        OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Hideable, HierarchicalCollection,
+        Comparable<ResourceCollection> {
 
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
+
+
+    public ResourceCollection(String title, String description, boolean hidden, SortOption sortOption, DisplayOrientation displayOrientation, TdarUser creator) {
+        setName(title);
+        setDescription(description);
+        setHidden(hidden);
+        setSortBy(sortOption);
+        setOrientation(displayOrientation);
+        setOwner(creator);
+        this.setType(CollectionType.SHARED);
+    }
+    
+    public ResourceCollection(Long id, String title, String description, SortOption sortOption, boolean hidden) {
+        setId(id);
+        setName(title);
+        setDescription(description);
+        setHidden(hidden);
+        setSortBy(sortOption);
+        this.setType(CollectionType.SHARED);
+
+    }
+
+    public ResourceCollection(String title, String description, TdarUser submitter) {
+        setName(title);
+        setDescription(description);
+        setHidden(false);
+        this.setOwner(submitter);
+        setSortBy(SortOption.TITLE);
+        setOrientation(DisplayOrientation.LIST);
+        this.setType(CollectionType.SHARED);
+    }
+
+    public ResourceCollection(Document document, TdarUser tdarUser) {
+        markUpdated(tdarUser);
+        getResources().add(document);
+        setHidden(false);
+        setSortBy(SortOption.TITLE);
+        setOrientation(DisplayOrientation.LIST);
+        this.setType(CollectionType.SHARED);
+    }
+
+    public ResourceCollection() {
+        this.setType(CollectionType.SHARED);
+        setSortBy(SortOption.TITLE);
+        setOrientation(DisplayOrientation.LIST);
+    }
 
     @Transient
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -177,7 +222,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     @NotNull
     private Date dateCreated;
 
-    private transient TreeSet<SharedCollection> transientChildren = new TreeSet<>(new TitleSortComparator());
+    private transient TreeSet<ResourceCollection> transientChildren = new TreeSet<>(new TitleSortComparator());
 
     @Column(nullable = false, name = "date_updated")
     @NotNull
@@ -283,11 +328,11 @@ public abstract class ResourceCollection extends AbstractPersistable
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private SharedCollection parent;
+    private ResourceCollection parent;
 
     @ManyToOne
     @JoinColumn(name = "alternate_parent_id")
-    private SharedCollection alternateParent;
+    private ResourceCollection alternateParent;
 
     // if you serialize this (even if just a list IDs, hibernate will request all necessary fields and do a traversion of the full resource graph (this could
     // crash tDAR if > 100,000)
@@ -306,12 +351,12 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Transient
     @XmlTransient
     // infinite loop because parentTree[0]==self
-    public List<SharedCollection> getHierarchicalResourceCollections() {
-        ArrayList<SharedCollection> parentTree = new ArrayList<>();
-        parentTree.add((SharedCollection) this);
-        SharedCollection collection = (SharedCollection) this;
+    public List<ResourceCollection> getHierarchicalResourceCollections() {
+        ArrayList<ResourceCollection> parentTree = new ArrayList<>();
+        parentTree.add((ResourceCollection) this);
+        ResourceCollection collection = (ResourceCollection) this;
         while (collection.getParent() != null) {
-            collection = (SharedCollection) collection.getParent();
+            collection = (ResourceCollection) collection.getParent();
             parentTree.add(0, collection);
         }
         return parentTree;
@@ -320,7 +365,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     /*
      * Default to sorting by name, but grouping by parentId, used for sorting int he tree
      */
-    public int compareTo(SharedCollection o) {
+    public int compareTo(ResourceCollection o) {
         List<String> tree = getParentNameList();
         List<String> tree_ = o.getParentNameList();
         while (!tree.isEmpty() && !tree_.isEmpty() && (tree.get(0) == tree_.get(0))) {
@@ -340,7 +385,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Transient
     public List<String> getParentNameList() {
         ArrayList<String> parentNameTree = new ArrayList<String>();
-        for (SharedCollection collection : getHierarchicalResourceCollections()) {
+        for (ResourceCollection collection : getHierarchicalResourceCollections()) {
             parentNameTree.add(collection.getName());
         }
         return parentNameTree;
@@ -348,41 +393,41 @@ public abstract class ResourceCollection extends AbstractPersistable
 
     @Transient
     @XmlTransient
-    public List<SharedCollection> getVisibleParents() {
-        List<SharedCollection> hierarchicalResourceCollections = getHierarchicalResourceCollections();
-        Iterator<SharedCollection> iterator = hierarchicalResourceCollections.iterator();
+    public List<ResourceCollection> getVisibleParents() {
+        List<ResourceCollection> hierarchicalResourceCollections = getHierarchicalResourceCollections();
+        Iterator<ResourceCollection> iterator = hierarchicalResourceCollections.iterator();
         while (iterator.hasNext()) {
-            SharedCollection collection = iterator.next();
-            if (!(SharedCollection.class.isAssignableFrom(collection.getClass())) || !collection.isHidden()) {
+            ResourceCollection collection = iterator.next();
+            if (!(ResourceCollection.class.isAssignableFrom(collection.getClass())) || !collection.isHidden()) {
                 iterator.remove();
             }
         }
         return hierarchicalResourceCollections;
     }
 
-    public SharedCollection getAlternateParent() {
+    public ResourceCollection getAlternateParent() {
         return alternateParent;
     }
 
-    public void setAlternateParent(SharedCollection alternateParent) {
+    public void setAlternateParent(ResourceCollection alternateParent) {
         this.alternateParent = alternateParent;
     }
 
-    public void copyImmutableFieldsFrom(SharedCollection resource) {
+    public void copyImmutableFieldsFrom(ResourceCollection resource) {
         this.setDateCreated(resource.getDateCreated());
         this.setOwner(resource.getOwner());
         this.setType(resource.getType());
         this.setAuthorizedUsers(new HashSet<>(resource.getAuthorizedUsers()));
         this.setSystemManaged(resource.isSystemManaged());
-        ((SharedCollection) this).getResources().addAll(((SharedCollection) resource).getResources());
+        ((ResourceCollection) this).getResources().addAll(((ResourceCollection) resource).getResources());
         this.setParent(resource.getParent());
     }
 
-    public SharedCollection getParent() {
+    public ResourceCollection getParent() {
         return parent;
     }
 
-    public void setParent(SharedCollection parent) {
+    public void setParent(ResourceCollection parent) {
         this.parent = parent;
     }
 
@@ -774,18 +819,18 @@ public abstract class ResourceCollection extends AbstractPersistable
 
     @XmlTransient
     @Transient
-    public TreeSet<SharedCollection> getTransientChildren() {
+    public TreeSet<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }
 
-    public void setTransientChildren(TreeSet<SharedCollection> transientChildren) {
+    public void setTransientChildren(TreeSet<ResourceCollection> transientChildren) {
         this.transientChildren = transientChildren;
     }
 
     public Collection<String> getAlternateParentNameList() {
         HashSet<String> names = new HashSet<>();
         if (PersistableUtils.isNotNullOrTransient(getAlternateParent())) {
-            SharedCollection hierarchicalCollection = getAlternateParent();
+            ResourceCollection hierarchicalCollection = getAlternateParent();
             if (PersistableUtils.isNotNullOrTransient(hierarchicalCollection.getParent())) {
                 names.addAll(hierarchicalCollection.getParentNameList());
             }

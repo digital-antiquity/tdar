@@ -82,7 +82,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -413,7 +413,7 @@ public class Resource implements Persistable,
     @XmlTransient
     @Where(clause="collection_type='SHARED' and status='ACTIVE' ")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.sharedCollections")
-    private Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
+    private Set<ResourceCollection> sharedCollections = new LinkedHashSet<>();
 
     // MAINTAINED FOR HQL QUERY USE
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
@@ -431,7 +431,7 @@ public class Resource implements Persistable,
     @XmlTransient
     @Where(clause="collection_type='LIST' and status='ACTIVE' ")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.unmanagedResourceCollections")
-    private Set<SharedCollection> unmanagedResourceCollections = new LinkedHashSet<>();
+    private Set<ResourceCollection> unmanagedResourceCollections = new LinkedHashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
@@ -1226,34 +1226,34 @@ public class Resource implements Persistable,
    //     @XmlElementRef(name = "listCollectionRef", type = JAXBPersistableRef.class, required = false)
    // })
     @XmlTransient
-    public Set<SharedCollection> getUnmanagedResourceCollections() {
+    public Set<ResourceCollection> getUnmanagedResourceCollections() {
         return unmanagedResourceCollections;
     }
     
-    public void setUnmanagedResourceCollections(Set<SharedCollection> publicResourceCollections) {
+    public void setUnmanagedResourceCollections(Set<ResourceCollection> publicResourceCollections) {
         this.unmanagedResourceCollections = publicResourceCollections;
     }
 
     @XmlElementWrapper(name = "resourceCollections")
     @XmlElementRefs({
-            @XmlElementRef(name = "resourceCollection", type = SharedCollection.class, required = false),
+            @XmlElementRef(name = "resourceCollection", type = ResourceCollection.class, required = false),
             @XmlElementRef(name = "resourceCollectionRef", type = JAXBPersistableRef.class, required = false)
     })
     @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
-    public Set<SharedCollection> getSharedCollections() {
+    public Set<ResourceCollection> getSharedCollections() {
         return sharedCollections;
     }
 
 
     @Transient
-    public Set<SharedCollection> getRightsBasedResourceCollections() {
-        Set<SharedCollection> collections = new HashSet<>();
+    public Set<ResourceCollection> getRightsBasedResourceCollections() {
+        Set<ResourceCollection> collections = new HashSet<>();
         if (CollectionUtils.isNotEmpty(getSharedCollections())) {
             collections.addAll(getSharedCollections());
         }
-        Iterator<SharedCollection> iterator = collections.iterator();
+        Iterator<ResourceCollection> iterator = collections.iterator();
         while (iterator.hasNext()) {
-            SharedCollection next = iterator.next();
+            ResourceCollection next = iterator.next();
             if (next == null) {
                 iterator.remove();
             }
@@ -1328,16 +1328,16 @@ public class Resource implements Persistable,
     }
 
     @Transient
-    public Set<SharedCollection> getSharedResourceCollections() {
+    public Set<ResourceCollection> getSharedResourceCollections() {
         return sharedCollections;
     }
 
     @Transient
-    public Set<SharedCollection> getVisibleSharedResourceCollections() {
-        Set<SharedCollection> collections = new LinkedHashSet<>();
-        for (SharedCollection collection : sharedCollections) {
+    public Set<ResourceCollection> getVisibleSharedResourceCollections() {
+        Set<ResourceCollection> collections = new LinkedHashSet<>();
+        for (ResourceCollection collection : sharedCollections) {
             if (collection.isVisibleAndActive()) {
-                collections.add((SharedCollection)collection);
+                collections.add((ResourceCollection)collection);
             }
         }
         return collections;
@@ -1702,9 +1702,9 @@ public class Resource implements Persistable,
         this.formattedDescription = formattedDescription;
     }
 
-    public Collection<SharedCollection> getVisibleUnmanagedResourceCollections() {
-        Set<SharedCollection> collections = new LinkedHashSet<>();
-        for (SharedCollection collection : getUnmanagedResourceCollections()) {
+    public Collection<ResourceCollection> getVisibleUnmanagedResourceCollections() {
+        Set<ResourceCollection> collections = new LinkedHashSet<>();
+        for (ResourceCollection collection : getUnmanagedResourceCollections()) {
             if (collection.isVisibleAndActive()) {
                 collections.add(collection);
             }

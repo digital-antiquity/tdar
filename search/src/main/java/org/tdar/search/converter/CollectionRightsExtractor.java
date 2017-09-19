@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -30,8 +30,8 @@ public class CollectionRightsExtractor {
                 people.add(user.getUser());
             }
         }
-        if (collection_ instanceof SharedCollection) {
-            SharedCollection shared = (SharedCollection)collection_;
+        if (collection_ instanceof ResourceCollection) {
+            ResourceCollection shared = (ResourceCollection)collection_;
             if ((shared.getParent() != null) && recurse) {
             people.addAll(getUsersWhoCan(shared.getParent(), permission, recurse));
         }

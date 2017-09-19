@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -50,7 +50,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
     public void testResourceInCollection() { 
         // test that a direct collection share works
         Dataset dataset = createAndSaveNewDataset();
-        SharedCollection collection = createAndSaveNewResourceCollection("test collection");
+        ResourceCollection collection = createAndSaveNewResourceCollection("test collection");
         collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(collection);
         collection.getResources().add(dataset);
@@ -68,8 +68,8 @@ public class SharingITCase extends AbstractIntegrationTestCase {
     public void testResourceInNestedCollection() {
         // test that a child collection share works, billing user is in child collection
         Dataset dataset = createAndSaveNewDataset();
-        SharedCollection collection = createAndSaveNewResourceCollection("test collection");
-        SharedCollection child = createAndSaveNewResourceCollection("test collection");
+        ResourceCollection collection = createAndSaveNewResourceCollection("test collection");
+        ResourceCollection child = createAndSaveNewResourceCollection("test collection");
         collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(collection);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child, collection);
@@ -102,7 +102,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
         final String collectionName = "the best collection ever";
         List<TdarUser> users = new ArrayList<>(Arrays.asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
 
-        SharedCollection collection = createAndSaveNewResourceCollection(collectionName);
+        ResourceCollection collection = createAndSaveNewResourceCollection(collectionName);
         users.remove(collection.getOwner());
 
         // sanity checks

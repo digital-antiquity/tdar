@@ -32,7 +32,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
@@ -292,10 +292,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
     @Rollback(false)
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
-        SharedCollection collection = createSharedCollection(DateTime.now().plusDays(1).toDate(),dataset);
+        ResourceCollection collection = createSharedCollection(DateTime.now().plusDays(1).toDate(),dataset);
         final Long cid = collection.getId();
         Date expires = DateTime.now().minusDays(2).toDate();
-        SharedCollection expired = createSharedCollection(expires, dataset);
+        ResourceCollection expired = createSharedCollection(expires, dataset);
         final Long eid = expired.getId();
 //        genericService.saveOrUpdate(e)
 //        dataset.getResourceCollections().add(collection);
@@ -310,12 +310,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
                 scheduledProcessService.runNextScheduledProcessesInQueue();
 //                dtarp.execute();
 //                dtarp.cleanup();
-                SharedCollection rcn = genericService.find(SharedCollection.class, cid);
+                ResourceCollection rcn = genericService.find(ResourceCollection.class, cid);
                 logger.debug("{}",rcn);
                 logger.debug("au: {}",rcn.getAuthorizedUsers());
                 assertEquals(aus, rcn.getAuthorizedUsers().size());
 
-                SharedCollection rce = genericService.find(SharedCollection.class, eid);
+                ResourceCollection rce = genericService.find(ResourceCollection.class, eid);
                 logger.debug("{}",rce);
                 logger.debug("au: {}",rce.getAuthorizedUsers());
                 assertEquals(aus -1 , rce.getAuthorizedUsers().size());
@@ -328,8 +328,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         });
     }
 
-    private SharedCollection createSharedCollection(Date date, Dataset dataset) {
-        SharedCollection collection = new SharedCollection();
+    private ResourceCollection createSharedCollection(Date date, Dataset dataset) {
+        ResourceCollection collection = new ResourceCollection();
         collection.getResources().add(dataset);
         dataset.getSharedCollections().add(collection);
         collection.markUpdated(getAdminUser());

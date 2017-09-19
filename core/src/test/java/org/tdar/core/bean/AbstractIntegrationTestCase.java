@@ -48,7 +48,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -402,12 +402,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
 
     // create new, public, collection with the getUser() as the owner and no resources
-    public SharedCollection createAndSaveNewResourceCollection(String name) {
-        return init(new SharedCollection(), name);
+    public ResourceCollection createAndSaveNewResourceCollection(String name) {
+        return init(new ResourceCollection(), name);
     }
 
-    public SharedCollection createAndSaveNewWhiteLabelCollection(String name) {
-        SharedCollection wlc = new SharedCollection();
+    public ResourceCollection createAndSaveNewWhiteLabelCollection(String name) {
+        ResourceCollection wlc = new ResourceCollection();
         wlc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().setSubtitle("This is a fancy whitelabel collection");

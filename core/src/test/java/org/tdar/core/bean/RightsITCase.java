@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -147,18 +147,18 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(authorizedUser);
 
         // setup collection and parent, grant ownership rights to parent
-        SharedCollection grandParent = new SharedCollection("rights parent", "rights parent", getBasicUser());
+        ResourceCollection grandParent = new ResourceCollection("rights parent", "rights parent", getBasicUser());
         grandParent.markUpdated(getBasicUser());
         grandParent.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), ownerUser, GeneralPermissions.ADMINISTER_SHARE));
-        SharedCollection parent = new SharedCollection("rights inherit", "rights inherit", getBasicUser());
+        ResourceCollection parent = new ResourceCollection("rights inherit", "rights inherit", getBasicUser());
         parent.markUpdated(getBasicUser());
         parent.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getEditorUser(), GeneralPermissions.ADMINISTER_SHARE));
-        SharedCollection collection = new SharedCollection("rights inherit", "rights inherit", getBasicUser());
+        ResourceCollection collection = new ResourceCollection("rights inherit", "rights inherit", getBasicUser());
         collection.markUpdated(getBasicUser());
         collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getAdminUser(), GeneralPermissions.ADMINISTER_SHARE));
         
         // setup a completely different inheritance tree
-        SharedCollection collection2 = new SharedCollection("rights2", "rights2", getBasicUser());
+        ResourceCollection collection2 = new ResourceCollection("rights2", "rights2", getBasicUser());
         collection2.markUpdated(getBasicUser());
         collection2.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getAdminUser(), GeneralPermissions.ADMINISTER_SHARE));
         genericService.saveOrUpdate(grandParent);

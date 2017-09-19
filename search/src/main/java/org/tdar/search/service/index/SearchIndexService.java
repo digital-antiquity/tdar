@@ -31,7 +31,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -256,7 +256,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @param collectionToReindex
      */
     @Transactional
-    public void indexAllResourcesInCollectionSubTree(SharedCollection collectionToReindex) {
+    public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
         logger.trace("indexing collection async");
         Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
         ScrollableResults results = resourceCollectionDao
@@ -273,7 +273,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      */
     @Async
     @Transactional
-    public void indexAllResourcesInCollectionSubTreeAsync(final SharedCollection collectionToReindex) {
+    public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
         indexAllResourcesInCollectionSubTree(collectionToReindex);
     }
 
@@ -552,7 +552,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @param persistable
      */
     @Transactional(readOnly = true)
-    public void partialIndexAllResourcesInCollectionSubTree(SharedCollection persistable) {
+    public void partialIndexAllResourcesInCollectionSubTree(ResourceCollection persistable) {
         Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(persistable);
         logger.debug("partially indexing {} resources from {} ({})", total, persistable.getName(), persistable.getId());
         ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(persistable);
@@ -591,7 +591,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
 
     @Transactional(readOnly = true)
     @Async
-    public void partialIndexAllResourcesInCollectionSubTreeAsync(SharedCollection persistable) {
+    public void partialIndexAllResourcesInCollectionSubTreeAsync(ResourceCollection persistable) {
         indexAllResourcesInCollectionSubTree(persistable);
     }
 
