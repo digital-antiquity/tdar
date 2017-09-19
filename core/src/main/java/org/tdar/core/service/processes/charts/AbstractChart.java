@@ -24,6 +24,7 @@ public abstract class AbstractChart  {
     private int height;
     private String title;
     private String filename;
+    private boolean showLegend;
 
     // Customize Chart
     Color[] sliceColors = new Color[] { new Color(235,215,144),
@@ -49,12 +50,14 @@ public abstract class AbstractChart  {
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
         chart.getStyler().setPlotBorderVisible(false);
         chart.getStyler().setLegendBorderColor(Color.WHITE);
+        chart.getStyler().setHasAnnotations(true);
+        chart.getStyler().setLegendVisible(showLegend);
     }
 
     public File exportChart(Chart chart, Path path_) throws IOException {
         Path path = path_.normalize();
         String filename = path.toAbsolutePath().toString()+".png";
-        logger.debug("exporting: {}\t type:{}", path.toAbsolutePath());
+        logger.debug("exporting: {}", path.toAbsolutePath());
         File outputFile = new File(filename);
         BitmapEncoder.saveBitmap(chart, new FileOutputStream(outputFile), BitmapFormat.PNG);
        
@@ -103,4 +106,9 @@ public abstract class AbstractChart  {
     public void setOutputDir(String outputDir) {
         this.outputDir = outputDir;
     }
+    
+    public void setShowLegend(boolean showLegend){
+    	this.showLegend = showLegend;
+    }
+    
 }

@@ -34,6 +34,7 @@ public class TdarBarChart extends AbstractChart {
 		setWidth(width);
 		setHeight(height);
 		setFilename(filename);
+		setShowLegend(false);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -44,12 +45,12 @@ public class TdarBarChart extends AbstractChart {
 		chart.getStyler().setPlotGridHorizontalLinesVisible(false);
 		chart.getStyler().setPlotGridVerticalLinesVisible(false);
 
-		addRowsToChart(data, chart);
+		addRowsToChart(data, chart, getTitle());
 
 		return renderAndExport(chart);
 	}
 
-	private void addRowsToChart(Map<String, Number> data, CategoryChart chart) {
+	private void addRowsToChart(Map<String, Number> data, CategoryChart chart, String title) {
 /*		for (String key : data.keySet()) {
 			List<String> series = new ArrayList<String>();
 			List<Number> values = new ArrayList<Number>();
@@ -68,12 +69,16 @@ public class TdarBarChart extends AbstractChart {
 		List<String> series = new ArrayList<String>();
 		List<Number> values = new ArrayList<Number>();
 		
+		boolean hasValue=false;
 		for (String key : data.keySet()) {
-			series.add(key);
-			values.add(data.get(key));
-
+			Number value = data.get(key);
+			if(value.intValue()>0 || hasValue){
+				series.add(key);
+				values.add(value);
+				hasValue=true;
+			}
 		}
-		chart.addSeries("Series Name", series, values);
+		chart.addSeries(title, series, values);
 		
 		/*for(int i = 0; i< values.size();i++){
 			List<Number> seriesValue = new ArrayList<Number>();

@@ -17,6 +17,7 @@ public class TdarPieChart extends AbstractChart {
         setWidth(width);
         setHeight(height);
         setFilename(filename);
+        setShowLegend(true);
         this.data = data;
     }
     
