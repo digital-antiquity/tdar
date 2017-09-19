@@ -492,7 +492,11 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
                 new ArrayList<Resource>(), null);
         InformationResource testFile = generateDocumentWithUser();
         ResourceCollection parentCollection = generateResourceCollection("PARENT", "", true, new ArrayList<>(users), getUser(),
-                Arrays.asList(testFile), null);
+                Arrays.asList(), null);
+        parentCollection.getUnmanagedResources().add(testFile);
+        genericService.saveOrUpdate(parentCollection);
+        testFile.getUnmanagedResourceCollections().add(parentCollection);
+        genericService.saveOrUpdate(testFile);
         Long id = parentCollection.getId();
         ResourceCollection childCollection = generateResourceCollection("CHILD", "", true, new ArrayList<AuthorizedUser>(), getUser(),
                 new ArrayList<Resource>(), id);

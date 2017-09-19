@@ -1253,7 +1253,7 @@ public class Resource implements Persistable,
         Iterator<ResourceCollection> iterator = collections.iterator();
         while (iterator.hasNext()) {
             ResourceCollection next = iterator.next();
-            if (next == null) {
+            if (next == null || CollectionUtils.isEmpty(next.getResources())) {
                 iterator.remove();
             }
         }
