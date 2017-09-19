@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.Sortable;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
@@ -42,11 +43,12 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, extractor.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, extractor.getUsersWhoCanAdminister());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, extractor.getUsersWhoCanView());
-        doc.setField(QueryFieldNames.COLLECTION_TYPE, collection.getType().name());
+        CollectionType type = CollectionType.SHARED;
+        doc.setField(QueryFieldNames.COLLECTION_TYPE, type.name());
 
         doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.COLLECTION.name());
-        doc.setField(QueryFieldNames.OBJECT_TYPE, ObjectType.from(collection.getType()).name());
-        doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, ObjectType.from(collection.getType()).getSortName());
+        doc.setField(QueryFieldNames.OBJECT_TYPE, ObjectType.from(type).name());
+        doc.setField(QueryFieldNames.OBJECT_TYPE_SORT, ObjectType.from(type).getSortName());
         return doc;
     }
 

@@ -42,7 +42,7 @@
 		    </div>
         </#if>
         <#if collections?has_content && !collections.empty > 
-            <h3>Child <#if resourceCollection.type == 'LIST'>Collections<#else>Collections</#if></h3>
+            <h3>ChildCollections</h3>
             <@commonr.listCollections collections=collections showOnlyVisible=true />
         </#if>
 		<@list.displayWidget />
@@ -77,7 +77,7 @@
 
 <#macro header>
     <#if editable>
-    <#local path="${resourceCollection.type.urlNamespace}"/>
+    <#local path="${resourceCollection.urlNamespace}"/>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
             namespace="${path}"
@@ -239,7 +239,7 @@
 
         <div class="row">
             <div class="span4">
-                <@view.kvp key="Collection Type" val="${resourceCollection.type.label} ${type} ${resourceCollection.systemManaged!false?string(' (System)','')}" />
+                <@view.kvp key="Collection Type" val="${type} ${resourceCollection.systemManaged!false?string(' (System)','')}" />
             </div>
             <div class="span4">
                 <@view.kvp key="Hidden" val=resourceCollection.hidden?string />

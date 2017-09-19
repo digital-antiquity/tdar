@@ -61,7 +61,7 @@ navigation freemarker macros
             <ul>
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
-                    <@makeLink resourceCollection.type.urlNamespace "edit" "edit" "edit" current />
+                    <@makeLink resourceCollection.urlNamespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
                     <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true false />

@@ -197,7 +197,7 @@ public class ResourceCollection extends AbstractPersistable
     @Enumerated(EnumType.STRING)
     @XmlTransient
     @Column(name = "collection_type", updatable = false, insertable = false)
-    private CollectionType type;
+    private CollectionType type = CollectionType.SHARED;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
@@ -575,7 +575,7 @@ public class ResourceCollection extends AbstractPersistable
     }
 
     public CollectionType getType() {
-        return type;
+        return CollectionType.SHARED;
     }
 
     protected void setType(CollectionType type) {
