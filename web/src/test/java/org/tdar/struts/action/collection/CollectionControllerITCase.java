@@ -75,10 +75,17 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
                 new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.ADD_TO_COLLECTION)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        ResourceCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null);
+        ResourceCollection collection = generateResourceCollection(name, description, false, users, testPerson, new ArrayList<>(), null);
+        collection.getUnmanagedResources().addAll(resources);
+        genericService.saveOrUpdate(collection);
+//        for (Resource r : resources) {
+//            r.getUnmanagedResourceCollections().add(collection);
+//        }
+//        genericService.saveOrUpdate(resources);
         final Long id = collection.getId();
         String slug = collection.getSlug();
         collection = null;
+        resources = null;
 
         ShareCollectionRightsController cc = generateNewInitializedController(ShareCollectionRightsController.class, getAdminUser());
         cc.setId(id);

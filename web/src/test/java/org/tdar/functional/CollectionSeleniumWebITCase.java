@@ -34,7 +34,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     private static final String DIV_ACCESS_RIGHTS_ADD_ANOTHER_BUTTON = "#divAccessRightsAddAnotherButton";
     private static final String SHARE = "/collection/";
-    private static final String LISTCOLLECTION = "/listcollection/";
+    private static final String LISTCOLLECTION = "/collection/";
     TestConfiguration config = TestConfiguration.getInstance();
 
     //safeguard to avoid confusion when passing boolean arguments
