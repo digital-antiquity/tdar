@@ -106,17 +106,20 @@ public class CollectionDataExtractor {
             collectionIds.addAll(shared.getAlternateParentIds());
             collectionNames.addAll(shared.getAlternateParentNameList());
         }
-        allCollectionIds.addAll(collectionIds);
         for (ResourceCollection collection : resource.getUnmanagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
             }
 
+            getCollectionIds().add(collection.getId());
             getListCollectionIds().add(collection.getId());
             directListCollectionIds.add(collection.getId());
             getListCollectionNames().addAll(collection.getParentNameList());
             getListCollectionIds().addAll(collection.getParentIds());
+            getCollectionNames().addAll(collection.getParentNameList());
+            getCollectionIds().addAll(collection.getParentIds());
         }
+        allCollectionIds.addAll(collectionIds);
         getListCollectionIds().addAll(directCollectionIds);
     }
 
