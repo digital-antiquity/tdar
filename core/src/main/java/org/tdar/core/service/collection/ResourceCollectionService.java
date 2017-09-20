@@ -7,8 +7,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;

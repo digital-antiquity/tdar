@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.utils.PersistableUtils;

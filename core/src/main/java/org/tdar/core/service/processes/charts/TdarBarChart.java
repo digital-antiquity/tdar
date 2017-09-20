@@ -9,12 +9,6 @@ import java.util.Map;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
 
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
-import javafx.stage.Stage;
-
 
 @SuppressWarnings("restriction")
 public class TdarBarChart extends AbstractChart  {

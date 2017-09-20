@@ -9,8 +9,6 @@ import java.util.HashSet;
 
 import org.apache.commons.lang.ClassUtils;
 import org.junit.Test;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;

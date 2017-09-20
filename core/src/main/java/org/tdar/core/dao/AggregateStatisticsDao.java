@@ -14,9 +14,9 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.utils.PersistableUtils;
 

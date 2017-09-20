@@ -16,19 +16,16 @@ import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts_base.action.TdarActionSupport;
 
 @RunWith(MultipleTdarConfigurationRunner.class)

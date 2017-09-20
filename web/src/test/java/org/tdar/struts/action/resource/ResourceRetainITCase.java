@@ -1,6 +1,6 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -11,8 +11,6 @@ import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
-
-import net.sf.saxon.pattern.DocumentNodeTest;
 
 public class ResourceRetainITCase extends AbstractControllerITCase {
 

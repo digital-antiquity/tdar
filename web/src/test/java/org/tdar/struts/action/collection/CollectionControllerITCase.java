@@ -58,10 +58,9 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
     @Test
     @Rollback(true)
     public void testPublicCollection() throws Exception {
-        String email = "a243@basda.com";
-        entityService.delete(entityService.findByEmail(email));
-
-        final TdarUser testPerson = createAndSaveNewPerson(email, "1234");
+        long currentTimeMillis = System.currentTimeMillis();
+        String email = "abc"+currentTimeMillis+"@ab.com";
+        final TdarUser testPerson = createAndSaveNewPerson(email, ""+currentTimeMillis);
         String name = "test collection";
         String description = "test description";
 
@@ -76,17 +75,28 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.ADD_TO_COLLECTION)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ResourceCollection collection = generateResourceCollection(name, description, false, users, testPerson, new ArrayList<>(), null);
-        collection.getUnmanagedResources().addAll(resources);
-        genericService.saveOrUpdate(collection);
-//        for (Resource r : resources) {
-//            r.getUnmanagedResourceCollections().add(collection);
-//        }
-//        genericService.saveOrUpdate(resources);
+        
+        
         final Long id = collection.getId();
         String slug = collection.getSlug();
         collection = null;
+        collection = null;
         resources = null;
+        normal = null;
+        draft = null;
+        genericService.synchronize();
+        collection = genericService.find(ResourceCollection.class, id);
+        normal = genericService.find(InformationResource.class, normalId);
+        normal.getUnmanagedResourceCollections().add(collection);
+        draft = genericService.find(InformationResource.class, draftId);
+        draft.getUnmanagedResourceCollections().add(collection);
+//        collection.getUnmanagedResources().addAll(resources);
+//        genericService.saveOrUpdate(collection);
+        genericService.saveOrUpdate(normal);
+        genericService.saveOrUpdate(draft);
 
+        
+//-----------------------
         ShareCollectionRightsController cc = generateNewInitializedController(ShareCollectionRightsController.class, getAdminUser());
         cc.setId(id);
         cc.prepare();
@@ -100,6 +110,8 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_RECORD));
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, draft));
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, normal));
+        /*
+*/
     }
     
 

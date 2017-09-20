@@ -7,8 +7,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.search.bean.PersonSearchOption;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
-import org.tdar.search.query.SearchResult;
-import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.TextProvider;
 

@@ -7,8 +7,6 @@ import java.io.Writer;
 
 import javax.xml.bind.JAXBException;
 
-import org.springframework.context.event.EventListener;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;

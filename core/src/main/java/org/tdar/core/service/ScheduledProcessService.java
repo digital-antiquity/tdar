@@ -4,16 +4,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.manager.ProcessManager;
 

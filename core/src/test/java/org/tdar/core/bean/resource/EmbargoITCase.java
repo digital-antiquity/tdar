@@ -1,6 +1,8 @@
 package org.tdar.core.bean.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -19,7 +21,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.utils.MessageHelper;
 
 public class EmbargoITCase extends AbstractIntegrationTestCase {
