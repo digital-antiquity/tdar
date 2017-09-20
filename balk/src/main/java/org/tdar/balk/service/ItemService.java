@@ -112,12 +112,10 @@ public class ItemService {
 
     @Transactional(readOnly = false)
     public void markUploaded(String id, Long tdarId, boolean dir) {
-        if (PersistableUtils.isNotNullOrTransient(tdarId)) {
-            AbstractDropboxItem item = itemDao.findByDropboxId(id, dir);
-            item.getTdarReferences().add(new TdarReference(id, tdarId));
-            genericDao.saveOrUpdate(item);
-            genericDao.saveOrUpdate(item.getTdarReferences());
-        }
+        AbstractDropboxItem item = itemDao.findByDropboxId(id, dir);
+        item.getTdarReferences().add(new TdarReference(id, tdarId));
+        genericDao.saveOrUpdate(item);
+        genericDao.saveOrUpdate(item.getTdarReferences());
 
     }
 
@@ -253,7 +251,11 @@ public class ItemService {
         if (debug == false) {
             logger.debug("uploading: {}", file);
             ApiClientResponse response = uploadFile(file, actualFile, docXml);
-            markUploaded(file.getDropboxId(), response.getTdarId(), false);
+            Long id = -1l;
+            if (response != null) {
+                id = response.getTdarId();
+            }
+            markUploaded(file.getDropboxId(), id, false);
         }
     }
 
@@ -272,8 +274,13 @@ public class ItemService {
                 parentId = parent.getParentId();
             }
         }
-        ApiClientResponse response = apiClient.uploadRecord(docXml, null, accountId, actualFile);
-        return response;
+        try {
+            ApiClientResponse response = apiClient.uploadRecord(docXml, null, accountId, actualFile);
+            return response;
+        } catch (Throwable t){
+            logger.error("{}",t,t);
+            return null;
+        }
     }
 
     private String makeXml(File file, String filename, String extension, String collection, String username)
