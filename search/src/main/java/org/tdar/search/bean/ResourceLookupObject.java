@@ -125,11 +125,7 @@ public class ResourceLookupObject implements Serializable {
     }
 
     public List<Long> getShareIds() {
-        return shareIds;
+        return collectionIds;
     }
 
-    public void setShareIds(List<Long> shareIds) {
-        this.shareIds = shareIds;
-    }
-    
 }

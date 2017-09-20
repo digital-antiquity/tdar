@@ -80,7 +80,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         // add basic user
         loginAdmin();
-        gotoEdit(url, CollectionType.SHARED);
+        gotoEdit(url);
         applyEditPageHacks();
         submitForm();
         find(".toolbar-rights").click();
@@ -99,7 +99,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         // change view permission
         loginAdmin();
-        gotoEdit(url, CollectionType.SHARED);
+        gotoEdit(url);
         applyEditPageHacks();
         find(By.name("resourceCollection.hidden")).val(true);
         submitForm();
@@ -122,7 +122,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionRemoveElement() {
         String url = setupListForTest(TITLE + " (remove edit)",titles, CollectionVisibility.VISIBLE);
-        gotoEdit(url, CollectionType.LIST);
+        gotoEdit(url);
         applyEditPageHacks();
 
         WebElementSelection select = find(id("collection-selector"));
@@ -158,7 +158,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionRetain() {
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, CollectionVisibility.HIDDEN);
-        gotoEdit(url, CollectionType.SHARED);
+        gotoEdit(url);
         submitForm();
         find(".toolbar-rights").click();
         waitForPageload();
@@ -172,7 +172,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         logout();
         login();
-        gotoEdit(url, CollectionType.SHARED);
+        gotoEdit(url);
 //        gotoEdit(url, CollectionType.SHARED);
         // removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
@@ -358,17 +358,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         return url;
     }
 
-    private void gotoEdit(String url_, CollectionType type) {
+    private void gotoEdit(String url_) {
         String url = url_;
         url = url.substring(0, url.lastIndexOf("/"));
         logger.debug(getCurrentUrl());
         String id = StringUtils.substringAfterLast(url, "/");
-        if (type == CollectionType.LIST) {
-            gotoPage(LISTCOLLECTION+ id +"/edit");
-        }
-        if (type == CollectionType.SHARED) {
-            gotoPage(SHARE+ id +"/edit");
-        }
+        gotoPage(SHARE+ id +"/edit");
         logger.debug(getCurrentUrl());
         // find(By.linkText(" edit")).click();
         waitForPageload();
