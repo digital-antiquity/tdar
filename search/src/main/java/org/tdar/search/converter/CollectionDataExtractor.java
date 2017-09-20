@@ -97,16 +97,14 @@ public class CollectionDataExtractor {
             if (!collection.isActive()) {
                 continue;
             }
-            if (collection instanceof ResourceCollection) {
-                ResourceCollection shared = (ResourceCollection) collection;
-                directCollectionIds.add(collection.getId());
-                directCollectionNames.add(shared.getName());
-                collectionNames.addAll(shared.getParentNameList());
-                collectionIds.addAll(shared.getParentIds());
-                collectionIds.add(shared.getId());
-                collectionIds.addAll(shared.getAlternateParentIds());
-                collectionNames.addAll(shared.getAlternateParentNameList());
-            }
+            ResourceCollection shared = (ResourceCollection) collection;
+            directCollectionIds.add(collection.getId());
+            directCollectionNames.add(shared.getName());
+            collectionNames.addAll(shared.getParentNameList());
+            collectionIds.addAll(shared.getParentIds());
+            collectionIds.add(shared.getId());
+            collectionIds.addAll(shared.getAlternateParentIds());
+            collectionNames.addAll(shared.getAlternateParentNameList());
         }
         allCollectionIds.addAll(collectionIds);
         for (ResourceCollection collection : resource.getUnmanagedResourceCollections()) {

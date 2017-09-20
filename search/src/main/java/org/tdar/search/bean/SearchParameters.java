@@ -441,6 +441,9 @@ public class SearchParameters {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <P extends Persistable> SkeletonPersistableQueryPart constructSkeletonQueryPart(String fieldName, String label, String prefix, Class<P> cls,
             Operator operator, List<P> values) {
+        if (CollectionUtils.isEmpty(values)){
+            return null;
+        }
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);
         logger.debug("{} {} {} ", cls, prefix, values);
         if ((HasName.class.isAssignableFrom(cls) || ResourceCollection.class.isAssignableFrom(cls)) && StringUtils.isNotBlank(prefix)) {

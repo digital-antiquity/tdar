@@ -784,10 +784,14 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
     public void testSparseObjectNameLoading() throws SearchException, SearchIndexException, IOException, ParseException {
         String colname = "my fancy collection";
+        logger.debug("self assignable to self? {}",ResourceCollection.class.isAssignableFrom(ResourceCollection.class));
         Project proj = createAndSaveNewResource(Project.class);
         ResourceCollection coll = createAndSaveNewResourceCollection(colname);
         searchIndexService.index(coll);
         proj.getSharedCollections().add(coll);
+        coll.getResources().add(proj);
+        genericService.saveOrUpdate(proj);
+        genericService.saveOrUpdate(coll);
         searchIndexService.index(proj);
 
         // simulate searchParamerters that represents a project at [0] and collection at [1]
