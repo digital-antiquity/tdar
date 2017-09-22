@@ -5,12 +5,16 @@ import static org.junit.Assert.fail;
 import java.util.Date;
 import java.util.logging.Level;
 
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.HasCapabilities;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.events.WebDriverEventListener;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.functional.util.WebDriverEventAdapter;
@@ -90,6 +94,18 @@ public class TdarEventListener extends WebDriverEventAdapter {
                 // find might be volatile if not preceded by an implicit wait.
                 test.setVolatileFind(true);
             }
+            if (driver instanceof HasCapabilities) {
+                Capabilities cp = ((HasCapabilities) driver).getCapabilities();
+                if (cp.getBrowserName().equals("chrome")) {
+                    try {
+                        ((JavascriptExecutor) driver).executeScript(
+                                "arguments[0].scrollIntoView(true);", element);
+                    } catch (Exception e) {
+                        
+                    }
+                }
+            }
+//            driver.manage().window().maximize();
         }
 
         @Override
