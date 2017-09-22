@@ -297,6 +297,19 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback(true)
+    public void testJAXBProjectConversionWithTransientCollection() throws Exception {
+        Project project = genericService.find(Project.class, 2420l);
+        SharedCollection col = new SharedCollection("test", "test", getAdminUser());
+        project.getSharedCollections().add(col);
+        String xml = serializationService.convertToXML(project);
+        genericService.detachFromSession(project);
+        logger.info(xml);
+        Project newProject = (Project) serializationService.parseXml(new StringReader(xml));
+
+    }
+
+    @Test
     @Rollback(false)
     public void testJaxbRoundtrip() throws Exception {
         Project project = genericService.find(Project.class, 3805l);
