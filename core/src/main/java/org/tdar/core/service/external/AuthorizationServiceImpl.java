@@ -970,10 +970,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }
-        GeneralPermissions permission = GeneralPermissions.ADD_TO_COLLECTION;
-        if (type == CollectionType.SHARED) {
-            permission = GeneralPermissions.ADD_TO_SHARE;
-        }
+        GeneralPermissions permission = permission = GeneralPermissions.ADD_TO_SHARE;
         return authorizedUserDao.isAllowedTo(user, collectionToAdd, permission);
     }
 
@@ -989,10 +986,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
-        if (type == CollectionType.SHARED) {
-            permission = GeneralPermissions.REMOVE_FROM_SHARE;
-        }
+        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_SHARE;
         return authorizedUserDao.isAllowedTo(user, collection, permission);
     }
 

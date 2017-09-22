@@ -35,8 +35,8 @@ public enum GeneralPermissions implements HasLabel, Localizable {
     VIEW_ALL( 100, Resource.class, ResourceCollection.class),
     MODIFY_METADATA(400, Resource.class, ResourceCollection.class),
     MODIFY_RECORD(500, Resource.class, ResourceCollection.class),
-    ADD_TO_COLLECTION(40, ResourceCollection.class),
-    REMOVE_FROM_COLLECTION(50, ResourceCollection.class),
+//    ADD_TO_COLLECTION(40, ResourceCollection.class),
+//    REMOVE_FROM_COLLECTION(50, ResourceCollection.class),
 //    ADMINISTER_GROUP(80,SharedCollection.class),
     ADD_TO_SHARE(4000,ResourceCollection.class),
     REMOVE_FROM_SHARE(4500, ResourceCollection.class),
@@ -98,8 +98,8 @@ public enum GeneralPermissions implements HasLabel, Localizable {
 
     public static List<GeneralPermissions> resourcePermissions() {
         List<GeneralPermissions> permissions = new ArrayList<>(Arrays.asList(GeneralPermissions.values()));
-        permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
-        permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
+//        permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
+//        permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
         permissions.remove(GeneralPermissions.ADMINISTER_SHARE);
         permissions.remove(GeneralPermissions.ADD_TO_SHARE);
         permissions.remove(GeneralPermissions.REMOVE_FROM_SHARE);

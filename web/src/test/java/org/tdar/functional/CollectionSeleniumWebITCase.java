@@ -262,7 +262,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
         find(By.name("resourceCollection.hidden")).val(visibility.isHidden());
-        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
+        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_SHARE;
         addResourceToCollection(_139);
         for (String title : titles) {
             addResourceToCollection(title);
