@@ -1017,4 +1017,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 	public String getCharacterSet() {
 		return assistant.getStringProperty("aws.characterset");
 	}
+	
+	public String getAwsQueueName(){
+		return assistant.getStringProperty("aws.queuename");
+	}
 }

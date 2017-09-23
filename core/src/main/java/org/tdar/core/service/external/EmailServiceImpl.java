@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import javax.mail.MessagingException;
@@ -61,10 +62,8 @@ import org.tdar.utils.EmailStatisticsHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.StatsChartGenerator;
 
-import com.amazonaws.services.simpleemail.model.Content;
 import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
-import com.mchange.v1.util.SetUtils;
 
 /**
  * $Id$
@@ -290,6 +289,8 @@ public class EmailServiceImpl implements EmailService {
         }
         email.setSubject(subject);
         email.setType(type);
+        
+        
         if (resource != null) {
             email.setResource(resource);
         }
@@ -360,7 +361,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
 	@Transactional(readOnly = false)
     public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
-            EmailMessageType type, GeneralPermissions permission, Date expires) {
+    		EmailMessageType type, GeneralPermissions permission, Date expires) {
         
     	EmailType emailType = null;
     	if(reject){
@@ -461,7 +462,11 @@ public class EmailServiceImpl implements EmailService {
 		ClassPathResource logo =  new ClassPathResource("tdar-logo.png");
 		messageHelper.addInline("logo", logo);
 		
-		return messageHelper.getMimeMessage();
+		mimeMessage =  messageHelper.getMimeMessage();
+		
+		mimeMessage.addHeader("x-tdar-message-id", message.getEmail().getMessageUuid());
+		
+		return mimeMessage;
 	}
 
 	
@@ -523,7 +528,9 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	public AwsMessage createMessage(EmailType emailType, String to) {
 		Email message = new Email();
-		
+		message.setMessageUuid(UUID.randomUUID().toString());
+		message.setAwsMessagetype(emailType);
+
 		if(emailType.getFromAddress()==null){
 			message.setFrom(CONFIG.getDefaultFromEmail());
 		}

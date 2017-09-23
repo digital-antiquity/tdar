@@ -1,6 +1,5 @@
 package org.tdar.core.service.email;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -46,75 +45,69 @@ import org.springframework.core.io.FileSystemResource;
 @Service
 public class AwsEmailServiceImpl implements AwsEmailService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final TdarConfiguration config = TdarConfiguration.getInstance();
-
-	@Autowired
-	private FreemarkerService freemarkerService;
+	private static final TdarConfiguration config = TdarConfiguration.getInstance();
 
 	private Regions awsRegion = Regions.US_WEST_2;
-	
+
 	@Override
 	public SendEmailResult sendMessage(AwsMessage message) {
 		logger.debug("sendMessage() message={}", message);
 
-		Email 		email 		= message.getEmail();
-		Destination toEmail 	= new Destination().withToAddresses(email.getTo());
-		String 		fromEmail 	= message.getEmail().getFrom();
+		Email email = message.getEmail();
+		Destination toEmail = new Destination().withToAddresses(email.getTo());
+		String fromEmail = message.getEmail().getFrom();
 
 		Body body = new Body().withHtml(createContent(email.getMessage()));
-		
+
 		Message message1 = new Message();
 		message1.withBody(body);
 		message1.withSubject(createContent(email.getSubject()));
-		
+
 		SendEmailRequest request = new SendEmailRequest();
 		request.withDestination(toEmail);
 		request.withMessage(message1);
 		request.withSource(fromEmail);
 
 		SendEmailResult response = getSesClient().sendEmail(request);
-		
+
 		return response;
 	}
-
 
 	@Override
-	public SendRawEmailResult sendMultiPartMessage(RawMessage message) throws IOException, MessagingException  {
-		SendRawEmailRequest request  	= new SendRawEmailRequest().withRawMessage(message);
-		SendRawEmailResult  response 	= getSesClient().sendRawEmail(request);
+	public SendRawEmailResult sendMultiPartMessage(RawMessage message) throws IOException, MessagingException {
+		SendRawEmailRequest request = new SendRawEmailRequest().withRawMessage(message);
+		SendRawEmailResult response = getSesClient().sendRawEmail(request);
 		return response;
 	}
-	
-		private Content createContent(String content){
+
+	private Content createContent(String content) {
 		String characterSet = TdarConfiguration.getInstance().getCharacterSet();
 		return new Content().withCharset(characterSet).withData(content);
 	}
-    
-    
-	private BasicAWSCredentials getAwsCredentials(){
+
+	private BasicAWSCredentials getAwsCredentials() {
 		return new BasicAWSCredentials(config.getAwsAccessKey(), config.getAwsSecretKey());
 	}
-	
-	private AmazonSimpleEmailService getSesClient(){
-		AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().
-				withCredentials(new AWSStaticCredentialsProvider(getAwsCredentials())).
-				withRegion(awsRegion).build();
+
+	private AmazonSimpleEmailService getSesClient() {
+		AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
+				.withCredentials(new AWSStaticCredentialsProvider(getAwsCredentials())).withRegion(awsRegion).build();
 		return client;
 	}
-	
+
 	@Override
-	public void setAwsRegion(Regions region){
+	public void setAwsRegion(Regions region) {
 		this.awsRegion = region;
 	}
 
 	/**
-	 * This method is used in the job scheduler to convert a queued email object back to an AwsMessage object
-	 * so that it can be sent as a mime message.
+	 * This method is used in the job scheduler to convert a queued email object
+	 * back to an AwsMessage object so that it can be sent as a mime message.
 	 */
 	@Override
 	public AwsMessage convertEmailToAwsMessage(Email email) {
 		// TODO Auto-generated method stub
 		return null;
-		
+
 	}
 }

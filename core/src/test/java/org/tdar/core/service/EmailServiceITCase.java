@@ -32,7 +32,6 @@ import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.email.MockAwsEmailServiceImpl;
 import org.tdar.core.service.external.MockMailSender;
-import org.tdar.utils.MockStatsChartGenerator;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
@@ -62,7 +61,6 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     
     
     @Test
-    @Rollback
     public void testSendInviteEmail(){
     	 Person to 	   = new Person("To", "Person", "bcastel1@asu.edu");
     	 Person from 	   = new Person("From", "Somone", "toguy@tdar.net");
@@ -162,7 +160,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testEmailContent() throws IOException {    
-        AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "success@simulator.amazonses.com");
+        AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
         message.getEmail().setSubject("Subject");
     	message.getEmail().setMessage("This is a test message");
     	message.addData("foo", "foo");
@@ -172,14 +170,14 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
     	emailService.renderAndUpdateEmailContent(message);
     	emailService.updateEmailSubject(message);
+    	
+    	try {
+			emailService.renderAndSendMessage(message);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         getLogger().debug(message.getEmail().getMessage());
-    }
-    
-
-    @Test
-    @Rollback
-    public void testAwsMockObject(){
-    	assertTrue(emailService.getAwsEmailService() instanceof MockAwsEmailServiceImpl);
     }
     
 }
