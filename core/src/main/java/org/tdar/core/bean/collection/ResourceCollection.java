@@ -392,6 +392,8 @@ public abstract class ResourceCollection extends AbstractPersistable
     }
 
 //    @XmlTransient
+    @XmlElementWrapper(name="authorizedUsers")
+    @XmlElement(name="authorizedUser")
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }

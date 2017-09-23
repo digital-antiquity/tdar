@@ -67,12 +67,12 @@ public abstract class HierarchicalCollection<C extends HierarchicalCollection<C>
 
     private transient TreeSet<C> transientChildren = new TreeSet<>(new TitleSortComparator());
 
-    @XmlAttribute(name = "parentIdRef")
+    @XmlAttribute(name = "parentIdRef", required=false)
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public abstract C getParent();
 
 
-    @XmlAttribute(name = "altParentIdRef")
+    @XmlAttribute(name = "altParentIdRef" , required=false)
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public abstract C getAlternateParent();
 
