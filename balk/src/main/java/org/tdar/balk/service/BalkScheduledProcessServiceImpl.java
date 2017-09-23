@@ -44,8 +44,7 @@ public class BalkScheduledProcessServiceImpl implements BalkScheduledProcessServ
                 itemService.handleUploads();
             }
         } catch (URISyntaxException | IOException | DbxException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("{}", e,e);
         }
     }
 

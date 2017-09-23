@@ -1723,6 +1723,9 @@ public class Resource implements Persistable,
         this.viewConfidential = editable;
     }
 
+    
+    @XmlElementWrapper(name="authorizedUsers")
+    @XmlElement(name="authorizedUser")
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }
