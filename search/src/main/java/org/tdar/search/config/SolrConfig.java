@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient.Builder;
 import org.apache.solr.core.CoreContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,9 @@ public class SolrConfig {
         //https://cwiki.apache.org/confluence/display/solr/Using+SolrJ
         String solrServerUrl = environment.getProperty("solr.server.url");
         if (StringUtils.isNotBlank(solrServerUrl)) {
-            solrServer = new HttpSolrClient(solrServerUrl);
+            Builder b =  new HttpSolrClient.Builder();
+            b.withBaseSolrUrl(solrServerUrl);
+            solrServer = b.build();
             
             logger.debug("initializing http Solr:{}", solrServer);
             return solrServer;
