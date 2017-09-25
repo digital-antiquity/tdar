@@ -31,6 +31,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 @PropertySource(value = "file://${TDAR_CONFIG_PATH}/" + SolrConfig.SEARCH_PROPERTIES, ignoreResourceNotFound = true)
 public class SolrConfig {
     
+    private static final int CONNECTION_TIMEOUT = 1000;
+
     private static final String TARGET_CLASSES_SOLR = "target/classes/solr/";
 
     public static final String SEARCH_PROPERTIES = "search.properties";
@@ -83,7 +85,7 @@ public class SolrConfig {
         //https://cwiki.apache.org/confluence/display/solr/Using+SolrJ
         String solrServerUrl = environment.getProperty("solr.server.url");
         if (StringUtils.isNotBlank(solrServerUrl)) {
-            Builder b =  new HttpSolrClient.Builder();
+            Builder b =  new HttpSolrClient.Builder().withConnectionTimeout(CONNECTION_TIMEOUT);
             b.withBaseSolrUrl(solrServerUrl);
             solrServer = b.build();
             
@@ -117,7 +119,7 @@ public class SolrConfig {
         }
         logger.debug("solr server path: {}", path);
         CoreContainer container = CoreContainer.createAndLoad(path);
-        
+
         logger.debug("core names: {}", container.getAllCoreNames());
         solrServer = new EmbeddedSolrServer( container, "resources");
         
