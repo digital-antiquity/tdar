@@ -1,5 +1,10 @@
 package org.tdar.core.bean.notification;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.tdar.core.bean.HasLabel;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.notification.aws.AccessRequestCustomMessage;
 import org.tdar.core.bean.notification.aws.AccessRequestGrantedMessage;
 import org.tdar.core.bean.notification.aws.AccessRequestRejectedMessage;
@@ -10,8 +15,9 @@ import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
 import org.tdar.core.bean.notification.aws.InviteMessage;
 import org.tdar.core.bean.notification.aws.MonthlyUserStatisticsMessage;
 import org.tdar.core.bean.notification.aws.TestAwsMessage;
+import org.tdar.utils.MessageHelper;
 
-public enum EmailType {
+public enum EmailType implements Localizable, HasLabel {
 	INVITE("invite/invite.ftl","test@tdar.org",InviteMessage.class),
 	INVITE_ACCEPTED("invite/invite-accepted.ftl","test@tdar.org",InviteAcceptedMessage.class),
 	NEW_USER_NOTIFY("email_new_users.ftl"),
@@ -32,7 +38,15 @@ public enum EmailType {
 	ADMIN_OVERDRAWN_NOTIFICATION("overdrawn-admin.ftl"),
 	
 	MONTHLY_USER_STATISTICS("monthly_user_statistics.ftl","test@tdar.org",MonthlyUserStatisticsMessage.class),
-	TEST_EMAIL("test-email.ftl", "test@tdar.org", TestAwsMessage.class);
+	TEST_EMAIL("test-email.ftl", "test@tdar.org", TestAwsMessage.class),
+
+	
+	//Refactored from EmailMessageType.
+    CONTACT("email-form/contact.ftl"),
+    REQUEST_ACCESS("email-form/access-request.ftl"),
+    SUGGEST_CORRECTION("email-form/correction.ftl"),
+    MERGE_PEOPLE("email-form/merge-people.ftl"),
+    CUSTOM("email-form/custom-request.ftl");
 	
 	/**
 	 * a string representation of the .ftl template to use
@@ -58,7 +72,67 @@ public enum EmailType {
 		this(template, fromAddress);
 		this.setEmailClass(emailClass);
     }
+	
+    public boolean requiresResource() {
+        return true;
+    }
 
+
+    @Override
+    public String getLabel() {
+        return MessageHelper.getMessage(getLocaleKey());
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
+    }
+	
+    public static List<EmailType> valuesWithoutConfidentialFiles() {
+        ArrayList<EmailType> types = new ArrayList<EmailType>();
+        for (EmailType type : values()) {
+            switch (type) {
+                case REQUEST_ACCESS:
+                case CUSTOM:
+                case MERGE_PEOPLE:
+                    break;
+                default:
+                    types.add(type);
+            }
+        }
+        return types;
+    }
+
+	public static List<EmailType> valuesWithoutCustom() {
+        ArrayList<EmailType> types = new ArrayList<EmailType>();
+        for (EmailType type : values()) {
+            if (type != CUSTOM && type != MERGE_PEOPLE) {
+                types.add(type);
+            }
+        }
+        return types;
+	}
+	
+	public static List<EmailType> valuesForUserSelection(){
+        ArrayList<EmailType> types = new ArrayList<EmailType>();
+        for (EmailType type : values()) {
+            switch (type) {
+                case CONTACT:
+                case REQUEST_ACCESS:
+                case SUGGEST_CORRECTION:
+                case MERGE_PEOPLE:
+                case CUSTOM:
+                    types.add(type);
+                    break;
+			default:
+				break;
+            }
+        }
+        return types;
+		
+	}
+	
+	
 	public String getTemplateLocation() {
 		return templateLocation;
 	}

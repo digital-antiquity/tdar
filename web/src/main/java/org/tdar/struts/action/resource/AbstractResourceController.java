@@ -35,6 +35,7 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
@@ -66,7 +67,6 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.ResourceControllerProxy;
 import org.tdar.web.service.ResourceEditControllerService;
@@ -95,7 +95,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private boolean select2SingleEnabled = TdarConfiguration.getInstance().isSelect2SingleEnabled();
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
-    private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
+    private List<EmailType> emailTypes = EmailType.valuesWithoutConfidentialFiles();
     private RevisionLogType revisionType = RevisionLogType.EDIT;
     private String submit;
     protected ResourceControllerProxy<R> proxy = new ResourceControllerProxy<>(this);
@@ -885,11 +885,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return PersistableUtils.extractIds(persistables);
     }
 
-    public List<EmailMessageType> getEmailTypes() {
+    public List<EmailType> getEmailTypes() {
         return emailTypes;
     }
 
-    public void setEmailTypes(List<EmailMessageType> emailTypes) {
+    public void setEmailTypes(List<EmailType> emailTypes) {
         this.emailTypes = emailTypes;
     }
 

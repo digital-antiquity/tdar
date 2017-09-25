@@ -46,7 +46,6 @@ import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.transform.OpenUrlFormatter;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.ResourceCitationFormatter;
 import org.tdar.web.service.ResourceViewControllerService;
 

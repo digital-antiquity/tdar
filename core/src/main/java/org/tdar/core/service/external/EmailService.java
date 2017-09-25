@@ -20,7 +20,6 @@ import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.utils.EmailMessageType;
 
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
@@ -56,17 +55,17 @@ public interface EmailService {
 	void send(Email email);
 
 	Email constructEmail(Person from, HasEmail to, Resource resource, String subject, String messageBody,
-			EmailMessageType type);
+			EmailType type);
 
 	Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody,
-			EmailMessageType type, Map<String, String[]> params);
+			EmailType type, Map<String, String[]> params);
 
 	void changeEmailStatus(Status action, List<Email> emails);
 
 	List<Email> findEmailsWithStatus(Status status);
 
 	void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment,
-			boolean reject, EmailMessageType type, GeneralPermissions permission, Date expires);
+			boolean reject, EmailType type, GeneralPermissions permission, Date expires);
 
 	void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person);
 

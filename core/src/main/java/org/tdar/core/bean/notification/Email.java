@@ -21,7 +21,6 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.utils.EmailMessageType;
 
 @Entity
 @Table(name = "email_queue")
@@ -36,12 +35,8 @@ public class Email extends AbstractPersistable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "message_type", length = FieldLength.FIELD_LENGTH_50)
-    private EmailMessageType type;
+    private EmailType type;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "aws_message_type", length = FieldLength.FIELD_LENGTH_50)
-    private EmailType awsMessagetype;
-    
     @Column(name = "user_generated", nullable = false, columnDefinition = "boolean default TRUE")
     private boolean userGenerated = true;
 
@@ -199,12 +194,12 @@ public class Email extends AbstractPersistable {
         this.resource = resource;
     }
 
-    public EmailMessageType getType() {
+    public EmailType getType() {
         return type;
     }
     
 
-    public void setType(EmailMessageType type) {
+    public void setType(EmailType type) {
         this.type = type;
     }
 
@@ -230,13 +225,5 @@ public class Email extends AbstractPersistable {
 
 	public void setToUser(Person toUser) {
 		this.toUser = toUser;
-	}
-
-	public EmailType getAwsMessagetype() {
-		return awsMessagetype;
-	}
-
-	public void setAwsMessagetype(EmailType awsMessagetype) {
-		this.awsMessagetype = awsMessagetype;
 	}
 }

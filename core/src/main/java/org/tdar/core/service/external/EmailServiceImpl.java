@@ -57,7 +57,6 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.email.AwsEmailService;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.EmailStatisticsHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.StatsChartGenerator;
@@ -248,20 +247,20 @@ public class EmailServiceImpl implements EmailService {
     }
 
     /* (non-Javadoc)
-	 * @see org.tdar.core.service.external.EmailService#constructEmail(org.tdar.core.bean.entity.Person, org.tdar.core.bean.entity.HasEmail, org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, org.tdar.utils.EmailMessageType)
+	 * @see org.tdar.core.service.external.EmailService#constructEmail(org.tdar.core.bean.entity.Person, org.tdar.core.bean.entity.HasEmail, org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, org.tdar.utils.EmailType)
 	 */
     @Override
 	@Transactional(readOnly = false)
-    public Email constructEmail(Person from, HasEmail to, Resource resource, String subject, String messageBody, EmailMessageType type) {
+    public Email constructEmail(Person from, HasEmail to, Resource resource, String subject, String messageBody, EmailType type) {
         return constructEmail(from, to, resource, subject, messageBody, type, null);
     }
 
     /* (non-Javadoc)
-	 * @see org.tdar.core.service.external.EmailService#constructEmail(org.tdar.core.bean.entity.Person, org.tdar.core.bean.entity.HasEmail, org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, org.tdar.utils.EmailMessageType, java.util.Map)
+	 * @see org.tdar.core.service.external.EmailService#constructEmail(org.tdar.core.bean.entity.Person, org.tdar.core.bean.entity.HasEmail, org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String, org.tdar.utils.EmailType, java.util.Map)
 	 */
     @Override
 	@Transactional(readOnly = false)
-    public Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody, EmailMessageType type,
+    public Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody, EmailType type,
             Map<String, String[]> params) {
         Email email = new Email();
         genericDao.markWritable(email);
@@ -269,7 +268,7 @@ public class EmailServiceImpl implements EmailService {
         String subjectPart = MessageHelper.getMessage(type.getLocaleKey());
         Map<String, Object> map = new HashMap<>();
 
-        if (type == EmailMessageType.CUSTOM) {
+        if (type == EmailType.CUSTOM) {
             RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
             logger.debug("{}", customRequest);
             subjectPart = customRequest.getName();
@@ -307,7 +306,7 @@ public class EmailServiceImpl implements EmailService {
         map.put("message", messageBody);
         map.put("type", type);
         email.setMessage(messageBody);
-        queueWithFreemarkerTemplate(type.getTemplateName(), map, email);
+        queueWithFreemarkerTemplate(type.getTemplateLocation(), map, email);
         return email;
 
     }
@@ -356,19 +355,19 @@ public class EmailServiceImpl implements EmailService {
     }
 
     /* (non-Javadoc)
-	 * @see org.tdar.core.service.external.EmailService#proccessPermissionsRequest(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.TdarUser, java.lang.String, boolean, org.tdar.utils.EmailMessageType, org.tdar.core.bean.entity.permissions.GeneralPermissions, java.util.Date)
+	 * @see org.tdar.core.service.external.EmailService#proccessPermissionsRequest(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.TdarUser, java.lang.String, boolean, org.tdar.utils.EmailType, org.tdar.core.bean.entity.permissions.GeneralPermissions, java.util.Date)
 	 */
     @Override
 	@Transactional(readOnly = false)
     public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
-    		EmailMessageType type, GeneralPermissions permission, Date expires) {
+    		EmailType type, GeneralPermissions permission, Date expires) {
         
     	EmailType emailType = null;
     	if(reject){
     		emailType = EmailType.PERMISSION_REQUEST_REJECTED;
     	}
     	else {
-    		if(type == EmailMessageType.CUSTOM){
+    		if(type == EmailType.CUSTOM){
     			emailType = EmailType.PERMISSION_REQUEST_CUSTOM;
     		}
     		else {
@@ -381,7 +380,7 @@ public class EmailServiceImpl implements EmailService {
     	message.addData("resource", resource);
     	message.addData("expires", expires);
     	message.addData("authorizedUser", authenticatedUser);
-    	if (type == EmailMessageType.CUSTOM) {
+    	if (type == EmailType.CUSTOM) {
             RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
             message.addData("customName", customRequest.getName());
             message.addData("descriptionResponse", customRequest.getDescriptionResponse());
@@ -529,7 +528,7 @@ public class EmailServiceImpl implements EmailService {
 	public AwsMessage createMessage(EmailType emailType, String to) {
 		Email message = new Email();
 		message.setMessageUuid(UUID.randomUUID().toString());
-		message.setAwsMessagetype(emailType);
+		message.setType(emailType);
 
 		if(emailType.getFromAddress()==null){
 			message.setFrom(CONFIG.getDefaultFromEmail());
