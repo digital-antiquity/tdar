@@ -300,12 +300,14 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testJAXBProjectConversionWithTransientCollection() throws Exception {
         Project project = genericService.find(Project.class, 2420l);
+        Document document = createAndSaveNewInformationResource(Document.class);
         SharedCollection col = new SharedCollection("test", "test", getAdminUser());
         project.getSharedCollections().add(col);
-        String xml = serializationService.convertToXML(project);
-        genericService.detachFromSession(project);
+        document.setProject(project);
+        String xml = serializationService.convertToXML(document);
+        genericService.detachFromSession(document);
         logger.info(xml);
-        Project newProject = (Project) serializationService.parseXml(new StringReader(xml));
+//        Project newProject = (Project) serializationService.parseXml(new StringReader(xml));
 
     }
 
