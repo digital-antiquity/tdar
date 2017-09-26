@@ -90,7 +90,7 @@ public enum EmailType implements Localizable, HasLabel {
 	
     public static List<EmailType> valuesWithoutConfidentialFiles() {
         ArrayList<EmailType> types = new ArrayList<EmailType>();
-        for (EmailType type : values()) {
+        for (EmailType type : valuesForUserSelection()) {
             switch (type) {
                 case REQUEST_ACCESS:
                 case CUSTOM:
@@ -105,7 +105,7 @@ public enum EmailType implements Localizable, HasLabel {
 
 	public static List<EmailType> valuesWithoutCustom() {
         ArrayList<EmailType> types = new ArrayList<EmailType>();
-        for (EmailType type : values()) {
+        for (EmailType type : valuesForUserSelection()) {
             if (type != CUSTOM && type != MERGE_PEOPLE) {
                 types.add(type);
             }

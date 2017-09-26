@@ -93,7 +93,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testSendAwsMail() throws IOException {
-        AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bcastel1@asu.edu");
+        AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
         message.getEmail().setSubject("Subject");
     	message.getEmail().setMessage("This is a test message");
     	message.addData("foo", "foo");

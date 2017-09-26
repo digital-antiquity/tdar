@@ -164,7 +164,6 @@ public class EmailServiceImpl implements EmailService {
 		} catch (MessagingException | IOException e) {
 			logger.debug("Error happened: {} ",e,e);
 		}*/
-
     }
     
     /* (non-Javadoc)
