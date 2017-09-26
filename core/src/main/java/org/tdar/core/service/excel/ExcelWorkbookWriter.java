@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
@@ -15,7 +16,9 @@ import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
 import org.apache.poi.ss.SpreadsheetVersion;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -236,7 +239,7 @@ public class ExcelWorkbookWriter {
     public CellStyle createSummaryStyle(Workbook workbook) {
         CellStyle summaryStyle = workbook.createCellStyle();
         Font summaryFont = workbook.createFont();
-        summaryFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        summaryFont.setBold(true);
         summaryStyle.setFont(summaryFont);
         summaryStyle.setWrapText(true);
         return summaryStyle;
@@ -354,7 +357,7 @@ public class ExcelWorkbookWriter {
             try {
                 if (value.startsWith("http") && urlValidator.isValid(value) ) {
 
-                Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(org.apache.poi.common.usermodel.Hyperlink.LINK_URL);
+                Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(HyperlinkType.URL);
                 hyperlink.setAddress(value);
                 hyperlink.setLabel(value);
                 cell.setHyperlink(hyperlink);
@@ -497,8 +500,8 @@ public class ExcelWorkbookWriter {
      */
     public CellStyle createDefaultHeaderStyle(Workbook workbook) {
         return CellFormat.build(Style.BOLD)
-                .setColor(new HSSFColor.GREY_25_PERCENT())
-                .setBorderBottom(CellStyle.BORDER_THIN)
+                .setColor(HSSFColorPredefined.GREY_25_PERCENT.getColor())
+                .setBorderBottom(BorderStyle.THIN)
                 .setWrapping(true)
                 .createStyle(workbook);
     }
@@ -649,7 +652,7 @@ public class ExcelWorkbookWriter {
     public void addPairedHeaderRow(Sheet sheet, int rowNum, int i, List<String> asList) {
         addRow(sheet, rowNum, i, asList, CellFormat.build(Style.NORMAL).createStyle(sheet.getWorkbook()));
         sheet.getRow(rowNum).getCell(i)
-                .setCellStyle(CellFormat.build(Style.BOLD).setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).createStyle(sheet.getWorkbook()));
+                .setCellStyle(CellFormat.build(Style.BOLD).setColor(HSSFColorPredefined.GREY_25_PERCENT.getColor()).setWrapping(true).createStyle(sheet.getWorkbook()));
     }
 
     /**

@@ -115,7 +115,7 @@ public class ExcelUnit {
 
     private boolean isCellBold(Cell cell) {
         try {
-            return Font.BOLDWEIGHT_NORMAL != sheet.getWorkbook().getFontAt(cell.getCellStyle().getFontIndex()).getBoldweight();
+            return sheet.getWorkbook().getFontAt(cell.getCellStyle().getFontIndex()).getBold();
         } catch (Exception e) {
             return false;
         }
