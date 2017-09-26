@@ -9,10 +9,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.bean.statistics.DailyTotal;
@@ -36,24 +40,67 @@ public class ResourceStatisticsObject {
     private String graphJson;
 
     private Map<String, Map<String, Object>> map = new HashMap<>();
+    private Map<String, DailyTotal> allMap = new TreeMap<>();
+    private Map<String, DailyTotal> monthlyMap = new HashMap<>();
+    private Map<String, DailyTotal> annualMap = new HashMap<>();
 
     public ResourceStatisticsObject(TextProvider provider, List<AggregateDayViewStatistic> usageStatsForResources,
-            Map<String, List<AggregateDownloadStatistic>> downloadStats) {
-        this.setUsageStatsForResource(usageStatsForResources);
-        this.setDownloadStats(downloadStats);
-        Map<Integer, Map<String, Long>> byYear = new HashMap<>();
-        Map<String, Map<String, Long>> byMonth = new HashMap<>();
-        Map<String, Map<String, Long>> byDay = new HashMap<>();
+            Map<String, List<AggregateDownloadStatistic>> downloadStats, Resource resource) {
+
         DateTime lastYear = DateTime.now().minusDays(255).withDayOfMonth(1);
         DateTime lastWeek = DateTime.now().minusDays(7);
+
+        
+        List<DailyTotal> last7 = new ArrayList<>();
+        List<String> filenames = new ArrayList<>();
+        
+        if (resource instanceof InformationResource) {
+            for (InformationResourceFile file : ((InformationResource) resource).getInformationResourceFiles()) {
+                filenames.add(file.getFilename());
+            }
+        }
+        for (AggregateDayViewStatistic stat : usageStatsForResources) {
+            String key = String.format("%s-%s", stat.getMonth(),stat.getYear());
+            String ykey = String.format("%s", stat.getYear());
+            for (DailyTotal total : stat.getDailyTotals()) {
+                if (total.getDate().after(lastWeek.toDate())) {
+                    last7.add(total);
+                }
+                
+                total.setTotalDownloads(new ArrayList<>(filenames.size()));
+                getAllMap().put(total.getDateString(), total);
+
+                if (total.getDate().after(lastYear.toDate())) {
+                    DailyTotal mtotal = getMonthlyMap().getOrDefault(key, new DailyTotal(0, 0, key, null));
+                    mtotal.setTotal(mtotal.getTotal() + total.getTotal());
+                    mtotal.setTotalBot(mtotal.getTotalBot() + total.getTotalBot());
+                    mtotal.setTotalDownloads(new ArrayList<>(filenames.size()));
+                    getMonthlyMap().put(key, mtotal);
+                }
+            }
+            DailyTotal atotal = getAnnualMap().getOrDefault(ykey, new DailyTotal(0, 0, ykey, null));
+            getAnnualMap().put(ykey, atotal);
+            atotal.setTotal(atotal.getTotal() + stat.getTotal().intValue());
+            atotal.setTotalBot(atotal.getTotalBot() + stat.getTotal_bot().intValue());
+            atotal.setTotalDownloads(new ArrayList<>(filenames.size()));
+        }
+
+        for (int i=0; i< filenames.size(); i++) {
+            String filename = filenames.get(i);
+            for (AggregateDownloadStatistic stat : downloadStats.get(filename)) {
+                String key = format.format(stat.getAggregateDate());
+                String ykey = Integer.toBinaryString(stat.getYear());
+                DailyTotal dailyTotal = getAllMap().get(key);
+                dailyTotal.getTotalDownloads().set(i, stat.getCount().intValue());
+                if (dailyTotal.getDate().after(lastYear.toDate())) {
+                    DailyTotal mtotal = getMonthlyMap().getOrDefault(key, new DailyTotal(0, 0, key, null));
+                    mtotal.getTotalDownloads().set(i, mtotal.getTotalDownloads().get(i)  + stat.getCount().intValue() );
+                }
+                DailyTotal ytotal = getMonthlyMap().getOrDefault(ykey, new DailyTotal(0, 0, key, null));
+                ytotal.getTotalDownloads().set(i, ytotal.getTotalDownloads().get(i)  + stat.getCount().intValue() );
+            }
+        }
         String viewsText = provider.getText("resourceStatisticsController.views");
-
-        setupLabels(byMonth, byDay, lastYear, lastWeek);
-
-        incrementViewStatistics(byYear, byMonth, byDay, viewsText, lastYear, lastWeek);
-        incrementDownloadStatistics(byYear, byMonth, byDay, lastYear, lastWeek);
-
-        sortAndSetupForViewLayer(byYear, byMonth, byDay);
 
     }
 
@@ -115,7 +162,7 @@ public class ResourceStatisticsObject {
         for (AggregateDayViewStatistic s : getUsageStatsForResource()) {
             incrementKey(byYear, s.getYear(), s.getTotal(), viewsText);
             for (DailyTotal t : s.getDailyTotals()) {
-                DateTime date = DateTime.parse(t.getDate());
+                DateTime date = new DateTime(t.getDate());
                 Date date2 = date.toDate();
                 String dayString = date.toString(YYYY_MM_DD);
 
@@ -188,7 +235,7 @@ public class ResourceStatisticsObject {
         if (count_ != null) {
             count = count_;
         }
-        by.put(k, by.getOrDefault(k,0L) + count);
+        by.put(k, by.getOrDefault(k, 0L) + count);
         parent.put(subKey, by);
     }
 
@@ -219,7 +266,6 @@ public class ResourceStatisticsObject {
     public TreeSet<Integer> getYearLabels() {
         return yearLabels;
     }
-
 
     public TreeSet<String> getMonthLabels() {
         return monthLabels;
@@ -259,6 +305,30 @@ public class ResourceStatisticsObject {
 
     public void setGraphJson(String graphJson) {
         this.graphJson = graphJson;
+    }
+
+    public Map<String, DailyTotal> getAnnualMap() {
+        return annualMap;
+    }
+
+    public void setAnnualMap(Map<String, DailyTotal> annualMap) {
+        this.annualMap = annualMap;
+    }
+
+    public Map<String, DailyTotal> getMonthlyMap() {
+        return monthlyMap;
+    }
+
+    public void setMonthlyMap(Map<String, DailyTotal> monthlyMap) {
+        this.monthlyMap = monthlyMap;
+    }
+
+    public Map<String, DailyTotal> getAllMap() {
+        return allMap;
+    }
+
+    public void setAllMap(Map<String, DailyTotal> allMap) {
+        this.allMap = allMap;
     }
 
 }

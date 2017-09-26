@@ -2,6 +2,7 @@ package org.tdar.core.bean.statistics;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Immutable;
+import org.joda.time.DateTime;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.resource.Resource;
 
@@ -116,51 +118,44 @@ public class AggregateDayViewStatistic extends AbstractPersistable implements Se
             return totals;
         }
         totals = new ArrayList<>();
-        addTotals(d1, d1_bot, "01");
-        addTotals(d2, d2_bot, "02");
-        addTotals(d3, d3_bot, "03");
-        addTotals(d4, d4_bot, "04");
-        addTotals(d5, d5_bot, "05");
-        addTotals(d6, d6_bot, "06");
-        addTotals(d7, d7_bot, "07");
-        addTotals(d8, d8_bot, "08");
-        addTotals(d9, d9_bot, "09");
-        addTotals(d10, d10_bot, "10");
-        addTotals(d11, d11_bot, "11");
-        addTotals(d12, d12_bot, "12");
-        addTotals(d13, d13_bot, "13");
-        addTotals(d14, d14_bot, "14");
-        addTotals(d15, d15_bot, "15");
-        addTotals(d16, d16_bot, "16");
-        addTotals(d17, d17_bot, "17");
-        addTotals(d18, d18_bot, "18");
-        addTotals(d19, d19_bot, "19");
-        addTotals(d20, d20_bot, "20");
-        addTotals(d21, d21_bot, "21");
-        addTotals(d22, d22_bot, "22");
-        addTotals(d23, d23_bot, "23");
-        addTotals(d24, d24_bot, "24");
-        addTotals(d25, d25_bot, "25");
-        addTotals(d26, d26_bot, "26");
-        addTotals(d27, d27_bot, "27");
-        addTotals(d28, d28_bot, "28");
-        addTotals(d29, d29_bot, "29");
-        addTotals(d30, d30_bot, "30");
-        addTotals(d31, d31_bot, "31");
+        addTotals(d1, d1_bot, "01", 1);
+        addTotals(d2, d2_bot, "02", 2);
+        addTotals(d3, d3_bot, "03", 3);
+        addTotals(d4, d4_bot, "04", 4);
+        addTotals(d5, d5_bot, "05", 5);
+        addTotals(d6, d6_bot, "06", 6);
+        addTotals(d7, d7_bot, "07", 7);
+        addTotals(d8, d8_bot, "08", 8);
+        addTotals(d9, d9_bot, "09", 9);
+        addTotals(d10, d10_bot, "10", 10);
+        addTotals(d11, d11_bot, "11", 11);
+        addTotals(d12, d12_bot, "12", 12);
+        addTotals(d13, d13_bot, "13", 13);
+        addTotals(d14, d14_bot, "14", 14);
+        addTotals(d15, d15_bot, "15", 15);
+        addTotals(d16, d16_bot, "16", 16);
+        addTotals(d17, d17_bot, "17", 17);
+        addTotals(d18, d18_bot, "18", 18);
+        addTotals(d19, d19_bot, "19", 19);
+        addTotals(d20, d20_bot, "20", 20);
+        addTotals(d21, d21_bot, "21", 21);
+        addTotals(d22, d22_bot, "22", 22);
+        addTotals(d23, d23_bot, "23", 23);
+        addTotals(d24, d24_bot, "24", 24);
+        addTotals(d25, d25_bot, "25", 25);
+        addTotals(d26, d26_bot, "26", 26);
+        addTotals(d27, d27_bot, "27", 27);
+        addTotals(d28, d28_bot, "28", 28);
+        addTotals(d29, d29_bot, "29", 29);
+        addTotals(d30, d30_bot, "30", 30);
+        addTotals(d31, d31_bot, "31", 31);
         return totals;
     }
 
-    private void addTotals(Integer i1, Integer i2, String day) {
-        int t = 0;
-        if (i1 != null) {
-            t += i1.intValue();
-        }
-        if (i2 != null) {
-            t += i2.intValue();
-        }
-
-        if (t > 0) {
-            totals.add(new DailyTotal(t, String.format("%s-%02d-%s", year, month, day)));
+    private void addTotals(Integer i1, Integer i2, String day, int d) {
+        if (i1 != null || i2 != null) {
+            totals.add(new DailyTotal(i1,i2, String.format("%s-%02d-%s", year, month, day),
+                    new DateTime().withYear(year).withMonthOfYear(month).withDayOfMonth(d).withTimeAtStartOfDay().toDate()));
         }
 
     }
