@@ -12,8 +12,7 @@ import org.apache.poi.ss.usermodel.Workbook;
  */
 public class CellFormat {
     public enum Style {
-        NORMAL(false),
-        BOLD(true);
+        NORMAL(false), BOLD(true);
 
         private boolean bold;
 
@@ -34,10 +33,10 @@ public class CellFormat {
     private HSSFColor color;
     private HSSFColor backgroundColor;
     private short fontSize = 11;
-    private BorderStyle borderBottom;
-    private BorderStyle borderTop;
-    private BorderStyle borderLeft;
-    private BorderStyle borderRight;
+    private BorderStyle borderBottom = BorderStyle.NONE;
+    private BorderStyle borderTop = BorderStyle.NONE;
+    private BorderStyle borderLeft = BorderStyle.NONE;
+    private BorderStyle borderRight = BorderStyle.NONE;
     private boolean wrapping;
 
     public CellFormat(Style style) {
