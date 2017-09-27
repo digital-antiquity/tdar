@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,7 +32,8 @@ public class AggregateDayViewStatistic extends AbstractPersistable implements Se
     private Integer year;
     private Integer month;
     private Long total;
-    private Long total_bot;
+    @Column(name="total_bot")
+    private Long totalBot;
     private Integer d1;
     private Integer d2;
     private Integer d3;
@@ -118,44 +120,44 @@ public class AggregateDayViewStatistic extends AbstractPersistable implements Se
             return totals;
         }
         totals = new ArrayList<>();
-        addTotals(d1, d1_bot, "01", 1);
-        addTotals(d2, d2_bot, "02", 2);
-        addTotals(d3, d3_bot, "03", 3);
-        addTotals(d4, d4_bot, "04", 4);
-        addTotals(d5, d5_bot, "05", 5);
-        addTotals(d6, d6_bot, "06", 6);
-        addTotals(d7, d7_bot, "07", 7);
-        addTotals(d8, d8_bot, "08", 8);
-        addTotals(d9, d9_bot, "09", 9);
-        addTotals(d10, d10_bot, "10", 10);
-        addTotals(d11, d11_bot, "11", 11);
-        addTotals(d12, d12_bot, "12", 12);
-        addTotals(d13, d13_bot, "13", 13);
-        addTotals(d14, d14_bot, "14", 14);
-        addTotals(d15, d15_bot, "15", 15);
-        addTotals(d16, d16_bot, "16", 16);
-        addTotals(d17, d17_bot, "17", 17);
-        addTotals(d18, d18_bot, "18", 18);
-        addTotals(d19, d19_bot, "19", 19);
-        addTotals(d20, d20_bot, "20", 20);
-        addTotals(d21, d21_bot, "21", 21);
-        addTotals(d22, d22_bot, "22", 22);
-        addTotals(d23, d23_bot, "23", 23);
-        addTotals(d24, d24_bot, "24", 24);
-        addTotals(d25, d25_bot, "25", 25);
-        addTotals(d26, d26_bot, "26", 26);
-        addTotals(d27, d27_bot, "27", 27);
-        addTotals(d28, d28_bot, "28", 28);
-        addTotals(d29, d29_bot, "29", 29);
-        addTotals(d30, d30_bot, "30", 30);
-        addTotals(d31, d31_bot, "31", 31);
+        addTotals(d1, d1_bot, 1);
+        addTotals(d2, d2_bot, 2);
+        addTotals(d3, d3_bot, 3);
+        addTotals(d4, d4_bot, 4);
+        addTotals(d5, d5_bot, 5);
+        addTotals(d6, d6_bot, 6);
+        addTotals(d7, d7_bot, 7);
+        addTotals(d8, d8_bot, 8);
+        addTotals(d9, d9_bot, 9);
+        addTotals(d10, d10_bot,10);
+        addTotals(d11, d11_bot,11);
+        addTotals(d12, d12_bot,12);
+        addTotals(d13, d13_bot,13);
+        addTotals(d14, d14_bot,14);
+        addTotals(d15, d15_bot,15);
+        addTotals(d16, d16_bot,16);
+        addTotals(d17, d17_bot,17);
+        addTotals(d18, d18_bot,18);
+        addTotals(d19, d19_bot,19);
+        addTotals(d20, d20_bot,20);
+        addTotals(d21, d21_bot,21);
+        addTotals(d22, d22_bot,22);
+        addTotals(d23, d23_bot,23);
+        addTotals(d24, d24_bot,24);
+        addTotals(d25, d25_bot,25);
+        addTotals(d26, d26_bot,26);
+        addTotals(d27, d27_bot,27);
+        addTotals(d28, d28_bot,28);
+        addTotals(d29, d29_bot,29);
+        addTotals(d30, d30_bot,30);
+        addTotals(d31, d31_bot,31);
         return totals;
     }
 
-    private void addTotals(Integer i1, Integer i2, String day, int d) {
+    private void addTotals(Integer i1, Integer i2, int day) {
         if (i1 != null || i2 != null) {
-            totals.add(new DailyTotal(i1,i2, String.format("%s-%02d-%s", year, month, day),
-                    new DateTime().withYear(year).withMonthOfYear(month).withDayOfMonth(d).withTimeAtStartOfDay().toDate()));
+            totals.add(new DailyTotal(i1,i2, String.format("%s-%02d-%02d", year, month, day),
+                    new DateTime().withYear(year).withMonthOfYear(month).withDayOfMonth(day).withTimeAtStartOfDay().toDate()));
         }
 
     }
@@ -184,12 +186,12 @@ public class AggregateDayViewStatistic extends AbstractPersistable implements Se
         this.total = total;
     }
 
-    public Long getTotal_bot() {
-        return total_bot;
+    public Long getTotalBot() {
+        return totalBot;
     }
 
-    public void setTotal_bot(Long total_bot) {
-        this.total_bot = total_bot;
+    public void setTotalBot(Long total_bot) {
+        this.totalBot = total_bot;
     }
 
     public Integer getD1() {

@@ -6,16 +6,21 @@ import java.util.List;
 
 public class DailyTotal {
 
-    private Integer total;
-    private Integer totalBot;
+    private Integer total = 0;
+    private Integer totalBot = 0;
     private String dateString;
     private Date date;
     private List<Integer> totalDownloads = new ArrayList<>();
     
-    public DailyTotal(Integer i1, Integer i2, String dateString, Date date) {
+    public DailyTotal(Integer i1, Integer i2, String dateString, Date date, List<Integer> downloads) {
         this.setTotal(i1);
         this.setTotalBot(i2);
+        this.setDate(date);
         this.setDateString(dateString);
+        this.setTotalDownloads(downloads);
+    }    
+    public DailyTotal(Integer i1, Integer i2, String dateString, Date date) {
+        this(i1,i2,dateString,date, null);
     }
 
     public String getDateString() {
@@ -56,6 +61,35 @@ public class DailyTotal {
 
     public void setTotalBot(Integer totalBot) {
         this.totalBot = totalBot;
+    }
+
+    public void addTotalBot(Integer totalBot) {
+        if (this.totalBot == null) {
+            this.totalBot = 0;
+        }
+        if (totalBot != null) {
+            this.totalBot += totalBot;
+        }
+    }
+
+    public void addTotal(Integer totalBot) {
+        if (this.total == null) {
+            this.total = 0;
+        }
+        if (totalBot != null) {
+            this.total += totalBot;
+        }
+    }
+
+    public void addTotalDownload(int i, Long count) {
+        if (count == null || count == 0L) {
+            return;
+        }
+        Integer integer = getTotalDownloads().get(i);
+        getTotalDownloads().set(i, integer  + count.intValue());
+
+        // TODO Auto-generated method stub
+        
     }
     
 }
