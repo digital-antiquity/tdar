@@ -63,21 +63,21 @@ public class DailyTotal {
         this.totalBot = totalBot;
     }
 
-    public void addTotalBot(Integer totalBot) {
+    public void addTotalBot(Number totalBot) {
         if (this.totalBot == null) {
             this.totalBot = 0;
         }
         if (totalBot != null) {
-            this.totalBot += totalBot;
+            this.totalBot += totalBot.intValue();
         }
     }
 
-    public void addTotal(Integer totalBot) {
+    public void addTotal(Number totalBot) {
         if (this.total == null) {
             this.total = 0;
         }
         if (totalBot != null) {
-            this.total += totalBot;
+            this.total += totalBot.intValue();
         }
     }
 
@@ -88,8 +88,12 @@ public class DailyTotal {
         Integer integer = getTotalDownloads().get(i);
         getTotalDownloads().set(i, integer  + count.intValue());
 
-        // TODO Auto-generated method stub
-        
+    }
+
+    public void addTotals(Number total2, Number totalBot2, List<Integer> createDownloadList) {
+        addTotal(total2);
+        addTotalBot(totalBot2);
+        setTotalDownloads(createDownloadList);
     }
     
 }

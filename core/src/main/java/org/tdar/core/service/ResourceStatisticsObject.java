@@ -2,18 +2,11 @@ package org.tdar.core.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -51,6 +44,30 @@ public class ResourceStatisticsObject {
             }
         }
 
+        setupDailyUsage(usageStatsForResources, lastWeekDate, lastYearDate);
+        setupDownloadUsage(downloadStats, lastYearDate);
+
+    }
+
+    private void setupDownloadUsage(Map<String, List<AggregateDownloadStatistic>> downloadStats, Date lastYearDate) {
+        for (int i=0; i< getFilenames().size(); i++) {
+            String filename = getFilenames().get(i);
+            for (AggregateDownloadStatistic stat : downloadStats.get(filename)) {
+                String key = format.format(stat.getAggregateDate());
+                String ykey = Integer.toBinaryString(stat.getYear());
+                DailyTotal dailyTotal = getAllMap().get(key);
+                dailyTotal.addTotalDownload(i, stat.getCount());
+                if (dailyTotal.getDate().after(lastYearDate)) {
+                    DailyTotal mtotal = getMonthlyMap().getOrDefault(key, createEmptyDailyTotal(key));
+                    mtotal.addTotalDownload(i, stat.getCount());
+                }
+                DailyTotal ytotal = getMonthlyMap().getOrDefault(ykey, createEmptyDailyTotal(key));
+                ytotal.addTotalDownload(i, stat.getCount());
+            }
+        }
+    }
+
+    private void setupDailyUsage(List<AggregateDayViewStatistic> usageStatsForResources, Date lastWeekDate, Date lastYearDate) {
         for (AggregateDayViewStatistic stat : usageStatsForResources) {
             String key = String.format("%02d-%s", stat.getMonth(),stat.getYear());
             String ykey = String.format("%s", stat.getYear());
@@ -63,36 +80,19 @@ public class ResourceStatisticsObject {
                 getAllMap().put(total.getDateString(), total);
 
                 if (total.getDate().after(lastYearDate)) {
-                    DailyTotal mtotal = getMonthlyMap().getOrDefault(key, new DailyTotal(0, 0, key, null,createDownloadList()));
-                    mtotal.addTotal(total.getTotal());
-                    mtotal.addTotalBot(total.getTotalBot());
-                    mtotal.setTotalDownloads(createDownloadList());
+                    DailyTotal mtotal = getMonthlyMap().getOrDefault(key, createEmptyDailyTotal(key));
+                    mtotal.addTotals(total.getTotal(), total.getTotalBot(), createDownloadList());
                     getMonthlyMap().put(key, mtotal);
                 }
             }
-            DailyTotal atotal = getAnnualMap().getOrDefault(ykey, new DailyTotal(0, 0, ykey, null,createDownloadList()));
+            DailyTotal atotal = getAnnualMap().getOrDefault(ykey, createEmptyDailyTotal(ykey));
             getAnnualMap().put(ykey, atotal);
-            atotal.addTotal(stat.getTotal().intValue());
-            atotal.addTotalBot(stat.getTotalBot().intValue());
-            atotal.setTotalDownloads(createDownloadList());
+            atotal.addTotals(stat.getTotal(),stat.getTotalBot(), createDownloadList());
         }
+    }
 
-        for (int i=0; i< getFilenames().size(); i++) {
-            String filename = getFilenames().get(i);
-            for (AggregateDownloadStatistic stat : downloadStats.get(filename)) {
-                String key = format.format(stat.getAggregateDate());
-                String ykey = Integer.toBinaryString(stat.getYear());
-                DailyTotal dailyTotal = getAllMap().get(key);
-                dailyTotal.addTotalDownload(i, stat.getCount());
-                if (dailyTotal.getDate().after(lastYearDate)) {
-                    DailyTotal mtotal = getMonthlyMap().getOrDefault(key, new DailyTotal(0, 0, key, null, createDownloadList()));
-                    mtotal.addTotalDownload(i, stat.getCount());
-                }
-                DailyTotal ytotal = getMonthlyMap().getOrDefault(ykey, new DailyTotal(0, 0, key, null, createDownloadList()));
-                ytotal.addTotalDownload(i, stat.getCount());
-            }
-        }
-
+    private DailyTotal createEmptyDailyTotal(String key) {
+        return new DailyTotal(0, 0, key, null, createDownloadList());
     }
 
     private List<Integer> createDownloadList() {
