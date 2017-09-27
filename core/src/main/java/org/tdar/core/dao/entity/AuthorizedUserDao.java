@@ -279,6 +279,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
      * @param generalPermission
      * @return
      */
+    //FIXME: RENAME
     public List<AuthorizedUser> checkSelfEscalation(TdarUser actor, HasAuthorizedUsers source, InternalTdarRights editAnything, GeneralPermissions generalPermission) {
         String q = QUERY_RIGHTS_EXPIRY_COLLECTION;
         if (source instanceof Resource) {

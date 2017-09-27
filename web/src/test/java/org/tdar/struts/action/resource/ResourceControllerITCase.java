@@ -64,7 +64,7 @@ public class ResourceControllerITCase extends AbstractControllerITCase implement
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         
-        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource = createAndSaveDocumentWithFileAndUseDefaultUser();
         Long resourceId = resource.getId();
         Long accountId  = account.getId();
         getLogger().debug("Available space is {} MB",account.getAvailableSpaceInMb());

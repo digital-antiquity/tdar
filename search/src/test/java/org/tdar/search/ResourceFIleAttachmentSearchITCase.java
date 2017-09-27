@@ -75,7 +75,7 @@ public class ResourceFIleAttachmentSearchITCase extends AbstractResourceSearchIT
     @Test
     @Rollback(true)
     public void testFilenameFound() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
-        Document doc = generateDocumentWithFileAndUseDefaultUser();
+        Document doc = createAndSaveDocumentWithFileAndUseDefaultUser();
         searchIndexService.index(doc);
         SearchParameters sp = new SearchParameters();
         sp.getFilenames().add(TestConstants.TEST_DOCUMENT_NAME);

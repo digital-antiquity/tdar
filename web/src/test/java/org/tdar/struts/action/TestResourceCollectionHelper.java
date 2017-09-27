@@ -14,7 +14,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -50,7 +49,7 @@ public interface TestResourceCollectionHelper {
     }
 
     @SuppressWarnings("deprecation")
-    default <C extends HierarchicalCollection, D extends AbstractCollectionController> C generateResourceCollection(String name, String description,
+    default <C extends ResourceCollection, D extends AbstractCollectionController> C generateResourceCollection(String name, String description,
             boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId, Class<D> ctlClss, Class<C> cls) throws Exception {
         ShareCollectionController controller = generateNewInitializedController(ShareCollectionController.class, owner);

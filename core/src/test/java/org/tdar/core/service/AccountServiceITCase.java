@@ -89,7 +89,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase implements
         model.setVersion(100);
         genericService.saveOrUpdate(model);
         final Long modelId = model.getId();
-        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource = createAndSaveDocumentWithFileAndUseDefaultUser();
         resource.setAccount(account);
         final long rid = resource.getId();
         final long accountId = account.getId();

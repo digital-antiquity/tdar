@@ -146,7 +146,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
     @Test
     @Rollback
     public void testVerifyProcess() throws InstantiationException, IllegalAccessException, FileNotFoundException {
-        Document document = generateDocumentWithFileAndUseDefaultUser();
+        Document document = createAndSaveDocumentWithFileAndUseDefaultUser();
         scheduledProcessService.queue(WeeklyFilestoreLoggingProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         Number totalFiles = genericService.count(InformationResourceFileVersion.class);

@@ -219,7 +219,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         createAndSaveNewInformationResource(Ontology.class);
         createAndSaveNewInformationResource(Geospatial.class);
         createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewUser());
-        generateDocumentWithFileAndUseDefaultUser();
+        createAndSaveDocumentWithFileAndUseDefaultUser();
         processingTask.execute();
         genericService.synchronize();
 

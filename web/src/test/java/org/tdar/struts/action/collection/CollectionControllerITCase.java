@@ -35,9 +35,6 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
     private GenericService genericService;
 
     @Autowired
-    private EntityService entityService;
-
-    @Autowired
     AuthorizedUserDao authorizedUserDao;
 
     ShareCollectionController controller;
@@ -64,8 +61,8 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         String name = "test collection";
         String description = "test description";
 
-        InformationResource normal = generateDocumentWithFileAndUseDefaultUser();
-        InformationResource draft = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource normal = createAndSaveDocumentWithFileAndUseDefaultUser();
+        InformationResource draft = createAndSaveDocumentWithFileAndUseDefaultUser();
         final Long normalId = normal.getId();
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);

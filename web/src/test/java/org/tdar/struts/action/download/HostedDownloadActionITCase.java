@@ -149,7 +149,7 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
     }
 
     public Long setup() throws InstantiationException, IllegalAccessException, FileNotFoundException {
-        doc = generateDocumentWithFileAndUseDefaultUser();
+        doc = createAndSaveDocumentWithFileAndUseDefaultUser();
         ResourceCollection collection = new ResourceCollection();
         collection.setName("authorized collection");
         collection.setDescription(collection.getName());

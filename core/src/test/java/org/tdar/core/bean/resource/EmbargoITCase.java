@@ -32,7 +32,7 @@ public class EmbargoITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testEmbargoWarning() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document doc = generateDocumentWithFileAndUser();
-        Document doc2 = generateDocumentWithFileAndUseDefaultUser();
+        Document doc2 = createAndSaveDocumentWithFileAndUseDefaultUser();
         long id = doc.getId();
 
         InformationResourceFile irf = doc.getFirstInformationResourceFile();
@@ -76,7 +76,7 @@ public class EmbargoITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testChangedEmbargoExpiry() throws InstantiationException, IllegalAccessException, IOException {
-        Document document = generateDocumentWithFileAndUseDefaultUser();
+        Document document = createAndSaveDocumentWithFileAndUseDefaultUser();
         InformationResourceFile file = document.getFirstInformationResourceFile();
         file.setRestriction(FileAccessRestriction.EMBARGOED_FIVE_YEARS);
         DateTime now = DateTime.now();

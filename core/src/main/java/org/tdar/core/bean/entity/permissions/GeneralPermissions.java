@@ -16,7 +16,6 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
@@ -118,9 +117,6 @@ public enum GeneralPermissions implements HasLabel, Localizable {
 
     public static <P extends Persistable> List<GeneralPermissions> getAvailablePermissionsFor(Class<P> persistableClass_) {
         Class<P> persistableClass = persistableClass_;
-        if (persistableClass.equals(HierarchicalCollection.class)) {
-            persistableClass = (Class<P>) ResourceCollection.class;
-        }
 
         List<GeneralPermissions> toReturn = new ArrayList<>();
         for (GeneralPermissions perm : GeneralPermissions.values()) {

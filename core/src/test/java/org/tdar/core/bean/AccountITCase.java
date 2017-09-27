@@ -102,7 +102,7 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
         BillingAccount account = new BillingAccount();
-        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource = createAndSaveDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         updateModel(model, true, false, false);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_RESOURCES, accountService.canAddResource(account, re));
@@ -124,7 +124,7 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
     public void testAccountCanAddResource() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         BillingActivityModel model = new BillingActivityModel();
         ResourceEvaluator re = new ResourceEvaluator(model);
-        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource = createAndSaveDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         // public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb) {
         BillingAccount account = setupAccountWithInvoiceForOneResource(model, getUser());
@@ -152,7 +152,7 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         updateModel(model, false, false, true);
         BillingAccount account = setupAccountWithInvoiceFor6Mb(model, getUser());
         ResourceEvaluator re = new ResourceEvaluator(model);
-        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource = createAndSaveDocumentWithFileAndUseDefaultUser();
         re.evaluateResources(resource);
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
@@ -178,7 +178,7 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         BillingAccount account = setupAccountForPerson(getUser());
-        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource = createAndSaveDocumentWithFileAndUseDefaultUser();
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
@@ -212,8 +212,8 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         BillingAccount account = setupAccountForPerson(getUser());
-        Document resource = generateDocumentWithFileAndUseDefaultUser();
-        Document resource2 = generateDocumentWithFileAndUseDefaultUser();
+        Document resource = createAndSaveDocumentWithFileAndUseDefaultUser();
+        Document resource2 = createAndSaveDocumentWithFileAndUseDefaultUser();
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
         Long spaceUsedInBytes = account.getSpaceUsedInBytes();
         Long resourcesUsed = account.getResourcesUsed();
@@ -271,8 +271,8 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         BillingAccount account = setupAccountWithInvoiceForOneFile(model, getUser());
-        Document resource = generateDocumentWithFileAndUseDefaultUser();
-        Document resource2 = generateDocumentWithFileAndUseDefaultUser();
+        Document resource = createAndSaveDocumentWithFileAndUseDefaultUser();
+        Document resource2 = createAndSaveDocumentWithFileAndUseDefaultUser();
         // ResourceEvaluator resourceEvaluator = accountService.getResourceEvaluator(resource, resource2);
 
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
@@ -417,8 +417,8 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         model.setCountingResources(true);
         assertFalse(re.accountHasMinimumForNewResource(new BillingAccount(), null));
         Image img = new Image();
-        InformationResource irfile = generateDocumentWithFileAndUseDefaultUser();
-        InformationResource irfile2 = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource irfile = createAndSaveDocumentWithFileAndUseDefaultUser();
+        InformationResource irfile2 = createAndSaveDocumentWithFileAndUseDefaultUser();
         InformationResourceFile irfProcessed = new InformationResourceFile(FileStatus.PROCESSED, null);
         InformationResourceFile irfDeleted = new InformationResourceFile(FileStatus.PROCESSED, null);
         irfDeleted.setDeleted(true);

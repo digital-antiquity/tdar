@@ -135,8 +135,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
 public class ResourceCollection extends AbstractPersistable
         implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus, HasAuthorizedUsers, Sortable,
-        OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Hideable, HierarchicalCollection,
-        Comparable<ResourceCollection> {
+        OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Hideable, Comparable<ResourceCollection> {
 
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
 

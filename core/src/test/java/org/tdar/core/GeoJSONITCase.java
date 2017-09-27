@@ -91,7 +91,7 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
     @SuppressWarnings("deprecation")
     private Resource[] setupDocs() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Resource[] resources = new Resource[2];
-        Document document = generateDocumentWithFileAndUseDefaultUser();
+        Document document = createAndSaveDocumentWithFileAndUseDefaultUser();
 //        document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
         document.setInheritingCulturalInformation(true);
         // PROJECT LAT/LONG should be obfuscated

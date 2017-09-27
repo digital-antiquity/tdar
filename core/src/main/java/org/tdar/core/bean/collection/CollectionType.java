@@ -5,6 +5,7 @@ import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.utils.MessageHelper;
 
 public enum CollectionType implements Localizable, PluralLocalizable {
+    //RENAME Managed / Unmanaged
      SHARED("Shared"), LIST("Public");
 
     private String label;
