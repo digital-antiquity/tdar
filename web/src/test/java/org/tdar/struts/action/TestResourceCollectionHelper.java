@@ -119,7 +119,7 @@ public interface TestResourceCollectionHelper {
         }
         if (CollectionUtils.isNotEmpty(resources)) {
             if (resourceCollection instanceof ResourceCollection) {
-                assertThat(((ResourceCollection) resourceCollection).getResources(), containsInAnyOrder(resources.toArray()));
+                assertThat(((ResourceCollection) resourceCollection).getManagedResources(), containsInAnyOrder(resources.toArray()));
             }
         }
         return (C) resourceCollection;

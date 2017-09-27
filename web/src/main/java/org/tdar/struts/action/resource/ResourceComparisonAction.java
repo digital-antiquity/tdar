@@ -63,9 +63,9 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         resources.addAll(genericService.findAll(Resource.class, ids));
         if (PersistableUtils.isNotNullOrTransient(getCollectionId())) {
             ResourceCollection rc = genericService.find(ResourceCollection.class, getCollectionId());
-                resources.addAll(((ResourceCollection)rc).getResources());
+                resources.addAll(((ResourceCollection)rc).getManagedResources());
                 for (ResourceCollection sc :resourceCollectionService.findAllChildCollectionsOnly((ResourceCollection)rc)) {
-                    resources.addAll(sc.getResources());
+                    resources.addAll(sc.getManagedResources());
                 }
         }
 
@@ -96,7 +96,7 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 latitudeLongitude.addAll(PersistableUtils.extractIds(r.getActiveLatitudeLongitudeBoxes()));
                 notes.addAll(PersistableUtils.extractIds(r.getActiveResourceNotes()));
                 coverage.addAll(PersistableUtils.extractIds(r.getActiveCoverageDates()));
-                collections.addAll(PersistableUtils.extractIds(r.getSharedResourceCollections()));
+                collections.addAll(PersistableUtils.extractIds(r.getManagedResourceCollections()));
                 annotations.addAll(PersistableUtils.extractIds(r.getActiveResourceAnnotations()));
                 first = false;
             } else {
@@ -115,7 +115,7 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 notes = intersection(notes, toSet(r.getActiveResourceNotes()));
 
                 coverage = intersection(coverage, toSet(r.getActiveCoverageDates()));
-                collections = intersection(collections, toSet(r.getSharedResourceCollections()));
+                collections = intersection(collections, toSet(r.getManagedResourceCollections()));
                 annotations = intersection(annotations, toSet(r.getActiveResourceAnnotations()));
             }
         }

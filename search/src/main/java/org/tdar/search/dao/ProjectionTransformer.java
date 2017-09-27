@@ -68,7 +68,7 @@ public class ProjectionTransformer<I extends Indexable> {
         Collection<Long> collectionIds = (Collection<Long>) (Collection) doc.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_IDS);
         for (ResourceCollection rc : datasetDao.findAll(ResourceCollection.class, collectionIds)) {
             if(rc instanceof ResourceCollection) {
-                r_.getSharedCollections().add((ResourceCollection) rc);
+                r_.getManagedResourceCollections().add((ResourceCollection) rc);
             }
         }
 

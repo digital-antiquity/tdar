@@ -211,7 +211,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
             String referrer) {
         InformationResource ir = informationResourceFileVersion.getInformationResourceFile().getInformationResource();
         Set<Long> sharedCollectionIds = new HashSet<>();
-        for (ResourceCollection rc : ir.getSharedResourceCollections()) {
+        for (ResourceCollection rc : ir.getManagedResourceCollections()) {
             sharedCollectionIds.add(rc.getId());
             sharedCollectionIds.addAll(rc.getParentIds());
         }
@@ -275,7 +275,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     public ResourceCollection getWhiteLabelCollectionForResource(Resource resource) {
         Set<ResourceCollection> resourceCollections = new HashSet<>();
-        resourceCollections.addAll(resource.getSharedCollections());
+        resourceCollections.addAll(resource.getManagedResourceCollections());
 
         List<ResourceCollection> whiteLabelCollections = new ArrayList<>();
         for (ResourceCollection rc : resourceCollections) {
@@ -460,7 +460,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
     }
 
     public RequestCollection findCustomRequest(Resource resource) {
-        List<Long> ids = PersistableUtils.extractIds(resource.getSharedCollections());
+        List<Long> ids = PersistableUtils.extractIds(resource.getManagedResourceCollections());
         for (RequestCollection rc : findAll(RequestCollection.class)) {
             if (CollectionUtils.containsAny(rc.getCollections(), ids)) {
                 return rc;

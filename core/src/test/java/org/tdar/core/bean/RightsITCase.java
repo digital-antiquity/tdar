@@ -167,13 +167,13 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(grandParent);
         genericService.saveOrUpdate(parent);
         genericService.saveOrUpdate(collection);
-        dataset.getSharedCollections().add(collection);
+        dataset.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(collection);
-        collection.getResources().add(dataset);
+        collection.getManagedResources().add(dataset);
         genericService.saveOrUpdate(dataset);
-        dataset.getSharedCollections().add(collection2);
+        dataset.getManagedResourceCollections().add(collection2);
         genericService.saveOrUpdate(collection2);
-        collection2.getResources().add(dataset);
+        collection2.getManagedResources().add(dataset);
         genericService.saveOrUpdate(dataset);
 //        authorizedUser = null;
         Long datasetId = dataset.getId();

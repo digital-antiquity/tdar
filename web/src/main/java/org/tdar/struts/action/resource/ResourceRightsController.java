@@ -131,7 +131,7 @@ public class ResourceRightsController extends AbstractRightsController implement
             
             
 
-            resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getSharedCollections(),
+            resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getManagedResourceCollections(),
                     getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, type);
 
             if (!authorizationService.canEdit(getAuthenticatedUser(), getResource())) {
@@ -169,7 +169,7 @@ public class ResourceRightsController extends AbstractRightsController implement
 
     @Override
     public void handleCollectionSave() {
-        resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getSharedCollections(),
+        resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getManagedResourceCollections(),
                 getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, getType());
     }
     

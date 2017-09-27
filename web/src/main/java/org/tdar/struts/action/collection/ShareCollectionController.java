@@ -126,6 +126,6 @@ public class ShareCollectionController extends AbstractCollectionController<Reso
      * @return
      */
     public boolean isBigCollection() {
-        return (getPersistable().getResources().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        return (getPersistable().getManagedResources().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 }

@@ -115,7 +115,7 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         col.setName("test");
         col.setDescription("test");
         genericService.saveOrUpdate(col);
-        ds.getSharedCollections().add(col);
+        ds.getManagedResourceCollections().add(col);
         genericService.saveOrUpdate(ds);
         dataTable.setDataset(ds);
         CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), MessageHelper.getInstance(), dataTable.getColumnByName("basic_int"),

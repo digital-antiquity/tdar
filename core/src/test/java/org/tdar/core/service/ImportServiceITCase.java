@@ -74,7 +74,7 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         rc.setName("name");
         rc.markUpdated(getAdminUser());
         genericService.saveOrUpdate(rc);
-        document.getSharedCollections().add(rc);
+        document.getManagedResourceCollections().add(rc);
         
         genericService.saveOrUpdate(document);
         logger.debug("IRC:{}",document.getAuthorizedUsers());

@@ -65,11 +65,11 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             collection.setSortBy(SortOption.RESOURCE_TYPE);
             genericService.saveOrUpdate(collection);
             for (Resource r : resources) {
-                collection.getResources().add(r);
-                r.getSharedCollections().add(collection);
+                collection.getManagedResources().add(r);
+                r.getManagedResourceCollections().add(collection);
                 genericService.saveOrUpdate(r);
             }
-            collection.getResources().addAll(resources);
+            collection.getManagedResources().addAll(resources);
             genericService.saveOrUpdate(collection);
             searchIndexService.indexCollection(resources);
         } catch (Exception e) {

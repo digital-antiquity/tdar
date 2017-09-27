@@ -183,7 +183,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         genericService.save(testCollection);
 
         // add the resourceCollection to the project (and vice/versa)
-        project_.getSharedResourceCollections().add(testCollection);
+        project_.getManagedResourceCollections().add(testCollection);
         genericService.saveOrUpdate(testCollection);
         genericService.saveOrUpdate(project_);
         List<AuthorizedUser> users2 = new ArrayList<AuthorizedUser>();

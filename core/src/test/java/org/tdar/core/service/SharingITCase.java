@@ -52,8 +52,8 @@ public class SharingITCase extends AbstractIntegrationTestCase {
         ResourceCollection collection = createAndSaveNewResourceCollection("test collection");
         collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(collection);
-        collection.getResources().add(dataset);
-        dataset.getSharedCollections().add(collection);
+        collection.getManagedResources().add(dataset);
+        dataset.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
@@ -72,8 +72,8 @@ public class SharingITCase extends AbstractIntegrationTestCase {
         collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(collection);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child, collection);
-        child.getResources().add(dataset);
-        dataset.getSharedCollections().add(child);
+        child.getManagedResources().add(dataset);
+        dataset.getManagedResourceCollections().add(child);
         genericService.saveOrUpdate(child);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(dataset);

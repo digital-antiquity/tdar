@@ -131,7 +131,7 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                         String location = "";
                         String projectName = "";
                         List<String> collections = new ArrayList<>();
-                        r.getSharedCollections().forEach(rc -> {
+                        r.getManagedResourceCollections().forEach(rc -> {
                             if (getAuthorizationService().canView(getAuthenticatedUser(), rc)) {
                                 collections.add(rc.getName());
                             }

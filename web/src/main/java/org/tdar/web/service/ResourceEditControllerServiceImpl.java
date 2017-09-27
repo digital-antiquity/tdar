@@ -177,7 +177,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
         effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(resource));
 
         logger.debug("loadEffective...");
-        for (ResourceCollection rc : resource.getSharedResourceCollections()) {
+        for (ResourceCollection rc : resource.getManagedResourceCollections()) {
             if (authorizationService.canRemoveFromCollection( rc, authenticatedUser, CollectionType.SHARED)) {
                 shares.add(rc);
             } else {

@@ -51,14 +51,14 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     public void testSparseResource() throws Exception {
         ResourceCollection collection = new ResourceCollection("test", "test", getAdminUser());
         collection.markUpdated(getAdminUser());
-        collection.setResources(new HashSet<>(genericService.findRandom(Resource.class, 20)));
+        collection.setManagedResources(new HashSet<>(genericService.findRandom(Resource.class, 20)));
         genericService.saveOrUpdate(collection);
         Long collectionId = collection.getId();
         collection = null;
 
         collection = genericService.findAll(ResourceCollection.class, Arrays.asList(collectionId)).get(0);
 
-        for (Resource resource : collection.getResources()) {
+        for (Resource resource : collection.getManagedResources()) {
             logger.info("{} {} ", resource, resource.getSubmitter());
         }
 
@@ -76,15 +76,15 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
             if (seen == false) {
                 r.setStatus(Status.DRAFT);
             }
-            r.getSharedCollections().add(collection);
+            r.getManagedResourceCollections().add(collection);
             genericService.saveOrUpdate(r);
-            collection.getResources().add(r);
+            collection.getManagedResources().add(r);
         }
         Long collectionId = collection.getId();
         collection = null;
         collection = genericService.find(ResourceCollection.class, collectionId);
         resourceCollectionService.makeResourcesInCollectionActive(collection, getAdminUser());
-        for (Resource r : collection.getResources()) {
+        for (Resource r : collection.getManagedResources()) {
             assertEquals(Status.ACTIVE, r.getStatus());
         }
     }
@@ -130,17 +130,17 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         trns.setName(TEST_TITLE);
         trns.setId(-1L);
         list.add(trns);
-        resourceCollectionService.saveResourceCollections(image, list, image.getSharedCollections(), getBasicUser(), true,
+        resourceCollectionService.saveResourceCollections(image, list, image.getManagedResourceCollections(), getBasicUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.SHARED);
-        logger.debug("collections: {}", image.getSharedCollections());
+        logger.debug("collections: {}", image.getManagedResourceCollections());
 
-        List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
+        List<Long> extractIds = PersistableUtils.extractIds(image.getManagedResourceCollections());
         assertFalse(extractIds.contains(test.getId()));
-        image.getSharedCollections().clear();
-        resourceCollectionService.saveResourceCollections(image, list, image.getSharedCollections(), getEditorUser(), true,
+        image.getManagedResourceCollections().clear();
+        resourceCollectionService.saveResourceCollections(image, list, image.getManagedResourceCollections(), getEditorUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.SHARED);
-        logger.debug("collections: {}", image.getSharedCollections());
-        extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
+        logger.debug("collections: {}", image.getManagedResourceCollections());
+        extractIds = PersistableUtils.extractIds(image.getManagedResourceCollections());
         logger.debug("{} -> {}", test.getId(), extractIds);
         assertTrue(extractIds.contains(test.getId()));
     }
@@ -210,9 +210,9 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         ResourceCollection collection = createAndSaveNewResourceCollection("test collection");
         collection.getAuthorizedUsers().clear();
         collection.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
-        collection.getResources().add(dataset);
+        collection.getManagedResources().add(dataset);
         genericService.saveOrUpdate(collection);
-        dataset.getSharedCollections().add(collection);
+        dataset.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
         List<ResourceCollection> list = resourceCollectionService.findCollectionsSharedWith(getBillingUser(), user);
@@ -360,8 +360,8 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
                 resourceCollectionService.saveCollectionForRightsController(myCollection, getBasicUser(), aus, -1L);
                 genericService.synchronize();
                 logger.debug("au: {}", myCollection.getAuthorizedUsers());
-                logger.debug("no: {}", normal.getSharedCollections());
-                logger.debug("df: {}", draft.getSharedCollections());
+                logger.debug("no: {}", normal.getManagedResourceCollections());
+                logger.debug("df: {}", draft.getManagedResourceCollections());
                 assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
                 assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_METADATA));
                 assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, GeneralPermissions.MODIFY_METADATA));

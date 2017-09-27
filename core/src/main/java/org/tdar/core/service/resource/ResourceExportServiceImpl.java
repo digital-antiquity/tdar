@@ -87,7 +87,7 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
             resources.addAll(rep.getAccount().getResources());
         }
         if (PersistableUtils.isNotNullOrTransient(rep.getCollection())) {
-            resources.addAll(rep.getCollection().getResources());
+            resources.addAll(rep.getCollection().getManagedResources());
         }
         if (CollectionUtils.isNotEmpty(rep.getResources())) {
             resources.addAll(rep.getResources());
@@ -188,10 +188,10 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
         // remove internal
         resource.getAuthorizedUsers().clear();
         resource.getLatitudeLongitudeBoxes().forEach(llb -> clearId(llb));
-        resource.getSharedResourceCollections().forEach(rc -> {
+        resource.getManagedResourceCollections().forEach(rc -> {
             clearId(rc);
             rc.setResourceIds(null);
-            rc.getResources().clear();
+            rc.getManagedResources().clear();
         });
 
         datasetDao.clearOneToManyIds(resource, true);

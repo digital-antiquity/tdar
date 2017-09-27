@@ -402,7 +402,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
 
         if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
-            resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getSharedCollections(),
+            resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getManagedResourceCollections(),
                     authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.SHARED);
 
             if (!authorizationService.canEdit(authWrapper.getAuthenticatedUser(), authWrapper.getItem())) {
@@ -452,7 +452,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
     public void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<ResourceCollection> retainedSharedCollections,
             List<ResourceCollection> retainedListCollections) {
         logger.debug("loadEffective... (save)");
-        for (ResourceCollection rc : auth.getItem().getSharedCollections()) {
+        for (ResourceCollection rc : auth.getItem().getManagedResourceCollections()) {
             if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionType.SHARED)) {
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);

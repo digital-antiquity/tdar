@@ -481,7 +481,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
             genericService.refresh(resource);
-            Set<ResourceCollection> resourceCollections = resource.getSharedCollections();
+            Set<ResourceCollection> resourceCollections = resource.getManagedResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
             for (ResourceCollection rc : resourceCollections) {
                 logger.debug("\t\t {}", rc);
@@ -492,12 +492,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals("we should have a total of 3 collections (0 internal +2 shared)", 2, collections.size());
 //        int internalCount = 0;
         for (ResourceCollection col : collections) {
-            logger.debug("{} : {}", col, col.getResources());
+            logger.debug("{} : {}", col, col.getManagedResources());
 //            if (col instanceof InternalCollection) {
 //                assertEquals(1, col.getResources().size());
 //                internalCount++;
 //            } else {
-                assertEquals(2, col.getResources().size());
+                assertEquals(2, col.getManagedResources().size());
 //            }
         }
         assertEquals("we should have one new adhoc collection", 2, newSharedCount - origSharedCount);

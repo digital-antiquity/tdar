@@ -73,7 +73,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
 
         if (getLogger().isTraceEnabled()) {
             getLogger().debug("authUser: {}", resource.getAuthorizedUsers());
-            getLogger().debug("  shares: {}", resource.getSharedCollections());
+            getLogger().debug("  shares: {}", resource.getManagedResourceCollections());
         }
 
         for (AuthorizedUser au : resource.getAuthorizedUsers()) {

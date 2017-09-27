@@ -480,8 +480,8 @@ public class ResourceServiceImpl implements ResourceService  {
                          // manage session (when called from bulk upload, need to make sure we're on the session, as the incomming may be on a different thread)
                          shared = genericDao.find(ResourceCollection.class, shared.getId());
                      }
-                     shared.getResources().add(resource);
-                     resource.getSharedCollections().add(shared);
+                     shared.getManagedResources().add(resource);
+                     resource.getManagedResourceCollections().add(shared);
                  } else {
                      throw new TdarRecoverableRuntimeException("resourceService.invalid_collectiontype");
                 }
@@ -949,9 +949,9 @@ public class ResourceServiceImpl implements ResourceService  {
                     ir.setDate(date);
                 }
             }
-            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getSharedCollections().contains(collectionToAdd)) { 
-                r.getSharedCollections().add(collectionToAdd);
-                collectionToAdd.getResources().add(r);
+            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getManagedResourceCollections().contains(collectionToAdd)) { 
+                r.getManagedResourceCollections().add(collectionToAdd);
+                collectionToAdd.getManagedResources().add(r);
             }
             if (different) {
                 ResourceRevisionLog rrl = new ResourceRevisionLog("Resource batch modified (basic)", r, authenticatedUser, RevisionLogType.EDIT);

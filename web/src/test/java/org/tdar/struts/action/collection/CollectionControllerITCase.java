@@ -129,21 +129,20 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         ResourceCollection collection = 
                 generateResourceCollection(name, description, true, users, getUser(), resources, null, ShareCollectionController.class, ResourceCollection.class);
         Long collectionid = collection.getId();
-        logger.info("{}", collection.getResources());
+        logger.info("{}", collection.getManagedResources());
         assertFalse(collectionid.equals(-1L));
         collection = null;
         ResourceCollection foundCollection = genericService.find(ResourceCollection.class, collectionid);
         assertNotNull(foundCollection);
         assertEquals(3, foundCollection.getAuthorizedUsers().size());
-        assertEquals(2, foundCollection.getResources().size());
+        assertEquals(2, foundCollection.getManagedResources().size());
 
         assertEquals(name, foundCollection.getName());
         assertEquals(description, foundCollection.getDescription());
-        assertEquals(CollectionType.SHARED, foundCollection.getType());
         assertEquals(SortOption.RESOURCE_TYPE, foundCollection.getSortBy());
 
-        assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile2));
-        assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile));
+        assertTrue(foundCollection.getManagedResources().contains(generateInformationResourceWithFile2));
+        assertTrue(foundCollection.getManagedResources().contains(generateInformationResourceWithFile));
 
         int count = 0;
         for (AuthorizedUser user : foundCollection.getAuthorizedUsers()) {

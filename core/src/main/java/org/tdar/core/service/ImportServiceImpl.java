@@ -397,15 +397,15 @@ public class ImportServiceImpl implements ImportService  {
             for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
                 latLong.obfuscate();
             }
-            rec.getSharedCollections().clear();
+            rec.getManagedResourceCollections().clear();
             rec.getAuthorizedUsers().clear();
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            for (ResourceCollection rc : rec.getSharedCollections()) {
-                rc.getResources().add(rec);
+            for (ResourceCollection rc : rec.getManagedResourceCollections()) {
+                rc.getManagedResources().add(rec);
             }
         }
         genericService.detachFromSession(rec);
@@ -587,11 +587,11 @@ public class ImportServiceImpl implements ImportService  {
             if (collection instanceof ResourceCollection) {
                 logger.debug("field:: {} , {}", fieldName, collection);
                 if (StringUtils.equals("sharedCollections", fieldName)) {
-                resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getManagedResourceCollections()),
                         authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.SHARED);
                 } else {
-                    resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
+                    resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getManagedResourceCollections()),
                             authenticatedUser, true,
                             ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.LIST);
                     
@@ -632,9 +632,9 @@ public class ImportServiceImpl implements ImportService  {
             ResourceCollection collection = (ResourceCollection) toReturn;
             // making sure that the collection's creators and other things are on the sessions properly too
             resetOwnerOnSession((ResourceCollection)collection);
-            collection.getResources().add((Resource) resource);
+            collection.getManagedResources().add((Resource) resource);
             if (collection instanceof ResourceCollection) {
-                ((Resource) resource).getSharedCollections().add((ResourceCollection)collection);
+                ((Resource) resource).getManagedResourceCollections().add((ResourceCollection)collection);
 //            } else if (collection instanceof InternalCollection) {
 //                ((Resource) resource).getInternalCollections().add((InternalCollection)collection);
 //                
@@ -715,7 +715,7 @@ private void validateInvalidImportFields(ResourceCollection incomingResource, Td
 //            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
 //        }
 
-        if (incomingResource instanceof ResourceCollection && CollectionUtils.isNotEmpty(((ResourceCollection)incomingResource).getResources())) {
+        if (incomingResource instanceof ResourceCollection && CollectionUtils.isNotEmpty(((ResourceCollection)incomingResource).getManagedResources())) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
         }
 

@@ -352,7 +352,7 @@ public class ItemServiceImpl implements ItemService {
             }
             rc.setName(collection);
             rc.setDescription("(from dropbox)");
-            object.getSharedCollections().add(rc);
+            object.getManagedResourceCollections().add(rc);
         }
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);

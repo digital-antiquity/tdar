@@ -406,10 +406,10 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         ResourceCollection sharedCollection = createAndSaveNewResourceCollection("test");
         TdarUser person = createAndSaveNewPerson("aas23@.com", "asdasff");
         sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, GeneralPermissions.ADMINISTER_SHARE));
-        sharedCollection.getResources().add(codingSheet);
+        sharedCollection.getManagedResources().add(codingSheet);
         genericService.saveOrUpdate(sharedCollection);
         genericService.saveOrUpdate(sharedCollection.getAuthorizedUsers());
-        codingSheet.getSharedCollections().add(sharedCollection);
+        codingSheet.getManagedResourceCollections().add(sharedCollection);
         codingSheet.getAuthorizedUsers().clear();
         genericService.saveOrUpdate(codingSheet);
         

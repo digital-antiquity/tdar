@@ -441,7 +441,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
      * @return
      */
     public boolean isBigCollection() {
-            return (((ResourceCollection) getPersistable()).getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+            return (((ResourceCollection) getPersistable()).getManagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 
     public Long getViewCount() {

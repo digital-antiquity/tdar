@@ -258,10 +258,10 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         ResourceCollection usafLowerCase = new ResourceCollection("usaf", "test", getAdminUser());
         usafLowerCase.markUpdated(getAdminUser());
         doc.setTitle("USAF");
-        usafLowerCase.getResources().add(doc);
-        titleCase.getResources().add(doc);
-        lowerCase.getResources().add(doc);
-        upperCase.getResources().add(doc);
+        usafLowerCase.getManagedResources().add(doc);
+        titleCase.getManagedResources().add(doc);
+        lowerCase.getManagedResources().add(doc);
+        upperCase.getManagedResources().add(doc);
         genericService.saveOrUpdate(usafLowerCase, titleCase, lowerCase, upperCase);
         reindex();
 

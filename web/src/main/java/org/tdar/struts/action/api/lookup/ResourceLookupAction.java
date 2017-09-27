@@ -109,7 +109,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
                 for (Indexable result_ : getResults()) {
                     Resource resource = (Resource) result_;
                     if (resource != null && resource.isViewable()) {
-                        if (resource.getSharedCollections().contains(collectionContainer) || resource.getUnmanagedResourceCollections().contains(collectionContainer)) {
+                        if (resource.getManagedResourceCollections().contains(collectionContainer) || resource.getUnmanagedResourceCollections().contains(collectionContainer)) {
                             resourceIds.add(resource.getId());
                         }
                     }

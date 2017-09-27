@@ -39,7 +39,7 @@ public class UnmanagedResourceCollectionITCase extends AbstractIntegrationTestCa
         genericService.saveOrUpdate(collection.getAuthorizedUsers());
         genericService.saveOrUpdate(collection);
       
-        resourceCollectionService.addResourceCollectionToResource(document, document.getSharedResourceCollections(), getBasicUser(), true, 
+        resourceCollectionService.addResourceCollectionToResource(document, document.getManagedResourceCollections(), getBasicUser(), true, 
                 ErrorHandling.NO_VALIDATION, collection, CollectionType.LIST);
         
         // get the Ids
@@ -58,7 +58,7 @@ public class UnmanagedResourceCollectionITCase extends AbstractIntegrationTestCa
         collection = genericService.find(ResourceCollection.class, collectionId);
         assertFalse(authenticationAndAuthorizationService.canEdit(tdarUser, document));
         assertTrue(collection.getUnmanagedResources().contains(document));
-        assertFalse(collection.getResources().contains(document));
+        assertFalse(collection.getManagedResources().contains(document));
     }
     
     @Test

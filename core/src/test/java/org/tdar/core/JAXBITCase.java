@@ -134,7 +134,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         geos.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "collected around the national monument"));
         geos.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(-77.05041825771332, 38.889028630817144, -77.04992473125458, 38.88953803591012));
         geos.setTitle("map of ceramics around national monument");
-        geos.getSharedCollections().add(new ResourceCollection("test collection", "test description", getAdminUser()));
+        geos.getManagedResourceCollections().add(new ResourceCollection("test collection", "test description", getAdminUser()));
         geos.setDescription("test map");
         geos.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 2010, 2015));
         geos.getFileProxies().add(new FileProxy("geotiff.tiff", null, VersionType.UPLOADED, FileAction.ADD));
@@ -162,8 +162,8 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     public void exportResourceCollection() throws Exception {
         ResourceCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
         for (Resource r : genericService.findRandom(Resource.class, 10)) {
-            collection.getResources().add(r);
-            r.getSharedCollections().add(collection);
+            collection.getManagedResources().add(r);
+            r.getManagedResourceCollections().add(collection);
         }
         genericService.saveOrUpdate(collection);
         genericService.synchronize();
@@ -202,7 +202,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         ResourceCollection rc = new ResourceCollection(10000L, "test", "test", SortOption.TITLE, false);
         rc.markUpdated(getAdminUser());
         rc.setOwner(getBasicUser());
-        rc.getResources().addAll(genericService.findRandom(Resource.class, 4));
+        rc.getManagedResources().addAll(genericService.findRandom(Resource.class, 4));
         genericService.saveOrUpdate(rc);
         try {
         String json = serializationService.convertToJson(rc);
@@ -279,7 +279,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     public void testJAXBProjectConversionWithTransientCollection() throws Exception {
         Project project = genericService.find(Project.class, 2420l);
         ResourceCollection col = new ResourceCollection("test", "test", getAdminUser());
-        project.getSharedCollections().add(col);
+        project.getManagedResourceCollections().add(col);
         String xml = serializationService.convertToXML(project);
         genericService.detachFromSession(project);
         logger.info(xml);
@@ -292,11 +292,11 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     public void testJaxbRoundtrip() throws Exception {
         Project project = genericService.find(Project.class, 3805l);
         ResourceCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
-        collection.getResources().add(project);
-        project.getSharedCollections().add(collection);
+        collection.getManagedResources().add(project);
+        project.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(project);
         genericService.saveOrUpdate(collection);
-        final int totalShared = project.getSharedResourceCollections().size();
+        final int totalShared = project.getManagedResourceCollections().size();
         final String xml = serializationService.convertToXML(project);
         logger.info(xml);
         genericService.detachFromSession(project);
@@ -312,8 +312,8 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
                     newProject = (Project) serializationService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
                     newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
-                    logger.debug("collections:{}",newProject.getSharedCollections());
-                     size = newProject.getSharedResourceCollections().size();
+                    logger.debug("collections:{}",newProject.getManagedResourceCollections());
+                     size = newProject.getManagedResourceCollections().size();
                 } catch (Exception e) {
                     exception = true;
                     logger.warn("exception: {}", e);

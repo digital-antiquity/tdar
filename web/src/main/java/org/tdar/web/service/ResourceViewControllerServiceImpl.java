@@ -177,7 +177,7 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
 
         // if nobody logged in, just get the shared+visible collections
         Set<ResourceCollection> collections = new HashSet<>(auth.getItem().getVisibleSharedResourceCollections());
-        addViewableCollections(collections, auth.getItem().getSharedCollections(), auth);
+        addViewableCollections(collections, auth.getItem().getManagedResourceCollections(), auth);
         return collections;
     }
 

@@ -81,21 +81,20 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         ResourceCollection collection = generateResourceCollection(name, description, true, users, resources, null);
         Long collectionid = collection.getId();
-        logger.info("{}", collection.getResources());
+        logger.info("{}", collection.getManagedResources());
         assertFalse(collectionid.equals(-1L));
         collection = null;
         ResourceCollection foundCollection = genericService.find(ResourceCollection.class, collectionid);
         assertNotNull(foundCollection);
         assertEquals(3, foundCollection.getAuthorizedUsers().size());
-        assertEquals(2, foundCollection.getResources().size());
+        assertEquals(2, foundCollection.getManagedResources().size());
 
         assertEquals(name, foundCollection.getName());
         assertEquals(description, foundCollection.getDescription());
-        assertEquals(CollectionType.SHARED, foundCollection.getType());
         assertEquals(SortOption.RESOURCE_TYPE, foundCollection.getSortBy());
 
-        assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile2));
-        assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile));
+        assertTrue(foundCollection.getManagedResources().contains(generateInformationResourceWithFile2));
+        assertTrue(foundCollection.getManagedResources().contains(generateInformationResourceWithFile));
 
         int count = 0;
         for (AuthorizedUser user : foundCollection.getAuthorizedUsers()) {
@@ -131,7 +130,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile2));
         ResourceCollection collection = generateResourceCollection(name, description, true, users, getEditorUser(), resources, null);
         Long collectionid = collection.getId();
-        logger.info("{}", collection.getResources());
+        logger.info("{}", collection.getManagedResources());
         assertFalse(collectionid.equals(-1L));
         collection = null;
         TdarUser transientSelf = new TdarUser();
@@ -229,7 +228,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
 
         Long resId = setupResource(testPerson, users);
         InformationResource generateInformationResourceWithFile = genericService.find(InformationResource.class, resId);
-        logger.debug("collections: {}", generateInformationResourceWithFile.getSharedCollections());
+        logger.debug("collections: {}", generateInformationResourceWithFile.getManagedResourceCollections());
         authorizedUserDao.clearUserPermissionsCache();
         assertTrue("user can edit based on parent of parent resource collection",
                 authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
@@ -329,7 +328,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         assertEquals(1, document.getRightsBasedResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());
-        assertEquals(1, first.getResources().size());
+        assertEquals(1, first.getManagedResources().size());
     }
 
     @Test
@@ -415,11 +414,11 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         assertFalse(result.equals(Action.SUCCESS));
         controller = generateNewInitializedController(ShareCollectionController.class);
         controller.setId(resourceCollection.getId());
-        assertEquals(0, resourceCollection.getResources().size());
+        assertEquals(0, resourceCollection.getManagedResources().size());
         resourceCollection = null;
         controller.prepare();
         controller.edit();
-        assertEquals(0, controller.getResourceCollection().getResources().size());
+        assertEquals(0, controller.getResourceCollection().getManagedResources().size());
 
     }
 
@@ -503,7 +502,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         Document document;
         document = genericService.find(Document.class, docId);
         Long id = null;
-        for (ResourceCollection c : document.getSharedCollections()) {
+        for (ResourceCollection c : document.getManagedResourceCollections()) {
             if (c instanceof ResourceCollection && ((ResourceCollection) c).getTitle().equals(TEST123)) {
                 id = c.getId();
             }

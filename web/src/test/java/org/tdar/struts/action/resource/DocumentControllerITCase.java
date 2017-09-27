@@ -105,8 +105,8 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
 //        collectionChild.setOrientation(DisplayOrientation.GRID);
         collectionChild.setDescription(collectionChild.getTitle());
         collectionChild.markUpdated(getAdminUser());
-        project.getSharedCollections().add(collectionChild);
-        collectionChild.getResources().add(project);
+        project.getManagedResourceCollections().add(collectionChild);
+        collectionChild.getManagedResources().add(project);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), collectionChild, collection);
         genericService.saveOrUpdate(collectionChild);
         genericService.saveOrUpdate(project);
@@ -137,10 +137,10 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         doc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
 //        genericService.saveOrUpdate(internal);
 
-        doc.getSharedCollections().add(collection);
+        doc.getManagedResourceCollections().add(collection);
 //        doc.getInternalCollections().add(internal);
 //        internal.getResources().add(doc);
-        collection.getResources().add(doc);
+        collection.getManagedResources().add(doc);
 //        genericService.saveOrUpdate(internal);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(doc);
@@ -647,11 +647,11 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         controller.setId(newId);
         controller.prepare();
         controller.edit();
-        ResourceCollection collection = controller.getResource().getSharedResourceCollections().iterator().next();
+        ResourceCollection collection = controller.getResource().getManagedResourceCollections().iterator().next();
         Long collectionId = collection.getId();
         logger.info("{}", collection);
         Long newId2 = createDocument(collectionname, "test 2");
-        ResourceCollection collection2 = controller.getResource().getSharedResourceCollections().iterator().next();
+        ResourceCollection collection2 = controller.getResource().getManagedResourceCollections().iterator().next();
         Long collectionId2 = collection2.getId();
         assertEquals(collectionId, collectionId2);
 

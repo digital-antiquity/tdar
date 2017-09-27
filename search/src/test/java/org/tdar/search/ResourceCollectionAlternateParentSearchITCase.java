@@ -36,8 +36,8 @@ public class ResourceCollectionAlternateParentSearchITCase extends AbstractResou
         ResourceCollection alternate = createCollection("alternate", getAdminUser());
         ResourceCollection child = createCollection("child", getAdminUser());
         ResourceCollection grantChild = createCollection("actual", getAdminUser());
-        grantChild.getResources().add(d);
-        d.getSharedCollections().add(grantChild);
+        grantChild.getManagedResources().add(d);
+        d.getManagedResourceCollections().add(grantChild);
         genericService.saveOrUpdate(d);
         genericService.saveOrUpdate(grantChild);
         genericService.synchronize();

@@ -106,7 +106,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
         if (type == CollectionType.LIST) {
             collection.getUnmanagedResources().add(doc);
         } else {
-            collection.getResources().add(doc);
+            collection.getManagedResources().add(doc);
         }
         collection.markUpdated(getUser());
         genericService.saveOrUpdate(collection);

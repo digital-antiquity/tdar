@@ -101,16 +101,16 @@ public class UserPermissionsITCase extends AbstractControllerITCase  implements 
                 }
                 evictCache();
                 Image img = genericService.find(Image.class, imgId);
-                assertEquals("we should have cleared the collections list should not be empty now", 1, img.getSharedResourceCollections().size());
+                assertEquals("we should have cleared the collections list should not be empty now", 1, img.getManagedResourceCollections().size());
                 assertNotEquals("submitter and p should not be the same", img.getSubmitter().getId(), pid);
 
-                logger.debug("resource collections: {}", img.getSharedCollections());
+                logger.debug("resource collections: {}", img.getManagedResourceCollections());
 
                 List<AuthorizedUser> authUsers = resourceCollectionService.getAuthorizedUsersForResource(img, p_);
                 assertEquals("expecting authuser list should be empty now", 0, authUsers.size());
                 img.markUpdated(getAdminUser());
                 genericService.saveOrUpdate(img);
-                img.getSharedCollections().clear();
+                img.getManagedResourceCollections().clear();
                 genericService.saveOrUpdate(img);
                 img = null;
                 evictCache();
@@ -193,16 +193,16 @@ public class UserPermissionsITCase extends AbstractControllerITCase  implements 
                 }
                 evictCache();
                 Image img = genericService.find(Image.class, imgId);
-                assertEquals("we should have cleared the collections list should not be empty now", 1, img.getSharedResourceCollections().size());
+                assertEquals("we should have cleared the collections list should not be empty now", 1, img.getManagedResourceCollections().size());
                 assertNotEquals("submitter and p should not be the same", img.getSubmitter().getId(), pid);
 
-                logger.debug("resource collections: {}", img.getSharedCollections());
+                logger.debug("resource collections: {}", img.getManagedResourceCollections());
 
                 List<AuthorizedUser> authUsers = resourceCollectionService.getAuthorizedUsersForResource(img, p_);
                 assertEquals("expecting authuser list should be empty now", 0, authUsers.size());
                 img.markUpdated(getAdminUser());
                 genericService.saveOrUpdate(img);
-                img.getSharedCollections().clear();
+                img.getManagedResourceCollections().clear();
                 genericService.saveOrUpdate(img);
                 img = null;
                 evictCache();

@@ -196,7 +196,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         List<Document> docList = new ArrayList<>();
         docList.add(createAndSaveNewInformationResource(Document.class));
         docList.add(createAndSaveNewInformationResource(Document.class));
-        resourceCollection.getResources().addAll(docList);
+        resourceCollection.getManagedResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
         TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net","bobloblaw123" );
         owner.setContributor(true);
@@ -209,7 +209,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
 
         genericService.saveOrUpdate(resourceCollection);
         for (Document doc : docList) {
-            doc.getSharedCollections().add(resourceCollection);
+            doc.getManagedResourceCollections().add(resourceCollection);
             doc.setSubmitter(owner);
             genericService.saveOrUpdate(doc);
         }
@@ -231,7 +231,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         }
         controller.setServletRequest(getServletPostRequest());
         assertNotNull(controller.getPersistable());
-        assertTrue("resource list should not be empty", !controller.getPersistable().getResources().isEmpty());
+        assertTrue("resource list should not be empty", !controller.getPersistable().getManagedResources().isEmpty());
 
         // clear the list of incoming resources, then save
         // controller.getResources().clear(); // strictly speaking this line is not
@@ -242,7 +242,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
 
         // now load our resource collection again. the resources should be gone.
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
-        assertEquals("resource list should be empty", 0, resourceCollection.getResources().size());
+        assertEquals("resource list should be empty", 0, resourceCollection.getManagedResources().size());
     }
 
     @Test
@@ -258,7 +258,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         List<Document> docList = new ArrayList<>();
         docList.add(createAndSaveNewInformationResource(Document.class));
         docList.add(createAndSaveNewInformationResource(Document.class));
-        resourceCollection.getResources().addAll(docList);
+        resourceCollection.getManagedResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
         TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net","bobloblaw1234");
         owner.setContributor(true);
@@ -291,7 +291,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         init(deleteAction, owner);
         deleteAction.prepare();
         assertNotNull(deleteAction.getPersistable());
-        assertTrue("resource list should not be empty", !((ResourceCollection)deleteAction.getPersistable()).getResources().isEmpty());
+        assertTrue("resource list should not be empty", !((ResourceCollection)deleteAction.getPersistable()).getManagedResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();
@@ -312,7 +312,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         init(deleteAction, owner);
         deleteAction.prepare();
         assertNotNull(deleteAction.getPersistable());
-        assertTrue("resource list should not be empty", !((ResourceCollection)deleteAction.getPersistable()).getResources().isEmpty());
+        assertTrue("resource list should not be empty", !((ResourceCollection)deleteAction.getPersistable()).getManagedResources().isEmpty());
         // resourceCollection.setParent(parent)
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
@@ -345,7 +345,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         resourceCollection.setDescription("testing add then remove resources");
         List<Document> docList = new ArrayList<>();
         docList.add(createAndSaveNewInformationResource(Document.class));
-        resourceCollection.getResources().addAll(docList);
+        resourceCollection.getManagedResources().addAll(docList);
         resourceCollection.setDateCreated(new Date());
         TdarUser owner = new TdarUser("bob", "loblaw", "bobloblaw@tdar.net");
         owner.setContributor(true);
@@ -367,7 +367,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         init(deleteAction, owner);
         deleteAction.prepare();
         assertNotNull(deleteAction.getPersistable());
-        assertTrue("resource list should not be empty", !((ResourceCollection)deleteAction.getPersistable()).getResources().isEmpty());
+        assertTrue("resource list should not be empty", !((ResourceCollection)deleteAction.getPersistable()).getManagedResources().isEmpty());
         assertTrue("user list should not be empty", !deleteAction.getPersistable().getAuthorizedUsers().isEmpty());
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
@@ -383,7 +383,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         init(deleteAction, owner);
         deleteAction.prepare();
         assertNotNull(deleteAction.getPersistable());
-        assertTrue("resource list should not be empty", !((ResourceCollection)deleteAction.getPersistable()).getResources().isEmpty());
+        assertTrue("resource list should not be empty", !((ResourceCollection)deleteAction.getPersistable()).getManagedResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();
@@ -674,7 +674,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         assertEquals(1, document.getRightsBasedResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());
-        assertEquals(1, first.getResources().size());
+        assertEquals(1, first.getManagedResources().size());
     }
 
     @Test
@@ -708,7 +708,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
 //        logger.debug("IC: {}", document.getInternalCollections());
         assertEquals(1, document.getRightsBasedResourceCollections().size());
         assertTrue(document.getRightsBasedResourceCollections().contains(collection1));
-        assertEquals(1, collection1.getResources().size());
+        assertEquals(1, collection1.getManagedResources().size());
         searchIndexService.index(document);
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(collection1.getId());
@@ -936,7 +936,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         vc.view();
         assertEquals("okay, we should have one resource in this collection now", 1, vc.getResults().size());
         project = genericService.find(Project.class, pid);
-        project.getSharedCollections().add(rc);
+        project.getManagedResourceCollections().add(rc);
         genericService.saveOrUpdate(project);
         evictCache();
         // okay now lets delete the resource
@@ -961,7 +961,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
 
         // so far so good. but lets make sure that the resource *is* actually in the collection
         rc = genericService.find(ResourceCollection.class, rcid);
-        assertTrue(rc.getResources().contains(project));
+        assertTrue(rc.getManagedResources().contains(project));
         logger.info("{}", resourceDeleteAction.getPersistable().getRightsBasedResourceCollections());
     }
 
@@ -975,7 +975,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         project = null;
         project = genericService.find(Project.class, pid);
         project.setStatus(Status.DELETED);
-        project.getSharedCollections().add(collection);
+        project.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(project);
         Long rcid = collection.getId();
         String slug = collection.getSlug();
@@ -1008,7 +1008,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         vc.setSlug(slug);
         vc.prepare();
         vc.view();
-        logger.info("{}", ((ResourceCollection) vc.getResourceCollection()).getResources().iterator().next().getStatus());
+        logger.info("{}", ((ResourceCollection) vc.getResourceCollection()).getManagedResources().iterator().next().getStatus());
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(vc.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page
@@ -1017,8 +1017,8 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         controller.prepare();
         controller.edit();
         // logger.info("resources:{}", controller.getResources());
-        logger.info("?:{}", controller.getResourceCollection().getResources());
-        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResourceCollection().getResources()));
+        logger.info("?:{}", controller.getResourceCollection().getManagedResources());
+        assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResourceCollection().getManagedResources()));
     }
 
     @SuppressWarnings("deprecation")
@@ -1136,11 +1136,11 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
 
         for (ResourceCollection collection : allCollections) {
             // get map of persisted resources
-            Map<Long, Resource> persistedResourceMap = PersistableUtils.createIdMap(collection.getResources());
+            Map<Long, Resource> persistedResourceMap = PersistableUtils.createIdMap(collection.getManagedResources());
 
             // get list of sparse resources, make sure it has same size & contents as the persisted resource list.
             List<Resource> sparseResources = resourceCollectionService.findCollectionSparseResources(collection.getId());
-            assertThat(collection.getResources(), hasSize(sparseResources.size()));
+            assertThat(collection.getManagedResources(), hasSize(sparseResources.size()));
 
             for (Resource sparseResource : sparseResources) {
                 logger.trace("evaluating resource:{}", sparseResource);

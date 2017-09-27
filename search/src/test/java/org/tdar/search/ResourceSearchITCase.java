@@ -788,8 +788,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         Project proj = createAndSaveNewResource(Project.class);
         ResourceCollection coll = createAndSaveNewResourceCollection(colname);
         searchIndexService.index(coll);
-        proj.getSharedCollections().add(coll);
-        coll.getResources().add(proj);
+        proj.getManagedResourceCollections().add(coll);
+        coll.getManagedResources().add(proj);
         genericService.saveOrUpdate(proj);
         genericService.saveOrUpdate(coll);
         searchIndexService.index(proj);
@@ -967,10 +967,10 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         collection.markUpdated(getUser());
         Ontology ont = createAndSaveNewInformationResource(Ontology.class);
         genericService.saveOrUpdate(collection);
-        collection.getResources().add(ont);
+        collection.getManagedResources().add(ont);
         // babysitting bidirectional relationshi[
         genericService.saveOrUpdate(collection);
-        ont.getSharedCollections().add(collection);
+        ont.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(ont);
         searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters params = new ReservedSearchParameters();

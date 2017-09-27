@@ -252,8 +252,8 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
                         resource.getResourceType(), submitter, resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
                 try {
-                    collection.getResources().add(resource);
-                    resource.getSharedCollections().add(collection);
+                    collection.getManagedResources().add(resource);
+                    resource.getManagedResourceCollections().add(collection);
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage, RevisionLogType.CREATE);
                     genericDao.saveOrUpdate(resource);
                 } catch (TdarRecoverableRuntimeException trex) {

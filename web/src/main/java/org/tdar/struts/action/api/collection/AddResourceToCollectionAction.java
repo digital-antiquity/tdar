@@ -70,7 +70,7 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
     @PostOnly
     @Action(value="addResource")
     public String execute() throws Exception {
-            resourceCollectionService.addResourceCollectionToResource(resource, resource.getSharedCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, toCollection, type);
+            resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, toCollection, type);
         
         setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
         return super.execute();

@@ -150,8 +150,8 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         col.setName("test");
         col.setDescription("test");
         col.markUpdated(getAdminUser());
-        col.getResources().add(document);
-        document.getSharedCollections().add(col);
+        col.getManagedResources().add(document);
+        document.getManagedResourceCollections().add(col);
         genericService.saveOrUpdate(col);
         genericService.saveOrUpdate(document);
         dailyTask.execute();
