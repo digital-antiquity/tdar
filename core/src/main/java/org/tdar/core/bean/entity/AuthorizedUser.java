@@ -201,6 +201,8 @@ public class AuthorizedUser extends AbstractPersistable {
         this.dateExpires = dateExpires;
     }
 
+    @XmlElement(name = "createdByRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getCreatedBy() {
         return createdBy;
     }

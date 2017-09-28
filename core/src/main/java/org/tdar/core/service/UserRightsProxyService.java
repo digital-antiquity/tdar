@@ -139,7 +139,7 @@ public class UserRightsProxyService {
     public void convertProxyToItems(List<UserRightsProxy> proxies, TdarUser authenticatedUser, List<AuthorizedUser> authorizedUsers, List<UserInvite> invites) {
         for (UserRightsProxy proxy : proxies) {
             if (proxy == null || proxy.isEmpty()) {
-                return;
+                continue;
             } 
 
             if (proxy.getEmail() != null || proxy.getInviteId() != null) {
