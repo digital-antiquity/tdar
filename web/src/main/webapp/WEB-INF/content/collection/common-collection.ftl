@@ -99,7 +99,7 @@
                 disabled=disabled
             extraClass=""/>
 
-        <#if editor && ((resourceCollection.unmanagedResources![])?size > 0 || (resourceCollection.resources![])?size > 0) >
+        <#if editor && ((resourceCollection.managedResources![])?size > 0) >
             <@nav.makeLink
             namespace="${path}/admin/batch"
             action="${id?c}"
