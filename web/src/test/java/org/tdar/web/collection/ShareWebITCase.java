@@ -29,7 +29,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String url = url_;
         url = url.substring(0, url.lastIndexOf("/"));
         String id = org.apache.commons.lang3.StringUtils.substringAfterLast(url, "/");
-        gotoPage("/share/"+ id +"/edit");
+        gotoPage("/collection/"+ id +"/edit");
     }
 
     
@@ -270,7 +270,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testAssignNonUserToCollection() {
         // try to create a collection and assign it to a person that is not a registered user.
-        gotoPage("/share/add");
+        gotoPage("/collection/add");
 
         // first lets start populating the person fields with a person that does not yet exist. tDAR should not create the person record on the fly, and
         // should not assign to the collection.
@@ -303,7 +303,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testAssignNonUserToCollection2() {
-        gotoPage("/share/add");
+        gotoPage("/collection/add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
@@ -344,7 +344,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testCollectionRightsRevoke() {
         //create test collection with basic user having adminGroup rights
-        gotoPage("/share/add");
+        gotoPage("/collection/add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
@@ -354,7 +354,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         String url = getCurrentUrlPath();
         Long id = extractTdarIdFromCurrentURL();
-        gotoPage("/share/" + id + "/rights");
+        gotoPage("/collection/" + id + "/rights");
         setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
         setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_SHARE.toString());
         submitForm();
