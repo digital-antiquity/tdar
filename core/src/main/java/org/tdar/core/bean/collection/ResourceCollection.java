@@ -309,7 +309,7 @@ public class ResourceCollection extends AbstractPersistable
     private boolean hidden = false;
 
     @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedCollections", targetEntity = Resource.class)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "managedResourceCollections", targetEntity = Resource.class)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.SharedCollection.resources")
     private Set<Resource> managedResources = new LinkedHashSet<Resource>();
