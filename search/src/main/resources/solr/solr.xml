@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solr configSetBaseDir="configset">
+    <shardHandlerFactory name="shardHandlerFactory"
+        class="HttpShardHandlerFactory">
+        <int name="socketTimeout">${socketTimeout:1000}</int>
+        <int name="connTimeout">${connTimeout:1000}</int>
+        <int name="connectionTimeoutMillis">${connTimeout:1000}</int>
+    </shardHandlerFactory>
+</solr>

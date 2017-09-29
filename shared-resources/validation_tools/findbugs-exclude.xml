@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+	<!-- ignore generated classes from Clover -->
+	<Match>
+		<Class name="~.*\.*__CLR3*" />
+		<Class name="~.*?__CLR3*" />
+	</Match>
+	<Match>
+		<Class name="~.*_.*" />
+	</Match>
+
+	<!-- ignore test classes -->
+	<Match>
+		<Class name="~.*Test$" />
+	</Match>
+	<Match>
+		<Class name="~.*TestCase$" />
+	</Match>
+	<Match>
+		<Class name="~.*ITCase$" />
+	</Match>
+
+	<!-- ignore nonsensical warnings that don't show in eclipse version, remove when clover issues resolved	
+	<Match>
+		<Bug pattern="BIT_AND_ZZ" />
+	</Match>
+	<Match>
+		<Bug pattern="BIT_IOR" />
+	</Match>
+	-->
+
+</FindBugsFilter>

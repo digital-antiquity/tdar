@@ -1,0 +1,37 @@
+version: '3'
+services:
+  db:
+    image: mdillon/postgis:9.5
+    volumes:
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh
+      - ./postgres:/var/lib/postgresql/data
+      - ../database/src/main/resources:/liquibase
+    # ports:
+    #     - "5432:5432"
+    environment:
+        POSTGRES_PASSWORD: tdar
+        POSTGRES_USERNAME: tdar
+  solr:
+     image: solr
+     ports:
+      - "8983:8983"
+     volumes:
+       - ../search/src/main/resources/solr:/opt/solr/server/solr
+     entrypoint:
+       - docker-entrypoint.sh
+       - solr-precreate
+       - mycore
+  web:
+    build: .
+    image: tdar/web
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2
+    ports:
+      - "8280:8280"
+    links:
+      - db
+      - solr
+      
+## docker-compose build --pull
+## docker-compose up
