@@ -179,7 +179,11 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
                     msg = ((InstitutionSearchAction) controller).searchInstitutions();
                     break;
                 case RESOURCE:
-                    msg = ((AdvancedSearchController) controller).search();
+                    if (controller instanceof AdvancedSearchDownloadAction) {
+                        msg = ((AdvancedSearchDownloadAction) controller).viewExcelReport();
+                    } else {
+                        msg = ((AdvancedSearchController) controller).search();
+                    }
                     break;
                 default:
                     fail();
