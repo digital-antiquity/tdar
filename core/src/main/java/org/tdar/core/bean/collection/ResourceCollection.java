@@ -854,11 +854,12 @@ public class ResourceCollection extends AbstractPersistable
     }
 
     @XmlElementWrapper(name = "unmanagedResources")
-    @XmlElement(name = "resourceId")
+    @XmlElement(name = "unmanagedResourceId")
     public Set<Long> getUnmanagedResourceIds() {
         return unmanagedResourceIds;
     }
 
+    @Transient
     public void setUnmanagedResourceIds(Set<Long> unmanagedResourceIds) {
         this.unmanagedResourceIds = unmanagedResourceIds;
     }

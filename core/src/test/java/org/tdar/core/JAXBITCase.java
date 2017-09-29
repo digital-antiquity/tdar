@@ -305,7 +305,8 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         final String xml = serializationService.convertToXML(project);
         logger.info(xml);
         genericService.detachFromSession(project);
-
+        project = null;
+        collection = null;
         setVerifyTransactionCallback(new TransactionCallback<Project>() {
 
             @Override
@@ -321,7 +322,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
                      size = newProject.getManagedResourceCollections().size();
                 } catch (Exception e) {
                     exception = true;
-                    logger.warn("exception: {}", e);
+                    logger.warn("exception: {}", e,e);
                 } finally {
                     // genericService.delete(newProject.getResourceCollections());
                     // genericService.delete(newProject);
