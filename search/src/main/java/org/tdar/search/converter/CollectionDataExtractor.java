@@ -47,7 +47,7 @@ public class CollectionDataExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
             }
@@ -75,7 +75,7 @@ public class CollectionDataExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, GeneralPermissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
@@ -92,7 +92,7 @@ public class CollectionDataExtractor {
     }
 
     public void extractHierarchy() {
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
             }

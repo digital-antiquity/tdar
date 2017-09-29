@@ -324,8 +324,8 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, controller.save());
         evictCache();
-        ResourceCollection first = document.getRightsBasedResourceCollections().iterator().next();
-        assertEquals(1, document.getRightsBasedResourceCollections().size());
+        ResourceCollection first = document.getManagedResourceCollections().iterator().next();
+        assertEquals(1, document.getManagedResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());
         assertEquals(1, first.getManagedResources().size());

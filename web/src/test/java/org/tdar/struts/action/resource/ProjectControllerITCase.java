@@ -194,7 +194,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         genericService.saveOrUpdate(testCollection);
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
-        logger.info("rc:{}", project_.getRightsBasedResourceCollections());
+        logger.info("rc:{}", project_.getManagedResourceCollections());
         assertFalse(authenticationAndAuthorizationService.canEditResource(testOwner, testResource, GeneralPermissions.MODIFY_METADATA));
         assertFalse(authenticationAndAuthorizationService.canEditResource(testView, testResource, GeneralPermissions.MODIFY_METADATA));
 
@@ -263,7 +263,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         Project loadedProject = genericService.find(Project.class, id);
         logger.info("{}", loadedProject);
         // confirm that the controller added the list of resource collections to the project
-        assertTrue("collection list shouldn't be empty", loadedProject.getRightsBasedResourceCollections().size() > 0);
+        assertTrue("collection list shouldn't be empty", loadedProject.getManagedResourceCollections().size() > 0);
 
         logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
         evictCache();
@@ -327,7 +327,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         Project loadedProject = genericService.find(Project.class, id);
         assertNotNull(loadedProject);
         Collection<ResourceCollection> cols = new HashSet<>();
-        for (ResourceCollection rrc : loadedProject.getRightsBasedResourceCollections()) {
+        for (ResourceCollection rrc : loadedProject.getManagedResourceCollections()) {
             cols.add((ResourceCollection)rrc);
         }
         assertUniqueCollections(cols, name1, name2);

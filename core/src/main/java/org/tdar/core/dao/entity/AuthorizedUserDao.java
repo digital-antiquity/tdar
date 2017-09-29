@@ -83,7 +83,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         }
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
                 ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
         }

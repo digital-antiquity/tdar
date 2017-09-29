@@ -93,7 +93,7 @@ public class DataTableColumnDao extends HibernateBase<DataTableColumn> {
         save(codingSheet);
         if (dataset != null) {
             codingSheet.setProject(dataset.getProject());
-            for (ResourceCollection collection : dataset.getRightsBasedResourceCollections()) {
+            for (ResourceCollection collection : dataset.getManagedResourceCollections()) {
                 if (collection instanceof ResourceCollection) {
                     codingSheet.getManagedResourceCollections().add((ResourceCollection) collection);
                 }

@@ -44,7 +44,7 @@ public class ResourceRightsExtractor {
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, GeneralPermissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
@@ -69,7 +69,7 @@ public class ResourceRightsExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, GeneralPermissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
@@ -86,7 +86,7 @@ public class ResourceRightsExtractor {
     }
 
     public void extractCollectionHierarchy() {
-        Set<ResourceCollection> collections = new HashSet<>(resource.getRightsBasedResourceCollections());
+        Set<ResourceCollection> collections = new HashSet<>(resource.getManagedResourceCollections());
 //        collections.addAll(resource.getUnmanagedResourceCollections());
         for (ResourceCollection collection : collections) {
             if (collection instanceof ResourceCollection) {

@@ -342,7 +342,7 @@ public class ImportServiceImpl implements ImportService  {
         Set<AuthorizedUser> aus = new HashSet<>();
         if (incomingResource != null) {
             // for non-admins don't want to have to figure out rights check logic, so reject authorizedUsers
-            incomingResource.getRightsBasedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
+            incomingResource.getManagedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
             incomingResource.getUnmanagedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
             if (CollectionUtils.isNotEmpty(aus) && !authenticationAndAuthorizationService.isAdministrator(user)) {
                 throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
@@ -586,7 +586,7 @@ public class ImportServiceImpl implements ImportService  {
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
             if (collection instanceof ResourceCollection) {
                 logger.debug("field:: {} , {}", fieldName, collection);
-                if (StringUtils.equals("sharedCollections", fieldName)) {
+                if (StringUtils.equals(Resource.RESOURCE_COLLECTIONS, fieldName)) {
                 resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getManagedResourceCollections()),
                         authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.SHARED);

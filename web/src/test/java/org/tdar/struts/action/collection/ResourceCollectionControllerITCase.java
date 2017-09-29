@@ -514,7 +514,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         // WHY DOES THE SYNCHRONIZE ON THE INDEX CALL DO ANYTHING HERE VS THE
         // SYNCHRONIZE ABOVE
         testFile = genericService.find(Document.class, fileId);
-        logger.info("{} : {}", testFile, testFile.getRightsBasedResourceCollections());
+        logger.info("{} : {}", testFile, testFile.getManagedResourceCollections());
 
         controller_.setRecordsPerPage(1000);
         assertEquals(Action.SUCCESS, controller_.browseCollections());
@@ -538,7 +538,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         collection2 = null;
 //        assertFalse(collections.contains(collection1Id));
         assertFalse(collections.contains(collection2Id));
-        assertEquals(0, testFile.getRightsBasedResourceCollections().size());
+        assertEquals(0, testFile.getManagedResourceCollections().size());
         assertEquals(1, testFile.getUnmanagedResourceCollections().size());
         parentCollection = genericService.find(ResourceCollection.class, id);
         assertTrue(!parentCollection.isHidden());
@@ -670,8 +670,8 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         controller.setServletRequest(getServletPostRequest());
         controller.getShares().add(fakeIncoming);
         assertEquals(Action.SUCCESS, controller.save());
-        ResourceCollection first = document.getRightsBasedResourceCollections().iterator().next();
-        assertEquals(1, document.getRightsBasedResourceCollections().size());
+        ResourceCollection first = document.getManagedResourceCollections().iterator().next();
+        assertEquals(1, document.getManagedResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());
         assertEquals(1, first.getManagedResources().size());
@@ -704,10 +704,10 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
 
         evictCache();
         document = genericService.find(Document.class, id);
-        logger.debug("RRC: {}", document.getRightsBasedResourceCollections());
+        logger.debug("RRC: {}", document.getManagedResourceCollections());
 //        logger.debug("IC: {}", document.getInternalCollections());
-        assertEquals(1, document.getRightsBasedResourceCollections().size());
-        assertTrue(document.getRightsBasedResourceCollections().contains(collection1));
+        assertEquals(1, document.getManagedResourceCollections().size());
+        assertTrue(document.getManagedResourceCollections().contains(collection1));
         assertEquals(1, collection1.getManagedResources().size());
         searchIndexService.index(document);
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
@@ -962,7 +962,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         // so far so good. but lets make sure that the resource *is* actually in the collection
         rc = genericService.find(ResourceCollection.class, rcid);
         assertTrue(rc.getManagedResources().contains(project));
-        logger.info("{}", resourceDeleteAction.getPersistable().getRightsBasedResourceCollections());
+        logger.info("{}", resourceDeleteAction.getPersistable().getManagedResourceCollections());
     }
 
     @Test
@@ -1001,8 +1001,8 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
 
         searchIndexService.index(project2);
 
-        logger.info("{}", project2.getRightsBasedResourceCollections());
-        assertTrue(PersistableUtils.extractIds(project2.getRightsBasedResourceCollections()).contains(rcid));
+        logger.info("{}", project2.getManagedResourceCollections());
+        assertTrue(PersistableUtils.extractIds(project2.getManagedResourceCollections()).contains(rcid));
         CollectionViewAction<ResourceCollection> vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(rcid);
         vc.setSlug(slug);

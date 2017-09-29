@@ -156,6 +156,8 @@ public class Resource implements Persistable,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, ConfidentialViewable, Addressable,
         DeHydratable, XmlLoggable, Slugable, HasAuthorizedUsers {
 
+    public static final String RESOURCE_COLLECTIONS = "resourceCollections";
+
     private static final long serialVersionUID = -230400285817185637L;
 
     @Transient
@@ -1219,7 +1221,12 @@ public class Resource implements Persistable,
      * Marking these as comments due to list collections not being currently implemented.
      * @return
      */
-    @XmlTransient
+    @XmlElementWrapper(name = "unmanagedResourceCollections")
+    @XmlElementRefs({
+            @XmlElementRef(name = "resourceCollection", type = ResourceCollection.class, required = false),
+            @XmlElementRef(name = "resourceCollectionRef", type = JAXBPersistableRef.class, required = false)
+    })
+    @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
     public Set<ResourceCollection> getUnmanagedResourceCollections() {
         return unmanagedResourceCollections;
     }
@@ -1228,7 +1235,7 @@ public class Resource implements Persistable,
         this.unmanagedResourceCollections = publicResourceCollections;
     }
 
-    @XmlElementWrapper(name = "resourceCollections")
+    @XmlElementWrapper(name = RESOURCE_COLLECTIONS)
     @XmlElementRefs({
             @XmlElementRef(name = "resourceCollection", type = ResourceCollection.class, required = false),
             @XmlElementRef(name = "resourceCollectionRef", type = JAXBPersistableRef.class, required = false)
@@ -1239,21 +1246,21 @@ public class Resource implements Persistable,
     }
 
 
-    @Transient
-    public Set<ResourceCollection> getRightsBasedResourceCollections() {
-        Set<ResourceCollection> collections = new HashSet<>();
-        if (CollectionUtils.isNotEmpty(getManagedResourceCollections())) {
-            collections.addAll(getManagedResourceCollections());
-        }
-        Iterator<ResourceCollection> iterator = collections.iterator();
-        while (iterator.hasNext()) {
-            ResourceCollection next = iterator.next();
-            if (next == null || CollectionUtils.isEmpty(next.getManagedResources())) {
-                iterator.remove();
-            }
-        }
-        return collections;
-    }
+//    @Transient
+//    public Set<ResourceCollection> getRightsBasedResourceCollections() {
+//        Set<ResourceCollection> collections = new HashSet<>();
+//        if (CollectionUtils.isNotEmpty(getManagedResourceCollections())) {
+//            collections.addAll(getManagedResourceCollections());
+//        }
+//        Iterator<ResourceCollection> iterator = collections.iterator();
+//        while (iterator.hasNext()) {
+//            ResourceCollection next = iterator.next();
+//            if (next == null || CollectionUtils.isEmpty(next.getManagedResources())) {
+//                iterator.remove();
+//            }
+//        }
+//        return collections;
+//    }
 
 
     @Override

@@ -470,7 +470,7 @@ public class ResourceServiceImpl implements ResourceService  {
                 resource.getAuthorizedUsers().add(newAuthorizedUser);
 
             }
-            for (ResourceCollection collection : proxy.getRightsBasedResourceCollections()) {
+            for (ResourceCollection collection : proxy.getManagedResourceCollections()) {
                  if (collection instanceof ResourceCollection){
                      ResourceCollection shared = (ResourceCollection)collection;
                      logger.info("adding to shared collection : {} ", collection);
