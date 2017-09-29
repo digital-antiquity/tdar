@@ -237,6 +237,13 @@ public class ResourceCollection extends AbstractPersistable
     // fixme: replace resourceIds hack with service/dao with optimized DAO save() method. (TDAR-5605)
     private Set<Long> resourceIds = new HashSet<>();
 
+    @ElementCollection
+    @CollectionTable(name = "unmanaged_collection_resource", joinColumns = @JoinColumn(name = "collection_id"))
+    @Column(name = "resource_id")
+    @Immutable
+    // fixme: replace resourceIds hack with service/dao with optimized DAO save() method. (TDAR-5605)
+    private Set<Long> unmanagedResourceIds = new HashSet<>();
+
     private transient boolean created;
 
     @Enumerated(EnumType.STRING)
@@ -424,6 +431,7 @@ public class ResourceCollection extends AbstractPersistable
         this.parent = parent;
     }
 
+    @XmlTransient
     public Set<Resource> getUnmanagedResources() {
         return unmanagedResources;
     }
@@ -843,5 +851,15 @@ public class ResourceCollection extends AbstractPersistable
             return true;
         }
         return false;
+    }
+
+    @XmlElementWrapper(name = "unmanagedResources")
+    @XmlElement(name = "resourceId")
+    public Set<Long> getUnmanagedResourceIds() {
+        return unmanagedResourceIds;
+    }
+
+    public void setUnmanagedResourceIds(Set<Long> unmanagedResourceIds) {
+        this.unmanagedResourceIds = unmanagedResourceIds;
     }
 }

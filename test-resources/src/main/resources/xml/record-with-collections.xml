@@ -46,9 +46,6 @@
     <tdar:title>abcd</tdar:title>
     <tdar:unmanagedResourceCollections>
             <tdar:resourceCollection hidden="false">
-                <tdar:resources>
-                    <tdar:resourceId>4232</tdar:resourceId>
-                </tdar:resources>
                 <tdar:name>54321</tdar:name>
                 <tdar:orientation>LIST</tdar:orientation>
     		    <tdar:properties>
@@ -59,7 +56,11 @@
     		        <tdar:subCollectionsEnabled>false</tdar:subCollectionsEnabled>
     		        <tdar:whitelabel>false</tdar:whitelabel>
     		    </tdar:properties>
+                <tdar:resources/>
                 <tdar:sortBy>TITLE</tdar:sortBy>
+                <tdar:unmanagedResources>
+                    <tdar:resourceId>4232</tdar:resourceId>
+                </tdar:unmanagedResources>
             </tdar:resourceCollection>
         </tdar:unmanagedResourceCollections>
     <tdar:url></tdar:url>

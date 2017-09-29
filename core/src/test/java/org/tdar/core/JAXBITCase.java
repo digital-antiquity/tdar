@@ -47,6 +47,7 @@ import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -279,7 +280,11 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     public void testJAXBProjectConversionWithTransientCollection() throws Exception {
         Project project = genericService.find(Project.class, 2420l);
         ResourceCollection col = new ResourceCollection("test", "test", getAdminUser());
+        ResourceCollection col2 = new ResourceCollection("test2", "test2", getAdminUser());
         project.getManagedResourceCollections().add(col);
+        project.getUnmanagedResourceCollections().add(col2);
+        col2.setProperties(new CollectionDisplayProperties());
+        col2.getProperties().setWhitelabel(true);
         String xml = serializationService.convertToXML(project);
         genericService.detachFromSession(project);
         logger.info(xml);
