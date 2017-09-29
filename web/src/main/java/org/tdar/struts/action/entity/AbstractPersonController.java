@@ -34,16 +34,14 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
     }
 
     public void validateUniqueEmail() {
-        if (StringUtils.isBlank(getPersistable().getEmail())) {
+        if (StringUtils.isBlank(email)) {
             return;
         }
 
         // person2 should be null or same person being edited. Anything else means email address is not unique.
         Person person2 = entityService.findByEmail(email);
-        if (person2 != null) {
-            if (!person2.equals(getPersistable())) {
-                addFieldError("email", getText("userAccountController.username_not_available"));
-            }
+        if (person2 != null && !person2.equals(getPersistable())) {
+            addFieldError("email", getText("userAccountController.username_not_available"));
         }
     }
 
@@ -56,9 +54,8 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
     @Validations(
             emails = { @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "email", key = "userAccountController.email_invalid") },
             stringLengthFields = { @StringLengthFieldValidator(type = ValidatorType.SIMPLE, fieldName = "contributorReason",
-                    key = "userAccountController.contributorReason_invalid", maxLength = "512") }
-            )
-            public String save(Person person) {
+                    key = "userAccountController.contributorReason_invalid", maxLength = "512") })
+    public String save(Person person) {
         return savePersonInfo(person);
     }
 

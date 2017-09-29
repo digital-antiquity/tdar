@@ -63,6 +63,7 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogType;
@@ -311,7 +312,9 @@ public abstract class AbstractSeleniumWebITCase {
                 caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
                 // profile.setPreference("browser.download.dir","c:\\downloads");
-                rawDriver = new FirefoxDriver(fb, profile, caps);
+                FirefoxOptions options = new FirefoxOptions(caps);
+                options.setProfile(profile);
+                rawDriver = new FirefoxDriver(options);
 
                 break;
             case CHROME:

@@ -61,15 +61,6 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
         setStats(statisticService.getUsageStatsObjectForResource(this, getResource()));
     }
 
-    public List<AggregateDayViewStatistic> getUsageStatsForResources() {
-        return stats.getUsageStatsForResource();
-    }
-
-
-    public Map<String, List<AggregateDownloadStatistic>> getDownloadStats() {
-        return stats.getDownloadStats();
-    }
-
     public Long getId() {
         return id;
     }
@@ -109,38 +100,6 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
     @Override
     public InternalTdarRights getAdminRights() {
         return InternalTdarRights.EDIT_ANY_RESOURCE;
-    }
-
-    public TreeSet<Integer> getYearLabels() {
-        return stats.getYearLabels();
-    }
-
-    public TreeSet<String> getMonthLabels() {
-        return stats.getMonthLabels();
-    }
-
-    public TreeSet<String> getDayLabels() {
-        return stats.getDayLabels();
-    }
-
-    public Map<String, List<Long>> getAllByYear() {
-        return stats.getAllByYear();
-    }
-
-    public Map<String, List<Long>> getAllByMonth() {
-        return stats.getAllByMonth();
-    }
-
-    public Map<String, List<Long>> getAllByDay() {
-        return stats.getAllByDay();
-    }
-
-    public String getGraphJson() {
-        return stats.getGraphJson();
-    }
-
-    public String getCategoryKeys() {
-        return stats.getCategoryKeys();
     }
     public ResourceStatisticsObject getStats() {
         return stats;
