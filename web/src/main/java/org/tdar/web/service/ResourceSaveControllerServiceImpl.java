@@ -25,7 +25,7 @@ import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -403,7 +403,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
             resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getManagedResourceCollections(),
-                    authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.SHARED);
+                    authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.MANAGED);
 
             if (!authorizationService.canEdit(authWrapper.getAuthenticatedUser(), authWrapper.getItem())) {
                 // addActionError("abstractResourceController.cannot_remove_collection");
@@ -414,7 +414,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             logger.debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }
         resourceCollectionService.saveResourceCollections(authWrapper.getItem(), resourceCollections, authWrapper.getItem().getUnmanagedResourceCollections(),
-                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.LIST);
+                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.UNMANGED);
 
         if (rcp.getResource() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) rcp.getResource();
@@ -453,13 +453,13 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             List<ResourceCollection> retainedListCollections) {
         logger.debug("loadEffective... (save)");
         for (ResourceCollection rc : auth.getItem().getManagedResourceCollections()) {
-            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionType.SHARED)) {
+            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionResourceSection.MANAGED)) {
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
         for (ResourceCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
-            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionType.LIST)) {
+            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionResourceSection.UNMANGED)) {
                 retainedListCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }

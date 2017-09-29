@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -37,8 +37,8 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         loginAdmin();
     }
 
-    public void createTestCollection(CollectionType collectionType, String name, String desc, List<? extends Resource> someResources) {
-        gotoPage(String.format("/%s/add", collectionType.getUrlNamespace()));
+    public void createTestCollection(CollectionResourceSection collectionType, String name, String desc, List<? extends Resource> someResources) {
+        gotoPage("/collection/add");
         setInput("resourceCollection.name", name);
         setInput("resourceCollection.description", desc);
 

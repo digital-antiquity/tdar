@@ -13,7 +13,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -72,7 +72,7 @@ public class ResourceRightsController extends AbstractRightsController implement
     private List<ResourceCollection> retainedSharedCollections = new ArrayList<>();
     private List<ResourceCollection> effectiveShares = new ArrayList<>();
 
-    private CollectionType type;
+    private CollectionResourceSection type;
     @Override
     public boolean authorize() {
         return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_RECORD);
@@ -209,11 +209,11 @@ public class ResourceRightsController extends AbstractRightsController implement
         this.shares = shares;
     }
 
-    public CollectionType getType() {
+    public CollectionResourceSection getType() {
         return type;
     }
 
-    public void setType(CollectionType type) {
+    public void setType(CollectionResourceSection type) {
         this.type = type;
     }
 

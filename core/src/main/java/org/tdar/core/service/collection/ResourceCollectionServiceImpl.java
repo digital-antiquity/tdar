@@ -28,7 +28,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.CollectionRevisionLog;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -323,7 +323,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     @Override
     @Transactional(readOnly = false)
     public void saveResourceCollections(Resource resource, Collection<ResourceCollection> incoming, Set<ResourceCollection> current,
-            TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling, CollectionType type) {
+            TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling, CollectionResourceSection type) {
 
         // FIXME.... BROKEN???
         logger.debug("incoming {}: {} ({})", type, incoming, incoming.size());
@@ -348,7 +348,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     }
 
     private void removeResourceCollectionFromResource(Resource resource, Set<ResourceCollection> current, TdarUser authenticatedUser,
-            ResourceCollection collection, CollectionType type) {
+            ResourceCollection collection, CollectionResourceSection type) {
         if (!authorizationService.canRemoveFromCollection(collection, authenticatedUser, type)) {
             String name = "Collection";
             if (collection instanceof ResourceCollection) {
@@ -358,7 +358,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
 
         }
         current.remove(collection);
-        if (type == CollectionType.SHARED) {
+        if (type == CollectionResourceSection.MANAGED) {
             ((ResourceCollection) collection).getManagedResources().remove(resource);
             if (collection instanceof ResourceCollection) {
                 resource.getManagedResourceCollections().remove(collection);
@@ -383,7 +383,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     @Transactional(readOnly = false)
     public void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, TdarUser authenticatedUser,
             boolean shouldSave,
-            ErrorHandling errorHandling, ResourceCollection collection, CollectionType type) {
+            ErrorHandling errorHandling, ResourceCollection collection, CollectionResourceSection type) {
         logger.trace("addResourceCollectionToResource({}) {} - {}", type, collection, resource);
         if (!collection.isValidForController()) {
             logger.debug("skipping invalid: {}", collection);
@@ -411,7 +411,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
             }
 
             // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
-            if (type == CollectionType.SHARED) {
+            if (type == CollectionResourceSection.MANAGED) {
                 addToCollection(resource, (ResourceCollection) collectionToAdd);
             } else {
                 collectionToAdd.getUnmanagedResources().add(resource);
@@ -785,7 +785,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     @Transactional(readOnly = false)
     public void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove) {
-        CollectionType type = CollectionType.SHARED;
+        CollectionResourceSection type = CollectionResourceSection.MANAGED;
         Set<Resource> resources = persistable.getManagedResources();
         List<Resource> ineligibleToAdd = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
         List<Resource> ineligibleToRemove = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
@@ -843,7 +843,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
      */
     @Override
     @Transactional(readOnly = false)
-    public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionType type) {
+    public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionResourceSection type) {
         if (!authorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
                 authorizationService.canRemoveFromCollection(collection, authenticatedUser, type)) {
             throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
@@ -892,12 +892,12 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     public void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser) {
         // should I do something special?
         for (Resource resource : persistable.getManagedResources()) {
-            removeFromCollection(resource, persistable, CollectionType.SHARED);
+            removeFromCollection(resource, persistable, CollectionResourceSection.MANAGED);
             getDao().saveOrUpdate(resource);
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
         for (Resource resource : persistable.getUnmanagedResources()) {
-            removeFromCollection(resource, persistable, CollectionType.LIST);
+            removeFromCollection(resource, persistable, CollectionResourceSection.UNMANGED);
             getDao().saveOrUpdate(resource);
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
@@ -1113,8 +1113,8 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
 
     }
 
-    private void removeFromCollection(Resource resource, ResourceCollection collection, CollectionType type) {
-        if (type == CollectionType.SHARED) {
+    private void removeFromCollection(Resource resource, ResourceCollection collection, CollectionResourceSection type) {
+        if (type == CollectionResourceSection.MANAGED) {
             resource.getManagedResourceCollections().remove(collection);
             // ((SharedCollection)collection).getResources().remove(resource);
         } else {

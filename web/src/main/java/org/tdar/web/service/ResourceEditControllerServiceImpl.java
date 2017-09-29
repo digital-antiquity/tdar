@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -178,7 +178,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
 
         logger.debug("loadEffective...");
         for (ResourceCollection rc : resource.getManagedResourceCollections()) {
-            if (authorizationService.canRemoveFromCollection( rc, authenticatedUser, CollectionType.SHARED)) {
+            if (authorizationService.canRemoveFromCollection( rc, authenticatedUser, CollectionResourceSection.MANAGED)) {
                 shares.add(rc);
             } else {
                 retainedSharedCollections.add(rc);
@@ -186,7 +186,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
             }
         }
         for (ResourceCollection rc : resource.getUnmanagedResourceCollections()) {
-            if (authorizationService.canRemoveFromCollection(rc,authenticatedUser, CollectionType.LIST)) {
+            if (authorizationService.canRemoveFromCollection(rc,authenticatedUser, CollectionResourceSection.UNMANGED)) {
                 resourceCollections.add(rc);
             } else {
                 retainedListCollections.add(rc);

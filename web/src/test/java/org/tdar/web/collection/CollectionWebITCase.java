@@ -10,7 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -90,7 +90,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         someResources.add(createDocument());
         someResources.add(createDocument());
         someResources.add(createDocument());
-        createTestCollection(CollectionType.LIST, name, desc, someResources);
+        createTestCollection(CollectionResourceSection.UNMANGED, name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());
@@ -179,7 +179,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String name = "my fancy collection: " + System.currentTimeMillis();
         String desc = "description goes here: " + System.currentTimeMillis();
         List<? extends Resource> someResources = getSomeResources();
-        createTestCollection(CollectionType.LIST, name, desc, someResources);
+        createTestCollection(CollectionResourceSection.UNMANGED, name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());

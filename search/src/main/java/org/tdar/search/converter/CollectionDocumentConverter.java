@@ -4,7 +4,7 @@ import java.util.HashSet;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.Sortable;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.LookupSource;
@@ -43,7 +43,7 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, extractor.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, extractor.getUsersWhoCanAdminister());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, extractor.getUsersWhoCanView());
-        CollectionType type = CollectionType.SHARED;
+        CollectionResourceSection type = CollectionResourceSection.MANAGED;
         doc.setField(QueryFieldNames.COLLECTION_TYPE, type.name());
 
         doc.setField(QueryFieldNames.GENERAL_TYPE, LookupSource.COLLECTION.name());

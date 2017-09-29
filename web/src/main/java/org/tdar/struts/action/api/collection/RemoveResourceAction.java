@@ -8,7 +8,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
@@ -37,7 +37,7 @@ public class RemoveResourceAction extends AbstractJsonApiAction implements Prepa
     private Long resourceId;
     private Long collectionId;
     private Resource resource;
-    private CollectionType type;
+    private CollectionResourceSection type;
     private ResourceCollection collection;
 
     @Autowired
@@ -94,12 +94,12 @@ public class RemoveResourceAction extends AbstractJsonApiAction implements Prepa
     }
 
 
-    public CollectionType getType() {
+    public CollectionResourceSection getType() {
         return type;
     }
 
 
-    public void setType(CollectionType type) {
+    public void setType(CollectionResourceSection type) {
         this.type = type;
     }
     

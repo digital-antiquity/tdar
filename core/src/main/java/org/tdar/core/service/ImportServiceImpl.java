@@ -32,7 +32,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -589,11 +589,11 @@ public class ImportServiceImpl implements ImportService  {
                 if (StringUtils.equals(Resource.RESOURCE_COLLECTIONS, fieldName)) {
                 resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getManagedResourceCollections()),
                         authenticatedUser, true,
-                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.SHARED);
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionResourceSection.MANAGED);
                 } else {
                     resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getManagedResourceCollections()),
                             authenticatedUser, true,
-                            ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.LIST);
+                            ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionResourceSection.UNMANGED);
                     
                 }
             }

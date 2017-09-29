@@ -10,7 +10,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
@@ -40,7 +40,7 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
 
     private String term;
     private GeneralPermissions permission;
-    private CollectionType type;
+    private CollectionResourceSection type;
 
     @Action(value = "collection", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
@@ -84,11 +84,11 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
         this.term = term;
     }
 
-    public CollectionType getType() {
+    public CollectionResourceSection getType() {
         return type;
     }
 
-    public void setType(CollectionType type) {
+    public void setType(CollectionResourceSection type) {
         this.type = type;
     }
 

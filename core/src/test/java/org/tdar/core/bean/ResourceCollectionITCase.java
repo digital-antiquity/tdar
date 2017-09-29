@@ -14,7 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -131,14 +131,14 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         trns.setId(-1L);
         list.add(trns);
         resourceCollectionService.saveResourceCollections(image, list, image.getManagedResourceCollections(), getBasicUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.SHARED);
+                ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.MANAGED);
         logger.debug("collections: {}", image.getManagedResourceCollections());
 
         List<Long> extractIds = PersistableUtils.extractIds(image.getManagedResourceCollections());
         assertFalse(extractIds.contains(test.getId()));
         image.getManagedResourceCollections().clear();
         resourceCollectionService.saveResourceCollections(image, list, image.getManagedResourceCollections(), getEditorUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.SHARED);
+                ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.MANAGED);
         logger.debug("collections: {}", image.getManagedResourceCollections());
         extractIds = PersistableUtils.extractIds(image.getManagedResourceCollections());
         logger.debug("{} -> {}", test.getId(), extractIds);

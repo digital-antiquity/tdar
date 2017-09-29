@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -129,7 +129,7 @@ public class SearchParameters {
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes = new ArrayList<LatitudeLongitudeBox>();
     private List<ResourceType> resourceTypes = new ArrayList<>();
     private List<ObjectType> objectTypes = new ArrayList<>();
-    private List<CollectionType> collectionTypes = new ArrayList<CollectionType>();
+    private List<CollectionResourceSection> collectionTypes = new ArrayList<CollectionResourceSection>();
     private List<LookupSource> types = new ArrayList<>();
     private List<IntegratableOptions> integratableOptions = new ArrayList<IntegratableOptions>();
     private List<DocumentType> documentTypes = new ArrayList<DocumentType>();
@@ -327,7 +327,7 @@ public class SearchParameters {
             queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.GENERAL_TYPE,support_.getText("searchParameter.general_type"), Operator.OR, getTypes()));
         }
         if (CollectionUtils.isNotEmpty(getCollectionTypes())) {
-            queryPartGroup.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
+            queryPartGroup.append(new FieldQueryPart<CollectionResourceSection>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
         }
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
@@ -678,11 +678,11 @@ public class SearchParameters {
         this.types = types;
     }
 
-    public List<CollectionType> getCollectionTypes() {
+    public List<CollectionResourceSection> getCollectionTypes() {
         return collectionTypes;
     }
 
-    public void setCollectionTypes(List<CollectionType> collectionTypes) {
+    public void setCollectionTypes(List<CollectionResourceSection> collectionTypes) {
         this.collectionTypes = collectionTypes;
     }
 

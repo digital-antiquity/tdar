@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -93,7 +93,7 @@ public interface ResourceCollectionService {
     List<ResourceCollection> findPotentialParentCollections(Person person, ResourceCollection collection);
 
     void saveResourceCollections(Resource resource, Collection<ResourceCollection> incoming, Set<ResourceCollection> current,
-            TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling, CollectionType type);
+            TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling, CollectionResourceSection type);
 
     /**
      * Add a @Link ResourceCollection to a @link Resource, create as needed.
@@ -107,7 +107,7 @@ public interface ResourceCollectionService {
      */
     void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, TdarUser authenticatedUser,
             boolean shouldSave,
-            ErrorHandling errorHandling, ResourceCollection collection, CollectionType type);
+            ErrorHandling errorHandling, ResourceCollection collection, CollectionResourceSection type);
 
     /**
      * Find all @link ResourceCollection entries (shared only)
@@ -237,7 +237,7 @@ public interface ResourceCollectionService {
     void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove);
 
-    void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionType type);
+    void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionResourceSection type);
 
     void reconcileIncomingResourcesForCollectionWithoutRights(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove);

@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.query.QueryFieldNames;
@@ -42,7 +42,7 @@ public class CollectionAccessQueryPart implements QueryPart<TdarUser> {
         }
         // setup the rights; by default allow people to see things they have the rights to "view" or are public
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
-        group.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
+        group.append(new FieldQueryPart<CollectionResourceSection>(QueryFieldNames.COLLECTION_TYPE, CollectionResourceSection.MANAGED));
 
         // if the Permissions property is set, we're in the context of the Resource or Collection Controllers and are likely looking
         // for collections the person administers and thus can modify contents (ADMINISTER_GROUP); but MODIFY may be useful in the future

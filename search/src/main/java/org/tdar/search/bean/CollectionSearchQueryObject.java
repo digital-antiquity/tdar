@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 
 public class CollectionSearchQueryObject implements Serializable {
@@ -20,7 +20,7 @@ public class CollectionSearchQueryObject implements Serializable {
     private List<String> allFields = new ArrayList<>();
     private GeneralPermissions permission;
     private List<String> titles = new ArrayList<>();
-    private CollectionType type;
+    private CollectionResourceSection type;
     public boolean isIncludeHidden() {
         return includeHidden;
     }
@@ -77,11 +77,11 @@ public class CollectionSearchQueryObject implements Serializable {
         this.titles = title;
     }
 
-    public CollectionType getType() {
+    public CollectionResourceSection getType() {
         return type;
     }
 
-    public void setType(CollectionType type) {
+    public void setType(CollectionResourceSection type) {
         this.type = type;
     }
 

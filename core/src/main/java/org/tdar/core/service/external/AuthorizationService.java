@@ -10,7 +10,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -244,9 +244,9 @@ public interface AuthorizationService {
 
     boolean canEditCreator(TdarUser tdarUser, Creator<?> persistable);
 
-    boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd, CollectionType type);
+    boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd, CollectionResourceSection type);
 
-    <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user, CollectionType type);
+    <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user, CollectionResourceSection type);
 
     RightsResolver getRightsResolverFor(HasAuthorizedUsers resource, TdarUser actor, InternalTdarRights rights);
 

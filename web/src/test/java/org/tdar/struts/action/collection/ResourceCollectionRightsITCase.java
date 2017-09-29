@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -265,7 +265,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         // authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
         ResourceCollection find = genericService.find(ResourceCollection.class, childId);
         logger.debug("parent:{}",find.getParent());
-        assertTrue(authenticationAndAuthorizationService.canAddToCollection(testPerson, find, CollectionType.SHARED));
+        assertTrue(authenticationAndAuthorizationService.canAddToCollection(testPerson, find, CollectionResourceSection.MANAGED));
         authorizedUserDao.clearUserPermissionsCache();
         find = null;
         controller = generateNewInitializedController(ShareCollectionController.class, testPerson);

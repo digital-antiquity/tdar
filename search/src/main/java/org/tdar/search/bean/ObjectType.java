@@ -7,7 +7,7 @@ import java.util.List;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.PluralLocalizable;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.utils.MessageHelper;
 
@@ -78,11 +78,11 @@ public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
         return null;
     }
 
-    public static ObjectType from(CollectionType type) {
+    public static ObjectType from(CollectionResourceSection type) {
         switch (type) {
-            case LIST:
+            case UNMANGED:
                 return LIST_COLLECTION;
-            case SHARED:
+            case MANAGED:
                 return SHARED_COLLECTION;
             default:
                 break;

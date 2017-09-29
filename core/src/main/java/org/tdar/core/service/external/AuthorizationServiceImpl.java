@@ -26,7 +26,7 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -966,7 +966,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
      * org.tdar.core.bean.collection.ResourceCollection)
      */
     @Override
-    public boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd, CollectionType type) {
+    public boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd, CollectionResourceSection type) {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }
@@ -981,7 +981,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
      * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    public <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user, CollectionType type) {
+    public <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user, CollectionResourceSection type) {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }
