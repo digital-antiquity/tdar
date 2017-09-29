@@ -18,7 +18,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -36,7 +36,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
     public void testResource() {
         // test that a direct resource share exists (BillingUser -> reosurce -> basicUser)
         Dataset dataset = createAndSaveNewDataset();
-        dataset.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
+        dataset.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
         List<TdarUser> findUsersSharedWith = resourceCollectionService.findUsersSharedWith(getUser());
@@ -50,7 +50,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
         // test that a direct collection share works
         Dataset dataset = createAndSaveNewDataset();
         ResourceCollection collection = createAndSaveNewResourceCollection("test collection");
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(collection);
         collection.getManagedResources().add(dataset);
         dataset.getManagedResourceCollections().add(collection);
@@ -69,7 +69,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
         Dataset dataset = createAndSaveNewDataset();
         ResourceCollection collection = createAndSaveNewResourceCollection("test collection");
         ResourceCollection child = createAndSaveNewResourceCollection("test collection");
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(collection);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child, collection);
         child.getManagedResources().add(dataset);
@@ -110,7 +110,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
 
         // now add some authusers
         collection.getAuthorizedUsers().addAll(
-                users.stream().map(user -> new AuthorizedUser(getAdminUser(), user, GeneralPermissions.MODIFY_RECORD)).collect(Collectors.toList()));
+                users.stream().map(user -> new AuthorizedUser(getAdminUser(), user, Permissions.MODIFY_RECORD)).collect(Collectors.toList()));
 
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(collection.getAuthorizedUsers());

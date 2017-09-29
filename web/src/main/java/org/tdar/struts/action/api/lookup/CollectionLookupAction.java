@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
@@ -39,7 +39,7 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
     private transient CollectionSearchService collectionSearchService;
 
     private String term;
-    private GeneralPermissions permission;
+    private Permissions permission;
     private CollectionResourceSection type;
 
     @Action(value = "collection", results = {
@@ -68,11 +68,11 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
         return SUCCESS;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 

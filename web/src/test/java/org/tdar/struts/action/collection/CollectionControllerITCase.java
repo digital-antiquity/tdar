@@ -18,7 +18,7 @@ import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -68,8 +68,8 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.ADD_TO_COLLECTION)));
+                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.ADD_TO_COLLECTION)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ResourceCollection collection = generateResourceCollection(name, description, false, users, testPerson, new ArrayList<>(), null);
         
@@ -99,12 +99,12 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         cc.prepare();
         cc.edit();
         cc.setServletRequest(getServletPostRequest());
-        cc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
+        cc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
         cc.setAsync(false);
         cc.save();
         cc = null;
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_RECORD));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, normal, Permissions.MODIFY_METADATA));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, draft, Permissions.MODIFY_RECORD));
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, draft));
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, normal));
         /*
@@ -122,9 +122,9 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
         InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
-                new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
+                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD), 
+                new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         ResourceCollection collection = 
                 generateResourceCollection(name, description, true, users, getUser(), resources, null, ShareCollectionController.class, ResourceCollection.class);
@@ -148,15 +148,15 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         for (AuthorizedUser user : foundCollection.getAuthorizedUsers()) {
             if (user.getUser().equals(testPerson)) {
                 count++;
-                assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());
+                assertEquals(Permissions.MODIFY_RECORD, user.getGeneralPermission());
             }
             if (user.getUser().equals(getAdminUser())) {
                 count++;
-                assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());
+                assertEquals(Permissions.MODIFY_RECORD, user.getGeneralPermission());
             }
             if (user.getUser().equals(getBasicUser())) {
                 count++;
-                assertEquals(GeneralPermissions.ADMINISTER_COLLECTION, user.getGeneralPermission());
+                assertEquals(Permissions.ADMINISTER_COLLECTION, user.getGeneralPermission());
             }
         }
         assertEquals(3, count);

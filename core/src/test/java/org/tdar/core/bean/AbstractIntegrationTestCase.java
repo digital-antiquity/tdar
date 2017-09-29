@@ -50,7 +50,7 @@ import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -379,7 +379,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             if (resource instanceof InformationResource) {
                 ((InformationResource) resource).setDate(2012);
             }
-            resource.getAuthorizedUsers().add(new AuthorizedUser(persistentPerson, persistentPerson, GeneralPermissions.MODIFY_RECORD));
+            resource.getAuthorizedUsers().add(new AuthorizedUser(persistentPerson, persistentPerson, Permissions.MODIFY_RECORD));
             genericService.save(resource);
             genericService.save(resource.getAuthorizedUsers());
         } catch (Exception e) {
@@ -420,7 +420,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         resourceCollection.setHidden(false);
         resourceCollection.markUpdated(getUser());
         resourceCollection.setOwner(getUser());
-        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(getUser(), getUser(), GeneralPermissions.ADMINISTER_COLLECTION));
+        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(getUser(), getUser(), Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(resourceCollection);
         genericService.saveOrUpdate(resourceCollection.getAuthorizedUsers());
         return resourceCollection;
@@ -530,7 +530,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return TestConfiguration.getInstance().getEditorUserId();
     }
 
-    public void addAuthorizedUser(Resource resource, TdarUser person, GeneralPermissions permission) {
+    public void addAuthorizedUser(Resource resource, TdarUser person, Permissions permission) {
         AuthorizedUser authorizedUser = new AuthorizedUser(person, person, permission);
 //        InternalCollection internalResourceCollection = resource.getInternalResourceCollection();
 //        if (internalResourceCollection == null) {

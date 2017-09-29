@@ -32,7 +32,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -283,7 +283,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         }
 
         if (!authorizationService.canDo(auth.getAuthenticatedUser(), item, InternalTdarRights.EDIT_ANY_RESOURCE,
-                GeneralPermissions.MODIFY_RECORD)) {
+                Permissions.MODIFY_RECORD)) {
             throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
         }
         // abstractInformationResourceController.didnt_override=%s didn't override properly
@@ -401,7 +401,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         resourceCollections.addAll(retainedListCollections);
 
         if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
-                GeneralPermissions.MODIFY_RECORD)) {
+                Permissions.MODIFY_RECORD)) {
             resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getManagedResourceCollections(),
                     authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.MANAGED);
 

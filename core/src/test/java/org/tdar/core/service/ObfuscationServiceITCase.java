@@ -24,7 +24,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Project;
 
 /**
@@ -54,7 +54,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
             project.setAuthorizedUsers(new HashSet<>());
         }
         if (CollectionUtils.isEmpty(project.getAuthorizedUsers())) {
-            project.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION));
+            project.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.ADMINISTER_COLLECTION));
             genericService.saveOrUpdate(project.getAuthorizedUsers());
             genericService.saveOrUpdate(project);
         }

@@ -13,7 +13,7 @@ import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
@@ -39,7 +39,7 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 		// create a collection
 		ResourceCollection collection = createAndSaveNewResourceCollection("test umanaged");
 		collection.getAuthorizedUsers()
-				.add(new AuthorizedUser(getAdminUser(), tdarUser, GeneralPermissions.ADMINISTER_COLLECTION));
+				.add(new AuthorizedUser(getAdminUser(), tdarUser, Permissions.ADMINISTER_COLLECTION));
 		genericService.saveOrUpdate(collection.getAuthorizedUsers());
 		genericService.saveOrUpdate(collection);
 
@@ -65,7 +65,7 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 		assertFalse(collection.getManagedResources().contains(document));
 	}
 
-	@Ignore
+//	@Ignore
 	@Test
 	@Rollback
 	public void testManagedCollections()
@@ -84,13 +84,13 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 		Document someoneElsesConfidentialDocument = createAndSaveDocumentWithFileAndUseDefaultUser();
 		someoneElsesConfidentialDocument.getFirstInformationResourceFile()
 				.setRestriction(FileAccessRestriction.CONFIDENTIAL);
-		someoneElsesConfidentialDocument.getAuthorizedUsers().add(new AuthorizedUser(someOtherOwner, someOtherOwner, GeneralPermissions.ADMINISTER_COLLECTION));
+		someoneElsesConfidentialDocument.getAuthorizedUsers().add(new AuthorizedUser(someOtherOwner, someOtherOwner, Permissions.ADMINISTER_COLLECTION));
 		genericService.saveOrUpdate(someoneElsesConfidentialDocument);
 		genericService.saveOrUpdate(someoneElsesConfidentialDocument.getAuthorizedUsers());
 
 		ResourceCollection someoneElsesCollection = createAndSaveNewResourceCollection(
 				"Someone else's resource collection");
-		someoneElsesCollection.getAuthorizedUsers().add(new AuthorizedUser(someOtherOwner,someOtherOwner,GeneralPermissions.ADMINISTER_COLLECTION));
+		someoneElsesCollection.getAuthorizedUsers().add(new AuthorizedUser(someOtherOwner,someOtherOwner,Permissions.ADMINISTER_COLLECTION));
 		
 		someoneElsesCollection.getManagedResources().add(someoneElsesConfidentialDocument);
 		someoneElsesCollection.getUnmanagedResources().add(someoneElsesPublicDocument);
@@ -104,17 +104,17 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 		Dataset ownersConfidentialDataset = createAndSaveNewResource(Dataset.class, owner, "Owner's dataset");
 		//AB: a resource should never have 'ADMINISTER' rights on it
 		ownersConfidentialDataset.getAuthorizedUsers()
-				.add(new AuthorizedUser(owner, owner, GeneralPermissions.ADMINISTER_COLLECTION));
+				.add(new AuthorizedUser(owner, owner, Permissions.ADMINISTER_COLLECTION));
 
 		Dataset ownersPublicDataset = createAndSaveNewDataset();
 		ownersPublicDataset.getAuthorizedUsers()
-				.add(new AuthorizedUser(owner, owner, GeneralPermissions.ADMINISTER_COLLECTION));
+				.add(new AuthorizedUser(owner, owner, Permissions.ADMINISTER_COLLECTION));
 
 		genericService.save(ownersConfidentialDataset);
 		genericService.save(ownersConfidentialDataset.getAuthorizedUsers());
 		
 		ResourceCollection ownersCollection = createAndSaveNewResourceCollection("Owner's resource collection");
-		ownersCollection.getAuthorizedUsers().add(new AuthorizedUser(owner,owner,GeneralPermissions.ADMINISTER_COLLECTION));
+		ownersCollection.getAuthorizedUsers().add(new AuthorizedUser(owner,owner,Permissions.ADMINISTER_COLLECTION));
 		genericService.save(ownersCollection.getAuthorizedUsers());
 		
 		// TODO: How to I set the permissions for this collection as private for
@@ -134,7 +134,7 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 
 		TdarUser user = createAndSaveNewUser();
 		//Add permission for the user to add/remove resources to the owner's collection.
-		ownersCollection.getAuthorizedUsers().add(new AuthorizedUser(user, user, GeneralPermissions.ADMINISTER_COLLECTION));
+		ownersCollection.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.ADMINISTER_COLLECTION));
 		genericService.saveOrUpdate(ownersCollection.getAuthorizedUsers());
 
 		// Create a viewer who has no association to the owner's collection.
@@ -197,14 +197,17 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 		//Test that someone elses public document can be added as a resouce, can be viewed, but not edited. 
 		assertTrue(ownersCollection.getUnmanagedResources().contains(someoneElsesPublicDocument));
 		assertFalse(authenticationAndAuthorizationService.canEdit(owner, someoneElsesPublicDocument));
+		logger.debug("{} {}", owner, someoneElsesPublicDocument);
 		assertTrue(authenticationAndAuthorizationService.canView(owner, someoneElsesPublicDocument));
 		
 		
 		// test the user
 		// test if the user can access the resources on the owner's collection.
-		assertFalse(authenticationAndAuthorizationService.canView(user, someoneElsesConfidentialDocument));
+		assertTrue(authenticationAndAuthorizationService.canView(user, someoneElsesConfidentialDocument));
+		assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(user, someoneElsesConfidentialDocument));
+		
 		assertTrue(authenticationAndAuthorizationService.canEdit(user, ownersCollection));
-		assertFalse(authenticationAndAuthorizationService.canView(user, ownersConfidentialDataset));
+		assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(user, ownersConfidentialDataset));
 		assertTrue(authenticationAndAuthorizationService.canView(user, ownersPublicDataset));
 		
 		// create a viewer

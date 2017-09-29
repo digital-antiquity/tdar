@@ -21,7 +21,7 @@ import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -75,9 +75,9 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
         InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
-                new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
+                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD), 
+                new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         ResourceCollection collection = generateResourceCollection(name, description, true, users, resources, null);
         Long collectionid = collection.getId();
@@ -100,15 +100,15 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         for (AuthorizedUser user : foundCollection.getAuthorizedUsers()) {
             if (user.getUser().equals(testPerson)) {
                 count++;
-                assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());
+                assertEquals(Permissions.MODIFY_RECORD, user.getGeneralPermission());
             }
             if (user.getUser().equals(getAdminUser())) {
                 count++;
-                assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());
+                assertEquals(Permissions.MODIFY_RECORD, user.getGeneralPermission());
             }
             if (user.getUser().equals(getBasicUser())) {
                 count++;
-                assertEquals(GeneralPermissions.ADMINISTER_COLLECTION, user.getGeneralPermission());
+                assertEquals(Permissions.ADMINISTER_COLLECTION, user.getGeneralPermission());
             }
         }
         assertEquals(3, count);
@@ -124,9 +124,9 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         // InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
         InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
-                new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
+                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD), 
+                new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile2));
         ResourceCollection collection = generateResourceCollection(name, description, true, users, getEditorUser(), resources, null);
         Long collectionid = collection.getId();
@@ -140,9 +140,9 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         TdarUser transientTest = new TdarUser();
         transientTest.setId(testPerson.getId());
         List<UserRightsProxy> transientUsers = new ArrayList<>(Arrays.asList(
-                new UserRightsProxy(new AuthorizedUser(getAdminUser(),transientSelf, GeneralPermissions.ADMINISTER_COLLECTION)),
-                new UserRightsProxy(new AuthorizedUser(getAdminUser(),transientAdmin, GeneralPermissions.MODIFY_RECORD)),
-                new UserRightsProxy(new AuthorizedUser(getAdminUser(),transientTest, GeneralPermissions.MODIFY_RECORD))));
+                new UserRightsProxy(new AuthorizedUser(getAdminUser(),transientSelf, Permissions.ADMINISTER_COLLECTION)),
+                new UserRightsProxy(new AuthorizedUser(getAdminUser(),transientAdmin, Permissions.MODIFY_RECORD)),
+                new UserRightsProxy(new AuthorizedUser(getAdminUser(),transientTest, Permissions.MODIFY_RECORD))));
         ShareCollectionRightsController cc = generateNewInitializedController(ShareCollectionRightsController.class, getBasicUser());
         cc.setId(collectionid);
         cc.prepare();
@@ -158,7 +158,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
 
         // create a parent collection where basic user has administer groups, and with one resource
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION)));
+        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile));
         ResourceCollection collection = generateResourceCollection("parent", "parent", false, users, resources, null);
         collection.setOwner(getAdminUser());
@@ -197,9 +197,9 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
 
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
-                new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
+                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD), 
+                new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         ResourceCollection collection = generateResourceCollection(name, description, false, users, resources, null);
         Long id = collection.getId();
@@ -208,10 +208,10 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
 
         ResourceCollection foundCollection = genericService.find(ResourceCollection.class, id);
 
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile2, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, Permissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile2, Permissions.MODIFY_METADATA));
         assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), generateInformationResourceWithFile2,
-                GeneralPermissions.MODIFY_METADATA));
+                Permissions.MODIFY_METADATA));
 
         assertTrue(authenticationAndAuthorizationService.canEditCollection(getBasicUser(), foundCollection));
         assertFalse(authenticationAndAuthorizationService.canEditCollection(testPerson, foundCollection));
@@ -222,16 +222,16 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
     public void testResourceCollectionPermissionsWithDepthController() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
-                new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
+                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD), 
+                new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
 
         Long resId = setupResource(testPerson, users);
         InformationResource generateInformationResourceWithFile = genericService.find(InformationResource.class, resId);
         logger.debug("collections: {}", generateInformationResourceWithFile.getManagedResourceCollections());
         authorizedUserDao.clearUserPermissionsCache();
         assertTrue("user can edit based on parent of parent resource collection",
-                authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
+                authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, Permissions.MODIFY_METADATA));
     }
 
     /**
@@ -244,9 +244,9 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
     public void testInheritedAdminister() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@asdaasd.com", "1234");
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
-                new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.ADMINISTER_COLLECTION)));
+                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD), 
+                new AuthorizedUser(getAdminUser(),testPerson, Permissions.ADMINISTER_COLLECTION)));
         ResourceCollection collection = generateResourceCollection("test parent", "test parent", false, users, null, null);
         Long parentId = collection.getId();
         ResourceCollection child = generateResourceCollection("test child", "test child", false, null, null, parentId);
@@ -290,7 +290,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         // authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
         authorizedUserDao.clearUserPermissionsCache();
         assertFalse("user can no longer edit",
-                authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
+                authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, Permissions.MODIFY_METADATA));
     }
 
     @SuppressWarnings("unused")
@@ -343,7 +343,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class, getAdminUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA)));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
@@ -370,7 +370,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class, getAdminUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA)));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
@@ -383,7 +383,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         try {
             controller.prepare();
             controller.edit();
-            controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD)));
+            controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD)));
             resourceCollectionService.saveResourceRights(controller.getProxies(), getBasicUser(), controller.getResource());
         } catch (Exception es) {
             e = es;
@@ -462,7 +462,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class, getAdminUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA)));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         
@@ -488,7 +488,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         try {
          cc.prepare();
         // controller.getResources().add(document);
-        cc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD)));
+        cc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD)));
         assertWeFailedToSave(cc);
         
         } catch (Exception e) {
@@ -514,7 +514,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
     @Test
     @Rollback
     public void testRightsEscalationUserUpsParent() throws Exception {
-        List<AuthorizedUser> users = Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION));
+        List<AuthorizedUser> users = Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION));
         ResourceCollection parent = generateResourceCollection("parent", "parent", true, users, getBasicUser(), Collections.EMPTY_LIST,
                 null);
         Long parentId = parent.getId();
@@ -527,7 +527,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         ResourceRightsController controller = generateNewInitializedController(ResourceRightsController.class, getAdminUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_METADATA)));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_METADATA)));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
 
@@ -579,7 +579,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         cc.setId(rcid);
         cc.prepare();
         cc.edit();
-        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_COLLECTION)));
+        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),registeredUser, Permissions.ADMINISTER_COLLECTION)));
         cc.setServletRequest(getServletPostRequest());
         cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());
@@ -590,7 +590,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         cc.prepare();
         cc.edit();
         cc.getProxies().clear();
-        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getEditorUser(), GeneralPermissions.ADMINISTER_COLLECTION)));
+        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getEditorUser(), Permissions.ADMINISTER_COLLECTION)));
         cc.setServletRequest(getServletPostRequest());
         cc.setAsync(false);
         result = cc.save();
@@ -644,7 +644,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         cc.setId(rcid);
         cc.prepare();
         cc.edit();
-        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),registeredUser, GeneralPermissions.ADMINISTER_COLLECTION)));
+        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),registeredUser, Permissions.ADMINISTER_COLLECTION)));
         cc.setServletRequest(getServletPostRequest());
         cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());
@@ -717,7 +717,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         cc.setId(rcid);
         cc.prepare();
         cc.edit();
-        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getUser(), GeneralPermissions.ADMINISTER_COLLECTION)));
+        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getUser(), Permissions.ADMINISTER_COLLECTION)));
         cc.setServletRequest(getServletPostRequest());
         cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());

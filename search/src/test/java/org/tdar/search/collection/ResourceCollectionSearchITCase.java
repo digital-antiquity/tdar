@@ -14,7 +14,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchIndexException;
@@ -38,7 +38,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
                 collection.setOwner(getAdminUser());
                 collection.setHidden(true);
                 collection.markUpdated(collection.getOwner());
-                collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION));
+                collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.ADMINISTER_COLLECTION));
                 genericService.saveOrUpdate(collection.getAuthorizedUsers());
                 genericService.saveOrUpdate(collection);
             }

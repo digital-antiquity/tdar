@@ -34,7 +34,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -83,7 +83,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     public List<ResourceCollection> findParentOwnerCollections(Person person) {
         String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER;
-        GeneralPermissions base = GeneralPermissions.ADMINISTER_COLLECTION;
+        Permissions base = Permissions.ADMINISTER_COLLECTION;
 
         Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         Long id = -1L;
@@ -111,7 +111,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     public ResourceCollection findCollectionWithName(TdarUser user, boolean isAdmin, String name) {
         String q = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
-        GeneralPermissions base = GeneralPermissions.ADMINISTER_COLLECTION;
+        Permissions base = Permissions.ADMINISTER_COLLECTION;
         Query<ResourceCollection> query = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         query.setParameter("name", name);
         List<ResourceCollection> list = query.getResultList();
@@ -136,7 +136,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return query.getResultList();
     }
 
-    public List<ResourceCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
+    public List<ResourceCollection> findInheritedCollections(Person user, Permissions generalPermissions) {
         if (PersistableUtils.isTransient(user)) {
             return Collections.<ResourceCollection> emptyList();
         }
@@ -149,7 +149,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
     }
 
     // @SuppressWarnings("unchecked")
-    public Set<ResourceCollection> findFlattendCollections(Person user, GeneralPermissions generalPermissions) {
+    public Set<ResourceCollection> findFlattendCollections(Person user, Permissions generalPermissions) {
         Set<ResourceCollection> allCollections = new HashSet<>();
 
         // get all collections that grant explicit edit permissions to person
@@ -387,7 +387,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     }
 
-    public List<ResourceCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, GeneralPermissions perm, boolean admin) {
+    public List<ResourceCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Permissions perm, boolean admin) {
         Query<ResourceCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, ResourceCollection.class);
         shared.setParameter("userId", authenticatedUser.getId());
         shared.setParameter("perm", perm.getEffectivePermissions() - 1);

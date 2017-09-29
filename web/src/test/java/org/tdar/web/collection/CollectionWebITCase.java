@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -54,7 +54,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("image.date", "2000");
         setInput("image.description", "test description of a image with edit rights by user");
         setInput("authorizedUsers[0].user.id", TEST.getUserId());
-        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        setInput("authorizedUsers[0].generalPermission", Permissions.MODIFY_RECORD.name());
         setInput("authorizedUsersFullNames[0]", "test user");
         setInput("resourceCollections[0].name", RETAIN_COLLECTION);
         submitForm();
@@ -117,7 +117,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (StringUtils.containsIgnoreCase(user.getProperName(), "user")) {
                 continue;
             }
-            createUserWithPermissions(i, user, GeneralPermissions.VIEW_ALL);
+            createUserWithPermissions(i, user, Permissions.VIEW_ALL);
             i++;
         }
         submitForm();
@@ -279,7 +279,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         Person user = new Person("joe", "blow", "testAssignNonUserToCollection@tdar.net");
 
-        createUserFields(1, user, GeneralPermissions.VIEW_ALL, null);
+        createUserFields(1, user, Permissions.VIEW_ALL, null);
 
         submitFormWithoutErrorCheck();
 
@@ -318,7 +318,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (StringUtils.containsIgnoreCase(person.getProperName(), "user")) {
                 continue;
             }
-            createUserFields(i, person, GeneralPermissions.VIEW_ALL, person.getId());
+            createUserFields(i, person, Permissions.VIEW_ALL, person.getId());
             i++;
         }
 
@@ -345,7 +345,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long id = extractTdarIdFromCurrentURL();
         gotoPage(LISTCOLLECTION + id + "/rights");
         setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_COLLECTION.toString());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), Permissions.ADMINISTER_COLLECTION.toString());
         submitForm();
         logout();
         

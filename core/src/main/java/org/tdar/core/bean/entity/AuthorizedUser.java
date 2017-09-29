@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -56,7 +56,7 @@ public class AuthorizedUser extends AbstractPersistable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "general_permission", length = FieldLength.FIELD_LENGTH_50)
-    private GeneralPermissions generalPermission;
+    private Permissions generalPermission;
 
     @Column(name = "general_permission_int")
     private Integer effectiveGeneralPermission;
@@ -99,13 +99,13 @@ public class AuthorizedUser extends AbstractPersistable {
     public AuthorizedUser() {
     }
 
-    public AuthorizedUser(TdarUser createdBy, TdarUser person, GeneralPermissions permission) {
+    public AuthorizedUser(TdarUser createdBy, TdarUser person, Permissions permission) {
         this.createdBy = createdBy;
         this.user = person;
         setGeneralPermission(permission);
     }
 
-    public AuthorizedUser(TdarUser authenticatedUser, TdarUser person, GeneralPermissions permission, Date date) {
+    public AuthorizedUser(TdarUser authenticatedUser, TdarUser person, Permissions permission, Date date) {
         this(authenticatedUser, person, permission);
         if (date != null) {
             setDateExpires(date);
@@ -126,7 +126,7 @@ public class AuthorizedUser extends AbstractPersistable {
      * @param generalPermission
      *            the generalPermission to set
      */
-    public void setGeneralPermission(GeneralPermissions generalPermission) {
+    public void setGeneralPermission(Permissions generalPermission) {
         this.generalPermission = generalPermission;
         this.setEffectiveGeneralPermission(generalPermission.getEffectivePermissions());
     }
@@ -134,7 +134,7 @@ public class AuthorizedUser extends AbstractPersistable {
     /**
      * @return the generalPermission
      */
-    public GeneralPermissions getGeneralPermission() {
+    public Permissions getGeneralPermission() {
         return generalPermission;
     }
 

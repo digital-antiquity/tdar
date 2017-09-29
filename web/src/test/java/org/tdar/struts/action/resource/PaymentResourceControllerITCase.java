@@ -29,7 +29,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
@@ -101,7 +101,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
         ResourceCollection rCollection = generateResourceCollection("test", "test", true,
-                Arrays.asList(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
+                Arrays.asList(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.MODIFY_METADATA)),
                 getAdminUser(), Arrays.asList(dataset), null);
         dataset.getManagedResourceCollections().add(rCollection);
         dataset.setSubmitter(getBasicUser());
@@ -259,7 +259,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         // Account account = createAccount(getBasicUser());
         // d.setAccount(account);
         genericService.saveOrUpdate(d);
-        d.getAuthorizedUsers().add(new AuthorizedUser(d.getSubmitter(),d.getSubmitter(),GeneralPermissions.MODIFY_RECORD));
+        d.getAuthorizedUsers().add(new AuthorizedUser(d.getSubmitter(),d.getSubmitter(),Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(d);
         logger.info("account: {}", d.getAccount());
         setIgnoreActionErrors(true);

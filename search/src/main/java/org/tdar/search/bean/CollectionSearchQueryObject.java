@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.collection.CollectionResourceSection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 
 public class CollectionSearchQueryObject implements Serializable {
 
@@ -18,7 +18,7 @@ public class CollectionSearchQueryObject implements Serializable {
     private boolean includeHidden = true;
     private boolean limitToTopLevel = false;
     private List<String> allFields = new ArrayList<>();
-    private GeneralPermissions permission;
+    private Permissions permission;
     private List<String> titles = new ArrayList<>();
     private CollectionResourceSection type;
     public boolean isIncludeHidden() {
@@ -61,11 +61,11 @@ public class CollectionSearchQueryObject implements Serializable {
         this.operator = operator;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 

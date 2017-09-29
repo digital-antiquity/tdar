@@ -41,7 +41,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
@@ -154,9 +154,9 @@ public class ImportServiceImpl implements ImportService  {
         processFiles(blessedAuthorizedUser, proxies, incomingResource);
         geoSearchService.processManagedGeographicKeywords(incomingResource, incomingResource.getLatitudeLongitudeBoxes());
         if (created == true) {
-            GeneralPermissions administerShare = GeneralPermissions.ADMINISTER_COLLECTION;
+            Permissions administerShare = Permissions.ADMINISTER_COLLECTION;
             if ( incomingResource instanceof Resource) {
-                administerShare = GeneralPermissions.MODIFY_RECORD;
+                administerShare = Permissions.MODIFY_RECORD;
             }
             incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, administerShare));
         }
@@ -236,7 +236,7 @@ public class ImportServiceImpl implements ImportService  {
             }
 
             // check if the user can modify the record
-            if (!authenticationAndAuthorizationService.canEditResource(authorizedUser, existing, GeneralPermissions.MODIFY_RECORD)) {
+            if (!authenticationAndAuthorizationService.canEditResource(authorizedUser, existing, Permissions.MODIFY_RECORD)) {
                 throw new APIException(MessageHelper.getMessage("error.permission_denied"), StatusCode.UNAUTHORIZED);
             }
             if (incomingResource instanceof InformationResource) {

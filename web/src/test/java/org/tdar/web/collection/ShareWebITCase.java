@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -52,7 +52,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInPage(RETAIN_COLLECTION);
         clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         setInput("proxies[0].id", TEST.getUserId());
-        setInput("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
+        setInput("proxies[0].permission", Permissions.MODIFY_RECORD.name());
         setInput("proxies[0].displayName", "test user");
         logger.debug(getPageText());
         submitForm();
@@ -103,7 +103,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         setInput(String.format(FMT_AUTHUSERS_ID, 0), TEST.getUserId()); // leave the id blank
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.MODIFY_RECORD.name());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), Permissions.MODIFY_RECORD.name());
         submitForm();
         assertTextPresentInPage("true");
         logout();
@@ -166,7 +166,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (StringUtils.containsIgnoreCase(user.getProperName(), "user")) {
                 continue;
             }
-            createUserWithPermissions(i, user, GeneralPermissions.VIEW_ALL);
+            createUserWithPermissions(i, user, Permissions.VIEW_ALL);
             i++;
         }
         submitForm();
@@ -292,7 +292,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Person user = new Person("joe", "blow", "testAssignNonUserToCollection@tdar.net");
         submitForm();
         clickLinkWithText(CollectionWebITCase.PERMISSIONS);
-        createUserFields(1, user, GeneralPermissions.VIEW_ALL, null);
+        createUserFields(1, user, Permissions.VIEW_ALL, null);
         submitFormWithoutErrorCheck();
 
         // assertTrue("we should  be on the INPUT page. current page: " + getCurrentUrlPath(), getCurrentUrlPath().contains("/collection/save.action"));
@@ -327,7 +327,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (StringUtils.containsIgnoreCase(person.getProperName(), "user")) {
                 continue;
             }
-            createUserFields(i, person, GeneralPermissions.VIEW_ALL, person.getId());
+            createUserFields(i, person, Permissions.VIEW_ALL, person.getId());
             i++;
         }
 
@@ -356,7 +356,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long id = extractTdarIdFromCurrentURL();
         gotoPage("/collection/" + id + "/rights");
         setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_COLLECTION.toString());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), Permissions.ADMINISTER_COLLECTION.toString());
         submitForm();
         logout();
         

@@ -36,7 +36,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -336,7 +336,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         collection.setName("test " + date);
         collection.setDescription("test");
         collection.markUpdated(getAdminUser());
-        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.VIEW_ALL);
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.VIEW_ALL);
         
         authorizedUser.setDateExpires(date);
         collection.getAuthorizedUsers().add( authorizedUser);

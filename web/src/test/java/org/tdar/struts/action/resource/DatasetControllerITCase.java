@@ -34,7 +34,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -105,7 +105,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         dataset.setAccount(account);
         accountService.updateQuota(account, p, dataset);
         TdarUser createAndSaveNewPerson = createAndSaveNewPerson("a@bcasdasd.com", "aa");
-        dataset.getAuthorizedUsers().add(new AuthorizedUser(p, createAndSaveNewPerson, GeneralPermissions.MODIFY_RECORD));
+        dataset.getAuthorizedUsers().add(new AuthorizedUser(p, createAndSaveNewPerson, Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
         

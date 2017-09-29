@@ -18,7 +18,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 
 @Entity
 @Table(name = "collection_request")
@@ -33,7 +33,7 @@ public class RequestCollection extends AbstractPersistable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "general_permission", length = FieldLength.FIELD_LENGTH_50)
-    private GeneralPermissions permission;
+    private Permissions permission;
     
     @Column
     @Length(max = FieldLength.FIELD_LENGTH_500)
@@ -59,11 +59,11 @@ public class RequestCollection extends AbstractPersistable {
         this.collections = collections;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 

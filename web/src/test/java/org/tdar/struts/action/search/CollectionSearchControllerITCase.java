@@ -14,7 +14,7 @@ import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchIndexException;
@@ -111,7 +111,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
         collection.markUpdated(getUser());
         genericService.saveOrUpdate(collection);
         if (createAuthUser) {
-            AuthorizedUser authuser = new AuthorizedUser(getAdminUser(), user, GeneralPermissions.ADMINISTER_COLLECTION);
+            AuthorizedUser authuser = new AuthorizedUser(getAdminUser(), user, Permissions.ADMINISTER_COLLECTION);
             collection.getAuthorizedUsers().add(authuser);
             genericService.saveOrUpdate(collection);
         }

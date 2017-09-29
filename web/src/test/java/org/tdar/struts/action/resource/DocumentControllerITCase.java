@@ -30,7 +30,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -95,7 +95,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         ResourceCollection collection = createResourceCollectionWithAdminRights();
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(collection);
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection);
 
         ResourceCollection collectionChild = new ResourceCollection();
@@ -134,7 +134,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
 //        InternalCollection internal = new InternalCollection();
 //        internal.markUpdated(getAdminUser());
 //        genericService.saveOrUpdate(internal);
-        doc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        doc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
 //        genericService.saveOrUpdate(internal);
 
         doc.getManagedResourceCollections().add(collection);
@@ -170,7 +170,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         collection.setDescription(collection.getTitle());
         collection.markUpdated(getAdminUser());
         genericService.saveOrUpdate(collection);
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(collection);
         return collection;
     }
@@ -681,7 +681,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         rrc.setId(id);
         rrc.prepare();
         rrc.edit();
-        rrc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getBasicUser(), newUser, GeneralPermissions.MODIFY_METADATA)));
+        rrc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getBasicUser(), newUser, Permissions.MODIFY_METADATA)));
         rrc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, rrc.save());
         evictCache();
@@ -697,7 +697,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         
         doc = genericService.find(Document.class, id);
         assertFalse(authenticationAndAuthorizationService.canDo(newUser, doc,
-                InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.ADMINISTER_COLLECTION));
+                InternalTdarRights.EDIT_ANY_RESOURCE, Permissions.ADMINISTER_COLLECTION));
         assertEquals(2, doc.getAuthorizedUsers().size());
         // try to edit as basic user -- should fail
         doc = null;
@@ -755,7 +755,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         doc.setDateCreated(date1);
         doc.setDateUpdated(date3);
         genericService.saveOrUpdate(doc);
-        doc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), getUser(), GeneralPermissions.MODIFY_RECORD));
+        doc.getAuthorizedUsers().add(new AuthorizedUser(getUser(), getUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(doc);
         long docId = doc.getId();
         assertThat(docId, is(not(-1L)));

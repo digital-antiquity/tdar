@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.UserRightsProxy;
@@ -41,11 +41,11 @@ public class ResourceRightsControllerITCase extends AbstractControllerITCase {
 
         evictCache();
         ResourceRightsController rrc;
-        saveUser(id, new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.MODIFY_METADATA));
+        saveUser(id, new AuthorizedUser(getAdminUser(),newUser, Permissions.MODIFY_METADATA));
         doc = genericService.find(Document.class, id);
         logger.debug("RC: {}", doc.getAuthorizedUsers());
         // change the submitter to the admin
-        saveUser(id, new AuthorizedUser(getAdminUser(),newUser, GeneralPermissions.ADMINISTER_COLLECTION));
+        saveUser(id, new AuthorizedUser(getAdminUser(),newUser, Permissions.ADMINISTER_COLLECTION));
         logger.debug("RC: {}", doc.getAuthorizedUsers());
 
         evictCache();
@@ -70,7 +70,7 @@ public class ResourceRightsControllerITCase extends AbstractControllerITCase {
         evictCache();
         Long imgId = image.getId();
         assertNotNull(imgId);
-        saveUser(imgId, new AuthorizedUser(getAdminUser(),p, GeneralPermissions.MODIFY_RECORD));
+        saveUser(imgId, new AuthorizedUser(getAdminUser(),p, Permissions.MODIFY_RECORD));
 
         ResourceRightsController rrc = generateNewInitializedController(ResourceRightsController.class, getBasicUser());
         rrc.setId(imgId);

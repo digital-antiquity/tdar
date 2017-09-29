@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -70,7 +70,7 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         }
 
         for (Resource resource : resources) {
-            if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD)) {
+            if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, Permissions.MODIFY_RECORD)) {
                 addActionError(getText("abstractPersistableController.unable_to_view_edit"));
                 break;
             }

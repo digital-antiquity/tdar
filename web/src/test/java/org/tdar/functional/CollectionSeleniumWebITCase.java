@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.functional.util.WebElementSelection;
@@ -84,7 +84,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         applyEditPageHacks();
         submitForm();
         find(".toolbar-rights").click();
-        addUserWithRights(person.getProperName(), person.getUsername(),  person.getId(), GeneralPermissions.VIEW_ALL);
+        addUserWithRights(person.getProperName(), person.getUsername(),  person.getId(), Permissions.VIEW_ALL);
         submitForm();
 
         logout();
@@ -110,7 +110,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         assertPageNotViewable(titles);
     }
 
-    private void addUserWithRights(String name, String username, Long userId, GeneralPermissions permissions) {
+    private void addUserWithRights(String name, String username, Long userId, Permissions permissions) {
         WebElementSelection find = waitFor(DIV_ACCESS_RIGHTS_ADD_ANOTHER_BUTTON);
         find.click();
         find.click();
@@ -163,7 +163,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         find(".toolbar-rights").click();
         waitForPageload();
 
-        addUserWithRights("test user", config.getUsername(), config.getUserId(), GeneralPermissions.ADMINISTER_COLLECTION);
+        addUserWithRights("test user", config.getUsername(), config.getUserId(), Permissions.ADMINISTER_COLLECTION);
         submitForm();
 
         gotoPage("/project/" + _139 + "/edit");
@@ -262,7 +262,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
         find(By.name("resourceCollection.hidden")).val(visibility.isHidden());
-        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
+        Permissions permission = Permissions.REMOVE_FROM_COLLECTION;
         addResourceToCollection(_139);
         for (String title : titles) {
             addResourceToCollection(title);
@@ -328,7 +328,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
         find(By.name("resourceCollection.hidden")).val(visibility.isHidden());
-        GeneralPermissions permission = GeneralPermissions.MODIFY_RECORD;
+        Permissions permission = Permissions.MODIFY_RECORD;
         addResourceToCollection(_139);
         for (String title : resourceTitles) {
             addResourceToCollection(title);

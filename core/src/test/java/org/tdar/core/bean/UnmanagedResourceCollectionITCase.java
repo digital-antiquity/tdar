@@ -12,7 +12,7 @@ import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -35,7 +35,7 @@ public class UnmanagedResourceCollectionITCase extends AbstractIntegrationTestCa
 
         // create a collection
         ResourceCollection collection = createAndSaveNewResourceCollection("test umanaged");
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), tdarUser, GeneralPermissions.ADMINISTER_COLLECTION));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), tdarUser, Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection.getAuthorizedUsers());
         genericService.saveOrUpdate(collection);
       

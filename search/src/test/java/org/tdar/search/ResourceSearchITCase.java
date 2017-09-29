@@ -42,7 +42,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -991,11 +991,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     public void testModifyEditor() throws SearchException, SearchIndexException, IOException, ParseException {
         ReservedSearchParameters params = new ReservedSearchParameters();
 
-        SearchResult<Resource> result = performSearch("", null, null, null, null, getEditorUser(), params, GeneralPermissions.MODIFY_METADATA, 1000);
+        SearchResult<Resource> result = performSearch("", null, null, null, null, getEditorUser(), params, Permissions.MODIFY_METADATA, 1000);
         logger.debug("results:{}", result.getResults());
         List<Long> ids = PersistableUtils.extractIds(result.getResults());
 
-        result = performSearch("", null, null, null, null, getAdminUser(), params, GeneralPermissions.MODIFY_METADATA, 1000);
+        result = performSearch("", null, null, null, null, getAdminUser(), params, Permissions.MODIFY_METADATA, 1000);
         logger.debug("results:{}", result.getResults());
         List<Long> ids2 = PersistableUtils.extractIds(result.getResults());
         Assert.assertArrayEquals(ids.toArray(), ids2.toArray());

@@ -29,7 +29,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -238,7 +238,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         setSaveSuccessPath(getResource().getResourceType().getUrlNamespace());
         if (PersistableUtils.isNullOrTransient(getId())) {
             revisionType = RevisionLogType.CREATE;
-            getPersistable().getAuthorizedUsers().add(new AuthorizedUser(getAuthenticatedUser(), getAuthenticatedUser(), GeneralPermissions.ADMINISTER_COLLECTION));
+            getPersistable().getAuthorizedUsers().add(new AuthorizedUser(getAuthenticatedUser(), getAuthenticatedUser(), Permissions.ADMINISTER_COLLECTION));
         }
 
         String save2 = super.save();
@@ -346,7 +346,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             return true;
         }
         if (editable == null) {
-            editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
+            editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_METADATA);
         }
         return editable;
     }

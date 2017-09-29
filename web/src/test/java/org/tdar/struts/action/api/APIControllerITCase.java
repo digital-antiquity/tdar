@@ -30,7 +30,7 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -183,7 +183,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
 
     @SuppressWarnings("deprecation")
     private void setupFakeRecord(Document fake) {
-        addAuthorizedUser(fake, getUser(), GeneralPermissions.MODIFY_RECORD);
+        addAuthorizedUser(fake, getUser(), Permissions.MODIFY_RECORD);
         // setup a fake record, with some new fields off the session
         genericService.saveOrUpdate(fake);
         genericService.synchronize();

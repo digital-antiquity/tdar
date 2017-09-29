@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -75,7 +75,7 @@ public class ResourceRightsController extends AbstractRightsController implement
     private CollectionResourceSection type;
     @Override
     public boolean authorize() {
-        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_RECORD);
+        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_RECORD);
     }
 
     @Override
@@ -109,8 +109,8 @@ public class ResourceRightsController extends AbstractRightsController implement
         return SUCCESS;
     }
 
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
+    public List<Permissions> getAvailablePermissions() {
+        List<Permissions> permissions = Permissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
 

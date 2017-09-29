@@ -26,7 +26,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -160,7 +160,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         resourceCreator.setSequenceNumber(1);
         d1.getResourceCreators().add(resourceCreator);
 
-        AuthorizedUser user1 = new AuthorizedUser(getAdminUser(), authority, GeneralPermissions.ADMINISTER_COLLECTION);
+        AuthorizedUser user1 = new AuthorizedUser(getAdminUser(), authority, Permissions.ADMINISTER_COLLECTION);
         ResourceCollection resourceCollection = genericService.findAll(ResourceCollection.class).iterator().next();
         resourceCollection.getAuthorizedUsers().add(user1);
         genericService.save(user1);

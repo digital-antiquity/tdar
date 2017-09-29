@@ -29,7 +29,7 @@ import org.tdar.utils.MessageHelper;
  *         be faster to query / index in the database
  */
 @SuppressWarnings("unchecked")
-public enum GeneralPermissions implements HasLabel, Localizable {
+public enum Permissions implements HasLabel, Localizable {
     NONE(-1000),
     VIEW_ALL( 100, Resource.class, ResourceCollection.class),
     MODIFY_METADATA(400, Resource.class, ResourceCollection.class),
@@ -43,11 +43,11 @@ public enum GeneralPermissions implements HasLabel, Localizable {
     private Integer effectivePermissions;
     private List<Class<? extends Persistable>> contexts;
 
-    GeneralPermissions(Integer effectivePermissions) {
+    Permissions(Integer effectivePermissions) {
         this.setEffectivePermissions(effectivePermissions);
     }
 
-    GeneralPermissions(Integer effectivePermissions, Class<? extends Persistable> ... contexts) {
+    Permissions(Integer effectivePermissions, Class<? extends Persistable> ... contexts) {
         this.setEffectivePermissions(effectivePermissions);
         this.setContexts(Arrays.asList(contexts));
     }
@@ -80,9 +80,9 @@ public enum GeneralPermissions implements HasLabel, Localizable {
         return effectivePermissions;
     }
 
-    public List<GeneralPermissions> getLesserAndEqualPermissions() {
-        List<GeneralPermissions> permissions = new ArrayList<>();
-        for (GeneralPermissions permission : GeneralPermissions.values()) {
+    public List<Permissions> getLesserAndEqualPermissions() {
+        List<Permissions> permissions = new ArrayList<>();
+        for (Permissions permission : Permissions.values()) {
             if (permission.getEffectivePermissions() <= getEffectivePermissions()) {
                 permissions.add(permission);
             }
@@ -92,15 +92,15 @@ public enum GeneralPermissions implements HasLabel, Localizable {
 
 
 
-    public static List<GeneralPermissions> resourcePermissions() {
-        List<GeneralPermissions> permissions = new ArrayList<>(Arrays.asList(GeneralPermissions.values()));
+    public static List<Permissions> resourcePermissions() {
+        List<Permissions> permissions = new ArrayList<>(Arrays.asList(Permissions.values()));
 //        permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
 //        permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
-        permissions.remove(GeneralPermissions.ADMINISTER_COLLECTION);
-        permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
-        permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
-        permissions.remove(GeneralPermissions.EDIT_ACCOUNT);
-        permissions.remove(GeneralPermissions.EDIT_INTEGRATION);
+        permissions.remove(Permissions.ADMINISTER_COLLECTION);
+        permissions.remove(Permissions.ADD_TO_COLLECTION);
+        permissions.remove(Permissions.REMOVE_FROM_COLLECTION);
+        permissions.remove(Permissions.EDIT_ACCOUNT);
+        permissions.remove(Permissions.EDIT_INTEGRATION);
         return permissions;
     }
 
@@ -112,11 +112,11 @@ public enum GeneralPermissions implements HasLabel, Localizable {
         this.contexts = contexts;
     }
 
-    public static <P extends Persistable> List<GeneralPermissions> getAvailablePermissionsFor(Class<P> persistableClass_) {
+    public static <P extends Persistable> List<Permissions> getAvailablePermissionsFor(Class<P> persistableClass_) {
         Class<P> persistableClass = persistableClass_;
 
-        List<GeneralPermissions> toReturn = new ArrayList<>();
-        for (GeneralPermissions perm : GeneralPermissions.values()) {
+        List<Permissions> toReturn = new ArrayList<>();
+        for (Permissions perm : Permissions.values()) {
             if (CollectionUtils.isEmpty(perm.getContexts())) {
                 toReturn.add(perm);
                 continue;
@@ -132,18 +132,18 @@ public enum GeneralPermissions implements HasLabel, Localizable {
         return toReturn;
     }
 
-    public static GeneralPermissions getEditPermissionFor(HasAuthorizedUsers account) {
+    public static Permissions getEditPermissionFor(HasAuthorizedUsers account) {
         if (account instanceof BillingAccount) {
-            return GeneralPermissions.EDIT_ACCOUNT;
+            return Permissions.EDIT_ACCOUNT;
         }
         if (account instanceof DataIntegrationWorkflow) {
-            return GeneralPermissions.EDIT_INTEGRATION;
+            return Permissions.EDIT_INTEGRATION;
         }
         if (account instanceof ResourceCollection) {
-            return GeneralPermissions.ADMINISTER_COLLECTION;
+            return Permissions.ADMINISTER_COLLECTION;
         }
         if (account instanceof Resource) {
-            return GeneralPermissions.MODIFY_RECORD;
+            return Permissions.MODIFY_RECORD;
         }
         return null;
     }

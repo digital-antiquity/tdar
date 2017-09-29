@@ -8,7 +8,7 @@ import java.util.Set;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.utils.PersistableUtils;
 
 public class CollectionRightsExtractor {
@@ -22,7 +22,7 @@ public class CollectionRightsExtractor {
     /*
      * Convenience Method that provides a list of users that match the permission
      */
-    public static Set<TdarUser> getUsersWhoCan(ResourceCollection collection_, GeneralPermissions permission, boolean recurse) {
+    public static Set<TdarUser> getUsersWhoCan(ResourceCollection collection_, Permissions permission, boolean recurse) {
         Set<TdarUser> people = new HashSet<>();
         for (AuthorizedUser user : collection_.getAuthorizedUsers()) {
             if (user.getEffectiveGeneralPermission() >= permission.getEffectivePermissions()) {
@@ -44,10 +44,10 @@ public class CollectionRightsExtractor {
      * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection
      */
     public List<Long> getUsersWhoCanModify() {
-        return toUserList(GeneralPermissions.MODIFY_RECORD);
+        return toUserList(Permissions.MODIFY_RECORD);
     }
 
-    private List<Long> toUserList(GeneralPermissions permission) {
+    private List<Long> toUserList(Permissions permission) {
         ArrayList<Long> users = new ArrayList<>();
         HashSet<TdarUser> writable = new HashSet<>();
         writable.addAll(getUsersWhoCan(collection, permission, true));
@@ -61,10 +61,10 @@ public class CollectionRightsExtractor {
     }
 
     public List<Long> getUsersWhoCanAdminister() {
-        return toUserList(GeneralPermissions.ADMINISTER_COLLECTION);
+        return toUserList(Permissions.ADMINISTER_COLLECTION);
     }
 
     public List<Long> getUsersWhoCanView() {
-        return toUserList(GeneralPermissions.VIEW_ALL);
+        return toUserList(Permissions.VIEW_ALL);
     }
 }

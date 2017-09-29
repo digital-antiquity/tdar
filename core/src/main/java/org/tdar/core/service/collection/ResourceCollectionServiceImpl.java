@@ -35,7 +35,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.RevisionLogType;
@@ -410,7 +410,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
             collectionToAdd.markUpdated(authenticatedUser);
             if (collectionToAdd.isTransient()) {
                 collectionToAdd.setChangesNeedToBeLogged(true);
-                collectionToAdd.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, GeneralPermissions.ADMINISTER_COLLECTION));
+                collectionToAdd.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, Permissions.ADMINISTER_COLLECTION));
             }
 
             // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
@@ -531,7 +531,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
      */
     @Override
     @Transactional(readOnly = true)
-    public Set<ResourceCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions) {
+    public Set<ResourceCollection> findFlattenedCollections(Person user, Permissions generalPermissions) {
         return getDao().findFlattendCollections(user, generalPermissions);
     }
 
@@ -730,7 +730,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
      */
     @Override
     @Transactional
-    public void addUserToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission) {
+    public void addUserToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, Permissions permission) {
         resource.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, user, permission));
     }
 
@@ -792,7 +792,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         Set<Resource> resources = persistable.getManagedResources();
         List<Resource> ineligibleToAdd = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
         List<Resource> ineligibleToRemove = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
-        GeneralPermissions modifyRecord = GeneralPermissions.MODIFY_RECORD;
+        Permissions modifyRecord = Permissions.MODIFY_RECORD;
         
         if (CollectionUtils.isNotEmpty(resourcesToAdd)) {
             if (!authorizationService.canAddToCollection(authenticatedUser, (ResourceCollection) persistable, type)) {
@@ -847,7 +847,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     @Override
     @Transactional(readOnly = false)
     public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionResourceSection type) {
-        if (!authorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
+        if (!authorizationService.canEditResource(authenticatedUser, resource, Permissions.MODIFY_RECORD) ||
                 authorizationService.canRemoveFromCollection(collection, authenticatedUser, type)) {
             throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
         } else {
@@ -953,7 +953,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         }
         logger.debug("{} - {}", persistable, persistable.getId());
         if (PersistableUtils.isTransient(persistable)) {
-            GeneralPermissions perm = GeneralPermissions.ADMINISTER_COLLECTION;
+            Permissions perm = Permissions.ADMINISTER_COLLECTION;
 
             persistable.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, perm));
         }
@@ -1196,7 +1196,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         if (authorizationService.isEditor(authenticatedUser)) {
             admin = true;
         }
-        return getDao().findCollectionsSharedWith(authenticatedUser, user, GeneralPermissions.MODIFY_RECORD, admin);
+        return getDao().findCollectionsSharedWith(authenticatedUser, user, Permissions.MODIFY_RECORD, admin);
     }
 
     /*

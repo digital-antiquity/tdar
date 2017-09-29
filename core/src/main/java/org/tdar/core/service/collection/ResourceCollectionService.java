@@ -11,7 +11,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.RevisionLogType;
@@ -157,7 +157,7 @@ public interface ResourceCollectionService {
      * @param generalPermissions
      * @return
      */
-     Set<ResourceCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions);
+     Set<ResourceCollection> findFlattenedCollections(Person user, Permissions generalPermissions);
 
     /**
      * Return the root resource collection of the provided resource collection. This method also populates the
@@ -228,7 +228,7 @@ public interface ResourceCollectionService {
 
     List<ResourceCollection> getAllChildCollections(ResourceCollection persistable);
 
-    void addUserToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission);
+    void addUserToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, Permissions permission);
 
     Set<ResourceCollection> getEffectiveSharesForResource(Resource resource);
 

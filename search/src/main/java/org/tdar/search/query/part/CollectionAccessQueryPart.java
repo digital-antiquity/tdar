@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 
@@ -22,10 +22,10 @@ public class CollectionAccessQueryPart implements QueryPart<TdarUser> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private TdarUser user;
-    private GeneralPermissions permissions;
+    private Permissions permissions;
     private boolean admin;
 
-    public CollectionAccessQueryPart(TdarUser person, boolean admin, GeneralPermissions generalPermissions) {
+    public CollectionAccessQueryPart(TdarUser person, boolean admin, Permissions generalPermissions) {
         this.user = person;
         this.permissions = generalPermissions;
         this.admin = admin;
@@ -36,7 +36,7 @@ public class CollectionAccessQueryPart implements QueryPart<TdarUser> {
         return (PersistableUtils.isNullOrTransient(user) || (permissions == null));
     }
 
-    protected QueryPart<?> getQueryPart(TdarUser value, GeneralPermissions permissions) {
+    protected QueryPart<?> getQueryPart(TdarUser value, Permissions permissions) {
         if (isEmpty()) {
             return null;
         }

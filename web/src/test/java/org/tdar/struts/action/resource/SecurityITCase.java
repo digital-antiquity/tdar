@@ -17,7 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -100,7 +100,7 @@ public class SecurityITCase extends AbstractControllerITCase {
     private Document setupReadUserDoc() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
-        addAuthorizedUser(doc, getUser(), GeneralPermissions.VIEW_ALL);
+        addAuthorizedUser(doc, getUser(), Permissions.VIEW_ALL);
         genericService.save(doc);
         return doc;
     }
@@ -108,7 +108,7 @@ public class SecurityITCase extends AbstractControllerITCase {
     private Document setupBadReadUserDoc() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
-        addAuthorizedUser(doc, getAdminUser(), GeneralPermissions.VIEW_ALL);
+        addAuthorizedUser(doc, getAdminUser(), Permissions.VIEW_ALL);
         genericService.save(doc);
         return doc;
     }
@@ -123,14 +123,14 @@ public class SecurityITCase extends AbstractControllerITCase {
     private Document setupFullUserDoc() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
-        addAuthorizedUser(doc, getUser(), GeneralPermissions.MODIFY_RECORD);
+        addAuthorizedUser(doc, getUser(), Permissions.MODIFY_RECORD);
         return doc;
     }
 
     private Document setupBadFullUserDoc() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document doc = setupEmbargoedDoc();
         doc.getInformationResourceFiles().iterator().next().setRestriction(FileAccessRestriction.CONFIDENTIAL);
-        addAuthorizedUser(doc, getAdminUser(), GeneralPermissions.MODIFY_RECORD);
+        addAuthorizedUser(doc, getAdminUser(), Permissions.MODIFY_RECORD);
         return doc;
     }
 

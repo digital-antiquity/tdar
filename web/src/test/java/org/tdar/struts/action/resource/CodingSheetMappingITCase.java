@@ -38,7 +38,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -405,7 +405,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         CodingSheet codingSheet = setupCodingSheet(EXCEL_FILE_NAME, EXCEL_FILE_PATH, ontology, null);
         ResourceCollection sharedCollection = createAndSaveNewResourceCollection("test");
         TdarUser person = createAndSaveNewPerson("aas23@.com", "asdasff");
-        sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, GeneralPermissions.ADMINISTER_COLLECTION));
+        sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, Permissions.ADMINISTER_COLLECTION));
         sharedCollection.getManagedResources().add(codingSheet);
         genericService.saveOrUpdate(sharedCollection);
         genericService.saveOrUpdate(sharedCollection.getAuthorizedUsers());
