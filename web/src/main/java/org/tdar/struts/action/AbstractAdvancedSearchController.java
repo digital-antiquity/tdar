@@ -623,7 +623,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         types.remove(ObjectType.ARCHIVE);
         types.remove(ObjectType.AUDIO);
         types.remove(ObjectType.VIDEO);
-        types.remove(ObjectType.LIST_COLLECTION);
         return types;
     }
 

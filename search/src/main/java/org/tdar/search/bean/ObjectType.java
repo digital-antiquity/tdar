@@ -7,12 +7,11 @@ import java.util.List;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.PluralLocalizable;
-import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.utils.MessageHelper;
 
 public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
-    DOCUMENT, DATASET, PROJECT, LIST_COLLECTION, SHARED_COLLECTION, CODING_SHEET, IMAGE, GEOSPATIAL, SENSORY_DATA, ONTOLOGY, VIDEO, AUDIO, ARCHIVE, INTEGRATION;
+    DOCUMENT, DATASET, PROJECT, COLLECTION, CODING_SHEET, IMAGE, GEOSPATIAL, SENSORY_DATA, ONTOLOGY, VIDEO, AUDIO, ARCHIVE, INTEGRATION;
 
     public static ObjectType from(ResourceType resourceType) {
         switch (resourceType) {
@@ -58,32 +57,18 @@ public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
                 return "006" + this.name();
             case IMAGE:
                 return "002" + this.name();
-            case LIST_COLLECTION:
-                return "050" + this.name();
             case ONTOLOGY:
                 return "009" + this.name();
             case PROJECT:
                 return "005" + this.name();
             case SENSORY_DATA:
                 return "007" + this.name();
-            case SHARED_COLLECTION:
+            case COLLECTION:
                 return "010" + this.name();
             case INTEGRATION:
                 return "040" + this.name();
             case VIDEO:
                 return "099" + this.name();
-            default:
-                break;
-        }
-        return null;
-    }
-
-    public static ObjectType from(CollectionResourceSection type) {
-        switch (type) {
-            case UNMANGED:
-                return LIST_COLLECTION;
-            case MANAGED:
-                return SHARED_COLLECTION;
             default:
                 break;
         }
@@ -107,8 +92,7 @@ public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
 
     public static List<ObjectType> resourceValues() {
         List<ObjectType> lst = new ArrayList<>(Arrays.asList(ObjectType.values()));
-        lst.remove(SHARED_COLLECTION);
-        lst.remove(LIST_COLLECTION);
+        lst.remove(COLLECTION);
         lst.remove(INTEGRATION);
         return lst;
     }

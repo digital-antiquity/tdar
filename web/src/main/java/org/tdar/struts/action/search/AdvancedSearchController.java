@@ -123,7 +123,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         getAsqo().setMultiCore(true);
         try {
             getFacetWrapper().facetBy(QueryFieldNames.OBJECT_TYPE, ObjectType.class);
-            getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionResourceSection.class);
+//            getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionResourceSection.class);
             getFacetWrapper().facetBy(QueryFieldNames.GENERAL_TYPE, LookupSource.class);
             getFacetWrapper().facetBy(QueryFieldNames.INTEGRATABLE, IntegratableOptions.class);
             getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_ACCESS_TYPE, ResourceAccessType.class);

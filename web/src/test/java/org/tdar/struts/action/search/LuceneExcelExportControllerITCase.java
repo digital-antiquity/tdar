@@ -52,7 +52,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
                 genericService.find(TdarUser.class, getBasicUserId()));
 
         controller.setServletRequest(getServletRequest());
-        doSearch("");
+        doSearch( controller,"");
         assertEquals(Action.SUCCESS, controller.viewExcelReport());
         assertFalse(controller.getSearchPhrase() + " should not have bold tag", controller.getSearchPhrase().toLowerCase().contains("<b>"));
         File tempFile = File.createTempFile("report", ".xls");
@@ -78,7 +78,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
                 genericService.find(TdarUser.class, getAdminUserId()));
 
         controller.setServletRequest(getServletRequest());
-        doSearch("");
+        doSearch( controller,"");
         assertEquals(Action.SUCCESS, controller.viewExcelReport());
         assertFalse(controller.getSearchPhrase() + " should not have bold tag", controller.getSearchPhrase().toLowerCase().contains("<b>"));
         File tempFile = File.createTempFile("report", ".xls");
@@ -107,7 +107,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         // controller = generateNewInitializedController(AdvancedSearchController.class);
 
         controller.setServletRequest(getServletRequest());
-        doSearch("");
+        doSearch( controller,"");
         TdarActionException except = null;
         try {
             controller.viewExcelReport();
