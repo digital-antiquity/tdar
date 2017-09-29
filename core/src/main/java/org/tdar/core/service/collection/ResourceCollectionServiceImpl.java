@@ -21,6 +21,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.atlas.test.Gen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,8 @@ import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
 
 import com.opensymphony.xwork2.TextProvider;
+
+import ucar.nc2.ft.point.standard.plug.GempakCdm;
 
 /**
  * @author Adam Brin
@@ -1101,7 +1104,6 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
             Class<C> class1, Long startTime) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         List<UserInvite> invites = new ArrayList<>();
-
         userRightsProxyService.convertProxyToItems(proxies, authenticatedUser, authorizedUsers, invites);
         RevisionLogType edit = RevisionLogType.EDIT;
         saveAuthorizedUsersForResourceCollection(c, c, authorizedUsers, true, authenticatedUser, edit);
@@ -1112,7 +1114,9 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
             revision.setTimeBasedOnStart(startTime);
             getDao().saveOrUpdate(revision);
         }
+        c.markUpdated(authenticatedUser);
         userRightsProxyService.handleInvites(authenticatedUser, invites, c);
+        saveOrUpdate(c);
         publisher.publishEvent(new TdarEvent(c, EventType.CREATE_OR_UPDATE));
 
     }
