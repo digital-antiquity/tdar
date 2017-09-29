@@ -405,7 +405,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         CodingSheet codingSheet = setupCodingSheet(EXCEL_FILE_NAME, EXCEL_FILE_PATH, ontology, null);
         ResourceCollection sharedCollection = createAndSaveNewResourceCollection("test");
         TdarUser person = createAndSaveNewPerson("aas23@.com", "asdasff");
-        sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, GeneralPermissions.ADMINISTER_SHARE));
+        sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, GeneralPermissions.ADMINISTER_COLLECTION));
         sharedCollection.getManagedResources().add(codingSheet);
         genericService.saveOrUpdate(sharedCollection);
         genericService.saveOrUpdate(sharedCollection.getAuthorizedUsers());

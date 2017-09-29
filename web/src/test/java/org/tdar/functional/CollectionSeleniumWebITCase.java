@@ -163,7 +163,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         find(".toolbar-rights").click();
         waitForPageload();
 
-        addUserWithRights("test user", config.getUsername(), config.getUserId(), GeneralPermissions.ADMINISTER_SHARE);
+        addUserWithRights("test user", config.getUsername(), config.getUserId(), GeneralPermissions.ADMINISTER_COLLECTION);
         submitForm();
 
         gotoPage("/project/" + _139 + "/edit");
@@ -262,7 +262,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
         find(By.name("resourceCollection.hidden")).val(visibility.isHidden());
-        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_SHARE;
+        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
         addResourceToCollection(_139);
         for (String title : titles) {
             addResourceToCollection(title);

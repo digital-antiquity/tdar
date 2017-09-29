@@ -34,12 +34,9 @@ public enum GeneralPermissions implements HasLabel, Localizable {
     VIEW_ALL( 100, Resource.class, ResourceCollection.class),
     MODIFY_METADATA(400, Resource.class, ResourceCollection.class),
     MODIFY_RECORD(500, Resource.class, ResourceCollection.class),
-//    ADD_TO_COLLECTION(40, ResourceCollection.class),
-//    REMOVE_FROM_COLLECTION(50, ResourceCollection.class),
-//    ADMINISTER_GROUP(80,SharedCollection.class),
-    ADD_TO_SHARE(4000,ResourceCollection.class),
-    REMOVE_FROM_SHARE(4500, ResourceCollection.class),
-    ADMINISTER_SHARE( 5000,ResourceCollection.class),
+    ADD_TO_COLLECTION(4000,ResourceCollection.class),
+    REMOVE_FROM_COLLECTION(4500, ResourceCollection.class),
+    ADMINISTER_COLLECTION( 5000,ResourceCollection.class),
     EDIT_ACCOUNT( 10000,BillingAccount.class),
     EDIT_INTEGRATION( 2000,DataIntegrationWorkflow.class);
 
@@ -99,9 +96,9 @@ public enum GeneralPermissions implements HasLabel, Localizable {
         List<GeneralPermissions> permissions = new ArrayList<>(Arrays.asList(GeneralPermissions.values()));
 //        permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
 //        permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
-        permissions.remove(GeneralPermissions.ADMINISTER_SHARE);
-        permissions.remove(GeneralPermissions.ADD_TO_SHARE);
-        permissions.remove(GeneralPermissions.REMOVE_FROM_SHARE);
+        permissions.remove(GeneralPermissions.ADMINISTER_COLLECTION);
+        permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
+        permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
         permissions.remove(GeneralPermissions.EDIT_ACCOUNT);
         permissions.remove(GeneralPermissions.EDIT_INTEGRATION);
         return permissions;
@@ -143,7 +140,7 @@ public enum GeneralPermissions implements HasLabel, Localizable {
             return GeneralPermissions.EDIT_INTEGRATION;
         }
         if (account instanceof ResourceCollection) {
-            return GeneralPermissions.ADMINISTER_SHARE;
+            return GeneralPermissions.ADMINISTER_COLLECTION;
         }
         if (account instanceof Resource) {
             return GeneralPermissions.MODIFY_RECORD;

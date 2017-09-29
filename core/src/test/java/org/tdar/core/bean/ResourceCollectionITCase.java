@@ -151,7 +151,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         ResourceCollection test = new ResourceCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(test);
         genericService.saveOrUpdate(test.getAuthorizedUsers());
@@ -172,8 +172,8 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         test.setStatus(Status.DELETED);
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getAdminUser(), GeneralPermissions.ADMINISTER_SHARE));
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getAdminUser(), GeneralPermissions.ADMINISTER_COLLECTION));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(test);
         genericService.saveOrUpdate(test.getAuthorizedUsers());
@@ -190,7 +190,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         ResourceCollection test = new ResourceCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(test);
 
         ResourceCollection c1 = new ResourceCollection();
@@ -287,7 +287,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
     private void process(ResourceCollection list) {
         list.markUpdated(getAdminUser());
-        list.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),list.getOwner(),GeneralPermissions.ADMINISTER_SHARE));
+        list.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),list.getOwner(),GeneralPermissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(list);
         genericService.saveOrUpdate(list.getAuthorizedUsers());
     }
@@ -324,7 +324,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ResourceCollection collection = new ResourceCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection);
         genericService.synchronize();
         CollectionSaveObject cso = new CollectionSaveObject(collection, getBasicUser(), -1L);
@@ -343,7 +343,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 //
 //            @Override
 //            public SharedCollection doInTransaction(TransactionStatus arg0) {
-                List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+                List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
                         new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
                 
                 ResourceCollection myCollection = genericService.find(ResourceCollection.class, id);

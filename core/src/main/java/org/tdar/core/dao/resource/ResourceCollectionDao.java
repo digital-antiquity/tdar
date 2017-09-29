@@ -83,7 +83,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     public List<ResourceCollection> findParentOwnerCollections(Person person) {
         String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER;
-        GeneralPermissions base = GeneralPermissions.ADMINISTER_SHARE;
+        GeneralPermissions base = GeneralPermissions.ADMINISTER_COLLECTION;
 
         Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         Long id = -1L;
@@ -111,7 +111,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
 
     public ResourceCollection findCollectionWithName(TdarUser user, boolean isAdmin, String name) {
         String q = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
-        GeneralPermissions base = GeneralPermissions.ADMINISTER_SHARE;
+        GeneralPermissions base = GeneralPermissions.ADMINISTER_COLLECTION;
         Query<ResourceCollection> query = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         query.setParameter("name", name);
         List<ResourceCollection> list = query.getResultList();

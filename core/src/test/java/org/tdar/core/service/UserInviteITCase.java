@@ -80,7 +80,7 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         // create a collection
         ResourceCollection collection = new ResourceCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection);
         Long id = collection.getId();
         genericService.synchronize();
@@ -91,7 +91,7 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         ResourceCollection myCollection = genericService.find(ResourceCollection.class, id);
 
         // grant basic user and admin user rights on the collection
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
                 
         List<UserRightsProxy> aus = new ArrayList<>();

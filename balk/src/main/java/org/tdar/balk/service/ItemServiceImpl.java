@@ -348,7 +348,7 @@ public class ItemServiceImpl implements ItemService {
             ResourceCollection rc = new ResourceCollection();
             rc.setHidden(true);
             if (StringUtils.isNotBlank(username)) {
-                rc.getAuthorizedUsers().add(new AuthorizedUser(null, new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_SHARE));
+                rc.getAuthorizedUsers().add(new AuthorizedUser(null, new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_COLLECTION));
             }
             rc.setName(collection);
             rc.setDescription("(from dropbox)");

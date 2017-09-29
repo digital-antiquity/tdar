@@ -21,7 +21,7 @@ public class GeneralPermissionsTestCase {
         List<GeneralPermissions> availablePermissionsFor = GeneralPermissions.getAvailablePermissionsFor(Resource.class);
         logger.debug("rperm: {}", availablePermissionsFor);
         assertTrue(availablePermissionsFor.contains(GeneralPermissions.MODIFY_METADATA));
-        assertFalse(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_SHARE));
+        assertFalse(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_COLLECTION));
     }
 
     @Test
@@ -29,7 +29,7 @@ public class GeneralPermissionsTestCase {
         List<GeneralPermissions> availablePermissionsFor = GeneralPermissions.getAvailablePermissionsFor(ResourceCollection.class);
         logger.debug("sharedperm: {}", availablePermissionsFor);
         assertTrue(availablePermissionsFor.contains(GeneralPermissions.MODIFY_METADATA));
-        assertTrue(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_SHARE));
+        assertTrue(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_COLLECTION));
     }
 
 }

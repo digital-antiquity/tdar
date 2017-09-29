@@ -407,7 +407,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
             collectionToAdd.markUpdated(authenticatedUser);
             if (collectionToAdd.isTransient()) {
                 collectionToAdd.setChangesNeedToBeLogged(true);
-                collectionToAdd.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, GeneralPermissions.ADMINISTER_SHARE));
+                collectionToAdd.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, GeneralPermissions.ADMINISTER_COLLECTION));
             }
 
             // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
@@ -950,7 +950,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         }
         logger.debug("{} - {}", persistable, persistable.getId());
         if (PersistableUtils.isTransient(persistable)) {
-            GeneralPermissions perm = GeneralPermissions.ADMINISTER_SHARE;
+            GeneralPermissions perm = GeneralPermissions.ADMINISTER_COLLECTION;
 
             persistable.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, authenticatedUser, perm));
         }

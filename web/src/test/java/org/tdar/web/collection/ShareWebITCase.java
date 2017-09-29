@@ -356,7 +356,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long id = extractTdarIdFromCurrentURL();
         gotoPage("/collection/" + id + "/rights");
         setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_SHARE.toString());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_COLLECTION.toString());
         submitForm();
         logout();
         

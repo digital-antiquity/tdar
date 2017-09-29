@@ -68,8 +68,8 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.ADD_TO_SHARE)));
+                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.ADD_TO_COLLECTION)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ResourceCollection collection = generateResourceCollection(name, description, false, users, testPerson, new ArrayList<>(), null);
         
@@ -122,7 +122,7 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
         InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD), 
                 new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
@@ -156,7 +156,7 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
             }
             if (user.getUser().equals(getBasicUser())) {
                 count++;
-                assertEquals(GeneralPermissions.ADMINISTER_SHARE, user.getGeneralPermission());
+                assertEquals(GeneralPermissions.ADMINISTER_COLLECTION, user.getGeneralPermission());
             }
         }
         assertEquals(3, count);

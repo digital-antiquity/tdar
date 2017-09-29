@@ -189,7 +189,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         List<AuthorizedUser> users2 = new ArrayList<AuthorizedUser>();
         users2.addAll(Arrays.asList(new AuthorizedUser(getAdminUser(), testModify, GeneralPermissions.MODIFY_RECORD), 
                 new AuthorizedUser(getAdminUser(), testView, GeneralPermissions.VIEW_ALL),
-                new AuthorizedUser(getAdminUser(),testAdmin, GeneralPermissions.ADMINISTER_SHARE)));
+                new AuthorizedUser(getAdminUser(),testAdmin, GeneralPermissions.ADMINISTER_COLLECTION)));
         resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true,  getBasicUser(),RevisionLogType.EDIT);
         genericService.saveOrUpdate(testCollection);
 
@@ -248,7 +248,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         ProjectController controller = tryAndSaveCollectionToController(rc);
         assertNotEquals(Action.SUCCESS, controller.save());
 
-        rc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getUser(), GeneralPermissions.ADMINISTER_SHARE));
+        rc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(rc);
         evictCache();
         // try ... and should succeed now that we add the user + permissions

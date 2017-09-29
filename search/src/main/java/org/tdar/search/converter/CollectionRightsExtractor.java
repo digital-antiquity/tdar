@@ -61,7 +61,7 @@ public class CollectionRightsExtractor {
     }
 
     public List<Long> getUsersWhoCanAdminister() {
-        return toUserList(GeneralPermissions.ADMINISTER_SHARE);
+        return toUserList(GeneralPermissions.ADMINISTER_COLLECTION);
     }
 
     public List<Long> getUsersWhoCanView() {

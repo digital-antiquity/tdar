@@ -54,7 +54,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
             project.setAuthorizedUsers(new HashSet<>());
         }
         if (CollectionUtils.isEmpty(project.getAuthorizedUsers())) {
-            project.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+            project.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION));
             genericService.saveOrUpdate(project.getAuthorizedUsers());
             genericService.saveOrUpdate(project);
         }

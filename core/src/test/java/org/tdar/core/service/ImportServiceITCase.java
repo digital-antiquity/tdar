@@ -54,7 +54,7 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         document.setTitle("test");
         document.setDescription("test description");
         document.setDocumentType(DocumentType.BOOK);
-        document.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), new TdarUser(null, null, null, getBillingUser().getUsername()), GeneralPermissions.ADMINISTER_SHARE));
+        document.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), new TdarUser(null, null, null, getBillingUser().getUsername()), GeneralPermissions.ADMINISTER_COLLECTION));
         Document newDoc = importService.bringObjectOntoSession(document, getAdminUser(), null, null, true);
         genericService.synchronize();
         Set<AuthorizedUser> authorizedUsers = newDoc.getAuthorizedUsers();

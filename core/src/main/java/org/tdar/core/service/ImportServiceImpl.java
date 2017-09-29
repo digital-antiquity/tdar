@@ -154,7 +154,7 @@ public class ImportServiceImpl implements ImportService  {
         processFiles(blessedAuthorizedUser, proxies, incomingResource);
         geoSearchService.processManagedGeographicKeywords(incomingResource, incomingResource.getLatitudeLongitudeBoxes());
         if (created == true) {
-            GeneralPermissions administerShare = GeneralPermissions.ADMINISTER_SHARE;
+            GeneralPermissions administerShare = GeneralPermissions.ADMINISTER_COLLECTION;
             if ( incomingResource instanceof Resource) {
                 administerShare = GeneralPermissions.MODIFY_RECORD;
             }

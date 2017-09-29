@@ -90,7 +90,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUser() throws SearchException, SearchIndexException, IOException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),   GeneralPermissions.ADD_TO_SHARE);
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),   GeneralPermissions.ADD_TO_COLLECTION);
         SearchResult<ResourceCollection> result = search(getBasicUser(), null, "test");
         assertTrue(result.getResults().contains(e));
     }
@@ -98,8 +98,8 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUserForModification() throws SearchException, SearchIndexException, IOException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),  GeneralPermissions.REMOVE_FROM_SHARE);
-        SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE, "test");
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),  GeneralPermissions.REMOVE_FROM_COLLECTION);
+        SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION, "test");
         assertFalse(result.getResults().contains(e));
     }
 
@@ -124,7 +124,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Rollback(true)
     public void testInvisibleShareLookupFoundByBasicUserForModification() throws SearchException, SearchIndexException, IOException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),  GeneralPermissions.VIEW_ALL);
-        SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE, "test");
+        SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION, "test");
         assertFalse(result.getResults().contains(e));
     }
 

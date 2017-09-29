@@ -35,7 +35,7 @@ public class UnmanagedResourceCollectionITCase extends AbstractIntegrationTestCa
 
         // create a collection
         ResourceCollection collection = createAndSaveNewResourceCollection("test umanaged");
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), tdarUser, GeneralPermissions.ADMINISTER_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), tdarUser, GeneralPermissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection.getAuthorizedUsers());
         genericService.saveOrUpdate(collection);
       

@@ -420,7 +420,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         resourceCollection.setHidden(false);
         resourceCollection.markUpdated(getUser());
         resourceCollection.setOwner(getUser());
-        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(getUser(), getUser(), GeneralPermissions.ADMINISTER_SHARE));
+        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(getUser(), getUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(resourceCollection);
         genericService.saveOrUpdate(resourceCollection.getAuthorizedUsers());
         return resourceCollection;

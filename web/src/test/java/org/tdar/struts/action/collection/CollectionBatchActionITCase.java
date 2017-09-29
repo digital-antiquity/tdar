@@ -82,7 +82,7 @@ public class CollectionBatchActionITCase extends AbstractControllerITCase implem
 
         
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION),
                 new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft, newProject, existingProject));

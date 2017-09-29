@@ -267,7 +267,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
 //        if (persistable instanceof ListCollection) {
 //            return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_COLLECTION);
 //        }
-        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_SHARE);
+        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_COLLECTION);
     }
 
     /*
@@ -288,7 +288,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-        GeneralPermissions permission = GeneralPermissions.ADMINISTER_SHARE;
+        GeneralPermissions permission = GeneralPermissions.ADMINISTER_COLLECTION;
 //        if (persistable instanceof ListCollection) {
 //            permission = GeneralPermissions.ADMINISTER_GROUP;
 //        }
@@ -970,7 +970,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }
-        GeneralPermissions permission = permission = GeneralPermissions.ADD_TO_SHARE;
+        GeneralPermissions permission = permission = GeneralPermissions.ADD_TO_COLLECTION;
         return authorizedUserDao.isAllowedTo(user, collectionToAdd, permission);
     }
 
@@ -986,7 +986,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_SHARE;
+        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
         return authorizedUserDao.isAllowedTo(user, collection, permission);
     }
 

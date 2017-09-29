@@ -44,7 +44,7 @@ public class RightsResolverTestCase {
         TdarUser basic = new TdarUser("basic", "user", "a@b.com");
         Date date = new Date(1000L);
         AuthorizedUser user = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date);
-        AuthorizedUser user2 = new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE);
+        AuthorizedUser user2 = new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_COLLECTION);
         users.add(user);
         users.add(user2);
         RightsResolver rr = RightsResolver.evaluate(users);
@@ -53,8 +53,8 @@ public class RightsResolverTestCase {
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
-        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE, date)));
-        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_COLLECTION, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_COLLECTION)));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class RightsResolverTestCase {
         TdarUser basic = new TdarUser("basic", "user", "a@b.com");
         Date date = new Date(1500L);
         AuthorizedUser user = new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA);
-        AuthorizedUser user2 = new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE, date);
+        AuthorizedUser user2 = new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_COLLECTION, date);
         users.add(user);
         users.add(user2);
         RightsResolver rr = RightsResolver.evaluate(users);
@@ -73,10 +73,10 @@ public class RightsResolverTestCase {
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA, date)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
-        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE, date)));
-        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE)));
-        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE, date)));
-        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_COLLECTION, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_COLLECTION)));
+        assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_COLLECTION, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_COLLECTION)));
 
     }
 
@@ -97,10 +97,10 @@ public class RightsResolverTestCase {
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_METADATA)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD, date)));
         assertFalse(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.MODIFY_RECORD)));
-        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE, date)));
-        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_SHARE)));
-        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE, date)));
-        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_SHARE)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_COLLECTION, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADMINISTER_COLLECTION)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_COLLECTION, date)));
+        assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, GeneralPermissions.ADD_TO_COLLECTION)));
 
 
     }

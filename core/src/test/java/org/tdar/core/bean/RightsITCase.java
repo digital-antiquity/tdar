@@ -100,7 +100,7 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         genericService.synchronize();
 
         
-        AuthorizedUser au = new AuthorizedUser(badUser, badUser, GeneralPermissions.ADMINISTER_SHARE);
+        AuthorizedUser au = new AuthorizedUser(badUser, badUser, GeneralPermissions.ADMINISTER_COLLECTION);
         au.setDateExpires(soon);
         List<UserRightsProxy> proxies = Arrays.asList(new UserRightsProxy(au));
         saveAndAssertException(dataset, badUser, proxies);
@@ -146,18 +146,18 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         // setup collection and parent, grant ownership rights to parent
         ResourceCollection grandParent = new ResourceCollection("rights parent", "rights parent", getBasicUser());
         grandParent.markUpdated(getBasicUser());
-        grandParent.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), ownerUser, GeneralPermissions.ADMINISTER_SHARE));
+        grandParent.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), ownerUser, GeneralPermissions.ADMINISTER_COLLECTION));
         ResourceCollection parent = new ResourceCollection("rights inherit", "rights inherit", getBasicUser());
         parent.markUpdated(getBasicUser());
-        parent.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getEditorUser(), GeneralPermissions.ADMINISTER_SHARE));
+        parent.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getEditorUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         ResourceCollection collection = new ResourceCollection("rights inherit", "rights inherit", getBasicUser());
         collection.markUpdated(getBasicUser());
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getAdminUser(), GeneralPermissions.ADMINISTER_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getAdminUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         
         // setup a completely different inheritance tree
         ResourceCollection collection2 = new ResourceCollection("rights2", "rights2", getBasicUser());
         collection2.markUpdated(getBasicUser());
-        collection2.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getAdminUser(), GeneralPermissions.ADMINISTER_SHARE));
+        collection2.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getAdminUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(grandParent);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(collection2);

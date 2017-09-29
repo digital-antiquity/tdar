@@ -189,11 +189,6 @@ public class ResourceCollection extends AbstractPersistable
     private Boolean systemManaged = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
-    @XmlTransient
-    @Column(name = "collection_type", updatable = false, insertable = false)
-    private CollectionResourceSection type = CollectionResourceSection.MANAGED;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
     @JsonView(JsonLookupFilter.class)
     private Status status = Status.ACTIVE;

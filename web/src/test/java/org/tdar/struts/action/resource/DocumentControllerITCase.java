@@ -95,7 +95,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         ResourceCollection collection = createResourceCollectionWithAdminRights();
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(collection);
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection);
 
         ResourceCollection collectionChild = new ResourceCollection();
@@ -697,7 +697,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         
         doc = genericService.find(Document.class, id);
         assertFalse(authenticationAndAuthorizationService.canDo(newUser, doc,
-                InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.ADMINISTER_SHARE));
+                InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.ADMINISTER_COLLECTION));
         assertEquals(2, doc.getAuthorizedUsers().size());
         // try to edit as basic user -- should fail
         doc = null;
