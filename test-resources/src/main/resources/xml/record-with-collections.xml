@@ -59,7 +59,7 @@
                 <tdar:resources/>
                 <tdar:sortBy>TITLE</tdar:sortBy>
                 <tdar:unmanagedResources>
-                    <tdar:resourceId>4232</tdar:resourceId>
+                    <tdar:unmanagedResourceId>4232</tdar:unmanagedResourceId>
                 </tdar:unmanagedResources>
             </tdar:resourceCollection>
         </tdar:unmanagedResourceCollections>

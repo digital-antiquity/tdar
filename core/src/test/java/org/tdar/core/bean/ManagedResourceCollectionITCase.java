@@ -20,6 +20,7 @@ import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.resource.ErrorHandling;
 
+@Ignore
 public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase {
 
 	@Autowired
