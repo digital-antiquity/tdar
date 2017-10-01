@@ -106,7 +106,7 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, normal, Permissions.MODIFY_METADATA));
         assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, draft, Permissions.MODIFY_RECORD));
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, draft));
-        assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, normal));
+        assertTrue(authenticationAndAuthorizationService.canViewResource(testPerson, normal));
         /*
 */
     }

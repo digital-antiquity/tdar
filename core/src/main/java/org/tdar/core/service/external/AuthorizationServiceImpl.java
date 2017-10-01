@@ -209,6 +209,8 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
+        //NOTE: this was a change in Quartz ... it may just need to be return true, which is what it 
+        // was historically (things that call this skip this call if resource is active)
         if (resource.isActive()) {
             if (CollectionUtils.isEmpty(resource.getActiveLatitudeLongitudeBoxes())) {
                 return true;
