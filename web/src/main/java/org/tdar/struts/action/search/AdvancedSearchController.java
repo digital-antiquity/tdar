@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -123,7 +123,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         getAsqo().setMultiCore(true);
         try {
             getFacetWrapper().facetBy(QueryFieldNames.OBJECT_TYPE, ObjectType.class);
-            getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionType.class);
+//            getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionResourceSection.class);
             getFacetWrapper().facetBy(QueryFieldNames.GENERAL_TYPE, LookupSource.class);
             getFacetWrapper().facetBy(QueryFieldNames.INTEGRATABLE, IntegratableOptions.class);
             getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_ACCESS_TYPE, ResourceAccessType.class);
@@ -340,11 +340,11 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         getReservedSearchParameters().setTypes(types);
     }
 
-    public List<CollectionType> getCollectionTypes() {
+    public List<CollectionResourceSection> getCollectionTypes() {
         return getReservedSearchParameters().getCollectionTypes();
     }
 
-    public void setCollectionTypes(List<CollectionType> types) {
+    public void setCollectionTypes(List<CollectionResourceSection> types) {
         getReservedSearchParameters().setCollectionTypes(types);
     }
 

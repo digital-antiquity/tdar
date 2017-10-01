@@ -232,7 +232,7 @@ public interface TdarNamedQueries {
             + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND "
             +
             " ((exists "
-            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and rescol.status='ACTIVE' and "
+            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.managedResources as colres where colres.id = res.id and rescol.status='ACTIVE' and "
             +
             " (TRUE=:admin or exists ( "
             + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
@@ -242,7 +242,7 @@ public interface TdarNamedQueries {
     String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
             + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
             + " lower(ds.title) like :titleLookup and "
-            + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.status='ACTIVE' and (rc.id=:collectionId or parentId=:collectionId))) and "
+            + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.managedResources r where rc.status='ACTIVE' and (rc.id=:collectionId or parentId=:collectionId))) and "
             + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
             + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
             + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "

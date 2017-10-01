@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.PersistableUtils;
 
@@ -47,11 +47,11 @@ public class CollectionDataExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
             }
-            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, GeneralPermissions.MODIFY_METADATA, true));
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, Permissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
@@ -75,8 +75,8 @@ public class CollectionDataExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, GeneralPermissions.VIEW_ALL, true));
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, Permissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
@@ -92,7 +92,7 @@ public class CollectionDataExtractor {
     }
 
     public void extractHierarchy() {
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
             }

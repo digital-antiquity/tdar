@@ -336,7 +336,7 @@
         ),
         @NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_COLLECTION,
-                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.resources as res "
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.managedResources as res "
                         + " where coll.id in (:collectionIds)) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
@@ -434,7 +434,7 @@
                         " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
                         " (res.submitter.id=:userId or exists (" +
                         " from ResourceCollection rescol  " +
-                        " join rescol.resources as colres " +
+                        " join rescol.managedResources as colres " +
                         " where " +
                         " colres.id = res.id and colres.status='ACTIVE'  and " +
                         " (TRUE=:admin or rescol.id in (:rescolIds) )))  "),
@@ -467,10 +467,10 @@
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES,
-                query = "select distinct res from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' order by res.id asc"),
+                query = "select distinct res from ResourceCollection rc left join rc.parentIds parentId join rc.managedResources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' order by res.id asc"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
-                query = "select count(distinct res.id) from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
+                query = "select count(distinct res.id) from ResourceCollection rc left join rc.parentIds parentId join rc.managedResources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
         @NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
         @NamedQuery(

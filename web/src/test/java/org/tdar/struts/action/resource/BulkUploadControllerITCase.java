@@ -26,7 +26,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.citation.Citation;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -427,7 +427,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     public void testAddingAdHocCollectionToBulkUpload() throws Exception {
         // start by getting the original count of public/private collections
         // int origInternalCount = getCollectionCount(CollectionType.INTERNAL);
-        int origSharedCount = getCollectionCount(CollectionType.SHARED);
+        int origSharedCount = getCollectionCount(CollectionResourceSection.MANAGED);
         int origImageCount = genericService.findAll(Image.class).size();
 
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
@@ -466,7 +466,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(new Float(100), basa.getPercentDone());
 
         // int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
-        int newSharedCount = getCollectionCount(CollectionType.SHARED);
+        int newSharedCount = getCollectionCount(CollectionResourceSection.MANAGED);
         int newImageCount = genericService.findAll(Image.class).size();
         Assert.assertNotSame(origImageCount, newImageCount);
         assertTrue((newImageCount - origImageCount) > 0);
@@ -481,7 +481,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
             genericService.refresh(resource);
-            Set<ResourceCollection> resourceCollections = resource.getSharedCollections();
+            Set<ResourceCollection> resourceCollections = resource.getManagedResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
             for (ResourceCollection rc : resourceCollections) {
                 logger.debug("\t\t {}", rc);
@@ -492,12 +492,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals("we should have a total of 3 collections (0 internal +2 shared)", 2, collections.size());
 //        int internalCount = 0;
         for (ResourceCollection col : collections) {
-            logger.debug("{} : {}", col, col.getResources());
+            logger.debug("{} : {}", col, col.getManagedResources());
 //            if (col instanceof InternalCollection) {
 //                assertEquals(1, col.getResources().size());
 //                internalCount++;
 //            } else {
-                assertEquals(2, col.getResources().size());
+                assertEquals(2, col.getManagedResources().size());
 //            }
         }
         assertEquals("we should have one new adhoc collection", 2, newSharedCount - origSharedCount);
@@ -507,7 +507,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // assertEquals(msg, uploadFiles.size(), newInternalCount - origInternalCount );
     }
 
-    private int getCollectionCount(CollectionType type) {
+    private int getCollectionCount(CollectionResourceSection type) {
         List<ResourceCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null);
         return col.size();
     }

@@ -18,7 +18,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.UserRightsProxyService;
@@ -97,8 +97,8 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         return SUCCESS;
     }
 
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
+    public List<Permissions> getAvailablePermissions() {
+        List<Permissions> permissions = Permissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
 

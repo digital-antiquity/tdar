@@ -147,7 +147,6 @@ public class ResourceCollection extends AbstractPersistable
         setSortBy(sortOption);
         setOrientation(displayOrientation);
         setOwner(creator);
-        this.setType(CollectionType.SHARED);
     }
     
     public ResourceCollection(Long id, String title, String description, SortOption sortOption, boolean hidden) {
@@ -156,7 +155,6 @@ public class ResourceCollection extends AbstractPersistable
         setDescription(description);
         setHidden(hidden);
         setSortBy(sortOption);
-        this.setType(CollectionType.SHARED);
 
     }
 
@@ -167,20 +165,17 @@ public class ResourceCollection extends AbstractPersistable
         this.setOwner(submitter);
         setSortBy(SortOption.TITLE);
         setOrientation(DisplayOrientation.LIST);
-        this.setType(CollectionType.SHARED);
     }
 
     public ResourceCollection(Document document, TdarUser tdarUser) {
         markUpdated(tdarUser);
-        getResources().add(document);
+        getManagedResources().add(document);
         setHidden(false);
         setSortBy(SortOption.TITLE);
         setOrientation(DisplayOrientation.LIST);
-        this.setType(CollectionType.SHARED);
     }
 
     public ResourceCollection() {
-        this.setType(CollectionType.SHARED);
         setSortBy(SortOption.TITLE);
         setOrientation(DisplayOrientation.LIST);
     }
@@ -192,11 +187,6 @@ public class ResourceCollection extends AbstractPersistable
     private static final long serialVersionUID = -5308517783896369040L;
     @Column(name = "system_managed")
     private Boolean systemManaged = Boolean.FALSE;
-
-    @Enumerated(EnumType.STRING)
-    @XmlTransient
-    @Column(name = "collection_type", updatable = false, insertable = false)
-    private CollectionType type = CollectionType.SHARED;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
@@ -246,6 +236,13 @@ public class ResourceCollection extends AbstractPersistable
     @Immutable
     // fixme: replace resourceIds hack with service/dao with optimized DAO save() method. (TDAR-5605)
     private Set<Long> resourceIds = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name = "unmanaged_collection_resource", joinColumns = @JoinColumn(name = "collection_id"))
+    @Column(name = "resource_id")
+    @Immutable
+    // fixme: replace resourceIds hack with service/dao with optimized DAO save() method. (TDAR-5605)
+    private Set<Long> unmanagedResourceIds = new HashSet<>();
 
     private transient boolean created;
 
@@ -314,10 +311,10 @@ public class ResourceCollection extends AbstractPersistable
     private boolean hidden = false;
 
     @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedCollections", targetEntity = Resource.class)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "managedResourceCollections", targetEntity = Resource.class)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.SharedCollection.resources")
-    private Set<Resource> resources = new LinkedHashSet<Resource>();
+    private Set<Resource> managedResources = new LinkedHashSet<Resource>();
 
     @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "unmanagedResourceCollections", targetEntity = Resource.class)
@@ -336,12 +333,12 @@ public class ResourceCollection extends AbstractPersistable
     // if you serialize this (even if just a list IDs, hibernate will request all necessary fields and do a traversion of the full resource graph (this could
     // crash tDAR if > 100,000)
     @XmlTransient
-    public Set<Resource> getResources() {
-        return resources;
+    public Set<Resource> getManagedResources() {
+        return managedResources;
     }
 
-    public void setResources(Set<Resource> resources) {
-        this.resources = resources;
+    public void setManagedResources(Set<Resource> resources) {
+        this.managedResources = resources;
     }
 
     /*
@@ -417,10 +414,9 @@ public class ResourceCollection extends AbstractPersistable
     public void copyImmutableFieldsFrom(ResourceCollection resource) {
         this.setDateCreated(resource.getDateCreated());
         this.setOwner(resource.getOwner());
-        this.setType(resource.getType());
         this.setAuthorizedUsers(new HashSet<>(resource.getAuthorizedUsers()));
         this.setSystemManaged(resource.isSystemManaged());
-        ((ResourceCollection) this).getResources().addAll(((ResourceCollection) resource).getResources());
+        ((ResourceCollection) this).getManagedResources().addAll(((ResourceCollection) resource).getManagedResources());
         this.setParent(resource.getParent());
     }
 
@@ -435,6 +431,7 @@ public class ResourceCollection extends AbstractPersistable
         this.parent = parent;
     }
 
+    @XmlTransient
     public Set<Resource> getUnmanagedResources() {
         return unmanagedResources;
     }
@@ -480,7 +477,7 @@ public class ResourceCollection extends AbstractPersistable
 
     @Override
     public boolean isValid() {
-        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName());
+        logger.trace("owner: {} name: {} sort: {}", getOwner(), getName());
         if (!isValidForController()) {
             return false;
         }
@@ -573,13 +570,6 @@ public class ResourceCollection extends AbstractPersistable
         this.secondarySortBy = secondarySortBy;
     }
 
-    public CollectionType getType() {
-        return CollectionType.SHARED;
-    }
-
-    protected void setType(CollectionType type) {
-        this.type = type;
-    }
 
 //    @XmlTransient
     @XmlElementWrapper(name="authorizedUsers")
@@ -641,7 +631,7 @@ public class ResourceCollection extends AbstractPersistable
         if (owner != null) {
             own = owner.getProperName() + " " + owner.getId();
         }
-        return String.format("%s | %s | collection %s  (creator: %s)", getName(), getType(), getId(), own);
+        return String.format("%s | collection %s  (creator: %s)", getName(), getId(), own);
     }
 
     @Override
@@ -861,5 +851,16 @@ public class ResourceCollection extends AbstractPersistable
             return true;
         }
         return false;
+    }
+
+    @XmlElementWrapper(name = "unmanagedResources")
+    @XmlElement(name = "unmanagedResourceId")
+    public Set<Long> getUnmanagedResourceIds() {
+        return unmanagedResourceIds;
+    }
+
+    @Transient
+    public void setUnmanagedResourceIds(Set<Long> unmanagedResourceIds) {
+        this.unmanagedResourceIds = unmanagedResourceIds;
     }
 }

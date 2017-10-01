@@ -10,11 +10,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchIndexException;
@@ -53,7 +53,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testSearchForPrivateSharedCollectionAnonymous() throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
-        ResourceCollection collection = setupCollection(true, null, false, CollectionType.LIST);
+        ResourceCollection collection = setupCollection(true, null, false, CollectionResourceSection.UNMANGED);
         assertFalse(controller.getResults().contains(collection));
     }
 
@@ -61,7 +61,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithRights()
             throws InstantiationException, IllegalAccessException, SearchIndexException, SearchException, IOException {
-        ResourceCollection collection = setupCollection(true, getBasicUser(), true, CollectionType.LIST);
+        ResourceCollection collection = setupCollection(true, getBasicUser(), true, CollectionResourceSection.UNMANGED);
         searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
     }
@@ -70,7 +70,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateSharedCollectionAsBasicUserWithRights()
             throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
-        ResourceCollection collection = setupCollection(true, getBasicUser(), true, CollectionType.LIST);
+        ResourceCollection collection = setupCollection(true, getBasicUser(), true, CollectionResourceSection.UNMANGED);
         searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
     }
@@ -92,10 +92,10 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     }
 
     private ResourceCollection setupCollection(boolean visible, TdarUser user) throws SearchIndexException, IOException {
-        return setupCollection(visible, user, false, CollectionType.LIST);
+        return setupCollection(visible, user, false, CollectionResourceSection.UNMANGED);
     }
 
-    private ResourceCollection setupCollection(boolean visible, TdarUser user, boolean createAuthUser, CollectionType type)
+    private ResourceCollection setupCollection(boolean visible, TdarUser user, boolean createAuthUser, CollectionResourceSection type)
             throws SearchIndexException, IOException {
         assertEquals(getUser(), getAdminUser());
         ResourceCollection collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project");
@@ -103,15 +103,15 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
 
         collection.setDescription("test");
         collection.setHidden(visible);
-        if (type == CollectionType.LIST) {
+        if (type == CollectionResourceSection.UNMANGED) {
             collection.getUnmanagedResources().add(doc);
         } else {
-            collection.getResources().add(doc);
+            collection.getManagedResources().add(doc);
         }
         collection.markUpdated(getUser());
         genericService.saveOrUpdate(collection);
         if (createAuthUser) {
-            AuthorizedUser authuser = new AuthorizedUser(getAdminUser(), user, GeneralPermissions.ADMINISTER_SHARE);
+            AuthorizedUser authuser = new AuthorizedUser(getAdminUser(), user, Permissions.ADMINISTER_COLLECTION);
             collection.getAuthorizedUsers().add(authuser);
             genericService.saveOrUpdate(collection);
         }

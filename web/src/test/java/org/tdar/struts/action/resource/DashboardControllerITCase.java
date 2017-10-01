@@ -16,7 +16,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -43,7 +43,7 @@ public class DashboardControllerITCase extends AbstractControllerITCase {
 
         genericService.save(projectWithDifferentSubmitterAndFullUser);
 
-        addAuthorizedUser(projectWithDifferentSubmitterAndFullUser, testPerson, GeneralPermissions.MODIFY_RECORD);
+        addAuthorizedUser(projectWithDifferentSubmitterAndFullUser, testPerson, Permissions.MODIFY_RECORD);
         // evictCache();
 
         logger.debug("{internal: {}", projectWithDifferentSubmitterAndFullUser.getAuthorizedUsers());
@@ -53,8 +53,8 @@ public class DashboardControllerITCase extends AbstractControllerITCase {
         projectWithSameFullUserAndSubmitter.setStatus(Status.ACTIVE);
         projectWithSameFullUserAndSubmitter.markUpdated(testPerson);
         genericService.save(projectWithSameFullUserAndSubmitter);
-        addAuthorizedUser(projectWithSameFullUserAndSubmitter, testPerson, GeneralPermissions.MODIFY_RECORD);
-        addAuthorizedUser(projectWithSameFullUserAndSubmitter, getBasicUser(), GeneralPermissions.MODIFY_RECORD);
+        addAuthorizedUser(projectWithSameFullUserAndSubmitter, testPerson, Permissions.MODIFY_RECORD);
+        addAuthorizedUser(projectWithSameFullUserAndSubmitter, getBasicUser(), Permissions.MODIFY_RECORD);
         DashboardController controller = generateNewInitializedController(DashboardController.class);
         controller.prepare();
         init(controller, testPerson);

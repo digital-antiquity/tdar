@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -82,8 +82,8 @@ public class CollectionBatchActionITCase extends AbstractControllerITCase implem
 
         
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD)));
         
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft, newProject, existingProject));
 

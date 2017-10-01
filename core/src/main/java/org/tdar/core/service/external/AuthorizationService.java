@@ -10,11 +10,11 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
@@ -81,7 +81,7 @@ public interface AuthorizationService {
      * @param resource
      * @return true if person has write permissions on resource according to the above policies, false otherwise.
      */
-    boolean canEditResource(TdarUser person, Resource resource, GeneralPermissions basePermission);
+    boolean canEditResource(TdarUser person, Resource resource, Permissions basePermission);
 
     /**
      * Checks whether a @link Person has the rights to edit a @link ResourceCollection. First, checking whether the person's @link TdarGroup permissions grant
@@ -172,7 +172,7 @@ public interface AuthorizationService {
      * (c) checks if user is allowed to perform action based on @link AuthorizedUser / @link ResourceCollection permissions
      * (d) check's iuf user was submitter
      */
-    boolean canDo(TdarUser person, HasAuthorizedUsers resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission);
+    boolean canDo(TdarUser person, HasAuthorizedUsers resource, InternalTdarRights equivalentAdminRight, Permissions permission);
 
     /*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFileVersion
@@ -244,9 +244,9 @@ public interface AuthorizationService {
 
     boolean canEditCreator(TdarUser tdarUser, Creator<?> persistable);
 
-    boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd, CollectionType type);
+    boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd, CollectionResourceSection type);
 
-    <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user, CollectionType type);
+    <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user, CollectionResourceSection type);
 
     RightsResolver getRightsResolverFor(HasAuthorizedUsers resource, TdarUser actor, InternalTdarRights rights);
 

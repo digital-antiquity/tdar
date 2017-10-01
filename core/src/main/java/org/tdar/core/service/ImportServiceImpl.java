@@ -32,7 +32,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -41,7 +41,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
@@ -154,9 +154,9 @@ public class ImportServiceImpl implements ImportService  {
         processFiles(blessedAuthorizedUser, proxies, incomingResource);
         geoSearchService.processManagedGeographicKeywords(incomingResource, incomingResource.getLatitudeLongitudeBoxes());
         if (created == true) {
-            GeneralPermissions administerShare = GeneralPermissions.ADMINISTER_SHARE;
+            Permissions administerShare = Permissions.ADMINISTER_COLLECTION;
             if ( incomingResource instanceof Resource) {
-                administerShare = GeneralPermissions.MODIFY_RECORD;
+                administerShare = Permissions.MODIFY_RECORD;
             }
             incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, administerShare));
         }
@@ -236,7 +236,7 @@ public class ImportServiceImpl implements ImportService  {
             }
 
             // check if the user can modify the record
-            if (!authenticationAndAuthorizationService.canEditResource(authorizedUser, existing, GeneralPermissions.MODIFY_RECORD)) {
+            if (!authenticationAndAuthorizationService.canEditResource(authorizedUser, existing, Permissions.MODIFY_RECORD)) {
                 throw new APIException(MessageHelper.getMessage("error.permission_denied"), StatusCode.UNAUTHORIZED);
             }
             if (incomingResource instanceof InformationResource) {
@@ -342,7 +342,7 @@ public class ImportServiceImpl implements ImportService  {
         Set<AuthorizedUser> aus = new HashSet<>();
         if (incomingResource != null) {
             // for non-admins don't want to have to figure out rights check logic, so reject authorizedUsers
-            incomingResource.getRightsBasedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
+            incomingResource.getManagedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
             incomingResource.getUnmanagedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
             if (CollectionUtils.isNotEmpty(aus) && !authenticationAndAuthorizationService.isAdministrator(user)) {
                 throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
@@ -397,15 +397,15 @@ public class ImportServiceImpl implements ImportService  {
             for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
                 latLong.obfuscate();
             }
-            rec.getSharedCollections().clear();
+            rec.getManagedResourceCollections().clear();
             rec.getAuthorizedUsers().clear();
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            for (ResourceCollection rc : rec.getSharedCollections()) {
-                rc.getResources().add(rec);
+            for (ResourceCollection rc : rec.getManagedResourceCollections()) {
+                rc.getManagedResources().add(rec);
             }
         }
         genericService.detachFromSession(rec);
@@ -586,14 +586,14 @@ public class ImportServiceImpl implements ImportService  {
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
             if (collection instanceof ResourceCollection) {
                 logger.debug("field:: {} , {}", fieldName, collection);
-                if (StringUtils.equals("sharedCollections", fieldName)) {
-                resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
+                if (StringUtils.equals(Resource.RESOURCE_COLLECTIONS, fieldName)) {
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getManagedResourceCollections()),
                         authenticatedUser, true,
-                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.SHARED);
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionResourceSection.MANAGED);
                 } else {
-                    resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
+                    resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getManagedResourceCollections()),
                             authenticatedUser, true,
-                            ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionType.LIST);
+                            ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionResourceSection.UNMANGED);
                     
                 }
             }
@@ -632,9 +632,9 @@ public class ImportServiceImpl implements ImportService  {
             ResourceCollection collection = (ResourceCollection) toReturn;
             // making sure that the collection's creators and other things are on the sessions properly too
             resetOwnerOnSession((ResourceCollection)collection);
-            collection.getResources().add((Resource) resource);
+            collection.getManagedResources().add((Resource) resource);
             if (collection instanceof ResourceCollection) {
-                ((Resource) resource).getSharedCollections().add((ResourceCollection)collection);
+                ((Resource) resource).getManagedResourceCollections().add((ResourceCollection)collection);
 //            } else if (collection instanceof InternalCollection) {
 //                ((Resource) resource).getInternalCollections().add((InternalCollection)collection);
 //                
@@ -715,7 +715,7 @@ private void validateInvalidImportFields(ResourceCollection incomingResource, Td
 //            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
 //        }
 
-        if (incomingResource instanceof ResourceCollection && CollectionUtils.isNotEmpty(((ResourceCollection)incomingResource).getResources())) {
+        if (incomingResource instanceof ResourceCollection && CollectionUtils.isNotEmpty(((ResourceCollection)incomingResource).getManagedResources())) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
         }
 

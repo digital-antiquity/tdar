@@ -14,11 +14,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
@@ -51,14 +51,14 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     public void testSparseResource() throws Exception {
         ResourceCollection collection = new ResourceCollection("test", "test", getAdminUser());
         collection.markUpdated(getAdminUser());
-        collection.setResources(new HashSet<>(genericService.findRandom(Resource.class, 20)));
+        collection.setManagedResources(new HashSet<>(genericService.findRandom(Resource.class, 20)));
         genericService.saveOrUpdate(collection);
         Long collectionId = collection.getId();
         collection = null;
 
         collection = genericService.findAll(ResourceCollection.class, Arrays.asList(collectionId)).get(0);
 
-        for (Resource resource : collection.getResources()) {
+        for (Resource resource : collection.getManagedResources()) {
             logger.info("{} {} ", resource, resource.getSubmitter());
         }
 
@@ -76,15 +76,15 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
             if (seen == false) {
                 r.setStatus(Status.DRAFT);
             }
-            r.getSharedCollections().add(collection);
+            r.getManagedResourceCollections().add(collection);
             genericService.saveOrUpdate(r);
-            collection.getResources().add(r);
+            collection.getManagedResources().add(r);
         }
         Long collectionId = collection.getId();
         collection = null;
         collection = genericService.find(ResourceCollection.class, collectionId);
         resourceCollectionService.makeResourcesInCollectionActive(collection, getAdminUser());
-        for (Resource r : collection.getResources()) {
+        for (Resource r : collection.getManagedResources()) {
             assertEquals(Status.ACTIVE, r.getStatus());
         }
     }
@@ -130,17 +130,17 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         trns.setName(TEST_TITLE);
         trns.setId(-1L);
         list.add(trns);
-        resourceCollectionService.saveResourceCollections(image, list, image.getSharedCollections(), getBasicUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.SHARED);
-        logger.debug("collections: {}", image.getSharedCollections());
+        resourceCollectionService.saveResourceCollections(image, list, image.getManagedResourceCollections(), getBasicUser(), true,
+                ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.MANAGED);
+        logger.debug("collections: {}", image.getManagedResourceCollections());
 
-        List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
+        List<Long> extractIds = PersistableUtils.extractIds(image.getManagedResourceCollections());
         assertFalse(extractIds.contains(test.getId()));
-        image.getSharedCollections().clear();
-        resourceCollectionService.saveResourceCollections(image, list, image.getSharedCollections(), getEditorUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionType.SHARED);
-        logger.debug("collections: {}", image.getSharedCollections());
-        extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
+        image.getManagedResourceCollections().clear();
+        resourceCollectionService.saveResourceCollections(image, list, image.getManagedResourceCollections(), getEditorUser(), true,
+                ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.MANAGED);
+        logger.debug("collections: {}", image.getManagedResourceCollections());
+        extractIds = PersistableUtils.extractIds(image.getManagedResourceCollections());
         logger.debug("{} -> {}", test.getId(), extractIds);
         assertTrue(extractIds.contains(test.getId()));
     }
@@ -151,8 +151,8 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         ResourceCollection test = new ResourceCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), Permissions.ADMINISTER_COLLECTION));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(test);
         genericService.saveOrUpdate(test.getAuthorizedUsers());
         ResourceCollection c1 = new ResourceCollection();
@@ -172,15 +172,15 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         test.setStatus(Status.DELETED);
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getAdminUser(), GeneralPermissions.ADMINISTER_SHARE));
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getAdminUser(), Permissions.ADMINISTER_COLLECTION));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), Permissions.ADMINISTER_COLLECTION));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(test);
         genericService.saveOrUpdate(test.getAuthorizedUsers());
         genericService.synchronize();
         ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, "test");
         assertNull("should be null for deleted collection",withName);
-        List<ResourceCollection> findCollectionsSharedWith = resourceCollectionDao.findCollectionsSharedWith(getAdminUser(), getBillingUser(), GeneralPermissions.MODIFY_METADATA, false);
+        List<ResourceCollection> findCollectionsSharedWith = resourceCollectionDao.findCollectionsSharedWith(getAdminUser(), getBillingUser(), Permissions.MODIFY_METADATA, false);
         assertTrue("result should be empty", CollectionUtils.isEmpty(findCollectionsSharedWith));
     }
 
@@ -190,7 +190,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         ResourceCollection test = new ResourceCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(test);
 
         ResourceCollection c1 = new ResourceCollection();
@@ -205,14 +205,14 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     public void testFindSharedResources() {
         TdarUser user = createAndSaveNewPerson("rightsUser@asba.asd", "rights-user");
         Dataset dataset = createAndSaveNewDataset();
-        dataset.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), user, GeneralPermissions.MODIFY_RECORD));
+        dataset.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), user, Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(dataset);
         ResourceCollection collection = createAndSaveNewResourceCollection("test collection");
         collection.getAuthorizedUsers().clear();
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), getBillingUser(), GeneralPermissions.MODIFY_RECORD));
-        collection.getResources().add(dataset);
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), getBillingUser(), Permissions.MODIFY_RECORD));
+        collection.getManagedResources().add(dataset);
         genericService.saveOrUpdate(collection);
-        dataset.getSharedCollections().add(collection);
+        dataset.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
         List<ResourceCollection> list = resourceCollectionService.findCollectionsSharedWith(getBillingUser(), user);
@@ -225,7 +225,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         logger.debug("r:{}", resources);
         assertTrue("should not have shared any collections with user", CollectionUtils.isEmpty(list));
         assertTrue("should have at least one resource", CollectionUtils.isNotEmpty(resources));
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), user, GeneralPermissions.MODIFY_RECORD));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), user, Permissions.MODIFY_RECORD));
         list = resourceCollectionService.findCollectionsSharedWith(getBillingUser(), user);
         assertTrue("should have 1 shared any collections with user", CollectionUtils.isNotEmpty(list));
     }
@@ -252,7 +252,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         process(child22);
 
         genericService.saveOrUpdate(parent, child1, child2, child11, child22, parent2, parent3, access);
-        access.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        access.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child1, parent);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child2, parent);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child11, child1);
@@ -287,7 +287,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
     private void process(ResourceCollection list) {
         list.markUpdated(getAdminUser());
-        list.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),list.getOwner(),GeneralPermissions.ADMINISTER_SHARE));
+        list.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),list.getOwner(),Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(list);
         genericService.saveOrUpdate(list.getAuthorizedUsers());
     }
@@ -311,8 +311,8 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         // create a normal and draft resource giving basic users permissions
         InformationResource normal = generateDocumentWithUser();
         InformationResource draft = generateDocumentWithUser();
-        normal.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(),GeneralPermissions.MODIFY_RECORD));
-        draft.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(),GeneralPermissions.MODIFY_RECORD));
+        normal.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(),Permissions.MODIFY_RECORD));
+        draft.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(),Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(normal);
         genericService.saveOrUpdate(draft);
         final Long normalId = normal.getId();
@@ -324,7 +324,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ResourceCollection collection = new ResourceCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection);
         genericService.synchronize();
         CollectionSaveObject cso = new CollectionSaveObject(collection, getBasicUser(), -1L);
@@ -343,12 +343,12 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 //
 //            @Override
 //            public SharedCollection doInTransaction(TransactionStatus arg0) {
-                List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
-                        new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+                List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                        new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD)));
                 
                 ResourceCollection myCollection = genericService.find(ResourceCollection.class, id);
                 List<UserRightsProxy> aus = new ArrayList<>();
-                aus.add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),testPerson, GeneralPermissions.MODIFY_RECORD)));
+                aus.add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
                 for (AuthorizedUser user : users) {
                     aus.add(new UserRightsProxy(user));
                 }
@@ -360,12 +360,12 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
                 resourceCollectionService.saveCollectionForRightsController(myCollection, getBasicUser(), aus, -1L);
                 genericService.synchronize();
                 logger.debug("au: {}", myCollection.getAuthorizedUsers());
-                logger.debug("no: {}", normal.getSharedCollections());
-                logger.debug("df: {}", draft.getSharedCollections());
-                assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
-                assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_METADATA));
-                assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, GeneralPermissions.MODIFY_METADATA));
-                assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, GeneralPermissions.MODIFY_METADATA));
+                logger.debug("no: {}", normal.getManagedResourceCollections());
+                logger.debug("df: {}", draft.getManagedResourceCollections());
+                assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, Permissions.MODIFY_METADATA));
+                assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, Permissions.MODIFY_METADATA));
+                assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, Permissions.MODIFY_METADATA));
+                assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, Permissions.MODIFY_METADATA));
 
                 assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), draft));
                 assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), normal));

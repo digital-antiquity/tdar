@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.RequestCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -54,7 +54,7 @@ public class AdminPermissonsRequestAction extends AbstractProcessPermissonsActio
     }
 
     @Override
-	public List<GeneralPermissions> getAvailablePermissions() {
+	public List<Permissions> getAvailablePermissions() {
     	if (getType() != null && getType() == EmailMessageType.CUSTOM) {
     	    if (custom != null) {
     	        return Arrays.asList(custom.getPermission());

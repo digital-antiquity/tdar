@@ -69,7 +69,7 @@
 
 <#macro collectionLegend collection>
 <span class="collection-embed pull-right">
-            <span title="# of resources"><i class="icon-file"></i> ${((collection.unmanagedResources?size)!0 + collection.resources?size!0)} Resources</span>
+            <span title="# of resources"><i class="icon-file"></i> ${((collection.unmanagedResources?size)!0 + collection.managedResources?size!0)} Resources</span>
             <#local children= (collection.transientChildren?size)!0/>
             <#local users= (collection.authorizedUsers?size)!0/>
             

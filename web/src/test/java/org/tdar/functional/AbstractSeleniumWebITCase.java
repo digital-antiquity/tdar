@@ -63,6 +63,7 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogType;
@@ -81,7 +82,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
@@ -311,7 +312,9 @@ public abstract class AbstractSeleniumWebITCase {
                 caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
                 // profile.setPreference("browser.download.dir","c:\\downloads");
-                rawDriver = new FirefoxDriver(fb, profile, caps);
+                FirefoxOptions options = new FirefoxOptions(caps);
+                options.setProfile(profile);
+                rawDriver = new FirefoxDriver(options);
 
                 break;
             case CHROME:
@@ -1412,7 +1415,7 @@ public abstract class AbstractSeleniumWebITCase {
         return true;
     }
 
-    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
+    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, Permissions permissions) {
 
         WebElement blankField = find(By.name(nameField)).first();
         if (!selectAutocompleteValue(blankField, name, email, selector)) {

@@ -30,7 +30,7 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -171,7 +171,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         assertTrue("field should be inherited", importedRecord.isInheritingNoteInformation());
         assertFalse("field should be inherited", importedRecord.isInheritingCollectionInformation());
         genericService.delete(importedRecord);
-        for (ResourceCollection rc : importedRecord.getSharedResourceCollections()) {
+        for (ResourceCollection rc : importedRecord.getManagedResourceCollections()) {
             logger.debug("{} - {}", rc.getName(), rc.isHidden());
                 if (rc.getName().equals("hidden")) {
                     assertTrue(rc.isHidden());
@@ -183,7 +183,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
 
     @SuppressWarnings("deprecation")
     private void setupFakeRecord(Document fake) {
-        addAuthorizedUser(fake, getUser(), GeneralPermissions.MODIFY_RECORD);
+        addAuthorizedUser(fake, getUser(), Permissions.MODIFY_RECORD);
         // setup a fake record, with some new fields off the session
         genericService.saveOrUpdate(fake);
         genericService.synchronize();
@@ -201,12 +201,12 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         coll.setHidden(true);
         coll.setName("hidden");
         coll.markUpdated(getAdminUser());
-        fake.getSharedCollections().add(coll);
+        fake.getManagedResourceCollections().add(coll);
         ResourceCollection coll2 = new ResourceCollection();
         coll2.setHidden(false);
         coll2.setName("visible");
         coll2.markUpdated(getAdminUser());
-        fake.getSharedCollections().add(coll2);
+        fake.getManagedResourceCollections().add(coll2);
 
         fake.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000));
         // fake.getResourceCollections().clear();

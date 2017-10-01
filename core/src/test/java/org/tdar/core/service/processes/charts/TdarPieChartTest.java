@@ -60,7 +60,7 @@ public class TdarPieChartTest {
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
         chart.getStyler().setPlotBorderVisible(false);
         chart.getStyler().setLegendBorderColor(Color.WHITE);
-        BitmapEncoder.saveBitmap(chart, "./Sample_Chart", BitmapFormat.PNG);
+        BitmapEncoder.saveBitmap(chart, "target/Sample_Chart", BitmapFormat.PNG);
 //        VectorGraphicsEncoder.saveVectorGraphic(chart, "./Sample_Chart", VectorGraphicsFormat.EPS);
 
     }
@@ -106,7 +106,7 @@ public class TdarPieChartTest {
         chart.addSeries("test 1", Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 }), Arrays.asList(new Integer[] { 4, 5, 9, 6, 5 }));
         chart.addSeries("test 2", Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 }), Arrays.asList(new Integer[] { 4, 5, 9, 6, 5 }));
 
-        BitmapEncoder.saveBitmap(chart, "./Sample_Chart2", BitmapFormat.PNG);
+        BitmapEncoder.saveBitmap(chart, "target/Sample_Chart2", BitmapFormat.PNG);
 
 
     }

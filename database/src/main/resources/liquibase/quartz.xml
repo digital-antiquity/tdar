@@ -32,5 +32,10 @@
      update authorized_user set general_permission_int=50, general_permission='REMOVE_FROM_SHARE' where general_permission='REMOVE_FROM_COLLECTION';
      </sql>
      </changeSet>
+     <changeSet id="quartz-collections-2" author="abrin">
+        <sql>update authorized_user set general_permission='ADD_TO_COLLECTION' where general_permission='ADD_TO_SHARE'</sql>
+        <sql>update authorized_user set general_permission='REMOVE_FROM_COLLECTION' where general_permission='REMOVE_FROM_SHARE'</sql>
+        <sql>update authorized_user set general_permission='ADMINISTER_COLLECTION' where general_permission='ADMINISTER_SHARE'</sql>
+     </changeSet>
 </databaseChangeLog>
 

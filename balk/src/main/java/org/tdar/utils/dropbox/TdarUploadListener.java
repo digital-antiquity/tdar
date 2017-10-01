@@ -117,7 +117,7 @@ public class TdarUploadListener implements MetadataListener {
         rc.setHidden(true);
         rc.setName(collection);
         rc.setDescription("(from dropbox)");
-        object.getSharedResourceCollections().add(rc);
+        object.getManagedResourceCollections().add(rc);
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);
         return writer.toString();

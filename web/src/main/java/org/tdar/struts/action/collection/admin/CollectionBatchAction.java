@@ -82,7 +82,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
         }
 
         // COMMENTED OUT UNTIL WE FIGURE OUT What sort of collection should support this
-        setResources(new ArrayList<>(((ResourceCollection) getCollection()).getResources()));
+        setResources(new ArrayList<>(((ResourceCollection) getCollection()).getManagedResources()));
         Collections.sort(resources , new Comparator<Resource>() {
             @Override
             public int compare(Resource o1, Resource o2) {

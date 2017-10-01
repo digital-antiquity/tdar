@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
@@ -28,7 +28,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
     @Test
     public void testShareAccessSuccess() {
         gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
-        setInput("permission", GeneralPermissions.MODIFY_METADATA.name());
+        setInput("permission", Permissions.MODIFY_METADATA.name());
         submitForm("submit");
         logger.info(getCurrentUrlPath());
         logger.info(getPageText());
@@ -42,7 +42,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
     @Test
     public void testShareAccessExpiresSuccess() {
         gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
-        setInput("permission", GeneralPermissions.MODIFY_METADATA.name());
+        setInput("permission", Permissions.MODIFY_METADATA.name());
         String untilString = DateTime.now().plusDays(1).toString("yyyy-MM-dd");
         setInput("expiresString", untilString);
         submitForm("submit");
@@ -63,7 +63,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
 @Test
     public void testShareAccessDenied() {
         gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
-        setInput("permission", GeneralPermissions.MODIFY_METADATA.name());
+        setInput("permission", Permissions.MODIFY_METADATA.name());
         setInput("reject", "true");
         setInput("comment","message!");
         submitForm("submit");

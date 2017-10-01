@@ -13,10 +13,10 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -72,10 +72,10 @@ public class ResourceRightsController extends AbstractRightsController implement
     private List<ResourceCollection> retainedSharedCollections = new ArrayList<>();
     private List<ResourceCollection> effectiveShares = new ArrayList<>();
 
-    private CollectionType type;
+    private CollectionResourceSection type;
     @Override
     public boolean authorize() {
-        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_RECORD);
+        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_RECORD);
     }
 
     @Override
@@ -109,8 +109,8 @@ public class ResourceRightsController extends AbstractRightsController implement
         return SUCCESS;
     }
 
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
+    public List<Permissions> getAvailablePermissions() {
+        List<Permissions> permissions = Permissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
 
@@ -131,7 +131,7 @@ public class ResourceRightsController extends AbstractRightsController implement
             
             
 
-            resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getSharedCollections(),
+            resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getManagedResourceCollections(),
                     getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, type);
 
             if (!authorizationService.canEdit(getAuthenticatedUser(), getResource())) {
@@ -169,7 +169,7 @@ public class ResourceRightsController extends AbstractRightsController implement
 
     @Override
     public void handleCollectionSave() {
-        resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getSharedCollections(),
+        resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getManagedResourceCollections(),
                 getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, getType());
     }
     
@@ -209,11 +209,11 @@ public class ResourceRightsController extends AbstractRightsController implement
         this.shares = shares;
     }
 
-    public CollectionType getType() {
+    public CollectionResourceSection getType() {
         return type;
     }
 
-    public void setType(CollectionType type) {
+    public void setType(CollectionResourceSection type) {
         this.type = type;
     }
 

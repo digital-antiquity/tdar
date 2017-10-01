@@ -19,7 +19,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
@@ -47,7 +47,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         super(AuthorizedUser.class);
     }
 
-    public boolean isAllowedTo(TdarUser person, HasAuthorizedUsers resource, GeneralPermissions permission) {
+    public boolean isAllowedTo(TdarUser person, HasAuthorizedUsers resource, Permissions permission) {
         if (resource instanceof ResourceCollection) {
             return isAllowedTo(person, (ResourceCollection) resource, permission);
         } else {
@@ -61,7 +61,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
      * @param permission
      * @return
      */
-    public boolean isAllowedTo(TdarUser person, Resource resource, GeneralPermissions permission) {
+    public boolean isAllowedTo(TdarUser person, Resource resource, Permissions permission) {
         Set<Long> ids = new HashSet<Long>();
 
         if (resource.isDeleted()) {
@@ -73,7 +73,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
 
         if (getLogger().isTraceEnabled()) {
             getLogger().debug("authUser: {}", resource.getAuthorizedUsers());
-            getLogger().debug("  shares: {}", resource.getSharedCollections());
+            getLogger().debug("  shares: {}", resource.getManagedResourceCollections());
         }
 
         for (AuthorizedUser au : resource.getAuthorizedUsers()) {
@@ -83,7 +83,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         }
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
                 ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
         }
@@ -91,7 +91,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         return isAllowedTo(person, permission, ids);
     }
 
-    public boolean isAllowedTo(TdarUser person, ResourceCollection collection, GeneralPermissions permission) {
+    public boolean isAllowedTo(TdarUser person, ResourceCollection collection, Permissions permission) {
 
         List<Long> ids = new ArrayList<>(collection.getParentIds());
 
@@ -110,7 +110,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         userPermissionsCache.clear();
     }
 
-    public boolean isAllowedTo(TdarUser person, GeneralPermissions permission, Collection<Long> ids) {
+    public boolean isAllowedTo(TdarUser person, Permissions permission, Collection<Long> ids) {
         if (CollectionUtils.isEmpty(ids) || PersistableUtils.isNullOrTransient(person)) {
             return false;
         }
@@ -139,7 +139,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         return cacheResult.getBooleanEquivalent();
     }
 
-    private CacheResult checkUserPermissionsCache(TdarUser person, GeneralPermissions permission, Collection<Long> collectionIds, Session currentSession) {
+    private CacheResult checkUserPermissionsCache(TdarUser person, Permissions permission, Collection<Long> collectionIds, Session currentSession) {
         UserPermissionCacheKey key = new UserPermissionCacheKey(person, permission, collectionIds);
         // could be enhanced to check each ID
         Map<UserPermissionCacheKey, Boolean> sessionMap = userPermissionsCache.get(currentSession);
@@ -157,7 +157,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         return result;
     }
 
-    private void updateUserPermissionsCache(TdarUser person, GeneralPermissions permission, Collection<Long> collectionIds, Session currentSession,
+    private void updateUserPermissionsCache(TdarUser person, Permissions permission, Collection<Long> collectionIds, Session currentSession,
             CacheResult result) {
         Map<UserPermissionCacheKey, Boolean> sessionMap = userPermissionsCache.get(currentSession);
         if (sessionMap == null) {
@@ -168,7 +168,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
          * FIXME: this can be enhanced to add keys for: each collectionId?
          */
         getLogger().trace("{} ==> {}", permission, permission.getLesserAndEqualPermissions());
-        for (GeneralPermissions subPermission : permission.getLesserAndEqualPermissions()) {
+        for (Permissions subPermission : permission.getLesserAndEqualPermissions()) {
             UserPermissionCacheKey key = new UserPermissionCacheKey(person, subPermission, collectionIds);
             // if things are positive, then set lower permissions to positive too. Don't make negative assumptions.
             if (result != null && result == CacheResult.TRUE) {
@@ -189,7 +189,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         query.setParameter("userId", person.getId());
         query.setParameter("admin", isAdmin);
         query.setParameter("resourceTypes", resourceTypes);
-        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
+        query.setParameter("effectivePermission", Permissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         if (resourceTypes.size() == ResourceType.values().length) {
             query.setParameter("allResourceTypes", true);
         } else {
@@ -206,7 +206,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         query.setParameter("userId", person.getId());
         query.setParameter("admin", isAdmin);
         query.setParameter("resourceTypes", resourceTypes);
-        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
+        query.setParameter("effectivePermission", Permissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         if (resourceTypes.size() == ResourceType.values().length) {
             query.setParameter("allResourceTypes", true);
         } else {
@@ -228,7 +228,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
             return Collections.emptyList();
         }
         Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED, Resource.class);
-        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
+        query.setParameter("effectivePermission", Permissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         query.setParameter("userId", person.getId());
         query.setParameter("admin", isAdmin);
         query.setParameter("resourceTypes", resourceTypes);
@@ -280,7 +280,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
      * @return
      */
     //FIXME: RENAME
-    public List<AuthorizedUser> checkSelfEscalation(TdarUser actor, HasAuthorizedUsers source, InternalTdarRights editAnything, GeneralPermissions generalPermission) {
+    public List<AuthorizedUser> checkSelfEscalation(TdarUser actor, HasAuthorizedUsers source, InternalTdarRights editAnything, Permissions generalPermission) {
         String q = QUERY_RIGHTS_EXPIRY_COLLECTION;
         if (source instanceof Resource) {
             q = QUERY_RIGHTS_EXPIRY_RESOURCE;

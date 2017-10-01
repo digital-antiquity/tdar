@@ -156,6 +156,8 @@ public class Resource implements Persistable,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, ConfidentialViewable, Addressable,
         DeHydratable, XmlLoggable, Slugable, HasAuthorizedUsers {
 
+    public static final String RESOURCE_COLLECTIONS = "resourceCollections";
+
     private static final long serialVersionUID = -230400285817185637L;
 
     @Transient
@@ -412,7 +414,7 @@ public class Resource implements Persistable,
     @XmlTransient
     @Where(clause="status='ACTIVE' ")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.sharedCollections")
-    private Set<ResourceCollection> sharedCollections = new LinkedHashSet<>();
+    private Set<ResourceCollection> managedResourceCollections = new LinkedHashSet<>();
 
     // MAINTAINED FOR HQL QUERY USE
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
@@ -1219,12 +1221,12 @@ public class Resource implements Persistable,
      * Marking these as comments due to list collections not being currently implemented.
      * @return
      */
-    //@XmlElementWrapper(name = "listCollections")
-    //@XmlElementRefs({
-    //    @XmlElementRef(name = "listCollection", type = ListCollection.class, required = false),
-   //     @XmlElementRef(name = "listCollectionRef", type = JAXBPersistableRef.class, required = false)
-   // })
-    @XmlTransient
+    @XmlElementWrapper(name = "unmanagedResourceCollections")
+    @XmlElementRefs({
+            @XmlElementRef(name = "resourceCollection", type = ResourceCollection.class, required = false),
+            @XmlElementRef(name = "resourceCollectionRef", type = JAXBPersistableRef.class, required = false)
+    })
+    @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
     public Set<ResourceCollection> getUnmanagedResourceCollections() {
         return unmanagedResourceCollections;
     }
@@ -1233,32 +1235,32 @@ public class Resource implements Persistable,
         this.unmanagedResourceCollections = publicResourceCollections;
     }
 
-    @XmlElementWrapper(name = "resourceCollections")
+    @XmlElementWrapper(name = RESOURCE_COLLECTIONS)
     @XmlElementRefs({
             @XmlElementRef(name = "resourceCollection", type = ResourceCollection.class, required = false),
             @XmlElementRef(name = "resourceCollectionRef", type = JAXBPersistableRef.class, required = false)
     })
     @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
-    public Set<ResourceCollection> getSharedCollections() {
-        return sharedCollections;
+    public Set<ResourceCollection> getManagedResourceCollections() {
+        return managedResourceCollections;
     }
 
 
-    @Transient
-    public Set<ResourceCollection> getRightsBasedResourceCollections() {
-        Set<ResourceCollection> collections = new HashSet<>();
-        if (CollectionUtils.isNotEmpty(getSharedCollections())) {
-            collections.addAll(getSharedCollections());
-        }
-        Iterator<ResourceCollection> iterator = collections.iterator();
-        while (iterator.hasNext()) {
-            ResourceCollection next = iterator.next();
-            if (next == null || CollectionUtils.isEmpty(next.getResources())) {
-                iterator.remove();
-            }
-        }
-        return collections;
-    }
+//    @Transient
+//    public Set<ResourceCollection> getRightsBasedResourceCollections() {
+//        Set<ResourceCollection> collections = new HashSet<>();
+//        if (CollectionUtils.isNotEmpty(getManagedResourceCollections())) {
+//            collections.addAll(getManagedResourceCollections());
+//        }
+//        Iterator<ResourceCollection> iterator = collections.iterator();
+//        while (iterator.hasNext()) {
+//            ResourceCollection next = iterator.next();
+//            if (next == null || CollectionUtils.isEmpty(next.getManagedResources())) {
+//                iterator.remove();
+//            }
+//        }
+//        return collections;
+//    }
 
 
     @Override
@@ -1326,15 +1328,11 @@ public class Resource implements Persistable,
         return true;
     }
 
-    @Transient
-    public Set<ResourceCollection> getSharedResourceCollections() {
-        return sharedCollections;
-    }
 
     @Transient
     public Set<ResourceCollection> getVisibleSharedResourceCollections() {
         Set<ResourceCollection> collections = new LinkedHashSet<>();
-        for (ResourceCollection collection : sharedCollections) {
+        for (ResourceCollection collection : managedResourceCollections) {
             if (collection.isVisibleAndActive()) {
                 collections.add((ResourceCollection)collection);
             }
@@ -1449,7 +1447,7 @@ public class Resource implements Persistable,
         this.setFilesUsed(resource.getPreviousFilesUsed());
         this.setSpaceInBytesUsed(resource.getSpaceInBytesUsed());
         this.setFilesUsed(resource.getFilesUsed());
-        this.getSharedCollections().addAll(new ArrayList<>(resource.getSharedCollections()));
+        this.getManagedResourceCollections().addAll(new ArrayList<>(resource.getManagedResourceCollections()));
         this.getAuthorizedUsers().addAll(resource.getAuthorizedUsers());
 
     }

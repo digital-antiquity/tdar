@@ -287,7 +287,7 @@ public class OaiPmhServiceImpl implements OaiPmhService {
 		// iso_utc
 		record.setHeader(header);
 		if (resource instanceof Resource) {
-            for (ResourceCollection rc : ((Resource) resource).getSharedResourceCollections()) {
+            for (ResourceCollection rc : ((Resource) resource).getManagedResourceCollections()) {
                 header.getSetSpec().add(Long.toString(rc.getId()));
                 Set<Long> parents = new HashSet<>(rc.getParentIds());
                 parents.addAll(rc.getAlternateParentIds());

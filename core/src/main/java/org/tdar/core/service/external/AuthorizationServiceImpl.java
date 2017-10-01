@@ -26,14 +26,14 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.ConfidentialViewable;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
@@ -209,9 +209,21 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
+        //NOTE: this was a change in Quartz ... it may just need to be return true, which is what it 
+        // was historically (things that call this skip this call if resource is active)
+        if (resource.isActive()) {
+            if (CollectionUtils.isEmpty(resource.getActiveLatitudeLongitudeBoxes())) {
+                return true;
+            }
+            if (!resource.getFirstActiveLatitudeLongitudeBox().isObfuscatedObjectDifferent()) {
+                return true;
+            }
+
+        }
+
         // finally, check if user has been granted permission
         // FIXME: technically the dao layer is doing some stuff that we should be, but I don't want to mess w/ it right now.
-        return authorizedUserDao.isAllowedTo(person, resource, GeneralPermissions.VIEW_ALL);
+        return authorizedUserDao.isAllowedTo(person, resource, Permissions.VIEW_ALL);
     }
 
     /*
@@ -222,7 +234,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
      */
     @Override
     @Transactional(readOnly = true)
-    public boolean canEditResource(TdarUser person, Resource resource, GeneralPermissions basePermission) {
+    public boolean canEditResource(TdarUser person, Resource resource, Permissions basePermission) {
         // is the request valid
         if (person == null) {
             return false;
@@ -237,7 +249,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-        if (CollectionUtils.isEmpty(resource.getAuthorizedUsers()) && CollectionUtils.isEmpty(resource.getSharedCollections())) {
+        if (CollectionUtils.isEmpty(resource.getAuthorizedUsers()) && CollectionUtils.isEmpty(resource.getManagedResourceCollections())) {
             return false;
         }
 
@@ -264,10 +276,10 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-//        if (persistable instanceof ListCollection) {
-//            return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_COLLECTION);
-//        }
-        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_SHARE);
+        // if (persistable instanceof ListCollection) {
+        // return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_COLLECTION);
+        // }
+        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, Permissions.ADD_TO_COLLECTION);
     }
 
     /*
@@ -288,10 +300,10 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-        GeneralPermissions permission = GeneralPermissions.ADMINISTER_SHARE;
-//        if (persistable instanceof ListCollection) {
-//            permission = GeneralPermissions.ADMINISTER_GROUP;
-//        }
+        Permissions permission = Permissions.ADMINISTER_COLLECTION;
+        // if (persistable instanceof ListCollection) {
+        // permission = GeneralPermissions.ADMINISTER_GROUP;
+        // }
 
         return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, permission);
     }
@@ -350,7 +362,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     @Transactional(readOnly = true)
     public boolean canEdit(TdarUser authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
-            return canEditResource(authenticatedUser, (Resource) item, GeneralPermissions.MODIFY_METADATA);
+            return canEditResource(authenticatedUser, (Resource) item, Permissions.MODIFY_METADATA);
         } else if (item instanceof ResourceCollection) {
             return canEditCollection(authenticatedUser, (ResourceCollection) item);
         } else if (item instanceof Institution) {
@@ -407,14 +419,14 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     @Override
     @Transactional(readOnly = true)
     public boolean canViewConfidentialInformation(TdarUser person, Resource resource) {
-            
+
         if (resource instanceof Project || resource instanceof SupportsResource) {
             return true;
         }
-        if (((InformationResource) resource).isPublicallyAccessible()){
+        if (((InformationResource) resource).isPublicallyAccessible()) {
             return true;
         }
-        return canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, GeneralPermissions.VIEW_ALL);
+        return canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, Permissions.VIEW_ALL);
     }
 
     /*
@@ -425,7 +437,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     @Override
     @Transactional(readOnly = true)
     public boolean canUploadFiles(TdarUser person, Resource resource) {
-        return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD);
+        return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, Permissions.MODIFY_RECORD);
     }
 
     /*
@@ -436,7 +448,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
      */
     @Override
     @Transactional(readOnly = true)
-    public boolean canDo(TdarUser person, HasAuthorizedUsers resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
+    public boolean canDo(TdarUser person, HasAuthorizedUsers resource, InternalTdarRights equivalentAdminRight, Permissions permission) {
         // This function used to pre-test on the resource, but it doesn't have to and is now more granular
         if (resource == null) {
             return false;
@@ -460,7 +472,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         if (isMember(person, TdarGroup.TDAR_RPA_MEMBER) && false) {
             return true;
         }
-        
+
         if (authorizedUserDao.isAllowedTo(person, resource, permission)) {
             logger.trace("person is an authorized user");
             return true;
@@ -547,7 +559,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             logger.trace("\tuser is special': {}", person);
             return true;
         }
-        return authorizedUserDao.isAllowedTo(person, collection, GeneralPermissions.VIEW_ALL);
+        return authorizedUserDao.isAllowedTo(person, collection, Permissions.VIEW_ALL);
     }
 
     /*
@@ -675,7 +687,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         }
         if (resource.isActive()
                 || can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser) || canView(authenticatedUser, resource)
-                || canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_METADATA)) {
+                || canEditResource(authenticatedUser, resource, Permissions.MODIFY_METADATA)) {
             logger.trace("{} is viewable: {}", resource.getId(), resource.getClass().getSimpleName());
             return true;
         }
@@ -690,7 +702,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     @Override
     @Transactional(readOnly = true)
     public boolean isResourceEditable(TdarUser authenticatedUser, Resource resource) {
-        return canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_METADATA);
+        return canEditResource(authenticatedUser, resource, Permissions.MODIFY_METADATA);
     }
 
     /*
@@ -765,7 +777,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         }
 
         for (AuthorizedUser au : workflow.getAuthorizedUsers()) {
-            if (au.getUser().equals(authenticatedUser) && (GeneralPermissions.EDIT_INTEGRATION.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
+            if (au.getUser().equals(authenticatedUser) && (Permissions.EDIT_INTEGRATION.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
                 return true;
             }
         }
@@ -804,7 +816,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
 
         for (AuthorizedUser au : account.getAuthorizedUsers()) {
             logger.debug("au: {}", au);
-            if (au.getUser().equals(authenticatedUser) && (GeneralPermissions.EDIT_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
+            if (au.getUser().equals(authenticatedUser) && (Permissions.EDIT_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
                 return true;
             }
         }
@@ -835,7 +847,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     public void applyTransientViewableFlag(Resource r_, TdarUser authenticatedUser, Collection<Long> collectionIds) {
         Viewable item = (Viewable) r_;
         boolean viewable = setupViewable(authenticatedUser, item);
-        boolean allowedToViewAll = authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.VIEW_ALL, collectionIds);
+        boolean allowedToViewAll = authorizedUserDao.isAllowedTo(authenticatedUser, Permissions.VIEW_ALL, collectionIds);
         if (logger.isTraceEnabled()) {
             Long auid = null;
             if (authenticatedUser != null) {
@@ -886,7 +898,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     @Transactional(readOnly = true)
     public boolean canAdminiserUsersOn(HasAuthorizedUsers source, TdarUser actor) {
         // if we're internal we want to check if the actor is the submitter
-        if (source instanceof Resource && canEditResource(actor, (Resource) source, GeneralPermissions.MODIFY_RECORD)) {
+        if (source instanceof Resource && canEditResource(actor, (Resource) source, Permissions.MODIFY_RECORD)) {
             return true;
         }
         if (source instanceof ResourceCollection && canAdministerCollection(actor, (ResourceCollection) source)) {
@@ -929,7 +941,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
 
         for (AuthorizedUser au : account.getAuthorizedUsers()) {
             logger.debug("au: {}", au);
-            if (au.getUser().equals(authenticatedUser) && (GeneralPermissions.EDIT_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
+            if (au.getUser().equals(authenticatedUser) && (Permissions.EDIT_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
                 return true;
             }
         }
@@ -966,11 +978,11 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
      * org.tdar.core.bean.collection.ResourceCollection)
      */
     @Override
-    public boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd, CollectionType type) {
+    public boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd, CollectionResourceSection type) {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }
-        GeneralPermissions permission = permission = GeneralPermissions.ADD_TO_SHARE;
+        Permissions permission = permission = Permissions.ADD_TO_COLLECTION;
         return authorizedUserDao.isAllowedTo(user, collectionToAdd, permission);
     }
 
@@ -981,12 +993,12 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
      * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    public <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user, CollectionType type) {
+    public <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user, CollectionResourceSection type) {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }
 
-        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_SHARE;
+        Permissions permission = Permissions.REMOVE_FROM_COLLECTION;
         return authorizedUserDao.isAllowedTo(user, collection, permission);
     }
 

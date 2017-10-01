@@ -18,7 +18,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.exception.SearchException;
@@ -52,7 +52,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     private String query;
     private Long sortCategoryId;
     private boolean includeCompleteRecord = false;
-    private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
+    private Permissions permission = Permissions.VIEW_ALL;
 
     private boolean parentCollectionsIncluded = true;
 
@@ -109,7 +109,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
                 for (Indexable result_ : getResults()) {
                     Resource resource = (Resource) result_;
                     if (resource != null && resource.isViewable()) {
-                        if (resource.getSharedCollections().contains(collectionContainer) || resource.getUnmanagedResourceCollections().contains(collectionContainer)) {
+                        if (resource.getManagedResourceCollections().contains(collectionContainer) || resource.getUnmanagedResourceCollections().contains(collectionContainer)) {
                             resourceIds.add(resource.getId());
                         }
                     }
@@ -158,11 +158,11 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         this.includeCompleteRecord = includeCompleteRecord;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 

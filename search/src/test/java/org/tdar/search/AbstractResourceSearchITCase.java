@@ -20,7 +20,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -250,7 +250,7 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     }
 
     public SearchResult<Resource> performSearch(String term, Long projectId, Long collectionId, Boolean includeParent, Long categoryId, TdarUser user,
-            ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, int max) throws IOException,SearchException, SearchIndexException {
+            ReservedSearchParameters reservedSearchParameters, Permissions permission, int max) throws IOException,SearchException, SearchIndexException {
         SearchResult<Resource> result = new SearchResult<>(max);
         logger.debug("{}, {}", resourceSearchService, MessageHelper.getInstance());
         ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent,null, collectionId, categoryId, permission, reservedSearchParameters);

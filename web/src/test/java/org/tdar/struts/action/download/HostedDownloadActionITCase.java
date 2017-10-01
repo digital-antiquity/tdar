@@ -154,9 +154,9 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
         collection.setName("authorized collection");
         collection.setDescription(collection.getName());
         collection.markUpdated(getAdminUser());
-        collection.getResources().add(doc);
+        collection.getManagedResources().add(doc);
         genericService.saveOrUpdate(collection);
-        doc.getSharedCollections().add(collection);
+        doc.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(doc);
         DownloadAuthorization downloadAuthorization = new DownloadAuthorization();
         downloadAuthorization.setApiKey("test");

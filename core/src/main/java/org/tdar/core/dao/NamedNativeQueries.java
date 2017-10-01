@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -67,7 +67,7 @@ public final class NamedNativeQueries {
         return String.format(sql, projectId, sb.toString());
     }
 
-    public static String generateDashboardGraphQuery(Person user, GeneralPermissions permission) {
+    public static String generateDashboardGraphQuery(Person user, Permissions permission) {
         return String
                 .format("select id, status, resource_type from resource where id in  (select resource_id from collection_resource,collection, authorized_user where collection.id=collection_resource.collection_id and collection.id=user_id and user_id=%s and general_permission_int > %s union select id from resource where updater_id=%s or submitter_id=%s)",
                         user.getId(), (permission.getEffectivePermissions() - 1), user.getId(), user.getId());

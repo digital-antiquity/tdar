@@ -8,11 +8,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -35,12 +35,12 @@ public class UnmanagedResourceCollectionITCase extends AbstractIntegrationTestCa
 
         // create a collection
         ResourceCollection collection = createAndSaveNewResourceCollection("test umanaged");
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), tdarUser, GeneralPermissions.ADMINISTER_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), tdarUser, Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection.getAuthorizedUsers());
         genericService.saveOrUpdate(collection);
       
-        resourceCollectionService.addResourceCollectionToResource(document, document.getSharedResourceCollections(), getBasicUser(), true, 
-                ErrorHandling.NO_VALIDATION, collection, CollectionType.LIST);
+        resourceCollectionService.addResourceCollectionToResource(document, document.getManagedResourceCollections(), getBasicUser(), true, 
+                ErrorHandling.NO_VALIDATION, collection, CollectionResourceSection.UNMANGED);
         
         // get the Ids
         Long userId = tdarUser.getId();
@@ -58,7 +58,7 @@ public class UnmanagedResourceCollectionITCase extends AbstractIntegrationTestCa
         collection = genericService.find(ResourceCollection.class, collectionId);
         assertFalse(authenticationAndAuthorizationService.canEdit(tdarUser, document));
         assertTrue(collection.getUnmanagedResources().contains(document));
-        assertFalse(collection.getResources().contains(document));
+        assertFalse(collection.getManagedResources().contains(document));
     }
     
     @Test

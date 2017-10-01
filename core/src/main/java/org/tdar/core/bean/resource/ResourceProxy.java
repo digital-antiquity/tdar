@@ -286,7 +286,7 @@ public class ResourceProxy implements Serializable {
         res.setDateUpdated(this.getDateUpdated());
         res.setId(this.getId());
         logger.trace("recursing down");
-        res.getSharedCollections().addAll(getSharedCollections());
+        res.getManagedResourceCollections().addAll(getSharedCollections());
         res.getAuthorizedUsers().addAll(getAuthorizedUsers());
         logger.trace("done generation");
         return res;

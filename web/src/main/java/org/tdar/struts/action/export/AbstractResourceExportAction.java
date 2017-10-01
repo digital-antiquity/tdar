@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -68,7 +68,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         List<Resource> resources = getExportProxy().getResources();
         if (resources != null) {
             for (Resource r : resources) {
-                if (!authorizationService.canEditResource(getAuthenticatedUser(), r, GeneralPermissions.MODIFY_METADATA)) {
+                if (!authorizationService.canEditResource(getAuthenticatedUser(), r, Permissions.MODIFY_METADATA)) {
                     issues.add(format(r));
                 }
             }

@@ -14,13 +14,14 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 import org.opengis.annotation.XmlElement;
 import org.tdar.core.bean.HasImage;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
 
 @XmlElement("collectionDisplayProperties")
 @Embeddable
-public class CollectionDisplayProperties implements HasImage {
+public class CollectionDisplayProperties implements HasImage, Persistable {
     private static final long serialVersionUID = -3972164997710223460L;
 
     private transient Integer maxHeight;

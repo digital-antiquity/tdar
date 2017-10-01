@@ -101,7 +101,7 @@
     <p>
     <ul class="inline">
         <#items as collection>
-    <li><a class="sml moreInfo" data-type="collection" data-size="${collection.resources?size!0}" data-hidden="${collection.hidden?c}" 
+    <li><a class="sml moreInfo" data-type="collection" data-size="${collection.managedResources![]?size!0 + collection.unmanagedResources![]?size!0}" data-hidden="${collection.hidden?c}" 
     		data-submitter="${collection.submitter.properName}"
     		data-submitterLink="${collection.submitter.detailUrl}" 
     		data-description="${collection.description!''}"
