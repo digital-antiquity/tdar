@@ -58,6 +58,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
@@ -566,6 +567,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         resourceCollections.addAll(retainedListCollections);
         boolean notFlagged = true;
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
+            if (PersistableUtils.isNullOrTransient(accountId)) {
+                addActionError("accountService.account_is_null");
+                return;
+            }
+
             BillingAccount a = accountService.find(accountId);
             notFlagged = !a.isFlagged();
         }
