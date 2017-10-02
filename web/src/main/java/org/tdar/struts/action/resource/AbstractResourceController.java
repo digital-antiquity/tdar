@@ -564,10 +564,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getLogger().debug("retained list collections:{}", retainedListCollections);
         shares.addAll(retainedSharedCollections);
         resourceCollections.addAll(retainedListCollections);
-        BillingAccount a = accountService.find(accountId);
+        boolean notFlagged = true;
+        if (getTdarConfiguration().isPayPerIngestEnabled()) {
+            BillingAccount a = accountService.find(accountId);
+            notFlagged = !a.isFlagged();
+        }
         // if the user has the right to edit metadata AND the billing account is active (if the billing account is overdrawn then the UI has no collections list)
         if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
-                GeneralPermissions.MODIFY_RECORD) && a.isActive()) {
+                GeneralPermissions.MODIFY_RECORD) && notFlagged) {
             resourceCollectionService.saveResourceCollections(getResource(), shares, getResource().getSharedCollections(),
                     getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
 
