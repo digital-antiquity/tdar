@@ -48,7 +48,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     List<String> temporalKeywords;
     private String resourceProviderInstitutionName;
     private String publisherName;
-
+    private Long accountId;
     private List<ResourceCreatorProxy> creditProxies;
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<CoverageDate> coverageDates;
@@ -417,6 +417,13 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     public void setOntology(Ontology ontology) {
         this.ontology = ontology;
     }
-    
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
 
 }

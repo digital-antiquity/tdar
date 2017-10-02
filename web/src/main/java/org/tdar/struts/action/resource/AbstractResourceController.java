@@ -364,6 +364,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
 
         proxy.setResource(getPersistable());
+        proxy.setAccountId(accountId);
         proxy.setIncomingAnnotations(resourceAnnotations);
         proxy.setLatitudeLongitudeBoxes(latitudeLongitudeBoxes);
         proxy.setGeographicKeywords(geographicKeywords);

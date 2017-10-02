@@ -23,6 +23,7 @@ import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.SupportsResource;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ListCollection;
@@ -400,8 +401,9 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         shares.addAll(retainedSharedCollections);
         resourceCollections.addAll(retainedListCollections);
 
+        BillingAccount account = genericService.find(BillingAccount.class, rcp.getAccountId());
         if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
-                GeneralPermissions.MODIFY_RECORD)) {
+                GeneralPermissions.MODIFY_RECORD) && account.isActive()) {
             resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getSharedCollections(),
                     authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
 
