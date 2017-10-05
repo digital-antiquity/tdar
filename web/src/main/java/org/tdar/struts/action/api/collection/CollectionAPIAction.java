@@ -24,6 +24,7 @@ import org.tdar.core.service.ImportService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.api.AbstractApiController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -41,25 +42,32 @@ import com.opensymphony.xwork2.Preparable;
 @HttpsOnly
 public class CollectionAPIAction extends AbstractApiController implements Preparable {
 
+    private static final String SUCCESS_JSON = "success_json";
+    private static final String ERROR_JSON = "error_json";
+
     @Autowired
     private transient SerializationService serializationService;
 
     @Autowired
     private transient ImportService importService;
 
-    
     private ResourceCollection importedRecord;
     private String type = "xml";
+
     @Override
     public void prepare() throws Exception {
-        
+
     }
-    
+
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
-                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
+                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = SUCCESS_JSON, type = TdarActionSupport.JSONRESULT,
+                            params = { "stream", "inputStream", "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR_JSON, type = TdarActionSupport.JSONRESULT,
+                            params = { "stream", "inputStream", "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
     // @WriteableSession
@@ -109,6 +117,10 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
 
+            if (!"xml".equals(type)) {
+                return SUCCESS_JSON;
+            }
+
             return SUCCESS;
         } catch (Throwable e) {
             setErrorMessage("");
@@ -118,6 +130,9 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
                 errors = new ArrayList<>(events);
 
                 errorResponse(StatusCode.BAD_REQUEST, errors, getErrorMessage(), null);
+                if (!"xml".equals(type)) {
+                    return ERROR_JSON;
+                }
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -136,15 +151,20 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
 
             if (e instanceof APIException) {
                 errorResponse(((APIException) e).getCode(), errors, e.getMessage(), stackTraces);
+                if (!"xml".equals(type)) {
+                    return ERROR_JSON;
+                }
+
                 return ERROR;
             }
         }
         errorResponse(StatusCode.UNKNOWN_ERROR, errors, getErrorMessage(), stackTraces);
+        if (!"xml".equals(type)) {
+            return ERROR_JSON;
+        }
         return ERROR;
 
     }
-
-
 
     public ResourceCollection getImportedRecord() {
         return importedRecord;
@@ -153,5 +173,5 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
     public void setImportedRecord(ResourceCollection importedRecord) {
         this.importedRecord = importedRecord;
     }
-    
+
 }
