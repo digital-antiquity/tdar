@@ -32,24 +32,24 @@
 </head>
 
 
-    <@nav.toolbar "${resource.urlNamespace}" "view">
-        <#if resource.resourceType.dataTableSupported && editable>
-            <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
-            <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
-            <@nav.makeLink "dataset" "columns/${persistable.id?c}" "metadata" "columns" current true disabled "hidden-desktop"/>
-            <#if mappingFeatureEnabled >
-            <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
-            </#if>
+<@nav.toolbar "${resource.urlNamespace}" "view">
+    <#if resource.resourceType.dataTableSupported && editable>
+        <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
+        <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
+        <@nav.makeLink "dataset" "columns/${persistable.id?c}" "metadata" "columns" current true disabled "hidden-desktop"/>
+        <#if mappingFeatureEnabled >
+        <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
         </#if>
+    </#if>
 
-        <#if local_.toolbarAdditions?? && local_.toolbarAdditions?is_macro>
-            <@local_.toolbarAdditions />
-        </#if>
-    </@nav.toolbar>
+    <#if local_.toolbarAdditions?? && local_.toolbarAdditions?is_macro>
+        <@local_.toolbarAdditions />
+    </#if>
+</@nav.toolbar>
 
-        <#if local_.notifications?? && local_.notifications?is_macro>
-            <@local_.notifications />
-        </#if>
+<#if local_.notifications?? && local_.notifications?is_macro>
+    <@local_.notifications />
+</#if>
 
 <div id="datatable-child" style="display:none">
     <p class="">
@@ -57,25 +57,25 @@
     </p>
 </div>
 
-    <@view.pageStatusCallout />
+<@view.pageStatusCallout />
 
-    <h1 class="view-page-title">${resource.title!"No Title"}</h1>
-    <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
+<h1 class="view-page-title">${resource.title!"No Title"}</h1>
+<#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
-    <div id="subtitle">
-        <p>Part of the
-            <#if resource.projectVisible || editable>
-                <a href="<@s.url value='${resource.project.detailUrl}'/>">${resource.project.coreTitle}</a>
-            <#else>
-            ${resource.project.coreTitle}
-            </#if>
-            <#if resource.project.draft>(DRAFT)</#if> project
-        </p></div>
-    </#if>
+<div id="subtitle">
+    <p>Part of the
+        <#if resource.projectVisible || editable>
+            <a href="<@s.url value='${resource.project.detailUrl}'/>">${resource.project.coreTitle}</a>
+        <#else>
+        ${resource.project.coreTitle}
+        </#if>
+        <#if resource.project.draft>(DRAFT)</#if> project
+    </p></div>
+</#if>
 
-    <#if editor>
+<#if editor>
     <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/resource/admin?id=${resource.id?c}"/>">ADMIN</a></div>
-    </#if>
+</#if>
 
 <p class="meta">
     <@view.showCreatorProxy proxyList=authorshipProxies />
@@ -94,48 +94,53 @@
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
 
 <h2>Summary</h2>
-    <@common.description resource.description />
+<@common.description resource.description />
+
 <hr>
-    <#list viewableResourceCollections>
+<#list viewableResourceCollections>
     <h3>This Resource is Part of the Following Collections</h3>
     <p>
     <ul class="inline">
-        <#items as collection>
-    <li><a class="sml moreInfo" data-type="collection" data-size="${collection.managedResources![]?size!0 + collection.unmanagedResources![]?size!0}" data-hidden="${collection.hidden?c}" 
+    <#items as collection>
+        <li>
+            <a class="sml moreInfo" data-type="collection" data-size="${collection.managedResources![]?size!0 + collection.unmanagedResources![]?size!0}" data-hidden="${collection.hidden?c}" 
     		data-submitter="${collection.submitter.properName}"
     		data-submitterLink="${collection.submitter.detailUrl}" 
     		data-description="${collection.description!''}"
     		data-name="${collection.name!''}" 
     		
     		href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
-        <#sep>&nbsp;&nbsp;&bull;</#sep></li>
-</#items>
-</ul>
-</p>
-<hr>
+            <#sep>&nbsp;&nbsp;&bull;</#sep>
+        </li>
+    </#items>
+    </ul>
+    </p>
+    <hr>
 </#list>
 
 
 <@view.resourceCitationSection resource />
 
 <hr/>
-    <#noescape>
-        <#if resource.url! != ''>
-        <p><strong>URL: </strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
-                                   title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
-        </#if>
-    </#noescape>
 
-
-    <#if local_.afterBasicInfo?? && local_.afterBasicInfo?is_macro>
-        <@local_.afterBasicInfo />
+<#noescape>
+    <#if resource.url! != ''>
+    <p><strong>URL: </strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
+                               title="${resource.url?html}"><@common.truncate resource.url?html 80 /></a></p><br/>
     </#if>
+</#noescape>
 
-    <#if ( resource.hasBrowsableImages && resource.visibleFilesWithThumbnails?size > 0)>
-        <@view.imageGallery />
-    <br/>
-    <hr/>
-    </#if>
+
+<#if local_.afterBasicInfo?? && local_.afterBasicInfo?is_macro>
+    <@local_.afterBasicInfo />
+</#if>
+
+<#if ( resource.hasBrowsableImages && resource.visibleFilesWithThumbnails?size > 0)>
+    <@view.imageGallery />
+<br/>
+<hr/>
+</#if>
+
 
     <#if resource.resourceType.dataTableSupported>
         <#if (resource.dataTables?has_content)>
@@ -525,31 +530,93 @@
             <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
         </#if>
     </#if>
-        <ul class="media-list">
-            <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
-            <li class="media">
-            <i class="icon-comment pull-left"></i>
-                <div class="media-body">
-                        <a id="requestAccess" href="<@s.url value="/resource/request/${id?c}"/>">${txt}
-                    <#if !(authenticatedUser.id)?has_content>
-                             (requires login)
-                    </#if>
-                </a>
+    
+        <div id="app-2">
+            <ul class="media-list">
+                <#assign txt>
+                    <#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment
+                </#assign>
+                
+                <li class="media">
+                    <i class="icon-comment pull-left"></i>
+                        <div class="media-body">
+                            <a id="requestAccess" href="<@s.url value="/resource/request/${id?c}"/>">${txt}
+                            <#if !(authenticatedUser.id)?has_content>
+                                     (requires login)
+                            </#if>
+                        </a>
+                    </div>
+                </li>
+            
+            <#if (authenticatedUser.id)?has_content>
+                <@list.bookmarkMediaLink resource />
+               
+                <li class="media "><i class="icon-folder-open pull-left"></i>
+                    <div class="media-body">
+                        <a id="addToCollection" href="#modal" data-toggle="modal" v-on:click="getCollections">Add to a Collection</a>
+                    </div>
+                </li>
+                 
+            </#if>
+    
+                <@nav.shareSection />
+            </ul>
+            
+                <div class="modal hide fade" id="modal">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Add to a Collection</h3>
+              </div>
+              <div class="modal-body" >
+                 <div>
+                      <ul class="collection-list unstyled">
+                        <collection v-for="item in items" :id="item.id" :name="item.name"></collection>
+                      </ul>
                 </div>
-            </li>
-        <#if (authenticatedUser.id)?has_content && editable>
-            <@list.bookmarkMediaLink resource />
-            <#-- 
-            <li class="media "><i class="icon-folder-open pull-left"></i>
-                <div class="media-body">
-                    <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
-                </div>
-            </li>
-             -->
-        </#if>
-
-            <@nav.shareSection />
-        </ul>
+              </div>
+              <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                <a href="#" class="btn btn-primary">Save changes</a>
+              </div>
+        </div>
+    </div>
+    
+    <script>
+    
+    Vue.component('collection', 
+    
+    {
+    props: ["id","name"],
+    template: "<li :id='id' class='extra'><input type='radio' name='collectionId' :id='id'> <a href='#'>{{name}}</a></li>",
+    
+     // need to figure out the binding so that the id's can be rendered correctly.
+    //"<li v-bind='{id:}'{{ellipseName}}</a></li>",
+    computed: {
+        ellipseName: function(){
+        name
+            //this needs to have the TDAR libs in so that the name will compute.
+           // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
+        }
+    }
+});    
+    
+    
+    
+      var app2 = new Vue({
+        el: '#app-2',
+        data: { items:[{id:"1",name:"Sample"}] },
+        methods: {
+            getCollections: function(){
+                var self = this;
+                $.getJSON( "/api/collection/tree?type=SHARED", function( data ) {
+                        self.items = data;
+                    });
+            }
+        }
+        });
+      </script>
+        
+        
     <h3>Basic Information</h3>
 
     <p>
@@ -619,13 +686,13 @@
 
         if ($("#dataTable")){
                 TDAR.datatable.initDataTableBrowser();
-}
+        }
         if(window._localJavaScript) {
             _localJavaScript();
         }
 
         TDAR.internalEmailForm.init();    
-    });
+})
 </script>
 
 <#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
@@ -641,20 +708,5 @@
         </table>
         </#list>
     </#macro>
-
-                <div class="modal hide fade" id="modal">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3>Add to a Collection</h3>
-                  </div>
-                  <div class="modal-body">
-                  <ul class="collection-list unstyled">
-                  </ul>
-                  </div>
-                  <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                    <a href="#" class="btn btn-primary">Save changes</a>
-                  </div>
-                </div>
 
 </#escape>
