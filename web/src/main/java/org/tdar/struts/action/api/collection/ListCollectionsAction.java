@@ -52,10 +52,12 @@ public class ListCollectionsAction extends AbstractJsonApiAction implements Prep
 	private class JsonCollection {
 		private Long id;
 		private String name;
+		private boolean owned; 
 
-		public JsonCollection(Long id, String name) {
+		public JsonCollection(Long id, String name, boolean owned) {
 			this.setId(id);
 			this.setName(name);
+			this.setOwned(owned);
 		}
 
 		public Long getId() {
@@ -73,6 +75,14 @@ public class ListCollectionsAction extends AbstractJsonApiAction implements Prep
 		public void setName(String name) {
 			this.name = name;
 		}
+
+		public boolean isOwned() {
+			return owned;
+		}
+
+		public void setOwned(boolean owned) {
+			this.owned = owned;
+		}
 	}
 
 	@Action(value = "tree", results = { @Result(name = SUCCESS, type = "jsonresult") })
@@ -84,31 +94,26 @@ public class ListCollectionsAction extends AbstractJsonApiAction implements Prep
 		 * getLogger().debug("input"); return INPUT; }
 		 */
 
-		Map<Long, String> map = new HashMap<Long, String>();
+		Map<Long, JsonCollection> map = new HashMap<Long, JsonCollection>();
 
 		getLogger().trace("parent/ owner collections");
 		for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
 			if (rc.isTopLevel()) {
-				map.put(rc.getId(),rc.getName());
+				map.put(rc.getId(), new JsonCollection(rc.getId(), rc.getName(), authorizationService.canEdit(getAuthenticatedUser(), rc)));
 			}
 		}
 
 		getLogger().trace("accessible collections");
 		for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-			if (rc instanceof ResourceCollection) {
-				map.put(rc.getId(),rc.getName());
+			if (rc instanceof ResourceCollection && !map.containsKey(rc.getId())) {
+				map.put(rc.getId(), new JsonCollection(rc.getId(), rc.getName(), authorizationService.canEdit(getAuthenticatedUser(), rc)));
 			}
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
-
 		List<JsonCollection> list = new ArrayList<JsonCollection>();
-
-		for (Long key : map.keySet()) {
-			JsonCollection js = new JsonCollection(key, map.get(key));
-			list.add(js);
-		}
-
+		list.addAll(map.values());
+		
 		setJsonInputStream(new ByteArrayInputStream(mapper.writeValueAsString(list).getBytes()));
 
 		return SUCCESS;

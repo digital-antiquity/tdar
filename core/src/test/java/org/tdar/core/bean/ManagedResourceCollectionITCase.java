@@ -45,7 +45,7 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 		genericService.saveOrUpdate(collection);
 
 		resourceCollectionService.addResourceCollectionToResource(document, document.getManagedResourceCollections(),
-				getBasicUser(), true, ErrorHandling.NO_VALIDATION, collection, CollectionResourceSection.UNMANGED);
+				getBasicUser(), true, ErrorHandling.NO_VALIDATION, collection, CollectionResourceSection.UNMANAGED);
 
 		// get the Ids
 		Long userId = tdarUser.getId();

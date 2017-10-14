@@ -593,7 +593,7 @@ public class ImportServiceImpl implements ImportService  {
                 } else {
                     resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getManagedResourceCollections()),
                             authenticatedUser, true,
-                            ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionResourceSection.UNMANGED);
+                            ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection)collection, CollectionResourceSection.UNMANAGED);
                     
                 }
             }

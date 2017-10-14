@@ -414,7 +414,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             logger.debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }
         resourceCollectionService.saveResourceCollections(authWrapper.getItem(), resourceCollections, authWrapper.getItem().getUnmanagedResourceCollections(),
-                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.UNMANGED);
+                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.UNMANAGED);
 
         if (rcp.getResource() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) rcp.getResource();
@@ -459,7 +459,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             }
         }
         for (ResourceCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
-            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionResourceSection.UNMANGED)) {
+            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser(), CollectionResourceSection.UNMANAGED)) {
                 retainedListCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }

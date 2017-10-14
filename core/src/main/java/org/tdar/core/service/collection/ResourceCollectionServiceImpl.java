@@ -900,7 +900,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
         for (Resource resource : persistable.getUnmanagedResources()) {
-            removeFromCollection(resource, persistable, CollectionResourceSection.UNMANGED);
+            removeFromCollection(resource, persistable, CollectionResourceSection.UNMANAGED);
             getDao().saveOrUpdate(resource);
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }

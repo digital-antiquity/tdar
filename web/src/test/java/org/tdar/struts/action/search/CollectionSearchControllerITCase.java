@@ -53,7 +53,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testSearchForPrivateSharedCollectionAnonymous() throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
-        ResourceCollection collection = setupCollection(true, null, false, CollectionResourceSection.UNMANGED);
+        ResourceCollection collection = setupCollection(true, null, false, CollectionResourceSection.UNMANAGED);
         assertFalse(controller.getResults().contains(collection));
     }
 
@@ -61,7 +61,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithRights()
             throws InstantiationException, IllegalAccessException, SearchIndexException, SearchException, IOException {
-        ResourceCollection collection = setupCollection(true, getBasicUser(), true, CollectionResourceSection.UNMANGED);
+        ResourceCollection collection = setupCollection(true, getBasicUser(), true, CollectionResourceSection.UNMANAGED);
         searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
     }
@@ -70,7 +70,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateSharedCollectionAsBasicUserWithRights()
             throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
-        ResourceCollection collection = setupCollection(true, getBasicUser(), true, CollectionResourceSection.UNMANGED);
+        ResourceCollection collection = setupCollection(true, getBasicUser(), true, CollectionResourceSection.UNMANAGED);
         searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
     }
@@ -92,7 +92,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     }
 
     private ResourceCollection setupCollection(boolean visible, TdarUser user) throws SearchIndexException, IOException {
-        return setupCollection(visible, user, false, CollectionResourceSection.UNMANGED);
+        return setupCollection(visible, user, false, CollectionResourceSection.UNMANAGED);
     }
 
     private ResourceCollection setupCollection(boolean visible, TdarUser user, boolean createAuthUser, CollectionResourceSection type)
@@ -103,7 +103,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
 
         collection.setDescription("test");
         collection.setHidden(visible);
-        if (type == CollectionResourceSection.UNMANGED) {
+        if (type == CollectionResourceSection.UNMANAGED) {
             collection.getUnmanagedResources().add(doc);
         } else {
             collection.getManagedResources().add(doc);

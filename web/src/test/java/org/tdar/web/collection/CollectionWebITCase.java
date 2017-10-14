@@ -90,7 +90,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         someResources.add(createDocument());
         someResources.add(createDocument());
         someResources.add(createDocument());
-        createTestCollection(CollectionResourceSection.UNMANGED, name, desc, someResources);
+        createTestCollection(CollectionResourceSection.UNMANAGED, name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());
@@ -179,7 +179,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String name = "my fancy collection: " + System.currentTimeMillis();
         String desc = "description goes here: " + System.currentTimeMillis();
         List<? extends Resource> someResources = getSomeResources();
-        createTestCollection(CollectionResourceSection.UNMANGED, name, desc, someResources);
+        createTestCollection(CollectionResourceSection.UNMANAGED, name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());

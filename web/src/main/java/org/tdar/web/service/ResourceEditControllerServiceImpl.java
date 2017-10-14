@@ -186,7 +186,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
             }
         }
         for (ResourceCollection rc : resource.getUnmanagedResourceCollections()) {
-            if (authorizationService.canRemoveFromCollection(rc,authenticatedUser, CollectionResourceSection.UNMANGED)) {
+            if (authorizationService.canRemoveFromCollection(rc,authenticatedUser, CollectionResourceSection.UNMANAGED)) {
                 resourceCollections.add(rc);
             } else {
                 retainedListCollections.add(rc);

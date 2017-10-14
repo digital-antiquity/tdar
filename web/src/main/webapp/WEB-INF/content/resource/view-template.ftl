@@ -550,33 +550,61 @@
             
             <#if (authenticatedUser.id)?has_content>
                 <@list.bookmarkMediaLink resource />
-               
                 <li class="media "><i class="icon-folder-open pull-left"></i>
                     <div class="media-body">
                         <a id="addToCollection" href="#modal" data-toggle="modal" v-on:click="getCollections">Add to a Collection</a>
                     </div>
                 </li>
-                 
             </#if>
-    
                 <@nav.shareSection />
             </ul>
             
                 <div class="modal hide fade" id="modal">
+                
               <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h3>Add to a Collection</h3>
               </div>
+              
               <div class="modal-body" >
-                 <div>
-                      <ul class="collection-list unstyled">
-                        <collection v-for="item in items" :id="item.id" :name="item.name"></collection>
-                      </ul>
-                </div>
+                      <form id="add-resource-form">
+                          <div>
+                            <label class="form-check-label"> 
+                                <input type="radio" id="rb_existing" v-model="pick" value="existing"> 
+                                Add To An Existing Collection
+                            </label>
+                          </div>
+                          
+                          <div v-if="pick=='existing'" style="padding-left:20px;" class="form-group">
+                              <select v-model="selectedCollection" class="collection-list unstyled" v-on:click="showGrant" id='collection-list'>
+                                <option value="0">Select a collection</option>
+                                <option v-for="item in items" :id="item.id" :value="item.id">{{item.name}}</option>
+                              </select>
+                          </div>
+                        
+                        <div>
+                            <label class="form-check-label">
+                                <input type="radio" id="rb_new" v-model="pick" value="newcollection"> 
+                                Add To A New Collection
+                            </label>
+                        </div>
+                        
+                        <div v-if="pick=='newcollection'" style="padding-left:20px;">
+                            <label> 
+                            <input class="form-control" id='new-collection-name' v-model="newCollectionName" />
+                        </div>
+                        
+                        <div v-if="canEdit">
+                                <label>
+                                    <input type="checkbox" v-model="managedResource" />
+                                     Grant rights to Edit this record to users of this collection
+                                </label>
+                              </div>
+                    </form>    
               </div>
               <div class="modal-footer">
                 <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                <a href="#" class="btn btn-primary">Save changes</a>
+                <a href="#" class="btn btn-primary"  v-on:click="addToCollection">Save changes</a>
               </div>
         </div>
     </div>
@@ -587,34 +615,69 @@
     
     {
     props: ["id","name"],
-    template: "<li :id='id' class='extra'><input type='radio' name='collectionId' :id='id'> <a href='#'>{{name}}</a></li>",
-    
-     // need to figure out the binding so that the id's can be rendered correctly.
-    //"<li v-bind='{id:}'{{ellipseName}}</a></li>",
-    computed: {
-        ellipseName: function(){
-        name
-            //this needs to have the TDAR libs in so that the name will compute.
-           // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
-        }
-    }
-});    
-    
-    
-    
-      var app2 = new Vue({
-        el: '#app-2',
-        data: { items:[{id:"1",name:"Sample"}] },
-        methods: {
-            getCollections: function(){
-                var self = this;
-                $.getJSON( "/api/collection/tree?type=SHARED", function( data ) {
-                        self.items = data;
-                    });
+    template: "<option :id='id' class='extra'>{{name}}</option>",
+        computed: {
+            ellipseName: function(){
+            name
+                //this needs to have the TDAR libs in so that the name will compute.
+               // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
             }
         }
-        });
-      </script>
+    });    
+    
+  var app2 = new Vue({
+    el: '#app-2',
+    data: { 
+        items:[{id:"1",name:"Sample"}], 
+        selectedCollection: 0 ,
+        pick:"existing",
+        newCollectionName:"",
+        showPermission:false,
+        managedResource: false,
+        resourceId: ${resource.id?c},
+        canEdit: ${canEdit?c}
+    },
+    methods: {
+        getCollections: function(){
+            var self = this;
+            $.getJSON( "/api/collection/tree?type=SHARED", function(data) {
+                    self.items = data;
+            });
+        },
+        
+        addToCollection:function(){
+            if(this.pick=="existing"){
+                if(this.selectedCollection==0){
+                    //This should change the background color to red and invalidate the box. 
+                    $("#collection-list").addClass("invalid-feedback");
+                    alert("you need to select a collection");
+                }
+                
+                
+            }
+            else {
+                var data = {
+                    id:-1,
+                    name: this.newCollectionName,
+                    resourceId:null
+                }
+            }
+            
+            
+        },
+        
+        showGrant: function(){
+           var index = $('#collection-list').prop('selectedIndex');
+           if(index > 0 ){
+            this.showPermission = this.items[index-1].owned==true;
+           }
+           else {
+            this.showPermission = false;
+           }
+        }
+    }
+    });
+  </script>
         
         
     <h3>Basic Information</h3>
