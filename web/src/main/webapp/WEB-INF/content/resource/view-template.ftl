@@ -81,7 +81,7 @@
     <@view.showCreatorProxy proxyList=authorshipProxies />
     <#if resource.date?has_content>
 	    <#assign dateval = "unknown" />
-	    <#if resource.date > &&  != -1 >
+	    <#if  (resource.date?has_content &&  resource.date > -1 )>
 	    	<#assign dateval = resource.date?c />
 		</#if>
         <@view.kvp key="Year" val=dateval />
