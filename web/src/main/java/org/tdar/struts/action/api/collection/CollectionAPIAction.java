@@ -1,5 +1,6 @@
 package org.tdar.struts.action.api.collection;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.api.AbstractApiController;
@@ -29,6 +31,7 @@ import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnl
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.jaxb.JaxbParsingException;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -65,9 +68,9 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
                     @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
                     @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
                     @Result(name = SUCCESS_JSON, type = TdarActionSupport.JSONRESULT,
-                            params = { "stream", "inputStream", "statusCode", "${status.httpStatusCode}" }),
+                            params = { "statusCode", "${status.httpStatusCode}" }),
                     @Result(name = ERROR_JSON, type = TdarActionSupport.JSONRESULT,
-                            params = { "stream", "inputStream", "statusCode", "${status.httpStatusCode}" })
+                            params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
     // @WriteableSession
@@ -84,8 +87,8 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
             if (getRecord().contains("<?xml")) {
                 setImportedRecord((ResourceCollection) serializationService.parseXml(new StringReader(getRecord())));
             } else {
-                setImportedRecord(serializationService.readObjectFromJson(getRecord(), ResourceCollection.class));
                 type = "json";
+                setImportedRecord(serializationService.readObjectFromJson(getRecord(), ResourceCollection.class));
             }
 
             getXmlResultObject().setRecordId(getImportedRecord().getId());
@@ -165,6 +168,11 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
         return ERROR;
 
     }
+
+    public JaxbResultContainer getJsonResult() {
+        return getXmlResultObject();
+    }
+
 
     public ResourceCollection getImportedRecord() {
         return importedRecord;
