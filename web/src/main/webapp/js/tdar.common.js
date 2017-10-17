@@ -294,11 +294,11 @@ TDAR.common = function (TDAR, fileupload) {
         TDAR.autocomplete.applyInstitutionAutocomplete($('#publisher'), true);
         $('#resourceCollectionTable').on("focus", ".collectionAutoComplete", function () {
             TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADMINISTER_GROUP"});
-});
+        });
 
         $('#sharesTable').on("focus", ".collectionAutoComplete", function () {
             TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADMINISTER_SHARE"});
-});
+        });
 
         // prevent "enter" from submitting
         _suppressKeypressFormSubmissions($form);
@@ -422,15 +422,23 @@ TDAR.common = function (TDAR, fileupload) {
         });
 
         TDAR.inheritance.registerClearSectionButtons(form);
+        _initFormNavigate(form);
+    };
 
+    
+    /**
+    * setup basic form navigate warning
+    */
+    var _initFormNavigate = function(form) {
         // I should be "last", to avoid accidentally marking the form dirty before the user has done anything.
         $(form).not('.disableFormNavigate').FormNavigate({
             message: "Leaving the page will cause any unsaved data to be lost!",
             customEvents: "repeatrowdeleted fileuploadstarted",
             cleanOnSubmit: false
         });
-    };
-
+    }
+    
+    
     /**
      * Perform initialization tasks for a typical tdar "view" page. Elements and functionality that are unique to a
      * specific page are not addressed by this funtion.
@@ -955,6 +963,7 @@ TDAR.common = function (TDAR, fileupload) {
         "formatNumber": _formatNumber,
         "registerAjaxStatusContainer": _registerAjaxStatusContainer,
         "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions,
+        "initFormNavigate": _initFormNavigate,
         "main": _init
     });
 
