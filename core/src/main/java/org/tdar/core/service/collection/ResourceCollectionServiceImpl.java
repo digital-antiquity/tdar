@@ -414,7 +414,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
 
             // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
             if (type == CollectionResourceSection.MANAGED) {
-                addToCollection(resource, (ResourceCollection) collectionToAdd);
+                addToCollection(resource, (ResourceCollection) collectionToAdd,CollectionResourceSection.MANAGED);
             } else {
                 collectionToAdd.getUnmanagedResources().add(resource);
                 resource.getUnmanagedResourceCollections().add(collectionToAdd);
@@ -439,12 +439,13 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         return name;
     }
 
-    private void addToCollection(Resource resource, ResourceCollection collectionToAdd) {
-
-        if (collectionToAdd instanceof ResourceCollection) {
-            resource.getManagedResourceCollections().add((ResourceCollection) collectionToAdd);
+    private void addToCollection(Resource resource, ResourceCollection collectionToAdd, CollectionResourceSection type) {
+        if(type == CollectionResourceSection.MANAGED){
+        	collectionToAdd.getManagedResources().add(resource);
         }
-        ((ResourceCollection) collectionToAdd).getManagedResources().add(resource);
+        else {
+        	collectionToAdd.getUnmanagedResources().add(resource);
+        }
     }
 
     private ResourceCollection findOrCreateCollection(Resource resource, TdarUser authenticatedUser, ResourceCollection collection) {
@@ -811,7 +812,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
             if (!authorizationService.canEditResource(authenticatedUser, resource, modifyRecord)) {
                 ineligibleToAdd.add(resource);
             } else {
-                addToCollection(resource, persistable);
+                addToCollection(resource, persistable, type);
                 publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
             }
         }
@@ -1251,6 +1252,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
 
 
 	@Override
+    @Transactional(readOnly = true)
 	public List<ResourceCollection> getCollectionsForResourceAndUser(Resource resource, TdarUser user) {
         logger.debug("getCollectionsForResourceAndUser: Getting collections for  {}  {}", resource, user);
 
@@ -1272,13 +1274,14 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
 
 
 	@Override
+    @Transactional(readOnly = false)
 	public ResourceCollection createNewResourceCollection(String collectionName, TdarUser user) {
         logger.debug("createNewResourceCollection: Creating new collection: {} for {}", collectionName, user);
 		ResourceCollection rc = new ResourceCollection(collectionName, "", user);
 		rc.markUpdated(user);
+		rc.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.ADMINISTER_COLLECTION));
 		getDao().saveOrUpdate(rc);
         logger.debug("New collection id:{}",rc.getId());
 		return rc;
     }
-
 }

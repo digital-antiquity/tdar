@@ -515,6 +515,79 @@
     </@view.accessRights>
 
 
+<div id="customIncludes" parse="true">
+  <script>
+    
+    Vue.component('collection', 
+    
+    {
+    props: ["id","name"],
+    template: "<option :id='id' class='extra'>{{name}}</option>",
+        computed: {
+            ellipseName: function(){
+            name
+                //this needs to have the TDAR libs in so that the name will compute.
+               // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
+            }
+        }
+    });    
+    
+  var app2 = new Vue({
+    el: '#app-2',
+    data: { 
+        items:[{id:"1",name:"Sample"}], 
+        selectedCollection: 0 ,
+        pick:"existing",
+        newCollectionName:"",
+        showPermission:false,
+        managedResource: false,
+        resourceId: ${resource.id?c},
+        canEdit: ${editable?c}
+    },
+    methods: {
+        getCollections: function(){
+            var self = this;
+            $.getJSON( "/api/collection/tree?type=SHARED", function(data) {
+                    self.items = data;
+            });
+        },
+        
+        addToCollection:function(){
+            if(this.pick=="existing"){
+                if(this.selectedCollection==0){
+                    //This should change the background color to red and invalidate the box. 
+                    $("#collection-list").addClass("invalid-feedback");
+                    alert("you need to select a collection");
+                }
+                
+                
+            }
+            else {
+                var data = {
+                    id:-1,
+                    name: this.newCollectionName,
+                    resourceId:null
+                }
+            }
+            
+            
+        },
+        
+        showGrant: function(){
+           var index = $('#collection-list').prop('selectedIndex');
+           if(index > 0 ){
+            this.showPermission = this.items[index-1].owned==true;
+           }
+           else {
+            this.showPermission = false;
+           }
+        }
+    }
+    });
+  </script>
+
+</div>
+
 <div id="sidebar-right" parse="true">
     <div class="beige white-border-bottom">
         <div class="iconbox">
@@ -613,76 +686,6 @@
         </div>
     </div>
     
-    <script>
-    
-    Vue.component('collection', 
-    
-    {
-    props: ["id","name"],
-    template: "<option :id='id' class='extra'>{{name}}</option>",
-        computed: {
-            ellipseName: function(){
-            name
-                //this needs to have the TDAR libs in so that the name will compute.
-               // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
-            }
-        }
-    });    
-    
-  var app2 = new Vue({
-    el: '#app-2',
-    data: { 
-        items:[{id:"1",name:"Sample"}], 
-        selectedCollection: 0 ,
-        pick:"existing",
-        newCollectionName:"",
-        showPermission:false,
-        managedResource: false,
-        resourceId: ${resource.id?c},
-        canEdit: ${canEdit?c}
-    },
-    methods: {
-        getCollections: function(){
-            var self = this;
-            $.getJSON( "/api/collection/tree?type=SHARED", function(data) {
-                    self.items = data;
-            });
-        },
-        
-        addToCollection:function(){
-            if(this.pick=="existing"){
-                if(this.selectedCollection==0){
-                    //This should change the background color to red and invalidate the box. 
-                    $("#collection-list").addClass("invalid-feedback");
-                    alert("you need to select a collection");
-                }
-                
-                
-            }
-            else {
-                var data = {
-                    id:-1,
-                    name: this.newCollectionName,
-                    resourceId:null
-                }
-            }
-            
-            
-        },
-        
-        showGrant: function(){
-           var index = $('#collection-list').prop('selectedIndex');
-           if(index > 0 ){
-            this.showPermission = this.items[index-1].owned==true;
-           }
-           else {
-            this.showPermission = false;
-           }
-        }
-    }
-    });
-  </script>
-        
         
     <h3>Basic Information</h3>
 

@@ -22,8 +22,12 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,8 +40,8 @@ import com.sun.tools.doclets.formats.html.SectionName;
 @Scope("prototype")
 @ParentPackage("secured")
 @RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
-// @HttpForbiddenErrorResponseOnly
-// @HttpsOnly
+@HttpForbiddenErrorResponseOnly
+@HttpsOnly
 @Results(value = { @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT),
 		@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream",
 				"jsonInputStream", "statusCode", "500" }) })
@@ -51,9 +55,6 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 	@Autowired
 	private transient ResourceCollectionService resourceCollectionService;
 
-	@Autowired
-	private transient EntityService entityService;
-
 	private Resource resource;
 
 	private Long resourceId;
@@ -63,83 +64,66 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 	private Boolean addAsManagedResource = false;
 
 	private ResourceCollection resourceCollection;
+	
+	private Map<String, Object> jsonResult = new HashMap<String, Object>();
+	
 
-	@Action(value = "addtocollection", results = { @Result(name = SUCCESS, type = "jsonresult") })
+	@Action(value = "addtocollection", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
+	@WriteableSession
+	@PostOnly
 	public String view() throws Exception {
-		Map<String, Object> result = new HashMap<String, Object>();
 		//verify they have permissions to the resource
-		if(!authorizationService.canEdit(getAuthenticatedUser(), resource)){
-			result.put("status", "failure");
-			result.put("reason", "no permission to edit resource");
+		getJsonResult().put("status", "failure");
+		
+		//TODO change to TdarMessage
+		getJsonResult().put("reason", "no permission to edit resource");
+		
+		//if they want to add as managed resource
+		if (addAsManagedResource && authorizationService.canEdit(getAuthenticatedUser(), resource)){
+				resourceCollection.getManagedResources().add(resource);
+				getGenericService().saveOrUpdate(resourceCollection.getManagedResources());
+				getJsonResult().put("status", "success");
+				getJsonResult().put("reason", "");
+				getJsonResult().put("resourceId", resourceId);
+				getJsonResult().put("collectionId", collectionId);
 		}
-		else {
-			//if they want to add as managed resource
-			if (addAsManagedResource) {
-				//verify that they can add it to the requested collection
-				if(!authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection, CollectionResourceSection.MANAGED )) {
-					result.put("status", "failure");
-					result.put("reason", "no permission to manage collection");
-				}
-				else {
-						resourceCollection.getManagedResources().add(resource);
-						getGenericService().saveOrUpdate(resourceCollection.getManagedResources());
-						result.put("status", "success");
-						result.put("resourceId", resourceId);
-						result.put("collectionId", collectionId);
-				}
-			}
-			else {
-				//verify that they can add it to the requested collection
-				if(!authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection, CollectionResourceSection.UNMANAGED )) {
-					result.put("status", "failure");
-					result.put("reason", "no permission to manage collection");
-				}
-				else {
-					resourceCollection.getUnmanagedResources().add(resource);
-					getGenericService().saveOrUpdate(resourceCollection.getUnmanagedResources());
-					result.put("status", "success");
-					result.put("resourceId", resourceId);
-					result.put("collectionId", collectionId);
-				}
-			}
+		//verify that they can add it to the requested collection
+		else if(authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection, CollectionResourceSection.UNMANAGED )) {
+				resourceCollection.getUnmanagedResources().add(resource);
+				getGenericService().saveOrUpdate(resourceCollection.getUnmanagedResources());
+				getJsonResult().put("status", "success");
+				getJsonResult().put("reason", "");
+				getJsonResult().put("resourceId", resourceId);
+				getJsonResult().put("collectionId", collectionId);
 		}
 		
-		ObjectMapper mapper = new ObjectMapper();
-		setJsonInputStream(new ByteArrayInputStream(mapper.writeValueAsString(result).getBytes()));
 		return SUCCESS;
 	}
 
 	@Override
 	public void validate() {
 		super.validate();
-		resource = getGenericService().find(Resource.class, resourceId);
 
 		if (PersistableUtils.isNullOrTransient(resource)
 				|| !authorizationService.canView(getAuthenticatedUser(), resource)) {
 			addActionError("cannot edit resource");
 		}
 
-		resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
 		if (PersistableUtils.isNullOrTransient(resourceCollection)
 				|| !authorizationService.canView(getAuthenticatedUser(), resourceCollection)) {
 			addActionError("no access to collection");
 		}
-
+	
+		if(!authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection, CollectionResourceSection.UNMANAGED )){
+			addActionError("can't add items to collection");
+		}
 	}
 
 	@Override
 	public void prepare() throws Exception {
-		/*
-		 * if (PersistableUtils.isNotNullOrTransient(getId())) { resource =
-		 * getGenericService().find(ResourceCollection.class, getId()); if
-		 * (resource == null) { getLogger().debug("could not find resource: {}",
-		 * getId()); } String title = "no title"; if (resource instanceof
-		 * ResourceCollection) { title = ((ResourceCollection)
-		 * resource).getTitle(); } logMessage("API VIEWING",
-		 * resource.getClass(), resource.getId(), title);
-		 * getXmlResultObject().setCollectionResult(resource); }
-		 */
-
+		super.prepare();
+		resource = getGenericService().find(Resource.class, resourceId);
+		resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
 	}
 
 	public ResourceCollectionService getResourceCollectionService() {
@@ -172,6 +156,14 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 
 	public void setAddAsManagedResource(Boolean addAsManagedResource) {
 		this.addAsManagedResource = addAsManagedResource;
+	}
+
+	public Map<String, Object> getJsonResult() {
+		return jsonResult;
+	}
+
+	public void setJsonResult(Map<String, Object> jsonResult) {
+		this.jsonResult = jsonResult;
 	}
 
 }

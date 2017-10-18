@@ -982,7 +982,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }
-        Permissions permission = permission = Permissions.ADD_TO_COLLECTION;
+        Permissions permission =  Permissions.ADD_TO_COLLECTION;
         return authorizedUserDao.isAllowedTo(user, collectionToAdd, permission);
     }
 

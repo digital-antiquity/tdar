@@ -1,6 +1,8 @@
 package org.tdar.struts.action.api.collection;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -54,6 +57,8 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     @Autowired
     private AuthorizationService authorizationService;
     
+    private Map<String, Object> jsonResult = new HashMap<String, Object>();
+    
     @Override
     public void validate() {
         super.validate();
@@ -70,11 +75,16 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     @PostOnly
     @Action(value="removeResource")
     public String execute() throws Exception {
-        resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser(), type);
-        setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
-        return super.execute();
+    	try { 
+    		resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser(), type);
+    		setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
+    		return SUCCESS;
+    	}
+    	catch(Throwable e){
+    		addActionErrorWithException(e.getMessage(), e);
+    		return INPUT;
+    	}
     }
-
 
     @Override
     public void prepare() throws Exception {
@@ -106,5 +116,13 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     public void setType(CollectionResourceSection type) {
         this.type = type;
     }
+
+	public Map<String, Object> getJsonResult() {
+		return jsonResult;
+	}
+
+	public void setJsonResult(Map<String, Object> jsonResult) {
+		this.jsonResult = jsonResult;
+	}
     
 }

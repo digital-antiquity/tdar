@@ -244,6 +244,12 @@ public interface ResourceCollectionService {
      */
     List<ResourceCollection> getCollectionsForResourceAndUser(Resource resource, TdarUser user);
     
+    /**
+     * Creates a new collection for a user given a collection name.
+     * @param collectionName
+     * @param user
+     * @return
+     */
     ResourceCollection createNewResourceCollection(String collectionName, TdarUser user);
     
     void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,

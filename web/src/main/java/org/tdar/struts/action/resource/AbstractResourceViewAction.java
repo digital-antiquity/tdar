@@ -100,9 +100,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     private List<UserInvite> invites;
     
-    private  boolean canEdit;
-    
-
     @Autowired
     ResourceViewControllerService viewService;
 
@@ -352,12 +349,4 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     public void setInvites(List<UserInvite> invites) {
         this.invites = invites;
     }
-
-	public boolean isCanEdit() {
-		return authorizationService.canEdit(getAuthenticatedUser(), getResource());
-	}
-
-	public void setCanEdit(boolean canEdit) {
-		this.canEdit = canEdit;
-	}
 }
