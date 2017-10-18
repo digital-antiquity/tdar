@@ -74,7 +74,6 @@ public class RemoveResourceAction extends AbstractJsonApiAction implements Prepa
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
         this.collection = getGenericService().find(ResourceCollection.class, collectionId);
-        
     }
 
     public Long getResourceId() {

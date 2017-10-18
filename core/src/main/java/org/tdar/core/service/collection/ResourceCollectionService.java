@@ -234,6 +234,18 @@ public interface ResourceCollectionService {
 
     Set<ResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource);
 
+    /**
+     * Given a resource and a user, find all of the collections that the resource has been added to 
+     * and that the user has access to.
+     * 
+     * @param resource
+     * @param user
+     * @return
+     */
+    List<ResourceCollection> getCollectionsForResourceAndUser(Resource resource, TdarUser user);
+    
+    ResourceCollection createNewResourceCollection(String collectionName, TdarUser user);
+    
     void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove);
 

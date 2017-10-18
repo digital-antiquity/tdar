@@ -62,7 +62,6 @@ import org.tdar.utils.TitleSortComparator;
 
 import com.opensymphony.xwork2.TextProvider;
 
-import ucar.nc2.ft.point.standard.plug.GempakCdm;
 
 /**
  * @author Adam Brin
@@ -1248,6 +1247,38 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     @Override
     public ResourceCollection find(long l) {
         return super.find(l);
+    }
+
+
+	@Override
+	public List<ResourceCollection> getCollectionsForResourceAndUser(Resource resource, TdarUser user) {
+        logger.debug("getCollectionsForResourceAndUser: Getting collections for  {}  {}", resource, user);
+
+		List<ResourceCollection> resourceCollections = new ArrayList<ResourceCollection>();
+		getLogger().trace("parent/ owner collections");
+		
+		//There's No javadoc for on getManagedResourceCollections. 
+		for(ResourceCollection rc : resource.getManagedResourceCollections()){
+			//Please verify the permission.
+			if(authorizationService.canEdit(user, rc)){
+				resourceCollections.add(rc);
+			}
+		}
+		
+        logger.debug("resourceCollections: {}", resourceCollections);
+
+		return resourceCollections; 
+	}
+
+
+	@Override
+	public ResourceCollection createNewResourceCollection(String collectionName, TdarUser user) {
+        logger.debug("createNewResourceCollection: Creating new collection: {} for {}", collectionName, user);
+		ResourceCollection rc = new ResourceCollection(collectionName, "", user);
+		rc.markUpdated(user);
+		getDao().saveOrUpdate(rc);
+        logger.debug("New collection id:{}",rc.getId());
+		return rc;
     }
 
 }
