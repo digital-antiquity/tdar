@@ -105,12 +105,30 @@ public class ImageThumbnailTask extends AbstractTask {
         Opener opener = new Opener();
         opener.setSilentMode(true);
         IJ.redirectErrorMessages(true);
+        openImageFile(sourceFile, filename, ext, opener);
+        if (getWorkflowContext().getResourceType() == null || getWorkflowContext().getResourceType().hasDemensions()) {
+            version.setHeight(ijSource.getHeight());
+            version.setWidth(ijSource.getWidth());
+            version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));
+        }
+        try {
+            Thread.yield();
+            createJpegDerivative(version, ijSource, filename, MEDIUM, false);
+            Thread.yield();
+            createJpegDerivative(version, ijSource, filename, LARGE, false);
+            Thread.yield();
+            createJpegDerivative(version, ijSource, filename, SMALL, false);
+            Thread.yield();
+        } catch (Throwable e) {
+            getLogger().error("Failed to create ({}) jpeg derivative", sourceFile, e);
+            throw new TdarRecoverableRuntimeException("imageThumbnailTask.processingError", e);
+        }
+    }
+
+    private void openImageFile(File sourceFile, String filename, String ext, Opener opener) {
         ijSource = opener.openImage(sourceFile.getAbsolutePath());
 
         String msg = IJ.getErrorMessage();
-        if (StringUtils.isNotBlank(msg)) {
-            getLogger().error(msg);
-        }
 
         
         if (ijSource == null && StringUtils.containsIgnoreCase(ext,"tif")) {
@@ -120,6 +138,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 RenderedOp renderedImage = (RenderedOp) coverage.getRenderedImage();
                 
                 ijSource = new ImagePlus("", renderedImage.getAsBufferedImage());
+                msg  = null;
             } catch (DataSourceException dse) {
                 // we get -1 if it's not a geotiff, so ignore
                 if (StringUtils.equals(dse.getMessage(),"-1")) {
@@ -135,6 +154,7 @@ public class ImageThumbnailTask extends AbstractTask {
                 msg = e.getMessage();
             }
         }
+        
 
         if (isJaiImageJenabled() && (ijSource == null)) {
             getLogger().debug("Unable to load source image with ImageJ: " + sourceFile);
@@ -154,27 +174,10 @@ public class ImageThumbnailTask extends AbstractTask {
             getLogger().debug("Unable to load source image: {} ({}) ", sourceFile, msg);
             if (msg != null && !msg.contains("Note: IJ cannot open CMYK JPEGs")) {
                 getWorkflowContext().setErrorFatal(true);
+                getLogger().error(msg);
             }
 
             throw new TdarRecoverableRuntimeException("imageThumbnailTask.fmt_error_processing_could_not_open", Arrays.asList(filename, msg));
-        } else {
-            if (getWorkflowContext().getResourceType() == null || getWorkflowContext().getResourceType().hasDemensions()) {
-                version.setHeight(ijSource.getHeight());
-                version.setWidth(ijSource.getWidth());
-                version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));
-            }
-            try {
-                Thread.yield();
-                createJpegDerivative(version, ijSource, filename, MEDIUM, false);
-                Thread.yield();
-                createJpegDerivative(version, ijSource, filename, LARGE, false);
-                Thread.yield();
-                createJpegDerivative(version, ijSource, filename, SMALL, false);
-                Thread.yield();
-            } catch (Throwable e) {
-                getLogger().error("Failed to create ({}) jpeg derivative", sourceFile, e);
-                throw new TdarRecoverableRuntimeException("imageThumbnailTask.processingError", e);
-            }
         }
     }
 
