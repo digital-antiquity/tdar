@@ -64,7 +64,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     private ResourceSearchService resourceSearchService;
 
     @Action(value = "resource", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String lookupResource() throws SolrServerException, IOException {
         setLookupSource(LookupSource.RESOURCE);

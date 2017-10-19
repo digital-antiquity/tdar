@@ -13,6 +13,7 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
@@ -36,7 +37,7 @@ public class APIViewAction extends AbstractApiController {
     private transient AuthorizationService authorizationService;
 
     @Action(value = "view", results = {
-            @Result(name = SUCCESS, type = "xmldocument") })
+            @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT) })
     public String view() throws Exception {
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             Resource resource = resourceService.find(getId());

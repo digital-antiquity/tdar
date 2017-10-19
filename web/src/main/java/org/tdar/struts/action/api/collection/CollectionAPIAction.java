@@ -65,8 +65,8 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
-                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
                     @Result(name = SUCCESS_JSON, type = TdarActionSupport.JSONRESULT,
                             params = { "statusCode", "${status.httpStatusCode}" }),
                     @Result(name = ERROR_JSON, type = TdarActionSupport.JSONRESULT,

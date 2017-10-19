@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.api.AbstractApiController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
@@ -37,7 +37,7 @@ public class CollectionApiViewAction extends AbstractApiController implements Pr
     private ResourceCollection resource;
 
     @Action(value = "view", results = {
-            @Result(name = SUCCESS, type = "xmldocument") })
+            @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT) })
     public String view() throws Exception {
         if (PersistableUtils.isNullOrTransient(getId()) || PersistableUtils.isNullOrTransient(resource)) {
             getLogger().debug("input");

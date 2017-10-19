@@ -23,6 +23,7 @@ import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**
  * $Id$
@@ -50,7 +51,6 @@ public class ProjectController extends AbstractResourceController<Project> {
     private SortOption secondarySortField;
     private SortOption sortField;
 
-    private InputStream jsonInputStream;
 
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
@@ -73,16 +73,26 @@ public class ProjectController extends AbstractResourceController<Project> {
             searchIndexService.indexProject(getPersistable());
         }
     }
+    
+    Object result;
 
     @Action(value = "json/{id}",
-            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
+            results = { @Result(name = SUCCESS, type = JSONRESULT) })
     @SkipValidation
     @HttpForbiddenErrorResponseOnly
     public String json() {
-        setJsonInputStream(new ByteArrayInputStream(projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback()).getBytes()));
+        result = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), getCallback());
         return SUCCESS;
     }
 
+    public Object getJsonResult() {
+        return result;
+    }
+    
+    public Class getJsonView() {
+        return JsonProjectLookupFilter.class;
+    }
+    
     public Project getProject() {
         return getPersistable();
     }
@@ -124,14 +134,6 @@ public class ProjectController extends AbstractResourceController<Project> {
     public List<DisplayOrientation> getResultsOrientations() {
         List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
         return options;
-    }
-
-    public InputStream getJsonInputStream() {
-        return jsonInputStream;
-    }
-
-    public void setJsonInputStream(InputStream jsonInputStream) {
-        this.jsonInputStream = jsonInputStream;
     }
 
     public SortOption getSecondarySortField() {

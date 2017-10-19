@@ -36,7 +36,7 @@ public class ResourceAnnotationKeyLookupAction extends AbstractLookupController<
     private String term;
 
     @Action(value = "annotationkey", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String lookupAnnotationKey() {
         setMinLookupLength(2);

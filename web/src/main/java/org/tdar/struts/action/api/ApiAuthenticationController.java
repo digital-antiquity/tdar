@@ -27,6 +27,7 @@ import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -60,8 +61,8 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
 
     @Action(value = "login",
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "200" }),
-                    @Result(name = INPUT, type = "xmldocument", params = { "statusCode", "400" })
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "200" }),
+                    @Result(name = INPUT, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "400" })
             })
     @WriteableSession
     @PostOnly
@@ -105,7 +106,7 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
     @Action(value = "logout",
             interceptorRefs = { @InterceptorRef("authenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "200" })
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "200" })
             })
     @PostOnly
     @SkipValidation

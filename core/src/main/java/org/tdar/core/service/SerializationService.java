@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
@@ -133,7 +134,7 @@ public interface SerializationService {
 
     <C> void convertToXMLFragment(Class<C> cls, C object, Writer writer) throws JAXBException;
 
-    String createGeoJsonFromResourceList(FeedSearchHelper helper) throws IOException;
+    Map<String, Object> createGeoJsonFromResourceList(FeedSearchHelper helper) throws IOException;
 
     boolean isUseTransactionalEvents();
 

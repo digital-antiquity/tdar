@@ -38,6 +38,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.api.AbstractApiController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -82,8 +83,8 @@ public class APIController extends AbstractApiController {
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
-                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
     // @WriteableSession
@@ -204,8 +205,8 @@ public class APIController extends AbstractApiController {
     @Action(value = "updateFiles",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
-                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
     @WriteableSession
