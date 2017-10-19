@@ -77,7 +77,7 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
             throw new IllegalArgumentException(msg);
         }
 
-        if (jsonObject_ != null) {
+        if (jsonObject_ != null && inputStream == null) {
             if (jsonObject_ instanceof Map && invocation.getAction() instanceof TdarActionSupport) {
                 TdarActionSupport tas = (TdarActionSupport) invocation.getAction();
                 Map<String, Object> result = (Map<String, Object>) jsonObject_;

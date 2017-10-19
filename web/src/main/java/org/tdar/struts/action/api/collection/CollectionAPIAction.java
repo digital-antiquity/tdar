@@ -169,11 +169,6 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
 
     }
 
-    public JaxbResultContainer getResultObject() {
-        return getResultObject();
-    }
-
-
     public ResourceCollection getImportedRecord() {
         return importedRecord;
     }
