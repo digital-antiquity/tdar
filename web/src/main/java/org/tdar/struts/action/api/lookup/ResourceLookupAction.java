@@ -103,7 +103,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         try {
             // includeComplete?
             resourceSearchService.lookupResource(getAuthenticatedUser(), look, this, this);
-            getLogger().trace("jsonResults: {}", getResults());
+            getLogger().trace("resultObjects: {}", getResults());
         } catch (SearchException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;

@@ -50,7 +50,7 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
 
     private AntiSpamHelper h = new AntiSpamHelper();
     private UserLogin userLogin = new UserLogin(h);
-    private Map<String, Object> xmlResultObject = new HashMap<>();
+    private Map<String, Object> resultObject = new HashMap<>();
 
     @Autowired
     private transient AuthenticationService authenticationService;
@@ -80,17 +80,17 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
                 AuthenticationResult result = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(),
                         getSessionData());
                 status = result.getStatus();
-                xmlResultObject.put(USERNAME, result.getTokenUsername());
-                xmlResultObject.put(API_TOKEN, result.getToken());
-                xmlResultObject.put(API_TOKEN_KEY_NAME, getTdarConfiguration().getRequestTokenName());
-                xmlResultObject.put(MESSAGE, getText("apiAuthenticationController.tos_reminder", Arrays.asList(getTdarConfiguration().getTosUrl())));
+                resultObject.put(USERNAME, result.getTokenUsername());
+                resultObject.put(API_TOKEN, result.getToken());
+                resultObject.put(API_TOKEN_KEY_NAME, getTdarConfiguration().getRequestTokenName());
+                resultObject.put(MESSAGE, getText("apiAuthenticationController.tos_reminder", Arrays.asList(getTdarConfiguration().getTosUrl())));
             }
         } catch (Exception e) {
             addActionError(e.getMessage());
             status = AuthenticationStatus.ERROR;
         }
 
-        xmlResultObject.put("status", status.name());
+        resultObject.put("status", status.name());
 
         switch (status) {
             case ERROR:
@@ -117,7 +117,7 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
                 || authenticationService.checkToken(token, getSessionData(), ServletActionContext.getRequest()).getType().isValid()) {
             authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
         }
-        xmlResultObject.put("status", "success");
+        resultObject.put("status", "success");
         return SUCCESS;
     }
 
@@ -144,12 +144,12 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
 
     }
 
-    public Map<String, Object> getXmlResultObject() {
-        return xmlResultObject;
+    public Map<String, Object> getResultObject() {
+        return resultObject;
     }
 
-    public void setXmlResultObject(Map<String, Object> xmlResultObject) {
-        this.xmlResultObject = xmlResultObject;
+    public void setResultObject(Map<String, Object> resultObject) {
+        this.resultObject = resultObject;
     }
 
 }

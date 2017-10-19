@@ -67,7 +67,7 @@ public class CollectionApiViewAction extends AbstractApiController implements Pr
                 title = ((ResourceCollection) resource).getTitle();
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), title);
-            getXmlResultObject().setCollectionResult(resource);
+            getResultObject().setCollectionResult(resource);
         }
         
     }

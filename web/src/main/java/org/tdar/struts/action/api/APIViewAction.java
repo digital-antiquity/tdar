@@ -49,7 +49,7 @@ public class APIViewAction extends AbstractApiController {
                 obfuscationService.obfuscate(resource, getAuthenticatedUser());
             }
             logMessage("API VIEWING", resource.getClass(), resource.getId(), resource.getTitle());
-            getXmlResultObject().setResult(resource);
+            getResultObject().setResult(resource);
             return SUCCESS;
         }
         return INPUT;

@@ -97,7 +97,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class, getAdminUser());
         controller.viewJson();
         assertNotEmpty("should have results", controller.getResults());
-        String xml = serializationService.convertFilteredJsonForStream(controller.getJsonResult(), controller.getJsonView(), null);
+        String xml = serializationService.convertFilteredJsonForStream(controller.getResultObject(), controller.getJsonView(), null);
         logger.debug(xml);
     }
 
@@ -108,7 +108,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         controller.viewJson();
         // the record we created should be the absolute first record
         assertEquals(document, controller.getResults().get(0));
-        String xml = serializationService.convertFilteredJsonForStream(controller.getJsonResult(), controller.getJsonView(), null);
+        String xml = serializationService.convertFilteredJsonForStream(controller.getResultObject(), controller.getJsonView(), null);
         return xml;
     }
 
@@ -125,7 +125,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         String viewJson = controller.viewJson();
         logger.debug(viewJson);
         logger.debug("{}", controller.getActionErrors());
-        String string = serializationService.convertFilteredJsonForStream(controller.getJsonResult(), controller.getJsonView(), null);
+        String string = serializationService.convertFilteredJsonForStream(controller.getResultObject(), controller.getJsonView(), null);
         logger.debug(string);
         // the record we created should be the absolute first record
         assertEquals(0, controller.getActionErrors().size());
@@ -147,7 +147,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         controller.setSessionData(new SessionData()); // create unauthenticated session
         assertFalse(controller.isReindexing());
         controller.viewJson();
-        String JsonFeed = serializationService.convertFilteredJsonForStream(controller.getJsonResult(), controller.getJsonView(), null);
+        String JsonFeed = serializationService.convertFilteredJsonForStream(controller.getResultObject(), controller.getJsonView(), null);
 
         assertTrue(resultsContainId(3074l, controller));
         logger.info(JsonFeed);

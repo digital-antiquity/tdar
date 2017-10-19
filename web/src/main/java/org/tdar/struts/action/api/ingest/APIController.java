@@ -101,7 +101,7 @@ public class APIController extends AbstractApiController {
             Resource incoming = (Resource) serializationService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
 
-            getXmlResultObject().setRecordId(incoming.getId());
+            getResultObject().setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             List<FileProxy> fileProxies = new ArrayList<FileProxy>();
             if (incoming instanceof InformationResource) {
@@ -123,8 +123,8 @@ public class APIController extends AbstractApiController {
             if (loadedRecord.isCreated()) {
                 setStatusMessage(StatusCode.CREATED, "created:" + loadedRecord.getId());
                 type = RevisionLogType.CREATE;
-                getXmlResultObject().setRecordId(loadedRecord.getId());
-                getXmlResultObject().setId(loadedRecord.getId());
+                getResultObject().setRecordId(loadedRecord.getId());
+                getResultObject().setId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             } else {
                 reconcileAccountId(loadedRecord);
@@ -137,10 +137,10 @@ public class APIController extends AbstractApiController {
                 coupon.getResourceIds().add(loadedRecord.getId());
                 getGenericService().saveOrUpdate(coupon);
             }
-            getXmlResultObject().setStatusCode(statuscode);
-            getXmlResultObject().setStatus(getStatus().toString());
+            getResultObject().setStatusCode(statuscode);
+            getResultObject().setStatus(getStatus().toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, getErrorMessage() + " " + loadedRecord.getTitle(), type);
-            getXmlResultObject().setMessage(getErrorMessage());
+            getResultObject().setMessage(getErrorMessage());
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
@@ -226,8 +226,8 @@ public class APIController extends AbstractApiController {
             }
             // I don't know that this is "right"
             incoming = getGenericService().markWritableOnExistingSession(incoming);
-            getXmlResultObject().setRecordId(getId());
-            getXmlResultObject().setId(getId());
+            getResultObject().setRecordId(getId());
+            getResultObject().setId(getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             FileProxies fileProxies = (FileProxies) serializationService.parseXml(FileProxies.class, new StringReader(getRecord()));
             List<FileProxy> incomingList = fileProxies.getFileProxies();
@@ -246,10 +246,10 @@ public class APIController extends AbstractApiController {
 
             logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
-            getXmlResultObject().setStatusCode(statuscode);
-            getXmlResultObject().setStatus(getStatus().toString());
+            getResultObject().setStatusCode(statuscode);
+            getResultObject().setStatus(getStatus().toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, getErrorMessage() + " " + loadedRecord.getTitle(), RevisionLogType.EDIT);
-            getXmlResultObject().setMessage(getErrorMessage());
+            getResultObject().setMessage(getErrorMessage());
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }

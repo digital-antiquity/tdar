@@ -29,21 +29,21 @@ public class DismissUserNotificationAction extends AbstractAuthenticatableAction
     @Autowired
     private transient UserNotificationService userNotificationService;
 
-    private Map<String, Object> jsonResult = new HashMap<>();
+    private Map<String, Object> resultObject = new HashMap<>();
     private Long id;
 
     private UserNotification notification;
 
     @Action(value = "dismiss", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
-            @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "jsonResult", "statusCode", "500" })
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "resultObject" }),
+            @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "resultObject", "statusCode", "500" })
     })
     @WriteableSession
     @PostOnly
     public String dismiss() {
         try {
             userNotificationService.dismiss(getAuthenticatedUser(), getNotification());
-            jsonResult.put(SUCCESS, SUCCESS);
+            resultObject.put(SUCCESS, SUCCESS);
         } catch (Exception e) {
             addActionError(e.getLocalizedMessage());
             return INPUT;
@@ -72,11 +72,11 @@ public class DismissUserNotificationAction extends AbstractAuthenticatableAction
         this.notification = notification;
     }
 
-    public Map<String, Object> getJsonResult() {
-        return jsonResult;
+    public Map<String, Object> getResultObject() {
+        return resultObject;
     }
 
-    public void setJsonResult(Map<String, Object> jsonResult) {
-        this.jsonResult = jsonResult;
+    public void setResultObject(Map<String, Object> resultObject) {
+        this.resultObject = resultObject;
     }
 }

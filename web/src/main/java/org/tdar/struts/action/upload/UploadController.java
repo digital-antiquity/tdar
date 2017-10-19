@@ -143,7 +143,7 @@ public class UploadController extends AbstractAuthenticatableAction {
                 file.put("delete_type", "DELETE");
             }
             result.put("ticket", ticket);
-            this.jsonResult = result;
+            this.resultObject = result;
             this.jsonView = JsonLookupFilter.class;
 
             return SUCCESS;
@@ -153,21 +153,21 @@ public class UploadController extends AbstractAuthenticatableAction {
         }
     }
     
-    private Object jsonResult;
+    private Object resultObject;
     private Class jsonView;
 
     @Action(value = "grab-ticket", results = { @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-        this.jsonResult = personalFilestoreTicket;
+        this.resultObject = personalFilestoreTicket;
         this.jsonView = JsonLookupFilter.class;
 
         return SUCCESS;
     }
 
-    public Object getJsonResult() {
-        return jsonResult;
+    public Object getResultObject() {
+        return resultObject;
     }
     
     public Class getJsonView() {
@@ -180,7 +180,7 @@ public class UploadController extends AbstractAuthenticatableAction {
         result.put("ticket", ticketId);
         result.put("errors", getActionErrors());
         getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
-        this.jsonResult = result;
+        this.resultObject = result;
     }
 
     public List<File> getUploadFile() {

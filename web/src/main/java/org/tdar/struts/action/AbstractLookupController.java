@@ -338,7 +338,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         this.setFilter(filter);
     }
 
-    public Object getJsonResult() {
+    public Object getResultObject() {
         return getResult();
     }
     

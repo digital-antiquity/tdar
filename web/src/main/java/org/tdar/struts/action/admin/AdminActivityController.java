@@ -78,7 +78,7 @@ public class AdminActivityController extends AbstractAuthenticatableAction {
         return JsonLookupFilter.class;
     }
 
-    public Object getJsonResult() {
+    public Object getResultObject() {
         return getActivePeople();
     }
     @Action(value = "activity")

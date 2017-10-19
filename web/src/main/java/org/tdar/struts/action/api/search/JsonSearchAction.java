@@ -36,7 +36,7 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
     private GeoRssMode geoMode = GeoRssMode.POINT;
     private boolean webObfuscation = false;
 
-    private Map<String, Object> jsonResult;
+    private Map<String, Object> resultObject;
 
     @Action(value = "json", results = {
             @Result(name = SUCCESS, type = JSONRESULT) })
@@ -66,7 +66,7 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
                 setFilter(filter);
                 FeedSearchHelper feedSearchHelper = new FeedSearchHelper(getRssUrl(), this, getGeoMode(), getAuthenticatedUser());
                 this.setFilter(filter);
-                jsonResult = serializationService.createGeoJsonFromResourceList(feedSearchHelper);
+                resultObject = serializationService.createGeoJsonFromResourceList(feedSearchHelper);
             } catch (Exception e) {
                 getLogger().error("error creating json", e);
             }
@@ -90,8 +90,8 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
         this.webObfuscation = webObfuscation;
     }
 
-    public Map<String, Object> getJsonResult() {
-        return jsonResult;
+    public Map<String, Object> getResultObject() {
+        return resultObject;
     }
 
 }

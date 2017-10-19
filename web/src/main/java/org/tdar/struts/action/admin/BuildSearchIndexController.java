@@ -108,7 +108,7 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
         return SUCCESS;
     }
     
-    public Object getJsonResult() {
+    public Object getResultObject() {
         return map;
     }
 

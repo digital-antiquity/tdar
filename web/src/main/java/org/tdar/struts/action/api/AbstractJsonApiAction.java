@@ -26,7 +26,7 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
     protected transient SerializationService serializationService;
 
     private Class jsonView;
-    private Object jsonResult;
+    private Object resultObject;
     /**
      * Convenience method for serializing the specified object and converting it to an inputStream.
      * 
@@ -37,7 +37,7 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
      * @throws IOException
      */
     protected final void setJsonObject(Object obj, Class<?> jsonFilter) throws IOException {
-        this.jsonResult = obj;
+        this.resultObject = obj;
         this.jsonView = jsonFilter;
     }
 
@@ -45,8 +45,8 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
         return jsonView;
     }
     
-    public Object getJsonResult() {
-        return jsonResult;
+    public Object getResultObject() {
+        return resultObject;
     }
     /**
      * Convenience method for serializing the specified object and converting it to an inputStream.

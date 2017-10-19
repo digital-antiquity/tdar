@@ -70,7 +70,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         key.setKey("key23123");
         controller.getProject().getResourceAnnotations().add(new ResourceAnnotation(key, "21234"));
         controller.json();
-        String projectAsJson = serializationService.convertFilteredJsonForStream(controller.getJsonResult(), controller.getJsonView(), null);
+        String projectAsJson = serializationService.convertFilteredJsonForStream(controller.getResultObject(), controller.getJsonView(), null);
 
         logger.info(projectAsJson);
         assertTrue(projectAsJson.contains("activeCultureKeywords"));

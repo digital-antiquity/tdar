@@ -85,7 +85,7 @@ public class ProjectController extends AbstractResourceController<Project> {
         return SUCCESS;
     }
 
-    public Object getJsonResult() {
+    public Object getResultObject() {
         return result;
     }
     
