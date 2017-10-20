@@ -64,8 +64,8 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
-                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
                     @Result(name = SUCCESS_JSON, type = TdarActionSupport.JSONRESULT,
                             params = { "statusCode", "${status.httpStatusCode}" }),
                     @Result(name = ERROR_JSON, type = TdarActionSupport.JSONRESULT,
@@ -90,7 +90,7 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
                 setImportedRecord(serializationService.readObjectFromJson(getRecord(), ResourceCollection.class));
             }
 
-            getXmlResultObject().setRecordId(getImportedRecord().getId());
+            getResultObject().setRecordId(getImportedRecord().getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
 
             ResourceCollection loadedRecord = importService.bringCollectionOntoSession(getImportedRecord(), authenticatedUser, true);
@@ -101,8 +101,8 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 setStatusMessage(StatusCode.CREATED, "created:" + loadedRecord.getId());
-                getXmlResultObject().setRecordId(loadedRecord.getId());
-                getXmlResultObject().setId(loadedRecord.getId());
+                getResultObject().setRecordId(loadedRecord.getId());
+                getResultObject().setId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
 
@@ -112,9 +112,9 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
             }
             logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), title);
 
-            getXmlResultObject().setStatusCode(statuscode);
-            getXmlResultObject().setStatus(getStatus().toString());
-            getXmlResultObject().setMessage(getErrorMessage());
+            getResultObject().setStatusCode(statuscode);
+            getResultObject().setStatus(getStatus().toString());
+            getResultObject().setMessage(getErrorMessage());
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
@@ -167,11 +167,6 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
         return ERROR;
 
     }
-
-    public JaxbResultContainer getJsonResult() {
-        return getXmlResultObject();
-    }
-
 
     public ResourceCollection getImportedRecord() {
         return importedRecord;

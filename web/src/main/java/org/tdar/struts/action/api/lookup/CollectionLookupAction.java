@@ -43,7 +43,7 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
     private CollectionResourceSection type;
 
     @Action(value = "collection", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String lookupResourceCollection() throws SolrServerException, IOException {
         setMinLookupLength(0);

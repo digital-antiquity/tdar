@@ -447,7 +447,7 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
      */
     @Override
     @Transactional(readOnly = true)
-    public String createGeoJsonFromResourceList(FeedSearchHelper helper) throws IOException {
+    public Map<String, Object> createGeoJsonFromResourceList(FeedSearchHelper helper) throws IOException {
         List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
         for (Object obj : helper.getResults()) {
             if (obj instanceof Resource) {
@@ -460,8 +460,8 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         result.put("properties", helper.getSearchParams());
         StringWriter writer = new StringWriter();
         logger.debug("filter: {}", helper.getJsonFilter());
-        convertToJson(result, writer, helper.getJsonFilter(), helper.getJsonCallback());
-        return writer.toString();
+//        convertToJson(result, writer, helper.getJsonFilter(), helper.getJsonCallback());
+        return result;
     }
 
     /* (non-Javadoc)

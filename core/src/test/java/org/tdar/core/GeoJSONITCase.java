@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,10 +56,12 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
         Resource[] setupDocs = setupDocs();
         genericService.synchronize();
         FeedSearchHelper feedHelper = setupTest(null, setupDocs);
-        String result = serializationService.createGeoJsonFromResourceList(feedHelper);
-        logger.info(result);
+        Map<String, Object> result_ = serializationService.createGeoJsonFromResourceList(feedHelper);
+        String result = serializationService.convertFilteredJsonForStream(result_, null, null);
+        logger.info("{}", result);
         feedHelper.setOverrideAndObfuscate(true);
-        String result2 = serializationService.createGeoJsonFromResourceList(feedHelper);
+        Map<String, Object> result2_ = serializationService.createGeoJsonFromResourceList(feedHelper);
+        String result2 = serializationService.convertFilteredJsonForStream(result_, null, null);
         logger.info(result2);
         String r1 = getCoordinatesBlock(result);
         String r2 = getCoordinatesBlock(result2);
@@ -113,7 +116,9 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
         Resource[] setupDocs = setupDocs();
         FeedSearchHelper feedHelper = setupTest(getAdminUser(), setupDocs);
         feedHelper.setOverrideAndObfuscate(false);
-        String result = serializationService.createGeoJsonFromResourceList(feedHelper);
+        Map<String, Object> result_ = serializationService.createGeoJsonFromResourceList(feedHelper);
+        String result = serializationService.convertFilteredJsonForStream(result_, null, null);
+
         logger.info(result);
         String r1 = getCoordinatesBlock(result);
 

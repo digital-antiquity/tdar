@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +37,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.converter.CollectionDataExtractor;
 import org.tdar.struts.action.AbstractControllerITCase;
@@ -51,6 +51,9 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
 
     @Autowired
     ResourceCollectionService resourceCollectionService;
+    
+    @Autowired
+    private SerializationService serializationService;
 
     @Test
     @Rollback
@@ -66,7 +69,8 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         key.setKey("key23123");
         controller.getProject().getResourceAnnotations().add(new ResourceAnnotation(key, "21234"));
         controller.json();
-        String projectAsJson = IOUtils.toString(controller.getJsonInputStream());
+        String projectAsJson = serializationService.convertFilteredJsonForStream(controller.getResultObject(), controller.getJsonView(), null);
+
         logger.info(projectAsJson);
         assertTrue(projectAsJson.contains("activeCultureKeywords"));
         assertTrue(projectAsJson.contains("Domestic Structure or Architectural Complex"));

@@ -86,7 +86,7 @@ public interface ProjectService {
      */
     Boolean containsIntegratableDatasets(List<Long> projectIds);
 
-    String getProjectAsJson(Project project, TdarUser user, String callback);
+    Object getProjectAsJson(Project project, TdarUser user, String callback);
 
     Project find(long l);
 

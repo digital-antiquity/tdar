@@ -175,7 +175,7 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
      */
     @Override
     @Transactional(readOnly=true)
-    public String getProjectAsJson(Project project, TdarUser user, String callback) {
+    public Object getProjectAsJson(Project project, TdarUser user, String callback) {
         getLogger().trace("getprojectasjson called");
         Object result = new HashMap<String, Object>();
 
@@ -195,7 +195,7 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         } catch (Exception ex) {
             throw new TdarRecoverableRuntimeException("projectController.project_json_invalid", ex);
         }
-        return serializationService.convertFilteredJsonForStream(result, JsonProjectLookupFilter.class, callback);
+        return result;
     }
 
     @Override

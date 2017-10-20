@@ -25,7 +25,7 @@ public class XMLDocumentResult implements Result {
     private static final long serialVersionUID = 7102433466724795537L;
     public static final String UTF_8 = "UTF-8";
     public static final String CONTENT_TYPE = "application/xml";
-    public static final String DEFAULT_PARAM = "xmlResultObject";
+    public static final String DEFAULT_PARAM = "resultObject";
 
     private Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
     private String object = DEFAULT_PARAM;

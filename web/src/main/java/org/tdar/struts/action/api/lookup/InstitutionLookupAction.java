@@ -38,7 +38,7 @@ public class InstitutionLookupAction extends AbstractLookupController<Institutio
 
 
     @Action(value = "institution", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String lookupInstitution() throws SolrServerException, IOException {
         setMode("institutionLookup");

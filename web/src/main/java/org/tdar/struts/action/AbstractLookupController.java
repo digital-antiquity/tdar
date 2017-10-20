@@ -54,7 +54,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     private SortOption secondarySortField = SortOption.TITLE;
     private boolean debug = false;
     private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-    private InputStream jsonInputStream;
     private Long id = null;
     private String mode;
     private String searchTitle;
@@ -324,12 +323,19 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     SerializationService serializationService;
 
     private Map<String, Object> result = new HashMap<>();
-
+    private Class filter;
     public void jsonifyResult(Class<?> filter) {
         prepareResult();
-        jsonInputStream = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
+        this.setFilter(filter);
     }
 
+    public Object getResultObject() {
+        return getResult();
+    }
+    
+    public Class getJsonView() {
+        return getFilter();
+    }
     protected void prepareResult() {
         List<I> actual = new ArrayList<>();
         for (I obj : results) {
@@ -393,14 +399,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         this.projectionModel = projectionModel;
     }
 
-    public InputStream getJsonInputStream() {
-        return jsonInputStream;
-    }
-
-    public void setJsonInputStream(InputStream jsonInputStream) {
-        this.jsonInputStream = jsonInputStream;
-    }
-
     public Map<String, Object> getResult() {
         return result;
     }
@@ -426,6 +424,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     @Override
     public DisplayOrientation getOrientation() {
         return null;
+    }
+
+    public Class getFilter() {
+        return filter;
+    }
+
+    public void setFilter(Class filter) {
+        this.filter = filter;
     }
 
 }

@@ -57,7 +57,6 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
     @Autowired
     private transient SerializationService serializationService;
 
-    private InputStream jsonInputStream;
 
     @IgnoreActivity
     @Action(value = "buildIndex", results = {
@@ -83,13 +82,14 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
             }
         }
         getLogger().info("return");
-        Map<String, Object> map = new HashMap<>();
         map.put("phase", phase);
         map.put("percentDone", percentDone);
         getLogger().debug("phase: {} [{}%]", phase, percentDone);
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(map, null, callback).getBytes()));
+//        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
     }
+
+    Map<String, Object> map = new HashMap<>();
 
     @IgnoreActivity
     @Action(value = "checkstatus", results = { @Result(name = SUCCESS, type = JSONRESULT) })
@@ -101,12 +101,15 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
             phase = activity.getMessage();
             percentDone = activity.getPercentComplete().intValue();
         }
-        Map<String, Object> map = new HashMap<>();
         map.put("phase", phase);
         map.put("percentDone", percentDone);
         // getLogger().debug("phase: {} [{}%]", phase, percentDone);
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(map, null, callback).getBytes()));
+//        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(map, null, callback).getBytes()));
         return SUCCESS;
+    }
+    
+    public Object getResultObject() {
+        return map;
     }
 
     @Action(value = "build", results = { @Result(name = SUCCESS, location = "build.ftl") })
@@ -218,14 +221,6 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
 
     public void setIndexesToRebuild(List<LookupSource> indexesToRebuild) {
         this.indexesToRebuild = indexesToRebuild;
-    }
-    
-    public InputStream getJsonInputStream() {
-        return jsonInputStream;
-    }
-
-    public void setJsonInputStream(InputStream jsonForStream) {
-        this.jsonInputStream = jsonForStream;
     }
 
     public boolean isAsyncSave() {

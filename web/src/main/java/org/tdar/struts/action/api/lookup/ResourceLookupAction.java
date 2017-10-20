@@ -62,7 +62,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     private ResourceSearchService resourceSearchService;
 
     @Action(value = "resource", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String lookupResource() throws SolrServerException, IOException {
         setLookupSource(LookupSource.RESOURCE);
@@ -96,7 +96,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         try {
             // includeComplete?
             resourceSearchService.lookupResource(getAuthenticatedUser(), look, this, this);
-            getLogger().trace("jsonResults: {}", getResults());
+            getLogger().trace("resultObjects: {}", getResults());
         } catch (SearchException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;

@@ -25,14 +25,8 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
     @Autowired
     protected transient SerializationService serializationService;
 
-    public InputStream getJsonInputStream() {
-        return jsonInputStream;
-    }
-
-    protected final void setJsonInputStream(InputStream jsonInputStream) {
-        this.jsonInputStream = jsonInputStream;
-    }
-
+    private Class jsonView;
+    private Object resultObject;
     /**
      * Convenience method for serializing the specified object and converting it to an inputStream.
      * 
@@ -43,11 +37,20 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
      * @throws IOException
      */
     protected final void setJsonObject(Object obj, Class<?> jsonFilter) throws IOException {
+        this.resultObject = obj;
+        this.jsonView = jsonFilter;
         String message = serializationService.convertToFilteredJson(obj, jsonFilter);
         getLogger().trace(message);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }
 
+    public Class getJsonView() {
+        return jsonView;
+    }
+    
+    public Object getResultObject() {
+        return resultObject;
+    }
     /**
      * Convenience method for serializing the specified object and converting it to an inputStream.
      * 
@@ -60,4 +63,14 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
     }
 
     public void prepare() throws Exception {};
+    
+    public InputStream getJsonInputStream() {
+        return jsonInputStream;
+    }
+
+    protected final void setJsonInputStream(InputStream jsonInputStream) {
+        this.jsonInputStream = jsonInputStream;
+    }
+
+
 }

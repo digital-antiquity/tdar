@@ -38,8 +38,12 @@ public class TableDetailsAction extends AbstractJsonApiAction implements Validat
     @Action(value = "table-details")
     public String dataTableDetails() throws IOException {
         TableDetailsProxy proxy = integrationService.getTableDetails(dataTableIds);
-        setJsonObject(proxy, JsonIntegrationDetailsFilter.class);
+        setJsonObject(proxy, getJsonView());
         return SUCCESS;
+    }
+
+    public Class<?> getJsonView() {
+        return JsonIntegrationDetailsFilter.class;
     }
 
     public List<Long> getDataTableIds() {

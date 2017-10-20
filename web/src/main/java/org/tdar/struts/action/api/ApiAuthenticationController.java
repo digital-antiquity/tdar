@@ -27,6 +27,7 @@ import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -49,7 +50,7 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
 
     private AntiSpamHelper h = new AntiSpamHelper();
     private UserLogin userLogin = new UserLogin(h);
-    private Map<String, Object> xmlResultObject = new HashMap<>();
+    private Map<String, Object> resultObject = new HashMap<>();
 
     @Autowired
     private transient AuthenticationService authenticationService;
@@ -60,8 +61,8 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
 
     @Action(value = "login",
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "200" }),
-                    @Result(name = INPUT, type = "xmldocument", params = { "statusCode", "400" })
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "200" }),
+                    @Result(name = INPUT, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "400" })
             })
     @WriteableSession
     @PostOnly
@@ -79,17 +80,17 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
                 AuthenticationResult result = authenticationService.authenticatePerson(getUserLogin(), getServletRequest(), getServletResponse(),
                         getSessionData());
                 status = result.getStatus();
-                xmlResultObject.put(USERNAME, result.getTokenUsername());
-                xmlResultObject.put(API_TOKEN, result.getToken());
-                xmlResultObject.put(API_TOKEN_KEY_NAME, getTdarConfiguration().getRequestTokenName());
-                xmlResultObject.put(MESSAGE, getText("apiAuthenticationController.tos_reminder", Arrays.asList(getTdarConfiguration().getTosUrl())));
+                resultObject.put(USERNAME, result.getTokenUsername());
+                resultObject.put(API_TOKEN, result.getToken());
+                resultObject.put(API_TOKEN_KEY_NAME, getTdarConfiguration().getRequestTokenName());
+                resultObject.put(MESSAGE, getText("apiAuthenticationController.tos_reminder", Arrays.asList(getTdarConfiguration().getTosUrl())));
             }
         } catch (Exception e) {
             addActionError(e.getMessage());
             status = AuthenticationStatus.ERROR;
         }
 
-        xmlResultObject.put("status", status.name());
+        resultObject.put("status", status.name());
 
         switch (status) {
             case ERROR:
@@ -105,7 +106,7 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
     @Action(value = "logout",
             interceptorRefs = { @InterceptorRef("authenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "200" })
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "200" })
             })
     @PostOnly
     @SkipValidation
@@ -116,7 +117,7 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
                 || authenticationService.checkToken(token, getSessionData(), ServletActionContext.getRequest()).getType().isValid()) {
             authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
         }
-        xmlResultObject.put("status", "success");
+        resultObject.put("status", "success");
         return SUCCESS;
     }
 
@@ -143,12 +144,12 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
 
     }
 
-    public Map<String, Object> getXmlResultObject() {
-        return xmlResultObject;
+    public Map<String, Object> getResultObject() {
+        return resultObject;
     }
 
-    public void setXmlResultObject(Map<String, Object> xmlResultObject) {
-        this.xmlResultObject = xmlResultObject;
+    public void setResultObject(Map<String, Object> resultObject) {
+        this.resultObject = resultObject;
     }
 
 }

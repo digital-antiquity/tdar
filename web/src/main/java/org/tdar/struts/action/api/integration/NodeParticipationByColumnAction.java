@@ -75,6 +75,10 @@ public class NodeParticipationByColumnAction extends AbstractJsonApiAction imple
         }
     }
 
+    public Class<?> getJsonView() {
+        return JsonIdNameFilter.class;
+    }
+    
     @Action("node-participation")
     @PostOnly
     public String execute() throws IOException {

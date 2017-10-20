@@ -25,6 +25,7 @@ import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ProjectService;
@@ -36,6 +37,7 @@ import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.tdar.web.service.FileSaveWrapper;
 import org.tdar.web.service.ResourceEditControllerServiceImpl;
 import org.tdar.web.service.ResourceSaveControllerService;
@@ -250,6 +252,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         loadResourceProviderInformation();
         resourceViewControllerService.setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
+    
+    @Autowired
+    private SerializationService serializationService;
 
     @Override
     public String loadAddMetadata() {
@@ -257,7 +262,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         resolveProject();
         Project obsProj = getGenericService().find(Project.class, getProjectId());
         obfuscationService.obfuscate(obsProj, getAuthenticatedUser());
-        json = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(), null);
+        Object proj = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(), null);
+        json = serializationService.convertFilteredJsonForStream(proj, JsonProjectLookupFilter.class, null);
         return retval;
     }
 
@@ -301,7 +307,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         if (PersistableUtils.isNotNullOrTransient(projectId)) {
             project = getGenericService().find(Project.class, projectId);
         }
-        json = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), null);
+        Object proj = projectService.getProjectAsJson(getProject(), getAuthenticatedUser(), null);
+        json = serializationService.convertFilteredJsonForStream(proj, JsonProjectLookupFilter.class, null);
     }
 
     public void setProject(Project project) {
