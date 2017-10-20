@@ -109,6 +109,10 @@
         <js>/js/maps/tdar.leaflet.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/js-emca-5.1-polyfill.js</js>
+
+        <!--Selectize  -->        
+        <js>/components/selectize/dist/js/standalone/selectize.js</js>
+        <css>/components/selectize/dist/css/selectize.css</css>
     </group>
     <group name="ng-integrate">
 

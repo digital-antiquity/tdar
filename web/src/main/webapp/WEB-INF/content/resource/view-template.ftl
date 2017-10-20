@@ -520,7 +520,7 @@
     
     Vue.component('collection', 
     
-    {
+    { 
     props: ["id","name"],
     template: "<option :id='id' class='extra'>{{name}}</option>",
         computed: {
@@ -547,7 +547,7 @@
     methods: {
         getCollections: function(){
             var self = this;
-            $.getJSON( "/api/collection/tree?type=SHARED", function(data) {
+            $.getJSON( "/api/lookup/collection?permission=ADMINISTER_COLLECTION", function(data) {
                     self.items = data;
             });
         },
@@ -584,6 +584,43 @@
         }
     }
     });
+    
+    
+    $('#select-collection').selectize({
+    valueField: 'id',
+    labelField: 'name',
+    searchField: 'name',
+    create: false,
+    render: {
+        option: function(item, escape) {
+            return '<div>' +
+                '<span class="title">' +
+                    '<span class="name">' + escape(item.name) + '</span>' +
+                    '<span class="by">' + escape(item.id) + '</span>' +
+                '</span>' +
+            '</div>';
+        }
+    },
+   
+    load: function(query, callback) {
+        if (!query.length) return callback();
+        $.ajax({
+            url: '/api/lookup/collection',
+            type: 'GET',
+            data: { 
+               'term':query
+            },
+            error: function() {
+                callback();
+            },
+            success: function(res) {
+                callback(res.collections);
+            }
+        });
+    }
+});
+    
+    
   </script>
 
 </div>
@@ -657,6 +694,9 @@
                                 <option value="0">Select a collection</option>
                                 <option v-for="item in items" :id="item.id" :value="item.id">{{item.name}}</option>
                               </select>
+                              
+                              <select id="select-collection"></select>
+                              
                           </div>
                         
                         <div>
