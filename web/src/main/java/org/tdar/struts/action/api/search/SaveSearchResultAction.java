@@ -2,6 +2,7 @@ package org.tdar.struts.action.api.search;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -40,6 +41,8 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController {
     private GeoRssMode geoMode = GeoRssMode.POINT;
     private boolean webObfuscation = false;
     private Long collectionId;
+
+    private Map<String, Object> resultObject;
     
     
     @Action(value = "save", results = {
@@ -95,16 +98,14 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController {
     @Override
     public void jsonifyResult(Class<?> filter) {
         prepareResult();
-        String ex = "";
         if (!isReindexing()) {
             try {
                 FeedSearchHelper feedSearchHelper = new FeedSearchHelper(getRssUrl(), this, getGeoMode(), getAuthenticatedUser());
-                ex = serializationService.createGeoJsonFromResourceList(feedSearchHelper);
+                resultObject = serializationService.createGeoJsonFromResourceList(feedSearchHelper);
             } catch (Exception e) {
                 getLogger().error("error creating json", e);
             }
         }
-        setJsonInputStream(new ByteArrayInputStream(ex.getBytes()));
     }
 
     public GeoRssMode getGeoMode() {
