@@ -251,14 +251,8 @@ public interface ResourceCollectionService {
      * @return
      */
     ResourceCollection createNewResourceCollection(String collectionName, TdarUser user);
-    
-    void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
-            List<Resource> resourcesToRemove);
 
     void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionResourceSection type);
-
-    void reconcileIncomingResourcesForCollectionWithoutRights(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
-            List<Resource> resourcesToRemove);
 
     void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser);
 
@@ -321,5 +315,8 @@ public interface ResourceCollectionService {
     List<ResourceCollection> findAlternateChildren(List<Long> ids, TdarUser authenticatedUser);
 
     ResourceCollection find(long l);
+
+    void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
+            List<Resource> resourcesToRemove, CollectionResourceSection type);
 
 }
