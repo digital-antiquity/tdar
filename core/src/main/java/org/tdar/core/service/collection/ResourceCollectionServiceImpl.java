@@ -422,8 +422,10 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     private void addToCollection(Resource resource, ResourceCollection collectionToAdd, CollectionResourceSection type) {
         if (type == CollectionResourceSection.MANAGED) {
             collectionToAdd.getManagedResources().add(resource);
+            resource.getManagedResourceCollections().add(collectionToAdd);
         } else {
             collectionToAdd.getUnmanagedResources().add(resource);
+            resource.getUnmanagedResourceCollections().add(collectionToAdd);
         }
     }
 
@@ -767,6 +769,9 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     @Transactional(readOnly = false)
     public void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove, CollectionResourceSection type) {
+        getLogger().debug(" {}:: toAdd: {}", type, resourcesToAdd);
+        getLogger().debug(" {}::toRemove: {}", type, resourcesToRemove);
+
         Set<Resource> resources = persistable.getManagedResources();
         List<Resource> ineligibleToAdd = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
         List<Resource> ineligibleToRemove = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
@@ -816,6 +821,12 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         if (ineligibleToRemove.size() > 0) {
             throw new TdarAuthorizationException("resourceCollectionService.could_not_remove", ineligibleToRemove);
         }
+        if (type == CollectionResourceSection.MANAGED) {
+            getLogger().debug(" result: {}:: {}", type, persistable.getManagedResources());
+        } else {
+            getLogger().debug(" result: {}:: {}", type, persistable.getUnmanagedResources());
+        }
+
     }
 
     /*
@@ -919,11 +930,9 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         List<Resource> resourcesToAdd = getDao().findAll(Resource.class, cso.getToAdd());
         List<Resource> publicToRemove = getDao().findAll(Resource.class, cso.getPublicToRemove());
         List<Resource> publicToAdd = getDao().findAll(Resource.class, cso.getPublicToAdd());
-        getLogger().debug("toAdd: {}", resourcesToAdd);
-        getLogger().debug("toRemove: {}", resourcesToRemove);
 
         reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove, CollectionResourceSection.MANAGED);
-        reconcileIncomingResourcesForCollection(persistable, authenticatedUser, publicToAdd, publicToAdd, CollectionResourceSection.UNMANAGED);
+        reconcileIncomingResourcesForCollection(persistable, authenticatedUser, publicToAdd, publicToRemove, CollectionResourceSection.UNMANAGED);
 
         // saveAuthorizedUsersForResourceCollection(persistable, persistable, cso.getAuthorizedUsers(), cso.isShouldSave(), authenticatedUser,type);
         simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable.getProperties(),
