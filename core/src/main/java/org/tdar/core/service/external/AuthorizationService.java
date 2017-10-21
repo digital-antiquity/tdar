@@ -244,11 +244,10 @@ public interface AuthorizationService {
 
     boolean canEditCreator(TdarUser tdarUser, Creator<?> persistable);
 
-    boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd, CollectionResourceSection type);
+    boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd);
 
-    <R extends ResourceCollection> boolean canRemoveFromCollection(R collection, TdarUser user, CollectionResourceSection type);
+    boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user);
 
     RightsResolver getRightsResolverFor(HasAuthorizedUsers resource, TdarUser actor, InternalTdarRights rights);
 
-    
 }

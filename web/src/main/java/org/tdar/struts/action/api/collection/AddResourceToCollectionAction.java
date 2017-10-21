@@ -88,7 +88,7 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 				getJsonResult().put("collectionId", collectionId);
 		}
 		//verify that they can add it to the requested collection
-		else if(authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection, CollectionResourceSection.UNMANAGED )) {
+		else if(authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
 				resourceCollection.getUnmanagedResources().add(resource);
 				getGenericService().saveOrUpdate(resourceCollection.getUnmanagedResources());
 				getJsonResult().put("status", "success");
@@ -114,7 +114,7 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 			addActionError("no access to collection");
 		}
 	
-		if(!authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection, CollectionResourceSection.UNMANAGED )){
+		if(!authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection )){
 			addActionError("can't add items to collection");
 		}
 	}
