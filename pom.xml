@@ -107,6 +107,7 @@
 
         <commons-fileupload.version>1.3.2</commons-fileupload.version>
         
+        <clover.licenseDir>/home/bamboo</clover.licenseDir>
         <!-- Following points to the profile directory to use for filtering 
             resources -->
         <!-- override by redefining in a profile. don't forget to 'clean' 
@@ -114,7 +115,7 @@
         <!-- Be warned: Eclipse may have a different active profile in play 
             to the command line -->
         <build.profile.id>default</build.profile.id>
-        <clover.version>4.2.0</clover.version>
+        <clover.version>4.1.2</clover.version>
         <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath> -->
     </properties>
 
@@ -250,98 +251,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-math3</artifactId>
                 <version>${commons.math.version}</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>com.intellij</groupId>
-                <artifactId>annotations</artifactId>
-                <version>12.0</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-model</artifactId>
-                <version>2.2.1</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-project</artifactId>
-                <version>2.2.1</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-plugin-api</artifactId>
-                <version>2.2.1</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.reporting</groupId>
-                <artifactId>maven-reporting-api</artifactId>
-                <version>2.2.1</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-artifact-manager</artifactId>
-                <version>2.2.1</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-artifact</artifactId>
-                <version>2.2.1</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven.doxia</groupId>
-                <artifactId>doxia-sink-api</artifactId>
-                <version>1.1</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-utils</artifactId>
-                <version>3.0.22</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-interpolation</artifactId>
-                <version>1.13</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-classworlds</artifactId>
-                <version>1.2-alpha-9</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-interactivity-api</artifactId>
-                <version>1.0-alpha-6</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-container-default</artifactId>
-                <version>1.0-alpha-30</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-
-            <dependency>
-                <groupId>commons-httpclient</groupId>
-                <artifactId>commons-httpclient</artifactId>
-                <version>3.1</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>commons-validator</groupId>
-                <artifactId>commons-validator</artifactId>
-                <version>1.6</version>
                 <!-- LICENSE: APACHE 2.0 -->
             </dependency>
             <dependency>
@@ -498,12 +407,6 @@
             <dependency>
                 <groupId>org.apache.ant</groupId>
                 <artifactId>ant</artifactId>
-                <version>${ant.version}</version>
-                <!-- LICENSE: APACHE 2.0 -->
-            </dependency>
-            <dependency>
-                <groupId>org.apache.ant</groupId>
-                <artifactId>ant-launcher</artifactId>
                 <version>${ant.version}</version>
                 <!-- LICENSE: APACHE 2.0 -->
             </dependency>
@@ -950,10 +853,11 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.openclover</groupId>
+                        <groupId>com.atlassian.maven.plugins</groupId>
                         <artifactId>clover-maven-plugin</artifactId>
                         <version>${clover.version}</version>
                         <configuration>
+                            <licenseLocation>${clover.licenseDir}/clover.license</licenseLocation>
                             <!-- <cloverDatabase>${clover.dir}/database.db</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database.db</cloverMergeDatabase> -->
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
@@ -992,8 +896,8 @@
             </build>
             <dependencies>
                 <dependency>
-                    <groupId>org.openclover</groupId>
-                    <artifactId>clover-maven-plugin</artifactId>
+                    <groupId>com.atlassian.clover</groupId>
+                    <artifactId>clover</artifactId>
                     <version>${clover.version}</version>
                 </dependency>
             </dependencies>
