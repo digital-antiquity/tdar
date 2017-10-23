@@ -245,7 +245,7 @@ public class PdfService {
         }
 
         if (StringUtils.isNotBlank(doi)) {
-            cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.doi"), doi, PdfFontHelper.HELVETICA_TWELVE_POINT,
+            cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.doi"), doi, PdfFontHelper.HELVETICA_TWELVE_POINT,
                     LEFT_MARGIN, cursorPositionFromBottom);
 
         }
@@ -265,7 +265,7 @@ public class PdfService {
             msg = "pdfService.on";
         }
         byOn.add(new Date());
-        cursorPositionFromBottom = writeLabelPairOnPage(content, provider.getText("pdfService.downloaded"), provider.getText(msg, byOn),
+        cursorPositionFromBottom = writeLabelPairOnPage(content, MessageHelper.getMessage("pdfService.downloaded"), MessageHelper.getMessage(msg, byOn),
                 PdfFontHelper.HELVETICA_EIGHT_POINT,
                 LEFT_MARGIN, cursorPositionFromBottom);
         content.close();
