@@ -54,13 +54,13 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
     }
 
     @Override
-    public void prepare() throws TdarActionException {
+    public void prepare() throws Exception {
         prepareAndLoad(this, RequestType.EDIT);
         if (getPersistable() == null) {
             // persistable is null, so the lookup failed (aka not found)
             abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
         }
-
+        super.prepare();
 
     }
 
