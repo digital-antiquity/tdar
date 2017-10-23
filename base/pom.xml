@@ -774,11 +774,10 @@
                             </executions>
                         </plugin>
                         <plugin>
-                            <groupId>com.atlassian.maven.plugins</groupId>
+                            <groupId>org.openclover</groupId>
                             <artifactId>maven-clover2-plugin</artifactId>
                             <version>${clover.version}</version>
                             <configuration>
-                                <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
                                 <includes>
                                     <include>**/*.java</include>
                                 </includes>
@@ -789,7 +788,7 @@
                             </configuration>
                             <dependencies>
                                 <dependency>
-                                    <groupId>com.atlassian.clover</groupId>
+                                    <groupId>org.openclover</groupId>
                                     <artifactId>clover</artifactId>
                                     <version>${clover.version}</version>
                                 </dependency>

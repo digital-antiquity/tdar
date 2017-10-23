@@ -253,6 +253,98 @@
                 <!-- LICENSE: APACHE 2.0 -->
             </dependency>
             <dependency>
+                <groupId>com.intellij</groupId>
+                <artifactId>annotations</artifactId>
+                <version>12.0</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-model</artifactId>
+                <version>2.2.1</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-project</artifactId>
+                <version>2.2.1</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>2.2.1</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.reporting</groupId>
+                <artifactId>maven-reporting-api</artifactId>
+                <version>2.2.1</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact-manager</artifactId>
+                <version>2.2.1</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>2.2.1</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.doxia</groupId>
+                <artifactId>doxia-sink-api</artifactId>
+                <version>1.1</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>3.0.22</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-interpolation</artifactId>
+                <version>1.13</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-classworlds</artifactId>
+                <version>1.2-alpha-9</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-interactivity-api</artifactId>
+                <version>1.0-alpha-6</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-container-default</artifactId>
+                <version>1.0-alpha-30</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+
+            <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>3.1</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>commons-validator</groupId>
+                <artifactId>commons-validator</artifactId>
+                <version>1.6</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
                 <version>${spring.framework.version}</version>
@@ -406,6 +498,12 @@
             <dependency>
                 <groupId>org.apache.ant</groupId>
                 <artifactId>ant</artifactId>
+                <version>${ant.version}</version>
+                <!-- LICENSE: APACHE 2.0 -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ant</groupId>
+                <artifactId>ant-launcher</artifactId>
                 <version>${ant.version}</version>
                 <!-- LICENSE: APACHE 2.0 -->
             </dependency>
@@ -852,7 +950,7 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <groupId>org.openclover</groupId>
                         <artifactId>clover-maven-plugin</artifactId>
                         <version>${clover.version}</version>
                         <configuration>
