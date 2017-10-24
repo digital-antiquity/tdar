@@ -307,7 +307,7 @@ public class AggregateStatisticsDao extends GenericDao {
      * @param date
      */
     public void updateMonthly(DateTime date) {
-
+        // the daily values do not track overlaps, the monthly values do.  That is D1 + D1_bot go into total, but but D1 does not contain D1_bot
         DateTime midnight = date.withTimeAtStartOfDay();
         String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth(), midnight.toString(YYYY_MM_DD),
                 midnight.plusDays(1).toString(YYYY_MM_DD));
