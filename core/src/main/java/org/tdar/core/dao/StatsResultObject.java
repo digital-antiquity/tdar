@@ -99,10 +99,7 @@ public class StatsResultObject implements Serializable {
     }
 
     public Collection<Map<String, Object>> getObjectForJson() {
-        logger.debug("keys:{}", keys);
-        logger.debug("totals:{}", totals);
-        logger.debug("totalBots:{}", totalBots);
-        logger.debug("totalDownloads:{}", totalDownloads);
+        debug();
         List<Map<String, Object>> toReturn = new ArrayList<>();
         for (int i = 0; i < keys.size(); i++) {
             String key = keys.get(i);
@@ -115,6 +112,13 @@ public class StatsResultObject implements Serializable {
             toReturn.add(value);
         }
         return toReturn;
+    }
+
+    public void debug() {
+        logger.debug("keys:{}", keys);
+        logger.debug("totals:{}", totals);
+        logger.debug("totalBots:{}", totalBots);
+        logger.debug("totalDownloads:{}", totalDownloads);
     }
 
     public List<Long> getTotals() {
