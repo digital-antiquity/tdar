@@ -14,7 +14,7 @@ ${json!'[]'}
 </script>
 </#noescape>
 </#if>
-
+<p><span class="label">Note:</span> We started actively tracking search engines and bots accessing tDAR record in April of 2017. Totals include bot and search engine traffic to show consistency in numbers.</p>
     <div>
     <ul class="nav nav-tabs">
         <li class="<#if granularity == 'DAY'>active</#if>"><a href="?granularity=DAY">Last Week</a></li>
