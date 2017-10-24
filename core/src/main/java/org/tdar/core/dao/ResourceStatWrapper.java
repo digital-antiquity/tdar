@@ -18,10 +18,12 @@ public class ResourceStatWrapper implements Serializable {
 
     private Resource resource;
     private List<Number> data;
+    private List<String> labels;
 
-    public ResourceStatWrapper(Resource resource2, List<Number> numbers) {
+    public ResourceStatWrapper(Resource resource2, List<Number> numbers, List<String> labels) {
         this.resource = resource2;
         this.data = numbers;
+        this.labels = labels;
     }
 
     public Resource getResource() {
