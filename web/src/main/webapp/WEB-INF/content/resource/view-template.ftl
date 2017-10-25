@@ -530,7 +530,8 @@
                // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
             }
         }
-    });    
+    });  
+    
     
   var app2 = new Vue({
     el: '#app-2',
@@ -557,21 +558,45 @@
                 if(this.selectedCollection==0){
                     //This should change the background color to red and invalidate the box. 
                     $("#collection-list").addClass("invalid-feedback");
+                    
+                    //Change this to popovers.
                     alert("you need to select a collection");
                 }
-                
-                
-            }
-            else {
-                var data = {
-                    id:-1,
-                    name: this.newCollectionName,
-                    resourceId:null
+                else { 
+                    var data = {
+                        resourceId:this.resourceId,
+                        collectionId:selectedCollection,
+                        addAsManagedResource:managedResource
+                    }
+                    
+                    $.post('/api/collection/addtocollection',data);
                 }
             }
-            
-            
+            else {
+                //post to create a new collection.
+                var data = {
+                    collectionName: this.newCollectionName,
+                }
+                
+                //On success, add the resource.
+                $.ajax('/api/collection/newcollection',data,function(res){
+                    var id = res.id;
+                    var data = {
+                        resourceId:this.resourceId,
+                        collectionId:id,
+                        addAsManagedResource:managedResource
+                    }
+                    $.post('/api/collections/addtocollection',data);
+                }
+                
+                );
+                
+                
+                
+            }
         },
+
+
         
         showGrant: function(){
            var index = $('#collection-list').prop('selectedIndex');
@@ -586,40 +611,45 @@
     });
     
     
-    $('#select-collection').selectize({
-    valueField: 'id',
-    labelField: 'name',
-    searchField: 'name',
-    create: false,
-    render: {
-        option: function(item, escape) {
-            return '<div>' +
-                '<span class="title">' +
-                    '<span class="name">' + escape(item.name) + '</span>' +
-                    '<span class="by">' + escape(item.id) + '</span>' +
-                '</span>' +
-            '</div>';
-        }
-    },
-   
-    load: function(query, callback) {
-        if (!query.length) return callback();
-        $.ajax({
-            url: '/api/lookup/collection',
-            type: 'GET',
-            data: { 
-               'term':query
-            },
-            error: function() {
-                callback();
-            },
-            success: function(res) {
-                callback(res.collections);
-            }
-        });
-    }
-});
-    
+   $('#collection-list').selectize({
+            valueField: 'id',
+            labelField: 'name',
+            searchField: 'name',
+            create: false,
+            render: {
+                option: function(item, escape) {
+                        return '<div>' +
+                            '<span class="title">' +
+                                '<span class="name">' + escape(item.name) + '</span>' +
+                                '<span class="by">' + escape(item.id) + '</span>' +
+                            '</span>' +
+                        '</div>';
+                    }
+                },
+           
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            $.ajax({
+                url: '/api/lookup/collection',
+                type: 'GET',
+                data: { 
+                   'term':query,
+                   'permission':'ADMINISTER_COLLECTION'
+                },
+                error: function() {
+                    callback();
+                },
+                success: function(res) {
+                    callback(res.collections);
+                }
+             });
+         }
+         });
+         
+         $("#collection-list").on("change",function(){
+           Vue.set(app2,'selectedCollection',this.value);
+         });
+
     
   </script>
 
@@ -666,7 +696,7 @@
                 <@list.bookmarkMediaLink resource />
                 <li class="media "><i class="icon-folder-open pull-left"></i>
                     <div class="media-body">
-                        <a id="addToCollection" href="#modal" data-toggle="modal" v-on:click="getCollections">Add to a Collection</a>
+                        <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
                     </div>
                 </li>
             </#if>
@@ -690,13 +720,11 @@
                           </div>
                           
                           <div v-if="pick=='existing'" style="padding-left:20px;" class="form-group">
-                              <select v-model="selectedCollection" class="collection-list unstyled" v-on:click="showGrant" id='collection-list'>
-                                <option value="0">Select a collection</option>
-                                <option v-for="item in items" :id="item.id" :value="item.id">{{item.name}}</option>
+                              <select id="collection-list" >
                               </select>
                               
-                              <select id="select-collection"></select>
-                              
+                              <input v-model="selectedCollection" type="hidden">
+                              {{selectedCollection}}
                           </div>
                         
                         <div>
@@ -712,11 +740,11 @@
                         </div>
                         
                         <div v-if="canEdit">
-                                <label>
-                                    <input type="checkbox" v-model="managedResource" />
-                                     Grant rights to Edit this record to users of this collection
-                                </label>
-                              </div>
+                            <label>
+                                <input type="checkbox" v-model="managedResource" />
+                                 Grant rights to Edit this record to users of this collection
+                            </label>
+                          </div>
                     </form>    
               </div>
               <div class="modal-footer">

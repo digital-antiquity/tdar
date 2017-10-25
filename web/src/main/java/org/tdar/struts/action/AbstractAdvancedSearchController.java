@@ -107,7 +107,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
      * @return true if this method translated a legacy search, false if this is
      *         not a legacy search
      */
-    private boolean processLegacySearchParameters() {
+    protected boolean processLegacySearchParameters() {
         // assumption: it's okay to wipe out the groups[] if we detect a legacy
         // request, and that you can't combine two different types (for
         // example: an id search combined with a uncontrolledCultureKeyword
@@ -188,19 +188,12 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         return null;
     }
 
+    
+    
     private String advancedSearch() throws TdarActionException, SolrServerException, IOException {
-        determineSearchTitle();
-        setMode("SEARCH");
-        // beforeSearch();
-
-        processCollectionProjectLimit();
-
+        prepareAdvancedSearchQueryObject();
+            
         try {
-            getAsqo().setExplore(explore);
-            getAsqo().setAllGeneralQueryFields(getAllGeneralQueryFields());
-            getAsqo().setQuery(query);
-            getAsqo().getSearchParameters().addAll(groups);
-            getAsqo().setReservedParams(getReservedSearchParameters());
             resourceSearchService.buildAdvancedSearch(getAsqo(), getAuthenticatedUser(), this, this);
             addActionMessages();
             updateDisplayOrientationBasedOnSearchResults();
@@ -219,8 +212,20 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         } else {
             return INPUT;
         }
-
     }
+
+	protected void prepareAdvancedSearchQueryObject() {
+		determineSearchTitle();
+        setMode("SEARCH");
+        // beforeSearch();
+
+        processCollectionProjectLimit();
+        getAsqo().setExplore(explore);
+        getAsqo().setAllGeneralQueryFields(getAllGeneralQueryFields());
+        getAsqo().setQuery(query);
+        getAsqo().getSearchParameters().addAll(groups);
+        getAsqo().setReservedParams(getReservedSearchParameters());
+	}
 
     private void addActionMessages() {
         for (SearchParameters sp: groups) {

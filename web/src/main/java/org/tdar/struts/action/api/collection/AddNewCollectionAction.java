@@ -46,19 +46,20 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Pre
 
 	private Long collectionId;
 
-	@Action(value = "newcollection", results = { @Result(name = SUCCESS, type = "jsonresult") })
+    private Map<String, Object> jsonResult = new HashMap<String, Object>();
+	
+	@Action(value = "newcollection", results = {@Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }) })
 	public String view() throws Exception {
 		
 		ResourceCollection rc =  resourceCollectionService.createNewResourceCollection(collectionName, getAuthenticatedUser());
 		collectionId = rc.getId();
 		
-		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("status", "success");
-		result.put("name", getCollectionName());
-		result.put("id", collectionId);
+		jsonResult.put("status", "success");
+		jsonResult.put("name", getCollectionName());
+		jsonResult.put("id", collectionId);
 		
-		ObjectMapper mapper = new ObjectMapper();
-		setJsonInputStream(new ByteArrayInputStream(mapper.writeValueAsString(result).getBytes()));
+		/*ObjectMapper mapper = new ObjectMapper();
+		setJsonInputStream(new ByteArrayInputStream(mapper.writeValueAsString(result).getBytes()));*/
 		return SUCCESS;
 	}
 

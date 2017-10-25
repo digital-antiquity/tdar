@@ -19,12 +19,14 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.GeoRssMode;
 import org.tdar.core.service.SerializationService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
+import org.tdar.web.service.WebSearchServiceImpl;
 
 @Namespaces(value = {
         @Namespace("/api/search") })
@@ -43,6 +45,13 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController {
     private Long collectionId;
 
     private Map<String, Object> resultObject;
+    
+    private boolean async=true;
+    
+    private boolean addAsManaged = false;
+    
+    @Autowired
+    private WebSearchServiceImpl webSearchService;
     
     
     @Action(value = "save", results = {
@@ -70,24 +79,28 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController {
             setMode("json");
             setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
             
+            setLookupSource(LookupSource.RESOURCE);
             
-            performResourceSearch();
-            
-            
-            List<Resource> results = getResults();
-            
-            //pass results w/ user and collection name (id) to service
-            
-            
-            //handle additional pages
-   
+            // we need this for tests to be able to change the projection model so
+            // we get full objects
+            if (getProjectionModel() == null) {
+                setProjectionModel(ProjectionModel.LUCENE);
+            }
+
+            processLegacySearchParameters();
+            if(isAsync()){
+            	webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
+            }
+            else{
+            	
+            }
             
            //  invoke the UI to update/notify that results have been completed. jsonifyResult(JsonLookupFilter.class);
             
         } 
-        catch (TdarActionException tdae) {
+        /*catch (TdarActionException tdae) {
             return tdae.getResponse();
-        } 
+        } */
         catch (Exception e) {
             getLogger().error("rss error", e);
             addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
@@ -130,6 +143,22 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController {
 
 	public void setCollectionId(Long collectionId) {
 		this.collectionId = collectionId;
+	}
+
+	public boolean isAsync() {
+		return async;
+	}
+
+	public void setAsync(boolean async) {
+		this.async = async;
+	}
+
+	public boolean isAddAsManaged() {
+		return addAsManaged;
+	}
+
+	public void setAddAsManaged(boolean addAsManaged) {
+		this.addAsManaged = addAsManaged;
 	}
 
 }

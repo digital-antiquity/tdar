@@ -66,6 +66,19 @@
                         Login
                     </#if></span>
                     </li>
+                    
+                <li class="media">
+                <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_download"></use></svg>
+                <span>Save these results &raquo;
+                    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
+                        <@search.searchLink "saveResults" "to Collection" />
+                        <#if (totalRecords > maxDownloadRecords)>
+                            Limited to the first ${maxDownloadRecords} results.
+                        </#if>
+                    <#else>
+                        Login
+                    </#if></span>
+                    </li>
             </ul>
                 <@rlist.displayWidget />
             <form>

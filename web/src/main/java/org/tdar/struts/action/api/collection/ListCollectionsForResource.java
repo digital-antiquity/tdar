@@ -13,6 +13,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
@@ -21,6 +22,8 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
 
@@ -32,9 +35,9 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
-// @HttpForbiddenErrorResponseOnly
-// @HttpsOnly
+@RequiresTdarUserGroup(TdarGroup.TDAR_USERS)
+@HttpForbiddenErrorResponseOnly
+@HttpsOnly
 public class ListCollectionsForResource extends AbstractJsonApiAction implements Preparable, Validateable {
 
 	private static final long serialVersionUID = 1344077793459231299L;
@@ -90,6 +93,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 	}
 
 	@Action(value = "resourcecollections", results = { @Result(name = SUCCESS, type = "jsonresult") })
+	@Transactional(readOnly=true)
 	public String view() throws Exception {
 
 		/*
