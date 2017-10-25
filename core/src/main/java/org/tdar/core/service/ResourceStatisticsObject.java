@@ -87,7 +87,16 @@ public class ResourceStatisticsObject {
             }
             DailyTotal atotal = getAnnualMap().getOrDefault(ykey, createEmptyDailyTotal(ykey));
             getAnnualMap().put(ykey, atotal);
-            atotal.addTotals(stat.getTotal(),stat.getTotalBot(), createDownloadList());
+            
+            //FIXME: this is not great, but the assumption in the DB is that the total here is Everything
+            Long total_ = 0L;
+            if (stat.getTotal() != null) {
+                total_ = stat.getTotal();;
+            }
+            if (stat.getTotalBot()  != null) {
+                total_ = stat.getTotalBot();;
+            }
+            atotal.addTotals(total_,stat.getTotalBot(), createDownloadList());
         }
     }
 
