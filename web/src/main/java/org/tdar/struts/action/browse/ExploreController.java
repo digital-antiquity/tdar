@@ -3,11 +3,8 @@ package org.tdar.struts.action.browse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -16,7 +13,6 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -24,16 +20,14 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.cache.BrowseDecadeCountCache;
 import org.tdar.core.cache.BrowseYearCountCache;
-import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.service.query.SearchService;
-import org.tdar.struts.action.AbstractLookupController;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.web.service.HomepageDetails;
 import org.tdar.web.service.HomepageService;
@@ -47,19 +41,17 @@ import org.tdar.web.service.HomepageService;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-@SuppressWarnings("rawtypes")
 @Namespace("/browse")
 @ParentPackage("default")
 @Component
 @Scope("prototype")
 @HttpsOnly
-public class ExploreController extends AbstractLookupController {
+public class ExploreController extends  AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = -2826087034735486222L;
 
     public static final String EXPLORE = "explore";
 
-    private Long viewCount = 0L;
     private List<InvestigationType> investigationTypes = new ArrayList<InvestigationType>();
     private List<CultureKeyword> cultureKeywords = new ArrayList<CultureKeyword>();
     private List<SiteTypeKeyword> siteTypeKeywords = new ArrayList<SiteTypeKeyword>();
@@ -68,15 +60,10 @@ public class ExploreController extends AbstractLookupController {
             "R", "S", "T", "U", "V", "W", "X", "Y", "Z"));
     private List<BrowseYearCountCache> scholarData;
     private String timelineData;
-    private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
-    private List<String> groups = new ArrayList<String>();
-    private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
-    private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
-    Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
-
+    
     @Autowired
     private transient SerializationService serializationService;
     @Autowired
@@ -179,21 +166,6 @@ public class ExploreController extends AbstractLookupController {
         this.timelineData = list;
     }
 
-    public ResourceSpaceUsageStatistic getUploadedResourceAccessStatistic() {
-        return uploadedResourceAccessStatistic;
-    }
-
-    public void setUploadedResourceAccessStatistic(ResourceSpaceUsageStatistic uploadedResourceAccessStatistic) {
-        this.uploadedResourceAccessStatistic = uploadedResourceAccessStatistic;
-    }
-
-    public ResourceSpaceUsageStatistic getTotalResourceAccessStatistic() {
-        return totalResourceAccessStatistic;
-    }
-
-    public void setTotalResourceAccessStatistic(ResourceSpaceUsageStatistic totalResourceAccessStatistic) {
-        this.totalResourceAccessStatistic = totalResourceAccessStatistic;
-    }
 
     public List<BrowseYearCountCache> getScholarData() {
         return scholarData;
@@ -201,30 +173,6 @@ public class ExploreController extends AbstractLookupController {
 
     public void setScholarData(List<BrowseYearCountCache> scholarData) {
         this.scholarData = scholarData;
-    }
-
-    public List<String> getGroups() {
-        return groups;
-    }
-
-    public void setGroups(List<String> groups) {
-        this.groups = groups;
-    }
-
-    public List<BillingAccount> getAccounts() {
-        return accounts;
-    }
-
-    public void setAccounts(List<BillingAccount> accounts) {
-        this.accounts = accounts;
-    }
-
-    public boolean isShowAdminInfo() {
-        return isAuthenticated() && (isEditor() || Objects.equals(getId(), getAuthenticatedUser().getId()));
-    }
-
-    public boolean isShowBasicInfo() {
-        return isAuthenticated() && (isEditor() || Objects.equals(getId(), getAuthenticatedUser().getId()));
     }
 
     public List<Resource> getFeaturedResources() {
@@ -243,13 +191,6 @@ public class ExploreController extends AbstractLookupController {
         this.recentResources = recentResources;
     }
 
-    public Long getViewCount() {
-        return viewCount;
-    }
-
-    public void setViewCount(Long viewCount) {
-        this.viewCount = viewCount;
-    }
 
     public HomepageDetails getHomepageGraphs() {
         return homepageGraphs;

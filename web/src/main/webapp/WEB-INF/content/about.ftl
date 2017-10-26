@@ -28,22 +28,22 @@
     <div class="pricing">
         <div class="span1 center">
         
-            <a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=DOCUMENT"/>">
+            <a href="<@s.url value="/document"/>">
                 <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
             </a>
         </div>
         <div class="span1 center">
-            <a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=DATASET"/>">
+            <a href="<@s.url value="/dataset"/>">
                 <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
             </a>
         </div>
         <div class="span1 center">
-            <a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=IMAGE"/>">
+            <a href="<@s.url value="/image"/>">
                 <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
             </a>
         </div>
         <div class="span1 center">
-            <a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=SENSORY_DATA"/>">
+            <a href="<@s.url value="/sensory-data"/>">
                 <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_sensory-data"></use></svg>
             </a>
         </div>
@@ -53,22 +53,22 @@
             </#if>
         </div>
         <div class="span1 center">
-            <a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=ONTOLOGY"/>">
+            <a href="<@s.url value="/ontology"/>">
                 <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_ontology"></use></svg>
             </a>
         </div>
         <div class="span1 center">
-            <a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=GEOSPATIAL"/>">
+            <a href="<@s.url value="/geospatial"/>">
                 <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_geospatial"></use></svg>
             </a>
         </div>
         <div class="span1 center">
-            <a href="<@s.url value="/search/results?_tdar.searchType=simple&resourceTypes=PROJECT"/>">
+            <a href="<@s.url value="/project"/>">
                 <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
             </a>
         </div>
         <div class="span1 center">
-            <a href="<@s.url value="/search/collections"/>">
+            <a href="<@s.url value="/collection"/>">
                 <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
             </a>
         </div>
