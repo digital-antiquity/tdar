@@ -31,6 +31,19 @@
 </div>
 <br/>
 
+
+<h2>Resources by Type</h2>
+
+<div>
+    <ul class="inline">
+        <#list resourceTypes as rt>
+        <li><a href="/${rt.urlNamespace}">${rt.plural}</a></li>
+        </#list>
+    </ul>
+    <br/>
+</div>
+<br/>
+
 <div class="row">    
         <@commonr.renderWorldMap mode='vertical'/>
 </div>

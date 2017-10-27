@@ -156,6 +156,15 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
             return null;
         }
     }
+    
+    public static ResourceType fromNamespace(String namespace) {
+        for (ResourceType rt : ResourceType.values()) {
+            if (StringUtils.equals(rt.getUrlNamespace(), namespace)) {
+                return rt;
+            }
+        }
+        return null;
+    }
 
     public static ResourceType fromClass(Class<?> clas) {
         for (ResourceType type : values()) {
@@ -287,5 +296,16 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
             default:
                 return false;
         }
+    }
+
+    public static List<ResourceType> activeValues() {
+        List<ResourceType> types = new ArrayList<>();
+        for (ResourceType rt: values()) {
+            if (rt == ARCHIVE || rt == ResourceType.VIDEO || rt == ResourceType.AUDIO) {
+                continue;
+            }
+            types.add(rt);
+        }
+        return types;
     }
 }

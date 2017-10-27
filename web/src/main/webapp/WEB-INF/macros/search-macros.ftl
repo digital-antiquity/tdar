@@ -97,6 +97,18 @@
     <link rel="alternate" type="application/atom+xml" title="Atom 1.0" href="<@s.url value="${url}" />"/>
     </#macro>
 
+   <#macro simpleHeaderLinks>
+    <meta name="totalResults" content="${totalRecords}"/>
+    <meta name="startIndex" content="${startRecord}"/>
+    <meta name="itemsPerPage" content="${recordsPerPage}"/>
+        <#if (nextPageStartRecord < totalRecords) >
+            <link rel="next" href="?startRecord=${nextPageStartRecord?c}"/>
+        </#if>
+        <#if  paginationHelper.hasPrevious() >
+        <link rel="previous" href="?<#if prevPageStartRecord !=0>startRecord=${prevPageStartRecord?c}</#if>" />
+        </#if>
+    </#macro>
+
 
     <#macro headerLinks includeRss=false>
     <meta name="totalResults" content="${totalRecords}"/>
@@ -106,7 +118,7 @@
             <@rssUrlTag url=rssUrl />
         </#if>
         <#if (nextPageStartRecord < totalRecords) >
-        <link rel="next" href="<@searchUrl ""><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl>"/>
+        <link rel="next" href="<#noescape><@searchUrl ""><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl></#noescape>"/>
         </#if>
         <#if  paginationHelper.hasPrevious() >
         <link rel="previous"

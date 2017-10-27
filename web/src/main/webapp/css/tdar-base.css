@@ -1468,3 +1468,10 @@ ul .header-auto {
 .ui-autocomplete {
 	z-index:1000;
 }
+
+
+.smallmargin {
+    margin-top:10px;
+    margin-bottom:10px;
+    
+}
