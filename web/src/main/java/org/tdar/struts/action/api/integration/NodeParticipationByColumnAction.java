@@ -17,6 +17,7 @@ import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonIdNameFilter;
 
 import com.opensymphony.xwork2.Preparable;
@@ -75,7 +76,7 @@ public class NodeParticipationByColumnAction extends AbstractJsonApiAction imple
         }
     }
 
-    public Class<?> getJsonView() {
+    public Class<? extends JacksonView> getJsonView() {
         return JsonIdNameFilter.class;
     }
     

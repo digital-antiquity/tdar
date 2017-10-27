@@ -14,6 +14,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.dao.integration.OntologyProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
+import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
@@ -41,7 +42,7 @@ public class OntologyDetailsAction extends AbstractJsonApiAction {
         return SUCCESS;
     }
 
-    public Class<?> getJsonView() {
+    public Class<? extends JacksonView> getJsonView() {
         return JsonIntegrationDetailsFilter.class;
     }
 
