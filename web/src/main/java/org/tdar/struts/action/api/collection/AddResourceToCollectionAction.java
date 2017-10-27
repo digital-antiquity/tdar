@@ -32,7 +32,7 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
+@RequiresTdarUserGroup(TdarGroup.TDAR_USERS)
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
 @Results(value = { @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT),
@@ -58,37 +58,40 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 
 	private ResourceCollection resourceCollection;
 	
-	private Map<String, Object> jsonResult = new HashMap<String, Object>();
-	
+
 
 	@Action(value = "addtocollection", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
 	@WriteableSession
 	@PostOnly
 	public String view() throws Exception {
+		Map<String, Object> jsonResult = new HashMap<String, Object>();
+		
 		//verify they have permissions to the resource
-		getJsonResult().put("status", "failure");
+		jsonResult.put("status", "failure");
 		
 		//TODO change to TdarMessage
-		getJsonResult().put("reason", "no permission to edit resource");
+		jsonResult.put("reason", "no permission to edit resource");
 		
 		//if they want to add as managed resource
 		if (addAsManagedResource && authorizationService.canEdit(getAuthenticatedUser(), resource)){
 				resourceCollection.getManagedResources().add(resource);
 				getGenericService().saveOrUpdate(resourceCollection.getManagedResources());
-				getJsonResult().put("status", "success");
-				getJsonResult().put("reason", "");
-				getJsonResult().put("resourceId", resourceId);
-				getJsonResult().put("collectionId", collectionId);
+				jsonResult.put("status", "success");
+				jsonResult.put("reason", "");
+				jsonResult.put("resourceId", resourceId);
+				jsonResult.put("collectionId", collectionId);
 		}
 		//verify that they can add it to the requested collection
 		else if(authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
 				resourceCollection.getUnmanagedResources().add(resource);
 				getGenericService().saveOrUpdate(resourceCollection.getUnmanagedResources());
-				getJsonResult().put("status", "success");
-				getJsonResult().put("reason", "");
-				getJsonResult().put("resourceId", resourceId);
-				getJsonResult().put("collectionId", collectionId);
+				jsonResult.put("status", "success");
+				jsonResult.put("reason", "");
+				jsonResult.put("resourceId", resourceId);
+				jsonResult.put("collectionId", collectionId);
 		}
+		
+		setResultObject(jsonResult);
 		
 		return SUCCESS;
 	}
@@ -151,12 +154,5 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 		this.addAsManagedResource = addAsManagedResource;
 	}
 
-	public Map<String, Object> getJsonResult() {
-		return jsonResult;
-	}
-
-	public void setJsonResult(Map<String, Object> jsonResult) {
-		this.jsonResult = jsonResult;
-	}
 
 }

@@ -37,7 +37,7 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
      * @throws IOException
      */
     protected final void setJsonObject(Object obj, Class<?> jsonFilter) throws IOException {
-        this.resultObject = obj;
+        this.setResultObject(obj);
         this.jsonView = jsonFilter;
         String message = serializationService.convertToFilteredJson(obj, jsonFilter);
         getLogger().trace(message);
@@ -71,6 +71,10 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
     protected final void setJsonInputStream(InputStream jsonInputStream) {
         this.jsonInputStream = jsonInputStream;
     }
+
+	public void setResultObject(Object resultObject) {
+		this.resultObject = resultObject;
+	}
 
 
 }

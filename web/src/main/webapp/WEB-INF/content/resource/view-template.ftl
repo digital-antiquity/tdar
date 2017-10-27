@@ -553,6 +553,15 @@
             });
         },
         
+        _addResourceToCollection : function(collectionId){
+            var data =  {
+                        resourceId:this.resourceId,
+                        collectionId:collectionId,
+                addAsManagedResource:this.managedResource
+            }
+            $.post('/api/collection/addtocollection',data);
+        },
+        
         addToCollection:function(){
             if(this.pick=="existing"){
                 if(this.selectedCollection==0){
@@ -563,36 +572,25 @@
                     alert("you need to select a collection");
                 }
                 else { 
-                    var data = {
-                        resourceId:this.resourceId,
-                        collectionId:selectedCollection,
-                        addAsManagedResource:managedResource
-                    }
-                    
-                    $.post('/api/collection/addtocollection',data);
+                   _addResourceToCollection(this.selectedCollection);
                 }
             }
             else {
                 //post to create a new collection.
+                console.log("Name is "+this.newCollectionName);
                 var data = {
-                    collectionName: this.newCollectionName,
+                    collectionName: this.newCollectionName
                 }
+                
+                var vapp = this;
                 
                 //On success, add the resource.
-                $.ajax('/api/collection/newcollection',data,function(res){
-                    var id = res.id;
-                    var data = {
-                        resourceId:this.resourceId,
-                        collectionId:id,
-                        addAsManagedResource:managedResource
+                $.post('/api/collection/newcollection',data,function(res){
+                        console.log("Adding resource to new console");
+                        var id = res.id;
+                        vapp._addResourceToCollection(id);
                     }
-                    $.post('/api/collections/addtocollection',data);
-                }
-                
                 );
-                
-                
-                
             }
         },
 
@@ -717,15 +715,19 @@
                                 <input type="radio" id="rb_existing" v-model="pick" value="existing"> 
                                 Add To An Existing Collection
                             </label>
+                            
+                            <div v-show="pick=='existing'" style="padding-left:20px;" class="form-group">
+                              <div>
+                                  <select id="collection-list" >
+                                  </select>
+                                  
+                                  <input v-model="selectedCollection" type="hidden">
+                                  {{selectedCollection}}
+                              </div>
+                              </div>
                           </div>
                           
-                          <div v-if="pick=='existing'" style="padding-left:20px;" class="form-group">
-                              <select id="collection-list" >
-                              </select>
-                              
-                              <input v-model="selectedCollection" type="hidden">
-                              {{selectedCollection}}
-                          </div>
+                          
                         
                         <div>
                             <label class="form-check-label">
@@ -736,7 +738,8 @@
                         
                         <div v-if="pick=='newcollection'" style="padding-left:20px;">
                             <label> 
-                            <input class="form-control" id='new-collection-name' v-model="newCollectionName" />
+                            <input class="form-control" id='new-collection-name' name="newCollectionName" v-model="newCollectionName" />
+                            {{newCollectionName}}
                         </div>
                         
                         <div v-if="canEdit">

@@ -19,7 +19,9 @@ import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.Preparable;
@@ -49,6 +51,8 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Pre
     private Map<String, Object> jsonResult = new HashMap<String, Object>();
 	
 	@Action(value = "newcollection", results = {@Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }) })
+	@PostOnly
+	@WriteableSession
 	public String view() throws Exception {
 		
 		ResourceCollection rc =  resourceCollectionService.createNewResourceCollection(collectionName, getAuthenticatedUser());
@@ -60,6 +64,7 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Pre
 		
 		/*ObjectMapper mapper = new ObjectMapper();
 		setJsonInputStream(new ByteArrayInputStream(mapper.writeValueAsString(result).getBytes()));*/
+		setResultObject(jsonResult);
 		return SUCCESS;
 	}
 

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
 
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,63 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 
 	@Autowired
 	ResourceCollectionService resourceCollectionService;
+
+	private TdarUser user2;
+	private Document user2PublicDocument;
+	private Document user2ConfidentialDocument;
+	private ResourceCollection user2Collection;
+	
+	private TdarUser user1;
+	private Dataset user1ConfidentialDataset;
+	private Dataset user1PublicDataset;
+	private ResourceCollection user1Collection;
+	
+	/**
+	private TdarUser viewer;
+
+	@BeforeClass
+	public void setUpClass() throws InstantiationException, IllegalAccessException, FileNotFoundException {
+		user1 = createAndSaveNewUser();
+		user1ConfidentialDataset = createAndSaveNewResource(Dataset.class, user1, "Owner's dataset");
+		// AB: a resource should never have 'ADMINISTER' rights on it
+		user1ConfidentialDataset.getAuthorizedUsers()
+				.add(new AuthorizedUser(user1, user1, Permissions.MODIFY_RECORD));
+
+		user1PublicDataset = createAndSaveNewDataset();
+		user1PublicDataset.getAuthorizedUsers()
+				.add(new AuthorizedUser(user1, user1, Permissions.MODIFY_RECORD));
+
+		genericService.save(user1ConfidentialDataset);
+		genericService.save(user1ConfidentialDataset.getAuthorizedUsers());
+
+		user1Collection = createAndSaveNewResourceCollection("Owner's resource collection");
+		user1Collection.getAuthorizedUsers().add(new AuthorizedUser(user1, user1, Permissions.ADMINISTER_COLLECTION));
+		genericService.save(user1Collection.getAuthorizedUsers());
+		
+		// Create some other user's collection and add a public and confidential
+		// resource to it.
+		user2 = createAndSaveNewUser();
+		user2PublicDocument = createAndSaveDocumentWithFileAndUseDefaultUser();
+		user2PublicDocument.getFirstInformationResourceFile().setRestriction(FileAccessRestriction.PUBLIC);
+		genericService.saveOrUpdate(user2PublicDocument);
+
+		user2ConfidentialDocument = createAndSaveDocumentWithFileAndUseDefaultUser();
+		user2ConfidentialDocument.getFirstInformationResourceFile().setRestriction(FileAccessRestriction.CONFIDENTIAL);
+		user2ConfidentialDocument.getAuthorizedUsers().add(new AuthorizedUser(user2, user2, Permissions.MODIFY_RECORD));
+		genericService.saveOrUpdate(user2ConfidentialDocument);
+		genericService.saveOrUpdate(user2ConfidentialDocument.getAuthorizedUsers());
+
+		user2Collection = createAndSaveNewResourceCollection("Someone else's resource collection");
+		user2Collection.getAuthorizedUsers().add(new AuthorizedUser(user2, user2, Permissions.ADMINISTER_COLLECTION));
+		user2Collection.getManagedResources().add(user2ConfidentialDocument);
+		user2Collection.getUnmanagedResources().add(user2PublicDocument);
+		genericService.saveOrUpdate(user2Collection);
+		genericService.saveOrUpdate(user2Collection.getManagedResources());
+		genericService.saveOrUpdate(user2Collection.getUnmanagedResources());
+		genericService.saveOrUpdate(user2Collection.getAuthorizedUsers());
+		
+		viewer = createAndSaveNewUser();
+	}
 
 	@Test
 	@Rollback(true)
@@ -54,6 +112,7 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 		tdarUser = null;
 		document = null;
 		collection = null;
+
 		// flush everything into the database
 		genericService.synchronize();
 
@@ -66,112 +125,113 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 		assertFalse(collection.getManagedResources().contains(document));
 	}
 
-//	@Ignore
 	@Test
 	@Rollback
-	public void testManagedCollections()
-			throws InstantiationException, IllegalAccessException, FileNotFoundException {
+	public void testAddPublicResourceToManagedCollection() {
 
-		// Create some other user's collection and add a public and confidential
-		// resource to it.
-		TdarUser someOtherOwner = createAndSaveNewUser();
+	}
 
-		Document someoneElsesPublicDocument = createAndSaveDocumentWithFileAndUseDefaultUser();
-		someoneElsesPublicDocument.getFirstInformationResourceFile().setRestriction(FileAccessRestriction.PUBLIC);
-		//someoneElsesPublicDocument.getAuthorizedUsers().add(new AuthorizedUser(someOtherOwner, someOtherOwner, GeneralPermissions.ADMINISTER_COLLECTION));
-		genericService.saveOrUpdate(someoneElsesPublicDocument);
-		//genericService.saveOrUpdate(someoneElsesPublicDocument.getAuthorizedUsers());
+	@Test
+	@Rollback
+	private void testAddPrivateResourceToManagedCollection() {
 
-		Document someoneElsesConfidentialDocument = createAndSaveDocumentWithFileAndUseDefaultUser();
-		someoneElsesConfidentialDocument.getFirstInformationResourceFile()
-				.setRestriction(FileAccessRestriction.CONFIDENTIAL);
-		someoneElsesConfidentialDocument.getAuthorizedUsers().add(new AuthorizedUser(someOtherOwner, someOtherOwner, Permissions.ADMINISTER_COLLECTION));
-		genericService.saveOrUpdate(someoneElsesConfidentialDocument);
-		genericService.saveOrUpdate(someoneElsesConfidentialDocument.getAuthorizedUsers());
+	}
 
-		ResourceCollection someoneElsesCollection = createAndSaveNewResourceCollection(
-				"Someone else's resource collection");
-		someoneElsesCollection.getAuthorizedUsers().add(new AuthorizedUser(someOtherOwner,someOtherOwner,Permissions.ADMINISTER_COLLECTION));
+	@Test
+	@Rollback
+	private void testAddPrivateResourceToUnmanagedCollection() {
+
+	}
+*/
+	// @Ignore
+	@Test
+	@Rollback
+	public void testManagedCollections() throws InstantiationException, IllegalAccessException, FileNotFoundException {
+
 		
-		someoneElsesCollection.getManagedResources().add(someoneElsesConfidentialDocument);
-		someoneElsesCollection.getUnmanagedResources().add(someoneElsesPublicDocument);
-		genericService.saveOrUpdate(someoneElsesCollection);
-		genericService.saveOrUpdate(someoneElsesCollection.getManagedResources());
-		genericService.saveOrUpdate(someoneElsesCollection.getUnmanagedResources());
-		genericService.saveOrUpdate(someoneElsesCollection.getAuthorizedUsers());
+		/***
+		 * 
+		 *  User 1 -- Collection 
+		 *  			- Managed 
+		 *  				- Confidentaial Dataset (#1)
+		 *   			    - Confidential Resource (User 2's, #3)
+		 *   
+		 *  			- Unmanaged 
+		 * 					- Public Dataset (#2)
+		 * 				    - Public Resource (User 2's #4)
+		 * 
+		 * 	User 2  -- Collection
+		 * 					- Managed
+		 * 						- Confidential Resource (#3)
+		 * 					- Unmanaged 
+		 * 						- Public Resource  (#4)
+		 * 
+		 * 
+		 *  
+		 * 
+		 * 
+		 */
+		
+		
+		
+		
+		/**
 
 		// Create an owner and their own resources
-		TdarUser owner = createAndSaveNewUser();
-		Dataset ownersConfidentialDataset = createAndSaveNewResource(Dataset.class, owner, "Owner's dataset");
-		//AB: a resource should never have 'ADMINISTER' rights on it
-		ownersConfidentialDataset.getAuthorizedUsers()
-				.add(new AuthorizedUser(owner, owner, Permissions.ADMINISTER_COLLECTION));
 
-		Dataset ownersPublicDataset = createAndSaveNewDataset();
-		ownersPublicDataset.getAuthorizedUsers()
-				.add(new AuthorizedUser(owner, owner, Permissions.ADMINISTER_COLLECTION));
+		
 
-		genericService.save(ownersConfidentialDataset);
-		genericService.save(ownersConfidentialDataset.getAuthorizedUsers());
-		
-		ResourceCollection ownersCollection = createAndSaveNewResourceCollection("Owner's resource collection");
-		ownersCollection.getAuthorizedUsers().add(new AuthorizedUser(owner,owner,Permissions.ADMINISTER_COLLECTION));
-		genericService.save(ownersCollection.getAuthorizedUsers());
-		
 		// TODO: How to I set the permissions for this collection as private for
 		// others?
-		//AB: not sure I follow, do you mean "hidden" as in other's can't see it?
-		
+		// AB: not sure I follow, do you mean "hidden" as in other's can't see
+		// it?
+
 		// Attempt to add a document the user doesn't have permission to as a
 		// managed resource.
-		ownersCollection.getManagedResources().add(someoneElsesConfidentialDocument);
-		ownersCollection.getManagedResources().add(ownersConfidentialDataset);
-		
-		ownersCollection.getUnmanagedResources().add(ownersPublicDataset);
-		ownersCollection.getUnmanagedResources().add(someoneElsesPublicDocument);
-		genericService.save(ownersCollection);
-		
-		
+		user1Collection.getManagedResources().add(user2ConfidentialDocument);
+		user1Collection.getManagedResources().add(user1ConfidentialDataset);
+
+		user1Collection.getUnmanagedResources().add(user1PublicDataset);
+		user1Collection.getUnmanagedResources().add(someoneElsesPublicDocument);
+		genericService.save(user1Collection);
 
 		TdarUser user = createAndSaveNewUser();
-		//Add permission for the user to add/remove resources to the owner's collection.
-		ownersCollection.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.ADMINISTER_COLLECTION));
-		genericService.saveOrUpdate(ownersCollection.getAuthorizedUsers());
+		// Add permission for the user to add/remove resources to the owner's
+		// collection.
+		user1Collection.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.ADMINISTER_COLLECTION));
+		genericService.saveOrUpdate(user1Collection.getAuthorizedUsers());
 
 		// Create a viewer who has no association to the owner's collection.
-		TdarUser viewer = createAndSaveNewUser();
 
 		// get the Ids
-		Long ownerId = owner.getId();
-		Long otherUserId = someOtherOwner.getId();
+		Long ownerId = user1.getId();
+		Long otherUserId = user2.getId();
 		Long userId = user.getId();
 		Long viewerId = viewer.getId();
 
-		
 		Long otherCollectionId = someoneElsesCollection.getId();
-		Long ownerCollectionId = ownersCollection.getId();
-		
-		someOtherOwner = null;
-		owner = null;
+		Long ownerCollectionId = user1Collection.getId();
+
+		user2 = null;
+		user1 = null;
 		user = null;
 		viewer = null;
-		ownersCollection = null;
+		user1Collection = null;
 		someoneElsesCollection = null;
-		
+
 		// flush everything into the database
 		genericService.synchronize();
 
 		// find again just in case (clears transient fields/ relationships)
-		owner = genericService.find(TdarUser.class, ownerId);
-		someOtherOwner = genericService.find(TdarUser.class, otherUserId);
+		user1 = genericService.find(TdarUser.class, ownerId);
+		user2 = genericService.find(TdarUser.class, otherUserId);
 		user = genericService.find(TdarUser.class, userId);
 		viewer = genericService.find(TdarUser.class, viewerId);
-		
-		
-		ownersCollection = genericService.find(ResourceCollection.class, ownerCollectionId);;
-		someoneElsesCollection = genericService.find(ResourceCollection.class, otherCollectionId);;
-		
 
+		user1Collection = genericService.find(ResourceCollection.class, ownerCollectionId);
+		;
+		someoneElsesCollection = genericService.find(ResourceCollection.class, otherCollectionId);
+		;
 
 		// Test a managed collection the user owns (created).
 
@@ -185,43 +245,47 @@ public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase
 
 		// add all the resources to the collection
 
-		
-		assertTrue(authenticationAndAuthorizationService.canEdit(someOtherOwner, someoneElsesConfidentialDocument));
-		
-		// test the owner
-		assertTrue(authenticationAndAuthorizationService.canEdit(owner, ownersCollection));
+		//The 3rd Party can edit their own dowcument. 
+		assertTrue(authenticationAndAuthorizationService.canEdit(user2, user2ConfidentialDocument));
 
-		//Test that the confidental document exists in the manages resources, but hte owner can't access it
-		assertTrue(ownersCollection.getManagedResources().contains(someoneElsesConfidentialDocument));
-		assertFalse(authenticationAndAuthorizationService.canEdit(owner, someoneElsesConfidentialDocument));
+		// The owner can edit their own document.
+		assertTrue(authenticationAndAuthorizationService.canEdit(user1, user1Collection));
+
+		// Test that the confidental document exists in the manages resources,
+		// but the owner can't access it
+		assertTrue(user1Collection.getManagedResources().contains(user2ConfidentialDocument));
+		assertFalse(authenticationAndAuthorizationService.canEdit(user1, user2ConfidentialDocument));
+
 		
-		//Test that someone elses public document can be added as a resouce, can be viewed, but not edited. 
-		assertTrue(ownersCollection.getUnmanagedResources().contains(someoneElsesPublicDocument));
-		assertFalse(authenticationAndAuthorizationService.canEdit(owner, someoneElsesPublicDocument));
-		logger.debug("{} {}", owner, someoneElsesPublicDocument);
-		assertTrue(authenticationAndAuthorizationService.canView(owner, someoneElsesPublicDocument));
-		
-		
+		// Test that someone elses public document can be added as a resouce,
+		// can be viewed, but not edited.
+		assertTrue(user1Collection.getUnmanagedResources().contains(someoneElsesPublicDocument));
+		assertFalse(authenticationAndAuthorizationService.canEdit(user1, someoneElsesPublicDocument));
+		logger.debug("{} {}", user1, someoneElsesPublicDocument);
+		assertTrue(authenticationAndAuthorizationService.canView(user1, someoneElsesPublicDocument));
+
 		// test the user
 		// test if the user can access the resources on the owner's collection.
-		assertTrue(authenticationAndAuthorizationService.canView(user, someoneElsesConfidentialDocument));
-		assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(user, someoneElsesConfidentialDocument));
-		
-		assertTrue(authenticationAndAuthorizationService.canEdit(user, ownersCollection));
-		assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(user, ownersConfidentialDataset));
-		assertTrue(authenticationAndAuthorizationService.canView(user, ownersPublicDataset));
-		
+		assertTrue(authenticationAndAuthorizationService.canView(user, user2ConfidentialDocument));
+		assertFalse(authenticationAndAuthorizationService.canViewConfidentialInformation(user,
+				user2ConfidentialDocument));
+
+		assertTrue(authenticationAndAuthorizationService.canEdit(user, user1Collection));
+		assertFalse(
+				authenticationAndAuthorizationService.canViewConfidentialInformation(user, user1ConfidentialDataset));
+		assertTrue(authenticationAndAuthorizationService.canView(user, user1PublicDataset));
+
 		// create a viewer
 		// test if the user has permission to each of the resources
-		assertFalse(authenticationAndAuthorizationService.canEdit(viewer, someoneElsesConfidentialDocument));
-		//AB:dup?
-		assertFalse(authenticationAndAuthorizationService.canEdit(viewer, someoneElsesConfidentialDocument));
-		assertFalse(authenticationAndAuthorizationService.canEdit(viewer, ownersPublicDataset));
-		assertFalse(authenticationAndAuthorizationService.canEdit(viewer, ownersConfidentialDataset));
+		assertFalse(authenticationAndAuthorizationService.canEdit(viewer, user2ConfidentialDocument));
+		// AB:dup?
+		assertFalse(authenticationAndAuthorizationService.canEdit(viewer, user2ConfidentialDocument));
+		assertFalse(authenticationAndAuthorizationService.canEdit(viewer, user1PublicDataset));
+		assertFalse(authenticationAndAuthorizationService.canEdit(viewer, user1ConfidentialDataset));
 
-		assertFalse(authenticationAndAuthorizationService.canView(viewer, someoneElsesConfidentialDocument));
+		assertFalse(authenticationAndAuthorizationService.canView(viewer, user2ConfidentialDocument));
 		assertTrue(authenticationAndAuthorizationService.canView(viewer, someoneElsesPublicDocument));
-		assertTrue(authenticationAndAuthorizationService.canView(viewer, ownersPublicDataset));
-		assertFalse(authenticationAndAuthorizationService.canView(viewer, ownersConfidentialDataset));
+		assertTrue(authenticationAndAuthorizationService.canView(viewer, user1PublicDataset));
+		assertFalse(authenticationAndAuthorizationService.canView(viewer, user1ConfidentialDataset));**/
 	}
 }
