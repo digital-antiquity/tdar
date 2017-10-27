@@ -44,7 +44,7 @@
         </div>
         <div class="span1 center">
             <a href="<@s.url value="/sensory-data"/>">
-                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_sensory-data"></use></svg>
+                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_sensory_data"></use></svg>
             </a>
         </div>
         <div class="span4 center" style="margin-top: 10px;">

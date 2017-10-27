@@ -4,10 +4,8 @@
 <#import "/WEB-INF/macros/search-macros.ftl" as search>
 <#import "/${config.themeDir}/settings.ftl" as settings>
 <head>
-<#assign title>Browse all ${resourceType.plural} in ${siteAcronym}</#assign>
-<style>
-    th {border-right:1px solid #DDD}
-    </style>
+    <#assign title>Browse all ${resourceType.plural} in ${siteAcronym}</#assign>
+    <@search.simpleHeaderLinks />
     <title>${title}</title>
 </head>
 <h1>${title}</h1>

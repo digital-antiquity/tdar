@@ -25,6 +25,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespaces(value={
         @Namespace("/document"),
         @Namespace("/image"),
+        @Namespace("/project"),
         @Namespace("/dataset"),
         @Namespace("/coding-sheet"),
         @Namespace("/geospatial"),
