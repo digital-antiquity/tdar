@@ -88,7 +88,10 @@ public class HttpsInterceptor implements Interceptor {
         logger.trace(" :: url: {} : {}", request.getRequestURI(), request.getQueryString());
         
         if (request.getMethod().equalsIgnoreCase("get") || request.getMethod().equalsIgnoreCase("head")) {
-            response.sendRedirect(changeUrlProtocol("https", request));
+            // change redirect to be permanent
+            response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+            response.setHeader("Location", changeUrlProtocol("https", request));
+
             return null;
         } else if (invocation.getAction() instanceof TdarActionSupport) {
             logger.warn("ERROR_HTTPS_ONLY");

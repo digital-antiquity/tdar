@@ -1,6 +1,5 @@
 package org.tdar.struts.action.admin;
 
-import java.io.ByteArrayInputStream;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
@@ -66,17 +65,22 @@ public class AdminActivityController extends AbstractAuthenticatableAction {
     private HashMap<String, Integer> counters;
     private List<TdarUser> activePeople;
 
-    private ByteArrayInputStream jsonInputStream;
 
     @Action(value = "active-users", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String listActiveUsers() {
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getActivePeople(), JsonLookupFilter.class, null)
-                .getBytes()));
+        setActivePeople(authenticationService.getCurrentlyActiveUsers());
         return SUCCESS;
     }
+    
+    public Class<?> getJsonView() {
+        return JsonLookupFilter.class;
+    }
 
+    public Object getResultObject() {
+        return getActivePeople();
+    }
     @Action(value = "activity")
     @Override
     public String execute() {
@@ -199,14 +203,6 @@ public class AdminActivityController extends AbstractAuthenticatableAction {
 
     public void setMoreInfo(HashMap<String, Object> moreInfo) {
         this.moreInfo = moreInfo;
-    }
-
-    public ByteArrayInputStream getJsonInputStream() {
-        return jsonInputStream;
-    }
-
-    public void setJsonInputStream(ByteArrayInputStream jsonInputStream) {
-        this.jsonInputStream = jsonInputStream;
     }
 
 }

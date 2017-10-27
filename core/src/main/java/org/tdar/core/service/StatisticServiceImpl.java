@@ -261,8 +261,7 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
             }
         }
 
-        ResourceStatisticsObject rso = new ResourceStatisticsObject(provider, getUsageStatsForResource(resource), downloadStats);
-        rso.setGraphJson(serializationService.convertToJson(rso.getMap().values()));
+        ResourceStatisticsObject rso = new ResourceStatisticsObject(provider, getUsageStatsForResource(resource), downloadStats, resource);
         return rso;
     }
 

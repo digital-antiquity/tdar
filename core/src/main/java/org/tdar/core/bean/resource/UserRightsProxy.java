@@ -48,6 +48,11 @@ public class UserRightsProxy implements Serializable {
         setUntilDate(au.getDateExpires());
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s %s - [id:%s ; inviteId:%s] %s", getDisplayName(), getPermission(), getId(), getInviteId(), getEmail());
+    }
+    
     public String getDisplayName() {
         return displayName;
     }

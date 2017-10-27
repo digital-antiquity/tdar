@@ -147,6 +147,7 @@
 $(function() {
     TDAR.repeatrow.registerRepeatable(".repeatLastRow");
     TDAR.autocomplete.delegateCreator("#divAccessRights", true, false);
+    TDAR.common.initFormNavigate($("form.rightsform"));
     $("form").on("repeatrowadded",function() {TDAR.datepicker.bind($("input.datepicker",$("form")))});
             
 })

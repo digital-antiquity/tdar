@@ -49,6 +49,7 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
@@ -62,12 +63,14 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -309,7 +312,9 @@ public abstract class AbstractSeleniumWebITCase {
                 caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
                 // profile.setPreference("browser.download.dir","c:\\downloads");
-                rawDriver = new FirefoxDriver(fb, profile, caps);
+                FirefoxOptions options = new FirefoxOptions(caps);
+                options.setProfile(profile);
+                rawDriver = new FirefoxDriver(options);
 
                 break;
             case CHROME:
@@ -1032,8 +1037,25 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public void submitForm(String cssSelector) {
         WebElementSelection buttons = find(cssSelector);
-        buttons.first().click();
+        WebElement first = buttons.first();
+        tryToGetFocus(first);
+        first.submit();
         waitForPageload();
+    }
+
+    private void tryToGetFocus(WebElement first) {
+        waitFor(ExpectedConditions.elementToBeClickable(first));
+        if (driver instanceof HasCapabilities) {
+            Capabilities cp = ((HasCapabilities) driver).getCapabilities();
+            if (cp.getBrowserName().equals("chrome")) {
+                try {
+                    ((JavascriptExecutor) driver).executeScript(
+                            "arguments[0].scrollIntoView(true);", first);
+                } catch (Exception e) {
+
+                }
+            }
+        }
     }
 
     /**

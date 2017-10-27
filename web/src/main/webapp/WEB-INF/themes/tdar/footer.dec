@@ -34,6 +34,7 @@
     <div class="span3">
         <h4>Start Digging</h4>
         <ul>
+            <li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
             <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
             <li><a href="<@s.url value="/resource/add"/>">Start a project &amp; add data</a></li>
             <li><a href="<@s.url value="/login"/>">Log In</a></li>

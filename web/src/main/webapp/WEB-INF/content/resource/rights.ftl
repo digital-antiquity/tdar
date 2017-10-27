@@ -12,7 +12,7 @@
 <div id="titlebar" parse="true">
     <h1>Permissions: <span class="red">${persistable.title}</span></h1>
 </div>
-    <@s.form class="form-horizontal tdarvalidate" action="save" method="POST" dynamicAttributes={"data-validate-method":"initRightsForm"}>
+    <@s.form class="form-horizontal tdarvalidate rightsform" action="save" method="POST" dynamicAttributes={"data-validate-method":"initRightsForm"}>
 <div class="row">
     <div class="span12">
     <p><i>This ${persistable.resourceType.label?lower_case} is currently shared with ${proxies?size} <#if (proxies?size == 1)>person<#else>people</#if><#if (persistable.sharedCollections?size > 0)>, and is in ${persistable.sharedCollections?size} collections</#if>.</i><br></p>

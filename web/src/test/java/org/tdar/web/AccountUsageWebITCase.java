@@ -184,7 +184,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         submitForm();
 
         // make sure we're on the view page
-        assertPageTitleEquals(title);
+        assertPageTitleContains(title);
         assertTextPresentInPage(filename);
 
         // make sure were not flagged.

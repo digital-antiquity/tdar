@@ -95,6 +95,7 @@
                 <#-- add the title -->
                     <@searchResultTitleSection resource titleTag />
 
+                
                 <#-- if in debug add lucene description to explain relevancy -->
                     <@_printLuceneExplanation  resource />
 

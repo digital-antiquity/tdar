@@ -12,6 +12,8 @@
 </head>
 <body>
 <h1>Browse By Year: ${year?c}</h1>
+        <@search.basicPagination "Records" />
+<hr>
     <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow orientation="LIST" />
 <hr>
         <@search.basicPagination "Records" />

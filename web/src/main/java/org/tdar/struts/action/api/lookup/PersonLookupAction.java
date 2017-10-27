@@ -44,11 +44,11 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
     private String term;
 
     @Autowired
-    private CreatorSearchService creatorSearchService;
+    private CreatorSearchService<Person> creatorSearchService;
 
 
     @Action(value = "person", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String lookupPerson() throws SolrServerException, IOException {
         setMode("personLookup");
@@ -66,7 +66,6 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
         return findPerson(term, person, Boolean.parseBoolean(registered));
     }
 
-  @SuppressWarnings("unchecked")
   public String findPerson(String term, Person person, boolean registered) throws SolrServerException, IOException {
       this.setLookupSource(LookupSource.PERSON);
       // TODO Auto-generated method stub

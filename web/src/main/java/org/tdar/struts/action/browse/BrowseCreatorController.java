@@ -209,6 +209,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     @Actions(value = {
             @Action(value = "{id}"),
+            @Action(value = "{id}/"),
             @Action(value = "{id}/{slug}")
     })
     @SkipValidation

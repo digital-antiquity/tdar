@@ -14,6 +14,8 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.dao.integration.OntologyProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
+import org.tdar.utils.json.JacksonView;
+import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 @Namespace("/api/integration")
@@ -36,8 +38,12 @@ public class OntologyDetailsAction extends AbstractJsonApiAction {
             OntologyProxy proxy = new OntologyProxy(getGenericService().find(Ontology.class, id));
             results.add(proxy);
         }
-        setJsonObject(results, JsonIntegrationFilter.class);
+        setJsonObject(results, getJsonView());
         return SUCCESS;
+    }
+
+    public Class<? extends JacksonView> getJsonView() {
+        return JsonIntegrationDetailsFilter.class;
     }
 
     public List<Long> getOntologyIds() {

@@ -298,9 +298,9 @@ public interface TdarNamedQueries {
     String DOWNLOAD_COUNT_SQL = "select coalesce((select count(irfds.id)  from information_resource_file_download_statistics irfds where irfds.information_resource_file_id='%1$s' and irfds.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(fda.count) from file_download_day_agg fda where fda.information_resource_file_id='%1$s'),0)";
     String ANNUAL_ACCESS_SKELETON = "select res.id, res.title, res.resource_type, res.status, %s %s from resource res ";
 
-    String ANNUAL_VIEW_PART = "(select sum(total) from resource_access_month_agg r where res.id=r.resource_id and r.year=%1$s) as \"%1$s Views\"";
-    String MONTH_VIEW_PART = "(select sum(total) from resource_access_month_agg r where res.id=r.resource_id and r.year=%2$s and r.month=%1$s) as \"%2$s-%1$02d Views\"";
-    String DAY_VIEW_PART = "(select sum(coalesce(r.d%2$s,0) + coalesce(r.d%2$s_bot,0) ) from resource_access_month_agg r where r.resource_id=res.id and r.year=%3$s and r.month=%4$s) as \"%1$s Views\"";
+    String ANNUAL_VIEW_PART = "(select sum(total%2$s) from resource_access_month_agg r where res.id=r.resource_id and r.year=%1$s) as \"%1$s Views %2$s\"";
+    String MONTH_VIEW_PART = "(select sum(total%3$s) from resource_access_month_agg r where res.id=r.resource_id and r.year=%2$s and r.month=%1$s) as \"%2$s-%1$02d Views %3$s\"";
+    String DAY_VIEW_PART = "(select sum(coalesce(r.d%2$s%5$s,0)) from resource_access_month_agg r where r.resource_id=res.id and r.year=%3$s and r.month=%4$s) as \"%1$s Views %5$s\"";
     String ANNUAL_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=res.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%1$s') as \"%1$s Downloads\"";
     String MONTH_DOWNLOAD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=res.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and year='%2$s' and month='%1$s') as \"%2$s-%1$02d Downloads\"";
     String DAY_DOWNLAOD_PART = "(select sum(count) from file_download_day_agg, information_resource_file where information_resource_id=res.id and information_resource_file.id=file_download_day_agg.information_resource_file_id and date_accessed = '%1$s') as \"%1$s Downloads\"";

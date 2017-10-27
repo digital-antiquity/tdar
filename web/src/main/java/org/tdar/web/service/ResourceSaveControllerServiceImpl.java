@@ -23,6 +23,7 @@ import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.SupportsResource;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ListCollection;
@@ -399,9 +400,21 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         logger.debug("retained list collections:{}", retainedListCollections);
         shares.addAll(retainedSharedCollections);
         resourceCollections.addAll(retainedListCollections);
+        ErrorTransferObject eto = null;
+
+        boolean notFlagged = true;
+        if (CONFIG.isPayPerIngestEnabled()) {
+            if (PersistableUtils.isNullOrTransient(rcp.getAccountId())) {
+                eto = new ErrorTransferObject();
+                eto.getActionErrors().add("accountService.account_is_null");
+                return eto;
+            }
+            BillingAccount account = genericService.find(BillingAccount.class, rcp.getAccountId());
+            notFlagged = !account.isFlagged();
+        }
 
         if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
-                GeneralPermissions.MODIFY_RECORD)) {
+                GeneralPermissions.MODIFY_RECORD) && notFlagged) {
             resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getSharedCollections(),
                     authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
 
@@ -426,7 +439,6 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             }
         }
 
-        ErrorTransferObject eto = null;
         if (rcp.getResource() instanceof InformationResource) {
             InformationResource ir = (InformationResource) rcp.getResource();
             saveResourceProviderInformation(ir, rcp.getResourceProviderInstitutionName(), rcp.getCopyrightHolderProxies(), rcp.getPublisherName());

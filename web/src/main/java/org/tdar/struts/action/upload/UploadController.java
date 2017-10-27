@@ -31,6 +31,8 @@ import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnl
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonLookupFilter;
 
+import com.carrotsearch.hppc.Preallocable;
+
 @SuppressWarnings("serial")
 @Namespace("/upload")
 @Component
@@ -55,7 +57,6 @@ public class UploadController extends AbstractAuthenticatableAction {
     private PersonalFilestoreTicket personalFilestoreTicket;
     private String callback;
     private Long informationResourceId;
-    private InputStream jsonInputStream;
     private int jsonContentLength;
 
     // this is the groupId that comes back to us from the the various upload requests
@@ -142,8 +143,8 @@ public class UploadController extends AbstractAuthenticatableAction {
                 file.put("delete_type", "DELETE");
             }
             result.put("ticket", ticket);
-            setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, JsonLookupFilter.class, getCallback())
-                    .getBytes()));
+            this.resultObject = result;
+            this.jsonView = JsonLookupFilter.class;
 
             return SUCCESS;
         } else {
@@ -151,25 +152,35 @@ public class UploadController extends AbstractAuthenticatableAction {
             return ERROR;
         }
     }
+    
+    private Object resultObject;
+    private Class jsonView;
 
-    @Action(value = "grab-ticket", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+    @Action(value = "grab-ticket", results = { @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String grabTicket() {
         personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(personalFilestoreTicket, JsonLookupFilter.class,
-                getCallback())
-                .getBytes()));
+        this.resultObject = personalFilestoreTicket;
+        this.jsonView = JsonLookupFilter.class;
 
         return SUCCESS;
     }
 
+    public Object getResultObject() {
+        return resultObject;
+    }
+    
+    public Class getJsonView() {
+        return jsonView;
+    }
+    
     // construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
     private void buildJsonError() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
         result.put("ticket", ticketId);
         result.put("errors", getActionErrors());
         getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, null, getCallback()).getBytes()));
+        this.resultObject = result;
     }
 
     public List<File> getUploadFile() {
@@ -233,14 +244,6 @@ public class UploadController extends AbstractAuthenticatableAction {
 
     public void setInformationResourceId(Long informationResourceId) {
         this.informationResourceId = informationResourceId;
-    }
-
-    public InputStream getJsonInputStream() {
-        return jsonInputStream;
-    }
-
-    public void setJsonInputStream(InputStream jsonInputStream) {
-        this.jsonInputStream = jsonInputStream;
     }
 
     public int getJsonContentLength() {

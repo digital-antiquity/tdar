@@ -14,10 +14,10 @@
 <div id="titlebar" parse="true">
     <h1>Permissions: <span class="red">${persistable.name}</span></h1>
 </div>
-    <@s.form class="form-horizontal tdarvalidate" action="rights-save" method="POST" dynamicAttributes={"data-validate-method":"initRightsForm"}>
+    <@s.form class="form-horizontal tdarvalidate rightsform" action="rights-save" method="POST" dynamicAttributes={"data-validate-method":"initRightsForm"}>
 <div class="row">
     <div class="span12">
-    <p><b>This collection is currenrly shared with <#if (proxies?size == 1)>person<#else>people</#if>.</b></p>
+    <p><b>This collection is currently shared with <#if (proxies?size == 1)>person<#else>people</#if>.</b></p>
     <@s.hidden name="id" />
     
     <#if editor>

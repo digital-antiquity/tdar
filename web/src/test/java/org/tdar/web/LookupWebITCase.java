@@ -11,7 +11,7 @@ import net.sf.json.JSONObject;
 
 public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    private void assertJsonResult(String url, String resultField, int minResults) {
+    private void assertResultObject(String url, String resultField, int minResults) {
         int status = gotoPageWithoutErrorCheck(url);
         Assert.assertEquals("http result should be 200 OK", HttpServletResponse.SC_OK, status);
         String json = getPageCode();
@@ -22,8 +22,8 @@ public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Assert.assertTrue(resultField + " array list should not be empty", JSONArray.toCollection(jarr).size() >= minResults);
     }
 
-    private void assertJsonResult(String url, String resultField) {
-        assertJsonResult(url, resultField, 1);
+    private void assertResultObject(String url, String resultField) {
+        assertResultObject(url, resultField, 1);
     }
 
     private static int indexCount = 0;
@@ -38,35 +38,35 @@ public class LookupWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     // TODO: These tests should assert more than just valid json and result counts.
     public void testValidPersonLookup() {
-        assertJsonResult("/api/lookup/person?minLookupLength=0", "people");
+        assertResultObject("/api/lookup/person?minLookupLength=0", "people");
     }
 
     @Test
     public void testValidInstitutionLookup() {
-        assertJsonResult("/api/lookup/institution?minLookupLength=0", "institutions");
+        assertResultObject("/api/lookup/institution?minLookupLength=0", "institutions");
         logger.debug(getPageCode());
     }
 
     @Test
     public void testValidResourceLookup() {
-        assertJsonResult("/api/lookup/resource?minLookupLength=0", "resources");
+        assertResultObject("/api/lookup/resource?minLookupLength=0", "resources");
     }
 
     @Test
     public void testValidKeywordLookup() {
-        assertJsonResult("/api/lookup/keyword?minLookupLength=0&keywordType=TemporalKeyword", "items");
+        assertResultObject("/api/lookup/keyword?minLookupLength=0&keywordType=TemporalKeyword", "items");
     }
 
     @Test
     public void testValidCollectionLookup() {
         // TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-        assertJsonResult("/api/lookup/collection?minLookupLength=0", "collections", 0);
+        assertResultObject("/api/lookup/collection?minLookupLength=0", "collections", 0);
     }
 
     @Test
     public void testValidAnnotationKeyLookup() {
         // TODO: put some annotation keys in the test dataset or have this create some resources w/ resourceAnnotations
-        assertJsonResult("/api/lookup/annotationkey?minLookupLength=0", "items", 0);
+        assertResultObject("/api/lookup/annotationkey?minLookupLength=0", "items", 0);
 
     }
 

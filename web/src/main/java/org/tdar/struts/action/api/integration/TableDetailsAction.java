@@ -16,6 +16,7 @@ import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
+import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 
 import com.opensymphony.xwork2.Validateable;
@@ -38,8 +39,12 @@ public class TableDetailsAction extends AbstractJsonApiAction implements Validat
     @Action(value = "table-details")
     public String dataTableDetails() throws IOException {
         TableDetailsProxy proxy = integrationService.getTableDetails(dataTableIds);
-        setJsonObject(proxy, JsonIntegrationDetailsFilter.class);
+        setJsonObject(proxy, getJsonView());
         return SUCCESS;
+    }
+
+    public Class<? extends JacksonView> getJsonView() {
+        return JsonIntegrationDetailsFilter.class;
     }
 
     public List<Long> getDataTableIds() {

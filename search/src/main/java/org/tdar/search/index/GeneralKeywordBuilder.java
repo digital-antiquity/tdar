@@ -106,6 +106,8 @@ public class GeneralKeywordBuilder implements Serializable {
         }
         sb.append(" ").append(ir.getPublisherName());
         sb.append(" ").append(ir.getDoi());
+        sb.append(" ").append(ir.getExternalId());
+        sb.append(" ");
         if (MapUtils.isNotEmpty(relatedDatasetData)) {
             for (String v : relatedDatasetData.values()) {
                 sb.append(v);

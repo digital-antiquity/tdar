@@ -123,6 +123,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String USER_AGREEMENT = "user_agreement";
     public static final String RESULT_REDIRECT_START = "redirect-start";
 
+    public static final String XMLDOCUMENT = "xmldocument";
+
     private String javascriptErrorLog;
 
     /**

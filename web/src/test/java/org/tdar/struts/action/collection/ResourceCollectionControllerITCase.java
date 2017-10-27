@@ -401,7 +401,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
 
     @Test
     @Rollback
-    public void testSaveAndDeleteWithRedundantAccessRights() throws TdarActionException {
+    public void testSaveAndDeleteWithRedundantAccessRights() throws Exception {
         ShareCollectionController controller = generateNewInitializedController(ShareCollectionController.class,getUser());
 
         controller.prepare();
