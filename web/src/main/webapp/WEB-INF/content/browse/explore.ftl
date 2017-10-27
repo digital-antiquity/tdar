@@ -38,6 +38,7 @@
     <ul class="inline">
         <#list resourceTypes as rt>
         <li><a href="/${rt.urlNamespace}">${rt.plural}</a></li>
+        </#list>
     </ul>
     <br/>
 </div>

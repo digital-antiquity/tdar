@@ -18,6 +18,7 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.cache.BrowseDecadeCountCache;
 import org.tdar.core.cache.BrowseYearCountCache;
 import org.tdar.core.service.GenericKeywordService;
@@ -63,7 +64,7 @@ public class ExploreController extends  AbstractAuthenticatableAction {
 
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
-    
+    private List<ResourceType> resourceTypes = ResourceType.activeValues();
     @Autowired
     private transient SerializationService serializationService;
     @Autowired
@@ -198,6 +199,14 @@ public class ExploreController extends  AbstractAuthenticatableAction {
 
     public void setHomepageGraphs(HomepageDetails homepageGraphs) {
         this.homepageGraphs = homepageGraphs;
+    }
+
+    public List<ResourceType> getResourceTypes() {
+        return resourceTypes;
+    }
+
+    public void setResourceTypes(List<ResourceType> resourceTypes) {
+        this.resourceTypes = resourceTypes;
     }
 
 

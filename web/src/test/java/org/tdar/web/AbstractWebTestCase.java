@@ -770,7 +770,7 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
         // logger.info(getPageCode());
         submitForm();
         // make sure we're on the view page
-        assertPageTitleEquals(title);
+        assertPageTitleContains(title);
         assertTextPresentInPage(title + " (ABSTRACT)");
         assertTextPresentInPage(TestConstants.TEST_DOCUMENT_NAME);
     }

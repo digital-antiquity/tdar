@@ -58,7 +58,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         logger.info(page.getUrl().toString());
 
         // make sure we're on the view page
-        assertPageTitleEquals(TEST_TITLE);
+        assertPageTitleContains(TEST_TITLE);
         assertTextPresentInPage(TEST_ABSTRACT);
         assertTextPresentInPage(TestConstants.TEST_DOCUMENT_NAME);
         URL url = internalPage.getUrl();
@@ -68,14 +68,14 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         clickLinkWithText("edit");
         setInput("status", Status.DRAFT.name());
         submitForm();
-        assertPageTitleEquals(TEST_TITLE);
+        assertPageTitleContains(TEST_TITLE);
 
         // now delete it, assert you cannot go to view page anymore
         clickLinkWithText("delete");
         submitForm("delete");
         assertCurrentUrlContains(URLConstants.DASHBOARD);
         gotoPage(url.toString());
-        assertPageTitleEquals("Access Denied");
+        assertPageTitleContains("Access Denied");
     }
 
     @Test
@@ -99,7 +99,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         }
 
         submitForm();
-        assertPageTitleEquals(TEST_TITLE);
+        assertPageTitleContains(TEST_TITLE);
         assertTextPresentInPage(TEST_ABSTRACT);
         assertTextPresentInPage("another description");
         assertTextPresentInPage("test description");
@@ -110,7 +110,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         assertCurrentUrlContains(URLConstants.DASHBOARD);
 
         gotoPage(url.toString());
-        assertPageTitleEquals("Access Denied");
+        assertPageTitleContains("Access Denied");
     }
 
 }
