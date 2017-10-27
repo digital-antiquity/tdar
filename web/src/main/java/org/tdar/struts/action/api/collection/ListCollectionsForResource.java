@@ -1,10 +1,7 @@
 package org.tdar.struts.action.api.collection;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -18,7 +15,6 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.service.EntityService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
@@ -26,8 +22,8 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.json.JsonLookupFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
@@ -48,93 +44,44 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 	@Autowired
 	private transient ResourceCollectionService resourceCollectionService;
 
-	@Autowired
-	private transient EntityService entityService;
-
 	private Resource resource;
 	
     private Long resourceId;
-	
 
-	private class JsonCollection {
-		private Long id;
-		private String name;
-		private boolean owned; 
-
-		public JsonCollection(Long id, String name, boolean owned) {
-			this.setId(id);
-			this.setName(name);
-			this.setOwned(owned);
-		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public void setId(Long id) {
-			this.id = id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public boolean isOwned() {
-			return owned;
-		}
-
-		public void setOwned(boolean owned) {
-			this.owned = owned;
-		}
-	}
-
+    public Class<?> getJsonView(){
+    	return JsonLookupFilter.class;
+    }
+    
 	@Action(value = "resourcecollections", results = { @Result(name = SUCCESS, type = "jsonresult") })
 	@Transactional(readOnly=true)
 	public String view() throws Exception {
-
-		/*
-		 * if (PersistableUtils.isNullOrTransient(getId()) ||
-		 * PersistableUtils.isNullOrTransient(resource)) {
-		 * getLogger().debug("input"); return INPUT; }
-		 */
-
-		Map<Long, JsonCollection> map = new HashMap<Long, JsonCollection>();
-
-		getLogger().trace("parent/ owner collections");
-		for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
-			if (rc.isTopLevel()) {
-					if(rc.getResourceIds().contains(resourceId) || rc.getUnmanagedResourceIds().contains(resourceId)) {
-						map.put(rc.getId(), new JsonCollection(rc.getId(), rc.getName(), authorizationService.canEdit(getAuthenticatedUser(), rc)));
-					}
+		TdarUser user = getAuthenticatedUser();
+		List<ResourceCollection> list = new ArrayList<ResourceCollection>();
+		
+		for(ResourceCollection resourceCollection : resource.getManagedResourceCollections()){
+			getLogger().debug("Checking collection {}",resourceCollection.getName());
+			if(authorizationService.canEdit(user, resourceCollection)){
+				getLogger().debug("Adding collection {}",resourceCollection.getName());
+				list.add(resourceCollection);
 			}
 		}
 		
-		getLogger().trace("accessible collections");
-		for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-			if (rc instanceof ResourceCollection && !map.containsKey(rc.getId())) {
-				if(rc.getResourceIds().contains(resourceId) || rc.getUnmanagedResourceIds().contains(resourceId)) {
-					map.put(rc.getId(), new JsonCollection(rc.getId(), rc.getName(), authorizationService.canEdit(getAuthenticatedUser(), rc)));
-				}
+		for(ResourceCollection resourceCollection : resource.getUnmanagedResourceCollections()){
+			getLogger().debug("Checking collection {}",resourceCollection.getName());
+			if(authorizationService.canEdit(user, resourceCollection)){
+				getLogger().debug("Adding collection {}",resourceCollection.getName());
+				list.add(resourceCollection);
 			}
 		}
+		
+		setResultObject(list);
 
-		ObjectMapper mapper = new ObjectMapper();
-		List<JsonCollection> list = new ArrayList<JsonCollection>();
-		
-		list.addAll(map.values());
-		
-		setJsonInputStream(new ByteArrayInputStream(mapper.writeValueAsString(list).getBytes()));
 		return SUCCESS;
 	}
 
 	@Override
 	public void validate() {
 		super.validate();
-		resource = getGenericService().find(Resource.class, resourceId);
 		
 		if (PersistableUtils.isNullOrTransient(resource) || !authorizationService.canView(getAuthenticatedUser(), resource)) {
 			 addActionError("cannot edit resource");
@@ -143,17 +90,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 
 	@Override
 	public void prepare() throws Exception {
-		/*
-		 * if (PersistableUtils.isNotNullOrTransient(getId())) { resource =
-		 * getGenericService().find(ResourceCollection.class, getId()); if
-		 * (resource == null) { getLogger().debug("could not find resource: {}",
-		 * getId()); } String title = "no title"; if (resource instanceof
-		 * ResourceCollection) { title = ((ResourceCollection)
-		 * resource).getTitle(); } logMessage("API VIEWING",
-		 * resource.getClass(), resource.getId(), title);
-		 * getXmlResultObject().setCollectionResult(resource); }
-		 */
-
+		resource = getGenericService().find(Resource.class, resourceId);
 	}
 
 	public ResourceCollectionService getResourceCollectionService() {

@@ -532,6 +532,7 @@
         }
     });  
     
+    $("#addToExisting").popover({placement:'right', delay:{hide:2000}});
     
   var app2 = new Vue({
     el: '#app-2',
@@ -544,6 +545,7 @@
         managedResource: false,
         resourceId: ${resource.id?c},
         canEdit: ${editable?c}
+        collections: []
     },
     methods: {
         getCollections: function(){
@@ -562,35 +564,60 @@
             $.post('/api/collection/addtocollection',data);
         },
         
+        _getCollectionsForResource : function(resourceId){
+            var data = {
+                resourceId : this.resourceId
+            }
+            
+            var self = this;
+            $.getJSON( "/api/collection/resourcecollections?resourceId="+this.resourceId, function(data) {
+                    self.collections = data;
+            });
+        }
+        
         addToCollection:function(){
+            var vapp = this;
+            
             if(this.pick=="existing"){
                 if(this.selectedCollection==0){
                     //This should change the background color to red and invalidate the box. 
                     $("#collection-list").addClass("invalid-feedback");
                     
+                    
+                    console.debug("Adding popover");
                     //Change this to popovers.
-                    alert("you need to select a collection");
+                    $("#addToExisting").popover('show');
+                     setTimeout(function () {
+                            $('#addToExisting').popover('hide');
+                        }, 2000);
                 }
                 else { 
-                   _addResourceToCollection(this.selectedCollection);
+                   vapp._addResourceToCollection(this.selectedCollection);
                 }
             }
             else {
-                //post to create a new collection.
-                console.log("Name is "+this.newCollectionName);
-                var data = {
-                    collectionName: this.newCollectionName
+            
+                if(this.newCollectionName==""){
+                     $("#addToNew").popover('show');
+                     setTimeout(function () {
+                            $('#addToNew').popover('hide');
+                        }, 2000);
                 }
-                
-                var vapp = this;
-                
-                //On success, add the resource.
-                $.post('/api/collection/newcollection',data,function(res){
-                        console.log("Adding resource to new console");
-                        var id = res.id;
-                        vapp._addResourceToCollection(id);
+                else {
+                    //post to create a new collection.
+                    console.log("Name is "+this.newCollectionName);
+                    var data = {
+                        collectionName: this.newCollectionName
                     }
-                );
+                    
+                    //On success, add the resource.
+                    $.post('/api/collection/newcollection',data,function(res){
+                            console.log("Adding resource to new console");
+                            var id = res.id;
+                            vapp._addResourceToCollection(id);
+                        }
+                    );
+                }
             }
         },
 
@@ -713,12 +740,12 @@
                           <div>
                             <label class="form-check-label"> 
                                 <input type="radio" id="rb_existing" v-model="pick" value="existing"> 
-                                Add To An Existing Collection
+                                <span id='addToExisting' data-content="A collection must be selected">Add To An Existing Collection</span>
                             </label>
                             
                             <div v-show="pick=='existing'" style="padding-left:20px;" class="form-group">
                               <div>
-                                  <select id="collection-list" >
+                                  <select id="collection-list">
                                   </select>
                                   
                                   <input v-model="selectedCollection" type="hidden">
@@ -732,14 +759,13 @@
                         <div>
                             <label class="form-check-label">
                                 <input type="radio" id="rb_new" v-model="pick" value="newcollection"> 
-                                Add To A New Collection
+                                <span>Add To A New Collection</span>
                             </label>
                         </div>
                         
                         <div v-if="pick=='newcollection'" style="padding-left:20px;">
                             <label> 
                             <input class="form-control" id='new-collection-name' name="newCollectionName" v-model="newCollectionName" />
-                            {{newCollectionName}}
                         </div>
                         
                         <div v-if="canEdit">
@@ -747,7 +773,12 @@
                                 <input type="checkbox" v-model="managedResource" />
                                  Grant rights to Edit this record to users of this collection
                             </label>
-                          </div>
+                         </div>
+                         
+                         <div>
+                            <!-- show collections -->                         
+                         </div>
+                         
                     </form>    
               </div>
               <div class="modal-footer">
