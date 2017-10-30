@@ -519,7 +519,6 @@
   <script>
     
     Vue.component('collection', 
-    
     { 
     props: ["id","name"],
     template: "<option :id='id' class='extra'>{{name}}</option>",
@@ -530,6 +529,12 @@
                // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
             }
         }
+    });
+    
+     Vue.component('resource-collection', 
+    { 
+    props: ["id","name"],
+    template: "<li :id='id' class='extra'>{{name}}</li>",
     });  
     
     $("#addToExisting").popover({placement:'right', delay:{hide:2000}});
@@ -544,10 +549,19 @@
         showPermission:false,
         managedResource: false,
         resourceId: ${resource.id?c},
-        canEdit: ${editable?c}
+        canEdit: ${editable?c},
         collections: []
     },
+    mounted: function() {
+     this._getCollectionsForResource();
+    },
     methods: {
+    
+        _resetForm: function(){
+            this.selectedCollection= 0 ,
+            this.pick="existing",
+            this.newCollectionName=""
+        },
         getCollections: function(){
             var self = this;
             $.getJSON( "/api/lookup/collection?permission=ADMINISTER_COLLECTION", function(data) {
@@ -562,9 +576,11 @@
                 addAsManagedResource:this.managedResource
             }
             $.post('/api/collection/addtocollection',data);
+            this._getCollectionsForResource();
+            this._resetForm();
         },
         
-        _getCollectionsForResource : function(resourceId){
+        _getCollectionsForResource : function(){
             var data = {
                 resourceId : this.resourceId
             }
@@ -573,7 +589,17 @@
             $.getJSON( "/api/collection/resourcecollections?resourceId="+this.resourceId, function(data) {
                     self.collections = data;
             });
-        }
+        },
+        
+        removeResourceFromCollection: function(collection){
+        var data =  {
+                resourceId:this.resourceId,
+                collectionId:collection.id
+            }
+            console.debug("removing collection id"+collection);
+            $.post('/api/collection/removefromcollection',data);
+            
+        },
         
         addToCollection:function(){
             var vapp = this;
@@ -593,6 +619,7 @@
                 }
                 else { 
                    vapp._addResourceToCollection(this.selectedCollection);
+                   vapp._getCollectionsForResource();
                 }
             }
             else {
@@ -615,13 +642,12 @@
                             console.log("Adding resource to new console");
                             var id = res.id;
                             vapp._addResourceToCollection(id);
+                            this._resetForm();
                         }
                     );
                 }
             }
         },
-
-
         
         showGrant: function(){
            var index = $('#collection-list').prop('selectedIndex');
@@ -646,7 +672,6 @@
                         return '<div>' +
                             '<span class="title">' +
                                 '<span class="name">' + escape(item.name) + '</span>' +
-                                '<span class="by">' + escape(item.id) + '</span>' +
                             '</span>' +
                         '</div>';
                     }
@@ -675,7 +700,7 @@
            Vue.set(app2,'selectedCollection',this.value);
          });
 
-    
+        app2.get
   </script>
 
 </div>
@@ -776,7 +801,13 @@
                          </div>
                          
                          <div>
-                            <!-- show collections -->                         
+                            <h3>Included as part of : </h3>
+                            <li v-for="collection in collections">
+                                {{collection.name}} <a v-on:click='removeResourceFromCollection(collection)'>Remove</a>
+                            </li>
+                            <div v-if="collections.length == 0">
+                                Not part of any collections
+                            </div>
                          </div>
                          
                     </form>    

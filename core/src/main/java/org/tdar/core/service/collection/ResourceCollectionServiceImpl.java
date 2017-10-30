@@ -1085,7 +1085,6 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
             resource.getUnmanagedResourceCollections().remove(collection);
             // ((ListCollection)collection).getUnmanagedResources().remove(resource);
         }
-
     }
 
     /*

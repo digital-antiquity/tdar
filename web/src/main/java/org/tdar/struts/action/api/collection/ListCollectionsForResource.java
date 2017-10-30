@@ -57,7 +57,9 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 	public String view() throws Exception {
 		TdarUser user = getAuthenticatedUser();
 		List<ResourceCollection> list = new ArrayList<ResourceCollection>();
-		
+		getLogger().debug("Adding resource {}",resource);
+		System.out.println(resource.getName());
+
 		for(ResourceCollection resourceCollection : resource.getManagedResourceCollections()){
 			getLogger().debug("Checking collection {}",resourceCollection.getName());
 			if(authorizationService.canEdit(user, resourceCollection)){
@@ -75,7 +77,6 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 		}
 		
 		setResultObject(list);
-
 		return SUCCESS;
 	}
 

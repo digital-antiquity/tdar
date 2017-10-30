@@ -1,6 +1,5 @@
 package org.tdar.struts.action.api.collection;
 
-import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,10 +11,10 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -24,22 +23,24 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 @Namespace("/api/collection")
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
+@RequiresTdarUserGroup(TdarGroup.TDAR_USERS)
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
-@Results(value = {
-        @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }),
-        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
-})
-public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction implements Preparable {
+@Results(value = { @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT),
+		@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream",
+				"jsonInputStream", "statusCode", "500" }) })
+public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction implements Preparable, Validateable  {
 
     private static final long serialVersionUID = -4463769039427602490L;
     private Long resourceId;
@@ -57,8 +58,6 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     @Autowired
     private AuthorizationService authorizationService;
     
-    private Map<String, Object> jsonResult = new HashMap<String, Object>();
-    
     @Override
     public void validate() {
         super.validate();
@@ -70,20 +69,20 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
         }
     }
     
-    @Override
     @WriteableSession
     @PostOnly
-    @Action(value="removeResource")
-    public String execute() throws Exception {
+    @Action(value="removefromcollection", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
+    public String removeResourceFromCollection() throws Exception {
+        Map<String, Object> jsonResult = new HashMap<String, Object>();
     	try { 
-    		resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser(), type);
-    		setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
+    		resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser(), CollectionResourceSection.MANAGED);
+    		setResultObject(jsonResult);
     		return SUCCESS;
     	}
     	catch(Throwable e){
     		addActionErrorWithException(e.getMessage(), e);
     		return INPUT;
-    	}
+    	} 
     }
 
     @Override
@@ -117,12 +116,4 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
         this.type = type;
     }
 
-	public Map<String, Object> getJsonResult() {
-		return jsonResult;
-	}
-
-	public void setJsonResult(Map<String, Object> jsonResult) {
-		this.jsonResult = jsonResult;
-	}
-    
 }

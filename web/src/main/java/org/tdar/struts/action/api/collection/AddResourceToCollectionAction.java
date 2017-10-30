@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
@@ -57,8 +58,6 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 	private Boolean addAsManagedResource = false;
 
 	private ResourceCollection resourceCollection;
-	
-
 
 	@Action(value = "addtocollection", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
 	@WriteableSession
@@ -77,6 +76,7 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 				resourceCollection.getManagedResources().add(resource);
 				getGenericService().saveOrUpdate(resourceCollection.getManagedResources());
 				jsonResult.put("status", "success");
+				jsonResult.put("type", 	 "managed");
 				jsonResult.put("reason", "");
 				jsonResult.put("resourceId", resourceId);
 				jsonResult.put("collectionId", collectionId);
@@ -84,11 +84,18 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 		//verify that they can add it to the requested collection
 		else if(authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
 				resourceCollection.getUnmanagedResources().add(resource);
+				try {
 				getGenericService().saveOrUpdate(resourceCollection.getUnmanagedResources());
 				jsonResult.put("status", "success");
+				jsonResult.put("type", 	 "unmanaged");
 				jsonResult.put("reason", "");
 				jsonResult.put("resourceId", resourceId);
 				jsonResult.put("collectionId", collectionId);
+				}
+				catch(TdarRecoverableRuntimeException e){
+					jsonResult.put("status", "failure");
+					jsonResult.put("type", 	 e.getMessage());
+				}
 		}
 		
 		setResultObject(jsonResult);
