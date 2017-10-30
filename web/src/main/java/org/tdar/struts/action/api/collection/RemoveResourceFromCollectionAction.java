@@ -75,7 +75,7 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     public String removeResourceFromCollection() throws Exception {
         Map<String, Object> jsonResult = new HashMap<String, Object>();
     	try { 
-    		resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser(), CollectionResourceSection.MANAGED);
+    		resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser(), type);
     		setResultObject(jsonResult);
     		return SUCCESS;
     	}

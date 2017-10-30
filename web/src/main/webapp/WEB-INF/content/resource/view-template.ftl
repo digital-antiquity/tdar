@@ -550,7 +550,7 @@
         managedResource: false,
         resourceId: ${resource.id?c},
         canEdit: ${editable?c},
-        collections: []
+        collections: {managed:[], unmanaged:[]}
     },
     mounted: function() {
      this._getCollectionsForResource();
@@ -558,9 +558,12 @@
     methods: {
     
         _resetForm: function(){
-            this.selectedCollection= 0 ,
+            this.selectedCollection=0,
             this.pick="existing",
-            this.newCollectionName=""
+            this.newCollectionName="";
+            this.managedResource = false;            
+            var $select = $('#collection-list').selectize();
+            $select[0].selectize.clear();
         },
         getCollections: function(){
             var self = this;
@@ -571,13 +574,19 @@
         
         _addResourceToCollection : function(collectionId){
             var data =  {
-                        resourceId:this.resourceId,
-                        collectionId:collectionId,
+                resourceId:this.resourceId,
+                collectionId:collectionId,
                 addAsManagedResource:this.managedResource
             }
-            $.post('/api/collection/addtocollection',data);
-            this._getCollectionsForResource();
-            this._resetForm();
+            
+            var self=this;
+            
+            $.post('/api/collection/addtocollection',data, function(){
+                self._getCollectionsForResource();
+                self._resetForm();
+            }
+            );
+            
         },
         
         _getCollectionsForResource : function(){
@@ -591,14 +600,19 @@
             });
         },
         
-        removeResourceFromCollection: function(collection){
+        removeResourceFromCollection: function(collection,section){
         var data =  {
                 resourceId:this.resourceId,
-                collectionId:collection.id
+                collectionId:collection.id,
+                type:section
             }
-            console.debug("removing collection id"+collection);
-            $.post('/api/collection/removefromcollection',data);
+            var self = this;
             
+            console.debug("removing collection id"+collection);
+            
+            $.post('/api/collection/removefromcollection',data, function(){
+             self._getCollectionsForResource();
+            });
         },
         
         addToCollection:function(){
@@ -772,9 +786,7 @@
                               <div>
                                   <select id="collection-list">
                                   </select>
-                                  
                                   <input v-model="selectedCollection" type="hidden">
-                                  {{selectedCollection}}
                               </div>
                               </div>
                           </div>
@@ -802,10 +814,13 @@
                          
                          <div>
                             <h3>Included as part of : </h3>
-                            <li v-for="collection in collections">
-                                {{collection.name}} <a v-on:click='removeResourceFromCollection(collection)'>Remove</a>
+                            <li v-for="collection in collections.managed">
+                                {{collection.name}} (rights managed) <a v-on:click='removeResourceFromCollection(collection,"MANAGED")'>Remove</a>
                             </li>
-                            <div v-if="collections.length == 0">
+                            <li v-for="collection in collections.unmanaged">
+                                {{collection.name}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")'>Remove</a>
+                            </li>
+                            <div v-if="collections.managed.length == 0 && collections.unmanaged.length==1">
                                 Not part of any collections
                             </div>
                          </div>

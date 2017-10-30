@@ -12,11 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -74,7 +76,8 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 		//if they want to add as managed resource
 		if (addAsManagedResource && authorizationService.canEdit(getAuthenticatedUser(), resource)){
 				resourceCollection.getManagedResources().add(resource);
-				getGenericService().saveOrUpdate(resourceCollection.getManagedResources());
+				//getGenericService().saveOrUpdate(resourceCollection.getManagedResources());
+				resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.MANAGED);
 				jsonResult.put("status", "success");
 				jsonResult.put("type", 	 "managed");
 				jsonResult.put("reason", "");
@@ -85,7 +88,8 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 		else if(authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
 				resourceCollection.getUnmanagedResources().add(resource);
 				try {
-				getGenericService().saveOrUpdate(resourceCollection.getUnmanagedResources());
+					resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.UNMANAGED);
+				//getGenericService().saveOrUpdate(resourceCollection.getUnmanagedResources());
 				jsonResult.put("status", "success");
 				jsonResult.put("type", 	 "unmanaged");
 				jsonResult.put("reason", "");
@@ -126,6 +130,7 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 	public void prepare() throws Exception {
 		super.prepare();
 		resource = getGenericService().find(Resource.class, resourceId);
+		
 		resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
 	}
 

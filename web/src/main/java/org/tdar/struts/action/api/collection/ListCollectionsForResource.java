@@ -1,7 +1,9 @@
 package org.tdar.struts.action.api.collection;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -56,7 +58,8 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 	@Transactional(readOnly=true)
 	public String view() throws Exception {
 		TdarUser user = getAuthenticatedUser();
-		List<ResourceCollection> list = new ArrayList<ResourceCollection>();
+		ArrayList<ResourceCollection> managed = new ArrayList<ResourceCollection>();
+		ArrayList<ResourceCollection> unmanaged = new ArrayList<ResourceCollection>();
 		getLogger().debug("Adding resource {}",resource);
 		System.out.println(resource.getName());
 
@@ -64,7 +67,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 			getLogger().debug("Checking collection {}",resourceCollection.getName());
 			if(authorizationService.canEdit(user, resourceCollection)){
 				getLogger().debug("Adding collection {}",resourceCollection.getName());
-				list.add(resourceCollection);
+				managed.add(resourceCollection);
 			}
 		}
 		
@@ -72,11 +75,15 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 			getLogger().debug("Checking collection {}",resourceCollection.getName());
 			if(authorizationService.canEdit(user, resourceCollection)){
 				getLogger().debug("Adding collection {}",resourceCollection.getName());
-				list.add(resourceCollection);
+				unmanaged.add(resourceCollection);
 			}
 		}
 		
-		setResultObject(list);
+		Map<String, ArrayList<ResourceCollection>> result = new HashMap<String, ArrayList<ResourceCollection>>();
+		result.put("managed",	managed);
+		result.put("unmanaged", unmanaged);
+		
+		setResultObject(result);
 		return SUCCESS;
 	}
 
