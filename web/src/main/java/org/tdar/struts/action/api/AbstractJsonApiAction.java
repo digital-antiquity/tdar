@@ -15,7 +15,8 @@ import com.opensymphony.xwork2.Preparable;
 
 @Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }),
-        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" }),
+        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
 })
 public abstract class AbstractJsonApiAction extends AbstractAuthenticatableAction implements Preparable {
 
