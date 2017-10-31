@@ -1,6 +1,5 @@
 package org.tdar.struts.action.api.collection;
 
-import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +22,6 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
@@ -37,7 +35,7 @@ import com.opensymphony.xwork2.Validateable;
 @Results(value = { @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT),
 		@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream",
 				"jsonInputStream", "statusCode", "500" }) })
-public class AddNewCollectionAction extends AbstractJsonApiAction implements Preparable, Validateable {
+public class AddNewCollectionAction extends AbstractJsonApiAction implements Validateable {
 
 	private static final long serialVersionUID = 1344077793459231299L;
 
@@ -62,8 +60,6 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Pre
 		jsonResult.put("name", getCollectionName());
 		jsonResult.put("id", collectionId);
 		
-		/*ObjectMapper mapper = new ObjectMapper();
-		setJsonInputStream(new ByteArrayInputStream(mapper.writeValueAsString(result).getBytes()));*/
 		setResultObject(jsonResult);
 		return SUCCESS;
 	}
@@ -74,10 +70,6 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Pre
 		if(getCollectionName() == null || getCollectionName().trim().equals("")){
 			addActionError("no name provided");
 		}
-	}
-
-	@Override
-	public void prepare() throws Exception {
 	}
 
 	public Long getCollectionId() {

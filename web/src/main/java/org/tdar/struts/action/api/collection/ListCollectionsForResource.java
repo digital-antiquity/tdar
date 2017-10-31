@@ -1,6 +1,7 @@
 package org.tdar.struts.action.api.collection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -48,7 +50,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 	private transient ResourceCollectionService resourceCollectionService;
 
 	private Resource resource;
-	
+	private Permissions permission = Permissions.REMOVE_FROM_COLLECTION;
     private Long resourceId;
 
     public Class<? extends JacksonView> getJsonView(){
@@ -62,23 +64,9 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 		ArrayList<ResourceCollection> managed = new ArrayList<ResourceCollection>();
 		ArrayList<ResourceCollection> unmanaged = new ArrayList<ResourceCollection>();
 		getLogger().debug("Adding resource {}",resource);
-		System.out.println(resource.getName());
 
-		for(ResourceCollection resourceCollection : resource.getManagedResourceCollections()){
-			getLogger().debug("Checking collection {}",resourceCollection.getName());
-			if(authorizationService.canEdit(user, resourceCollection)){
-				getLogger().debug("Adding collection {}",resourceCollection.getName());
-				managed.add(resourceCollection);
-			}
-		}
-		
-		for(ResourceCollection resourceCollection : resource.getUnmanagedResourceCollections()){
-			getLogger().debug("Checking collection {}",resourceCollection.getName());
-			if(authorizationService.canEdit(user, resourceCollection)){
-				getLogger().debug("Adding collection {}",resourceCollection.getName());
-				unmanaged.add(resourceCollection);
-			}
-		}
+		addToCollectionList(resource.getManagedResourceCollections(),user, managed);
+		addToCollectionList(resource.getUnmanagedResourceCollections(),user, unmanaged);
 		
 		Map<String, ArrayList<ResourceCollection>> result = new HashMap<String, ArrayList<ResourceCollection>>();
 		result.put("managed",	managed);
@@ -87,6 +75,27 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 		setResultObject(result);
 		return SUCCESS;
 	}
+
+    private void addToCollectionList(Collection<ResourceCollection> collections, TdarUser user, ArrayList<ResourceCollection> managed) {
+        for(ResourceCollection resourceCollection : collections){
+			getLogger().debug("Checking collection {}",resourceCollection.getName());
+			if(testCollection(user, resourceCollection)){
+		        getLogger().debug("Adding collection {}",resourceCollection.getName());
+		        managed.add(resourceCollection);
+			}
+		}
+    }
+
+    private boolean testCollection(TdarUser user, ResourceCollection resourceCollection) {
+        if (permission == Permissions.ADD_TO_COLLECTION) {
+            return authorizationService.canAddToCollection(user, resourceCollection);
+        }
+        if (permission == Permissions.REMOVE_FROM_COLLECTION) {
+            return authorizationService.canRemoveFromCollection( resourceCollection, user);
+        }
+        return authorizationService.canEdit(user, resourceCollection);
+    }
+
 
 	@Override
 	public void validate() {
@@ -117,5 +126,13 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 	public void setResourceId(Long resourceId) {
 		this.resourceId = resourceId;
 	}
+
+    public Permissions getPermission() {
+        return permission;
+    }
+
+    public void setPermission(Permissions permission) {
+        this.permission = permission;
+    }
 
 }

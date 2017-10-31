@@ -275,9 +275,6 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-        // if (persistable instanceof ListCollection) {
-        // return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADD_TO_COLLECTION);
-        // }
         return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, Permissions.ADD_TO_COLLECTION);
     }
 
