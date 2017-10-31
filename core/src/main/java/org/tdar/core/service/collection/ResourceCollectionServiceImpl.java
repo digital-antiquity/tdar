@@ -234,7 +234,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
         if (comparator.rightsDifferent()) {
             logger.debug("{}", actor);
 
-            if (!authorizationService.canAdminiserUsersOn(source, actor)) {
+            if (!authorizationService.canAdminiserUsersOn( actor, source)) {
                 throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
             }
 
@@ -360,7 +360,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
 
     private <C extends ResourceCollection> void removeResourceCollectionFromResource(Resource resource, Set<C> current, TdarUser authenticatedUser,
             C collection) {
-        if (!authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {
+        if (!authorizationService.canRemoveFromCollection(authenticatedUser, collection)) {
             String name = "Collection";
             if (collection instanceof ResourceCollection) {
                 name = ((ResourceCollection) collection).getName();
@@ -772,7 +772,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
         }
 
         if (CollectionUtils.isNotEmpty(resourcesToRemove)) {
-            if (!authorizationService.canRemoveFromCollection((ResourceCollection) persistable, authenticatedUser)) {
+            if (!authorizationService.canRemoveFromCollection(authenticatedUser, (ResourceCollection) persistable)) {
                 throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_remmove_error",
                         Arrays.asList(getName((ResourceCollection) persistable)));
             }
@@ -815,7 +815,7 @@ public class ResourceCollectionServiceImpl  extends ServiceInterface.TypedDaoBas
     @Transactional(readOnly = false)
     public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser) {
         if (!authorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
-                authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {
+                authorizationService.canRemoveFromCollection(authenticatedUser, collection)) {
             throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
         } else {
             removeFromCollection(resource, collection);
