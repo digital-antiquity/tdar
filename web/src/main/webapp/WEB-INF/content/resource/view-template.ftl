@@ -8,8 +8,9 @@
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "/WEB-INF/macros/common.ftl" as common>
 
+<#assign hasProject = (resource.project?? && resource.project.id?? && resource.project.id != -1)/>
 <head>
-    <title>${resource.title}</title>
+    <title>${resource.title}<#if hasProject> from ${resource.project.title}</#if> <#if (resource.primaryCreators?size > 0)> (${ resource.primaryCreators[0].creator.properName})</#if> | ${siteName}</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     <#if includeRssAndSearchLinks??>
         <#import "/WEB-INF/macros/search-macros.ftl" as search>
@@ -59,8 +60,8 @@
 
 <@view.pageStatusCallout />
 
-<h1 class="view-page-title">${resource.title!"No Title"}</h1>
-<#if resource.project?? && resource.project.id?? && resource.project.id != -1>
+    <h1 class="view-page-title">${resource.title!"No Title"}</h1>
+    <#if hasProject>
 
 <div id="subtitle">
     <p>Part of the

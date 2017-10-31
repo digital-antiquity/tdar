@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -120,7 +121,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         LuceneSearchResultHandler<Resource> result = new SearchResult<>();
         resourceSearchService.buildAdvancedSearch(asqo, getAdminUser(), result, MessageHelper.getInstance());
     }
-    
+
     @Test
     @Rollback
     public void testSiteNameKeywords() throws SearchException, SearchIndexException, IOException, ParseException {
@@ -135,6 +136,28 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         for (Indexable resource : result.getResults()) {
             assertTrue("expecting site name for resource", ((Resource)resource).getSiteNameKeywords().contains(snk));
         }
+    }
+
+    @Test
+    @Rollback
+    public void testDoi() throws SearchException, SearchIndexException, IOException, ParseException {
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.setExternalId("doi:10.6067/XCV8Z89BKF");
+        Long docId = doc.getId();
+        genericService.saveOrUpdate(doc);
+        SearchParameters sp = new SearchParameters();
+        SearchResult<Resource> result = doSearch("doi:10.6067/XCV8Z89BKF",null,sp,null);
+        assertFalse("we should get back at least one hit", result.getResults().isEmpty());
+        logger.debug("{}",doc);
+        logger.debug("---------");
+        boolean seenId = false;
+        for (Indexable resource : result.getResults()) {
+            logger.debug("{}", resource);
+            if (Objects.equals(docId, resource.getId())) {
+                seenId = true;
+            }
+        }
+            assertTrue("expecting doi for resource search", seenId);
     }
     
     @Test

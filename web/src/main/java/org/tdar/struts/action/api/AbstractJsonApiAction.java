@@ -10,15 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.result.HasJsonDocumentResult;
+import org.tdar.utils.json.JacksonView;
 
 import com.opensymphony.xwork2.Preparable;
 
 @Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }),
-        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" }),
-        @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
 })
-public abstract class AbstractJsonApiAction extends AbstractAuthenticatableAction implements Preparable {
+public abstract class AbstractJsonApiAction extends AbstractAuthenticatableAction implements Preparable, HasJsonDocumentResult {
 
     private static final long serialVersionUID = -1603470633052691056L;
     private InputStream jsonInputStream;
@@ -26,7 +27,7 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
     @Autowired
     protected transient SerializationService serializationService;
 
-    private Class jsonView;
+    private Class<? extends JacksonView> jsonView;
     private Object resultObject;
     /**
      * Convenience method for serializing the specified object and converting it to an inputStream.
@@ -37,15 +38,16 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
      *            JSON filter view to use during serialization
      * @throws IOException
      */
-    protected final void setJsonObject(Object obj, Class<?> jsonFilter) throws IOException {
-        this.setResultObject(obj);
+    protected final void setJsonObject(Object obj, Class<? extends JacksonView> jsonFilter) throws IOException {
+        this.resultObject = obj;
         this.jsonView = jsonFilter;
         String message = serializationService.convertToFilteredJson(obj, jsonFilter);
         getLogger().trace(message);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }
 
-    public Class getJsonView() {
+    @Override
+    public Class<? extends JacksonView> getJsonView() {
         return jsonView;
     }
     
@@ -59,6 +61,9 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
      *            object to stringify
      * @throws IOException
      */
+    protected final void setResultObject(Object obj) throws IOException {
+        setJsonObject(obj, null);
+    }
     protected final void setJsonObject(Object obj) throws IOException {
         setJsonObject(obj, null);
     }
@@ -72,10 +77,6 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
     protected final void setJsonInputStream(InputStream jsonInputStream) {
         this.jsonInputStream = jsonInputStream;
     }
-
-	public void setResultObject(Object resultObject) {
-		this.resultObject = resultObject;
-	}
 
 
 }

@@ -24,6 +24,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.opensymphony.xwork2.Preparable;
@@ -50,7 +51,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 	
     private Long resourceId;
 
-    public Class<?> getJsonView(){
+    public Class<? extends JacksonView> getJsonView(){
     	return JsonLookupFilter.class;
     }
     

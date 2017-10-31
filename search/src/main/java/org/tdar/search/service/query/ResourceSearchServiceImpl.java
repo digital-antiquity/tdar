@@ -29,6 +29,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
@@ -351,6 +352,22 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         q.append(params.toQueryPartGroup(support));
         q.append(reservedSearchParameters.toQueryPartGroup(support));
         result.setSortField(SortOption.DATE);
+        searchService.handleSearch(q, result, support);
+        return result;
+    }
+
+    @Transactional(readOnly =true)
+    public LuceneSearchResultHandler<Resource> findByResourceType(ResourceType resourceType, LuceneSearchResultHandler<Resource> result, TextProvider support) throws SearchException, IOException {
+        ResourceQueryBuilder q = new ResourceQueryBuilder();
+        q.setOperator(Operator.AND);
+        ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
+        reservedSearchParameters.setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE)));
+        initializeReservedSearchParameters(reservedSearchParameters, null);
+        SearchParameters params = new SearchParameters();
+        params.getResourceTypes().add(resourceType);
+        q.append(params.toQueryPartGroup(support));
+        q.append(reservedSearchParameters.toQueryPartGroup(support));
+        result.setSortField(SortOption.TITLE);
         searchService.handleSearch(q, result, support);
         return result;
     }

@@ -33,17 +33,6 @@
     </rule>
 
     <rule>
-        <from>^/(document)s?/?$</from>
-        <to type="redirect">/search/results?resourceTypes=DOCUMENT&amp;startRecord=0
-        </to>
-    </rule>
-
-    <rule>
-        <from>^/(collection)s?/?$</from>
-        <to type="redirect">/browse/collections</to>
-    </rule>
-
-    <rule>
         <from>^/filestore/?$</from>
         <to type="redirect">/</to>
     </rule>
@@ -193,46 +182,6 @@
         <to>/search/basic</to>
     </rule>
 
-
-    <rule>
-        <from>^/(dataset)s?/?$</from>
-        <to type="redirect">/search/results?resourceTypes=DATASET&amp;startRecord=0
-        </to>
-    </rule>
-
-    <rule>
-        <from>^/(coding-sheet)s?/?$</from>
-        <to type="redirect">/search/results?resourceTypes=CODING_SHEET&amp;startRecord=0
-        </to>
-    </rule>
-    
-    <rule>
-        <from>^/(ontology)s?/?$</from>
-        <to type="redirect">/search/results?resourceTypes=ONTOLOGY&amp;startRecord=0
-        </to>
-    </rule>
-
-    <rule>
-        <from>^/(image)s?/?$</from>
-        <to type="redirect">/search/results?resourceTypes=IMAGE&amp;startRecord=0</to>
-    </rule>
-
-    <rule>
-        <from>^/(archive)s?/?$</from>
-        <to type="redirect">/search/results?resourceTypes=ARCHIVE&amp;startRecord=0</to>
-    </rule>
-
-    <rule>
-        <from>^/(project)s?/?$</from>
-        <to type="redirect">/search/results?resourceTypes=PROJECT&amp;startRecord=0
-        </to>
-    </rule>
-
-    <rule>
-        <from>^/(audio)s?/?$</from>
-        <to type="redirect">/search/results?resourceTypes=AUDIO&amp;startRecord=0</to>
-    </rule>
-    
     <rule>
         <from>^/account$</from>
         <to>/account/new</to>

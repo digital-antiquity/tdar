@@ -559,7 +559,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
     @Test
     @Rollback
     @Ignore("duplicated by web test; fails because of transactional issue that I belive is related to the test setup, web test passes")
-    public void testResourceCollectionRightsRevoking() throws TdarActionException {
+    public void testResourceCollectionRightsRevoking() throws Exception {
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
         final Long userId = registeredUser.getId();
         controller = generateNewInitializedController(ShareCollectionController.class, getUser());
@@ -625,7 +625,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
 
     @SuppressWarnings("unused")
     @Test
-    public void testResourceCollectionRightsRevokingHier() throws TdarActionException {
+    public void testResourceCollectionRightsRevokingHier() throws Exception {
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
         controller = generateNewInitializedController(ShareCollectionController.class, getUser());
         controller.prepare();
@@ -698,7 +698,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
 
     @SuppressWarnings("unused")
     @Test
-    public void testResourceCollectionRightsRevokingHierOwnerFails() throws TdarActionException {
+    public void testResourceCollectionRightsRevokingHierOwnerFails() throws Exception {
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
         controller = generateNewInitializedController(ShareCollectionController.class, registeredUser);
         controller.prepare();

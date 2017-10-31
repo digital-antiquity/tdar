@@ -53,6 +53,12 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
                 draftSubgroup.append(permissionsSubgroup);
             }
             draftSubgroup.append(fieldsSubgroup);
+
+            // if the user specifies the status i,e. "ACTIVE" don't just include "DRAFT"
+            if (CollectionUtils.isNotEmpty(getFieldValues()) && !getFieldValues().contains(Status.DRAFT)) {
+                draftSubgroup.clear();
+            }
+            
         }
 
         // we remove DRAFT because it was handled above
