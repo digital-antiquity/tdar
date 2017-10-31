@@ -30,8 +30,6 @@ import net.sf.json.JSONObject;
 
 public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 
-	
-	
 	@Test
 	public void testCreateNewCollection() {
 		String url = "/api/collection/newcollection";
@@ -46,24 +44,63 @@ public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 	
 	@Test 
 	public void testAddResourceToManagedCollection(){
+		String url = "/api/collection/addtocollection";
+		Map<String, String> params = new HashMap<String, String>();
 		
+		params.put("resourceId", "42950");
+		params.put("collectionId", "1000");
+		params.put("addAsManagedResource", "true");
+		Page page = createWebRequest(url, params, false);
+		JSONObject response = getJsonResponse(page);
+		assertEquals(response.getString("status"), "success");
 	}
 	
 	@Test 
 	public void testAddResourceToUnmanagedCollection(){
+		String url = "/api/collection/addtocollection";
+		Map<String, String> params = new HashMap<String, String>();
 		
+		params.put("resourceId", "42940");
+		params.put("collectionId", "1000");
+		params.put("type", "UNMANAGED");
+		Page page = createWebRequest(url, params, false);
+		JSONObject response = getJsonResponse(page);
+		assertEquals(response.getString("status"), "success");
 	}
 	
 	@Test
-	public void testRemoveResourceFromCollection(){
+	public void testRemoveResourceFromManagedCollection(){
+		String url = "/api/collection/removefromcollection";
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("resourceId", "42950");
+		params.put("collectionId", "1000");
+		params.put("type", "MANAGED");
 		
+		Page page = createWebRequest(url, params, false);
+		assertEquals(page.getWebResponse().getStatusCode(), HttpStatus.OK.value());
+	}
+	
+	@Test
+	public void testRemoveResourceFromUnmanagedCollection(){
+		String url = "/api/collection/removefromcollection";
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("resourceId", 	 "42940");
+		params.put("collectionId", 	 "1000");
+		params.put("type", "UNMANAGED");
+		
+		Page page = createWebRequest(url, params, false);
+		assertEquals(page.getWebResponse().getStatusCode(), HttpStatus.OK.value());
 	}
 	
 	@Test 
 	public void testListCollectionsForResource(){
+		String url = "/api/collection/resourcecollections";
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("resourceId", "42940");
 		
+		Page page = createWebRequest(url, params, false);
+		assertEquals(page.getWebResponse().getStatusCode(), HttpStatus.OK.value());
 	}
-	
 
 	private Page createWebRequest(String path, Map<String, String> params, boolean assertNoErrors) {
 		int code = 0;
@@ -76,7 +113,6 @@ public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 		try {
 			WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
 			List<NameValuePair> parmsList = new ArrayList<NameValuePair>();
-			// parms.add(nameValuePair("ticketId", ticketId));
 
 			for (String key : params.keySet()) {
 				parmsList.add(nameValuePair(key, params.get(key)));

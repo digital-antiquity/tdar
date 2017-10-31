@@ -76,7 +76,6 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 		//if they want to add as managed resource
 		if (addAsManagedResource && authorizationService.canEdit(getAuthenticatedUser(), resource)){
 				resourceCollection.getManagedResources().add(resource);
-				//getGenericService().saveOrUpdate(resourceCollection.getManagedResources());
 				resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.MANAGED);
 				jsonResult.put("status", "success");
 				jsonResult.put("type", 	 "managed");
@@ -89,7 +88,6 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 				resourceCollection.getUnmanagedResources().add(resource);
 				try {
 					resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.UNMANAGED);
-				//getGenericService().saveOrUpdate(resourceCollection.getUnmanagedResources());
 				jsonResult.put("status", "success");
 				jsonResult.put("type", 	 "unmanaged");
 				jsonResult.put("reason", "");
