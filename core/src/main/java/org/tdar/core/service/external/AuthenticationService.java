@@ -382,10 +382,11 @@ public class AuthenticationService {
                 logger.info("person: {}", person);
             }
         }
-        Institution institution = institutionDao.findByName(reg.getInstitutionName());
-        if ((institution == null) && !StringUtils.isBlank(reg.getInstitutionName())) {
+        String institutionName = StringUtils.trim(reg.getInstitutionName());
+        Institution institution = institutionDao.findByName(institutionName);
+        if ((institution == null) && !StringUtils.isBlank(institutionName)) {
             institution = new Institution();
-            institution.setName(reg.getInstitutionName());
+            institution.setName(institutionName);
             personDao.save(institution);
         }
         person.setInstitution(institution);
