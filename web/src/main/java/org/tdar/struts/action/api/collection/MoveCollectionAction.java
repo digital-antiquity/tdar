@@ -51,10 +51,10 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
     public void validate() {
         super.validate();
         if (PersistableUtils.isNullOrTransient(collection) || !authorizationService.canEdit(getAuthenticatedUser(), collection)) {
-            addActionError("cannot edit collection");
+            addActionError("addResourceToCollectionAction.no_edit_permission");
         }
         if (PersistableUtils.isNullOrTransient(toCollection) || !authorizationService.canEdit(getAuthenticatedUser(), toCollection)) {
-            addActionError("cannot edit to colection");
+            addActionError("addResourceToCollectionAction.no_edit_permission");
         }
     }
     

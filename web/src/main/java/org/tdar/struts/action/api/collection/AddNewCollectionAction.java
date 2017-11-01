@@ -51,7 +51,7 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Val
 	@Action(value = "newcollection", results = {@Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }) })
 	@PostOnly
 	@WriteableSession
-	public String view() throws Exception {
+	public String createNewResourceCollection() throws Exception {
 		
 		ResourceCollection rc =  resourceCollectionService.createNewResourceCollection(collectionName, getAuthenticatedUser());
 		collectionId = rc.getId();
@@ -68,7 +68,7 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Val
 	public void validate() {
 		super.validate();
 		if(getCollectionName() == null || getCollectionName().trim().equals("")){
-			addActionError("no name provided");
+			addActionError("addNewCollectionAction.collection_name_missing");
 		}
 	}
 

@@ -64,14 +64,14 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 	@Action(value = "addtocollection", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
 	@WriteableSession
 	@PostOnly
-	public String view() throws Exception {
+	public String addResourceToResourceCollection() throws Exception {
 		Map<String, Object> jsonResult = new HashMap<String, Object>();
 		
 		//verify they have permissions to the resource
 		jsonResult.put("status", "failure");
 		
 		//TODO change to TdarMessage
-		jsonResult.put("reason", "no permission to edit resource");
+		jsonResult.put("reason", "addResourceToCollectionAction.no_edit_permission");
 		
 		//if they want to add as managed resource
 		try {
@@ -109,16 +109,16 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 
 		if (PersistableUtils.isNullOrTransient(resource)
 				|| !authorizationService.canView(getAuthenticatedUser(), resource)) {
-			addActionError("cannot edit resource");
+			addActionError("addResourceToCollectionAction.no_edit_permission");
 		}
 
 		if (PersistableUtils.isNullOrTransient(resourceCollection)
 				|| !authorizationService.canView(getAuthenticatedUser(), resourceCollection)) {
-			addActionError("no access to collection");
+			addActionError("addResourceToCollectionAction.no_edit_permission");
 		}
 	
 		if(!authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection )){
-			addActionError("can't add items to collection");
+			addActionError("addResourceToCollectionAction.no_edit_permission");
 		}
 	}
 

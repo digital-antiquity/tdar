@@ -62,10 +62,10 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     public void validate() {
         super.validate();
         if (PersistableUtils.isNullOrTransient(resource) || !authorizationService.canEdit(getAuthenticatedUser(), resource)) {
-            addActionError("cannot edit resource");
+            addActionError("addResourceToCollectionAction.no_edit_permission");
         }
         if (PersistableUtils.isNullOrTransient(collection) || !authorizationService.canRemoveFromCollection(getAuthenticatedUser(),collection )) {
-            addActionError("cannot edit to colection");
+            addActionError("addResourceToCollectionAction.no_edit_permission");
         }
     }
     

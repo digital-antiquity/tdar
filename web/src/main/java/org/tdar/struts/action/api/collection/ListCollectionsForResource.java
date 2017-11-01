@@ -59,7 +59,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
     
 	@Action(value = "resourcecollections", results = { @Result(name = SUCCESS, type = "jsonresult") })
 	@Transactional(readOnly=true)
-	public String view() throws Exception {
+	public String listCollectionsForResource() throws Exception {
 		TdarUser user = getAuthenticatedUser();
 		ArrayList<ResourceCollection> managed = new ArrayList<ResourceCollection>();
 		ArrayList<ResourceCollection> unmanaged = new ArrayList<ResourceCollection>();
@@ -102,7 +102,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
 		super.validate();
 		
 		if (PersistableUtils.isNullOrTransient(resource) || !authorizationService.canView(getAuthenticatedUser(), resource)) {
-			 addActionError("cannot edit resource");
+			 addActionError("addResourceToCollectionAction.no_edit_permission");
 		}
 	}
 
