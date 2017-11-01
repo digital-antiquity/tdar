@@ -80,7 +80,7 @@ public class BillingAccountSelectionAction extends AbstractAuthenticatableAction
         if (invoice == null) {
             throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
         }
-        if (!authorizationService.canAssignInvoice(invoice, getAuthenticatedUser())) {
+        if (!authorizationService.canAssignInvoice(getAuthenticatedUser(), invoice)) {
             throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
         }
     }

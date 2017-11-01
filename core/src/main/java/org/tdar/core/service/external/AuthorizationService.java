@@ -207,7 +207,7 @@ public interface AuthorizationService {
      * with the
      * Invoive itself
      */
-    boolean canAssignInvoice(Invoice invoice, TdarUser authenticatedUser);
+    boolean canAssignInvoice(TdarUser authenticatedUser, Invoice invoice);
 
     <R extends Resource> boolean isResourceViewable(TdarUser authenticatedUser, R resource);
 
@@ -236,7 +236,7 @@ public interface AuthorizationService {
 
     void applyTransientViewableFlag(Resource r_, TdarUser authenticatedUser, Collection<Long> collectionIds);
 
-    boolean canAdminiserUsersOn(HasAuthorizedUsers source, TdarUser actor);
+    boolean canAdminiserUsersOn(TdarUser actor, HasAuthorizedUsers source);
 
     void updateAuthorizedMembers(HasUsers entity, List<TdarUser> members);
 
@@ -246,7 +246,7 @@ public interface AuthorizationService {
 
     boolean canAddToCollection(TdarUser user, ResourceCollection collectionToAdd);
 
-    boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user);
+    boolean canRemoveFromCollection(TdarUser user, ResourceCollection collection);
 
     RightsResolver getRightsResolverFor(HasAuthorizedUsers resource, TdarUser actor, InternalTdarRights rights);
 

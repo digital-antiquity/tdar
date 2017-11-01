@@ -216,7 +216,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         if (comparator.rightsDifferent()) {
             logger.debug("{}", actor);
 
-            if (!authorizationService.canAdminiserUsersOn(source, actor)) {
+            if (!authorizationService.canAdminiserUsersOn( actor, source)) {
                 throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
             }
 
@@ -785,7 +785,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         }
 
         if (CollectionUtils.isNotEmpty(resourcesToRemove)) {
-            if (!authorizationService.canRemoveFromCollection(persistable, authenticatedUser)) {
+            if (!authorizationService.canRemoveFromCollection(authenticatedUser, persistable)) {
                 throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_remmove_error",
                         Arrays.asList(persistable.getName()));
             }
@@ -840,7 +840,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionResourceSection type) {
         if (type == CollectionResourceSection.MANAGED && 
         	(!authorizationService.canEditResource(authenticatedUser, resource, Permissions.MODIFY_RECORD) ||
-            !authorizationService.canRemoveFromCollection(collection, authenticatedUser))) {
+            !authorizationService.canRemoveFromCollection(authenticatedUser, collection))) {
             throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
         } 
         else if (type == CollectionResourceSection.UNMANAGED && !authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {

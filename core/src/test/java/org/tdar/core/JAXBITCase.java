@@ -78,12 +78,12 @@ import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.transform.ExtendedDcTransformer;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
-
 
 public class JAXBITCase extends AbstractIntegrationTestCase {
 
@@ -105,7 +105,6 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Autowired
     GenericKeywordService genericKeywordService;
 
-    
     @Test
     @Rollback
     public void testJAXBDocumentConversion() throws Exception {
@@ -142,6 +141,19 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         String xml = serializationService.convertToXML(geos);
         xml = StringUtils.replace(xml, " id=\"-1\"", "");
         logger.info(xml);
+    }
+
+    @Test
+    @Rollback
+    public void testIntegrationSerialization() throws IOException {
+        String json = "{\"title\":\"test integration\",\"description\":\"\",\"columns\":[{\"name\":\"display column\",\"type\":\"DISPLAY\",\"dataTableColumns\":[{\"id\":32640,\"name\":\"col_location\"}]},{\"name\":\"Fauna Taxon Ontology \",\"type\":\"INTEGRATION\",\"dataTableColumns\":[{\"id\":31710,\"name\":\"species_common_name\"},{\"id\":32450,\"name\":\"taxon\"}],\"ontology\":{\"id\":42940,\"title\":\"Fauna Taxon Ontology \"},\"nodeSelection\":[{\"id\":64870,\"iri\":\"Aves\"},{\"id\":62580,\"iri\":\"sheep\"},{\"id\":63000,\"iri\":\"rabbit___hare\"}]}],\"datasets\":[],\"dataTables\":[{\"id\":3091,\"displayName\":\"Main table\"},{\"id\":3104,\"displayName\":\"qryBone\"}],\"ontologies\":[{\"id\":42940,\"title\":\"Fauna Taxon Ontology \"},{\"id\":42950,\"title\":\"Fauna Element Ontology\"}]}";
+        IntegrationWorkflowData data = serializationService.readObjectFromJson(json, IntegrationWorkflowData.class);
+        logger.debug(data.getTitle());
+        data.setId(9L);
+        String workflowJson = serializationService.convertToJson(data);
+        logger.debug(workflowJson);
+        assertTrue(workflowJson.contains(" : 9"));
+        assertTrue(workflowJson.contains("test integration"));
     }
 
     @Test
@@ -211,7 +223,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         ResourceCollection rc2 = serializationService.readObjectFromJson(json, ResourceCollection.class);
         logger.debug("{}",rc2);
         } catch (Throwable t) {
-            logger.error("{}", t,t);
+            logger.error("{}", t, t);
             fail(t.getMessage());
         }
     }
@@ -395,7 +407,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         try {
             File generateSchema = serializationService.generateSchema();
             FileUtils.copyFile(generateSchema, schemaFile);
-            logger.debug("{}",generateSchema);
+            logger.debug("{}", generateSchema);
             testValidXMLSchemaResponse(FileUtils.readFileToString(generateSchema));
         } catch (Exception e) {
             logger.warn("exception", e);
@@ -449,14 +461,12 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         findAll.forEach(r -> {
             ExtendedDcTransformer.transformAny(r);
         });
-//        ScrollableResults allScrollable = genericService.findAllScrollable(Resource.class, 100);
-//        while (allScrollable.next()) {
-//            Resource r = (Resource) allScrollable.get()[0];
-//            ExtendedDcTransformer.transformAny(r);
-//        }
+        // ScrollableResults allScrollable = genericService.findAllScrollable(Resource.class, 100);
+        // while (allScrollable.next()) {
+        // Resource r = (Resource) allScrollable.get()[0];
+        // ExtendedDcTransformer.transformAny(r);
+        // }
     }
-
-
 
     /**
      * Validate a response against an external schema
@@ -465,13 +475,11 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
      *            the URL of the schema to use to validate the document
      * @throws ConfigurationException
      * @throws SAXException
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
     public void testValidXMLResponse(InputStream code, String schemaLocation) throws ConfigurationException, SAXException, FileNotFoundException {
         testValidXML(code, schemaLocation, true);
     }
-
-
 
     /**
      * Validate that a response is a valid XML schema
@@ -481,17 +489,16 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
      * @throws IOException
      */
     public void testValidXMLSchemaResponse(String code) throws ConfigurationException, SAXException, IOException {
-        JaxbSchemaValidator setupValidator =  new JaxbSchemaValidator(serializationService);
+        JaxbSchemaValidator setupValidator = new JaxbSchemaValidator(serializationService);
 
         // cleanup -- this is lazy
         File tempFile = File.createTempFile("test-schema", "xsd");
         FileUtils.writeStringToFile(tempFile, code);
-        setupValidator.addSchemaToValidatorWithLocalFallback( null, tempFile);
+        setupValidator.addSchemaToValidatorWithLocalFallback(null, tempFile);
     }
 
     private void testValidXML(InputStream code, String schema, boolean loadSchemas) throws FileNotFoundException {
         JaxbSchemaValidator v = new JaxbSchemaValidator(serializationService);
-        
 
         if (schema != null) {
             v.addSchemaSource(new StreamSource(schema));
@@ -526,4 +533,5 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
             }
             Assert.fail("Instance invalid: " + errors.toString() + " in:\n" + content);
         }
-    }}
+    }
+}

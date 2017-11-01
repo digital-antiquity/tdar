@@ -453,13 +453,13 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             List<ResourceCollection> retainedListCollections) {
         logger.debug("loadEffective... (save)");
         for (ResourceCollection rc : auth.getItem().getManagedResourceCollections()) {
-            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser())) {
+            if (!authorizationService.canRemoveFromCollection(auth.getAuthenticatedUser(), rc)) {
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
         for (ResourceCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
-            if (!authorizationService.canRemoveFromCollection(rc, auth.getAuthenticatedUser())) {
+            if (!authorizationService.canRemoveFromCollection(auth.getAuthenticatedUser(), rc)) {
                 retainedListCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }

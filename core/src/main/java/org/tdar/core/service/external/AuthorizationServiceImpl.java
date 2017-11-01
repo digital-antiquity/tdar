@@ -275,7 +275,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             return true;
         }
 
-        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, Permissions.ADD_TO_COLLECTION);
+        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, Permissions.ADMINISTER_COLLECTION);
     }
 
     /*
@@ -660,7 +660,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
      */
     @Override
     @Transactional(readOnly = true)
-    public boolean canAssignInvoice(Invoice invoice, TdarUser authenticatedUser) {
+    public boolean canAssignInvoice(TdarUser authenticatedUser, Invoice invoice) {
         if (authenticatedUser.equals(invoice.getTransactedBy())) {
             return true;
         }
@@ -892,7 +892,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
      */
     @Override
     @Transactional(readOnly = true)
-    public boolean canAdminiserUsersOn(HasAuthorizedUsers source, TdarUser actor) {
+    public boolean canAdminiserUsersOn(TdarUser actor, HasAuthorizedUsers source) {
         // if we're internal we want to check if the actor is the submitter
         if (source instanceof Resource && canEditResource(actor, (Resource) source, Permissions.MODIFY_RECORD)) {
             return true;
@@ -989,7 +989,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
      * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    public boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user) {
+    public boolean canRemoveFromCollection(TdarUser user, ResourceCollection collection) {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user)) {
             return true;
         }

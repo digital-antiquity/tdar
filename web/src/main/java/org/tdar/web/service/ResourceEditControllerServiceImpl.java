@@ -178,7 +178,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
 
         logger.debug("loadEffective...");
         for (ResourceCollection rc : resource.getManagedResourceCollections()) {
-            if (authorizationService.canRemoveFromCollection( rc, authenticatedUser)) {
+            if (authorizationService.canRemoveFromCollection( authenticatedUser, rc)) {
                 shares.add(rc);
             } else {
                 retainedSharedCollections.add(rc);
@@ -186,7 +186,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
             }
         }
         for (ResourceCollection rc : resource.getUnmanagedResourceCollections()) {
-            if (authorizationService.canRemoveFromCollection(rc,authenticatedUser)) {
+            if (authorizationService.canRemoveFromCollection(authenticatedUser, rc)) {
                 resourceCollections.add(rc);
             } else {
                 retainedListCollections.add(rc);
