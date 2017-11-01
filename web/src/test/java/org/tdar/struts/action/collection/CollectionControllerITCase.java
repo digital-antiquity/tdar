@@ -37,13 +37,13 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
     @Autowired
     AuthorizedUserDao authorizedUserDao;
 
-    ShareCollectionController controller;
+    ResourceCollectionController controller;
 
     static int indexCount = 0;
 
     @Before
     public void setup() {
-        controller = generateNewInitializedController(ShareCollectionController.class);
+        controller = generateNewInitializedController(ResourceCollectionController.class);
         if (indexCount < 1) {
             reindex();
         }
@@ -94,7 +94,7 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
 
         
 //-----------------------
-        ShareCollectionRightsController cc = generateNewInitializedController(ShareCollectionRightsController.class, getAdminUser());
+        ResourceCollectionRightsController cc = generateNewInitializedController(ResourceCollectionRightsController.class, getAdminUser());
         cc.setId(id);
         cc.prepare();
         cc.edit();
@@ -127,7 +127,7 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
                 new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         ResourceCollection collection = 
-                generateResourceCollection(name, description, true, users, getUser(), resources, null, ShareCollectionController.class, ResourceCollection.class);
+                generateResourceCollection(name, description, true, users, getUser(), resources, null, ResourceCollectionController.class, ResourceCollection.class);
         Long collectionid = collection.getId();
         logger.info("{}", collection.getManagedResources());
         assertFalse(collectionid.equals(-1L));

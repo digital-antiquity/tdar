@@ -20,10 +20,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.GenericService;
-import org.tdar.struts.action.collection.AbstractCollectionController;
-import org.tdar.struts.action.collection.AbstractCollectionRightsController;
-import org.tdar.struts.action.collection.ShareCollectionController;
-import org.tdar.struts.action.collection.ShareCollectionRightsController;
+import org.tdar.struts.action.collection.ResourceCollectionController;
+import org.tdar.struts.action.collection.ResourceCollectionRightsController;
 import org.tdar.utils.PersistableUtils;
 
 import com.google.common.base.Objects;
@@ -44,15 +42,15 @@ public interface TestResourceCollectionHelper {
 
     default ResourceCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
-        return generateResourceCollection(name, description, visible, users, owner, resources, parentId, ShareCollectionController.class,
+        return generateResourceCollection(name, description, visible, users, owner, resources, parentId, ResourceCollectionController.class,
                 ResourceCollection.class);
     }
 
     @SuppressWarnings("deprecation")
-    default <C extends ResourceCollection, D extends AbstractCollectionController> C generateResourceCollection(String name, String description,
+    default <C extends ResourceCollection, D extends ResourceCollectionController> C generateResourceCollection(String name, String description,
             boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId, Class<D> ctlClss, Class<C> cls) throws Exception {
-        ShareCollectionController controller = generateNewInitializedController(ShareCollectionController.class, owner);
+        ResourceCollectionController controller = generateNewInitializedController(ResourceCollectionController.class, owner);
         controller.setServletRequest(getServletPostRequest());
 
         // controller.setSessionData(getSessionData());
@@ -65,7 +63,7 @@ public interface TestResourceCollectionHelper {
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
         if (CollectionUtils.isNotEmpty(resources)) {
-            ((ShareCollectionController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
+            ((ResourceCollectionController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
         }
 
         if (parentId != null) {
@@ -92,7 +90,7 @@ public interface TestResourceCollectionHelper {
         getGenericService().evictFromCache(resourceCollection);
 
         if (users != null) {
-            AbstractCollectionRightsController sc = generateNewInitializedController(ShareCollectionRightsController.class, owner);
+            ResourceCollectionRightsController sc = generateNewInitializedController(ResourceCollectionRightsController.class, owner);
             sc.setId(id);
             sc.prepare();
             sc.edit();

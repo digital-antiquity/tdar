@@ -3,9 +3,14 @@ package org.tdar.struts.action.collection;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -13,8 +18,8 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AbstractRightsController;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
@@ -22,15 +27,17 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
-public abstract class AbstractCollectionRightsController<C extends ResourceCollection> extends AbstractRightsController
-        implements Preparable, PersistableLoadingAction<C> {
+@Component
+@Scope("prototype")
+@ParentPackage("secured")
+@Namespaces(value = { @Namespace("/share"), @Namespace("/collection") })
+public class ResourceCollectionRightsController extends AbstractRightsController
+        implements Preparable, PersistableLoadingAction<ResourceCollection> {
+
+    private static final long serialVersionUID = 5522048517742464825L;
 
     private static final String COLLECTION_RIGHTS_FTL = "../collection/rights.ftl";
-
     private static final String RIGHTS = "rights";
-
-    private static final long serialVersionUID = -8140980937049864587L;
-
     private static final String RIGHTS_SAVE = "rights-save";
 
     @Autowired
@@ -40,16 +47,19 @@ public abstract class AbstractCollectionRightsController<C extends ResourceColle
     @Autowired
     private transient AuthorizationService authorizationService;
 
+    @Override
+    public Class<ResourceCollection> getPersistableClass() {
+        return ResourceCollection.class;
+    }
 
-    private C resourceCollection;
+    private ResourceCollection resourceCollection;
 
     @Override
     public boolean authorize() {
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
-
-    public C getResourceCollection() {
+    public ResourceCollection getResourceCollection() {
         return resourceCollection;
     }
 
@@ -83,7 +93,7 @@ public abstract class AbstractCollectionRightsController<C extends ResourceColle
         }
     }
 
-    public void setResourceCollection(C rc) {
+    public void setResourceCollection(ResourceCollection rc) {
         setPersistable(rc);
     }
 
@@ -100,7 +110,6 @@ public abstract class AbstractCollectionRightsController<C extends ResourceColle
         return getPersistable().getAuthorizedUsers();
     }
 
-    
     public void handleLocalSave() {
 
         resourceCollectionService.saveCollectionForRightsController(getPersistable(), getAuthenticatedUser(), getProxies(), null);
@@ -113,22 +122,21 @@ public abstract class AbstractCollectionRightsController<C extends ResourceColle
 
     @SkipValidation
     @Action(value = RIGHTS_SAVE, results = {
-            @Result(name = SUCCESS, type=TDAR_REDIRECT, location = "${persistable.detailUrl}"),
-            @Result(name = INPUT, location =  COLLECTION_RIGHTS_FTL)
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${persistable.detailUrl}"),
+            @Result(name = INPUT, location = COLLECTION_RIGHTS_FTL)
     })
-    
+
     @WriteableSession
     @PostOnly
     public String save() throws TdarActionException {
         return super.save();
     }
 
-    public C getPersistable() {
+    public ResourceCollection getPersistable() {
         return getResourceCollection();
     }
 
-
-    public void setPersistable(C rc) {
+    public void setPersistable(ResourceCollection rc) {
         this.resourceCollection = rc;
     }
 
@@ -136,5 +144,4 @@ public abstract class AbstractCollectionRightsController<C extends ResourceColle
     public InternalTdarRights getAdminRights() {
         return InternalTdarRights.EDIT_RESOURCE_COLLECTIONS;
     }
-
 }

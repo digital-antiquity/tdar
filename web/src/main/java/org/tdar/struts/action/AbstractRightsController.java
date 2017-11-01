@@ -49,10 +49,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     @Autowired
     private transient SearchIndexService searchIndexService;
 
-//    private List<ResourceCollection> shares = new ArrayList<>();
-//    private List<ResourceCollection> retainedResourceCollections = new ArrayList<>();
-//    private List<ResourceCollection> effectiveShares = new ArrayList<>();
-
     private List<UserRightsProxy> proxies = new ArrayList<>();
     private List<UserRightsProxy> invites = new ArrayList<>();
     private Long id;
