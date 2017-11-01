@@ -344,7 +344,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
 
     private void removeResourceCollectionFromResource(Resource resource, Set<ResourceCollection> current, TdarUser authenticatedUser,
             ResourceCollection collection, CollectionResourceSection type) {
-        if (!authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {
+        if (!authorizationService.canRemoveFromCollection(authenticatedUser, collection)) {
             String name = collection.getName();
             throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_remmove_error", Arrays.asList(name));
 
@@ -843,7 +843,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
             !authorizationService.canRemoveFromCollection(authenticatedUser, collection))) {
             throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
         } 
-        else if (type == CollectionResourceSection.UNMANAGED && !authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {
+        else if (type == CollectionResourceSection.UNMANAGED && !authorizationService.canRemoveFromCollection(authenticatedUser, collection)) {
         	throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
         } 
         else {

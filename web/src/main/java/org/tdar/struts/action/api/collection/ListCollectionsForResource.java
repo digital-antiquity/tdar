@@ -91,7 +91,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
             return authorizationService.canAddToCollection(user, resourceCollection);
         }
         if (permission == Permissions.REMOVE_FROM_COLLECTION) {
-            return authorizationService.canRemoveFromCollection( resourceCollection, user);
+            return authorizationService.canRemoveFromCollection(user,resourceCollection);
         }
         return authorizationService.canEdit(user, resourceCollection);
     }
