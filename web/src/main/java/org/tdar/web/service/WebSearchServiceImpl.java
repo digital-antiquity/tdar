@@ -13,6 +13,8 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarAuthorizationException;
+import org.tdar.core.service.AsynchronousProcessManager;
+import org.tdar.core.service.AsynchronousStatus;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -44,7 +46,9 @@ public class WebSearchServiceImpl {
 	@Transactional(readOnly=false)
 	@Async
 	public void saveSearchResultsForUserAsync(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId, boolean addAsManagedResource) throws SearchException, IOException{
-        
+        AsynchronousStatus status = new AsynchronousStatus(constructKey(resourceCollectionId, userId));
+        AsynchronousProcessManager.getInstance().addActivityToQueue(status);
+        try {
 		TdarUser user = genericService.find(TdarUser.class, userId);
 		LuceneSearchResultHandler<Resource> result = new SearchResult<>();
 		result.setRecordsPerPage(maxNumOfRecords);
@@ -67,7 +71,15 @@ public class WebSearchServiceImpl {
 			}
 			
 			resourceCollectionService.addResourceCollectionToResource(resource, current, user, true, ErrorHandling.NO_VALIDATION, collection, section);
-		}
+			status.setCompleted();
+         }
+        } catch (Throwable t) {
+            status.addError(t);
+        }
 	}
+
+    public String constructKey(Long collectionId, Long userId) {
+        return "SaveSearchResult::" + collectionId + "::" + userId;
+    }
 	
 }

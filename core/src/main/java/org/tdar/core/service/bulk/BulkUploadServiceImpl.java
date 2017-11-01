@@ -35,6 +35,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.AsynchronousProcessManager;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.billing.BillingAccountService;
@@ -78,15 +79,6 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Cache<Long, BulkUpdateReceiver> asyncStatusMap;
-
-    public BulkUploadServiceImpl() {
-        asyncStatusMap = CacheBuilder.newBuilder()
-                .concurrencyLevel(4)
-                .maximumSize(100)
-                .expireAfterWrite(10, TimeUnit.MINUTES)
-                .build();
-    }
 
     /* (non-Javadoc)
      * @see org.tdar.core.service.bulk.BulkUploadService#saveAsync(org.tdar.core.bean.resource.InformationResource, java.lang.Long, java.lang.Long, java.util.Collection, java.lang.Long)
@@ -112,8 +104,8 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
         }
         
         genericDao.clearCurrentSession();
-        BulkUpdateReceiver asyncUpdateReceiver = new BulkUpdateReceiver();
-        asyncStatusMap.put(ticketId, asyncUpdateReceiver);
+        BulkUpdateReceiver asyncUpdateReceiver = new BulkUpdateReceiver(ticketId.toString());
+        AsynchronousProcessManager.getInstance().addActivityToQueue(asyncUpdateReceiver);
         TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
 
         // it is assumed that the the resourceTemplate is off the session when passed in, but make sure.
@@ -319,7 +311,7 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
      */
     @Override
     public BulkUpdateReceiver checkAsyncStatus(Long ticketId) {
-        return asyncStatusMap.getIfPresent(ticketId);
+        return (BulkUpdateReceiver) AsynchronousProcessManager.getInstance().findActivity(BulkUpdateReceiver.BULK_UPLOAD + ticketId.toString());
     }
 
 }

@@ -97,7 +97,7 @@ public class TdarBaseWebAppConfiguration extends TdarAppConfiguration implements
 
             @Override
             public void handleUncaughtException(Throwable ex, Method method, Object... params) {
-                logger.error("exception in async: {} {} ", method, params);
+                logger.error("exception in async: {} {} ", method, params,ex);
             }
         };
     }

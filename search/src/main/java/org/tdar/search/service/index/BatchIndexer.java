@@ -14,36 +14,45 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
-import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.datatable.DataTableRow;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.AsynchronousProcessManager;
+import org.tdar.core.service.AsynchronousStatus;
 import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
-import org.tdar.utils.activity.Activity;
 
 public class BatchIndexer implements Serializable {
 
     private static final long serialVersionUID = 3336640315201232201L;
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
-    public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
     private GenericDao genericDao;
     private DatasetDao datasetDao;
     private SearchIndexService searchIndexService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private AsynchronousStatus activity;
+    private List<LookupSource> sources;
+    private TdarUser person;
 
 
 
+    public BatchIndexer(GenericDao genericDao, DatasetDao datasetDao, SearchIndexService searchIndexService, List<LookupSource> sources, TdarUser person) {
+        this.genericDao = genericDao;
+        this.datasetDao = datasetDao;
+        this.searchIndexService = searchIndexService;
+        this.person = person;
+        this.sources = sources;
+    }
+    
     public BatchIndexer(GenericDao genericDao, DatasetDao datasetDao, SearchIndexService searchIndexService) {
         this.genericDao = genericDao;
         this.datasetDao = datasetDao;
         this.searchIndexService = searchIndexService;
     }
-    
+
     /**
      * Index all of the @link Indexable items. Uses a ScrollableResult to manage memory and object complexity
      * 
@@ -53,23 +62,12 @@ public class BatchIndexer implements Serializable {
      */
     @SuppressWarnings("deprecation")
     @Transactional(readOnly = true)
-    public void indexAll(AsyncUpdateReceiver updateReceiver_, List<LookupSource> sources, TdarUser person) {
-        AsyncUpdateReceiver updateReceiver = updateReceiver_;
-        if (updateReceiver == null) {
-            updateReceiver = getDefaultUpdateReceiver();
-        }
-        Activity activity = new Activity();
-        activity.setName(BUILD_LUCENE_INDEX_ACTIVITY_NAME);
-        activity.setIndexingActivity(true);
-        activity.setUser(person.getUsername(), person.getId());
-        activity.setMessage(String.format("reindexing %s", StringUtils.join(sources, ", ")));
-        activity.start();
-        ActivityManager.getInstance().addActivityToQueue(activity);
+    public void indexAll() {
 
         CacheMode cacheMode = genericDao.getCacheModeForCurrentSession();
         try {
             genericDao.synchronize();
-            updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
+            updateAllStatuses("initializing...", 0f);
             genericDao.markReadOnly();
             genericDao.setCacheModeForCurrentSession(CacheMode.IGNORE);
             Long total = 0L;
@@ -91,7 +89,7 @@ public class BatchIndexer implements Serializable {
             for (LookupSource src : sources) {
                 searchIndexService.purgeCore(src);
                 for (Class<? extends Indexable> toIndex : src.getClasses()) {
-                    updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", counter.getPercent());
+                    updateAllStatuses("initializing... ["+toIndex.getSimpleName()+": "+total+"]", counter.getPercent());
                     ScrollableResults scrollableResults = null;
                     if ( src == LookupSource.DATA) {
                         scrollableResults = datasetDao.findMappedResources(null);
@@ -100,21 +98,29 @@ public class BatchIndexer implements Serializable {
                     }
                     counter.setSubTotal(totals.get(toIndex).longValue());
                     counter.getSubCount().set(0);
-                    indexScrollable(updateReceiver, activity, counter, src, toIndex, scrollableResults, false);
+                    indexScrollable(counter, src, toIndex, scrollableResults, false);
                     String message = "finished indexing all " + toIndex.getSimpleName() + "(s)";
-                    updateAllStatuses(updateReceiver, activity, message, counter.getPercent());
+                    updateAllStatuses(message, counter.getPercent());
                 }
             }
 
-            complete(updateReceiver, activity, null, null);
+            complete(null,null);
         } catch (Throwable ex) {
             logger.warn("exception: {}", ex);
-            if (updateReceiver != null) {
-                updateReceiver.addError(ex);
+            if (activity != null) {
+                activity.addError(ex);
             }
         }
         genericDao.setCacheModeForCurrentSession(cacheMode);
         activity.end();
+    }
+
+    AsynchronousStatus createActivity() {
+        activity = new AsynchronousStatus(AsynchronousStatus.INDEXING);
+        activity.setUser(person.getUsername(), person.getId());
+        activity.setMessage(String.format("reindexing %s", StringUtils.join(sources, ", ")));
+        AsynchronousProcessManager.getInstance().addActivityToQueue(activity);
+        return activity;
     }
 
     /**
@@ -129,10 +135,10 @@ public class BatchIndexer implements Serializable {
      * @param total
      * @param scrollableResults
      */
-    private void indexScrollable(AsyncUpdateReceiver updateReceiver, Activity activity, Counter count, LookupSource src,
+    private void indexScrollable(Counter count, LookupSource src,
             Class<? extends Indexable> toIndex, ScrollableResults scrollableResults, boolean deleteFirst) {
         String message = count.getTotal() + " " + toIndex.getSimpleName() + "(s) to be indexed";
-        updateAllStatuses(updateReceiver, activity, message, count.getPercent());
+        updateAllStatuses(message, count.getPercent());
         int divisor = count.getDivisor();
         String MIDDLE = " of " + count.getSubTotal() + " " + toIndex.getSimpleName() + "(s) ";
         Long prevId = 0L;
@@ -149,7 +155,7 @@ public class BatchIndexer implements Serializable {
                 String range = String.format("(%s - %s)", prevId, currentId);
                 //[6:05:41 PM PST] indexed 600 of 805539 SiteTypeKeyword(s) 48.528873 % (818 - 868)
                 message = String.format("indexed %s %s %s %% %s", numProcessed, MIDDLE, totalProgress, range);
-                updateAllStatuses(updateReceiver, activity, message, totalProgress);
+                updateAllStatuses(message, totalProgress);
                 if (logger.isTraceEnabled()) {
                     logger.trace("last indexed: {}", item);
                 }
@@ -157,7 +163,7 @@ public class BatchIndexer implements Serializable {
             }
             if ((numProcessed % FLUSH_EVERY) == 0) {
                 message = String.format("indexed %s %s %s %% (flushing)", numProcessed, MIDDLE, totalProgress);
-                updateAllStatuses(updateReceiver, activity, message, totalProgress);
+                updateAllStatuses(message, totalProgress);
                 logger.trace("flushing search index");
                 try {
                     searchIndexService.commit(coreForClass);
@@ -182,7 +188,7 @@ public class BatchIndexer implements Serializable {
      * @return
      */
     private AsyncUpdateReceiver getDefaultUpdateReceiver() {
-        return AsyncUpdateReceiver.DEFAULT_RECEIVER;
+        return new AsynchronousStatus(AsynchronousStatus.INDEXING);
     }
 
     /**
@@ -193,35 +199,36 @@ public class BatchIndexer implements Serializable {
      * @param fullTextSession
      * @param previousFlushMode
      */
-    private void complete(AsyncUpdateReceiver updateReceiver, Activity activity, Object fullTextSession, FlushMode previousFlushMode) {
-        updateAllStatuses(updateReceiver, activity, "index all complete", 100f);
+    private void complete(Object fullTextSession, FlushMode previousFlushMode) {
+        updateAllStatuses("index all complete", 100f);
         if (activity != null) {
             activity.end();
         }
     }
 
-    private void updateAllStatuses(AsyncUpdateReceiver updateReceiver, Activity activity, String status, float complete) {
-        if (updateReceiver != null) {
-            updateReceiver.setPercentComplete(complete);
-            updateReceiver.setStatus(status);
-            if (updateReceiver instanceof DefaultReceiver) {
-                logger.debug(status);
-            }
-        }
+    private void updateAllStatuses(String status, float complete) {
+        logger.debug(status);
         if (activity != null) {
             activity.setMessage(status);
-            activity.setPercentDone(complete);
+            activity.setPercentComplete(complete);
         }
     }
 
     public void indexScrollable(Long total, Class<? extends Indexable> toIndex, ScrollableResults results) {
-        AsyncUpdateReceiver updateReceiver = getDefaultUpdateReceiver();
         Counter counter = new Counter();
         counter.setTotal(total);
         counter.setSubTotal(total);
-        indexScrollable(updateReceiver, null, counter, null, toIndex, results, true);
-        complete(updateReceiver, null, null, null);
+        indexScrollable(counter, null, toIndex, results, true);
+        complete(null, null);
 
+    }
+
+    public AsynchronousStatus getActivity() {
+        return activity;
+    }
+
+    public void setActivity(AsyncUpdateReceiver reciever) {
+        this.activity = (AsynchronousStatus) reciever;
     }
 
 }

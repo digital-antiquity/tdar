@@ -843,7 +843,7 @@ public class Resource implements Persistable,
     }
 
     // marked as final because this is called from constructors.
-    public final void setResourceType(ResourceType resourceType) {
+    public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
 

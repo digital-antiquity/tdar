@@ -33,10 +33,10 @@
             dataType: 'json',
             type: 'POST',
             success: function (data) {
-                gPercentDone = data.percentDone;
-                console.log("percent complete: %s", data.percentDone);
+                gPercentDone = data.percentComplete;
+                console.log("percent complete: %s", data.percentComplete);
                 if (data.percentDone != 100) {
-                    _updateProgressBar(data.percentDone);
+                    _updateProgressBar(data.percentComplete);
                     $("#buildStatus").empty().append(data.phase);
                     setTimeout(_updateProgress, TIMEOUT);
                 } else {

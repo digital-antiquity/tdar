@@ -47,12 +47,12 @@
         }
 
         function _checkStatus(data) {
-            if (data.percentDone == -1) {
+            if (data.percentComplete == -1) {
                 $("#idxBtn").removeAttr('disabled');
-            } else if (data.percentDone != 100) {
+            } else if (data.percentComplete != 100) {
                 var timeString = (new Date()).toLocaleTimeString();
-                updateProgressBar(data.percentDone);
-                document.title = "(" + data.percentDone + "%) Build ${siteAcronym} Index";
+                updateProgressBar(data.percentComplete);
+                document.title = "(" + data.percentComplete + "%) Build ${siteAcronym} Index";
                 if (data.errorHtml) {
                     $('#errors').show();
                     $('#errors').html(data.errorHtml)

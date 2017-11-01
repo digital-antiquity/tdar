@@ -1,7 +1,5 @@
 package org.tdar.struts.action.api.search;
 
-import java.io.ByteArrayInputStream;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -12,10 +10,10 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.AsynchronousProcessManager;
+import org.tdar.core.service.AsynchronousStatus;
 import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.GeoRssMode;
 import org.tdar.core.service.SerializationService;
@@ -25,15 +23,16 @@ import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.web.service.WebSearchServiceImpl;
+
+import com.opensymphony.xwork2.Preparable;
 
 @Namespaces(value = {
         @Namespace("/api/search") })
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-public class SaveSearchResultAction extends AbstractAdvancedSearchController {
+public class SaveSearchResultAction extends AbstractAdvancedSearchController implements Preparable {
 
     private static final long serialVersionUID = -7606256523280755196L;
 
@@ -43,44 +42,54 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController {
     private GeoRssMode geoMode = GeoRssMode.POINT;
     private boolean webObfuscation = false;
     private Long collectionId;
-
+    private String key;
     private Map<String, Object> resultObject;
-    
-    private boolean async=true;
-    
+
+    private boolean async = true;
+
     private boolean addAsManaged = false;
-    
+
     @Autowired
     private WebSearchServiceImpl webSearchService;
-    
-    
+
+    @Override
+    public void prepare() throws Exception {
+        // Construct a Key (proposal)
+        key = webSearchService.constructKey(collectionId, getAuthenticatedUser().getId());
+
+        // find whether the activity is in the queue
+        AsynchronousStatus status = AsynchronousProcessManager.getInstance().findActivity(key);
+        if (status != null) {
+            addActionError("SaveSearchResultAction.currently_saving");
+        }
+    }
+
     @Action(value = "save", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })}
-    		
-    		)
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) }
+
+    )
     @PostOnly
     public String viewJson() throws TdarActionException {
         try {
             if (getSortField() == null) {
                 setSecondarySortField(SortOption.TITLE);
             }
-            
+
             ResourceCollection resourceCollection;
-            if(PersistableUtils.isNullOrTransient(collectionId)){
-            //	resourceCollection = new ResourceCollection();
-            	
+            if (PersistableUtils.isNullOrTransient(collectionId)) {
+                // resourceCollection = new ResourceCollection();
+
+            } else {
+                resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
             }
-            else {
-            	resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
-            }
-            
-           //check resource  collection is null;
-            
+
+            // check resource collection is null;
+
             setMode("json");
             setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-            
+
             setLookupSource(LookupSource.RESOURCE);
-            
+
             // we need this for tests to be able to change the projection model so
             // we get full objects
             if (getProjectionModel() == null) {
@@ -88,19 +97,20 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController {
             }
 
             processLegacySearchParameters();
-            if(isAsync()){
-            	webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
+            if (isAsync()) {
+                webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
+            } else {
+
             }
-            else{
-            	
-            }
-            
-           //  invoke the UI to update/notify that results have been completed. jsonifyResult(JsonLookupFilter.class);
-            
-        } 
-        /*catch (TdarActionException tdae) {
-            return tdae.getResponse();
-        } */
+
+            // invoke the UI to update/notify that results have been completed. jsonifyResult(JsonLookupFilter.class);
+
+        }
+        /*
+         * catch (TdarActionException tdae) {
+         * return tdae.getResponse();
+         * }
+         */
         catch (Exception e) {
             getLogger().error("rss error", e);
             addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
@@ -137,28 +147,28 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController {
         this.webObfuscation = webObfuscation;
     }
 
-	public Long getCollectionId() {
-		return collectionId;
-	}
+    public Long getCollectionId() {
+        return collectionId;
+    }
 
-	public void setCollectionId(Long collectionId) {
-		this.collectionId = collectionId;
-	}
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+    }
 
-	public boolean isAsync() {
-		return async;
-	}
+    public boolean isAsync() {
+        return async;
+    }
 
-	public void setAsync(boolean async) {
-		this.async = async;
-	}
+    public void setAsync(boolean async) {
+        this.async = async;
+    }
 
-	public boolean isAddAsManaged() {
-		return addAsManaged;
-	}
+    public boolean isAddAsManaged() {
+        return addAsManaged;
+    }
 
-	public void setAddAsManaged(boolean addAsManaged) {
-		this.addAsManaged = addAsManaged;
-	}
+    public void setAddAsManaged(boolean addAsManaged) {
+        this.addAsManaged = addAsManaged;
+    }
 
 }

@@ -108,14 +108,14 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
         BulkUpdateStatusAction basa = checkStatus(ticketId);
-        assertEquals(new Float(100), basa.getPercentDone());
+        assertEquals(new Float(100).floatValue(), basa.getStatus().getPercentComplete());
         evictCache();
-        List<Pair<Long, String>> details = basa.getDetails();
+        List<Pair<Long, String>> details = basa.getStatus().getDetails();
         boolean manifest_gc = false;
         boolean manifest_book = false;
         logger.info("{}", details);
-        logger.info(basa.getAsyncErrors());
-        assertTrue(StringUtils.isEmpty(basa.getAsyncErrors()));
+        logger.info("{}",basa.getStatus().getAsyncErrors());
+        assertTrue(StringUtils.isEmpty(basa.getStatus().getAsyncErrors()));
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
             logger.info("{}", resource);
@@ -201,12 +201,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(file.exists());
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest( TdarActionSupport.SUCCESS_ASYNC, files);
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
-        assertEquals(new Float(100), basa.getPercentDone());
+        assertEquals(100f, basa.getStatus().getPercentComplete());
 
-        List<Pair<Long, String>> details = basa.getDetails();
+        List<Pair<Long, String>> details = basa.getStatus().getDetails();
         logger.info("{}", details);
-        logger.debug(basa.getAsyncErrors());
-        assertTrue(StringUtils.isEmpty(basa.getAsyncErrors()));
+        logger.debug("{}", basa.getStatus().getAsyncErrors());
+        assertTrue(StringUtils.isEmpty(basa.getStatus().getAsyncErrors()));
     }
 
     @Test
@@ -215,12 +215,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest(TdarActionSupport.SUCCESS_ASYNC);
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
 
-        assertEquals(new Float(100), basa.getPercentDone());
+        assertEquals(100f, basa.getStatus().getPercentComplete());
         // testing that an Float that is effectively an int 120.00 is ok in an int field
-        List<Pair<Long, String>> details = basa.getDetails();
+        List<Pair<Long, String>> details = basa.getStatus().getDetails();
         logger.info("{}", details);
-        logger.debug(basa.getAsyncErrors());
-        assertTrue(StringUtils.isEmpty(basa.getAsyncErrors()));
+        logger.debug("{}",basa.getStatus().getAsyncErrors());
+        assertTrue(StringUtils.isEmpty(basa.getStatus().getAsyncErrors()));
         Resource find1 = resourceService.find(details.get(0).getFirst());
         assertEquals(Status.ACTIVE, find1.getStatus());
         assertTrue(resourceService.find(details.get(1).getFirst()).isActive());
@@ -463,7 +463,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
         basa.checkStatus();
-        assertEquals(new Float(100), basa.getPercentDone());
+        assertEquals(100f, basa.getStatus().getPercentComplete());
 
         // int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
         int newSharedCount = getCollectionCount(CollectionResourceSection.MANAGED);
@@ -473,7 +473,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // ensure one shared collection created
         // evictCache();
 
-        List<Pair<Long, String>> details = basa.getDetails();
+        List<Pair<Long, String>> details = basa.getStatus().getDetails();
         logger.info("{}", details);
         Set<ResourceCollection> collections = new HashSet<>();
         evictCache();

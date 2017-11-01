@@ -122,7 +122,9 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
             if (tas.hasFieldErrors()) {
                 errors.put(FIELD_ERRORS, tas.getFieldErrors());
             }
-            logger.debug("errors: {}", errors);
+            if( MapUtils.isNotEmpty(errors)) {
+                logger.debug("errors: {}", errors);
+            }
             return errors;
         }
         return null;
