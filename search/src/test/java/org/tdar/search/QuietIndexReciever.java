@@ -8,7 +8,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.service.AsynchronousStatus;
 import org.tdar.utils.Pair;
 
-public class QuietIndexReciever implements AsyncUpdateReceiver {
+public class QuietIndexReciever extends AsynchronousStatus {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private float percentComplete;
