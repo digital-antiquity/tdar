@@ -177,7 +177,9 @@
     <field name="parentIdList" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="parentId" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="usersWhoCanAdminister" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
-	
+	<field name="usersWhoCanRemove" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="usersWhoCanAdd" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
     <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
