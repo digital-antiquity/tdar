@@ -108,7 +108,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
         BulkUpdateStatusAction basa = checkStatus(ticketId);
-        assertEquals(new Float(100).floatValue(), basa.getStatus().getPercentComplete());
+        assertTrue(100f == basa.getStatus().getPercentComplete());
         evictCache();
         List<Pair<Long, String>> details = basa.getStatus().getDetails();
         boolean manifest_gc = false;
@@ -201,7 +201,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertTrue(file.exists());
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest( TdarActionSupport.SUCCESS_ASYNC, files);
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
-        assertEquals(100f, basa.getStatus().getPercentComplete());
+        assertTrue(100f == basa.getStatus().getPercentComplete());
 
         List<Pair<Long, String>> details = basa.getStatus().getDetails();
         logger.info("{}", details);
@@ -215,7 +215,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest(TdarActionSupport.SUCCESS_ASYNC);
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
 
-        assertEquals(100f, basa.getStatus().getPercentComplete());
+        assertTrue(100f == basa.getStatus().getPercentComplete());
         // testing that an Float that is effectively an int 120.00 is ok in an int field
         List<Pair<Long, String>> details = basa.getStatus().getDetails();
         logger.info("{}", details);
@@ -463,7 +463,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
         basa.checkStatus();
-        assertEquals(100f, basa.getStatus().getPercentComplete());
+        assertTrue(100f == basa.getStatus().getPercentComplete());
+
 
         // int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
         int newSharedCount = getCollectionCount(CollectionResourceSection.MANAGED);
