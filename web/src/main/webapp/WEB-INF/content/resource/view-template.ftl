@@ -540,12 +540,71 @@
     
     $("#addToExisting").popover({placement:'right', delay:{hide:2000}});
     
+    
+    Vue.component('selectize', {
+  props: ['options', 'value'],
+  template: '<select><slot></slot></select>',
+  mounted: function () {
+    var vm = this;
+    var $vm = $(this);
+    var $tag  = $(this.$el); 
+    var opt = $.extend({},$(this.$el).data());
+    if (this.options != null) {
+    	opt.options = this.options;
+    }
+    var method = $tag.data('config');
+    console.log("using init method: " + method);
+    var opts = {};
+    if (method != undefined) {
+        var method_ = window[method];
+        // FIXME: There has to be a better way to bind these
+        if (window['TDAR']['selectize'] != undefined) {
+	        if ($.isFunction(window['TDAR']['selectize'][method])) {
+	            method_ = window['TDAR']['selectize'][method];
+	        }
+        }
+        if ($.isFunction(window[method])) {
+            method_ = window[method];
+        }               
+        if (method_ != undefined) {
+            // add options based on method ... here's where we implicitly call initBasicForm
+            opts  = method_(this);
+        } else {
+            console.log("init method specified, but not a function");
+        }
+    }
+    
+    this.sel = $(this.$el).selectize(opts)
+    	.on("change",function(){
+          vm.$emit('input', vm.sel.getValue());
+        })[0].selectize;
+    this.sel.setValue(this.value,true);
+  },
+  watch: {
+    value: function (value) {
+    	this.sel.setValue(value,true);
+    },
+    options: function (options) {
+    		var val = this.sel.getValue();
+        this.sel.clearOptions();
+        this.sel.addOption(options);
+        this.sel.refreshOptions(false);
+        this.sel.setValue(val);
+    }
+  },
+  destroyed: function () {
+  	this.sel.destroy();
+  }
+})
+
+
   var app2 = new Vue({
     el: '#app-2',
     data: { 
         items:[{id:"1",name:"Sample"}], 
         selectedCollection: 0 ,
         pick:"existing",
+        options:[],
         newCollectionName:"",
         showPermission:false,
         managedResource: false,
@@ -562,7 +621,7 @@
             this.selectedCollection=0,
             this.pick="existing",
             this.newCollectionName="";
-            this.managedResource = false;            
+            this.managedResource = false;
             var $select = $('#collection-list').selectize();
             $select[0].selectize.clear();
         },
@@ -676,8 +735,10 @@
     }
     });
     
+    function getSelectizeOpts() {
     
-   $('#collection-list').selectize({
+    
+       var opts = {
             valueField: 'id',
             labelField: 'name',
             searchField: 'name',
@@ -709,14 +770,12 @@
                 }
              });
          }
-         });
-         
-         $("#collection-list").on("change",function(){
-           Vue.set(app2,'selectedCollection',this.value);
-         });
-
-        app2.get
-  </script>
+         }; 
+         console.log(getSelectizeOpts);
+         return opts;
+    
+    }
+   </script>
 
 </div>
 
@@ -785,9 +844,13 @@
                             
                             <div v-show="pick=='existing'" style="padding-left:20px;" class="form-group">
                               <div>
-                                  <select id="collection-list">
-                                  </select>
-                                  <input v-model="selectedCollection" type="hidden">
+                                <selectize v-bind:options="options" v-model="selectedCollection" size="1"
+							         data-max-options="100" data-config="getSelectizeOpts"
+							         data-value-field= 'id' data-label-field= 'text' data-search-field= 'text' data-sort-field= 'text'>
+							    </selectize>
+
+						{{selectedCollection}}
+<#--                                   <input v-model="selectedCollection" type="hidden"> -->
                               </div>
                               </div>
                           </div>

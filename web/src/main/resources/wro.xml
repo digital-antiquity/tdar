@@ -47,8 +47,7 @@
         <!-- LICENSE:CC Attribution 3.0 Unported -->
         <js>/components/leaflet/dist/leaflet.js</js>
         <js>/components/leaflet-choropleth/dist/choropleth.js</js>
-        <js>/components/select2/dist/js/select2.min.js</js>
-        <css>/components/select2/dist/css/select2.min.css</css>
+        <js>/components/axios/dist/axios.js</js>
         <!--  https://github.com/CliffCloud/Leaflet.Sleep -->
         <js>/includes/Leaflet.Sleep.js</js>
         <css>/components/leaflet/dist/leaflet.css</css>

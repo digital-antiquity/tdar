@@ -219,6 +219,7 @@
             //selectResourcesFromCollectionid
 
             $(function () {
+                'use strict';
                 TDAR.datatable.setupDashboardDataTable({
                     isAdministrator: ${(editor!false)?string},
                     limitContext: ${((!editor)!true)?string},
@@ -226,12 +227,7 @@
                     showDescription: false,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
                 });
-            });
-
-
-
-            $(function () {
-                'use strict';
+           
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
