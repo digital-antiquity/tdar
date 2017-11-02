@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.dashboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +18,6 @@ import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.hibernate.boot.model.relational.Loggable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -53,6 +52,8 @@ import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.search.service.query.SearchService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.action.DataTableResourceDisplay;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
@@ -67,7 +68,7 @@ import org.tdar.utils.TitleSortComparator;
  * @version $Revision$
  */
 @ParentPackage("secured")
-@Namespace("")
+@Namespace("/")
 @Component
 @Scope("prototype")
 public class DashboardController extends AbstractAuthenticatableAction implements DataTableResourceDisplay {
