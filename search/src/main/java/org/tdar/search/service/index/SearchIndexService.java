@@ -41,7 +41,7 @@ public interface SearchIndexService extends TxMessageBus<SolrDocumentContainer> 
 
     public void indexAll(TdarUser person, LookupSource... sources);
 
-    public void indexAll(AsyncUpdateReceiver update, TdarUser person, LookupSource... sources);
+    public void indexAll(AsyncUpdateReceiver update, TdarUser person);
 
     public void purgeAll();
 

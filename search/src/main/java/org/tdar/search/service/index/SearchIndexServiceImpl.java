@@ -398,7 +398,11 @@ public class SearchIndexServiceImpl implements SearchIndexService {
     }
 
     public void indexAll(AsyncUpdateReceiver reciever, TdarUser person, LookupSource... sources) {
-        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this, Arrays.asList(sources), person);
+        List<LookupSource> asList = Arrays.asList(sources);
+        if (sources == null || sources.length == 0) {
+            asList = Arrays.asList(LookupSource.values());
+        }
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this, asList, person);
         AsyncUpdateReceiver activity = setupActivity(reciever, batch);
         batch.indexAll();
     }
