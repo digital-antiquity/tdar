@@ -17,7 +17,7 @@
         <#--<li class="nav-header">My Library</li>-->
         <li <@activeIf current "myprofile"/>><a href="/entity/user/myprofile">My Profile</a></li>
         <#if contributor>
-            <li <@activeIf current "billing" />><a href="/billing">Billing Accounts</a></li>
+            <li <@activeIf current "billing" />><a href="/dashboard/billing">Billing Accounts</a></li>
             <li <@activeIf current "export" />><a href="/export/request">Export</a></li>
         </#if>
     </ul>

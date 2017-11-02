@@ -148,4 +148,6 @@ public interface QueryFieldNames {
     String JOURNAL_NUMBER = "journal.number";
     String EFFECTIVELY_PUBLIC = "effectivelyPublic";
     String RESOURCE_ANNOTATION = "resourceAnnotationPair";
+    String COLLECTION_USERS_WHO_CAN_REMOVE = "usersWhoCanRemove";
+    String COLLECTION_USERS_WHO_CAN_ADD = "usersWhoCanAdd";
 }

@@ -1,9 +1,7 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.dashboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,6 +21,7 @@ import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
@@ -46,7 +45,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
 
     private static final long serialVersionUID = 5576550365349636811L;
     private TreeSet<SharedCollection> allResourceCollections = new TreeSet<>(new TitleSortComparator());
-    private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
     
 
     @Autowired
@@ -88,25 +86,9 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         getLogger().trace("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
             if (rc instanceof SharedCollection) {
-                getSharedResourceCollections().add((SharedCollection) rc);
+                getAllResourceCollections().add((SharedCollection) rc);
             }
         }
-        List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
-        collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
-        /*
-        getLogger().trace("reconcile tree1");
-         resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
-        getLogger().trace("reconcile tree2");
-        resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
-         */
-
-//        getLogger().trace("removing duplicates");
-//        getSharedResourceCollections().removeAll(getAllResourceCollections());
-//        getLogger().trace("sorting");
-//        Collections.sort(allResourceCollections);
-//        Collections.sort(sharedResourceCollections);
         getLogger().trace("done ");
     }
 
@@ -119,8 +101,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         getLogger().trace("begin find shared with");
         setFindUsersSharedWith(resourceCollectionService.findUsersSharedWith(getAuthenticatedUser()));
         getLogger().trace("done");
-//        prepareProjectStuff();
-//        internalCollections = resourceCollectionService.findAllInternalCollections(getAuthenticatedUser());
     }
 
 
@@ -133,22 +113,7 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         this.allResourceCollections = resourceCollections;
     }
 
-    /**
-     * @return the sharedResourceCollections
-     */
-    @DoNotObfuscate(reason = "not needed / performance test")
-    public List<SharedCollection> getSharedResourceCollections() {
-        return sharedResourceCollections;
-    }
-
-    /**
-     * @param sharedResourceCollections
-     *            the sharedResourceCollections to set
-     */
-    public void setSharedResourceCollections(List<SharedCollection> sharedResourceCollections) {
-        this.sharedResourceCollections = sharedResourceCollections;
-    }
-
+ 
     public List<UserNotification> getCurrentNotifications() {
         return currentNotifications;
     }

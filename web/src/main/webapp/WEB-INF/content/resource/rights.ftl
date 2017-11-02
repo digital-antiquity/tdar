@@ -17,23 +17,6 @@
     <div class="span12">
     <p><i>This ${persistable.resourceType.label?lower_case} is currently shared with ${proxies?size} <#if (proxies?size == 1)>person<#else>people</#if><#if (persistable.sharedCollections?size > 0)>, and is in ${persistable.sharedCollections?size} collections</#if>.</i><br></p>
     <@s.hidden name="id" />
-    <#if editor>
-    <#-- 
-	    <div class="control-group" id="divSubmitter">
-	        <label class="control-label">Submitter</label>
-	            <div class="controls controls-row">
-	                <#if owner?has_content>
-	                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
-	                    prefix="owner" includeRights=false includeRepeatRow=false />
-	 	        <#else>
-	                <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
-	                    prefix="owner" includeRights=false includeRepeatRow=false />
-                </#if>
-            </div>
-        </div>
-     -->
-    </#if>
-
 
     <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
 

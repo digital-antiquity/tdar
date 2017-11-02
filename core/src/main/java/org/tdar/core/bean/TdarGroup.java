@@ -16,7 +16,8 @@ public enum TdarGroup implements HasLabel {
     TDAR_USERS("tdar-users", 1),
     JIRA_USERS("jira-users", -1),
     CONFLUENCE_USERS("confluence-users", -1),
-    UNAUTHORIZED("", -2);
+    UNAUTHORIZED("", -2), 
+    TDAR_BALK("tdar-balk",21);
 
     private final String groupName;
     private final int permissionLevel;

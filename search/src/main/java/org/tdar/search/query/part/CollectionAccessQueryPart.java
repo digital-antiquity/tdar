@@ -54,6 +54,14 @@ public class CollectionAccessQueryPart implements QueryPart<TdarUser> {
                     userAccessQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY);
                     group.append(userAccessQueryPart);
                     break;
+                case ADD_TO_SHARE:
+                    userAccessQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADD);
+                    group.append(userAccessQueryPart);
+                    break;
+                case REMOVE_FROM_SHARE:
+                    userAccessQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_REMOVE);
+                    group.append(userAccessQueryPart);
+                    break;
                 case ADMINISTER_SHARE:
                     userAccessQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER);
                     group.append(userAccessQueryPart);
