@@ -112,7 +112,9 @@ public class BatchIndexer implements Serializable {
             }
         }
         genericDao.setCacheModeForCurrentSession(cacheMode);
-        activity.end();
+        if (activity != null) {
+            activity.end();
+        }
     }
 
     AsynchronousStatus createActivity() {
