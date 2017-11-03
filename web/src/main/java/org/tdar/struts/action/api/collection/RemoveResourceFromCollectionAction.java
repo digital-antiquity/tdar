@@ -89,7 +89,6 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
         this.collection = getGenericService().find(ResourceCollection.class, collectionId);
-        
     }
 
     public Long getResourceId() {

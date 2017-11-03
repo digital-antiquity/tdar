@@ -627,8 +627,8 @@
         },
         getCollections: function(){
             var self = this;
-            $.getJSON( "/api/lookup/collection?permission=ADMINISTER_COLLECTION", function(data) {
-                    self.items = data;
+            axios.get("/api/lookup/collection?permission=ADMINISTER_COLLECTION").then(function(res) {
+                    self.items = res.data;
             });
         },
         
@@ -641,11 +641,14 @@
             
             var self=this;
             
-            $.post('/api/collection/addtocollection',data, function(){
+            axios.post('/api/collection/addtocollection',data).then(function(){
                 self._getCollectionsForResource();
                 self._resetForm();
             }
-            );
+            ).catch(function(res){
+                console.log("An error occurred when adding to collection"); 
+                console.log(res);
+            });
             
         },
         
@@ -655,8 +658,10 @@
             }
             
             var self = this;
-            $.getJSON( "/api/collection/resourcecollections?resourceId="+this.resourceId, function(data) {
-                    self.collections = data;
+            
+            axios.get("/api/collection/resourcecollections?resourceId="+this.resourceId).then(function(response) {
+                console.log(response);
+                self.collections = response.data;
             });
         },
         
@@ -667,11 +672,12 @@
                 type:section
             }
             var self = this;
-            
             console.debug("removing collection id"+collection);
-            
-            $.post('/api/collection/removefromcollection',data, function(){
+            axios.post('/api/collection/removefromcollection', data).then(function(){
              self._getCollectionsForResource();
+            }).catch(function(error){
+                console.error("couldn't remove item from collection");
+                console.debug(error);
             });
         },
         
@@ -736,8 +742,6 @@
     });
     
     function getSelectizeOpts() {
-    
-    
        var opts = {
             valueField: 'id',
             labelField: 'name',
