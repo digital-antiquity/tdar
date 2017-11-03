@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.dashboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +20,7 @@ import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TitleSortComparator;
@@ -43,7 +44,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
 
     private static final long serialVersionUID = 5576550365349636811L;
     private TreeSet<ResourceCollection> allResourceCollections = new TreeSet<>(new TitleSortComparator());
-    private List<ResourceCollection> sharedResourceCollections = new ArrayList<>();
     
 
     @Autowired
@@ -78,31 +78,13 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         getLogger().trace("parent/ owner collections");
         for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
             if (rc.isTopLevel()) {
-                getAllResourceCollections().add((ResourceCollection) rc);
+                getAllResourceCollections().add(rc);
             }
         }
         getLogger().trace("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-            if (rc instanceof ResourceCollection) {
-                getSharedResourceCollections().add((ResourceCollection) rc);
-            }
+                getAllResourceCollections().add(rc);
         }
-        List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
-        collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
-        /*
-        getLogger().trace("reconcile tree1");
-         resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
-                collectionIds, ResourceCollection.class);
-        getLogger().trace("reconcile tree2");
-        resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
-                collectionIds, ResourceCollection.class);
-         */
-
-//        getLogger().trace("removing duplicates");
-//        getSharedResourceCollections().removeAll(getAllResourceCollections());
-//        getLogger().trace("sorting");
-//        Collections.sort(allResourceCollections);
-//        Collections.sort(sharedResourceCollections);
         getLogger().trace("done ");
     }
 
@@ -115,8 +97,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         getLogger().trace("begin find shared with");
         setFindUsersSharedWith(resourceCollectionService.findUsersSharedWith(getAuthenticatedUser()));
         getLogger().trace("done");
-//        prepareProjectStuff();
-//        internalCollections = resourceCollectionService.findAllInternalCollections(getAuthenticatedUser());
     }
 
 
@@ -127,22 +107,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
 
     public void setAllResourceCollections(TreeSet<ResourceCollection> resourceCollections) {
         this.allResourceCollections = resourceCollections;
-    }
-
-    /**
-     * @return the sharedResourceCollections
-     */
-    @DoNotObfuscate(reason = "not needed / performance test")
-    public List<ResourceCollection> getSharedResourceCollections() {
-        return sharedResourceCollections;
-    }
-
-    /**
-     * @param sharedResourceCollections
-     *            the sharedResourceCollections to set
-     */
-    public void setSharedResourceCollections(List<ResourceCollection> sharedResourceCollections) {
-        this.sharedResourceCollections = sharedResourceCollections;
     }
 
     public List<UserNotification> getCurrentNotifications() {

@@ -50,6 +50,8 @@
     <field name="parentIdList" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="parentId" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="usersWhoCanModify" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="usersWhoCanRemove" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="usersWhoCanAdd" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="usersWhoCanAdminister" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="usersWhoCanView" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="resourceOwner" type="long" indexed="true" stored="false" required="false" multiValued="false" />

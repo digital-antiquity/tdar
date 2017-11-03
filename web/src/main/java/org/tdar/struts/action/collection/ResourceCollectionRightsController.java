@@ -24,6 +24,7 @@ import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -66,7 +67,7 @@ public class ResourceCollectionRightsController extends AbstractRightsController
     @Override
     public void prepare() throws Exception {
         prepareAndLoad(this, RequestType.EDIT);
-        if (getPersistable() == null) {
+        if (PersistableUtils.isNullOrTransient(getPersistable())) {
             // persistable is null, so the lookup failed (aka not found)
             abort(StatusCode.NOT_FOUND, getText("abstractPersistableController.not_found"));
         }

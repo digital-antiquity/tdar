@@ -67,4 +67,12 @@ public class CollectionRightsExtractor {
     public List<Long> getUsersWhoCanView() {
         return toUserList(Permissions.VIEW_ALL);
     }
+
+    public List<Long> getUsersWhoCanRemove() {
+        return toUserList(Permissions.REMOVE_FROM_COLLECTION);
+    }
+
+    public List<Long> getUsersWhoCanAdd() {
+        return toUserList(Permissions.ADD_TO_COLLECTION);
+    }
 }

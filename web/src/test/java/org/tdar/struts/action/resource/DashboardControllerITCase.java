@@ -21,7 +21,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.DashboardController;
+import org.tdar.struts.action.dashboard.DashboardController;
 
 /**
  * @author Adam Brin
