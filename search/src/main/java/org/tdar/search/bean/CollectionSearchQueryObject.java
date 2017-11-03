@@ -15,19 +15,11 @@ public class CollectionSearchQueryObject implements Serializable {
     private Long id;
     private Operator operator = Operator.AND;
     
-    private boolean includeHidden = true;
     private boolean limitToTopLevel = false;
     private List<String> allFields = new ArrayList<>();
     private GeneralPermissions permission;
     private List<String> titles = new ArrayList<>();
     private CollectionType type;
-    public boolean isIncludeHidden() {
-        return includeHidden;
-    }
-
-    public void setIncludeHidden(boolean includeHidden) {
-        this.includeHidden = includeHidden;
-    }
 
     public boolean isLimitToTopLevel() {
         return limitToTopLevel;

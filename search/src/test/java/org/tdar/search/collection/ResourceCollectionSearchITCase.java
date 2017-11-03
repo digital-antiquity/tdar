@@ -79,6 +79,56 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
             logger.debug("{} {}", c.getId(), c);
         }
     }
+    
+    
+
+    @Test
+    @Rollback
+    public void testAddPermission() throws SearchException, SearchIndexException, IOException {
+        SharedCollection collection = createAndSaveNewResourceCollection("testRemove");
+        collection.getAuthorizedUsers().clear();
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), GeneralPermissions.REMOVE_FROM_SHARE));
+        genericService.saveOrUpdate(collection);
+        searchIndexService.index(collection);
+        // create collection
+        // grant user add permissions
+        // search for collection
+        // remove permission
+        // search for collection
+        assertCollectionMatch(collection, GeneralPermissions.ADD_TO_SHARE, true);
+        assertCollectionMatch(collection, GeneralPermissions.REMOVE_FROM_SHARE, true);
+        assertCollectionMatch(collection, GeneralPermissions.ADMINISTER_SHARE, false);
+        collection.getAuthorizedUsers().forEach(au -> {au.setGeneralPermission(GeneralPermissions.MODIFY_METADATA);} );
+        genericService.saveOrUpdate(collection);
+        searchIndexService.index(collection);
+        assertCollectionMatch(collection, GeneralPermissions.ADD_TO_SHARE, false);
+        assertCollectionMatch(collection, GeneralPermissions.REMOVE_FROM_SHARE, false);
+        assertCollectionMatch(collection, GeneralPermissions.ADMINISTER_SHARE, false);
+    }
+
+    private void assertCollectionMatch(SharedCollection collection, GeneralPermissions addToShare, boolean bool)
+            throws SearchException, SearchIndexException, IOException {
+        CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
+        logger.debug(" {} ~~ {} {}", bool, collection, addToShare);
+        csqo.getTitles().add("testRemove");
+        csqo.setPermission(addToShare);
+        SearchResult<ResourceCollection> result = runQuery(getBasicUser(), csqo);
+        if (bool) {
+        assertNotEmpty("should have results", result.getResults());
+        } else {
+            assertEmpty("should not have results", result.getResults());            
+        }
+        for (ResourceCollection c : result.getResults()) {
+            logger.debug("{} {}", c.getId(), c);
+            logger.debug("\t{}", c.getAuthorizedUsers());
+        }
+        if (bool) {
+            assertTrue(result.getResults().contains(collection));
+        } else {
+            assertFalse(result.getResults().contains(collection));
+            
+        }
+    }
 
     @Test
     @Rollback
@@ -118,9 +168,9 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
     @Rollback
     public void testHiddenBoolean() throws SearchException, SearchIndexException, IOException {
         init();
+        // test basic user
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
-        csqo.setIncludeHidden(false);
-        SearchResult<ResourceCollection> result = runQuery(getAdminUser(), csqo);
+        SearchResult<ResourceCollection> result = runQuery(getBasicUser(), csqo);
         assertNotEmpty("should have results", result.getResults());
         for (ResourceCollection c : result.getResults()) {
             if (c instanceof VisibleCollection) {
@@ -130,6 +180,20 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
                 fail("should not be indexing InternalCollections");
             }
         }
+        
+        // test admin user
+        csqo = new CollectionSearchQueryObject();
+        result = runQuery(getBasicUser(), csqo);
+        assertNotEmpty("should have results", result.getResults());
+        for (ResourceCollection c : result.getResults()) {
+            if (c instanceof VisibleCollection) {
+                logger.debug("{} {} {}", c.getId(), c, ((VisibleCollection) c).isHidden());
+        //        assertFalse("should not be hidden", ((VisibleCollection) c).isHidden());
+            } else {
+                fail("should not be indexing InternalCollections");
+            }
+        }
+
     }
 
     @Test
