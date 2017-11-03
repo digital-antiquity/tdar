@@ -66,6 +66,14 @@ public class CollectionSearchService extends AbstractSearchService {
 
         // either it's not hidden and you can see it, or it is hidden but you have rights to it.
 
+        QueryPartGroup rightsPart = buildCollectionRightsPart(authenticatedUser, query);
+        queryBuilder.append(rightsPart);
+        searchService.handleSearch(queryBuilder, result, provider);
+        return result;
+
+    }
+
+    private QueryPartGroup buildCollectionRightsPart(TdarUser authenticatedUser, CollectionSearchQueryObject query) {
         QueryPartGroup rightsPart = new QueryPartGroup(Operator.OR);
         FieldQueryPart<Boolean> effectivePart = new FieldQueryPart<Boolean>(QueryFieldNames.EFFECTIVELY_PUBLIC, Boolean.TRUE);
         rightsPart.append(effectivePart);
@@ -75,11 +83,19 @@ public class CollectionSearchService extends AbstractSearchService {
             if (permission == null) {
                 permission = GeneralPermissions.NONE;
             }
-            // if view anything and empty or view all
-            if (viewAnything) {
-                rightsPart.clear();
-                rightsPart.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, Arrays.asList(Status.ACTIVE,Status.DRAFT)));
+            
+            if (permission.ordinal() <= GeneralPermissions.VIEW_ALL.ordinal()) {
+                // if view anything and empty or view all
+                if (viewAnything) {
+                    rightsPart.clear();
+                    rightsPart.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, Arrays.asList(Status.ACTIVE,Status.DRAFT)));
+                } else {
+                    rightsPart.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
+                    
+                }
+                
             }
+            
             // if permission is greater than View, then we will use the permission part to build out the view
             if (permission.ordinal() > GeneralPermissions.VIEW_ALL.ordinal()) {
                 rightsPart.clear();
@@ -87,10 +103,7 @@ public class CollectionSearchService extends AbstractSearchService {
             CollectionAccessQueryPart queryPart = getPermissionsPart(authenticatedUser, query);
             rightsPart.append(queryPart);
         }
-        queryBuilder.append(rightsPart);
-        searchService.handleSearch(queryBuilder, result, provider);
-        return result;
-
+        return rightsPart;
     }
 
     public LuceneSearchResultHandler<ResourceCollection> lookupCollection(TdarUser authenticatedUser, CollectionSearchQueryObject csqo,
@@ -98,8 +111,8 @@ public class CollectionSearchService extends AbstractSearchService {
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
         q.setOperator(Operator.AND);
         q.append(new AutocompleteTitleQueryPart(csqo.getTitles().get(0)));
-        CollectionAccessQueryPart queryPart = getPermissionsPart(authenticatedUser, csqo);
-        q.append(queryPart);
+        QueryPartGroup rightsPart = buildCollectionRightsPart(authenticatedUser, csqo);
+        q.append(rightsPart);
         if (csqo.getType() != null) {
             q.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TYPE, csqo.getType()));
         }

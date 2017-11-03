@@ -170,7 +170,8 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         init();
         // test basic user
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
-        SearchResult<ResourceCollection> result = runQuery(getBasicUser(), csqo);
+        TdarUser user = createAndSaveNewUser();
+        SearchResult<ResourceCollection> result = runQuery(user, csqo);
         assertNotEmpty("should have results", result.getResults());
         for (ResourceCollection c : result.getResults()) {
             if (c instanceof VisibleCollection) {
