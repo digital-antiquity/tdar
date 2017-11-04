@@ -632,15 +632,15 @@
         },
         
         _addResourceToCollection : function(collectionId){
+            var self=this;
             var data =  {
-                resourceId:this.resourceId,
-                collectionId:collectionId,
-                addAsManagedResource:this.managedResource
+                "resourceId":self.resourceId,
+                "collectionId":collectionId,
+                "addAsManagedResource":this.managedResource
             }
             
-            var self=this;
-            
-            axios.post('/api/collection/addtocollection',data).then(function(){
+            console.debug(data);
+                axios.post('/api/collection/addtocollection', qs.stringify(data)).then(function(){
                 self._getCollectionsForResource();
                 self._resetForm();
             }
@@ -659,10 +659,13 @@
             var self = this;
             
             axios.get("/api/collection/resourcecollections?resourceId="+this.resourceId).then(function(response) {
-                console.log(response);
                 self.collections = response.data;
             });
         },
+        
+        ellipse : function(value){
+           return TDAR.common.htmlEncode(TDAR.ellipsify(value, 80))
+        }, 
         
         removeResourceFromCollection: function(collection,section){
         var data =  {
@@ -672,7 +675,7 @@
             }
             var self = this;
             console.debug("removing collection id"+collection);
-            axios.post('/api/collection/removefromcollection', data).then(function(){
+            axios.post('/api/collection/removefromcollection', qs.stringify(data)).then(function(){
              self._getCollectionsForResource();
             }).catch(function(error){
                 console.error("couldn't remove item from collection");
@@ -851,15 +854,10 @@
 							         data-max-options="100" data-config="getSelectizeOpts"
 							         data-value-field= 'id' data-label-field= 'text' data-search-field= 'text' data-sort-field= 'text'>
 							    </selectize>
-
-						{{selectedCollection}}
-<#--                                   <input v-model="selectedCollection" type="hidden"> -->
                               </div>
                               </div>
                           </div>
                           
-                          
-                        
                         <div>
                             <label class="form-check-label">
                                 <input type="radio" id="rb_new" v-model="pick" value="newcollection"> 
@@ -881,12 +879,15 @@
                          
                          <div>
                             <h3>Included as part of : </h3>
+                            <ul>
                             <li v-for="collection in collections.managed">
-                                {{collection.name}} (rights managed) <a v-on:click='removeResourceFromCollection(collection,"MANAGED")'>Remove</a>
+                                {{ellipse(collection.name)}} (rights managed) <a v-on:click='removeResourceFromCollection(collection,"MANAGED")'>Remove</a>
                             </li>
+                            
                             <li v-for="collection in collections.unmanaged">
-                                {{collection.name}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")'>Remove</a>
+                                {{ellipse(collection.name)}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")'>Remove</a>
                             </li>
+                            </ul>
                             <div v-if="collections.managed.length == 0 && collections.unmanaged.length==1">
                                 Not part of any collections
                             </div>
