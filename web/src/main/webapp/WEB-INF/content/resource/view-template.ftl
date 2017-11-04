@@ -639,8 +639,9 @@
                 "addAsManagedResource":this.managedResource
             }
             
+            console.debug("Adding resource to collection");
             console.debug(data);
-                axios.post('/api/collection/addtocollection', qs.stringify(data)).then(function(){
+            axios.post('/api/collection/addtocollection', Qs.stringify(data)).then(function(){
                 self._getCollectionsForResource();
                 self._resetForm();
             }
@@ -652,12 +653,10 @@
         },
         
         _getCollectionsForResource : function(){
+            var self = this;
             var data = {
                 resourceId : this.resourceId
             }
-            
-            var self = this;
-            
             axios.get("/api/collection/resourcecollections?resourceId="+this.resourceId).then(function(response) {
                 self.collections = response.data;
             });
@@ -675,7 +674,7 @@
             }
             var self = this;
             console.debug("removing collection id"+collection);
-            axios.post('/api/collection/removefromcollection', qs.stringify(data)).then(function(){
+            axios.post('/api/collection/removefromcollection', Qs.stringify(data)).then(function(){
              self._getCollectionsForResource();
             }).catch(function(error){
                 console.error("couldn't remove item from collection");
@@ -714,17 +713,17 @@
                 }
                 else {
                     //post to create a new collection.
-                    console.log("Name is "+this.newCollectionName);
                     var data = {
                         collectionName: this.newCollectionName
                     }
                     
                     //On success, add the resource.
-                    $.post('/api/collection/newcollection',data,function(res){
-                            console.log("Adding resource to new console");
-                            var id = res.id;
+                    axios.post('/api/collection/newcollection',Qs.stringify(data)).then(function(res){
+                            console.log("New Collection added");
+                            var id = res.data.id;
+                            console.debug("new collection id is "+id);
                             vapp._addResourceToCollection(id);
-                            this._resetForm();
+                            vapp._resetForm();
                         }
                     );
                 }
@@ -881,18 +880,17 @@
                             <h3>Included as part of : </h3>
                             <ul>
                             <li v-for="collection in collections.managed">
-                                {{ellipse(collection.name)}} (rights managed) <a v-on:click='removeResourceFromCollection(collection,"MANAGED")'>Remove</a>
+                                {{ellipse(collection.name)}} (managed) <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' style="cursor:pointer">Remove</a>
                             </li>
                             
                             <li v-for="collection in collections.unmanaged">
-                                {{ellipse(collection.name)}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")'>Remove</a>
+                                {{ellipse(collection.name)}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")' style="cursor:pointer">Remove</a>
                             </li>
                             </ul>
                             <div v-if="collections.managed.length == 0 && collections.unmanaged.length==1">
                                 Not part of any collections
                             </div>
                          </div>
-                         
                     </form>    
               </div>
               <div class="modal-footer">
