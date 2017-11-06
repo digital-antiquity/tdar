@@ -111,6 +111,11 @@
         <!--Selectize  -->        
         <js>/components/selectize/dist/js/standalone/selectize.js</js>
         <css>/components/selectize/dist/css/selectize.css</css>
+
+
+        <js>/js/vue/vue-selectize.js</js>
+        <js>/js/vue/view-collection-widget.js</js>
+
     </group>
     <group name="ng-integrate">
 

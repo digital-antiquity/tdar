@@ -4,7 +4,10 @@
 //define global TDAR object if not defined already
     var TDAR = window['TDAR'] || {};
     window.TDAR = TDAR;
-
+    if (TDAR['vuejs'] == undefined) {
+        TDAR['vuejs'] = {};
+    }
+    
     /**
      * Returns the namespace specified and creates it if it doesn't exist  (e.g. "TDAR.maps.controls",  "TDAR.stringutils")
      * (see YUI "module pattern",  http://yuiblog.com/blog/2007/06/12/module-pattern/) for more information
