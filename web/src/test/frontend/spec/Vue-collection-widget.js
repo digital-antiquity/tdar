@@ -5,15 +5,15 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     var _fixturePath = '';
     beforeEach(function() {
         moxios.install(axios);
-        _fixturePath = jasmine.getFixtures().fixturesPath;
-        jasmine.getFixtures().fixturesPath = "base/src/main/webapp/WEB-INF/content/";
+        // _fixturePath = jasmine.getFixtures().fixturesPath;
+        // jasmine.getFixtures().fixturesPath = "base/src/main/webapp/WEB-INF/content/";
         
         //jasmine.Ajax.install();
     });
 
     afterEach(function() {
         moxios.uninstall(axios);
-        jasmine.getFixtures().fixturesPath = _fixturePath;
+        // jasmine.getFixtures().fixturesPath = _fixturePath;
         //jasmine.Ajax.uninstall();
     });
 
@@ -26,33 +26,38 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         
         // moxios.withMock(function () {
         
-        var fixture = jasmine.getFixtures().read("resource/vue-collection-widget.html");
+        var fixture = jasmine.getFixtures().read("vue-collection-widget.html");
         
         fixture = fixture.replace("${editable?c}","false");
         fixture = fixture.replace("${resource.id?c}","111");
 
-        jasmine.getFixtures().set(fixture);
+        var fix = jasmine.getFixtures().set(fixture);
 
 
-        moxios.stubRequest('/api/collection/resourcecollections?resourceId=111', {
-                status: 500,
-                response: {'managed':[],'unmanaged':{}}
-        });
+        var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
+
 
         moxios.wait(function(){
-            TDAR.vuejs.collectionwidget.init("#add-resource-form");
             var request = moxios.requests.mostRecent();
             request.respondWith(        {
-                status: 500,
-                response: {'managed':[],'unmanaged':{}}
+                status: 200,
+                response: {'managed':[{"id":5,"name":'manhattan'}],'unmanaged':{}}
         });
-        console.log(moxios.requests.mostRecent());
-        console.log(request);
-            
+        // console.log(moxios.requests.mostRecent());
+        // console.log(request.url);
         });
+
         expect($("#collection-list")).toHaveLength(1);
-        console.log($("#existing-collections-list").html());
+
         
+        // console.error(fix.find("#existing-collections-list"));
+        // vapp.$nextTick(function() {
+        //     console.error("______");
+        //     console.error($("#existing-collections-list").html());
+        //     expect($("#existing-collections-list").html()).toContain('manhattan');
+        //   });
+
+
         
         console.info("------------------------------------- vue ---------------------------------------");
     // });

@@ -215,7 +215,7 @@ var _init = function(appId) {
         }
     }
     });
-
+      return app2;
     
     
 }
