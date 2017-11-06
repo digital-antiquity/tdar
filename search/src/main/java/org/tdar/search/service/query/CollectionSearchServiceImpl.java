@@ -88,7 +88,7 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
                 permission = Permissions.NONE;
             }
             
-            if (permission.ordinal() <= GeneralPermissions.VIEW_ALL.ordinal()) {
+            if (permission.ordinal() <= Permissions.VIEW_ALL.ordinal()) {
                 // if view anything and empty or view all
                 if (viewAnything) {
                     rightsPart.clear();
@@ -98,10 +98,7 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
                     
                 }
                 
-            }
-            
-            // if permission is greater than View, then we will use the permission part to build out the view
-            if (permission.ordinal() > Permissions.VIEW_ALL.ordinal()) {
+            } else {
                 rightsPart.clear();
             }
             CollectionAccessQueryPart queryPart = getPermissionsPart(authenticatedUser, query);
