@@ -172,11 +172,12 @@
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
-            <h2>Share Resources with other users</h2>
+                    
+            <h2>Resources</h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && ((resourceCollection.managedResources![])?size > 0 || (resourceCollection.unmanagedResources![])?size > 0)>
+            
             <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
-
             </@edit.resourceDataTable>
 
             <div id="divNoticeContainer" style="display:none">
@@ -235,7 +236,7 @@
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
-                        //remind users that adding a project does not also add the project's contents
+                //remind users that adding a project does not also add the project's contents
 				$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
                 });
         </script>

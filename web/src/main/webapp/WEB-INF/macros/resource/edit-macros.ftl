@@ -20,46 +20,51 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- Emit the choose-a-collection section -->
-    <#macro resourceCollectionSection prefix="resourceCollections" label="Collection" list=[] >
-        <#local _resourceCollections = [blankResourceCollection] />
-        <#local collectionType="LIST"/>
-        <#if prefix=='shares'>
-	        <#local collectionType="SHARED"/>
-            <#local _resourceCollections = [blankShare] />
-        </#if> 
-<h3>Collection Membership</h3>               
-        <#if (list?has_content && list?is_collection && (list?size!0) > 0 )>
-            <#local _resourceCollections = list />
-        </#if>
-        <@helptext.resourceCollection />
-    <div data-tiplabel="${siteAcronym} ${label}" data-tooltipcontent="#divResourceCollectionListTips">
-    <#if (ableToUploadFiles?? && ableToUploadFiles) || resource.resourceType.project || rightsPage!false >
-        <div id="${prefix}Table" class="control-group repeatLastRow" addAnother="add another ${label}">
-            <label class="control-label">${label} Name(s)</label>
+<#macro resourceCollectionSection prefix="resourceCollections" label="Collection" list=[] >
+    <#local _resourceCollections = [blankResourceCollection] />
+    <#local collectionType="LIST"/>
+    <#if prefix=='shares'>
+        <#local collectionType="SHARED"/>
+        <#local _resourceCollections = [blankShare] />
+    </#if> 
+    
+    <h3>Collection Membership</h3>               
 
-            <div class="controls">
-                <#list _resourceCollections as resourceCollection>
-                <#-- emit a single row of the choose-a-collection section -->
+    <#if (list?has_content && list?is_collection && (list?size!0) > 0 )>
+        <#local _resourceCollections = list />
+    </#if>
+    
+    <@helptext.resourceCollection />
+    
+    <div data-tiplabel="${siteAcronym} ${label}" data-tooltipcontent="#divResourceCollectionListTips">
+        <#if (ableToUploadFiles?? && ableToUploadFiles) || resource.resourceType.project || rightsPage!false >
+            <div id="${prefix}Table" class="control-group repeatLastRow" addAnother="add another ${label}">
+                <label class="control-label">${label} Name(s)</label>
+
+                <div class="controls">
+                    <#list _resourceCollections as resourceCollection>
+                    <#-- emit a single row of the choose-a-collection section -->
                     <div id="${prefix}Row_${resourceCollection_index}_" class="controls-row repeat-row">
                         <@s.hidden name="${prefix}[${resourceCollection_index}].id"  id="${prefix}Row_${resourceCollection_index}_id" />
-                <@s.textfield theme="simple" id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
-                    autocompleteIdElement="#${prefix}Row_${resourceCollection_index}_id" maxlength=255
-                    collectionType="${collectionType}"
-                    autocompleteParentElement="#${prefix}Row_${resourceCollection_index}_" />
-                <@nav.clearDeleteButton id="${prefix}Row" />
+                        <@s.textfield theme="simple" id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
+                        autocompleteIdElement="#${prefix}Row_${resourceCollection_index}_id" maxlength=255
+                        collectionType="${collectionType}"
+                        autocompleteParentElement="#${prefix}Row_${resourceCollection_index}_" />
+                    
+                        <@nav.clearDeleteButton id="${prefix}Row" />
                     </div>
-
-                </#list>
-                <#if resource.resourceType.project>
-                    <span class="help-inline"><em>Note</em>: adding this project to a collection will not include the resources within this project.</span>
-                </#if>
+                    </#list>
+                   
+                    <#if resource.resourceType.project>
+                        <span class="help-inline"><em>Note</em>: adding this project to a collection will not include the resources within this project.</span>
+                    </#if>
+                </div>
             </div>
-        </div>
-    <#else>
+        <#else>
         <p>Collection selection is disabled because you don't have full rights on this resource.</p>    
-    </#if>
+        </#if>
     </div>
-    </#macro>
+</#macro>
 
 
 <#-- emit a div containing "repeatable"  keyword fields
@@ -1041,144 +1046,184 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     @param selectable:boolean render resources in the list with "selectable" rows,  which will render a checkbox
         as the first column in each row of the data table
 -->
+<#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="" span="span8">
 
-    <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="" span="span8">
-    <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> <#--you are in a span9, but assume span8 so we fit inside well -->
 
-        <div class="row" >
-            <div class="${span}" >
-                <@s.textfield theme="tdar" name="_tdar.query" id="query${idAddition}" cssClass='span8'
-                    placeholder="Enter a full or partial title to filter results" />
-                <div>
-                    <button type="button" class="btn btn-mini pull-left" id="btnToggleFilters${idAddition}" data-toggle="collapse" data-target="#divAdvancedFilters${idAddition}">
-                        More/Less options...
-                    </button>
-                    <div class="pull-right">
+<ul class="nav nav-tabs">
+  <li class="active"><a data-toggle="tab" href="#existingResources">Resources in this collection</a></li>
+  <li><a data-toggle="tab" href="#addResources">Add Resources to this collection</a></li>
+</ul>
 
-                        <#if limitToCollection>
-                            <label class="checkbox" style="font-weight:normal; ">
-                                <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded${idAddition}">
-                                Show only selected resources
-                            </label>
-                        </#if>
+<div class="tab-content">
+  <div id="existingResources" class="tab-pane fade in active">
+    <@s.textfield theme="tdar" name="_tdar.filter" id="filter${idAddition}" cssClass='span4'
+    placeholder="find resource" />
+   
+   
+   
+   <#--
+   TODO : This looks up against a URL for resources. If the collection is being created, then the API will not return any data.
+   However, the resources that were selected from the other tab need to show here .
+   
+   When the filter is cleared, all of the results should show. 
+   
+   -->
+   <vuetable
+        api-url="/api/collections/resources/id=${resourceCollection.id?c}"
+        table-wrapper="#content"
+        :fields="columns"
+        :item-actions="itemActions"
+    ></vuetable>
+   
+   
+   
+  </div>
+  <div id="addResources" class="tab-pane fade" style="border:1px solid red">
+        <#--you are in a span9, but assume span8 so we fit inside well -->
+        <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> 
+                <div class="row" >
+                    <div class="${span}" >
+                        <@s.textfield theme="tdar" name="_tdar.query" id="query${idAddition}" cssClass='span8'
+                            placeholder="Enter a full or partial title to filter results" />
+                            <div>
+                                <button type="button" class="btn btn-mini pull-left" id="btnToggleFilters${idAddition}" data-toggle="collapse" data-target="#divAdvancedFilters${idAddition}">
+                                    More/Less options...
+                                </button>
+                                
+                                <div class="pull-right">
+                                    <#if limitToCollection>
+                                        <label class="checkbox" style="font-weight:normal; ">
+                                            <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded${idAddition}">
+                                            Show only selected resources
+                                        </label>
+                                    </#if>
+                                </div>
+                            </div>
                     </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div id="divAdvancedFilters${idAddition}" class="collapse">
-
-            <div class="row">
-                <div class="span4">
-                    <label class="" for="project-selector${idAddition}">Project</label>
-                    <select id="project-selector${idAddition}" name="_tdar.project" class="input-block-level">
-                        <option value="" selected='selected'>All Editable Projects</option>
-                        <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
-                            <optgroup label="Projects">
-                                <#list allSubmittedProjects?sort_by("title") as submittedProject>
-                                    <option value="${submittedProject.id?c}"
-                                            title="${submittedProject.title!""?html}"><@common.truncate submittedProject.title 70 /> </option>
-                                </#list>
-                            </optgroup>
-                        </#if>
-
-                        <#if fullUserProjects??>
-                            <optgroup label="Projects you have been given access to">
-                                <#list fullUserProjects?sort_by("title") as editableProject>
-                                    <option value="${editableProject.id?c}"
-                                        title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
-                                </#list>
-                            </optgroup>
-                        </#if>
-                    </select>
-                </div>
-
-                <div class="span4">
-                    <label class="" for="collection-selector${idAddition}">Collection</label>
-                    <#local selectedId=-1/>
-                    <#-- limit to just this collection
-                    <#if namespace=='/collection' && (id!-1) != -1>
-                        <#local selectedId=id/>
-                    </#if>
-                    -->
-                    <div class="">
-                        <select name="_tdar.collection" id="collection-selector${idAddition}" class="input-block-level">
-                            <option value="" <#if (selectedId!-1) == -1>selected='selected'</#if>>All Collections</option>
-                            <@s.iterator value='allResourceCollections' var='rc'>
-                                <option value="${rc.id?c}" title="${rc.name!""?html}"
-                                <#if (selectedId!-1) != -1 && rc.id == selectedId>selected="selected"</#if>
-                                ><@common.truncate rc.name!"(No Name)" 70 /></option>
-                            </@s.iterator>
-                        </select>
+                </div><#--End Search box-->
+    
+                <div id="divAdvancedFilters${idAddition}" class="collapse">
+                    <div class="row">
+                        <div class="span4">
+                            <label class="" for="project-selector${idAddition}">Project</label>
+                            
+                            <select id="project-selector${idAddition}" name="_tdar.project" class="input-block-level">
+                                <option value="" selected='selected'>All Editable Projects</option>
+                                <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
+                                    <optgroup label="Projects">
+                                        <#list allSubmittedProjects?sort_by("title") as submittedProject>
+                                            <option value="${submittedProject.id?c}"
+                                                    title="${submittedProject.title!""?html}"><@common.truncate submittedProject.title 70 /> </option>
+                                        </#list>
+                                    </optgroup>
+                                </#if>
+        
+                                <#if fullUserProjects??>
+                                    <optgroup label="Projects you have been given access to">
+                                        <#list fullUserProjects?sort_by("title") as editableProject>
+                                            <option value="${editableProject.id?c}"
+                                                title="${editableProject.title!""?html}"><@common.truncate editableProject.title 70 /></option>
+                                        </#list>
+                                    </optgroup>
+                                </#if>
+                            </select>
+                        </div>
+        
+                        <div class="span4">
+                            <label class="" for="collection-selector${idAddition}">Collection</label>
+                            <#local selectedId=-1/>
+                            <#-- limit to just this collection
+                            <#if namespace=='/collection' && (id!-1) != -1>
+                                <#local selectedId=id/>
+                            </#if>
+                            -->
+                            
+                            <div class="">
+                                <select name="_tdar.collection" id="collection-selector${idAddition}" class="input-block-level">
+                                    <option value="" <#if (selectedId!-1) == -1>selected='selected'</#if>>All Collections</option>
+                                    <@s.iterator value='allResourceCollections' var='rc'>
+                                        <option value="${rc.id?c}" title="${rc.name!""?html}"
+                                        <#if (selectedId!-1) != -1 && rc.id == selectedId>selected="selected"</#if>
+                                        ><@common.truncate rc.name!"(No Name)" 70 /></option>
+                                    </@s.iterator>
+                                </select>
+                            </div>
+                        </div><#--End row-->
+                    </div>
+        
+                    <div class="row">
+                        <div class="span4">
+                            <label class="">Status</label>
+                            <@s.select theme="tdar" id="statuses${idAddition}" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
+                            list='%{statuses}' cssClass="input-block-level"/>
+                        </div>
+        
+                        <div class="span4">
+                            <label class="">Resource Type</label>
+                            <@s.select theme="tdar" id="resourceTypes${idAddition}" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
+                            listValue='label' list='%{resourceTypes}' cssClass="input-block-level"/>
+                        </div>
+                    </div> <#--End row-->
+        
+                    <div class="row">
+                        <div class="span4">
+                            <label class="">Sort by</label>
+        
+                            <div class="">
+                                <@s.select theme="tdar" emptyOption='false' id="sortBy${idAddition}" name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' cssClass="selSortBy"
+                                value="ID_REVERSE" cssClass="input-block-level"/>
+                            </div>
+                        </div>
+                        <div class="span4">
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row">
-
-                <div class="span4">
-                    <label class="">Status</label>
-                    <@s.select theme="tdar" id="statuses${idAddition}" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
-                    list='%{statuses}' cssClass="input-block-level"/>
-                </div>
-
-                <div class="span4">
-                    <label class="">Resource Type</label>
-                    <@s.select theme="tdar" id="resourceTypes${idAddition}" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
-                    listValue='label' list='%{resourceTypes}' cssClass="input-block-level"/>
-                </div>
-
-            </div>
-
-            <div class="row">
-                <div class="span4">
-                    <label class="">Sort by</label>
-
-                    <div class="">
-                        <@s.select theme="tdar" emptyOption='false' id="sortBy${idAddition}" name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' cssClass="selSortBy"
-                        value="ID_REVERSE" cssClass="input-block-level"/>
-                    </div>
-                </div>
-                <div class="span4">
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-    <#nested />
-    <div class="row">
-        <div class="${span}">
-
+        </div><#-- end of the search box/advanced search options-->
+        
+        <#--The HTML table for resources. -->
+        <div class="row">
+            <div class="${span}">
             <table class="display table table-striped table-bordered tableFormat" id="resource_datatable${idAddition}">
-                <colgroup>
-                    <#if selectable>
-                        <col style="width:10%"></#if>
-                    <col style="width: 70%">
-                    <col style="">
-                </colgroup>
-                <thead>
-                <tr>
-                    <#if selectable>
-                        <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle${idAddition}">id</th></#if>
-                    <th>Title</th>
-                    <th>Type</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <#if selectable>
-                        <td>&nbsp;</td></#if>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                </tbody>
-            </table>
+                    <colgroup>
+                        <#if selectable>
+                            <col style="width:10%">
+                        </#if>
+                        <col style="width: 70%">
+                        <col style="">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <#if selectable>
+                                <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle${idAddition}">id</th></#if>
+                            <th>Title</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <#if selectable>
+                                <td>&nbsp;</td></#if>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </tbody>
+                </table>
+                            
+            </div>
         </div>
-    </div>
+        
+  </div>
+</div>
+
+
+   
+    
+    <#nested />
+    
     <br/>
-    </#macro>
+</#macro> 
+<#--End Datatable macro-->
+
 
 <#-- emit $.ready javascript snippet that registers is responsible for wiring up a table element as a datatable widget -->
     <#macro resourceDataTableJavascript showDescription=true selectable=false >
