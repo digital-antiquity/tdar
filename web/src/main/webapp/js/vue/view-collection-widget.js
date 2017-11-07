@@ -129,9 +129,9 @@ var _init = function(appId) {
                 resourceId : this.resourceId
             }
             axios.get("/api/collection/resourcecollections?resourceId="+this.resourceId).then(function(response) {
-                self.collections = response.data;
+                Vue.set(self,'collections',response.data);
             }).catch(function(error){
-                console.error("!!! something bad happened");
+                console.error("An error ocurred getting a list of collections for this resource");
                 console.error(error);
             });
         },

@@ -25,7 +25,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         console.info("------------------------------------- vue ---------------------------------------");
         
         // moxios.withMock(function () {
-        
+            jasmine.getFixtures().fixturesPath = "base/src/main/webapp/WEB-INF/content/resource/";
         var fixture = jasmine.getFixtures().read("vue-collection-widget.html");
         
         fixture = fixture.replace("${editable?c}","false");
@@ -41,21 +41,20 @@ describe("Vue-collection-widget.js: collection widget test", function() {
             var request = moxios.requests.mostRecent();
             request.respondWith(        {
                 status: 200,
-                response: {'managed':[{"id":5,"name":'manhattan'}],'unmanaged':{}}
-        });
-        // console.log(moxios.requests.mostRecent());
-        // console.log(request.url);
-        });
+                response: {managed:[{id:5,name:'manhattan'}],unmanaged:[]}
+            }).then(function(){
+                console.error('@@@@@@@@@@@@@');
+                expect($("#collection-list")).toHaveLength(1);
 
-        expect($("#collection-list")).toHaveLength(1);
-
-        
-        // console.error(fix.find("#existing-collections-list"));
-        // vapp.$nextTick(function() {
-        //     console.error("______");
-        //     console.error($("#existing-collections-list").html());
-        //     expect($("#existing-collections-list").html()).toContain('manhattan');
-        //   });
+                vapp.$forceUpdate();
+                vapp.$forceUpdate();
+                console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
+            });
+            console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
+            
+            // console.log(moxios.requests.mostRecent());
+            // console.log(request.url);
+        })
 
 
         
