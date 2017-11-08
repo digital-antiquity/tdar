@@ -4,7 +4,6 @@ describe("Vue-collection-widget.js: collection widget test", function() {
 
     var _fixturePath = '';
     beforeEach(function() {
-        moxios.install(axios);
         // _fixturePath = jasmine.getFixtures().fixturesPath;
         // jasmine.getFixtures().fixturesPath = "base/src/main/webapp/WEB-INF/content/";
         
@@ -20,7 +19,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
 
 
 
-    it("gracefully handles page with no map elements", function() {
+    it("gracefully handles page with no map elements", function(done) {
         //basically we just want to run this on a blank page, which should do nothing.  Jasmine will fail if it throws an error.
         console.info("------------------------------------- vue ---------------------------------------");
         
@@ -33,28 +32,31 @@ describe("Vue-collection-widget.js: collection widget test", function() {
 
         var fix = jasmine.getFixtures().set(fixture);
 
+        moxios.install(axios);
 
         var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
 
-
-        moxios.wait(function(){
-            var request = moxios.requests.mostRecent();
-            request.respondWith(        {
+        moxios.stubRequest('/api/collection/resourcecollections?resourceId=111', {
                 status: 200,
                 response: {managed:[{id:5,name:'manhattan'}],unmanaged:[]}
-            }).then(function(){
-                console.error('@@@@@@@@@@@@@');
+            });
+        
                 expect($("#collection-list")).toHaveLength(1);
 
                 vapp.$forceUpdate();
-                vapp.$forceUpdate();
-                console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
-            });
-            console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
+
+ Vue.nextTick(function() {
+    vapp.$forceUpdate();
+        console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
+    // });
+    console.log(fix.find("#existing-collections-list")); 
+    done();
+});
+            // console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
             
             // console.log(moxios.requests.mostRecent());
             // console.log(request.url);
-        })
+        // })
 
 
         
