@@ -1048,37 +1048,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 -->
 <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="" span="span8">
 
-
-<ul class="nav nav-tabs">
-  <li class="active"><a data-toggle="tab" href="#existingResources">Resources in this collection</a></li>
-  <li><a data-toggle="tab" href="#addResources">Add Resources to this collection</a></li>
-</ul>
-
-<div class="tab-content">
-  <div id="existingResources" class="tab-pane fade in active">
-    <@s.textfield theme="tdar" name="_tdar.filter" id="filter${idAddition}" cssClass='span4'
-    placeholder="find resource" />
-   
-   
-   
-   <#--
-   TODO : This looks up against a URL for resources. If the collection is being created, then the API will not return any data.
-   However, the resources that were selected from the other tab need to show here .
-   
-   When the filter is cleared, all of the results should show. 
-   
-   -->
-   <vuetable
-        api-url="/api/collections/resources/id=${resourceCollection.id?c}"
-        table-wrapper="#content"
-        :fields="columns"
-        :item-actions="itemActions"
-    ></vuetable>
-   
-   
-   
-  </div>
-  <div id="addResources" class="tab-pane fade" style="border:1px solid red">
         <#--you are in a span9, but assume span8 so we fit inside well -->
         <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> 
                 <div class="row" >
@@ -1211,15 +1180,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             
             </div>
         </div>
-        
-  </div>
-</div>
 
 
-   
-    
     <#nested />
-    
     <br/>
 </#macro> 
 <#--End Datatable macro-->

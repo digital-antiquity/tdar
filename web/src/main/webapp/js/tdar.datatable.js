@@ -391,6 +391,107 @@ TDAR.datatable = function() {
 
         _scrollOnPagination();
     }
+    
+    
+    /**
+     * initialize the datatable used for the edit collection page for displaying the resources in the collection.
+     * 
+     * @param options
+     * @private
+     */
+    function _setupCollectionResourcesDataTable(options) {
+        var _options = $.extend({}, options);
+        _extendSorting();
+
+        jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
+        $.extend($.fn.dataTableExt.oStdClasses, {
+            "sWrapper" : "dataTables_wrapper form-inline"
+        });
+
+        var _fnRenderTitle = _options.showDescription ? fnRenderTitleAndDescription : fnRenderTitle;
+
+        var aoColumns_ = [ 
+        	{
+                "mDataProp" : "id",
+                tdarSortOption : "ID",
+                sWidth : '5em',
+                "bSortable" : false
+            },
+        	{
+            "mDataProp" : "title",
+            fnRender : _fnRenderTitle,
+            bUseRendered : false,
+            "bSortable" : false
+        	}, 
+	        {
+	            "mDataProp" : "resourceTypeLabel",
+	            "bSortable" : false
+	        },
+	        
+        
+        ];
+        
+        var selector  = '#existing_resources_datatable';
+        var $dataTable = $(selector);
+        _registerLookupDataTable({
+            tableSelector : selector,
+            sAjaxSource : TDAR.uri( 'api/lookup/resource'),
+            "bLengthChange" : true,
+            "bFilter" : false,
+            aoColumns : aoColumns_,
+            "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
+            sAjaxDataProp : 'resources',
+            "oLanguage": {
+                	"sZeroRecords": "No records found. <span id='fltrTxt'>Consider <a id='lnkResetFilters' href='javascript:void(0)'>expanding your search</a></span>"
+             },
+            
+        	requestCallback : function(searchBoxContents) {
+                var parms =  {
+                    title : searchBoxContents,
+                    'resourceTypes' : "",
+                    'includedStatuses' : "",
+                    'sortField' : "",
+                    'term' : $("#existing_res_query").val(),
+                    'projectId' : $("#project-selector").val(),
+                    'collectionId' : $("#collection-selector").val(),
+                    selectResourcesFromCollectionid: options.selectResourcesFromCollectionid,
+                    parentCollectionsIncluded : true
+                };
+                
+                if (!_options.isAdministrator && _options.limitContext == true ) {
+                    parms['useSubmitterContext'] = true;
+                } else {
+                    parms['useSubmitterContext'] = false;
+                }
+                return parms;
+            },
+            
+            selectableRows : _options.isSelectable,
+            
+            rowSelectionCallback : function(id, obj, isAdded) {
+                if (isAdded) {
+                    _rowSelected(obj, $dataTable);
+                } else {
+                    _rowUnselected(obj, $dataTable);
+                }
+            }
+            
+        });
+
+        var $rdt = $("#existing_resources_datatable");
+
+        $("#existing_res_query").change(function() {
+            $rdt.dataTable().fnDraw();
+        });
+
+        $("#existing_res_query").bindWithDelay("keyup", function() {
+            $rdt.dataTable().fnDraw();
+        }, 500);
+
+       
+        _scrollOnPagination();
+    }
+    
 
     /**
      * Reset all filters, then trigger a 'change' so that we build a new query and render the results
@@ -830,6 +931,7 @@ TDAR.datatable = function() {
         registerLookupDataTable : _registerLookupDataTable,
         initUserDataTable : _registerUserLookupDatatable,
         setupDashboardDataTable : _setupDashboardDataTable,
+        setupCollectionResourcesDataTable : _setupCollectionResourcesDataTable,
         registerResourceCollectionDataTable : _registerResourceCollectionDataTable,
         renderPersonId : _fnRenderPersonId,
         checkAllToggle : _checkAllToggle,

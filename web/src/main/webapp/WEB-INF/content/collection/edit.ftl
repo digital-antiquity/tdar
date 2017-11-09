@@ -177,8 +177,52 @@
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && ((resourceCollection.managedResources![])?size > 0 || (resourceCollection.unmanagedResources![])?size > 0)>
             
-            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
-            </@edit.resourceDataTable>
+        <ul class="nav nav-tabs" id="tabs">
+          <li class="active"><a data-toggle="tab" href="#existingResources">Resources in this collection</a></li>
+          <li><a data-toggle="tab" href="#addResources">Add Resources to this collection</a></li>
+        </ul>
+        
+        <div class="tab-content">
+          <div id="existingResources" class="tab-pane fade in active">
+          
+                   <@s.textfield theme="tdar" name="_tdar.existing.query" id="existing_res_query" cssClass='span8'
+                            placeholder="Enter a full or partial title to filter results" />
+          
+                <#--The HTML table for resources. -->
+                <div class="row">
+                    <div class="span8">
+                    <table class="display table table-striped table-bordered tableFormat" id="existing_resources_datatable">
+                            <colgroup>
+                                <col style="width:10%">
+                                <col style="width: 70%">
+                                <col style="">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle">id</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                                    
+                    </div>
+                </div>
+           
+          </div>
+          <div id="addResources" class="tab-pane fade">
+                <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
+                </@edit.resourceDataTable>
+          </div>
+    </div>
+            
 
             <div id="divNoticeContainer" style="display:none">
                 <div id="divAddProjectToCollectionNotice" class="alert">
@@ -218,7 +262,13 @@
         <#noescape>
         <script type='text/javascript'>
             //selectResourcesFromCollectionid
-
+        $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+            var table = $.fn.dataTable.fnTables(true);
+            if ( table.length > 0 ) {
+                  $(table).dataTable().fnAdjustColumnSizing();
+            }
+        })
+        
             $(function () {
                 'use strict';
                 TDAR.datatable.setupDashboardDataTable({
@@ -228,6 +278,15 @@
                     showDescription: false,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
                 });
+                
+                 TDAR.datatable.setupCollectionResourcesDataTable({
+                    isAdministrator: ${(editor!false)?string},
+                    limitContext: ${((!editor)!true)?string},
+                    isSelectable: true,
+                    showDescription: false,
+                    selectResourcesFromCollectionid: $("#metadataForm_id").val()
+                });
+                
            
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
