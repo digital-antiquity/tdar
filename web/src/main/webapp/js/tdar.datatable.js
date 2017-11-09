@@ -24,6 +24,7 @@ TDAR.datatable = function() {
             tableSelector : '#dataTable',
             requestCallback : doNothingCallback,
             selectableRows : false,
+            
             rowSelectionCallback : doNothingCallback,
             "sAjaxSource" : TDAR.uri( 'api/lookup/resource'),
             "sAjaxDataProp" : 'resources',
@@ -131,6 +132,7 @@ TDAR.datatable = function() {
             }
         };
 
+        
         // if user wants selectable rows, render checkbox in the first column (which we assume is an ID field)
         if (options.selectableRows) {
             options.aoColumns[0].fnRender = fnRenderIdColumn;
@@ -452,8 +454,8 @@ TDAR.datatable = function() {
                     'includedStatuses' : "",
                     'sortField' : "",
                     'term' : $("#existing_res_query").val(),
-                    'projectId' : $("#project-selector").val(),
-                    'collectionId' : $("#collection-selector").val(),
+                    'projectId' : "",
+                    'collectionId' : $("#metadataForm_id").val(),
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid,
                     parentCollectionsIncluded : true
                 };
@@ -467,6 +469,8 @@ TDAR.datatable = function() {
             },
             
             selectableRows : _options.isSelectable,
+            
+            notDashboard:true,
             
             rowSelectionCallback : function(id, obj, isAdded) {
                 if (isAdded) {

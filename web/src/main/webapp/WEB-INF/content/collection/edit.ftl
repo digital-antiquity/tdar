@@ -199,9 +199,9 @@
                             </colgroup>
                             <thead>
                                 <tr>
+                                    <th><!--input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle"-->id</th>
                                     <th>Title</th>
                                     <th>Type</th>
-                                    <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle">id</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -282,7 +282,7 @@
                  TDAR.datatable.setupCollectionResourcesDataTable({
                     isAdministrator: ${(editor!false)?string},
                     limitContext: ${((!editor)!true)?string},
-                    isSelectable: true,
+                    isSelectable: false,
                     showDescription: false,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
                 });
