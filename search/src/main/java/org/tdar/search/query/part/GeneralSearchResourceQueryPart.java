@@ -10,8 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.SiteCodeExtractor;
 
 /**
  * Formulate a general keyword search for a resource
@@ -57,7 +57,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
     protected QueryPartGroup getQueryPart(String value) {
         Set<String> codes = new HashSet<>();
         if (StringUtils.isNotBlank(value) && SiteCodeExtractor.matches(value.toUpperCase())) {
-            codes.addAll(SiteCodeExtractor.extractSiteCodeTokens(value.toUpperCase()));
+            codes.addAll(SiteCodeExtractor.extractSiteCodeTokens(value.toUpperCase(),true));
             setUseProximity(false);
             logger.trace("Site code search: {}", codes);
         }

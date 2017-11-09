@@ -14,7 +14,6 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.exception.SearchException;
-import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
@@ -23,6 +22,7 @@ import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.query.part.StringAutocompletePart;
 import org.tdar.search.service.SearchUtils;
+import org.tdar.utils.SiteCodeExtractor;
 
 import com.opensymphony.xwork2.TextProvider;
 

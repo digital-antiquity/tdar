@@ -42,9 +42,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.index.GeneralKeywordBuilder;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.SiteCodeExtractor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.WKTWriter;
@@ -258,13 +258,13 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     private static HashSet<String> extractSiteCodeTokens(Resource resource) {
         HashSet<String> kwds = new HashSet<>();
-        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getTitle()));
-        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getDescription()));
+        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getTitle(),true));
+        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getDescription(),true));
         for (SiteNameKeyword kwd : resource.getActiveSiteNameKeywords()) {
-            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
+            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel(),true));
         }
         for (OtherKeyword kwd : resource.getActiveOtherKeywords()) {
-            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
+            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel(),true));
         }
         return kwds;
     }
