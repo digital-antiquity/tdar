@@ -231,6 +231,29 @@ TDAR.datatable = function() {
                 '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" >' + id
                 + '</label>');
     }
+    
+    
+    /**
+     * callback that renders the "managed" column of the datatable.
+     * 
+     * @param oObj
+     * @returns {string}
+     */
+    function fnRenderManagedColumn(oObj) {
+        // in spite of the name, aData is an object corresponding to the current row
+        var id = oObj.aData.id;
+        var attrId = "cbManagedId_" + id;
+        var resourceType = oObj.aData.resourceType;
+        // not all things are resourceTypes that are rendered like this
+        if (resourceType) {
+            resourceType = resourceType.toLowerCase();
+        }
+        // console.log("resource type:%s", resourceType);
+        return ('<label class="datatable-cell-unstyled">' +
+                '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" >'
+                + '</label>');
+    }
+    
 
     /**
      * datatable cell render callback: this callback specifically renders a resource title.
@@ -419,15 +442,31 @@ TDAR.datatable = function() {
                 sWidth : '5em',
                 "bSortable" : false
             },
+            
         	{
             "mDataProp" : "title",
-            fnRender : _fnRenderTitle,
-            bUseRendered : false,
-            "bSortable" : false
+	            fnRender : _fnRenderTitle,
+	            bUseRendered : false,
+	            "bSortable" : false
         	}, 
+        	
 	        {
 	            "mDataProp" : "resourceTypeLabel",
 	            "bSortable" : false
+	        },
+	        
+	        
+	        //The json response needs to provide a managed/unmanaged. 
+	        //See ResourceLookupAction
+	        {
+	        	"mDataProp" : "", //These need to be distinct property names. It causes issues when they are reused.
+	        	fnRender : fnRenderManagedColumn,
+	        	"bSortable" : false
+	        },
+	        {
+	        	"mDataProp" : "",
+	        	fnRender : fnRenderIdColumn,
+	        	"bSortable" : false
 	        },
 	        
         

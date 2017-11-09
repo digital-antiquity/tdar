@@ -196,16 +196,22 @@
                                 <col style="width:10%">
                                 <col style="width: 70%">
                                 <col style="">
+                                <col style="">
+                                <col style="">
                             </colgroup>
                             <thead>
                                 <tr>
                                     <th><!--input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle"-->id</th>
                                     <th>Title</th>
                                     <th>Type</th>
+                                    <th>Managed</th>
+                                    <th>Remove</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>

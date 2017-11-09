@@ -45,6 +45,8 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     private static final long serialVersionUID = 1328807454084572934L;
 
     public static final String SELECTED_RESULTS = "selectedResults";
+    public static final String MANAGED_RESULTS 	= "managedCollectionResults";
+    public static final String UNMANAGED_RESULTS = "unmanagedCollectionResults";
 
     private Long projectId;
     private List<Long> collectionId;
@@ -106,15 +108,27 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             ResourceCollection collectionContainer = getGenericService().find(ResourceCollection.class, getSelectResourcesFromCollectionid());
             if (collectionContainer != null) {
                 Set<Long> resourceIds = new HashSet<Long>();
+                Set<Long> managedCollectionIds = new HashSet<Long>();
+                Set<Long> unmanagedCollectionIds = new HashSet<Long>();
                 for (Indexable result_ : getResults()) {
                     Resource resource = (Resource) result_;
                     if (resource != null && resource.isViewable()) {
                         if (resource.getManagedResourceCollections().contains(collectionContainer) || resource.getUnmanagedResourceCollections().contains(collectionContainer)) {
                             resourceIds.add(resource.getId());
                         }
+                        
+                        if(resource.getManagedResourceCollections().contains(collectionContainer)){
+                        	managedCollectionIds.add(collectionContainer.getId());
+                        }
+                        else if(resource.getUnmanagedResourceCollections().contains(collectionContainer)){
+                        	unmanagedCollectionIds.add(collectionContainer.getId());
+                        }
+                        
                     }
                 }
                 getResult().put(SELECTED_RESULTS, resourceIds);
+                getResult().put(MANAGED_RESULTS, resourceIds);
+                getResult().put(UNMANAGED_RESULTS, resourceIds);
             }
         }
 
