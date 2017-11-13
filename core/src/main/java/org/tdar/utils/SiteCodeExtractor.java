@@ -21,7 +21,7 @@ public class SiteCodeExtractor {
     @SuppressWarnings("unused")
     private static final transient Logger logger = LoggerFactory.getLogger(SiteCodeExtractor.class);
 
-    static final String ONE_THROUGH_FIFTY = "([1-9]|[1-4][0-9]|50)";
+    static final String ONE_THROUGH_FIFTY = "0?([1-9]|[1-4][0-9]|50)";
     static final String SEP = "([\\s\\,\\:\\-]0*)";
     static final String SEP_OPT = SEP + "?";
     static final String STATE = "(AZ|ME|RI|VT|CT|CA)";

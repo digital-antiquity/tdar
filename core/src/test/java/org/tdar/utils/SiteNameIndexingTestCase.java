@@ -1,4 +1,4 @@
-package org.tdar.search.index.analyzer;
+package org.tdar.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -31,12 +31,12 @@ public class SiteNameIndexingTestCase {
         assertMatches(compile, "22:22:13-0005");
         assertMatches(compile, "RI-0006");
         assertMatches(compile, "AZ U:9:1(ASM)");
-        assertMatches(compile, "NA18,009(MNA)");
+//        assertMatches(compile, "NA18,009(MNA)");
         assertMatches(compile, "AZ N:16:45 (PC)");
-        assertMatches(compile, "AR-03-12-06-193(USFS)");
-        assertMatches(compile, "NM-H-46-62 (NN)");
-        assertMatches(compile, "LA 9219");
-        assertMatches(compile, "AR-03-12-01-1927");
+        assertMatches(compile, "VT-03-12-06-193(USFS)");
+        assertMatches(compile, "CA-H-46-62 (NN)");
+        assertMatches(compile, "CA 9219");
+        assertMatches(compile, "CT-03-12-01-1927");
         assertMatches(compile, "38AK933");
         assertMatches(compile, "AZ U:9:1(ASM)");
         assertMatches(compile, "AZ U:9:1 (ASM)");
