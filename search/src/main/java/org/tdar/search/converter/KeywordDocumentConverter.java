@@ -9,8 +9,8 @@ import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
-import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.utils.SiteCodeExtractor;
 
 
 public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
@@ -32,7 +32,7 @@ public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
         }
         
         if ((kwd instanceof SiteNameKeyword || kwd instanceof OtherKeyword) && SiteCodeExtractor.matches(label)) {
-            doc.setField(QueryFieldNames.SITE_CODE, SiteCodeExtractor.extractSiteCodeTokens(label));
+            doc.setField(QueryFieldNames.SITE_CODE, SiteCodeExtractor.extractSiteCodeTokens(label,true));
         }
         
         doc.setField(QueryFieldNames.NAME, names);
