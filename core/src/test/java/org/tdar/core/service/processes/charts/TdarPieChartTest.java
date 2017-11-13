@@ -14,7 +14,7 @@ import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.stage.Stage;
 
-//@Ignore
+@Ignore
 public class TdarPieChartTest {
     // from https://stackoverflow.com/a/18980655/667818
     Logger logger = LoggerFactory.getLogger(getClass());
