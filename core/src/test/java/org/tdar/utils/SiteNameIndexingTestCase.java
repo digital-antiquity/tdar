@@ -52,10 +52,38 @@ public class SiteNameIndexingTestCase {
     }
     
     @Test
+    public void boundaryTest() {
+        String phrase = "GB-235-1D I01";
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(phrase,false);
+        logger.debug("{}",extractSiteCodeTokens);
+        assertTrue(extractSiteCodeTokens.size() == 0);
+    }
+    
+    @Test
+    public void testAZ() {
+        String phrase = "AZ U:15:110(ASM ) Shelltown AA:1:66 Pit structure AZ U:15:110(ASM) Feature 757 All except;  context AZ U:10:6 ; four canals at Las Canopas (AZ U:9:161 [ASM]), located between ;  PRS-01 AZ U:15:110 (ASM) Crushed rock Plain";
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(phrase,false);
+        logger.debug("{}",extractSiteCodeTokens);
+        assertTrue(extractSiteCodeTokens.contains("AZ U:9:161 [ASM]"));
+        assertTrue(extractSiteCodeTokens.contains("AZ U:10:6"));
+        assertTrue(extractSiteCodeTokens.contains("AA:1:66"));
+        assertTrue(extractSiteCodeTokens.contains("AZ U:15:110 (ASM)"));
+        assertTrue(extractSiteCodeTokens.contains("AZ U:15:110(ASM)"));
+        assertTrue(extractSiteCodeTokens.contains("AZ U:15:110(ASM )"));
+    }
+    
+    @Test
     public void testExtractor() {
         Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens("38-AK-500",true);
         logger.debug("{}", extractSiteCodeTokens);
         assertTrue("should have one site code", extractSiteCodeTokens.size() == 1);
+    }
+    
+    @Test
+    public void testExtractorInPhrase() {
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens("G- AZ U:15:1, Snaketown, 8D:Strat Test 1, Level 3; H - AZ U:13:1, Snaketown, 8D:Strat Test 1, Level 4; I - AZ AA:1:66,\n",false);
+        logger.debug("{}", extractSiteCodeTokens);
+        assertTrue("should have one site code", extractSiteCodeTokens.size() == 3);
     }
     
     @Test
