@@ -169,6 +169,8 @@
             </dl>
         </div>
 
+    
+
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
@@ -176,7 +178,8 @@
             <h2>Resources</h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && ((resourceCollection.managedResources![])?size > 0 || (resourceCollection.unmanagedResources![])?size > 0)>
-            
+        
+    <#if resourceCollection.id?? &&  resourceCollection.id != -1>
         <ul class="nav nav-tabs" id="tabs">
           <li class="active"><a data-toggle="tab" href="#existingResources">Resources in this collection</a></li>
           <li><a data-toggle="tab" href="#addResources">Add Resources to this collection</a></li>
@@ -228,8 +231,11 @@
                 </@edit.resourceDataTable>
           </div>
     </div>
-            
-
+    <#else>
+         <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
+         </@edit.resourceDataTable>
+    </#if>
+    
             <div id="divNoticeContainer" style="display:none">
                 <div id="divAddProjectToCollectionNotice" class="alert">
                     <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="divAddProjectToCollectionNotice">×</button>
@@ -239,18 +245,53 @@
 
         </div>
 
+    <div id="editCollectionApp">
+
         <div id="divAddRemove">
             <h2>Modifications</h2>
 
             <div id="divToAdd">
                 <h4>The following resources will be added to the collection</h4>
-                <table id="tblToAdd" class="table table-condensed"></table>
+              
+                <table id="tblToAdd" class="table table-condensed">
+                    <tr v-for="(resource,index) in managedAdditions" v-bind:value="resource.id">
+                        <td>{{resource.id}} 
+                        <input type="hidden" :id="'hrid'+resource.id" name="toAddManaged" v-model = "managedAdditions[index].id" />
+                        </td>
+                        <td>{{ellipse(resource.title)}}</td>
+                        <td>Managed</td>
+                    </tr>
+                    <tr v-for="(resource,index) in unmanagedAdditions" v-bind:value="resource.id">
+                        <td>{{resource.id}} 
+                        <input type="hidden" :id="'hrid'+resource.id" name="toAddUnmanaged" v-model = "unmanagedAdditions[index].id" />
+                        </td>
+                        <td>{{ellipse(resource.title)}}</td>
+                        <td>Unmanaged</td>
+                    </tr>
+                </table>
             </div>
 
             <div id="divToRemove">
                 <h4>The following resources will be removed from the collection</h4>
-                <table id="tblToRemove" class="table table-condensed"></table>
+                <table id="tblToRemove" class="table table-condensed">
+                <tr v-for="(resource,index) in managedRemovals" v-bind:value="resource.id">
+                        <td>{{resource.id}} 
+                        <input type="hidden" :id="'hrid'+resource.id" name="toRemoveManaged" v-model = "managedRemovals[index].id" />
+                        </td>
+                        <td>{{ellipse(resource.title)}}</td>
+                        <td>Managed</td>
+                    </tr>
+                    <tr v-for="(resource,index) in unmanagedRemovals" v-bind:value="resource.id">
+                        <td>{{resource.id}} 
+                        <input type="hidden" :id="'hrid'+resource.id" name="toRemoveUnmanaged" v-model="unmanagedRemovals[index].id" />
+                        </td>
+                        <td>{{ellipse(resource.title)}}</td>
+                        <td>Unmanaged</td>
+                    </tr>
+                </table>
             </div>
+        </div>
+        
         </div>
 
             <@edit.submit fileReminder=false class="button btn submitButton btn-primary">
@@ -267,7 +308,30 @@
 
         <#noescape>
         <script type='text/javascript'>
-            //selectResourcesFromCollectionid
+        
+        var vm = new Vue(
+        {
+            el: '#editCollectionApp',
+            data: { 
+                managedAdditions: [],
+                managedRemovals: [],
+                unmanagedAdditions: [],
+                unmanagedRemovals: []
+            },
+            mounted: function() {
+               
+            },
+            methods: {
+                ellipse : function(value){
+                   return TDAR.common.htmlEncode(TDAR.ellipsify(value, 80))
+                }, 
+
+            
+            }
+        });
+        
+        
+        //selectResourcesFromCollectionid
         $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
             var table = $.fn.dataTable.fnTables(true);
             if ( table.length > 0 ) {
@@ -290,10 +354,10 @@
                     limitContext: ${((!editor)!true)?string},
                     isSelectable: false,
                     showDescription: false,
+                    isExistingResource: true,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
                 });
                 
-           
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
