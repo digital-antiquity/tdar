@@ -230,6 +230,12 @@ public class ItemService {
                 break;
             }
         }
+        
+        if (isValidExtension(file.getExtension())) {
+            markUploaded(file.getDropboxId(), -1L, false);
+
+        }
+        
         boolean debug = false;
         if (!loggedIn && debug == false) {
             apiClient.apiLogin();
@@ -257,6 +263,13 @@ public class ItemService {
             }
             markUploaded(file.getDropboxId(), id, false);
         }
+    }
+
+    private boolean isValidExtension(String extension) {
+        if (StringUtils.equalsIgnoreCase(extension, "laccdb")) {
+            return false;
+        }
+        return true;
     }
 
     private ApiClientResponse uploadFile(DropboxFile file, File actualFile, String docXml) throws ClientProtocolException, IOException {
