@@ -44,7 +44,7 @@ public class SiteCodeExtractor {
         }
         Set<String> toReturn = new HashSet<>();
 
-        for (String part : str.split(", ")) {
+        for (String part : str.split(",")) {
             Matcher matcher = getPattern().matcher(part);
             while (matcher.find()) {
                 String code = matcher.group(0).trim();
@@ -59,6 +59,12 @@ public class SiteCodeExtractor {
                 if (StringUtils.endsWithAny(code, new String[] { ",", ":", "-" })) {
                     continue;
                 }
+                
+                // trying to deal with cases like: "150 0 0" and "2603 9"
+                if (code.contains(" ") && StringUtils.containsNone(code, new char[]{'-',':'})) {
+                    continue;
+                }
+                
                 // we're probably a citation part
                 if (code.matches("(19|20)\\d\\d:\\d+(\\-\\d+)?")) {
                     continue;

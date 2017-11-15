@@ -80,6 +80,13 @@ public class SiteNameIndexingTestCase {
     }
     
     @Test
+    public void testExtractorInPhrase() {
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens("G- AZ U:15:1, Snaketown, 8D:Strat Test 1, Level 3; H - AZ U:13:1, Snaketown, 8D:Strat Test 1, Level 4; I - AZ AA:1:66,\n",false);
+        logger.debug("{}", extractSiteCodeTokens);
+        assertTrue("should have one site code", extractSiteCodeTokens.size() == 3);
+    }
+    
+    @Test
     public void testReader() throws IOException {
         String reader = " CA-AAA-0001 asasd qrqewr 22:22:13-0010 sadas d RI-0090  44:PG:0462";
         Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader,true);
