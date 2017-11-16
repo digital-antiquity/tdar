@@ -193,10 +193,10 @@
           
                 <#--The HTML table for resources. -->
                 <div class="row">
-                    <div class="span8">
+                    <div class="span9">
                     <table class="display table table-striped table-bordered tableFormat" id="existing_resources_datatable">
                             <colgroup>
-                                <col style="width:10%">
+                                <col style="width: 10%">
                                 <col style="width: 70%">
                                 <col style="">
                                 <col style="">
@@ -260,6 +260,7 @@
                         </td>
                         <td>{{ellipse(resource.title)}}</td>
                         <td>Managed</td>
+                        <td><a v-on:click='undoModification(resource.id,true,true)' style="cursor:pointer">Undo</a></td>
                     </tr>
                     <tr v-for="(resource,index) in unmanagedAdditions" v-bind:value="resource.id">
                         <td>{{resource.id}} 
@@ -267,6 +268,7 @@
                         </td>
                         <td>{{ellipse(resource.title)}}</td>
                         <td>Unmanaged</td>
+                        <td><a v-on:click='undoModification(resource.id,false,true)' style="cursor:pointer">Undo</a></td>
                     </tr>
                 </table>
             </div>
@@ -280,6 +282,7 @@
                         </td>
                         <td>{{ellipse(resource.title)}}</td>
                         <td>Managed</td>
+                        <td><a v-on:click='undoModification(resource.id,true,false)' style="cursor:pointer">Undo</a></td>
                     </tr>
                     <tr v-for="(resource,index) in unmanagedRemovals" v-bind:value="resource.id">
                         <td>{{resource.id}} 
@@ -287,6 +290,7 @@
                         </td>
                         <td>{{ellipse(resource.title)}}</td>
                         <td>Unmanaged</td>
+                        <td><a v-on:click='undoModification(resource.id,false,false)' style="cursor:pointer">Undo</a>/td>
                     </tr>
                 </table>
             </div>
@@ -325,8 +329,46 @@
                 ellipse : function(value){
                    return TDAR.common.htmlEncode(TDAR.ellipsify(value, 80))
                 }, 
+                
+                search: function(value, array){
+                    for (var i=0; i < array.length; i++) {
+                        if (array[i].id == value) {
+                            return array[i];
+                        }
+                    }
+                },
 
-            
+                
+                removeFromArray : function(id, array){
+                        var idx = this.search(id,array);
+                        if(idx !== -1) {
+                            array.splice(idx, 1);
+                        }
+                },
+                
+                
+                undoModification: function(id, isManaged, isAddition){
+                   var $dataTable = $('#existing_resources_datatable');
+                   
+                   if(isManaged){
+                        if(isAddition){
+                            this.removeFromArray(id, this.managedAdditions)
+                        }
+                        else {
+                            this.removeFromArray(id, this.managedRemovals)
+                        }
+                   }
+                   else {
+                       if(isAddition){
+                            this.removeFromArray(id, this.unmanagedAdditions)
+                        }
+                       else {
+                            this.removeFromArray(id, this.managedRemovals)
+                        }
+                   }
+                   
+                   TDAR.datatable.removePendingChange(id, isManaged, isAddition, $dataTable);
+                }
             }
         });
         
