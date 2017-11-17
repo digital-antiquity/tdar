@@ -53,7 +53,7 @@
             <#list allResourceCollections as collection>
                 <tr>
                 <td><a href="${collection.detailUrl}">${collection.name!'no name'}</a><br/>
-                ${collection.description!''}
+                <@common.truncate collection.description!'' 250 />
                     </td>
                    <td>${(collection.managedResources![])?size}</td>
                    <td>${(collection.authorizedUsers![])?size}</td>

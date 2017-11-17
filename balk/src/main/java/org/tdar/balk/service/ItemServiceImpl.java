@@ -254,6 +254,11 @@ public class ItemServiceImpl implements ItemService {
             }
         }
         boolean debug = false;
+        
+        if (isNotValidExtension(file.getExtension())) {
+            markUploaded(file.getDropboxId(), -1L, false);
+        }
+        
         if (!loggedIn && debug == false) {
             apiClient.apiLogin();
         }
@@ -282,6 +287,14 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
+    private boolean isNotValidExtension(String extension) {
+        if (StringUtils.equalsIgnoreCase(extension, "laccdb")) {
+            return true;
+        }
+        return false;
+    }
+
+    
     private ApiClientResponse uploadFile(DropboxFile file, File actualFile, String docXml) throws ClientProtocolException, IOException {
         Long accountId = apiClient.getDefaultAccount();
         if (file.getAccountId() != null) {
