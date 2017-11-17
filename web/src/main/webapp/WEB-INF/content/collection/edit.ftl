@@ -179,7 +179,7 @@
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && ((resourceCollection.managedResources![])?size > 0 || (resourceCollection.unmanagedResources![])?size > 0)>
         
-    <#if resourceCollection.id?? &&  resourceCollection.id != -1>
+    <#if (resourceCollection.id?? &&  resourceCollection.id != -1 && resourceCollection.size > 0)> 
         <ul class="nav nav-tabs" id="tabs">
           <li class="active"><a data-toggle="tab" href="#existingResources">Resources in this collection</a></li>
           <li><a data-toggle="tab" href="#addResources">Add Resources to this collection</a></li>
