@@ -62,9 +62,9 @@ TDAR.datatable = function() {
 
         $.extend(options, parms);
         var $dataTable = $(options.tableSelector);
+        
         $dataTable.data("toAdd", []);
         $dataTable.data("toRemove", []);
-        
         $dataTable.data("toAddManaged",[]);
         $dataTable.data("toAddUnmanaged",[]);
         $dataTable.data("toRemoveManaged",[]);
@@ -99,34 +99,6 @@ TDAR.datatable = function() {
                         var addIds = $dataTable.data("toAdd");
                         var removeIds = $dataTable.data("toRemove");
                         
-                        //These are values that dont exist in the database. They are being cached so they can be put back into
-                        //To the table.
-                        var addManagedIds = $dataTable.data("toAddManaged");
-                        var addUnmanagedIds = $dataTable.data("toAddUnmanaged");
-                        var removeManagedIds = $dataTable.data("toRemoveManaged");
-                        var removeUnmanagedIds = $dataTable.data("toRemoveUnmanaged");
-                        
-                        /*if(!addManagedIds) {
-                        	console.log("addManagedIds is empty");
-                            _data.toAddManaged = [];
-                            addManagedIds = [];
-                        }
-                        if(!addUnmanagedIds) {
-                        	console.log("addUnmanagedIds is empty");
-                            _data.toAddUnmanaged = [];
-                            addUnmanagedIds = [];
-                        }
-                        if(!removeManagedIds) {
-                        	console.log("removeManagedIds is empty");
-                            _data.toRemoveManaged = [];
-                            removeManagedIds = [];
-                        }
-                        if(!removeUnmanagedIds) {
-                        	console.log("removeUnmanagedIds is empty");
-                            _data.toRemoveUnmanaged = [];
-                            removeUnmanagedIds = [];
-                        }*/
-                        
                         //These are IDs of resources that are already in the collection. 
                         var managedResults = $dataTable.data("managedResults");
                         var unmanagedResults = $dataTable.data("unmanagedResults");
@@ -151,10 +123,22 @@ TDAR.datatable = function() {
                         $.extend(_data, recordInfo);
                         
                         //update the list of resource id's that belong to the current resource collection
+                        
                         $dataTable.data("selectedResults",  _data.selectedResults);
                         $dataTable.data("managedResults", 	_data.unmanagedResourceResults);
                         $dataTable.data("unmanagedResults", _data.managedResourceResults);
-
+                        
+                        
+                        var addManagedIds = $dataTable.data("toAddManaged");
+                        var addUnmanagedIds = $dataTable.data("toAddUnmanaged");
+                        var removeManagedIds = $dataTable.data("toRemoveManaged");
+                        var removeUnmanagedIds = $dataTable.data("toRemoveUnmanaged");
+                        
+                        _data["toAddManaged"]= addManagedIds;
+                        _data["toAddUnmanaged"]=addUnmanagedIds;
+                        _data["toRemoveManaged"]= removeManagedIds;
+                        _data["toRemoveUnmanaged"]=removeUnmanagedIds;
+                        
                         //similarly, add  isSelectedResult property to each result
                         if((options.selectableRows || options.isExistingResource) && _data.resources) {
                             if(!_data.selectedResults) {
@@ -186,9 +170,10 @@ TDAR.datatable = function() {
 
         
         // if user wants selectable rows, render checkbox in the first column (which we assume is an ID field)
-        if (options.selectableRows) {
+        /**if (options.selectableRows) {
             options.aoColumns[0].fnRender = fnRenderIdColumn;
             options.aoColumns[0].bUseRendered = false;
+            
             dataTableOptions["fnRowCallback"] = function(nRow, obj, iDisplayIndex, iDisplayIndexFull) {
                 // determine whether the user selected this item already (if so check the box)
                 var $cb = $(nRow).find('input[type=checkbox]');
@@ -214,22 +199,19 @@ TDAR.datatable = function() {
                 }
 
             });
-        }
+        }**/
         
         //this can be done more elegatly, so the callback can be set in the options. 
-        if (options.isExistingResource){
-        	console.log("Adding event handler for existing resources datatable");
+        if (options.isExistingResource || options.selectableRows){
         	
             $dataTable.on('click', 'button' , function() {
+            	console.log("Binding event handlers");
             	var $elem = $(this); // here 'this' is checkbox
                 var btnId = $elem.prop('id');
                 var btnName = btnId.substring(0,btnId.lastIndexOf("_"));
-                var id = btnId.substring(btnId.lastIndexOf("_")+1);
+                var id = parseInt(btnId.substring(btnId.lastIndexOf("_")+1));
                 
                 var objRowData = $dataTable.fnGetData($elem.parents('tr')[0]);
-                
-                console.log("Id is "+id);
-                console.log($elem.val());
                 
                 var mode = $elem.val();
                 
@@ -239,36 +221,35 @@ TDAR.datatable = function() {
                 switch(mode){
                 	//These aren't being used at the moment. 
                 	case "addUnmanaged":
-                		$dataTable.data('toAddUnmanaged')[id] = id;
+                		_arrayAdd($dataTable.data('toAddUnmanaged'),id);
                         options.rowSelectionCallback(id, objRowData, true, false);
                 		break;
                 	case "addManaged":
-                		$dataTable.data('toAddManaged')[id] = id;
+                		_arrayAdd($dataTable.data('toAddManaged'),id);
                         options.rowSelectionCallback(id, objRowData, true, true);
                         break;
-                        
-                     //There are three buttons that can be rendered. 
+                	case "addBoth":
+                		_arrayAdd($dataTable.data('toAddManaged'),id);
+                		_arrayAdd($dataTable.data('toAddUnmanaged'),id);
+                        options.rowSelectionCallback(id, objRowData, true, true);
+                        options.rowSelectionCallback(id, objRowData, true, false);
+
                 	case "removeUnmanaged":
-                		$dataTable.data('toRemoveUnmanaged')[id] = id;
+                		_arrayAdd($dataTable.data('toRemoveUnmanaged'),id);
                 		options.rowSelectionCallback(id, objRowData, false, false);
                 		break;
                 	case "removeManaged":
-                		//delete $dataTable.data('unmanagedResults')[id]; 
-                		$dataTable.data('toRemoveManaged')[id] = id;
+                		_arrayAdd($dataTable.data('toRemoveManaged'),id);
                 		options.rowSelectionCallback(id, objRowData, false, true);
                 		break;
                 	case "removeBoth":
-                		$dataTable.data('toRemoveManaged')[id] = id;
-                		$dataTable.data('toRemoveUnmanaged')[id] = id;
-                        
                 		
+                		_arrayAdd($dataTable.data('toRemoveManaged'),id);
+                		_arrayAdd($dataTable.data('toRemoveUnmanaged'),id);
                 		options.rowSelectionCallback(id, objRowData, false, false);
                 		options.rowSelectionCallback(id, objRowData, false, true);
-                		
                 		break;
                 }
-                
-               // $dataTable.fnDraw();
             });
         }
         
@@ -348,24 +329,14 @@ TDAR.datatable = function() {
      * @param oObj
      * @returns {string}
      */
-    function fnRenderButtonsColumn(oObj) {
+    function fnRenderRemoveButtonsColumn(oObj) {
         // in spite of the name, aData is an object corresponding to the current row
         var id = oObj.aData.id;
-        var mAttrId = "btnManagedId_" + id;
-        var uAttrId = "btnUnmanagedId_" + id;
-        var uAttrId = "btnBothId_" + id;
-        var resourceType = oObj.aData.resourceType;
-        // not all things are resourceTypes that are rendered like this
-        if (resourceType) {
-            resourceType = resourceType.toLowerCase();
-        }
-        // console.log("resource type:%s", resourceType);
-        //return ('<label class="datatable-cell-unstyled">' +
-         //       '<input type="checkbox" class="datatable-checkbox ' + resourceType + '" id="' + attrId + '" value="' + id + '" >'
-          //      + '</label>');
-        
-        var id = oObj.aData.id;
-        
+
+        var mAttrId = "btnRemoveManagedId_" + id;
+        var uAttrId = "btnRemoveUnmanagedId_" + id;
+        var bAttrId = "btnRemoveBothId_" + id;
+
         //this isn't right, becomes tightly coupled, but need a better way of doing it.
         var  $dataTable = $("#existing_resources_datatable");
         
@@ -376,10 +347,10 @@ TDAR.datatable = function() {
         
       //This will set if the resource id is in the array of IDs to be removed/added. 
         var isBeingAddedToManaged 		= addManagedIds.indexOf(id) > -1;
-        var isBeingRemovedFromManaged 	= removeManagedIds.indexOf(id) > -1;
-        
-        var isBeingAddedToUnmanaged		= addUnmanagedIds.indexOf(id) > -1;
         var isBeingRemovedFromUnmanaged	= removeUnmanagedIds.indexOf(id) > -1;
+
+        var isBeingRemovedFromManaged 	= removeManagedIds.indexOf(id) > -1;
+        var isBeingAddedToUnmanaged		= addUnmanagedIds.indexOf(id) > -1;
         
         var isManaged   = oObj.aData.isManagedResult   == true;
         var isUnmanaged = oObj.aData.isUnmanagedResult == true;
@@ -395,7 +366,7 @@ TDAR.datatable = function() {
         		var sDisabled = '';
         	}
         	
-        	output += '<button type="button" id="'+uAttrId+'"'+sDisabled+'value="removeManaged">Remove Managed</button>';
+        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="removeManaged">Remove Managed</button>';
         }
 
         if(isUnmanaged){
@@ -405,7 +376,7 @@ TDAR.datatable = function() {
         	else {
         		var sDisabled = '';
         	}
-        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="removeUnmanaged">Remove Unmanaged</button>';
+        	output += '<button type="button" id="'+uAttrId+'"'+sDisabled+'value="removeUnmanaged">Remove Unmanaged</button>';
         }
         
         if(isManaged && isUnmanaged){
@@ -415,9 +386,76 @@ TDAR.datatable = function() {
         	else {
         		var sDisabled = '';
         	}
-        	output += '<button type="button" id="'+bAttrId+'"'+sDisabled+'value="removeBoth">Remove Both</button>';
+        	//output += '<button type="button" id="'+bAttrId+'"'+sDisabled+'value="removeBoth">Remove Both</button>';
         }
         
+        return output;
+    }
+    
+    
+    /**
+     * callback that renders the "managed" column of the datatable.
+     * 
+     * @param oObj
+     * @returns {string}
+     */
+    function fnRenderAddButtonsColumn(oObj) {
+        // in spite of the name, aData is an object corresponding to the current row
+        var id = oObj.aData.id;
+        var mAttrId = "btnAddManagedId_" + id;
+        var uAttrId = "btnAddUnmanagedId_" + id;
+        var bAttrId = "btnAddBothId_" + id;
+        var id = oObj.aData.id;
+        
+        //this isn't right, becomes tightly coupled, but need a better way of doing it.
+        var  $dataTable = $("#resource_datatable");
+        
+        var addManagedIds 		= $dataTable.data("toAddManaged");
+        var addUnmanagedIds 	= $dataTable.data("toAddUnmanaged");
+        var removeManagedIds 	= $dataTable.data("toRemoveManaged");
+        var removeUnmanagedIds 	= $dataTable.data("toRemoveUnmanaged");
+        
+        //This will set if the resource id is in the array of IDs to be removed/added. 
+        var isBeingAddedToManaged 		= addManagedIds.indexOf(id) > -1;
+        var isBeingAddedToUnmanaged		= addUnmanagedIds.indexOf(id) > -1;
+        
+        var isManaged   = oObj.aData.isManagedResult   == true;
+        var isUnmanaged = oObj.aData.isUnmanagedResult == true;
+        
+        var output = "";
+        
+        if(!isManaged){
+        	//if the resource is manged, but has been put into the remove from managed
+        	if(isBeingAddedToManaged){
+        		var sDisabled = ' disabled="disabled" ' ;
+        	}
+        	else {
+        		var sDisabled = '';
+        	}
+        	
+        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="addManaged">Add Managed</button>';
+        }
+
+        if(!isUnmanaged){
+        	if(isBeingAddedToUnmanaged){
+        		var sDisabled = ' disabled="disabled" ' ;
+        	}
+        	else {
+        		var sDisabled = '';
+        	}
+        	
+        	output += '<button type="button" id="'+uAttrId+'"'+sDisabled+'value="addUnmanaged">Add Unmanaged</button>';
+        }
+        
+        if(!isManaged && !isUnmanaged){
+        	if(!isBeingAddedToManaged && isBeingAddedToUnmanaged){
+        		var sDisabled = ' disabled="disabled" ' ;
+        	}
+        	else {
+        		var sDisabled = '';
+        	}
+        	//output += '<button type="button" id="'+bAttrId+'"'+sDisabled+'value="addBoth">Add Both</button>';
+        }
         return output;
     }
     
@@ -515,12 +553,24 @@ TDAR.datatable = function() {
         } ];
         // make id the first column when datatable is selectable
         if (_options.isSelectable) {
-            aoColumns_.unshift({
-                "mDataProp" : "id",
-                tdarSortOption : "ID",
-                sWidth : '5em',
+           aoColumns_.unshift({
+               "mDataProp" : "id",
+               tdarSortOption : "ID",
+               sWidth : '5em',
                 "bSortable" : false
             });
+           
+           aoColumns_.push({
+	        	"mData" : null, 
+	        	fnRender : fnRenderStatusColumn,
+	        	"bSortable" : false
+	        });
+           
+           aoColumns_.push({
+	        	"mData" : null,
+	        	fnRender : fnRenderAddButtonsColumn,
+	        	"bSortable" : false
+	        });  
         }
         var $dataTable = $('#resource_datatable');
         _registerLookupDataTable({
@@ -550,18 +600,19 @@ TDAR.datatable = function() {
                 } else {
                     parms['useSubmitterContext'] = false;
                 }
-                console.log(parms);
                 if($("#parentCollectionsIncluded").length) {
                     parms.parentCollectionsIncluded = (!$("#parentCollectionsIncluded").prop("checked")).toString();
                 }
                 return parms;
             },
+            
             selectableRows : _options.isSelectable,
-            rowSelectionCallback : function(id, obj, isAdded) {
+            
+            rowSelectionCallback : function(id, obj, isAdded, isManaged) {
                 if (isAdded) {
-                    _rowSelected(obj, $dataTable);
+                	_addResourceToVueModel(obj, $dataTable, isManaged);
                 } else {
-                    _rowUnselected(obj, $dataTable);
+                	_removeResourceFromVueModel(obj, $dataTable, isManaged);
                 }
             }
         });
@@ -654,14 +705,14 @@ TDAR.datatable = function() {
 	        },
 	        
 	        {
-	        	"mData" : null, //These need to be distinct property names. It causes issues when they are reused.
+	        	"mData" : null, 
 	        	fnRender : fnRenderStatusColumn,
 	        	"bSortable" : false
 	        },
 	        
 	        {
 	        	"mData" : null,
-	        	fnRender : fnRenderButtonsColumn,
+	        	fnRender : fnRenderRemoveButtonsColumn,
 	        	"bSortable" : false
 	        },
         ];
@@ -735,23 +786,37 @@ TDAR.datatable = function() {
     
 
     function _removePendingChange(id, isManaged, isAddition, $dataTable){
+    	var array = "";
+    	var btnId = "";
+    	
     	if(isManaged){
     		if(isAddition){
-    			delete $dataTable.data('toAddManaged')[id]
+    			array =  'toAddManaged'
+    			btnId = "btnAddManagedId_";
     		}
 	    	else{
-	    		delete $dataTable.data('toRemoveManaged')[id]
+	    		array = 'toRemoveManaged';
+	    		btnId = "btnRemoveManagedId_";
 	    	}
     	}
     	else {
+    		
     		if(isAddition){
-    			delete $dataTable.data('toAddUnmanaged')[id]
+    			array = 'toAddUnmanaged';
+    			btnId = "btnAddUnmanagedId_";
     		}
     		else {
-    			delete $dataTable.data('toRemoveUnmanaged')[id]
+    			var array = 'toRemoveUnmanaged';
+    			btnId = "btnRemoveUnmanagedId_";
     		}
     	}
     	
+    	_arrayRemove($dataTable.data(array),parseInt(id));
+    	console.debug($dataTable);
+    	console.debug($dataTable.data(array));
+    	var buttonId = "#"+btnId+id;
+    	console.log("Reenabling button "+buttonId);
+    	$(buttonId).removeAttr("disabled");
     	$dataTable.dataTable().fnDraw();
     }
     
@@ -870,24 +935,18 @@ TDAR.datatable = function() {
      * @private
      */
     function _addResourceToVueModel(obj, $dataTable, isManaged) {
-        var $tableAdd = $("#tblToAdd");
-        var $tableRemove = $("#tblToRemove");
-
-        //remove tr, hidden field, id from  the 'remove' lists, if present
         _arrayRemove($dataTable.data("toRemove"), obj.id);
-        $("#trmod_" + obj.id).remove();
 
-        //if the resource was part of the collection to begin with, do nothing
         if(isManaged && !obj.isManagedResult)  {
         	console.log("Adding managed resource to the vue model");
         	vm.managedAdditions.push(obj);
-        	//_addRow($dataTable, $tableAdd, "trmod_" + obj.id, obj,"toAdd");
         }
         else if (!isManaged && !obj.isUnmanagedResult){
         	console.log("Adding umanaged resource to the vue model");
         	vm.unmanagedAdditions.push(obj);
         }
     }
+    
 
     /**
      * row unselected callback: remove the row of the "selected records" table
@@ -896,21 +955,14 @@ TDAR.datatable = function() {
      * @private
      */
     function _removeResourceFromVueModel(obj, $dataTable, isManaged) {
-        var $tableAdd = $("#tblToAdd");
-        var $tableRemove = $("#tblToRemove");
-        
-        console.log("Removing resource from the vue model");
         if(isManaged && obj.isManagedResult)  {
-        	console.log("Removing managed resource from the vue model");
+        	console.log("Removing managed resource "+obj.id+" from the vue model");
         	vm.managedRemovals.push(obj);
-        	//_addRow($dataTable, $tableAdd, "trmod_" + obj.id, obj,"toAdd");
         }
         else if (!isManaged && obj.isUnmanagedResult){
-        	console.log("Removing umanaged resource from the vue model");
+        	console.log("Removing umanaged resource "+obj.id+" from the vue model");
         	vm.unmanagedRemovals.push(obj);
         }
-        
-        
     }
     
 

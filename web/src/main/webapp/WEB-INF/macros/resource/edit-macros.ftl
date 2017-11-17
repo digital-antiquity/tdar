@@ -1163,9 +1163,14 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <thead>
                         <tr>
                             <#if selectable>
-                                <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle${idAddition}">id</th></#if>
-                            <th>Title</th>
-                            <th>Type</th>
+                                <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle${idAddition}">id</th>
+                            </#if>
+                                <th>Title</th>
+                                <th>Type</th>
+                            <#if selectable>
+                                <th>Status</th>
+                                <th>Add</th>
+                            </#if>
                         </tr>
                     </thead>
                     <tbody>
@@ -1174,6 +1179,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                                 <td>&nbsp;</td></#if>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
+                            <#if selectable>
+                                <td>&nbsp;</td>
+                                <td>&nbsp;</td>
+                            </#if>
                         </tr>
                     </tbody>
                 </table>

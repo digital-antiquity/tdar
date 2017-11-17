@@ -333,41 +333,48 @@
                 search: function(value, array){
                     for (var i=0; i < array.length; i++) {
                         if (array[i].id == value) {
-                            return array[i];
+                            console.debug("Found value "+value+" at position "+i);
+                            return i;
                         }
                     }
+                    return -1;
                 },
 
                 
                 removeFromArray : function(id, array){
                         var idx = this.search(id,array);
                         if(idx !== -1) {
+                            console.debug("Removing "+id+" at  "+ idx);
                             array.splice(idx, 1);
                         }
                 },
                 
                 
                 undoModification: function(id, isManaged, isAddition){
-                   var $dataTable = $('#existing_resources_datatable');
-                   
+                   var $dataTable = !isAddition ? $('#existing_resources_datatable') : $('#resource_datatable');
+
                    if(isManaged){
                         if(isAddition){
+                            console.debug("Removing "+id+" from managed additions");
                             this.removeFromArray(id, this.managedAdditions)
                         }
                         else {
+                            console.debug("Removing "+id+" from managed removals");
                             this.removeFromArray(id, this.managedRemovals)
                         }
                    }
                    else {
                        if(isAddition){
+                            console.debug("Removing "+id+" from unmanaged additions");
                             this.removeFromArray(id, this.unmanagedAdditions)
                         }
                        else {
+                            console.debug("Removing "+id+" from unmanaged additions");
                             this.removeFromArray(id, this.managedRemovals)
                         }
                    }
                    
-                   TDAR.datatable.removePendingChange(id, isManaged, isAddition, $dataTable);
+                   TDAR.datatable.removePendingChange(parseInt(id), isManaged, isAddition, $dataTable);
                 }
             }
         });
