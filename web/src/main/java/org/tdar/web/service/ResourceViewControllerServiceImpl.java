@@ -166,10 +166,20 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ResourceCollection> getVisibleCollections(AuthWrapper<Resource> auth) {
+    public List<ResourceCollection> getVisibleManagedCollections(AuthWrapper<Resource> auth) {
+        List<ResourceCollection> visibleCollections = new ArrayList<>();
+        visibleCollections.addAll(getViewableSharedResourceCollections(auth));
+        return visibleCollections;
+    }
+
+    /* (non-Javadoc)
+     * @see org.tdar.web.service.ResourceViewControllerServ#getVisibleCollections(org.tdar.struts.data.AuthWrapper)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ResourceCollection> getVisibleUnmanagedCollections(AuthWrapper<Resource> auth) {
         List<ResourceCollection> visibleCollections = new ArrayList<>();
         visibleCollections.addAll(getViewableListResourceCollections(auth));
-        visibleCollections.addAll(getViewableSharedResourceCollections(auth));
         return visibleCollections;
     }
 

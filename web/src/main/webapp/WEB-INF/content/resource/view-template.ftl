@@ -107,13 +107,31 @@
     <p>
     <ul class="inline">
     <#items as collection>
+    
         <li>
-            <a class="sml moreInfo" data-type="collection" data-size="${collection.managedResources![]?size!0 + collection.unmanagedResources![]?size!0}" data-hidden="${collection.hidden?c}" 
-    		data-submitter="${collection.submitter.properName}"
-    		data-description="<@common.truncate collection.description!'no description' />"
-    		data-name="${collection.name!''}" 
-    		
-    		href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+            <a class="sml moreInfo" data-type="collection" data-size="${((collection.managedResources![])?size!0 + (collection.unmanagedResources![])?size!0)?c}" data-hidden="${collection.hidden?c}" 
+            data-submitter="${collection.submitter.properName}"
+            data-description="<@common.truncate collection.description!'no description' />"
+            data-name="${collection.name!''}" 
+            
+            href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+            <#sep>&nbsp;&nbsp;&bull;</#sep>
+        </li>
+    </#items>
+    </ul>
+</#list>
+<#list visibleUnmanagedCollections>
+    <h3>This Resource is Part of the Following User Created Collections</h3>
+        <ul class="inline">
+    <#items as collection>
+    
+        <li>
+            <a class="sml moreInfo" data-type="collection" data-size="${((collection.managedResources![])?size!0 + (collection.unmanagedResources![])?size!0)?c}" data-hidden="${collection.hidden?c}" 
+            data-submitter="${collection.submitter.properName}"
+            data-description="<@common.truncate collection.description!'no description' />"
+            data-name="${collection.name!''}" 
+            
+            href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
             <#sep>&nbsp;&nbsp;&bull;</#sep>
         </li>
     </#items>

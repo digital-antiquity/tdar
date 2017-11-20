@@ -28,6 +28,8 @@ public interface ResourceViewControllerService {
             List<ResourceCollection> effectiveResourceCollections,
             List<AuthorizedUser> authorizedUsers);
 
-    List<ResourceCollection> getVisibleCollections(AuthWrapper<Resource> auth);
+    List<ResourceCollection> getVisibleUnmanagedCollections(AuthWrapper<Resource> auth);
+    List<ResourceCollection> getVisibleManagedCollections(AuthWrapper<Resource> auth);
+
 
 }

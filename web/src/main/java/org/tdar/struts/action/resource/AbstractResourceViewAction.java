@@ -103,6 +103,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     ResourceViewControllerService viewService;
 
+
+    private List<ResourceCollection> visibleUnmanagedCollections;
+
     public String getOpenUrl() {
         return OpenUrlFormatter.toOpenURL(getResource());
     }
@@ -167,7 +170,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         viewService.initializeResourceCreatorProxyLists(authWrapper, authorshipProxies, creditProxies, contactProxies);
         viewService.loadSharesCollectionsAuthUsers(authWrapper, getEffectiveShares(), getEffectiveResourceCollections(), getAuthorizedUsers());
         getLogger().trace("effective collections: {}", getEffectiveResourceCollections());
-        visibleCollections = viewService.getVisibleCollections(authWrapper);
+        visibleCollections = viewService.getVisibleManagedCollections(authWrapper);
+        visibleUnmanagedCollections = viewService.getVisibleUnmanagedCollections(authWrapper);
         if (getResource() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) getResource();
             setMappedData(resourceService.getMappedDataForInformationResource(informationResource, getTdarConfiguration().isProductionEnvironment()));
@@ -348,5 +352,13 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     public void setInvites(List<UserInvite> invites) {
         this.invites = invites;
+    }
+
+    public List<ResourceCollection> getVisibleUnmanagedCollections() {
+        return visibleUnmanagedCollections;
+    }
+
+    public void setVisibleUnmanagedCollections(List<ResourceCollection> visibleUnmanagedCollections) {
+        this.visibleUnmanagedCollections = visibleUnmanagedCollections;
     }
 }
