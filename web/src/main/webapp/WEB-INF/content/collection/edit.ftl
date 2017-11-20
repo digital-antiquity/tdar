@@ -227,12 +227,12 @@
            
           </div>
           <div id="addResources" class="tab-pane fade">
-                <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
+                <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection span="span9">
                 </@edit.resourceDataTable>
           </div>
     </div>
     <#else>
-         <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
+         <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection  span="span9" >
          </@edit.resourceDataTable>
     </#if>
     
@@ -251,12 +251,18 @@
             <h2>Modifications</h2>
 
             <div id="divToAdd">
-                <h4>The following resources will be added to the collection</h4>
+                <h4>The following {{pendingAdditions}} resources will be added to the collection</h4>
               
                 <table id="tblToAdd" class="table table-condensed">
+                    <colgroup>
+                        <col style="width: 10%">
+                        <col style="width: 70%">
+                        <col style="width: 10%">
+                        <col style="width: 10%">
+                    </colgroup>
                     <tr v-for="(resource,index) in managedAdditions" v-bind:value="resource.id">
                         <td>{{resource.id}} 
-                        <input type="hidden" :id="'hrid'+resource.id" name="toAddManaged" v-model = "managedAdditions[index].id" />
+                            <input type="hidden" :id="'hrid'+resource.id" name="toAddManaged" v-model = "managedAdditions[index].id" />
                         </td>
                         <td>{{ellipse(resource.title)}}</td>
                         <td>Managed</td>
@@ -264,7 +270,7 @@
                     </tr>
                     <tr v-for="(resource,index) in unmanagedAdditions" v-bind:value="resource.id">
                         <td>{{resource.id}} 
-                        <input type="hidden" :id="'hrid'+resource.id" name="toAddUnmanaged" v-model = "unmanagedAdditions[index].id" />
+                            <input type="hidden" :id="'hrid'+resource.id" name="toAddUnmanaged" v-model = "unmanagedAdditions[index].id" />
                         </td>
                         <td>{{ellipse(resource.title)}}</td>
                         <td>Unmanaged</td>
@@ -274,19 +280,28 @@
             </div>
 
             <div id="divToRemove">
-                <h4>The following resources will be removed from the collection</h4>
+                <h4>The following {{pendingRemovals}} resources will be removed from the collection</h4>
+                
+                
                 <table id="tblToRemove" class="table table-condensed">
+                <colgroup>
+                    <col style="width: 10%">
+                    <col style="width: 70%">
+                    <col style="width: 10%">
+                    <col style="width: 10%">
+                </colgroup>
                 <tr v-for="(resource,index) in managedRemovals" v-bind:value="resource.id">
                         <td>{{resource.id}} 
-                        <input type="hidden" :id="'hrid'+resource.id" name="toRemoveManaged" v-model = "managedRemovals[index].id" />
+                            <input type="hidden" :id="'hrid'+resource.id" name="toRemoveManaged" v-model = "managedRemovals[index].id" />
                         </td>
                         <td>{{ellipse(resource.title)}}</td>
                         <td>Managed</td>
                         <td><a v-on:click='undoModification(resource.id,true,false)' style="cursor:pointer">Undo</a></td>
                     </tr>
                     <tr v-for="(resource,index) in unmanagedRemovals" v-bind:value="resource.id">
-                        <td>{{resource.id}} 
-                        <input type="hidden" :id="'hrid'+resource.id" name="toRemoveUnmanaged" v-model="unmanagedRemovals[index].id" />
+                        <td>
+                            {{resource.id}} 
+                            <input type="hidden" :id="'hrid'+resource.id" name="toRemoveUnmanaged" v-model="unmanagedRemovals[index].id" />
                         </td>
                         <td>{{ellipse(resource.title)}}</td>
                         <td>Unmanaged</td>
@@ -325,6 +340,17 @@
             mounted: function() {
                
             },
+            
+            computed: {
+                    pendingRemovals : function(){
+                        return this.managedRemovals.length + this.unmanagedAdditions.length;
+                    },
+                    
+                    pendingAdditions: function(){
+                        return this.managedAdditions.length + this.unmanagedAdditions.length;
+                    }
+            },
+            
             methods: {
                 ellipse : function(value){
                    return TDAR.common.htmlEncode(TDAR.ellipsify(value, 80))
@@ -417,6 +443,7 @@
                 //remind users that adding a project does not also add the project's contents
 				$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
                 });
+                
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />

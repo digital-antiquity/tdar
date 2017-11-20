@@ -1163,7 +1163,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <thead>
                         <tr>
                             <#if selectable>
-                                <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle${idAddition}">id</th>
+                                <th>id</th>
                             </#if>
                                 <th>Title</th>
                                 <th>Type</th>

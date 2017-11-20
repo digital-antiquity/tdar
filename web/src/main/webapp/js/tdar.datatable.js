@@ -215,39 +215,42 @@ TDAR.datatable = function() {
                 
                 var mode = $elem.val();
                 
-                $elem.attr("disabled", "disabled");
-
                 
                 switch(mode){
-                	//These aren't being used at the moment. 
                 	case "addUnmanaged":
                 		_arrayAdd($dataTable.data('toAddUnmanaged'),id);
                         options.rowSelectionCallback(id, objRowData, true, false);
-                		break;
+                        $elem.attr("disabled", "disabled");
+                        break;
                 	case "addManaged":
                 		_arrayAdd($dataTable.data('toAddManaged'),id);
                         options.rowSelectionCallback(id, objRowData, true, true);
+                        $elem.attr("disabled", "disabled");
                         break;
                 	case "addBoth":
                 		_arrayAdd($dataTable.data('toAddManaged'),id);
                 		_arrayAdd($dataTable.data('toAddUnmanaged'),id);
                         options.rowSelectionCallback(id, objRowData, true, true);
                         options.rowSelectionCallback(id, objRowData, true, false);
-
+                        $elem.attr("disabled", "disabled");
+                        break;
+                        
                 	case "removeUnmanaged":
                 		_arrayAdd($dataTable.data('toRemoveUnmanaged'),id);
                 		options.rowSelectionCallback(id, objRowData, false, false);
+                		$elem.attr("disabled", "disabled");
                 		break;
                 	case "removeManaged":
                 		_arrayAdd($dataTable.data('toRemoveManaged'),id);
                 		options.rowSelectionCallback(id, objRowData, false, true);
+                		$elem.attr("disabled", "disabled");
                 		break;
                 	case "removeBoth":
-                		
                 		_arrayAdd($dataTable.data('toRemoveManaged'),id);
                 		_arrayAdd($dataTable.data('toRemoveUnmanaged'),id);
                 		options.rowSelectionCallback(id, objRowData, false, false);
                 		options.rowSelectionCallback(id, objRowData, false, true);
+                		$elem.attr("disabled", "disabled");
                 		break;
                 }
             });
@@ -355,7 +358,8 @@ TDAR.datatable = function() {
         var isManaged   = oObj.aData.isManagedResult   == true;
         var isUnmanaged = oObj.aData.isUnmanagedResult == true;
         
-        var output = "";
+        var output = '<div class="btn-group">';
+        
         
         if(isManaged){
         	//if the resource is manged, but has been put into the remove from managed
@@ -366,18 +370,20 @@ TDAR.datatable = function() {
         		var sDisabled = '';
         	}
         	
-        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="removeManaged">Remove Managed</button>';
+        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="removeManaged" class="btn btn-primary">Remove Managed</button>';
+        	output += '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">   <span class="caret"></span></button>';
+        	output += '<ul class="dropdown-menu" role="menu">';
         }
 
-        if(isUnmanaged){
-        	if(isBeingRemovedFromManaged){
+        //if(){
+        	if(isBeingRemovedFromManaged || !isUnmanaged){
         		var sDisabled = ' disabled="disabled" ' ;
         	}
-        	else {
+        	else if(isUnmanaged){
         		var sDisabled = '';
         	}
-        	output += '<button type="button" id="'+uAttrId+'"'+sDisabled+'value="removeUnmanaged">Remove Unmanaged</button>';
-        }
+        	output += '<li><button type="button" id="'+uAttrId+'"'+sDisabled+'value="removeUnmanaged"  class="btn">Remove Unmanaged</button></li>';
+        //}
         
         if(isManaged && isUnmanaged){
         	if(isBeingRemovedFromManaged && isBeingRemovedFromUnmanaged){
@@ -386,9 +392,10 @@ TDAR.datatable = function() {
         	else {
         		var sDisabled = '';
         	}
-        	//output += '<button type="button" id="'+bAttrId+'"'+sDisabled+'value="removeBoth">Remove Both</button>';
+        	//output += '<li><button type="button" id="'+bAttrId+'"'+sDisabled+'value="removeBoth" class="btn">Remove Both</button></li>';
         }
         
+        output += "</ul></div>";
         return output;
     }
     
@@ -422,7 +429,7 @@ TDAR.datatable = function() {
         var isManaged   = oObj.aData.isManagedResult   == true;
         var isUnmanaged = oObj.aData.isUnmanagedResult == true;
         
-        var output = "";
+        var output = '<div class="btn-group">';
         
         if(!isManaged){
         	//if the resource is manged, but has been put into the remove from managed
@@ -433,7 +440,10 @@ TDAR.datatable = function() {
         		var sDisabled = '';
         	}
         	
-        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="addManaged">Add Managed</button>';
+        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="addManaged" class="btn btn-primary">Add Managed</button>';
+        	output += '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">   <span class="caret"></span></button>';
+        	output += '<ul class="dropdown-menu" role="menu">';
+        	
         }
 
         if(!isUnmanaged){
@@ -444,7 +454,7 @@ TDAR.datatable = function() {
         		var sDisabled = '';
         	}
         	
-        	output += '<button type="button" id="'+uAttrId+'"'+sDisabled+'value="addUnmanaged">Add Unmanaged</button>';
+        	output += '<li><button type="button" id="'+uAttrId+'"'+sDisabled+'value="addUnmanaged" class="btn">Add Unmanaged</button></li>';
         }
         
         if(!isManaged && !isUnmanaged){
@@ -454,8 +464,10 @@ TDAR.datatable = function() {
         	else {
         		var sDisabled = '';
         	}
-        	//output += '<button type="button" id="'+bAttrId+'"'+sDisabled+'value="addBoth">Add Both</button>';
+        	//output += '<li><button type="button" id="'+bAttrId+'"'+sDisabled+'value="addBoth" class="btn btn-primary">Add Both</button></li>';
         }
+        
+        output += "</ul></div>";
         return output;
     }
     
@@ -811,9 +823,9 @@ TDAR.datatable = function() {
     		}
     	}
     	
+    	console.log("Remvoing from datatable data");
     	_arrayRemove($dataTable.data(array),parseInt(id));
     	console.debug($dataTable);
-    	console.debug($dataTable.data(array));
     	var buttonId = "#"+btnId+id;
     	console.log("Reenabling button "+buttonId);
     	$(buttonId).removeAttr("disabled");
