@@ -63,7 +63,7 @@ public interface TestResourceCollectionHelper {
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
         if (CollectionUtils.isNotEmpty(resources)) {
-            ((ResourceCollectionController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
+            ((ResourceCollectionController) controller).getToAddManaged().addAll(PersistableUtils.extractIds(resources));
         }
 
         if (parentId != null) {

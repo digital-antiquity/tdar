@@ -227,7 +227,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         controller.prepare();
         controller.edit();
         for (Document doc : docList) {
-            controller.getToRemove().add(doc.getId());
+            controller.getToRemoveManaged().add(doc.getId());
         }
         controller.setServletRequest(getServletPostRequest());
         assertNotNull(controller.getPersistable());
@@ -918,7 +918,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         // Project proxy = new Project(project.getId(), project.getTitle());
         Long pid = project.getId();
         project = null;
-        controller.getToAdd().add(pid);
+        controller.getToAddManaged().add(pid);
         controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -1034,7 +1034,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         // project = null;
         // Long pid = project.getId();
         Project proxy = new Project(project.getId(), project.getTitle());
-        shareController.getToAdd().add(proxy.getId());
+        shareController.getToAddManaged().add(proxy.getId());
         shareController.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         shareController.getPersistable().setDescription("description");
         shareController.getPersistable().setHidden(true);
@@ -1082,7 +1082,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         ResourceCollectionController controller = generateNewInitializedController(ResourceCollectionController.class);
         controller.setId(rcid);
         controller.prepare();
-        controller.getToAdd().add(proxy.getId());
+        controller.getToAddManaged().add(proxy.getId());
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         controller.save();

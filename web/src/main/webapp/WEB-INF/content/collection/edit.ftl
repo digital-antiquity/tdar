@@ -343,7 +343,7 @@
             
             computed: {
                     pendingRemovals : function(){
-                        return this.managedRemovals.length + this.unmanagedAdditions.length;
+                        return this.managedRemovals.length + this.unmanagedRemovals.length;
                     },
                     
                     pendingAdditions: function(){

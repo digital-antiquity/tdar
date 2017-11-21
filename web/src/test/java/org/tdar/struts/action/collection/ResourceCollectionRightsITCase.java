@@ -272,7 +272,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.setId(childId);
         controller.setParentId(parentId);
         controller.prepare();
-        controller.getToAdd().add(resId);
+        controller.getToAddManaged().add(resId);
         controller.setServletRequest(getServletPostRequest());
         String status = controller.save();
         assertEquals(TdarActionSupport.SUCCESS, status);
@@ -355,7 +355,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         cc.prepare();
         cc.getResourceCollection().setName("test");
         cc.getResourceCollection().setDescription("test");
-        cc.getToAdd().add(document.getId());
+        cc.getToAddManaged().add(document.getId());
         assertWeFailedToSave(cc);
     }
 
@@ -408,7 +408,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         resourceCollection.setDescription("tst");
         resourceCollection.markUpdated(getBasicUser());
 //        resourceCollection.setSortBy(SortOption.ID);
-        controller.getToAdd().add(document.getId());
+        controller.getToAddManaged().add(document.getId());
         controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
         assertFalse(result.equals(Action.SUCCESS));

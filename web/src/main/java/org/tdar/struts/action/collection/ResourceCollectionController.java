@@ -107,26 +107,30 @@ public class ResourceCollectionController extends AbstractPersistableController<
 
     
     
-    private List<Long> toRemove = new ArrayList<>();
-    private List<Long> toAdd = new ArrayList<>();
+    private List<Long> toRemoveManaged = new ArrayList<>();
+    private List<Long> toAddManaged = new ArrayList<>();
+    
+    private List<Long> toRemoveUnmanged = new ArrayList<>();
+    private List<Long> toAddUnmanaged = new ArrayList<>();
+    
 
-    public List<Long> getToRemove() {
-        return toRemove;
+    public List<Long> getToRemoveManaged() {
+        return toRemoveManaged;
     }
 
 
     public void setToRemove(List<Long> toRemove) {
-        this.toRemove = toRemove;
+        this.toRemoveManaged = toRemove;
     }
 
 
-    public List<Long> getToAdd() {
-        return toAdd;
+    public List<Long> getToAddManaged() {
+        return toAddManaged;
     }
 
 
-    public void setToAdd(List<Long> toAdd) {
-        this.toAdd = toAdd;
+    public void setToAddManaged(List<Long> toAdd) {
+        this.toAddManaged = toAdd;
     }
 
 
@@ -154,8 +158,13 @@ public class ResourceCollectionController extends AbstractPersistableController<
         cso.setAlternateParentId(getAlternateParentId());
         cso.setShouldSave(shouldSaveResource());
         cso.setFileProxy(generateFileProxy(getFileFileName(), getFile()));
-        cso.setToAdd(getToAdd());
-        cso.setToRemove(getToRemove());
+        
+        cso.setToAdd(getToAddManaged());
+        cso.setToRemove(getToRemoveManaged());
+        
+        cso.setPublicToAdd(getToAddUnmanaged());
+        cso.setPublicToRemove(getToRemoveUnmanged());
+        
         resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         
@@ -537,5 +546,25 @@ public class ResourceCollectionController extends AbstractPersistableController<
     public void setAlternateParentCollectionName(String alternateParentCollectionName) {
         this.alternateParentCollectionName = alternateParentCollectionName;
     }
+
+
+	public List<Long> getToRemoveUnmanged() {
+		return toRemoveUnmanged;
+	}
+
+
+	public void setToRemoveUnmanged(List<Long> toRemoveUnmanged) {
+		this.toRemoveUnmanged = toRemoveUnmanged;
+	}
+
+
+	public List<Long> getToAddUnmanaged() {
+		return toAddUnmanaged;
+	}
+
+
+	public void setToAddUnmanaged(List<Long> toAddUnmanaged) {
+		this.toAddUnmanaged = toAddUnmanaged;
+	}
 
 }
