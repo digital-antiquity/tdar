@@ -157,7 +157,7 @@
      * Execute any main() functions found in the API
      */
     TDAR.main = function () {
-        for(var key in TDAR){
+        for(var key in TDAR) {
             if(typeof TDAR[key] !== 'object') {continue}
             if(typeof (TDAR[key]['main']) !== 'function' ) {continue}
             var pkg = TDAR[key];

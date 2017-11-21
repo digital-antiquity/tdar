@@ -669,7 +669,10 @@
             _localJavaScript();
         }
 
-        TDAR.internalEmailForm.init();    
+        TDAR.internalEmailForm.init();
+        <#if authenticated>
+        TDAR.vuejs.collectionwidget.init("#add-resource-form");
+        </#if>
 })
 </script>
 
