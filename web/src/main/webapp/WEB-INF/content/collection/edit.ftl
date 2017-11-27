@@ -227,12 +227,12 @@
            
           </div>
           <div id="addResources" class="tab-pane fade">
-                <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection span="span9">
+                <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="span9">
                 </@edit.resourceDataTable>
           </div>
     </div>
     <#else>
-         <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection  span="span9" >
+         <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection  span="span9" >
          </@edit.resourceDataTable>
     </#if>
     
@@ -419,7 +419,8 @@
                 TDAR.datatable.setupDashboardDataTable({
                     isAdministrator: ${(editor!false)?string},
                     limitContext: ${((!editor)!true)?string},
-                    isSelectable: true,
+                    isSelectable: false,
+                    isClickable: true,
                     showDescription: false,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
                 });
@@ -429,7 +430,6 @@
                     limitContext: ${((!editor)!true)?string},
                     isSelectable: false,
                     showDescription: false,
-                    isExistingResource: true,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
                 });
                 
@@ -443,7 +443,6 @@
                 //remind users that adding a project does not also add the project's contents
 				$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
                 });
-                
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />

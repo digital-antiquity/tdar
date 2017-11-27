@@ -43,7 +43,7 @@ TDAR.datatable = function() {
                     $toggle.prop('checked', false);
                 }
                 
-                // show a different message for the "un-filter" message if we have 0 records and the filter checkbox exists
+                // welcome a different message for the "un-filter" message if we have 0 records and the filter checkbox exists
                 // show the unfilter message if "checked"
                 var $fltr = $("#fltrTxt");
                 var $cbx = $("#parentCollectionsIncluded");
@@ -140,10 +140,18 @@ TDAR.datatable = function() {
                         _data["toRemoveUnmanaged"]=removeUnmanagedIds;
                         
                         //similarly, add  isSelectedResult property to each result
-                        if((options.selectableRows || options.isExistingResource) && _data.resources) {
+                        if((options.selectableRows || options.clickableRows) && _data.resources) {
                             if(!_data.selectedResults) {
                                 _data.selectedResults = [];
                             }
+                            
+                            if(!_data.unmanagedResourceResults){
+                            	_data.unmanagedResourceResults = [];
+                            }
+                            if(!_data.managedResourceResults){
+                            	_data.managedResourceResults = [];
+                            }                            
+                            
                             $.each(_data.resources, function(idx, obj) {
                                 obj.isSelectedResult = _data.selectedResults.indexOf(obj.id) > -1;
                                 obj.isToggled = toggleIds.indexOf(obj.id) > -1;
@@ -170,7 +178,7 @@ TDAR.datatable = function() {
 
         
         // if user wants selectable rows, render checkbox in the first column (which we assume is an ID field)
-        /**if (options.selectableRows) {
+       if (options.selectableRows) {
             options.aoColumns[0].fnRender = fnRenderIdColumn;
             options.aoColumns[0].bUseRendered = false;
             
@@ -199,11 +207,10 @@ TDAR.datatable = function() {
                 }
 
             });
-        }**/
+        }
         
         //this can be done more elegatly, so the callback can be set in the options. 
-        if (options.isExistingResource || options.selectableRows){
-        	
+        if (options.clickableRows){
             $dataTable.on('click', 'button' , function() {
             	console.log("Binding event handlers");
             	var $elem = $(this); // here 'this' is checkbox
@@ -564,7 +571,10 @@ TDAR.datatable = function() {
             "bSortable" : false
         } ];
         // make id the first column when datatable is selectable
-        if (_options.isSelectable) {
+        
+        
+        
+        if (_options.isClickable) {
            aoColumns_.unshift({
                "mDataProp" : "id",
                tdarSortOption : "ID",
@@ -585,6 +595,7 @@ TDAR.datatable = function() {
 	        });  
         }
         var $dataTable = $('#resource_datatable');
+        
         _registerLookupDataTable({
             tableSelector : '#resource_datatable',
             sAjaxSource : TDAR.uri( 'api/lookup/resource'),
@@ -619,14 +630,28 @@ TDAR.datatable = function() {
             },
             
             selectableRows : _options.isSelectable,
+            clickableRows : true, //_options.isClickable,
             
             rowSelectionCallback : function(id, obj, isAdded, isManaged) {
-                if (isAdded) {
-                	_addResourceToVueModel(obj, $dataTable, isManaged);
-                } else {
-                	_removeResourceFromVueModel(obj, $dataTable, isManaged);
-                }
+            	if(_options.isClickable){
+                    if (isAdded) {
+                    	_addResourceToVueModel(obj, $dataTable, isManaged);
+                    } else {
+                    	_removeResourceFromVueModel(obj, $dataTable, isManaged);
+                    }
+            	}
+            	else if(_options.isSelectable) {
+            		if(isAdded){
+            			_rowSelected(obj, $dataTable);
+            		}
+            		else {
+            			_rowUnselected(obj, $dataTable);
+            		}
+            	}
+
             }
+            
+            
         });
 
         var $cs = $("#collection-selector");
@@ -764,8 +789,8 @@ TDAR.datatable = function() {
                 return parms;
             },
             
-            selectableRows : _options.isSelectable,
-            isExistingResource: true,
+            selectableRows : false,
+            clickableRows  : true,
             
             //Used to handle the pre-render
             fnRowCallback : function(nRow, obj, iDisplayIndex, iDisplayIndexFull) {
@@ -1055,6 +1080,7 @@ TDAR.datatable = function() {
             "bFilter" : true,
             sAjaxDataProp : 'people',
             selectableRows : false,
+            clickableRows : false,
             aoColumns : [ {
                 sTitle : "id",
                 bUseRendered : false,

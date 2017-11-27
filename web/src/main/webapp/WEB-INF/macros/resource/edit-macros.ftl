@@ -1046,7 +1046,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     @param selectable:boolean render resources in the list with "selectable" rows,  which will render a checkbox
         as the first column in each row of the data table
 -->
-<#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="" span="span8">
+<#macro resourceDataTable showDescription=true selectable=false clickable=false limitToCollection=false idAddition="" span="span8">
 
         <#--you are in a span9, but assume span8 so we fit inside well -->
         <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> 
@@ -1162,12 +1162,12 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     </colgroup>
                     <thead>
                         <tr>
-                            <#if selectable>
+                            <#if selectable || clickable>
                                 <th>id</th>
                             </#if>
                                 <th>Title</th>
                                 <th>Type</th>
-                            <#if selectable>
+                            <#if clickable>
                                 <th>Status</th>
                                 <th>Add</th>
                             </#if>
@@ -1175,11 +1175,12 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     </thead>
                     <tbody>
                         <tr>
-                            <#if selectable>
-                                <td>&nbsp;</td></#if>
+                            <#if selectable || clickable>
+                                <td>&nbsp;</td>
+                            </#if>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
-                            <#if selectable>
+                            <#if clickable>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
                             </#if>
