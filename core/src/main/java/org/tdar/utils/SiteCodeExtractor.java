@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class SiteCodeExtractor {
 
+    //https://en.wikipedia.org/wiki/Smithsonian_trinomial 
     /*
      * (non-Javadoc)
      * 
@@ -70,10 +71,13 @@ public class SiteCodeExtractor {
                     continue;
                 }
                 // if we're left with 150-250, check if sequential, then probably a page range
+                // note, there are tons of potential ranges
                 Matcher rangeMatcher = PAGE_RANGE_PATTERN.matcher(code);
                 if (rangeMatcher.matches()) {
                     // match page ranges
-                    if (Integer.parseInt(rangeMatcher.group(1)) < Integer.parseInt(rangeMatcher.group(2))) {
+                    // Hawaii is the only 'all numeric site code 
+                    if (!code.startsWith("50-")) {
+//                    if (Integer.parseInt(rangeMatcher.group(1)) < Integer.parseInt(rangeMatcher.group(2))) {
                         continue;
                     }
                 }
