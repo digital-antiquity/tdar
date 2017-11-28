@@ -59,9 +59,12 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     private AuthorizationService authorizationService;
     
     @Override
-    public void validate() {
+   public void validate() {
         super.validate();
-        if (PersistableUtils.isNullOrTransient(resource) || !authorizationService.canEdit(getAuthenticatedUser(), resource)) {
+        //If the resource is null  - or -
+        //if the user doesn't have permission to edit the resource, and its being removed from a managed collection.
+        //Then add the action error. (Unmanaged side doesn't necessarily need resource permision, so the check shouldn't apply there).
+        if (PersistableUtils.isNullOrTransient(resource) || (!authorizationService.canEdit(getAuthenticatedUser(), resource) && type == CollectionResourceSection.MANAGED)) {
             addActionError("addResourceToCollectionAction.no_edit_permission");
         }
         if (PersistableUtils.isNullOrTransient(collection) || !authorizationService.canRemoveFromCollection(getAuthenticatedUser(),collection )) {

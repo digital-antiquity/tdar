@@ -47,7 +47,7 @@ public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 		String url = "/api/collection/addtocollection";
 		Map<String, String> params = new HashMap<String, String>();
 		
-		params.put("resourceId", "42950");
+		params.put("resourceId", "3");
 		params.put("collectionId", "1000");
 		params.put("addAsManagedResource", "true");
 		Page page = createWebRequest(url, params, false);
@@ -60,7 +60,7 @@ public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 		String url = "/api/collection/addtocollection";
 		Map<String, String> params = new HashMap<String, String>();
 		
-		params.put("resourceId", "42940");
+		params.put("resourceId", "1");
 		params.put("collectionId", "1000");
 		params.put("type", "UNMANAGED");
 		Page page = createWebRequest(url, params, false);
@@ -68,15 +68,11 @@ public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 		assertEquals(response.getString("status"), "success");
 	}
 	
-	
-	//I am commenting these out for now because the test data is not added into the liquibase changeset.
-	//The tests fails because there is no data for the unmanaged collection. 
-	/**
 	@Test
 	public void testRemoveResourceFromManagedCollection(){
 		String url = "/api/collection/removefromcollection";
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("resourceId", "42950");
+		params.put("resourceId", "3");
 		params.put("collectionId", "1000");
 		params.put("type", "MANAGED");
 		
@@ -88,13 +84,13 @@ public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 	public void testRemoveResourceFromUnmanagedCollection(){
 		String url = "/api/collection/removefromcollection";
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("resourceId", 	 "42940");
+		params.put("resourceId", 	 "1");
 		params.put("collectionId", 	 "1000");
 		params.put("type", "UNMANAGED");
 		
 		Page page = createWebRequest(url, params, false);
 		assertEquals(page.getWebResponse().getStatusCode(), HttpStatus.OK.value());
-	}**/
+	}
 	
 	@Test 
 	public void testListCollectionsForResource(){
@@ -129,7 +125,6 @@ public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 			
 			logger.debug("errors: {} ; code: {} ; content: {}", assertNoErrors, code,
 					page.getWebResponse().getContentAsString());
-			//Assert.assertTrue(assertNoErrors && (code == HttpStatus.OK.value()));
 			
 		} catch (MalformedURLException e) {
 			Assert.fail("mailformed URL: are you sure you specified the right page in your test?");
@@ -139,7 +134,11 @@ public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 			if (assertNoErrors) {
 				Assert.fail("Failed HTTP requested: " + httpEx.getStatusCode());
 			}
+			else {
+				logger.debug("The HTTP request failed: {} ({})",httpEx.getMessage(),httpEx);
+			}
 		}
+		
 		return page;
 	}
 
