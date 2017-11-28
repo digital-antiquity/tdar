@@ -29,6 +29,10 @@ public class TitleSortComparator implements Comparator<HasName> {
                 return 0;
             }
 
+            if (t1.equals(t2)) {
+                return o1.getId().compareTo(o2.getId());
+            }
+
             return t1.compareTo(t2);
         }
 }
