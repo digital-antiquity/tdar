@@ -404,7 +404,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertTrue(text.contains(DESCRIPTION));
         return seen;
     }
-
+    
+    //TODO -- Change this checkbox to buttons, since the new one renders those instead. 
     public void addResourceToCollection(final String title) {
         // wait until datatable loads new content
         String selector = "#resource_datatable tbody tr";
@@ -477,6 +478,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         }
         return result;
 }
+    //TODO -- change the checkboxes to look for the buttons. 
     private void removeResourceFromCollection(String title) {
         boolean found = false;
         WebElementSelection rows = find("#resource_datatable tr");
