@@ -110,7 +110,7 @@ public class ResourceCollectionController extends AbstractPersistableController<
     private List<Long> toRemoveManaged = new ArrayList<>();
     private List<Long> toAddManaged = new ArrayList<>();
     
-    private List<Long> toRemoveUnmanged = new ArrayList<>();
+    private List<Long> toRemoveUnmanaged = new ArrayList<>();
     private List<Long> toAddUnmanaged = new ArrayList<>();
     
 
@@ -163,7 +163,7 @@ public class ResourceCollectionController extends AbstractPersistableController<
         cso.setToRemove(getToRemoveManaged());
         
         cso.setPublicToAdd(getToAddUnmanaged());
-        cso.setPublicToRemove(getToRemoveUnmanged());
+        cso.setPublicToRemove(getToRemoveUnmanaged());
         
         resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
@@ -548,20 +548,19 @@ public class ResourceCollectionController extends AbstractPersistableController<
     }
 
 
-	public List<Long> getToRemoveUnmanged() {
-		return toRemoveUnmanged;
+	public List<Long> getToRemoveUnmanaged() {
+		return toRemoveUnmanaged;
 	}
 
 
-	public void setToRemoveUnmanged(List<Long> toRemoveUnmanged) {
-		this.toRemoveUnmanged = toRemoveUnmanged;
+	public void setToRemoveUnmanaged(List<Long> toRemoveUnmanaged) {
+		this.toRemoveUnmanaged = toRemoveUnmanaged;
 	}
 
 
 	public List<Long> getToAddUnmanaged() {
 		return toAddUnmanaged;
 	}
-
 
 	public void setToAddUnmanaged(List<Long> toAddUnmanaged) {
 		this.toAddUnmanaged = toAddUnmanaged;

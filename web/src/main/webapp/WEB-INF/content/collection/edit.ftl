@@ -244,74 +244,9 @@
             </div>
 
         </div>
+    
+         <#include 'vue-edit-collection.html' />
 
-    <div id="editCollectionApp">
-
-        <div id="divAddRemove">
-            <h2>Modifications</h2>
-
-            <div id="divToAdd">
-                <h4>The following {{pendingAdditions}} resources will be added to the collection</h4>
-              
-                <table id="tblToAdd" class="table table-condensed">
-                    <colgroup>
-                        <col style="width: 10%">
-                        <col style="width: 70%">
-                        <col style="width: 10%">
-                        <col style="width: 10%">
-                    </colgroup>
-                    <tr v-for="(resource,index) in managedAdditions" v-bind:value="resource.id">
-                        <td>{{resource.id}} 
-                            <input type="hidden" :id="'hrid'+resource.id" name="toAddManaged" v-model = "managedAdditions[index].id" />
-                        </td>
-                        <td>{{ellipse(resource.title)}}</td>
-                        <td>Managed</td>
-                        <td><a v-on:click='undoModification(resource.id,true,true)' style="cursor:pointer">Undo</a></td>
-                    </tr>
-                    <tr v-for="(resource,index) in unmanagedAdditions" v-bind:value="resource.id">
-                        <td>{{resource.id}} 
-                            <input type="hidden" :id="'hrid'+resource.id" name="toAddUnmanaged" v-model = "unmanagedAdditions[index].id" />
-                        </td>
-                        <td>{{ellipse(resource.title)}}</td>
-                        <td>Unmanaged</td>
-                        <td><a v-on:click='undoModification(resource.id,false,true)' style="cursor:pointer">Undo</a></td>
-                    </tr>
-                </table>
-            </div>
-
-            <div id="divToRemove">
-                <h4>The following {{pendingRemovals}} resources will be removed from the collection</h4>
-                
-                
-                <table id="tblToRemove" class="table table-condensed">
-                <colgroup>
-                    <col style="width: 10%">
-                    <col style="width: 70%">
-                    <col style="width: 10%">
-                    <col style="width: 10%">
-                </colgroup>
-                <tr v-for="(resource,index) in managedRemovals" v-bind:value="resource.id">
-                        <td>{{resource.id}} 
-                            <input type="hidden" :id="'hrid'+resource.id" name="toRemoveManaged" v-model = "managedRemovals[index].id" />
-                        </td>
-                        <td>{{ellipse(resource.title)}}</td>
-                        <td>Managed</td>
-                        <td><a v-on:click='undoModification(resource.id,true,false)' style="cursor:pointer">Undo</a></td>
-                    </tr>
-                    <tr v-for="(resource,index) in unmanagedRemovals" v-bind:value="resource.id">
-                        <td>
-                            {{resource.id}} 
-                            <input type="hidden" :id="'hrid'+resource.id" name="toRemoveUnmanaged" v-model="unmanagedRemovals[index].id" />
-                        </td>
-                        <td>{{ellipse(resource.title)}}</td>
-                        <td>Unmanaged</td>
-                        <td><a v-on:click='undoModification(resource.id,false,false)' style="cursor:pointer">Undo</a>/td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        
-        </div>
 
             <@edit.submit fileReminder=false class="button btn submitButton btn-primary">
             <p><b>Where to go after save:</b><br/>
@@ -328,84 +263,6 @@
         <#noescape>
         <script type='text/javascript'>
         
-        var vm = new Vue(
-        {
-            el: '#editCollectionApp',
-            data: { 
-                managedAdditions: [],
-                managedRemovals: [],
-                unmanagedAdditions: [],
-                unmanagedRemovals: []
-            },
-            mounted: function() {
-               
-            },
-            
-            computed: {
-                    pendingRemovals : function(){
-                        return this.managedRemovals.length + this.unmanagedRemovals.length;
-                    },
-                    
-                    pendingAdditions: function(){
-                        return this.managedAdditions.length + this.unmanagedAdditions.length;
-                    }
-            },
-            
-            methods: {
-                ellipse : function(value){
-                   return TDAR.common.htmlEncode(TDAR.ellipsify(value, 80))
-                }, 
-                
-                search: function(value, array){
-                    for (var i=0; i < array.length; i++) {
-                        if (array[i].id == value) {
-                            console.debug("Found value "+value+" at position "+i);
-                            return i;
-                        }
-                    }
-                    return -1;
-                },
-
-                
-                removeFromArray : function(id, array){
-                        var idx = this.search(id,array);
-                        if(idx !== -1) {
-                            console.debug("Removing "+id+" at  "+ idx);
-                            array.splice(idx, 1);
-                        }
-                },
-                
-                
-                undoModification: function(id, isManaged, isAddition){
-                   var $dataTable = !isAddition ? $('#existing_resources_datatable') : $('#resource_datatable');
-
-                   if(isManaged){
-                        if(isAddition){
-                            console.debug("Removing "+id+" from managed additions");
-                            this.removeFromArray(id, this.managedAdditions)
-                        }
-                        else {
-                            console.debug("Removing "+id+" from managed removals");
-                            this.removeFromArray(id, this.managedRemovals)
-                        }
-                   }
-                   else {
-                       if(isAddition){
-                            console.debug("Removing "+id+" from unmanaged additions");
-                            this.removeFromArray(id, this.unmanagedAdditions)
-                        }
-                       else {
-                            console.debug("Removing "+id+" from unmanaged additions");
-                            this.removeFromArray(id, this.managedRemovals)
-                        }
-                   }
-                   
-                   TDAR.datatable.removePendingChange(parseInt(id), isManaged, isAddition, $dataTable);
-                }
-            }
-        });
-        
-        
         //selectResourcesFromCollectionid
         $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
             var table = $.fn.dataTable.fnTables(true);
@@ -413,6 +270,8 @@
                   $(table).dataTable().fnAdjustColumnSizing();
             }
         })
+
+        var vm;
         
             $(function () {
                 'use strict';
@@ -434,6 +293,8 @@
                 });
                 
                 var form = $("#metadataForm")[0];
+                vm = TDAR.vuejs.editcollectionapp.init();
+                
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
                 //TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);

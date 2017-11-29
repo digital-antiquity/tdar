@@ -115,6 +115,7 @@
 
         <js>/js/vue/vue-selectize.js</js>
         <js>/js/vue/view-collection-widget.js</js>
+        <js>/js/vue/edit-collection.js</js>
 
     </group>
     <group name="ng-integrate">
