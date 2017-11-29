@@ -119,7 +119,7 @@ public class ResourceCollectionController extends AbstractPersistableController<
     }
 
 
-    public void setToRemove(List<Long> toRemove) {
+    public void setToRemoveManaged(List<Long> toRemove) {
         this.toRemoveManaged = toRemove;
     }
 

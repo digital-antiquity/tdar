@@ -181,8 +181,8 @@
         
     <#if (resourceCollection.id?? &&  resourceCollection.id != -1 && resourceCollection.size > 0)> 
         <ul class="nav nav-tabs" id="tabs">
-          <li class="active"><a data-toggle="tab" href="#existingResources">Resources in this collection</a></li>
-          <li><a data-toggle="tab" href="#addResources">Add Resources to this collection</a></li>
+          <li class="active"><a data-toggle="tab" href="#existingResources" id="existingResourceTab">Resources in this collection</a></li>
+          <li><a data-toggle="tab" href="#addResources" id="addResourceTab">Add Resources to this collection</a></li>
         </ul>
         
         <div class="tab-content">

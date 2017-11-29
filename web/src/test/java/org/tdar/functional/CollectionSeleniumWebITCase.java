@@ -407,6 +407,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     
     //TODO -- Change this checkbox to buttons, since the new one renders those instead. 
     public void addResourceToCollection(final String title) {
+    	
+    	//click the add resources tab.
+    	String tabSelector = "#addResourceTab";
+    	WebElement addResourceTab = findFirst(tabSelector);
+    	addResourceTab.click();
+    	
         // wait until datatable loads new content
         String selector = "#resource_datatable tbody tr";
         WebElement origRow = findFirst(selector);
@@ -428,7 +434,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 //                .find(".datatable-checkbox");
 //        assertThat("expecting one or more matches", checkboxes.size(), is(greaterThan(0)));
 
-        retryingFindClick(By.cssSelector("#" + rowId + " .datatable-checkbox"));
+        retryingFindClick(By.cssSelector("#" + rowId + " button"));
 
         //reset the search
         find(By.name("_tdar.query")).val("");
@@ -478,17 +484,17 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         }
         return result;
 }
-    //TODO -- change the checkboxes to look for the buttons. 
+
     private void removeResourceFromCollection(String title) {
         boolean found = false;
-        WebElementSelection rows = find("#resource_datatable tr");
+        WebElementSelection rows = find("#existing_resources_datatable tr");
         logger.debug("rows: {}", rows);
         String id = "";
         for (WebElement tr : rows) {
             logger.debug(tr.getText());
             if (tr.getText().contains(title)) {
-                WebElement findElement = tr.findElement(By.className("datatable-checkbox"));
-                Assert.assertTrue("checkbox should already be checked", findElement.isSelected());
+                WebElement findElement = tr.findElement(By.tagName("button"));
+                //Assert.assertTrue("checkbox should already be checked", findElement.isSelected());
                 findElement.click();
                 id  = findElement.getAttribute("id");
                 found = true;
@@ -497,12 +503,14 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         }
         logger.debug(id);
         Assert.assertTrue("should have found at least one remove button with matching title: " + title, found);
-        if (StringUtils.isNotBlank(id)) {
+        
+        //The checkboxes aren't rendered for removals anymore.
+        /*if (StringUtils.isNotBlank(id)) {
             if (rows.find(id(id)).isSelected()) {
                 rows.find(id(id)).click();
             }
             Assert.assertFalse(rows.find(id(id)).isSelected());
-        }
+        }*/
     }
 
     @Override

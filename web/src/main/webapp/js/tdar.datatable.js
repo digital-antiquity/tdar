@@ -366,7 +366,7 @@ TDAR.datatable = function() {
         var isUnmanaged = oObj.aData.isUnmanagedResult == true;
         
         var output = '<div class="btn-group">';
-        
+        var closingUl = "";
         
         if(isManaged){
         	//if the resource is manged, but has been put into the remove from managed
@@ -380,6 +380,7 @@ TDAR.datatable = function() {
         	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="removeManaged" class="btn btn-primary">Remove Managed</button>';
         	output += '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">   <span class="caret"></span></button>';
         	output += '<ul class="dropdown-menu" role="menu">';
+        	closingUl = "</ul>";
         }
 
         //if(){
@@ -402,7 +403,7 @@ TDAR.datatable = function() {
         	//output += '<li><button type="button" id="'+bAttrId+'"'+sDisabled+'value="removeBoth" class="btn">Remove Both</button></li>';
         }
         
-        output += "</ul></div>";
+        output += closingUl+"</div>";
         return output;
     }
     
