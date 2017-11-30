@@ -1,11 +1,14 @@
-
 <div id="editCollectionApp">
 
 	<div id="divAddRemove">
-		<h2>Modifications</h2>
-
+		<h2 v-show="pendingAdditions>0 || pendingRemovals>0">Modifications</h2>
+    
 		<div id="divToAdd">
-			<h4>The following {{pendingAdditions}} resources will be added
+			<h4 v-show="pendingAdditions > 0">The following 
+			
+    			 {{pendingAdditionText}} 
+			
+			will be added
 				to the collection</h4>
 
 			<table id="tblToAdd" class="table table-condensed">
@@ -41,9 +44,8 @@
 		</div>
 
 		<div id="divToRemove">
-			<h4>The following {{pendingRemovals}} resources will be removed
+			<h4 v-show="pendingRemovals > 0">The following {{pendingRemovalText}} will be removed
 				from the collection</h4>
-
 
 			<table id="tblToRemove" class="table table-condensed">
 				<colgroup>

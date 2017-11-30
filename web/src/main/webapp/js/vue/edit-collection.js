@@ -24,7 +24,31 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 						pendingAdditions : function() {
 							return this.managedAdditions.length
 									+ this.unmanagedAdditions.length;
+						},
+						
+						pendingAdditionText :function(){
+							var p = this.pendingAdditions;
+							
+							if(p<=1){
+								return "resource";
+							}
+							else {
+								return p+" resources";
+							}
+						}, 
+						
+						pendingRemovalText :function(){
+							var p = this.pendingRemovals;
+							
+							if(p<=1){
+								return "resource";
+							}
+							else {
+								return p+" resources";
+							}
 						}
+						
+						
 					},
 
 					methods : {

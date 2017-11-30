@@ -368,7 +368,13 @@ TDAR.datatable = function() {
         var output = '<div class="btn-group">';
         var closingUl = "";
         
+        var extraLabel = "";
+        
         if(isManaged){
+        	if(isUnmanaged){
+        		extraLabel = " Managed";
+        	}
+        	
         	//if the resource is manged, but has been put into the remove from managed
         	if(isBeingRemovedFromManaged){
         		var sDisabled = ' disabled="disabled" ' ;
@@ -377,21 +383,33 @@ TDAR.datatable = function() {
         		var sDisabled = '';
         	}
         	
-        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="removeManaged" class="btn btn-primary">Remove Managed</button>';
-        	output += '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">   <span class="caret"></span></button>';
-        	output += '<ul class="dropdown-menu" role="menu">';
-        	closingUl = "</ul>";
+        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="removeManaged" class="btn">Remove'+extraLabel+'</button>';
         }
 
-        //if(){
+        if(isUnmanaged){
+        	extraLabel = "";
+        	if(isManaged){
+    		output += '<button type="button" class="btn dropdown-toggle" data-toggle="dropdown">   <span class="caret"></span></button>';
+        	output += '<ul class="dropdown-menu" role="menu"><li>';
+        	closingUl = "</li></ul>";
+        	extraLabel = " Unmanaged";
+            
+        	}
+            
+        	
         	if(isBeingRemovedFromManaged || !isUnmanaged){
         		var sDisabled = ' disabled="disabled" ' ;
         	}
         	else if(isUnmanaged){
         		var sDisabled = '';
         	}
-        	output += '<li><button type="button" id="'+uAttrId+'"'+sDisabled+'value="removeUnmanaged"  class="btn">Remove Unmanaged</button></li>';
-        //}
+        	
+        	if(isManaged){
+        		//if the reosurce is not added as managed, the first button won't show. So just show the text as "removed".
+    		}
+        	
+        	output += '<button type="button" id="'+uAttrId+'"'+sDisabled+'value="removeUnmanaged"  class="btn">Remove'+extraLabel+'</button>';
+        }
         
         if(isManaged && isUnmanaged){
         	if(isBeingRemovedFromManaged && isBeingRemovedFromUnmanaged){
@@ -448,8 +466,8 @@ TDAR.datatable = function() {
         		var sDisabled = '';
         	}
         	
-        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="addManaged" class="btn btn-primary">Add Managed</button>';
-        	output += '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">   <span class="caret"></span></button>';
+        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="addManaged" class="btn">Add Managed</button>';
+        	output += '<button type="button" class="btn dropdown-toggle" data-toggle="dropdown">   <span class="caret"></span></button>';
         	output += '<ul class="dropdown-menu" role="menu">';
         	
         }
@@ -472,7 +490,7 @@ TDAR.datatable = function() {
         	else {
         		var sDisabled = '';
         	}
-        	//output += '<li><button type="button" id="'+bAttrId+'"'+sDisabled+'value="addBoth" class="btn btn-primary">Add Both</button></li>';
+        	//output += '<li><button type="button" id="'+bAttrId+'"'+sDisabled+'value="addBoth" class="btn">Add Both</button></li>';
         }
         
         output += "</ul></div>";

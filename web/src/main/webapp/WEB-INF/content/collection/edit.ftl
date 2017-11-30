@@ -271,39 +271,39 @@
             }
         })
 
-        var vm;
+    var vm;
+
+    $(function () {
+        'use strict';
+        TDAR.datatable.setupDashboardDataTable({
+            isAdministrator: ${(editor!false)?string},
+            limitContext: ${((!editor)!true)?string},
+            isSelectable: false,
+            isClickable: true,
+            showDescription: false,
+            selectResourcesFromCollectionid: $("#metadataForm_id").val()
+        });
         
-            $(function () {
-                'use strict';
-                TDAR.datatable.setupDashboardDataTable({
-                    isAdministrator: ${(editor!false)?string},
-                    limitContext: ${((!editor)!true)?string},
-                    isSelectable: false,
-                    isClickable: true,
-                    showDescription: false,
-                    selectResourcesFromCollectionid: $("#metadataForm_id").val()
-                });
-                
-                 TDAR.datatable.setupCollectionResourcesDataTable({
-                    isAdministrator: ${(editor!false)?string},
-                    limitContext: ${((!editor)!true)?string},
-                    isSelectable: false,
-                    showDescription: false,
-                    selectResourcesFromCollectionid: $("#metadataForm_id").val()
-                });
-                
-                var form = $("#metadataForm")[0];
-                vm = TDAR.vuejs.editcollectionapp.init();
-                
-                TDAR.common.initEditPage(form);
-                TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
-                //TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
-                TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
-                //remind users that adding a project does not also add the project's contents
-				$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
-                });
+         TDAR.datatable.setupCollectionResourcesDataTable({
+            isAdministrator: ${(editor!false)?string},
+            limitContext: ${((!editor)!true)?string},
+            isSelectable: false,
+            showDescription: false,
+            selectResourcesFromCollectionid: $("#metadataForm_id").val()
+        });
+        
+        var form = $("#metadataForm")[0];
+        vm = TDAR.vuejs.editcollectionapp.init();
+        
+        TDAR.common.initEditPage(form);
+        TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
+        //TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
+        TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
+        TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
+        TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
+        //remind users that adding a project does not also add the project's contents
+		$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
+        });
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />

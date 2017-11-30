@@ -1069,7 +1069,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                                 </div>
                             </div>
                     </div>
-                </div><#--End Search box-->
+                </div>
+        <#--End Search box-->
     
                 <div id="divAdvancedFilters${idAddition}" class="collapse">
                     <div class="row">
@@ -1154,12 +1155,21 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <div class="${span}">
             <table class="display table table-striped table-bordered tableFormat" id="resource_datatable${idAddition}">
                     <colgroup>
-                        <#if selectable>
-                            <col style="width:10%">
+                        <#if selectable || clickable>
+                            <col style="" />
                         </#if>
-                        <col style="width: 70%">
-                        <col style="">
+                        <col style="width: 60%" />
+                        <col style="" />
+    
+                        <#if clickable>
+                            <col style="" />
+                            <col style="" />
+                        </#if>
+                        
                     </colgroup>
+                    <#--
+                    -->
+                    
                     <thead>
                         <tr>
                             <#if selectable || clickable>
