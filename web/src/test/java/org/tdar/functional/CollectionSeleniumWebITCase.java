@@ -344,7 +344,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         } catch(Throwable t) {
             logger.error("{}",t,t);
         }
-//        waitForPageload();
+        //        waitForPageload();
         logger.debug(getPageCode());
         WebElementSelection find = waitFor(DIV_ACCESS_RIGHTS_ADD_ANOTHER_BUTTON);
         find.click();
@@ -409,9 +409,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     public void addResourceToCollection(final String title) {
     	
     	//click the add resources tab.
-    	String tabSelector = "#addResourceTab";
-    	WebElement addResourceTab = findFirst(tabSelector);
-    	addResourceTab.click();
+    	//String tabSelector = "#addResourceTab";
+    	//WebElement addResourceTab = findFirst(tabSelector);
+    	//addResourceTab.click();
     	
         // wait until datatable loads new content
         String selector = "#resource_datatable tbody tr";
