@@ -132,10 +132,13 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         String id = url.substring(0, url.lastIndexOf("/edit"));
         id = id.substring(id.lastIndexOf("/") + 1);
         logger.debug("id: {}, url: {}", id, url);
-        find("#btnToggleFilters").click();
-        waitFor(ExpectedConditions.visibilityOf(select.first()));
-        select.val(id);
-        clearPageCache();
+        
+        //The filter toggle buttons are no longer on the Remove resource datatable.
+        //find("#btnToggleFilters").click();
+        // waitFor(ExpectedConditions.visibilityOf(select.first()));
+        //select.val(id);
+        //clearPageCache();
+        
         Assert.assertTrue(getText().contains(TAG_FAUNAL_WORKSHOP));
         clearPageCache();
         Assert.assertTrue(getText().contains(HARP_FAUNA_SPECIES_CODING_SHEET));
@@ -486,6 +489,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 }
 
     private void removeResourceFromCollection(String title) {
+    	
         boolean found = false;
         WebElementSelection rows = find("#existing_resources_datatable tr");
         logger.debug("rows: {}", rows);

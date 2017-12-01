@@ -211,9 +211,21 @@ TDAR.datatable = function() {
         
         //this can be done more elegatly, so the callback can be set in the options. 
         if (options.clickableRows){
+        	
+        	dataTableOptions["fnRowCallback"] = function(nRow, obj, iDisplayIndex, iDisplayIndexFull) {
+                // determine whether the user selected this item already (if so check the box)
+                //var $button = $(nRow).find('button');
+                //var btnId = $button.prop('id');
+                //var btnName = btnId.substring(0, btnId.lastIndexOf("_"));
+                var id = parseInt(obj.id);
+
+                $(nRow).attr("id","row-"+id);
+                return nRow;
+            };
+        	
             $dataTable.on('click', 'button' , function() {
             	console.log("Binding event handlers");
-            	var $elem = $(this); // here 'this' is checkbox
+            	var $elem = $(this); // here 'this' is button
                 var btnId = $elem.prop('id');
                 var btnName = btnId.substring(0,btnId.lastIndexOf("_"));
                 var id = parseInt(btnId.substring(btnId.lastIndexOf("_")+1));
@@ -221,7 +233,6 @@ TDAR.datatable = function() {
                 var objRowData = $dataTable.fnGetData($elem.parents('tr')[0]);
                 
                 var mode = $elem.val();
-                
                 
                 switch(mode){
                 	case "addUnmanaged":
