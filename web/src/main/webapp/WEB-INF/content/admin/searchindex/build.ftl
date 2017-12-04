@@ -57,7 +57,7 @@
                     $('#errors').show();
                     $('#errors').html(data.errorHtml)
                 }
-                if ($buildStatus.text() != data.message) {
+                if ($buildStatus.text() != data.message && data.message != undefined && data.message != '') {
                     $buildLog.prepend("<br>[" + timeString + "] " + $buildStatus.text().replace("Current Status: ", ""));
                     $buildStatus.empty().append(data.message);
                 }
@@ -67,10 +67,9 @@
                 $buildStatus.empty().append("<span id='spanDone'>Done.</span>");
                 $("#idxBtn").removeAttr('disabled');
             }
-            setTimeout(updateProgress, 200);
+            setTimeout(updateProgress, 1000);
         }        
         function updateProgress() {
-        console.log("updateProgress");
             var url = "<@s.url value="/admin/searchindex/checkstatus"/>?userId=${authenticatedUser.id?c}&";
             $.post(url, function (data) {
                 _checkStatus(data);
