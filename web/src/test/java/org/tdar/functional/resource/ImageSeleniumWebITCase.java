@@ -86,7 +86,7 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
 
     @Test
-    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.SELECT2 })
+//    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.SELECT2 })
     public void testCreateImageEditSavehasResource()  {
         gotoPage("/image/add");
         WebElement form = find("#metadataForm").first();
