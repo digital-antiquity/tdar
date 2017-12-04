@@ -256,7 +256,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     @Override
     @Transactional(readOnly = true)
     public boolean canEditCollection(TdarUser authenticatedUser, ResourceCollection persistable) {
-        if (authenticatedUser == null) {
+        if (authenticatedUser == null || persistable == null) {
             logger.trace("person is null");
             return false;
         }
