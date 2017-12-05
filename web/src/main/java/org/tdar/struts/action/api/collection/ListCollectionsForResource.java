@@ -23,6 +23,7 @@ import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
@@ -57,7 +58,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
     	return JsonLookupFilter.class;
     }
     
-	@Action(value = "resourcecollections", results = { @Result(name = SUCCESS, type = "jsonresult") })
+	@Action(value = "resourcecollections", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
 	@Transactional(readOnly=true)
 	public String listCollectionsForResource() throws Exception {
 		TdarUser user = getAuthenticatedUser();

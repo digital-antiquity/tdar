@@ -79,8 +79,9 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
     				resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.MANAGED);
     				produceSuccessResult(jsonResult,  "managed");
     		}
+    		
     		//verify that they can add it to the requested collection
-    		else if(authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
+    		else if(!addAsManagedResource && authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
 					resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.UNMANAGED);
 	                produceSuccessResult(jsonResult,  "unmanaged");
     		}
