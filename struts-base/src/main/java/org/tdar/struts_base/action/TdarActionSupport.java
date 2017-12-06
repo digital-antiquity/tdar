@@ -568,7 +568,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                 });
     }
 
-    protected boolean isBot() {
+    public boolean isBot() {
         return Activity.testUserAgent(ServletActionContext.getRequest().getHeader("User-Agent"));
 
     }
