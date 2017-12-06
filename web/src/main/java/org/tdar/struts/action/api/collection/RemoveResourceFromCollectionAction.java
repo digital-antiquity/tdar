@@ -1,7 +1,10 @@
 package org.tdar.struts.action.api.collection;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -59,16 +62,45 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     private AuthorizationService authorizationService;
     
     @Override
+    public void prepare() throws Exception {
+        this.resource = getGenericService().find(Resource.class, resourceId);
+        this.collection = getGenericService().find(ResourceCollection.class, collectionId);
+    }
+    
+    @Override
    public void validate() {
         super.validate();
+        
         //If the resource is null  - or -
         //if the user doesn't have permission to edit the resource, and its being removed from a managed collection.
         //Then add the action error. (Unmanaged side doesn't necessarily need resource permision, so the check shouldn't apply there).
-        if (PersistableUtils.isNullOrTransient(resource) || (!authorizationService.canEdit(getAuthenticatedUser(), resource) && type == CollectionResourceSection.MANAGED)) {
-            addActionError("addResourceToCollectionAction.no_edit_permission");
+
+        //require a valid resource and collection, and the ability to remove from the collection.        
+        if(PersistableUtils.isNullOrTransient(resource) || PersistableUtils.isNullOrTransient(collection) || 
+        		!authorizationService.canRemoveFromCollection(getAuthenticatedUser(),collection )) {
+        	addActionError("addResourceToCollectionAction.no_edit_permission");
         }
-        if (PersistableUtils.isNullOrTransient(collection) || !authorizationService.canRemoveFromCollection(getAuthenticatedUser(),collection )) {
-            addActionError("addResourceToCollectionAction.no_edit_permission");
+        else {
+	        if(type == CollectionResourceSection.MANAGED){
+	        	if (!authorizationService.canEdit(getAuthenticatedUser(), resource)) {
+		            addActionError("addResourceToCollectionAction.no_edit_permission");
+		        }
+	        	else {
+	        		List<Long> ids = resource.getManagedResourceCollections().stream().map( ResourceCollection::getId).collect(Collectors.toList());
+	        		if(!ids.contains(collectionId)){
+	            		addActionError("RemoveResourceFromCollectionAction.resource_not_in_collection");
+	            	}
+	        	}
+	        }
+	        
+	        //Verify the 
+	        else if(type==CollectionResourceSection.UNMANAGED){
+	        	getLogger().debug("RemoveResourceFromCollectionAction: Removing unmanaged resource");
+        		List<Long> ids = resource.getUnmanagedResourceCollections().stream().map( ResourceCollection::getId).collect(Collectors.toList());
+            	if(!ids.contains(collectionId)){
+            		addActionError("RemoveResourceFromCollectionAction.resource_not_in_collection");
+            	}
+	        }
         }
     }
     
@@ -79,6 +111,11 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
         Map<String, Object> jsonResult = new HashMap<String, Object>();
     	try { 
     		resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser(), type);
+    		jsonResult.put("status", "success");
+    		jsonResult.put("collectionId", collectionId);
+    		jsonResult.put("resourceId", resourceId);
+    		jsonResult.put("type", type);
+    		
     		setResultObject(jsonResult);
     		return SUCCESS;
     	}
@@ -86,12 +123,6 @@ public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction im
     		addActionErrorWithException(e.getMessage(), e);
     		return INPUT;
     	} 
-    }
-
-    @Override
-    public void prepare() throws Exception {
-        this.resource = getGenericService().find(Resource.class, resourceId);
-        this.collection = getGenericService().find(ResourceCollection.class, collectionId);
     }
 
     public Long getResourceId() {
