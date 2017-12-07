@@ -165,5 +165,10 @@ public class BaseSearchResult<I extends Indexable> implements SearchResultHandle
     public DisplayOrientation getOrientation() {
         return null;
     }
+    
+    @Override
+    public boolean isBot() {
+        return false;
+    }
 
 }

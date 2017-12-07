@@ -73,5 +73,7 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
     void setSearchTitle(String description);
     
     DisplayOrientation getOrientation();
+    
+    boolean isBot(); 
 
 }
