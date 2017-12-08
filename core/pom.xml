@@ -407,12 +407,12 @@
             <!-- LICENSE: BSD -->
         </dependency>
         <!-- needed for ANDSPidClient -->
-        <dependency>
+<!--         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>3.1</version>
         </dependency>
-        <!-- these are required for htmlunit 2.10 -->
+ -->        <!-- these are required for htmlunit 2.10 -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
@@ -597,17 +597,17 @@
             <artifactId>jsp-api</artifactId>
             <version>2.2</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
-            <version>1.4.5</version>
+            <version>1.6.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>activation</artifactId>
                     <groupId>javax.activation</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency> -->
         <!-- compress -->
         <dependency>
             <groupId>com.healthmarketscience.jackcess</groupId>
@@ -799,54 +799,6 @@
                   <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-bridge</artifactId>
-            <version>${batik.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-svg-dom</artifactId>
-            <version>${batik.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-dom</artifactId>
-            <version>${batik.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-anim</artifactId>
-            <version>${batik.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-gvt</artifactId>
-            <version>${batik.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-ext</artifactId>
-            <version>${batik.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-awt-util</artifactId>
-            <version>${batik.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>batik</groupId>
-            <artifactId>batik-script</artifactId>
-            <version>${batik.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
             <groupId>org.tuckey</groupId>
