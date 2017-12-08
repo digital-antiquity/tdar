@@ -188,6 +188,8 @@ public class ResourceCollection extends AbstractPersistable
     private static final long serialVersionUID = -5308517783896369040L;
     @Column(name = "system_managed")
     private Boolean systemManaged = Boolean.FALSE;
+    @Column(name = "verified")
+    private Boolean verified = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
@@ -868,5 +870,13 @@ public class ResourceCollection extends AbstractPersistable
     @Transient
     public int getSize() {
         return CollectionUtils.size(managedResources) +CollectionUtils.size(unmanagedResources); 
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
     }
 }
