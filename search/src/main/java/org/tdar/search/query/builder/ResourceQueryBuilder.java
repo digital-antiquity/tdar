@@ -18,8 +18,10 @@ import com.opensymphony.xwork2.TextProvider;
  * @version $Rev$
  * 
  */
-public class ResourceQueryBuilder extends QueryBuilder {
+public class ResourceQueryBuilder extends QueryBuilder implements HasCreator {
 
+    private boolean creatorCreatedEmphasized;
+    
     public ResourceQueryBuilder() {
         setTypeLimit(LookupSource.RESOURCE.name());
     }
@@ -60,6 +62,16 @@ public class ResourceQueryBuilder extends QueryBuilder {
 
     public void setBoostType(Set<String> matches) {
         this.boostType = matches;
+    }
+
+
+    public boolean isCreatorCreatedEmphasized() {
+        return creatorCreatedEmphasized;
+    }
+
+
+    public void setCreatorCreatedEmphasized(boolean creatorCreatedEmphasized) {
+        this.creatorCreatedEmphasized = creatorCreatedEmphasized;
     }
 
 

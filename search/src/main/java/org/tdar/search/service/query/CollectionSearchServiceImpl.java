@@ -45,6 +45,7 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
     public LuceneSearchResultHandler<ResourceCollection> buildResourceCollectionQuery(TdarUser authenticatedUser, CollectionSearchQueryObject query,
             LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws SearchException, IOException {
         ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
+        queryBuilder.setCreatorCreatedEmphasized(true);
         queryBuilder.setOperator(Operator.AND);
 
         if (CollectionUtils.isNotEmpty(query.getAllFields())) {
@@ -117,6 +118,7 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
     public LuceneSearchResultHandler<ResourceCollection> lookupCollection(TdarUser authenticatedUser, CollectionSearchQueryObject csqo,
             LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws SearchException, IOException {
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
+        q.setCreatorCreatedEmphasized(true);
         q.setOperator(Operator.AND);
         q.append(new AutocompleteTitleQueryPart(csqo.getTitles().get(0)));
 

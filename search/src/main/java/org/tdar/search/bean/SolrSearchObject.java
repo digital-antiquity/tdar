@@ -26,10 +26,12 @@ import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
+import org.tdar.search.query.builder.HasCreator;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * This is a wrapper around the SOLRJ request
@@ -104,7 +106,11 @@ public class SolrSearchObject<I extends Indexable> {
             if (qb.isDeemphasizeSupporting()) {
                 boosts.add("{!boost b=\"if(exists(query({!v='resourceType:(ONTOLOGY CODING_SHEET)'})),-10,1)\"} ");
             }
+
             
+        }
+        if (queryBuilder instanceof HasCreator && PersistableUtils.isNotNullOrTransient(handler.getAuthenticatedUser())) {
+            boosts.add(String.format("{!boost b=\"if(exists(query({!v='%s:%s'})),4,1)\"} ", QueryFieldNames.SUBMITTER_ID, handler.getAuthenticatedUser().getId()));
         }
         if (CollectionUtils.isNotEmpty(sort)) {
             setSortParam(StringUtils.join(sort, ","));
