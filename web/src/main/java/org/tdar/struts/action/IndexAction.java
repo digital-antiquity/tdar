@@ -81,7 +81,7 @@ public class IndexAction extends AbstractAuthenticatableAction {
     @SkipValidation
     @HttpOnlyIfUnauthenticated
     public String about() {
-        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
+        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, isBot(), this));
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
         featuredResources.forEach(r->{
             if (r.getFirstLatitudeLongitudeBox() != null) {

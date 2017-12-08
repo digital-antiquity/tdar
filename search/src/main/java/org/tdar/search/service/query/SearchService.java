@@ -121,8 +121,8 @@ public class SearchService<I extends Indexable> extends AbstractSearchService {
         String queryText = ftq.getQueryString();
         logger.debug(queryText + " :: " + ftq.getSortParam());
         Object searchMetadata[] = { resultHandler.getMode(), ftq.getLuceneTime(), ftq.getTotalResults(), resultHandler.getStartRecord(),
-                ftq.getHydrationTime() };
-        logger.trace("query: {} ", queryText, resultHandler.isBot());
+                ftq.getHydrationTime(), resultHandler.isBot() };
+        logger.trace("query: {} ", queryText);
         logger.debug("{}:: SOLR:{} #:{} @ {} H:{} BOT: {}", searchMetadata);
         resultHandler.setSearchTitle(q.getDescription(textProvider));
         if (resultHandler.getStartRecord() > ftq.getTotalResults()) {

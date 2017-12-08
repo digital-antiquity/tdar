@@ -125,7 +125,7 @@ public class HomepageService {
     }
     
     @Transactional(readOnly = true)
-    public synchronized HomepageDetails getHomepageGraphs(TdarUser authenticatedUser, Long collectionId, TextProvider provider) {
+    public synchronized HomepageDetails getHomepageGraphs(TdarUser authenticatedUser, Long collectionId, boolean isBot, TextProvider provider) {
         AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
         if (collectionId != null) {
             SearchParameters sp = new SearchParameters();
@@ -133,6 +133,9 @@ public class HomepageService {
             advancedSearchQueryObject.getSearchParameters().add(sp);
         }
         SearchResult<Resource> result = new SearchResult<>();
+        if (isBot) {
+            result.setBot(true);
+        }
         result.setFacetWrapper(new FacetWrapper());
         result.setRecordsPerPage(0);
 
