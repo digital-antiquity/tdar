@@ -154,7 +154,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     }
 
     private void setupMapGraphs() {
-        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
+        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, isBot(), this));
     }
 
     public Project getFeaturedProject() {
