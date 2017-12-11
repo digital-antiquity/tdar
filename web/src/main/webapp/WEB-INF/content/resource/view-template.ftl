@@ -108,8 +108,7 @@
         <#items as collection>
     <li><a class="sml moreInfo" data-type="collection" data-size="${collection.resources?size!0}" data-hidden="${collection.hidden?c}" 
     		data-submitter="${collection.submitter.properName}"
-    		data-submitterLink="${collection.submitter.detailUrl}" 
-    		data-description="${collection.description!''}"
+    		data-description="<@common.truncate collection.description!'no description' />"
     		data-name="${collection.name!''}" 
     		
     		href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>

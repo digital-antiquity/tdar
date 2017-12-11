@@ -89,7 +89,7 @@ public class ExploreController extends  AbstractAuthenticatableAction {
 
     @Action(EXPLORE)
     public String explore() throws IOException {
-        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
+        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, isBot(), this));
 
         setMaterialTypes(genericService.findAll(MaterialKeyword.class));
         setInvestigationTypes(genericService.findAll(InvestigationType.class));

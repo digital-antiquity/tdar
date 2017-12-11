@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.dashboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +23,7 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
@@ -70,7 +71,7 @@ public class ListCollectionOrganizeAction extends AbstractAuthenticatableAction 
     }
 
     @Override
-    @Action(value = "organize", results = { @Result(name = SUCCESS, location = "dashboard/organize.ftl") })
+    @Action(value = "organize", results = { @Result(name = SUCCESS, location = "organize.ftl") })
     public String execute() throws SolrServerException, IOException {
 
         return SUCCESS;

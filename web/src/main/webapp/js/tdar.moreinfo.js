@@ -14,8 +14,8 @@
 
                 var html_ = "<p><b>Description:</b> "+description+"<br>";
                 html_ += "<b># of Resources:</b> "+size+"<br>";
-                    if (hidden) {html_ += "<b>Hidden:</b> "+hidden+"</p>";}
-                    html_ += "<b>Submitter:</b> <a href=\""+submitterLink+"\">"+submitter+"</a><br>";
+                    if (hidden) {html_ += "<b>Hidden:</b> "+hidden+"<br>";}
+                    html_ += "<b>Submitter:</b> "+submitter+"</p>";
 
                 $t.popover({html: true, content:html_,trigger:'hover'});
             }

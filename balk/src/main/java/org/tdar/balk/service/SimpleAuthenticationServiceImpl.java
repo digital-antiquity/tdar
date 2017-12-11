@@ -59,6 +59,11 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
             logger.debug("Couldn't authenticate {} - (reason: {})", userLogin.getLoginUsername(), result);
             throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate", Arrays.asList(result.getType().getMessage()));
         }
+        if (!isMember(userLogin.getLoginUsername(), TdarGroup.TDAR_BALK)) {
+            logger.debug("Couldn't authenticate {} - (reason: {})", userLogin.getLoginUsername(), "not balk user");
+            throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate", Arrays.asList(result.getType().getMessage()));
+            
+        }
         setupUser(userLogin.getLoginUsername(), sessionData);
 
         result.setStatus(AuthenticationStatus.AUTHENTICATED);

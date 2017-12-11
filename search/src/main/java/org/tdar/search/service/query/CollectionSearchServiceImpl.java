@@ -1,6 +1,7 @@
 package org.tdar.search.service.query;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.bean.CollectionSearchQueryObject;
@@ -67,30 +70,51 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
 
         // either it's not hidden and you can see it, or it is hidden but you have rights to it.
 
-        QueryPartGroup rightsPart = new QueryPartGroup(Operator.OR);
-        rightsPart.append(new FieldQueryPart<String>(QueryFieldNames.HIDDEN, "false"));
-        if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
-            QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
-            if (!query.isIncludeHidden()) {
-                qpg.append(new FieldQueryPart<String>(QueryFieldNames.HIDDEN, "true"));
-            }
-            if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
-                // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
-                qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
-                rightsPart.append(qpg);
-            } else if (query.isIncludeHidden()) {
-                // if we're admin, drop the hidden check
-                rightsPart.clear();
-            }
-        }
+        QueryPartGroup rightsPart = buildCollectionRightsPart(authenticatedUser, query);
         queryBuilder.append(rightsPart);
         searchService.handleSearch(queryBuilder, result, provider);
         return result;
 
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.CollectionSearchService#lookupCollection(org.tdar.core.bean.entity.TdarUser, org.tdar.search.bean.CollectionSearchQueryObject, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
+    private QueryPartGroup buildCollectionRightsPart(TdarUser authenticatedUser, CollectionSearchQueryObject query) {
+        QueryPartGroup rightsPart = new QueryPartGroup(Operator.OR);
+        FieldQueryPart<Boolean> effectivePart = new FieldQueryPart<Boolean>(QueryFieldNames.EFFECTIVELY_PUBLIC, Boolean.TRUE);
+        rightsPart.append(effectivePart);
+        if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
+            boolean viewAnything = authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser);
+            GeneralPermissions permission  = query.getPermission();
+            if (permission == null) {
+                permission = GeneralPermissions.NONE;
+            }
+            
+            if (permission.ordinal() <= GeneralPermissions.VIEW_ALL.ordinal()) {
+                // if view anything and empty or view all
+                if (viewAnything) {
+                    rightsPart.clear();
+                    rightsPart.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, Arrays.asList(Status.ACTIVE,Status.DRAFT)));
+                } else {
+                    rightsPart.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
+                    
+                }
+                
+            }
+            
+            // if permission is greater than View, then we will use the permission part to build out the view
+            if (permission.ordinal() > GeneralPermissions.VIEW_ALL.ordinal()) {
+                rightsPart.clear();
+            }
+            CollectionAccessQueryPart queryPart = getPermissionsPart(authenticatedUser, query);
+            rightsPart.append(queryPart);
+        }
+        return rightsPart;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.CollectionSearchService#lookupCollection(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.search.bean.CollectionSearchQueryObject, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     public LuceneSearchResultHandler<ResourceCollection> lookupCollection(TdarUser authenticatedUser, CollectionSearchQueryObject csqo,
@@ -98,18 +122,24 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
         q.setOperator(Operator.AND);
         q.append(new AutocompleteTitleQueryPart(csqo.getTitles().get(0)));
-        boolean admin = false;
-        if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
-            admin = true;
-        }
-        CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(authenticatedUser, admin, csqo.getPermission());
-        q.append(queryPart);
+
+        QueryPartGroup rightsPart = buildCollectionRightsPart(authenticatedUser, csqo);
+        q.append(rightsPart);
         if (csqo.getType() != null) {
             q.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TYPE, csqo.getType()));
         }
         searchService.handleSearch(q, result, provider);
         return result;
 
+    }
+
+    private CollectionAccessQueryPart getPermissionsPart(TdarUser authenticatedUser, CollectionSearchQueryObject csqo) {
+        boolean admin = false;
+        if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
+            admin = true;
+        }
+        CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(authenticatedUser, admin, csqo.getPermission());
+        return queryPart;
     }
 
 }

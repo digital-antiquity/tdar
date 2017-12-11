@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.dashboard;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -18,6 +18,7 @@ import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.billing.BillingAccountService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -32,7 +33,7 @@ import com.opensymphony.xwork2.Preparable;
  * @version $Revision$
  */
 @ParentPackage("secured")
-@Namespace("")
+@Namespace("/dashboard")
 @Component
 @Scope("prototype")
 public class BillingAction extends AbstractAuthenticatableAction implements Preparable {
@@ -56,7 +57,7 @@ public class BillingAction extends AbstractAuthenticatableAction implements Prep
     }
 
     @Override
-    @Action(value = "billing", results = { @Result(name = SUCCESS, location = "dashboard/billing.ftl") })
+    @Action(value = "billing", results = { @Result(name = SUCCESS, location = "billing.ftl") })
     public String execute() throws SolrServerException, IOException {
 
         return SUCCESS;

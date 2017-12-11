@@ -1,4 +1,4 @@
-package org.tdar.web;
+    package org.tdar.web;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.not;
@@ -212,7 +212,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         assertTextPresent(accountName2);
         assertTextNotPresent(accountName);
         assertNotEquals(account, accountId);
-        gotoPage("/billing");
+        gotoPage("/dashboard/billing");
         assertTextPresent(accountName);
         assertTextPresent(accountName2);
         logger.debug(getPageText());

@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.dashboard;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
