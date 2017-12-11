@@ -57,6 +57,10 @@ public class SiteCodeExtractor {
                     continue;
                 }
 
+                if (StringUtils.containsAny(code, new char[] {'\r','\n'})) {
+                    continue;
+                }
+                
                 if (StringUtils.endsWithAny(code, new String[] { ",", ":", "-" })) {
                     continue;
                 }

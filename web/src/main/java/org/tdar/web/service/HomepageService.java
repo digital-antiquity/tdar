@@ -20,7 +20,7 @@ public interface HomepageService {
 
     void setupResultForMapSearch(FacetedResultHandler<Resource> result);
 
-    HomepageDetails getHomepageGraphs(TdarUser authenticatedUser, Long collectionId, TextProvider provider);
+    HomepageDetails getHomepageGraphs(TdarUser authenticatedUser, Long collectionId, boolean isBot, TextProvider provider);
 
     Set<Resource> featuredItems(TdarUser authenticatedUser);
 

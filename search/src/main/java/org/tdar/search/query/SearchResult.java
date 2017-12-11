@@ -14,7 +14,7 @@ public class SearchResult<I extends Indexable> extends BaseSearchResult<I> imple
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;    
     private DisplayOrientation orientation = null;
     public SearchResult() {}
-    
+    private boolean isBot = false;
     public SearchResult(int i) {
         setRecordsPerPage(i);
     }
@@ -45,6 +45,16 @@ public class SearchResult<I extends Indexable> extends BaseSearchResult<I> imple
 
     public void setOrientation(DisplayOrientation orientation) {
         this.orientation = orientation;
+    }
+
+
+    public boolean isBot() {
+        return isBot;
+    }
+
+
+    public void setBot(boolean isBot) {
+        this.isBot = isBot;
     }
 
 }

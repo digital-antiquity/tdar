@@ -141,7 +141,7 @@ public class HomepageServiceImpl implements HomepageService {
      */
     @Override
     @Transactional(readOnly = true)
-    public synchronized HomepageDetails getHomepageGraphs(TdarUser authenticatedUser, Long collectionId, TextProvider provider) {
+    public synchronized HomepageDetails getHomepageGraphs(TdarUser authenticatedUser, Long collectionId, boolean isBot, TextProvider provider) {
         AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
         if (collectionId != null) {
             SearchParameters sp = new SearchParameters();
@@ -150,6 +150,7 @@ public class HomepageServiceImpl implements HomepageService {
         }
         SearchResult<Resource> result = new SearchResult<>();
         result.setFacetWrapper(new FacetWrapper());
+        result.setBot(isBot);
         result.setRecordsPerPage(0);
 
         HomepageDetails details = getSearchAndHomepageGraphs(authenticatedUser, advancedSearchQueryObject, result, provider);
