@@ -46,6 +46,7 @@ public abstract class CustomizableCollection<C extends HierarchicalCollection<C>
             @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
             @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
             @AttributeOverride(name = "subtitle", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "hide_collection_sidebar", column = @Column(table = "whitelabel_collection")),
             @AttributeOverride(name = "css", column = @Column(table = "whitelabel_collection"))
     })
     @Access(AccessType.FIELD)

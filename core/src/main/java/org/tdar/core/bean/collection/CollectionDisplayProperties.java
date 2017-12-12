@@ -46,17 +46,21 @@ public class CollectionDisplayProperties implements HasImage {
     @Column(name = "sub_collections_enabled", nullable = false, columnDefinition = "boolean default false")
     private Boolean subCollectionsEnabled = false;
 
+    @Column(name = "hide_collection_sidebar", nullable = false, columnDefinition = "boolean default false")
+    private Boolean hideCollectionSidebar = false;
+
     public CollectionDisplayProperties() {
-        this(false,false,false,false,false,false);
+        this(false,false,false,false,false,false, false);
     }
     
-    public CollectionDisplayProperties(boolean whitelable, boolean customHeaderEnabled, boolean customLogoEnabled, boolean featuredResourceEnabled, boolean searchEnabled, boolean subCollectionEnabled) {
+    public CollectionDisplayProperties(boolean whitelable, boolean customHeaderEnabled, boolean customLogoEnabled, boolean featuredResourceEnabled, boolean searchEnabled, boolean subCollectionEnabled, boolean hideCollectionSidebar) {
         this.whitelabel = whitelable;
         this.customDocumentLogoEnabled= customLogoEnabled;
         this.customHeaderEnabled = customHeaderEnabled;
         this.featuredResourcesEnabled =featuredResourceEnabled;
         this.searchEnabled = searchEnabled;
         this.subCollectionsEnabled = subCollectionEnabled;
+        this.hideCollectionSidebar = hideCollectionSidebar;
     }
     
     @Lob
@@ -204,6 +208,14 @@ public class CollectionDisplayProperties implements HasImage {
 
     public void setWhitelabel(Boolean whitelabel) {
         this.whitelabel = whitelabel;
+    }
+
+    public Boolean getHideCollectionSidebar() {
+        return hideCollectionSidebar;
+    }
+
+    public void setHideCollectionSidebar(Boolean hideCollectionSidebar) {
+        this.hideCollectionSidebar = hideCollectionSidebar;
     }
 
 }
