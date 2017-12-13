@@ -41,7 +41,7 @@
 		        </div>
 		    </div>
         </#if>
-        <#if collections?has_content && !collections.empty > 
+        <#if collections?has_content && !collections.empty  && !(resourceCollection.properties.hideCollectionSidebar)!false> 
             <h3>ChildCollections</h3>
             <@commonr.listCollections collections=collections showOnlyVisible=true />
         </#if>

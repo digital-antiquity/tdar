@@ -407,7 +407,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public ResourceCollection createAndSaveNewWhiteLabelCollection(String name) {
         ResourceCollection wlc = new ResourceCollection();
-        wlc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false));
+        wlc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false,false));
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().setSubtitle("This is a fancy whitelabel collection");
         init(wlc, name);

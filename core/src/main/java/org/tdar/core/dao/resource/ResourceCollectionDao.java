@@ -318,7 +318,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
      */
     public ResourceCollection convertToWhitelabelCollection(ResourceCollection rc) {
         if (rc.getProperties() == null) {
-            rc.setProperties(new CollectionDisplayProperties(false, false, false, false, false, false));
+            rc.setProperties(new CollectionDisplayProperties(false, false, false, false, false, false, false));
         }
         rc.getProperties().setWhitelabel(true);
         saveOrUpdate(rc);
