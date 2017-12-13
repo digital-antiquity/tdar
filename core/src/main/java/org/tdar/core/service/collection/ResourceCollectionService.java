@@ -247,10 +247,11 @@ public interface ResourceCollectionService {
     /**
      * Creates a new collection for a user given a collection name.
      * @param collectionName
+     * @param collectionDescription 
      * @param user
      * @return
      */
-    ResourceCollection createNewResourceCollection(String collectionName, TdarUser user);
+    ResourceCollection createNewResourceCollection(String collectionName, String collectionDescription, TdarUser user);
 
     void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionResourceSection type);
 

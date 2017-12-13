@@ -43,6 +43,7 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Val
 	private transient ResourceCollectionService resourceCollectionService;
 
 	private String collectionName;
+	private String collectionDescription;
 
 	private Long collectionId;
 
@@ -53,7 +54,7 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Val
 	@WriteableSession
 	public String createNewResourceCollection() throws Exception {
 		
-		ResourceCollection rc =  resourceCollectionService.createNewResourceCollection(collectionName, getAuthenticatedUser());
+		ResourceCollection rc =  resourceCollectionService.createNewResourceCollection(collectionName, collectionDescription,  getAuthenticatedUser());
 		collectionId = rc.getId();
 		
 		jsonResult.put("status", "success");
@@ -87,4 +88,12 @@ public class AddNewCollectionAction extends AbstractJsonApiAction implements Val
 	public void setCollectionName(String collectionName) {
 		this.collectionName = collectionName;
 	}
+
+    public String getCollectionDescription() {
+        return collectionDescription;
+    }
+
+    public void setCollectionDescription(String collectionDescription) {
+        this.collectionDescription = collectionDescription;
+    }
 }

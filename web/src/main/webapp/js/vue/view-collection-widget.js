@@ -6,7 +6,8 @@ var _getSelectizeOpts = function() {
         valueField: 'id',
         labelField: 'name',
         searchField: 'name',
-        create: false,
+        create: true,
+        createOnBlur:true,
         render: {
             option: function(item, escape) {
                     return '<div>' +
@@ -73,6 +74,7 @@ var _init = function(appId) {
         pick:"existing",
         options:[],
         newCollectionName:"",
+        newCollectionDescription:"",
         showPermission:false,
         managedResource: false,
         resourceId: -1,
@@ -88,9 +90,10 @@ var _init = function(appId) {
     methods: {
 
         _resetForm: function(){
-            this.selectedCollection=0,
+            this.selectedCollection='',
             this.pick="existing",
             this.newCollectionName="";
+            this.newCollectionDescription="";
             this.managedResource = false;
             var $select = $('#collection-list').selectize();
             $select[0].selectize.clear();
@@ -158,9 +161,30 @@ var _init = function(appId) {
         
         addToCollection:function(){
             var vapp = this;
-            
-            if(this.pick=="existing"){
-                if(this.selectedCollection==0){
+            if(this.selectedCollection==""){
+                $("#addToNew").popover('show');
+                setTimeout(function () {
+                       $('#addToNew').popover('hide');
+                   }, 2000);
+              }
+
+            else if (isNaN(this.selectedCollection)) {
+                    // post to create a new collection.
+                    var data = {
+                        collectionName: this.selectedCollection,
+                        collectionDescription : this.newCollectionDescription
+                    }
+                    
+                    // On success, add the resource.
+                    axios.post('/api/collection/newcollection',Qs.stringify(data)).then(function(res){
+                            console.log("New Collection added");
+                            var id = res.data.id;
+                            console.debug("new collection id is "+id);
+                            vapp._addResourceToCollection(id);
+                            vapp._resetForm();
+                        }
+                    );
+                } else if(this.selectedCollection < 1){
                     // This should change the background color to red and invalidate the box.
                     $("#collection-list").addClass("invalid-feedback");
                     
@@ -176,32 +200,6 @@ var _init = function(appId) {
                    vapp._addResourceToCollection(this.selectedCollection);
                    vapp._getCollectionsForResource();
                 }
-            }
-            else {
-            
-                if(this.newCollectionName==""){
-                     $("#addToNew").popover('show');
-                     setTimeout(function () {
-                            $('#addToNew').popover('hide');
-                        }, 2000);
-                }
-                else {
-                    // post to create a new collection.
-                    var data = {
-                        collectionName: this.newCollectionName
-                    }
-                    
-                    // On success, add the resource.
-                    axios.post('/api/collection/newcollection',Qs.stringify(data)).then(function(res){
-                            console.log("New Collection added");
-                            var id = res.data.id;
-                            console.debug("new collection id is "+id);
-                            vapp._addResourceToCollection(id);
-                            vapp._resetForm();
-                        }
-                    );
-                }
-            }
         },
         
         showGrant: function(){

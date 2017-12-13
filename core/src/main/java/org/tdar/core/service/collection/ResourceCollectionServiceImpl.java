@@ -1236,7 +1236,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
 
     @Override
     @Transactional(readOnly = false)
-    public ResourceCollection createNewResourceCollection(String collectionName, TdarUser user) {
+    public ResourceCollection createNewResourceCollection(String collectionName, String description, TdarUser user) {
         logger.debug("createNewResourceCollection: Creating new collection: {} for {}", collectionName, user);
         ResourceCollection rc = new ResourceCollection(collectionName, "", user);
         rc.markUpdated(user);

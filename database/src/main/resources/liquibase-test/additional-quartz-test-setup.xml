@@ -35,4 +35,17 @@
 (NULL,500,'MODIFY_RECORD',8092,NULL,NULL,8092,'2017-12-04 19:22:46.099094',5000,NULL,NULL)</sql>
     </changeSet>
     
+    <changeSet id="quartz-collections-3" author="bcastel1">
+        <sql>INSERT INTO INFORMATION_RESOURCE
+		("copy_location","date_created","date_created_normalized","external_doi","external_reference","inheriting_collection_information","inheriting_cultural_information","inheriting_identifier_information","inheriting_individual_institutional_credit","inheriting_investigation_information","inheriting_material_information","inheriting_note_information","inheriting_other_information","inheriting_site_information","inheriting_spatial_information","inheriting_temporal_information","last_uploaded","license_text","license_type","mappeddatakeyvalue","metadata_language","publisher_location","resource_language","id","copyright_holder_id","mappeddatakeycolumn_id","project_id","publisher_id","provider_institution_id")
+		VALUES (NULL,2012,2010,NULL,false,false,false,false,false,false,false,false,false,false,false,false,NULL,NULL,NULL,NULL,NULL,NULL,NULL,5000,NULL,NULL,NULL,NULL,NULL);
+		</sql>
+		
+		<sql>
+        INSERT INTO image (id) VALUES (5000);
+		</sql>
+    
+    </changeSet>
+    
+    
 </databaseChangeLog>

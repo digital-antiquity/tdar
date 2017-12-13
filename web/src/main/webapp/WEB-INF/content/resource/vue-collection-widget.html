@@ -7,33 +7,20 @@
   <div class="modal-body" >
           <form>
               <div>
-                <label class="form-check-label"> 
-                    <input type="radio" id="rb_existing" v-model="pick" value="existing"> 
-                    <span id='addToExisting' data-content="A collection must be selected">Add To An Existing Collection</span>
-                </label>
-                
-                <div v-show="pick=='existing'" style="padding-left:20px;" class="form-group">
+                <span data-content="A collection must be selected">Select a collection, or create one</span>
+                <div  style="padding-left:20px;" class="form-group">
                   <div>
                     <selectize v-bind:options="options" v-model="selectedCollection" size="1"
-                         data-max-options="100" data-config="collectionSelectizeOptions" id="collection-list"
+                         data-max-options="100" data-config="collectionSelectizeOptions" id="collection-list" 
                          data-value-field='id' data-label-field='text' data-search-field='text' data-sort-field='text'>
                     </selectize>
                   </div>
+                  <div class="" v-if="isNaN(selectedCollection)" >
+                <label for="newCollectionDescription">Collection Description</label>
+                      <textarea name="description" id='newCollectionDescription' v-model="newCollectionDescription"> </textarea> 
+                  
                   </div>
               </div>
-              
-            <div>
-                <label class="form-check-label">
-                    <input type="radio" id="rb_new" v-model="pick" value="newcollection"> 
-                    <span>Add To A New Collection</span>
-                </label>
-            </div>
-            
-            <div v-if="pick=='newcollection'" style="padding-left:20px;">
-                <label> 
-                <input class="form-control" id='new-collection-name' name="newCollectionName" v-model="newCollectionName" />
-            </div>
-            
             <div v-if="canEdit">
                 <label>
                     <input type="checkbox" v-model="managedResource" />
@@ -41,20 +28,21 @@
                 </label>
              </div>
              
-             <div>
-                <h3>Included as part of : </h3>
-                <ul id='existing-collections-list'>
-                <li v-for="collection in collections.managed">
-                    {{ellipse(collection.name)}} (managed) <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' style="cursor:pointer">Remove</a>
-                </li>
-                
-                <li v-for="collection in collections.unmanaged">
-                    {{ellipse(collection.name)}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")' style="cursor:pointer">Remove</a>
-                </li>
-                </ul>
-                <div v-if="collections.managed.length == 0 && collections.unmanaged.length==1">
-                    Not part of any collections
-                </div>
+                 <div>
+                    <h3>Included as part of : </h3>
+                    <ul id='existing-collections-list'>
+                    <li v-for="collection in collections.managed">
+                        {{ellipse(collection.name)}} (managed) <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' style="cursor:pointer">Remove</a>
+                    </li>
+                    
+                    <li v-for="collection in collections.unmanaged">
+                        {{ellipse(collection.name)}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")' style="cursor:pointer">Remove</a>
+                    </li>
+                    </ul>
+                    <div v-if="collections.managed.length == 0 && collections.unmanaged.length==1">
+                        Not part of any collections
+                    </div>
+                 </div>
              </div>
         </form>
   </div>

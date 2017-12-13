@@ -106,8 +106,10 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 								}
 							}
 
+							try {
 							TDAR.datatable.removePendingChange(parseInt(id),
 									isManaged, isAddition, $dataTable);
+							} catch(e){console.warn(e);}
 						}
 					}
 				});
