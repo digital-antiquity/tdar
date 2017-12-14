@@ -1,7 +1,9 @@
 package org.tdar.struts.action.api.search;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Namespaces;
@@ -22,8 +24,12 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.activity.IgnoreActivity;
 import org.tdar.web.service.WebSearchServiceImpl;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -33,7 +39,7 @@ import com.opensymphony.xwork2.Validateable;
 @Scope("prototype")
 @ParentPackage("default")
 @RequiresTdarUserGroup(TdarGroup.TDAR_USERS)
-public class SaveSearchResultAction extends AbstractAdvancedSearchController implements Preparable, Validateable  {
+public class PollSearchResultProgressAction extends AbstractAdvancedSearchController implements Preparable, Validateable  {
 
     private static final long serialVersionUID = -7606256523280755196L;
 
@@ -42,7 +48,7 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
 
     private GeoRssMode geoMode = GeoRssMode.POINT;
     private boolean webObfuscation = false;
-    
+
     private Long collectionId;
     private String key;
 
@@ -57,20 +63,13 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
     @Autowired
     private WebSearchServiceImpl webSearchService;
 
+	private AsynchronousStatus asyncActivity;
+
     @Override
     public void prepare() throws Exception {
     	if(!PersistableUtils.isNullOrTransient(getAuthenticatedUser())){
-    		// Construct a Key (proposal)
     		key = webSearchService.constructKey(collectionId, getAuthenticatedUser().getId());
-    	
-	        // find whether the activity is in the queue
-	        AsynchronousStatus status = AsynchronousProcessManager.getInstance().findActivity(key);
-	        
-	        if (status != null) {
-	            addActionError("SaveSearchResultAction.currently_saving");
-	        }
     	}
-    
     }
     
     @Override
@@ -84,7 +83,6 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
             addActionError("SaveSearchResultAction.collection_missing");
         } else {
             resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
-            
             if(PersistableUtils.isNullOrTransient(resourceCollection)){
             	addActionError("SaveSearchResultAction.invalid_collection");
             }
@@ -94,49 +92,27 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
     }
     
 
-    @Action(value = "saveResults", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) }
-    )
-    public String saveSearchResultsToCollection() throws TdarActionException {
-        try {
-            if (getSortField() == null) {
-                setSecondarySortField(SortOption.TITLE);
-            }
-
-            // check resource collection is null;
-
-            setMode("json");
-            setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-
-            setLookupSource(LookupSource.RESOURCE);
-
-            // we need this for tests to be able to change the projection model so
-            // we get full objects
-            if (getProjectionModel() == null) {
-                setProjectionModel(ProjectionModel.LUCENE);
-            }
-
-            processLegacySearchParameters();
-            if (isAsync()) {
-                webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
-            } else {
-
-            }
-            // invoke the UI to update/notify that results have been completed. jsonifyResult(JsonLookupFilter.class);
+    @IgnoreActivity
+    @Action(value = "checkstatus", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
+    @HttpForbiddenErrorResponseOnly
+    public String checkStatusAsync() {
+        AsynchronousStatus status = AsynchronousProcessManager.getInstance().findActivity(key);
+        Map<String, Object> resultObject  = new HashMap<String, Object>();
+        if (status != null) {
+        	getLogger().debug("Activity is {} ",status);
+            resultObject.put("status", status.getStatus());
+            resultObject.put("message", status.getMessage());
+            resultObject.put("percentComplete", status.getPercentComplete());
         }
- 
-        /*
-         * catch (TdarActionException tdae) {
-         * return tdae.getResponse();
-         * }
-         */
-        catch (Exception e) {
-            getLogger().error("rss error", e);
-            addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
+        else {
+            resultObject.put("status", "not running");
+            resultObject.put("message", "there is no service process running");
+            resultObject.put("percentComplete", 0.0f);        	
         }
+        setResult(resultObject);
         return SUCCESS;
     }
-
+    
     public GeoRssMode getGeoMode() {
         return geoMode;
     }

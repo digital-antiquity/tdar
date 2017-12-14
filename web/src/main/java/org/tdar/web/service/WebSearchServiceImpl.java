@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,7 @@ public class WebSearchServiceImpl {
 	public void saveSearchResultsForUserAsync(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId, boolean addAsManagedResource) throws SearchException, IOException{
         AsynchronousStatus status = new AsynchronousStatus(constructKey(resourceCollectionId, userId));
         AsynchronousProcessManager.getInstance().addActivityToQueue(status);
+
         try {
 		TdarUser user = genericService.find(TdarUser.class, userId);
 		LuceneSearchResultHandler<Resource> result = new SearchResult<>();
@@ -61,7 +63,12 @@ public class WebSearchServiceImpl {
 			throw new TdarAuthorizationException("No permission to add to collection");
 		}
 		
+		Integer totalRecords = CollectionUtils.size(result.getResults());
+		Integer recordsProcessed = 0;
+		
 		for(Resource resource : result.getResults()){
+			recordsProcessed++;
+			
 			CollectionResourceSection section = CollectionResourceSection.UNMANAGED;
 			Set<ResourceCollection> current = resource.getUnmanagedResourceCollections();
 			
@@ -69,13 +76,18 @@ public class WebSearchServiceImpl {
 				section = CollectionResourceSection.MANAGED;
 				current = resource.getManagedResourceCollections();
 			}
+			status.setPercentComplete(new Float(recordsProcessed / totalRecords));
+            status.update(status.getPercentComplete(), String.format("saving %s", resource.getTitle()));
 			
 			resourceCollectionService.addResourceCollectionToResource(resource, current, user, true, ErrorHandling.NO_VALIDATION, collection, section);
-			status.setCompleted();
          }
+		
+		 status.setCompleted();
         } catch (Throwable t) {
             status.addError(t);
         }
+        
+        //Update status?
 	}
 
     public String constructKey(Long collectionId, Long userId) {

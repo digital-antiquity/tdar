@@ -112,8 +112,7 @@ var _init = function(appId) {
         _addResultsToCollection: function(collectionId){
         	var url = $(this.$el).data("url");
         	console.log(url);
-        	
-        	axios.post("/api/search/"+url, {collectionId: collectionId}).then(function(res) {
+        	axios.post("/api/search/"+url+"&collectionId="+collectionId).then(function(res) {
         		console.log("Finished adding!!");
         	});
         },
