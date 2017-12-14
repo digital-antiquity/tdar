@@ -27,8 +27,7 @@ import org.tdar.web.service.WebSearchServiceImpl;
 
 import com.opensymphony.xwork2.Preparable;
 
-@Namespaces(value = {
-        @Namespace("/api/search") })
+@Namespaces(value = { @Namespace("/api/search") })
 @Component
 @Scope("prototype")
 @ParentPackage("default")
@@ -41,8 +40,10 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
 
     private GeoRssMode geoMode = GeoRssMode.POINT;
     private boolean webObfuscation = false;
+    
     private Long collectionId;
     private String key;
+
     private Map<String, Object> resultObject;
 
     private boolean async = true;
@@ -59,16 +60,16 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
 
         // find whether the activity is in the queue
         AsynchronousStatus status = AsynchronousProcessManager.getInstance().findActivity(key);
+        
         if (status != null) {
             addActionError("SaveSearchResultAction.currently_saving");
         }
+    
     }
 
-    @Action(value = "save", results = {
+    @Action(value = "saveResults", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) }
-
     )
-    @PostOnly
     public String viewJson() throws TdarActionException {
         try {
             if (getSortField() == null) {

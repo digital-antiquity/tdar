@@ -41,8 +41,6 @@ var _getSelectizeOpts = function() {
 }
 
 var _init = function(appId) {
-    
-
 
     Vue.component('collection', 
     { 
@@ -51,7 +49,8 @@ var _init = function(appId) {
         computed: {
             ellipseName: function(){
             name
-                // this needs to have the TDAR libs in so that the name will compute.
+                // this needs to have the TDAR libs in so that the name will
+				// compute.
                // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
             }
         }
@@ -68,6 +67,7 @@ var _init = function(appId) {
         
       var app2 = new Vue({
         el: appId,
+    
     data: { 
         items:[{id:"1",name:"Sample"}], 
         selectedCollection: 0 ,
@@ -81,12 +81,16 @@ var _init = function(appId) {
         canEdit: false,
         collections: {managed:[], unmanaged:[]}
     },
+    
     mounted: function() {
         var $e = $(this.$el);
-        Vue.set(this, 'canEdit',$e.data('canEdit'));
-        Vue.set(this, 'resourceId',$e.data('resourceId'));
-     this._getCollectionsForResource();
+        if($e.data('resourceId')!=null){
+	        Vue.set(this, 'canEdit',$e.data('canEdit'));
+		    Vue.set(this, 'resourceId',$e.data('resourceId'));
+		    this._getCollectionsForResource();
+        }
     },
+    
     methods: {
 
         _resetForm: function(){
@@ -103,6 +107,15 @@ var _init = function(appId) {
             axios.get("/api/lookup/collection?permission=ADMINISTER_COLLECTION").then(function(res) {
                     self.items = res.data;
             });
+        },
+        
+        _addResultsToCollection: function(collectionId){
+        	var url = $(this.$el).data("url");
+        	console.log(url);
+        	
+        	axios.post("/api/search/"+url, {collectionId: collectionId}).then(function(res) {
+        		console.log("Finished adding!!");
+        	});
         },
         
         _addResourceToCollection : function(collectionId){
@@ -185,7 +198,8 @@ var _init = function(appId) {
                         }
                     );
                 } else if(this.selectedCollection < 1){
-                    // This should change the background color to red and invalidate the box.
+                    // This should change the background color to red and
+					// invalidate the box.
                     $("#collection-list").addClass("invalid-feedback");
                     
                     
@@ -210,7 +224,39 @@ var _init = function(appId) {
            else {
             this.showPermission = false;
            }
+        },
+        
+        
+        saveResultsToCollection: function(){
+        	var vapp = this;
+        	if(this.selectedCollection==""){
+                $("#addToNew").popover('show');
+                setTimeout(function () {
+                       $('#addToNew').popover('hide');
+                   }, 2000);
+            }
+
+            else if (isNaN(this.selectedCollection)) {
+                    // post to create a new collection.
+                    var data = {
+                        collectionName: this.selectedCollection,
+                        collectionDescription : this.newCollectionDescription
+                    }
+                    
+                    // On success, add the resource.
+                    axios.post('/api/collection/newcollection',Qs.stringify(data)).then(function(res){
+                            console.log("New Collection added");
+                            var id = res.data.id;
+                            console.debug("new collection id is "+id);
+                            vapp._addResultsToCollection(id);
+                        }
+                    );
+                }
+            else { 
+                vapp._addResultsToCollection(this.selectedCollection);
+             }
         }
+        
     }
     });
       return app2;

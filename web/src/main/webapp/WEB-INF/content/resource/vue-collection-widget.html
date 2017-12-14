@@ -16,11 +16,11 @@
                     </selectize>
                   </div>
                   <div class="" v-if="isNaN(selectedCollection)" >
-                <label for="newCollectionDescription">Collection Description</label>
-                      <textarea name="description" id='newCollectionDescription' v-model="newCollectionDescription"> </textarea> 
-                  
+                      <label for="newCollectionDescription">Collection Description</label>
+                      <textarea name="description" id='newCollectionDescription' v-model="newCollectionDescription"></textarea> 
                   </div>
               </div>
+
             <div v-if="canEdit">
                 <label>
                     <input type="checkbox" v-model="managedResource" />
