@@ -29,7 +29,7 @@ import nu.validator.xml.SystemErrErrorHandler;
 public class HtmlValidator {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
+    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<selectize>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
             "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
