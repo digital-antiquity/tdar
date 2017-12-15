@@ -56,6 +56,10 @@ public class ResourceStatisticsObject {
                 String key = format.format(stat.getAggregateDate());
                 String ykey = Integer.toBinaryString(stat.getYear());
                 DailyTotal dailyTotal = getAllMap().get(key);
+                if (dailyTotal == null) {
+                    dailyTotal = new DailyTotal(0, 0, key, stat.getAggregateDate());
+                    getAllMap().put(key, dailyTotal);
+                }
                 dailyTotal.addTotalDownload(i, stat.getCount());
                 if (dailyTotal.getDate().after(lastYearDate)) {
                     DailyTotal mtotal = getMonthlyMap().getOrDefault(key, createEmptyDailyTotal(key));
