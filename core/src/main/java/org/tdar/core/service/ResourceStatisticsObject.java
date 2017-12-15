@@ -115,7 +115,7 @@ public class ResourceStatisticsObject {
                 total_ += stat.getTotalBot();
             }
             atotal.addTotals(total_,stat.getTotalBot(), createDownloadList());
-            logger.debug("{}:{} -- {} ", stat.getYear(), stat.getMonth(), total_);
+//            logger.debug("{}:{} -- {} ", stat.getYear(), stat.getMonth(), total_);
         }
     }
 
