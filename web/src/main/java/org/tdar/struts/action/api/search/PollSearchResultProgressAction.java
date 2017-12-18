@@ -3,7 +3,6 @@ package org.tdar.struts.action.api.search;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Namespaces;
@@ -12,25 +11,18 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.AsynchronousProcessManager;
 import org.tdar.core.service.AsynchronousStatus;
-import org.tdar.core.service.FeedSearchHelper;
-import org.tdar.core.service.GeoRssMode;
-import org.tdar.core.service.SerializationService;
-import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.ProjectionModel;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
-import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.IgnoreActivity;
 import org.tdar.web.service.WebSearchServiceImpl;
+
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
@@ -43,10 +35,6 @@ public class PollSearchResultProgressAction extends AbstractAdvancedSearchContro
 
     private static final long serialVersionUID = -7606256523280755196L;
 
-    @Autowired
-    private transient SerializationService serializationService;
-
-    private GeoRssMode geoMode = GeoRssMode.POINT;
     private boolean webObfuscation = false;
 
     private Long collectionId;
@@ -54,16 +42,12 @@ public class PollSearchResultProgressAction extends AbstractAdvancedSearchContro
 
     private ResourceCollection resourceCollection;
     
-    private Map<String, Object> resultObject;
-
     private boolean async = true;
 
     private boolean addAsManaged = false;
   
     @Autowired
     private WebSearchServiceImpl webSearchService;
-
-	private AsynchronousStatus asyncActivity;
 
     @Override
     public void prepare() throws Exception {
@@ -87,7 +71,6 @@ public class PollSearchResultProgressAction extends AbstractAdvancedSearchContro
             	addActionError("SaveSearchResultAction.invalid_collection");
             }
         }
-    	
     	super.validate();
     }
     
@@ -99,7 +82,6 @@ public class PollSearchResultProgressAction extends AbstractAdvancedSearchContro
         AsynchronousStatus status = AsynchronousProcessManager.getInstance().findActivity(key);
         Map<String, Object> resultObject  = new HashMap<String, Object>();
         if (status != null) {
-        	getLogger().debug("Activity is {} ",status);
             resultObject.put("status", status.getStatus());
             resultObject.put("message", status.getMessage());
             resultObject.put("percentComplete", status.getPercentComplete());
@@ -113,14 +95,6 @@ public class PollSearchResultProgressAction extends AbstractAdvancedSearchContro
         return SUCCESS;
     }
     
-    public GeoRssMode getGeoMode() {
-        return geoMode;
-    }
-
-    public void setGeoMode(GeoRssMode geoMode) {
-        this.geoMode = geoMode;
-    }
-
     public boolean isWebObfuscation() {
         return webObfuscation;
     }

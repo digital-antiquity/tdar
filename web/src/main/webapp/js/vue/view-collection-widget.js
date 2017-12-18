@@ -79,7 +79,8 @@ var _init = function(appId) {
         managedResource: false,
         resourceId: -1,
         canEdit: false,
-        collections: {managed:[], unmanaged:[]}
+        collections: {managed:[], unmanaged:[]},
+        progressStatus:0
     },
     
     mounted: function() {
@@ -111,9 +112,16 @@ var _init = function(appId) {
         
         _addResultsToCollection: function(collectionId){
         	var url = $(this.$el).data("url");
-        	console.log(url);
+        	var vapp = this;
+        	var progress = $("#upload-progress");
+        	var form 	 = $("#upload-form");
+        	
+        	progress.show();
+        	form.hide();
+        	
         	axios.post("/api/search/"+url+"&collectionId="+collectionId).then(function(res) {
         		console.log("Finished adding!!");
+        		vapp.updateProgressBar(collectionId);
         	});
         },
         
@@ -149,6 +157,14 @@ var _init = function(appId) {
                 console.error("An error ocurred getting a list of collections for this resource");
                 console.error(error);
             });
+        },
+        
+        _resetCollectionSelectionState : function(){
+        	var progress = $("#upload-progress");
+        	var form 	 = $("#upload-form");
+        	
+        	progress.hide();
+        	form.show();
         },
         
         ellipse : function(value){
@@ -254,8 +270,39 @@ var _init = function(appId) {
             else { 
                 vapp._addResultsToCollection(this.selectedCollection);
              }
-        }
+        },
         
+        updateProgressBar(collectionId){
+            var vapp = this;
+            
+        	axios.get('/api/search/checkstatus?collectionId='+collectionId).
+        	then(function(res){
+        	    var percentComplete = parseInt(res.data.percentComplete);
+        	    var progress = $("#progress-bar-status");
+
+        	    console.log("progress is "+percentComplete);
+        	  
+        	    $("#progress-bar-status")
+        	      .css("width", percentComplete + "%")
+        	      .attr("aria-valuenow", percentComplete)
+        	      .text(percentComplete + "% Complete");
+        	    
+        	    if(percentComplete<100){
+        	    	 setTimeout(function(){
+                        vapp.updateProgressBar(collectionId);
+                     }, 1000);
+        	    }
+        	    else {
+        	    	console.log("Progress is 100%");
+        	    	vapp._resetCollectionSelectionState();
+        	    }
+        	    
+        	}).catch(function(res){
+                console.log("An error occurred when getting the progress status"); 
+                console.log(res);
+                vapp._resetCollectionSelectionState();
+            });
+        }
     }
     });
       return app2;
