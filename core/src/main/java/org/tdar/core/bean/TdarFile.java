@@ -22,5 +22,5 @@ public class TdarFile extends AbstractPersistable {
     private TdarFile parentFile;
 
     private ResourceType targetFileType;
-    private Resource resource;a
+    private Resource resource;
 }

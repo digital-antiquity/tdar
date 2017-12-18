@@ -16,16 +16,17 @@
 
 
 <div id="titlebar" parse="true">
-    <h1>Dashboard &raquo; <span class="red">My Bookmarks</span></h1>
+    <h1>Dashboard &raquo; <span class="red">My Scratch Space</span></h1>
 
 </div>
 <div class="row">
 <div class="span2">
-    <@dash.sidebar current="bookmarks" />
+    <@dash.sidebar current="files" />
 </div>
 <div class="span10">
 
 <form class="form-horizontal">
+<div class="span4">
 <div class="control-group">
   <label class="control-label" for="inputInfo">Select Billing Account</label>
   <div class="controls">
@@ -34,16 +35,25 @@
     </select>
   </div>
 </div>
+</div>
+<div class="span4">
+<input type="search" class="search input" placeholder="search"/>
+</div>
 
 <table class="table">
 <thead>
  <tr>
-    <th>id</th>
     <th>file</th>
     <th>status</th>
     <th>action</th>
  </tr>
 </thead>
+<tr>
+ <td colspan="3"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after 1 month.</td>
+</tr>
+<tr>
+
+</tr>
 </table>
 
 
