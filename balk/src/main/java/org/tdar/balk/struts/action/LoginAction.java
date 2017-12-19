@@ -40,7 +40,7 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = "/") })
+        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = "/${contextPath}/") })
 public class LoginAction extends AbstractAuthenticatedAction implements Validateable {
 
     private static final long serialVersionUID = -1219398494032484272L;
