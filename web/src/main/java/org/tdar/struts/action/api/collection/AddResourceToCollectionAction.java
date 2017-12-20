@@ -9,12 +9,15 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.event.EventType;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -61,6 +64,9 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 
 	private ResourceCollection resourceCollection;
 
+	@Autowired
+	private ApplicationEventPublisher publisher;
+	
 	@Action(value = "addtocollection", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
 	@WriteableSession
 	@PostOnly
@@ -77,13 +83,15 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 		try {
     		if (addAsManagedResource && authorizationService.canEdit(getAuthenticatedUser(), resource)){
     				resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.MANAGED);
+    				publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
     				produceSuccessResult(jsonResult,  "managed");
     		}
     		
     		//verify that they can add it to the requested collection
     		else if(!addAsManagedResource && authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
 					resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.UNMANAGED);
-	                produceSuccessResult(jsonResult,  "unmanaged");
+					publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+					produceSuccessResult(jsonResult,  "unmanaged");
     		}
 		}
 		catch(Throwable e){

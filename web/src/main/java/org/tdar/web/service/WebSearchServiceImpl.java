@@ -48,7 +48,7 @@ public class WebSearchServiceImpl {
 	@Autowired
 	private AuthorizationService authorizationService;
 
-	private Integer maxNumOfRecords = 500;
+	private Integer maxNumOfRecords = 100;
 
 	@Autowired
 	private ApplicationEventPublisher publisher;
@@ -63,43 +63,47 @@ public class WebSearchServiceImpl {
 		AsynchronousProcessManager.getInstance().addActivityToQueue(status);
 
 		try {
+			//Load the user and collection, and verify the user has permission to add to the collection.
 			TdarUser user = genericService.find(TdarUser.class, userId);
-			LuceneSearchResultHandler<Resource> result = new SearchResult<>();
-			result.setRecordsPerPage(maxNumOfRecords);
-
-			resourceSearchService.buildAdvancedSearch(asqo, user, result, MessageHelper.getInstance());
-
 			ResourceCollection collection = genericService.find(ResourceCollection.class, resourceCollectionId);
-
 			if (!authorizationService.canAddToCollection(user, collection)) {
 				throw new TdarAuthorizationException("No permission to add to collection");
 			}
 
+			//Construct a search query object
+			LuceneSearchResultHandler<Resource> result = new SearchResult<>();
+			result.setRecordsPerPage(maxNumOfRecords);
+			resourceSearchService.buildAdvancedSearch(asqo, user, result, MessageHelper.getInstance());
+
+			//Initalize the progress counters. 
 			Integer totalRecords = CollectionUtils.size(result.getResults());
 			Integer recordsProcessed = 0;
-
 			logger.debug("There are {} total records to process");
+
+			//Iterate over the search results and add the resources to the collection. 
 			for (Resource resource : result.getResults()) {
-				recordsProcessed++;
+				CollectionResourceSection sectionToAddTo = CollectionResourceSection.UNMANAGED;
+				Set<ResourceCollection> currentResources = resource.getUnmanagedResourceCollections();
 
-				CollectionResourceSection section = CollectionResourceSection.UNMANAGED;
-				Set<ResourceCollection> current = resource.getUnmanagedResourceCollections();
-
+				//If the user has permission to the resource, then add the resource to the managed section of the collection.
+				//Otherwise it will stay in the unmanaged. 
 				if (addAsManagedResource && authorizationService.canEdit(user, resource)) {
-					section = CollectionResourceSection.MANAGED;
-					current = resource.getManagedResourceCollections();
+					sectionToAddTo = CollectionResourceSection.MANAGED;
+					currentResources = resource.getManagedResourceCollections();
 				}
+				
+				//Update the progress status.
+				recordsProcessed++;
 				Float percentDone = ((float) recordsProcessed / totalRecords)*100;
 				status.setPercentComplete(percentDone);
 				status.update(status.getPercentComplete(), String.format("saving %s", resource.getTitle()));
-
 				logger.debug("{} percent complete", percentDone);
 
-				resourceCollectionService.addResourceCollectionToResource(resource, current, user, true,
-						ErrorHandling.NO_VALIDATION, collection, section);
-				// publisher.publishEvent(new TdarEvent(resource,
-				// EventType.CREATE_OR_UPDATE));
+				//Add the resource to the collection and publish the event to add index.
+				resourceCollectionService.addResourceCollectionToResource(resource, currentResources, user, true, ErrorHandling.NO_VALIDATION, collection, sectionToAddTo);
+				publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
 			}
+			//Update and set the status as completed. 
 			status.setPercentComplete(100f);
 			status.setCompleted();
 		} catch (Throwable t) {
@@ -109,12 +113,15 @@ public class WebSearchServiceImpl {
 			status.setCompleted();
 			status.setPercentComplete(100f);
 		}
-
-		// Update status?
 	}
 
+	/**
+	 * This is a unique identifier for the Async status object. 
+	 * @param collectionId
+	 * @param userId
+	 * @return
+	 */
 	public String constructKey(Long collectionId, Long userId) {
 		return "SaveSearchResult::" + collectionId + "::" + userId;
 	}
-
 }

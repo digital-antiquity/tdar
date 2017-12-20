@@ -39,7 +39,7 @@
                         {{ellipse(collection.name)}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")' style="cursor:pointer">Remove</a>
                     </li>
                     </ul>
-                    <div v-if="collections.managed.length == 0 && collections.unmanaged.length==1">
+                    <div v-if="collections.managed.length == 0 && collections.unmanaged.length==0">
                         Not part of any collections
                     </div>
                  </div>
@@ -47,7 +47,7 @@
         </form>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <a href="#" class="btn btn-primary"  v-on:click="addToCollection">Save changes</a>
+    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges">Close</button>
+    <a href="#" class="btn btn-primary"  v-on:click="saveAddToCollectionChanges">Save changes</a>
   </div>
 </div>  

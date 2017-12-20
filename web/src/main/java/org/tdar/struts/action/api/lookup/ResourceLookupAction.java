@@ -112,6 +112,9 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
                 Set<Long> unmanagedResourceIds = new HashSet<Long>();
                 for (Indexable result_ : getResults()) {
                     Resource resource = (Resource) result_;
+                    
+                    //This endpoint is used to display results in a collection for the datatable.
+                    //Should this include all resources including the ones in draft? 
                     if (resource != null && resource.isViewable()) {
                         if(resource.getManagedResourceCollections().contains(collectionContainer)){
                         	managedResourceIds.add(resource.getId()); 
@@ -122,7 +125,6 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
                         	unmanagedResourceIds.add(resource.getId());
                         	 resourceIds.add(resource.getId());
                         }
-                        
                     }
                 }
                 getResult().put(SELECTED_RESULTS, resourceIds);
