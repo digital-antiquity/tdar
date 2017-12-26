@@ -46,7 +46,7 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
         userMapping = userService.findUser(getAuthenticatedUser());
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items/list?path=${path}")})
+    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/${contextPath}/items/list?path=${path}")})
     @Override
     public String execute() throws Exception {
         try {

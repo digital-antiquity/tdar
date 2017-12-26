@@ -46,7 +46,7 @@ public class StartWokflowAction extends AbstractAuthenticatedAction implements P
         userMapping = userService.findUser(getAuthenticatedUser());
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items?path=${path}")})
+    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items/list?path=${path}")})
     @Override
     public String execute() throws Exception {
         try {
