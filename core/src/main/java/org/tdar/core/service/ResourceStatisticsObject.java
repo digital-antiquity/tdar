@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -18,6 +20,8 @@ import org.tdar.core.bean.statistics.DailyTotal;
 import com.opensymphony.xwork2.TextProvider;
 
 public class ResourceStatisticsObject {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private static final String YYYY_MM_DD = "yyyy-MM-dd";
     private SimpleDateFormat format = new SimpleDateFormat(YYYY_MM_DD);
@@ -54,17 +58,28 @@ public class ResourceStatisticsObject {
             String filename = getFilenames().get(i);
             for (AggregateDownloadStatistic stat : downloadStats.get(filename)) {
                 String key = format.format(stat.getAggregateDate());
-                String ykey = Integer.toBinaryString(stat.getYear());
-                DailyTotal dailyTotal = getAllMap().get(key);
+                String mkey = String.format("%02d-%s", stat.getMonth(),stat.getYear());
+                String ykey = Integer.toString(stat.getYear());
+                DailyTotal dailyTotal = getOrCreate(stat, key, getAllMap());
                 dailyTotal.addTotalDownload(i, stat.getCount());
                 if (dailyTotal.getDate().after(lastYearDate)) {
-                    DailyTotal mtotal = getMonthlyMap().getOrDefault(key, createEmptyDailyTotal(key));
+                    DailyTotal mtotal = getOrCreate(stat, mkey, getMonthlyMap());
                     mtotal.addTotalDownload(i, stat.getCount());
                 }
-                DailyTotal ytotal = getMonthlyMap().getOrDefault(ykey, createEmptyDailyTotal(key));
+                DailyTotal ytotal = getOrCreate(stat, ykey, getAnnualMap());
                 ytotal.addTotalDownload(i, stat.getCount());
             }
         }
+    }
+
+    private DailyTotal getOrCreate(AggregateDownloadStatistic stat, String mkey, Map<String,DailyTotal> map) {
+        DailyTotal mtotal = map.get(mkey);
+        if (mtotal == null) {
+            mtotal = createEmptyDailyTotal(mkey);
+            mtotal.setDate(stat.getAggregateDate());
+            map.put(mkey, mtotal);
+        }
+        return mtotal;
     }
 
     private void setupDailyUsage(List<AggregateDayViewStatistic> usageStatsForResources, Date lastWeekDate, Date lastYearDate) {
@@ -85,18 +100,22 @@ public class ResourceStatisticsObject {
                     getMonthlyMap().put(key, mtotal);
                 }
             }
-            DailyTotal atotal = getAnnualMap().getOrDefault(ykey, createEmptyDailyTotal(ykey));
-            getAnnualMap().put(ykey, atotal);
+            DailyTotal atotal = getAnnualMap().get(ykey);
+            if (atotal == null) {
+                atotal = createEmptyDailyTotal(ykey);
+                getAnnualMap().put(ykey, atotal);
+            }
             
             //FIXME: this is not great, but the assumption in the DB is that the total here is Everything
             Long total_ = 0L;
             if (stat.getTotal() != null) {
-                total_ = stat.getTotal();;
+                total_ += stat.getTotal();
             }
-            if (stat.getTotalBot()  != null) {
-                total_ = stat.getTotalBot();;
+            if (stat.getTotalBot() != null) {
+                total_ += stat.getTotalBot();
             }
             atotal.addTotals(total_,stat.getTotalBot(), createDownloadList());
+//            logger.debug("{}:{} -- {} ", stat.getYear(), stat.getMonth(), total_);
         }
     }
 

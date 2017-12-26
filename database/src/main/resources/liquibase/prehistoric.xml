@@ -440,5 +440,9 @@
         <comment>make whitelabel collections whitelabel again</comment>
         <sql>update whitelabel_collection set whitelabel = true where custom_header_enabled is true or featured_resources_enabled is true or search_enabled is true or sub_collections_enabled is true or custom_doc_logo_enabled is true</sql>
      </changeSet>
-     </databaseChangeLog>
-
+     <changeSet id="prehistoric-stable-28" author="abrin">
+        <comment>add hide feature boolean</comment>
+        <addColumn tableName="whitelabel_collection">
+            <column name="hide_collection_sidebar" type='boolean' defaultValueBoolean="false" /></addColumn>
+     </changeSet>
+</databaseChangeLog>
