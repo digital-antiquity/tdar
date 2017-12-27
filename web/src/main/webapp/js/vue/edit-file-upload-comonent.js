@@ -1,6 +1,5 @@
 TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
     "use strict";
-    var url = TDAR.uri('upload/upload');
     var ERROR_TIMEOUT = 5000;
 
     var __matching = function(arr1, arr2, name) {
@@ -90,56 +89,137 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         });
 // //https://github.com/blueimp/jQuery-File-Upload/wiki/API
 
+        var config = {
+                files:[],
+                url:TDAR.uri('upload/upload'),
+                ticketId: -1,
+                resourceId: -1,
+                userId: -1,
+                validFormats: [],
+                sideCarOnly: false,
+                maxNumberOfFiles: 50,
+               requiredOptionalPairs: [{required:[], optional:[]}]
+        };
+        if ($(widgetId).data('config') != undefined) {
+            console.log( $($(widgetId).data('config')).text() );
+          $.extend(config,JSON.parse($($(widgetId).data('config')).text()));  
+        }
+        
    var app = new Vue({
      el: widgetId,
      data: {
-          files:[],
-          ticketId: -1,
-          resourceId: -1,
-          userId: -1,
-          validFormats: [],
-          sideCarOnly: false,
-          maxNumberOfFiles: 50,
-         requiredOptionalPairs: [{required:[], optional:[]}]
+          files:config.files,
+          url:config.url,
+          ticketId: config.ticketId,
+          resourceId: config.resourceId,
+          userId: config.userId,
+          validFormats: config.validFormats,
+          sideCarOnly: config.sideCarOnly,
+          maxNumberOfFiles: config.maxNumberOfFiles,
+          requiredOptionalPairs: config.requiredOptionalPairs
+     },
+     computed : {
+         valid: function() {
+             return this.validatePackage();
+         }
      },
      methods: {
          validatePackage: function() {
-             // validates that once all of the files are added that the entire file package is valid
+             if (this.requiredOptionalPairs == undefined || this.requiredOptionalPairs.length == 0) {
+                 return true;
+             }
+             var _app = this;
+             console.log("computing overall validity");
+             var exts = new Array(); 
+             var pairs = new Array();
+             // convert to a set
+             this.files.forEach(function(file){
+                 var ext = file.name.substring(file.name.indexOf("."));
+                 exts.push(ext);
+                 var seen = false;
+                 _app.requiredOptionalPairs.forEach(function(pair){
+                     if (!seen && ($.inArray(ext, pair.required) > -1 || $.inArray(ext, pair.optional) > -1 ))  {
+                         pairs.push(pair);
+                         seen = true;
+                     }
+                 });
+             });
+             
+             if (pairs.length < 1) {
+                 console.error("we have requirements, but these files are too confusing");
+                 return false;
+             }
+             
+             
+             console.log("exts:", exts);
+             console.log("pairs:", pairs);
+             pairs.forEach(function(pair){
+                 var valid = false;
+                 var required = pair.required.slice(0);
+                 var optional = pair.optional.slice(0);
+                 // remove required
+                 exts.forEach(function(ext){
+                     console.log($.inArray(ext, required),required,ext);
+                     if ($.inArray(ext, required) > -1) {
+                         required.splice($.inArray(ext, required), 1 );
+                     }
+                     if ($.inArray(ext, optional ) > -1) {
+                         optional.splice($.inArray(ext, optional),1);
+                     }
+                 });
+                 console.log("required:", required);
+                 console.log("optional:", optional);
+                 if (required.length > 0) {
+                     console.error("required format(s) remain", required);
+                 }
+             });
+             return true;
          },
          validateAdd: function(file) {
+             console.log("validating file:", file);
              // valdiate the file can be added to the resource/existing type
              var validExt = undefined;
              // for valid extensions check if we match
+             var fileName = file.name;
              this.validFormats.forEach(function(ext){
-                 if (file.endsWith(ext)) {
+                 console.log("eval:",fileName,ext);
+                 if (fileName.indexOf(ext, fileName.length - ext.length) !== -1) {
                      validExt = ext
                  }
              });
              if (validExt == undefined) {
+                 console.error("extension is not valid:", file, this.validFormats);
                  return false;
              }
              
              // check number of files
+             // FIXME: add check/subtraction for deleted files
              if (this.files.length >= this.maxNumberOfFiles) {
+                 console.error("too many files", this.maximumNumberOfFiles);
                  return false;
              }
              
              // check if all files have to be connected (sidecar)
              if (this.sideCarOnly) {
-                 var base = file.substring(file.length - validExt.length);
+                 var base = fileName.substring(0, fileName.length - validExt.length);
+                 console.log("files:",this.files);
                  if (this.files.length > 0 ) {
                      var validSidecar = true;
                      this.files.forEach(function(f) {
+                         console.log("base:", base, f.name, fileName);
                          // if we don't have the same basename, or the file is a dup
-                         if (!f.startsWith(base) || f == file) {
+                         if (f.name.indexOf(base) != 0 || f.name == fileName) {
                              validSidecar = false;
                          }
                      });
                      if (!validSidecar) {
+                         console.error("file is not valid sidecar", base);
                          return false;
                      }
                  }
              }
+             
+             return true;
              
          },
          updateFileProgress: function(e,data) {
@@ -180,7 +260,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                    status: 'queued',
                    xhr: jqXHR
                };
-               if (valid && file.dontCreate == undefined || file.dontCreate == false) {
+               if (file.dontCreate == undefined || file.dontCreate == false) {
                    _app.files.push(f);
                }
            });
@@ -221,7 +301,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
      mounted: function() {
          // setup
          var up =  $('#fileupload').fileupload({
-              url: url,
+              url: this.url,
               dataType: 'json',
               progressall: function (e, data) {
                   var progress = parseInt(data.loaded / data.total * 100, 10);
