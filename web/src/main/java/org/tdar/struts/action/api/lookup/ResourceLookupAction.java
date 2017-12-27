@@ -82,7 +82,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         
         if (CollectionUtils.isNotEmpty(collectionId)) {
             for (Long id : collectionId) {
-                ResourceCollection rc = getGenericService().find(ResourceCollection.class, id);
+                //ResourceCollection rc = getGenericService().find(ResourceCollection.class, id);
                 look.getCollectionIds().add(id);                    
             }
         }

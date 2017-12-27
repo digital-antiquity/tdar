@@ -51,13 +51,11 @@ describe("Vue-collection-widget.js: collection widget test", function() {
             
             done();
         });
-            // console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
-            
-            // console.log(moxios.requests.mostRecent());
-            // console.log(request.url);
+
+        // console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
+        // console.log(moxios.requests.mostRecent());
+        // console.log(request.url);
         // })
-
-
         
         console.info("------------------------------------- vue ---------------------------------------");
     });

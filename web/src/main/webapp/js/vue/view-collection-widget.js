@@ -202,22 +202,32 @@ var _init = function(appId) {
             });
         },
         
+        _disableSubmitButton: function(){
+        	$("#modal .btn-primary").addClass("disabled");
+        	$("#modal .btn-primary").prop("disabled",true);
+        },
         
+        _enableSubmitButton: function(){ 
+        	$("#modal .btn-primary").removeClass("disabled");
+        	$("#modal .btn-primary").prop("disabled",false);
+        },
         
         /**
          * "save results to collection" functions
          */
         _addResultsToCollection: function(collectionId){
+        	
         	var url = $(this.$el).data("url");
         	var vapp = this;
+
         	var progress = $("#upload-progress");
         	var form 	 = $("#upload-form");
+        	var progressBar = $("#upload-progress-status");
         	this.lastSavedCollectionId = collectionId;
         	
-        	//progress.show();
-        	form.hide();
-        	
         	axios.post("/api/search/"+url+"&collectionId="+collectionId).then(function(res) {
+            	progress.show();
+            	form.hide();
         		console.log("Finished adding!!");
         		vapp.updateProgressBar(collectionId);
         	});
@@ -227,7 +237,10 @@ var _init = function(appId) {
         	var progress = $("#upload-progress");
         	var form 	 = $("#upload-form");
             var $select = $('#collection-list').selectize();
+            var vapp = this;
+            
             $select[0].selectize.clear();
+            vapp._enableSubmitButton();
         	progress.hide();
         	form.show();
         },
@@ -259,12 +272,14 @@ var _init = function(appId) {
               }
 
             else if (isNaN(this.selectedCollection)) {
+                	console.log("Creating a new collection");
+                	console.log("Disabling submit button");
                     // post to create a new collection.
                     var data = {
                         collectionName: this.selectedCollection,
                         collectionDescription : this.newCollectionDescription
                     }
-                    
+                	
                     // On success, add the resource.
                     axios.post('/api/collection/newcollection',Qs.stringify(data)).then(function(res){
                             console.log("New Collection added");
@@ -320,7 +335,6 @@ var _init = function(appId) {
         },
         
         
-        
         /**
          * SAVE RESULTS TO COLLECTION FUNCTIONS
          */
@@ -334,7 +348,9 @@ var _init = function(appId) {
             }
 
             else if (isNaN(this.selectedCollection)) {
-                    // post to create a new collection.
+            		vapp._disableSubmitButton();
+                    
+            		// post to create a new collection.
                     var data = {
                         collectionName: this.selectedCollection,
                         collectionDescription : this.newCollectionDescription
@@ -350,17 +366,18 @@ var _init = function(appId) {
                     );
                 }
             else { 
+            	vapp._disableSubmitButton();
                 vapp._addResultsToCollection(this.selectedCollection);
              }
         },
         
-        updateProgressBar(collectionId){
+        updateProgressBar: function(collectionId){
             var vapp = this;
             
         	axios.get('/api/search/checkstatus?collectionId='+collectionId).
         	then(function(res){
         	    var percentComplete = parseInt(res.data.percentComplete);
-        	    var progressBar = $("#progress-bar-status");
+        	    var progressBar = $("#upload-progress-status");
         	    
         	    console.log("progress is "+percentComplete+"%");
         	    progressBar.css("width", percentComplete + "%")
@@ -375,6 +392,7 @@ var _init = function(appId) {
         	    else {
         	    	console.log("Progress is 100%");
         	    	vapp._resetCollectionSelectionState();
+        	    	$("#modal").modal('hide');
         	    }
         	    
         	}).catch(function(res){

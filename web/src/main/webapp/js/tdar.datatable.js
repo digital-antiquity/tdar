@@ -800,15 +800,20 @@ TDAR.datatable = function() {
             
         	requestCallback : function(searchBoxContents) {
                 var parms =  {
-                    title : searchBoxContents,
+                    //These fields aren't used in request. They were used in the advanced options form that
+            		//isn't used for existing resources.
+                	title : searchBoxContents,
                     'resourceTypes' : "",
                     'includedStatuses' : "",
                     'sortField' : "",
                     'term' : $("#existing_res_query").val(),
                     'projectId' : "",
+                  
+                    'xxxEXISTINGRESOURCE' : true,
+                	//These are sent. 
                     'collectionId' : $("#metadataForm_id").val(),
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid,
-                    parentCollectionsIncluded : true
+                    parentCollectionsIncluded : true,
                 };
                 
                 if (!_options.isAdministrator && _options.limitContext == true ) {
@@ -816,6 +821,7 @@ TDAR.datatable = function() {
                 } else {
                     parms['useSubmitterContext'] = false;
                 }
+                
                 return parms;
             },
             

@@ -60,19 +60,24 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
     
 	@Action(value = "resourcecollections", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
 	@Transactional(readOnly=true)
+	/**
+	 * For a given resource, returns a JSON result containing all of the associated managed and unmanaged collections that 
+	 * the resource is part of.
+	 * @return
+	 * @throws Exception
+	 */
 	public String listCollectionsForResource() throws Exception {
 		TdarUser user = getAuthenticatedUser();
 		ArrayList<ResourceCollection> managed = new ArrayList<ResourceCollection>();
 		ArrayList<ResourceCollection> unmanaged = new ArrayList<ResourceCollection>();
-		getLogger().debug("Adding resource {}",resource);
+		getLogger().debug("listCollectionsForResource: {}",resource);
 
-		addToCollectionList(resource.getManagedResourceCollections(),user, managed);
+		addToCollectionList(resource.getManagedResourceCollections(),  user, managed);
 		addToCollectionList(resource.getUnmanagedResourceCollections(),user, unmanaged);
 		
 		Map<String, ArrayList<ResourceCollection>> result = new HashMap<String, ArrayList<ResourceCollection>>();
 		result.put("managed",	managed);
 		result.put("unmanaged", unmanaged);
-		
 		setResultObject(result);
 		return SUCCESS;
 	}
