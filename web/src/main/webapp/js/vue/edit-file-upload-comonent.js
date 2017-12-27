@@ -153,27 +153,31 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
              
              console.log("exts:", exts);
              console.log("pairs:", pairs);
+             var valid = false;
              pairs.forEach(function(pair){
-                 var valid = false;
-                 var required = pair.required.slice(0);
-                 var optional = pair.optional.slice(0);
-                 // remove required
-                 exts.forEach(function(ext){
-                     console.log($.inArray(ext, required),required,ext);
-                     if ($.inArray(ext, required) > -1) {
-                         required.splice($.inArray(ext, required), 1 );
+                 if (!valid) {
+                     var required = pair.required.slice(0);
+                     var optional = pair.optional.slice(0);
+                     // remove required
+                     exts.forEach(function(ext){
+                         console.log($.inArray(ext, required),required,ext);
+                         if ($.inArray(ext, required) > -1) {
+                             required.splice($.inArray(ext, required), 1 );
+                         }
+                         if ($.inArray(ext, optional ) > -1) {
+                             optional.splice($.inArray(ext, optional),1);
+                         }
+                     });
+                     console.log("required:", required);
+                     console.log("optional:", optional);
+                     if (required.length > 0) {
+                         console.error("required format(s) remain", required);
+                     } else {
+                         valid = true;
                      }
-                     if ($.inArray(ext, optional ) > -1) {
-                         optional.splice($.inArray(ext, optional),1);
-                     }
-                 });
-                 console.log("required:", required);
-                 console.log("optional:", optional);
-                 if (required.length > 0) {
-                     console.error("required format(s) remain", required);
                  }
              });
-             return true;
+             return valid;
          },
          validateAdd: function(file) {
              console.log("validating file:", file);
