@@ -427,6 +427,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
             collectionToAdd.getUnmanagedResources().add(resource);
             resource.getUnmanagedResourceCollections().add(collectionToAdd);
         }
+        publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
     }
 
     private ResourceCollection findOrCreateCollection(Resource resource, TdarUser authenticatedUser, ResourceCollection collection) {

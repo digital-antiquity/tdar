@@ -64,8 +64,8 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 
 	private ResourceCollection resourceCollection;
 
-	@Autowired
-	private ApplicationEventPublisher publisher;
+//	@Autowired
+//	private ApplicationEventPublisher publisher;
 	
 	@Action(value = "addtocollection", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
 	@WriteableSession
@@ -83,14 +83,14 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
 		try {
     		if (addAsManagedResource && authorizationService.canEdit(getAuthenticatedUser(), resource)){
     				resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.MANAGED);
-    				publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+//    				publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
     				produceSuccessResult(jsonResult,  "managed");
     		}
     		
     		//verify that they can add it to the requested collection
     		else if(!addAsManagedResource && authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
 					resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.UNMANAGED);
-					publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+//					publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
 					produceSuccessResult(jsonResult,  "unmanaged");
     		}
 		}
