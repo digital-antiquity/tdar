@@ -1,4 +1,4 @@
-TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue, jqueryFileUpload, timePicker) {
+TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
     "use strict";
     var url = TDAR.uri('upload/upload');
     var ERROR_TIMEOUT = 5000;
@@ -26,7 +26,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue, jqueryFileUpload, time
         Vue.component('fpart', {
             template: "#fpart-template",
             props: ["file","index"],
-            data() {
+            data : function() {
                 return {
                     previousDeleteState : '',
                     xhr:undefined,
@@ -41,19 +41,19 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue, jqueryFileUpload, time
                         Vue.set(this.file,"action","MODIFIED");
                     }
                 },
-                deleteFile() {
+                deleteFile: function() {
                     if (this.file.action == 'DELETE') {
                         return;
                     }
                     Vue.set(this,"previousDeleteState", this.file.action);
                     Vue.set(this.file,"action","DELETE");
                 },
-                unDeleteFile() {
+                unDeleteFile: function() {
                     if (this.file.action == 'DELETE') {
                         Vue.set(this.file,"action",this.previousDeleteState);
                     }
                 },
-                undoReplace(e) {
+                undoReplace: function(e) {
                     Vue.set(this.file,"action",this.previousReplaceState);
                     console.log($("#fileupload" + this.index));
                     this.xhr.abort();
@@ -62,7 +62,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue, jqueryFileUpload, time
                     Vue.set(this.file,"progress", undefined);
                     // $("#fileupload" + this.index).reset();
                 },
-                replaceFileChange(e){
+                replaceFileChange: function(e){
                     var files = e.target.files || e.dataTransfer.files;
                     if (!files.length){
                       return;
@@ -88,7 +88,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue, jqueryFileUpload, time
                 }
             }
         });
-////https://github.com/blueimp/jQuery-File-Upload/wiki/API
+// //https://github.com/blueimp/jQuery-File-Upload/wiki/API
 
    var app = new Vue({
      el: widgetId,
@@ -101,9 +101,6 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue, jqueryFileUpload, time
           sideCarOnly: false,
           maxNumberOfFiles: 50,
          requiredOptionalPairs: [{required:[], optional:[]}]
-     },
-     mounted: function(){
-         // do things
      },
      methods: {
          validatePackage: function() {
@@ -127,7 +124,6 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue, jqueryFileUpload, time
                  return false;
              }
              
-             
              // check if all files have to be connected (sidecar)
              if (this.sideCarOnly) {
                  var base = file.substring(file.length - validExt.length);
@@ -139,7 +135,6 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue, jqueryFileUpload, time
                              validSidecar = false;
                          }
                      });
-                     
                      if (!validSidecar) {
                          return false;
                      }
@@ -251,14 +246,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue, jqueryFileUpload, time
           // .bind('fileuploadchunkdone', function (e, data) {/* ... */})
           // .bind('fileuploadchunkfail', function (e, data) {/* ... */})
           // .bind('fileuploadchunkalways', function (e, data) {/* ... */});
-     },
-   });
-return app;
+     }});
+   return app;
     }
 
     return {
         init : _init,
-        collectionSelectizeOptions : _getSelectizeOpts,
         main : function() {
             var appId = '#uploadWidget';
             if ($(appId).length > 0) {
@@ -266,4 +259,4 @@ return app;
             }
         }
     }
-})(console, jQuery, window, Vue, jqueryFileUpload, timePicker);
+})(console, jQuery, window, Vue);

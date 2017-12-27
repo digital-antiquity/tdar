@@ -27,17 +27,13 @@
         <!-- LICENSE: BSD /GPL 2.0 -->
         <js>/components/jquery.treeview/jquery.treeview.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
-        <css>/components/jquery-file-upload/css/jquery.fileupload-ui.css</css>
         <js>/components/blueimp-tmpl/js/tmpl.js</js>
         <css>/components/bootstrap-datepicker-eyecon/css/datepicker.css</css>
         <js>/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js</js>
         
-        <!--<js>/components/jquery-file-upload/js/vendor/jquery.ui.widget.js</js>-->
-        <js>/components/jquery-file-upload/js/jquery.iframe-transport.js</js>
-        <js>/components/jquery-file-upload/js/jquery.fileupload.js</js>
-        <js>/components/jquery-file-upload/js/jquery.fileupload-process.js</js>
-        <js>/components/jquery-file-upload/js/jquery.fileupload-validate.js</js>
-        <js>/components/jquery-file-upload/js/jquery.fileupload-ui.js</js>
+        <js>/components/blueimp-file-upload/js/jquery.iframe-transport.js</js>
+        <js>/components/blueimp-file-upload/js/jquery.fileupload.js</js>
+        <js>/components/blueimp-file-upload/js/vendor/jquery.ui.widget.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/jquery.populate.js</js>
         <!-- LICENSE: MIT -->
@@ -115,6 +111,7 @@
 
         <js>/js/vue/vue-selectize.js</js>
         <js>/js/vue/view-collection-widget.js</js>
+        <js>/js/vue/edit-file-upload-comonent.js</js>
         <js>/js/vue/edit-collection.js</js>
 
     </group>

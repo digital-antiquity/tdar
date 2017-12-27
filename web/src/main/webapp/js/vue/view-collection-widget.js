@@ -354,7 +354,7 @@ var _init = function(appId) {
              }
         },
         
-        updateProgressBar(collectionId){
+        updateProgressBar:function(collectionId){
             var vapp = this;
             
         	axios.get('/api/search/checkstatus?collectionId='+collectionId).
