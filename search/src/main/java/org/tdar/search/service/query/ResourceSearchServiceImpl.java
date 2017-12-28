@@ -158,7 +158,7 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         String shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
         if (look.getIncludeParent() == Boolean.FALSE || look.getIncludeParent() == null) {
 //            colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS;
-            shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
+            shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS;
         }
 //        setupCollectionLookup(look, q, colQueryField, look.getCollectionIds());
         setupCollectionLookup(look, q, shareQueryField, look.getShareIds());

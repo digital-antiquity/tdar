@@ -59,8 +59,11 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
     public static SolrInputDocument convert(Resource resource) {
-
+    	//Create a new solr document. 
         SolrInputDocument doc = convertPersistable(resource);
+        Map<DataTableColumn, String> data = null;
+        
+        //Set index data for basic fields. 
         doc.setField(QueryFieldNames.NAME, resource.getName());
         doc.setField(QueryFieldNames.NAME_SORT, Sortable.getTitleSort(resource.getName()));
         addRequiredField(resource, doc);
@@ -68,16 +71,22 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
         }
         doc.setField(QueryFieldNames.DESCRIPTION, resource.getDescription());
+        
+        //Index the creator data
         indexCreatorInformation(doc, resource);
+        
+        //parse out the collection inforamation and add it to the document. 
         Map<String, Object> indexCollectionInformation = indexCollectionInformation(doc, resource);
         indexAll(doc, indexCollectionInformation);
+        
         indexTemporalInformation(doc, resource);
-        Map<DataTableColumn, String> data = null;
+        
         if (resource instanceof Project) {
             doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, Sortable.getTitleSort(resource.getTitle()));
             doc.setField(QueryFieldNames.TOTAL_FILES, 0);
 
         }
+        
         if (resource instanceof InformationResource) {
             InformationResource ir = (InformationResource) resource;
             Map<String, Object> indexProjectInformation = indexProjectInformation(doc, ir);
@@ -120,7 +129,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
 
             doc.setField(QueryFieldNames.RESOURCE_ACCESS_TYPE, ir.getResourceAccessType().name());
-
         }
 
         if (resource instanceof Document) {
@@ -144,12 +152,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.ISSN, doc_.getIssn());
         }
 
-        Set<Long> bookmarks = new HashSet<>();
-        for (BookmarkedResource bm : resource.getBookmarkedResources()) {
-            bookmarks.add(bm.getPerson().getId());
-        }
-        doc.setField(QueryFieldNames.BOOKMARKED_RESOURCE_PERSON_ID, bookmarks);
-
         if (resource instanceof Dataset) {
             Dataset dataset = (Dataset) resource;
             IntegratableOptions option = IntegratableOptions.NOT_INTEGRATABLE;
@@ -163,8 +165,13 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.INTEGRATABLE, option.name());
 
             // dataset.dataTables, DataTable.displayName , dataTableColumn.displayName
-
         }
+        
+        Set<Long> bookmarks = new HashSet<>();
+        for (BookmarkedResource bm : resource.getBookmarkedResources()) {
+            bookmarks.add(bm.getPerson().getId());
+        }
+        doc.setField(QueryFieldNames.BOOKMARKED_RESOURCE_PERSON_ID, bookmarks);
 
         addKeyword(doc, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, KeywordType.CULTURE_KEYWORD, resource.getActiveCultureKeywords());
         addKeyword(doc, QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS, KeywordType.GEOGRAPHIC_KEYWORD, resource.getIndexedGeographicKeywords());
@@ -279,6 +286,11 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
 
     @SuppressWarnings("unchecked")
+    /**
+     * Adds the Creator Information to the index for a given resource. 
+     * @param doc
+     * @param resource
+     */
     private static void indexCreatorInformation(SolrInputDocument doc, Resource resource) {
         List<String> crids = new ArrayList<>();
         Map<ResourceCreatorRole, HashSet<Creator<? extends Creator<?>>>> map = new HashMap<>();
@@ -387,12 +399,15 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     }
     
     public static Map<String,Object> indexCollectionInformation(SolrInputDocument doc, Resource resource) {
-        Map<String, Object> map = new HashMap<>();
+        //Get the parsed out Collection data. 
         CollectionDataExtractor rightsExtractor = new CollectionDataExtractor(resource);
+
+        //Map the parsed data to the document. 
+        Map<String, Object> map = new HashMap<>();
         map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, rightsExtractor.getUsersWhoCanModify());
         map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, rightsExtractor.getUsersWhoCanView());
 
-        map.put(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS, rightsExtractor.getDirectCollectionIds());
+        map.put(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS, rightsExtractor.getDirectCollectionIds());
         map.put(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, rightsExtractor.getCollectionIds());
         map.put(QueryFieldNames.RESOURCE_COLLECTION_IDS, rightsExtractor.getAllCollectionIds());
         map.put(QueryFieldNames.RESOURCE_COLLECTION_NAME, rightsExtractor.getCollectionNames());
@@ -409,7 +424,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
         Map<String, Object> map = ResourceDocumentConverter.indexCollectionInformation(doc, r);
         addRequiredField(r, doc);
-        replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
+        replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS);
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
 //        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS);
 //        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS);

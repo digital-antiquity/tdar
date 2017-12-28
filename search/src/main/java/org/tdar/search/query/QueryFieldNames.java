@@ -92,8 +92,12 @@ public interface QueryFieldNames {
     String PROPER_AUTO = "name_autocomplete";
     String COLLECTION_HIDDEN_WITH_RESOURCES = "visibleInSearch";
 
-    String RESOURCE_COLLECTION_DIRECT_SHARED_IDS = "directSharedCollectionIds";
-//    String RESOURCE_LIST_COLLECTION_DIRECT_IDS = "directListCollectionIds";
+    //These are resources that are directly part of the collection. (I.e. they are managed).
+    String RESOURCE_COLLECTION_DIRECT_MANAGED_IDS = "directSharedCollectionIds"; 
+    
+    //These are IDs of resources that are in the directly in the "List Collection" (i.e., unmanaged). 
+    String RESOURCE_COLLECTION_DIRECT_UNMANAGED_IDS = "directListCollectionIds";
+    
     String LAST_NAME_AUTO = "lastName_autocomplete";
     String FIRST_NAME_AUTO = "firstName_autocomplete";
     String NAME_AUTOCOMPLETE = "name_autocomplete";
