@@ -42,12 +42,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     private static final long serialVersionUID = 2357805482356017885L;
 
+    //Input parameters
     private String callback;
     private ProjectionModel projectionModel;
     private int minLookupLength = 3;
     private int recordsPerPage = getDefaultRecordsPerPage();
     private int startRecord = DEFAULT_START;
-    private List<I> results = Collections.emptyList();
     private int totalRecords;
     private SortOption sortField;
     private SortOption defaultSort = SortOption.getDefaultSortOption();
@@ -58,6 +58,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     private String mode;
     private String searchTitle;
     private String searchDescription;
+
     private FacetWrapper facetWrapper = new FacetWrapper();
     // execute a query even if query is empty
 
@@ -70,7 +71,15 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     @Autowired
     ObfuscationService obfuscationService;
+    
+    @Autowired
+    SerializationService serializationService;
 
+    private Map<String, Object> result = new HashMap<>();
+    private Class filter;
+    private List<I> results = Collections.emptyList();
+    
+    
     public String getCallback() {
         return callback;
     }
@@ -313,17 +322,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     protected void cleanupResourceTypes() {
             setResourceTypes(cleanupFacetOptions(getResourceTypes()));
     }
+    
     // REQUIRED IF YOU WANT FACETING TO ACTUALLY WORK
     public void setResourceTypes(List<ResourceType> resourceTypes) {
         getReservedSearchParameters().setResourceTypes(resourceTypes);
     }
 
-
-    @Autowired
-    SerializationService serializationService;
-
-    private Map<String, Object> result = new HashMap<>();
-    private Class filter;
     public void jsonifyResult(Class<?> filter) {
         prepareResult();
         this.setFilter(filter);
@@ -362,6 +366,10 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         return lookupSource;
     }
 
+    /**
+     * Specify the type of object that is being looked up
+     * @param lookupSource
+     */
     public void setLookupSource(LookupSource lookupSource) {
         this.lookupSource = lookupSource;
     }

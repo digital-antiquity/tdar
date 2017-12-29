@@ -1,6 +1,11 @@
 package org.tdar.struts.action.search;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
@@ -25,6 +30,24 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
         controller.setRecordsPerPage(99);
     }
 
+    
+    @Test
+    @Rollback
+    public void testVerifyManagedAndUnmanagedCollections() throws SolrServerException, IOException{
+    	List<Long> collectionIds = new ArrayList<Long>();
+    	collectionIds.add(1000L);
+    	controller.setCollectionId(collectionIds);
+    	
+    	controller.lookupResource();
+    	Set<Long> unmanaged = (Set<Long>) controller.getResult().get("UNMANAGED");
+    	Set<Long> managed   = (Set<Long>) controller.getResult().get("MANAGED");
+    	
+    	getLogger().debug("Umanaged resource is: {}", unmanaged);
+    	
+    	assertEquals("The unmanaged has 2 elements", 2, unmanaged.size());
+    	
+    }
+    
     @Test
     @Rollback
     // special characters need to be escaped or stripped prior to search

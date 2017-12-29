@@ -398,23 +398,35 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     }
     
+    /**
+     * Map a Resource's Collection data to a Solr document
+     * 
+     * @param doc
+     * @param resource
+     * @return
+     */
     public static Map<String,Object> indexCollectionInformation(SolrInputDocument doc, Resource resource) {
-        //Get the parsed out Collection data. 
+        //Instantiate and parsed out Resource Collection data from the resource. 
         CollectionDataExtractor rightsExtractor = new CollectionDataExtractor(resource);
 
         //Map the parsed data to the document. 
         Map<String, Object> map = new HashMap<>();
-        map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, rightsExtractor.getUsersWhoCanModify());
-        map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, rightsExtractor.getUsersWhoCanView());
+        map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY,  rightsExtractor.getUsersWhoCanModify());
+        map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, 	rightsExtractor.getUsersWhoCanView());
 
-        map.put(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS, rightsExtractor.getDirectCollectionIds());
-        map.put(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, rightsExtractor.getCollectionIds());
-        map.put(QueryFieldNames.RESOURCE_COLLECTION_IDS, rightsExtractor.getAllCollectionIds());
-        map.put(QueryFieldNames.RESOURCE_COLLECTION_NAME, rightsExtractor.getCollectionNames());
+        map.put(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS, rightsExtractor.getDirectManagedCollectionIds());
+        map.put(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_UNMANAGED_IDS, rightsExtractor.getDirectUnmanagedCollectionIds());
 
-//        map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, rightsExtractor.getListCollectionIds());
-//        map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS, rightsExtractor.getDirectListCollectionIds());
-//        map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_NAME, rightsExtractor.getListCollectionNames());
+        //There aren't Query fields to map the collection names. 
+        //map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_NAME, rightsExtractor.getListCollectionNames());
+        //map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, rightsExtractor.getListCollectionIds());
+        
+        
+        map.put(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, 		rightsExtractor.getCollectionIds());
+        map.put(QueryFieldNames.RESOURCE_COLLECTION_NAME, 				rightsExtractor.getCollectionNames());
+        map.put(QueryFieldNames.RESOURCE_COLLECTION_IDS, 				rightsExtractor.getAllCollectionIds());
+
+
 
         return map;
     }

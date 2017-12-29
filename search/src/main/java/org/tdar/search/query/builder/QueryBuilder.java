@@ -32,8 +32,7 @@ public abstract class QueryBuilder extends QueryPartGroup {
     private List<String> filters = new ArrayList<>();
 
     public void appendFilter(List<String> filters) {
-        this.getFilters() .addAll(filters);
-        
+        this.getFilters().addAll(filters);
     }
 
     public List<String> getFilters() {

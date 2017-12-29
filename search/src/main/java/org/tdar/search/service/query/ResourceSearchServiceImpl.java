@@ -139,51 +139,71 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
      */
     @Override
     @Transactional(readOnly = true)
-    public LuceneSearchResultHandler<Resource> lookupResource(TdarUser user, ResourceLookupObject look, LuceneSearchResultHandler<Resource> result,
+    public LuceneSearchResultHandler<Resource> lookupResource(TdarUser user, ResourceLookupObject searchParams, LuceneSearchResultHandler<Resource> result,
             TextProvider support) throws SearchException, IOException {
-        ResourceQueryBuilder q = new ResourceQueryBuilder();
-        if (StringUtils.isNotBlank(look.getTerm()) || look.getCategoryId() != null) {
-            q.append(new CategoryTermQueryPart(look.getTerm(), look.getCategoryId()));
+ 
+    	//Construct a Query Builder object, add the data that we want to search for, then execute the search. 
+    	ResourceQueryBuilder queryBuilder = new ResourceQueryBuilder();
+
+    	//If a search term  or category ID is provided, then add it as a field to be searched. 
+    	if (StringUtils.isNotBlank(searchParams.getTerm()) || searchParams.getCategoryId() != null) {
+            queryBuilder.append(new CategoryTermQueryPart(searchParams.getTerm(), searchParams.getCategoryId()));
         }
 
-        if (PersistableUtils.isNotNullOrTransient(look.getProjectId())) {
-            q.append(new ProjectIdLookupQueryPart(look.getProjectId()));
+    	//If a project Id is provided, add it as a field to be searched. 
+        if (PersistableUtils.isNotNullOrTransient(searchParams.getProjectId())) {
+            queryBuilder.append(new ProjectIdLookupQueryPart(searchParams.getProjectId()));
         }
 
-        if (StringUtils.isNotBlank(look.getGeneralQuery())) {
-            q.append(new GeneralSearchResourceQueryPart(look.getGeneralQuery()));
+        if (StringUtils.isNotBlank(searchParams.getGeneralQuery())) {
+            queryBuilder.append(new GeneralSearchResourceQueryPart(searchParams.getGeneralQuery()));
         }
 
-//        String colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS;
-        String shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
-        if (look.getIncludeParent() == Boolean.FALSE || look.getIncludeParent() == null) {
-//            colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS;
-            shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS;
+        
+        //If we're not looking for the parent collections, then only search for the resources directly in the collection. 
+        if (searchParams.getIncludeParent() == Boolean.FALSE || searchParams.getIncludeParent() == null) {
+        	QueryPartGroup qgp = new QueryPartGroup(Operator.OR);
+        	qgp.append(createCollectionLookupQueryPart(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS, searchParams.getCollectionIds()));
+        	qgp.append(createCollectionLookupQueryPart(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_UNMANAGED_IDS, searchParams.getCollectionIds()));
+        	queryBuilder.append(qgp);
+        	
         }
-//        setupCollectionLookup(look, q, colQueryField, look.getCollectionIds());
-        setupCollectionLookup(look, q, shareQueryField, look.getShareIds());
+        else{
+        	setupCollectionLookup(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, searchParams.getCollectionIds());
+        }
 
-        ReservedSearchParameters reservedSearchParameters = look.getReservedSearchParameters();
-        reservedSearchParameters.setUseSubmitterContext(look.isUseSubmitterContext());
+        ReservedSearchParameters reservedSearchParameters = searchParams.getReservedSearchParameters();
+        reservedSearchParameters.setUseSubmitterContext(searchParams.isUseSubmitterContext());
         initializeReservedSearchParameters(reservedSearchParameters, user);
-        q.append(reservedSearchParameters.toQueryPartGroup(support));
-
-        q.appendFilter(reservedSearchParameters.getFilters());
-
-        searchService.handleSearch(q, result, MessageHelper.getInstance());
+        
+        queryBuilder.append(reservedSearchParameters.toQueryPartGroup(support));
+        queryBuilder.appendFilter(reservedSearchParameters.getFilters());
+        
+        searchService.handleSearch(queryBuilder, result, MessageHelper.getInstance());
         return result;
-
     }
 
-    private void setupCollectionLookup(ResourceLookupObject look, ResourceQueryBuilder q, String colQueryField, List<Long> colids) {
-        Set<Long> filtered = new HashSet<>();
-        for (Long cid : colids) {
-            if (PersistableUtils.isNotNullOrTransient(cid)) {
-                filtered.add(cid);
+    /**
+     * 
+     * 
+     * @param searchParms
+     * @param queryBuilder
+     * @param queryFieldName
+     * @param collectionIds
+     */
+    private void setupCollectionLookup(ResourceLookupObject searchParms, ResourceQueryBuilder queryBuilder, String queryFieldName, List<Long> collectionIds) {
+        FieldQueryPart<Long> queryPart = createCollectionLookupQueryPart(searchParms, queryBuilder, queryFieldName, collectionIds);
+        queryBuilder.append(queryPart);
+    }
+    
+    private FieldQueryPart<Long> createCollectionLookupQueryPart(ResourceLookupObject searchParms, ResourceQueryBuilder queryBuilder, String queryFieldName, List<Long> collectionIds){
+    	Set<Long> filtered = new HashSet<>();
+        for (Long id : collectionIds) {
+            if (PersistableUtils.isNotNullOrTransient(id)) {
+                filtered.add(id);
             }
         }
-
-        q.append(new FieldQueryPart<Long>(colQueryField, Operator.OR, filtered));
+    	return new FieldQueryPart<Long>(queryFieldName, Operator.OR, filtered);
     }
 
     /* (non-Javadoc)

@@ -25,7 +25,6 @@ import org.tdar.utils.PersistableUtils;
  *
  */
 public class CollectionDataExtractor {
-
 	protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 	private Resource resource;
 
@@ -40,30 +39,21 @@ public class CollectionDataExtractor {
 		extractHierarchy();
 	}
 
-	// Contains ONLY ids of Managed collections the resource is a direct part of.  
+	//Managed collection data that the resource is a direct part of.  
 	private HashSet<Long> directManagedCollectionIds = new HashSet<>();
+	private Set<String> directManagedCollectionNames = new HashSet<>(); 
 
 	// Contains ONLY ids of Unmanaged collections the resource is a direct part of.
 	private HashSet<Long> directUnmanagedCollectionIds = new HashSet<>();
-	
+	private HashSet<String> directUnamangedCollectionNames = new HashSet<>();	
 	
 	//This contains ALL collection ids (managed/unmanaged, and parents). 
 	private HashSet<Long> collectionIds = new HashSet<>();;
+	private HashSet<String> collectionNames = new HashSet<>();
 	
 	//This ends up being the same as collectionsId. 
 	private HashSet<Long> allCollectionIds = new HashSet<>(); 
-	
-	//This contains ALL collection names (managed/unmanaged, and parents). 
-	private HashSet<String> collectionNames = new HashSet<>();
-	
-	//This contains ONLY  names for direct collections. 
-	private Set<String> directCollectionNames = new HashSet<>(); 
 
-	//Contains ALL collection IDs for unmanaged and their parents. 
-	private HashSet<Long> listCollectionIds = new HashSet<>();
-	
-	//Contains ALL collection names of Unmanaged collections and their parents. 
-	private HashSet<String> listCollectionNames = new HashSet<>();
 
 	/*
 	 * this function should introduce into the index all of the people who can
@@ -143,16 +133,15 @@ public class CollectionDataExtractor {
 				continue;
 			}
 
-			ResourceCollection shared = (ResourceCollection) collection;
 			directManagedCollectionIds.add(collection.getId());
-			directCollectionNames.add(collection.getName());
+			directManagedCollectionNames.add(collection.getName());
 
-			// Add all this collections heirarchy information to the lists.
+			// Add all this collection's heirarchy information to the lists.
 			collectionIds.add(collection.getId());
-			collectionIds.addAll(shared.getParentIds());
-			collectionIds.addAll(shared.getAlternateParentIds());
-			collectionNames.addAll(shared.getParentNameList());
-			collectionNames.addAll(shared.getAlternateParentNameList());
+			collectionIds.addAll(collection.getParentIds());
+			collectionIds.addAll(collection.getAlternateParentIds());
+			collectionNames.addAll(collection.getParentNameList());
+			collectionNames.addAll(collection.getAlternateParentNameList());
 		}
 
 		//Go through the unmanaged collections and get the parent info. 
@@ -161,32 +150,25 @@ public class CollectionDataExtractor {
 				continue;
 			}
 			
-			// BC: I created this field because the managed resources have direct managed collection ids. 
-			getDirectUnmanagedCollectionIds().add(collection.getId());
+			directUnmanagedCollectionIds.add(collection.getId());
+			directUnamangedCollectionNames.add(collection.getName());
 	
-			//Adds to the global list of ids. 
+			// Add all this collection's heirarchy information to the lists.
 			collectionIds.add(collection.getId());
-			listCollectionIds.add(collection.getId());
-			
-			//Store the Parents' data to both the List Collections and Collection names
-			listCollectionIds.addAll(collection.getParentIds());
-			listCollectionNames.addAll(collection.getParentNameList());
 			collectionIds.addAll(collection.getParentIds());
+			collectionIds.addAll(collection.getAlternateParentIds());
 			collectionNames.addAll(collection.getParentNameList());
+			collectionNames.addAll(collection.getAlternateParentNameList());
 		}
 
 		allCollectionIds.addAll(collectionIds);
-		
-		//Why would managed collection ids be added to the list collections?
-		//Or not add the names to the list?
-		getListCollectionIds().addAll(directManagedCollectionIds);
 	}
 
-	public HashSet<Long> getDirectCollectionIds() {
+	public HashSet<Long> getDirectManagedCollectionIds() {
 		return directManagedCollectionIds;
 	}
 
-	public void setDirectCollectionIds(HashSet<Long> directCollectionIds) {
+	public void setDirectManagedCollectionIds(HashSet<Long> directCollectionIds) {
 		this.directManagedCollectionIds = directCollectionIds;
 	}
 
@@ -214,36 +196,27 @@ public class CollectionDataExtractor {
 		this.collectionNames = collectionNames;
 	}
 
-	public Set<String> getDirectCollectionNames() {
-		return directCollectionNames;
+	public Set<String> getDirectManagedCollectionNames() {
+		return directManagedCollectionNames;
 	}
 
-	public void setDirectCollectionNames(Set<String> directCollectionNames) {
-		this.directCollectionNames = directCollectionNames;
-	}
-
-	public HashSet<Long> getListCollectionIds() {
-		return listCollectionIds;
-	}
-
-	public void setListCollectionIds(HashSet<Long> listCollectionIds) {
-		this.listCollectionIds = listCollectionIds;
-	}
-
-	public HashSet<String> getListCollectionNames() {
-		return listCollectionNames;
-	}
-
-	public void setListCollectionNames(HashSet<String> listCollectionNames) {
-		this.listCollectionNames = listCollectionNames;
+	public void setDirectManagedCollectionNames(Set<String> directCollectionNames) {
+		this.directManagedCollectionNames = directCollectionNames;
 	}
 
 	public HashSet<Long> getDirectUnmanagedCollectionIds() {
 		return directUnmanagedCollectionIds;
 	}
 
-	public void setDirectUnmanagedCollectionIds(HashSet<Long> directUnmanagedCollectionIds) {
-		this.directUnmanagedCollectionIds = directUnmanagedCollectionIds;
+	public void setDirectUnmanagedCollectionIds(HashSet<Long> listCollectionIds) {
+		this.directUnmanagedCollectionIds = listCollectionIds;
 	}
 
+	public HashSet<String> getDirectUnmanagedCollectionNames() {
+		return directUnamangedCollectionNames;
+	}
+
+	public void setDirectUnmanagedCollectionNames(HashSet<String> listCollectionNames) {
+		this.directUnamangedCollectionNames = listCollectionNames;
+	}
 }

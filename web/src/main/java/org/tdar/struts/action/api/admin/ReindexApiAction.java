@@ -58,18 +58,34 @@ public class ReindexApiAction extends AbstractAuthenticatableAction implements P
     @PostOnly
     @HttpForbiddenErrorResponseOnly
     public String execute() throws SearchIndexException, IOException {
-        if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-            ResourceCollection c = getGenericService().find(ResourceCollection.class, collectionId);
+        if (PersistableUtils.isNotNullOrTransient(getCollectionId())) {
+            ResourceCollection c = getGenericService().find(ResourceCollection.class, getCollectionId());
             searchIndexService.index(c);
             searchIndexService.indexAllResourcesInCollectionSubTree(c);
         }
         
-        if (!CollectionUtils.isEmpty(ids)) {
-            List<Resource> resources = getGenericService().findAll(Resource.class, ids);
+        if (!CollectionUtils.isEmpty(getIds())) {
+            List<Resource> resources = getGenericService().findAll(Resource.class, getIds());
             searchIndexService.indexCollection(resources);
         }
         return SUCCESS;
         
     }
+
+	public Long getCollectionId() {
+		return collectionId;
+	}
+
+	public void setCollectionId(Long collectionId) {
+		this.collectionId = collectionId;
+	}
+
+	public List<Long> getIds() {
+		return ids;
+	}
+
+	public void setIds(List<Long> ids) {
+		this.ids = ids;
+	}
     
 }
