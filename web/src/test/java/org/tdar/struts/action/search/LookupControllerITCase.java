@@ -37,12 +37,13 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
     	List<Long> collectionIds = new ArrayList<Long>();
     	collectionIds.add(1000L);
     	controller.setCollectionId(collectionIds);
-    	
+    	controller.setSelectResourcesFromCollectionid(1000L);
     	controller.lookupResource();
-    	Set<Long> unmanaged = (Set<Long>) controller.getResult().get("UNMANAGED");
-    	Set<Long> managed   = (Set<Long>) controller.getResult().get("MANAGED");
     	
-    	getLogger().debug("Umanaged resource is: {}", unmanaged);
+    	Set<Long> unmanaged = (Set<Long>) controller.getResult().get("unmanaged");
+    	Set<Long> managed   = (Set<Long>) controller.getResult().get("managed");
+    	
+    	getLogger().debug("Umanaged resource is: {}", controller.getResult());
     	
     	assertEquals("The unmanaged has 2 elements", 2, unmanaged.size());
     	
