@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -191,7 +190,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
         if (isEditor() && getPersistable() instanceof TdarUser) {
             getLogger().trace("find collections");
-            getOwnerCollections().addAll(resourceCollectionService.findParentOwnerCollections((TdarUser) getPersistable(), SharedCollection.class));
+            getOwnerCollections().addAll(resourceCollectionService.findParentOwnerCollections((TdarUser) getPersistable()));
             getOwnerCollections().addAll(entityService.findAccessibleResourceCollections((TdarUser) getPersistable()));
 
         }

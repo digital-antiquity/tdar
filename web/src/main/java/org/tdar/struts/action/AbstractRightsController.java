@@ -14,13 +14,11 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.UserRightsProxyService;
@@ -50,10 +48,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     private transient UserRightsProxyService userRightsProxyService;
     @Autowired
     private transient SearchIndexService searchIndexService;
-
-//    private List<SharedCollection> shares = new ArrayList<>();
-//    private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
-//    private List<SharedCollection> effectiveShares = new ArrayList<>();
 
     private List<UserRightsProxy> proxies = new ArrayList<>();
     private List<UserRightsProxy> invites = new ArrayList<>();
@@ -99,8 +93,8 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         return SUCCESS;
     }
 
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
+    public List<Permissions> getAvailablePermissions() {
+        List<Permissions> permissions = Permissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
 
@@ -182,13 +176,13 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     }
 
 
-    public SharedCollection getBlankShare() {
-        return new SharedCollection();
+    public ResourceCollection getBlankShare() {
+        return getBlankResourceCollection();
     }
 
 
-    public ListCollection getBlankResourceCollection() {
-        return new ListCollection();
+    public ResourceCollection getBlankResourceCollection() {
+        return new ResourceCollection();
     }
 
     public boolean isRightsPage() {

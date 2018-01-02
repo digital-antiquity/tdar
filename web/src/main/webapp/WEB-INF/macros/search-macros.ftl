@@ -127,8 +127,8 @@
     </#macro>
 
 
-    <#macro searchLink path linkText>
-    <a href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
+    <#macro searchLink path linkText linkId="">
+    <a id="${linkId}"  href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
     </#macro>
 
     <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url></#macro>

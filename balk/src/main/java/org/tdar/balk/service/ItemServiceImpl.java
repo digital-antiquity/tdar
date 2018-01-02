@@ -34,10 +34,10 @@ import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.bean.TdarReference;
 import org.tdar.balk.dao.ItemDao;
 import org.tdar.balk.dao.UserDao;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -358,14 +358,14 @@ public class ItemServiceImpl implements ItemService {
         object.setStatus(Status.DRAFT);
         object.setDate(2016);
         if (StringUtils.isNotBlank(collection)) {
-            SharedCollection rc = new SharedCollection();
+            ResourceCollection rc = new ResourceCollection();
             rc.setHidden(true);
             if (StringUtils.isNotBlank(username)) {
-                rc.getAuthorizedUsers().add(new AuthorizedUser(null, new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
+                rc.getAuthorizedUsers().add(new AuthorizedUser(null, new TdarUser(null, null, null, username), Permissions.ADMINISTER_COLLECTION));
             }
             rc.setName(collection);
             rc.setDescription("(from dropbox)");
-            object.getSharedCollections().add(rc);
+            object.getManagedResourceCollections().add(rc);
         }
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);

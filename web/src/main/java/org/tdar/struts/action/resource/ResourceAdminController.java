@@ -14,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -50,7 +50,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
     private List<UserInvite> invites;
 
     private List<ResourceRevisionLog> logEntries;
-    private Set<SharedCollection> effectiveShares = new HashSet<>();
+    private Set<ResourceCollection> effectiveShares = new HashSet<>();
     private List<File> xmlFiles = new ArrayList<>();
 
     private Resource resource;
@@ -120,16 +120,16 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
         this.resource = resource;
     }
 
-    public Set<SharedCollection> getEffectiveShares() {
+    public Set<ResourceCollection> getEffectiveShares() {
         return effectiveShares;
     }
 
-    public void setEffectiveShares(Set<SharedCollection> effectiveResourceCollections) {
+    public void setEffectiveShares(Set<ResourceCollection> effectiveResourceCollections) {
         this.effectiveShares = effectiveResourceCollections;
     }
 
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(Resource.class);
+    public List<Permissions> getAvailablePermissions() {
+        List<Permissions> permissions = Permissions.getAvailablePermissionsFor(Resource.class);
         return permissions;
     }
 

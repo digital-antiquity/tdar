@@ -65,7 +65,6 @@ import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
 import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;
 import org.w3c.dom.Document;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

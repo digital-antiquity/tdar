@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.utils.PersistableUtils;
@@ -65,8 +64,8 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
             logger.error("null collection!");
         }
         ResourceCollection rc_ = null;
-        if (cls.isAssignableFrom(SharedCollection.class)) {
-            rc_ = new SharedCollection();
+        if (cls.isAssignableFrom(ResourceCollection.class)) {
+            rc_ = new ResourceCollection();
 //        } else if (cls.isAssignableFrom(InternalCollection.class)) {
 //            rc_ = new InternalCollection();
         }

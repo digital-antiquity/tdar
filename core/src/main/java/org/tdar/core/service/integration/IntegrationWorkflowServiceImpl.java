@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.dao.integration.IntegrationWorkflowDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
@@ -76,7 +76,7 @@ public class IntegrationWorkflowServiceImpl  extends ServiceInterface.TypedDaoBa
             validateWorkflow(data, provider);
             persistable.markUpdated(authUser);
             if (PersistableUtils.isTransient(persistable)) {
-                persistable.getAuthorizedUsers().add(new AuthorizedUser(authUser, authUser, GeneralPermissions.EDIT_INTEGRATION));
+                persistable.getAuthorizedUsers().add(new AuthorizedUser(authUser, authUser, Permissions.EDIT_INTEGRATION));
             }
             data.copyValuesToBean(persistable, json);
             ontologyNodeDao.saveOrUpdate(persistable);

@@ -35,6 +35,11 @@ module.exports = function(config) {
         files: [].concat(
             [
                 // app dependencies  (included in DOM served by karma, but not monitored for changes)
+                'node_modules/es6-promise/dist/es6-promise.js',
+                'node_modules/es6-promise/dist/es6-promise.auto.js',
+                'node_modules/vue/dist/vue.js',
+                'node_modules/axios/dist/axios.js',
+                'node_modules/moxios/dist/moxios.js',
                 {pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
@@ -54,6 +59,8 @@ module.exports = function(config) {
 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
+                // more fixtures - added to DOM when you call loadFixtures(filename) in your test
+                {pattern:"src/main/webapp/WEB-INF/content/**/*.html", watched:true, served:true, included:false},
 
                 // html2js fixtures - globally accessible via  window.__html__[filepath]
                 "src/test/frontend/html2js/**/*.html",
@@ -86,8 +93,8 @@ module.exports = function(config) {
         preprocessors: {
             //caveat: files deeclared here cannot also be used as jasmine fixtures (known bug)
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
-            'src/test/frontend/html2js/*.html': ['html2js'],
-			'src/main/webapp/js/**/*.js': ['coverage']
+            'src/test/frontend/html2js/*.html': ['html2js']
+//            ,'src/main/webapp/js/**/*.js': ['coverage']
         },
 
         // test results reporter to use
@@ -111,7 +118,7 @@ module.exports = function(config) {
 
         // level of logging
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-        logLevel: config.LOG_INFO,
+        logLevel: config.LOG_DEBUG,
 
         // enable / disable watching file and executing tests whenever any file changes
         autoWatch: true,
@@ -122,6 +129,17 @@ module.exports = function(config) {
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
-        singleRun: true
+        singleRun: true,
+        
+        client: {
+            captureConsole: true,
+            config: {
+                browserConsoleLogOptions: true
+            }
+        },
+        browserConsoleLogOptions: {
+            terminal: true,
+            level: ""
+        }
     });
 };

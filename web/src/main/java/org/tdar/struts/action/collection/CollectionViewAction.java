@@ -2,7 +2,6 @@ package org.tdar.struts.action.collection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,12 +21,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -79,7 +73,7 @@ import org.tdar.web.service.HomepageService;
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction<C extends HierarchicalCollection> extends AbstractPersistableViewableAction<C>
+public class CollectionViewAction<C extends ResourceCollection> extends AbstractPersistableViewableAction<C>
         implements FacetedResultHandler<Resource>, SlugViewAction,
         ResourceFacetedAction {
 
@@ -140,18 +134,10 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
      * 
      * @return
      */
-    public List<C> getCandidateParentResourceCollections() {
-        Class<C> cls = getActualClass();
-        return resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(), getPersistable(), cls);
+    public List<ResourceCollection> getCandidateParentResourceCollections() {
+        return resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(), getPersistable());
     }
 
-    private Class<C> getActualClass() {
-        Class cls = SharedCollection.class;
-        if (getPersistable() instanceof ListCollection) {
-            cls = ListCollection.class;
-        }
-        return (Class<C>) cls;
-    }
 
     @Override
     public boolean authorize() throws TdarActionException {
@@ -212,14 +198,14 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         TreeSet<ResourceCollection> findAllChildCollections = new TreeSet<>(new TitleSortComparator());
 
         if (isAuthenticated()) {
-            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), getActualClass());
+            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser());
             findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
-            for (C c : resourceCollectionService.findDirectChildCollections(getId(), false, getActualClass())) {
+            for (ResourceCollection c : resourceCollectionService.findDirectChildCollections(getId(), false)) {
                 findAllChildCollections.add((ResourceCollection) c);
             }
         }
-        findAllChildCollections.addAll(resourceCollectionService.findAlternateChildren(Arrays.asList(getId()), getAuthenticatedUser(), getActualClass()));
+        findAllChildCollections.addAll(resourceCollectionService.findAlternateChildren(Arrays.asList(getId()), getAuthenticatedUser()));
         setCollections(new ArrayList<ResourceCollection>(findAllChildCollections));
         getLogger().trace("child collections: sort");
 //        Collections.sort(collections);
@@ -455,11 +441,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
      * @return
      */
     public boolean isBigCollection() {
-        if (getPersistable() instanceof SharedCollection) {
-            return (((SharedCollection) getPersistable()).getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
-        } else {
-            return (((ListCollection) getPersistable()).getUnmanagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
-        }
+            return (((ResourceCollection) getPersistable()).getManagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 
     public Long getViewCount() {

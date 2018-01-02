@@ -34,7 +34,7 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
@@ -343,7 +343,7 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
             }
         }
         assertNotNull(user);
-        assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());
+        assertEquals(Permissions.MODIFY_RECORD, user.getGeneralPermission());
     }
 
     @Test

@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 
 /**
@@ -63,13 +63,13 @@ public class UserInvite extends AbstractPersistable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "permission", length = FieldLength.FIELD_LENGTH_255)
-    private GeneralPermissions permissions;
+    private Permissions permissions;
 
-    public GeneralPermissions getPermissions() {
+    public Permissions getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(GeneralPermissions permissions) {
+    public void setPermissions(Permissions permissions) {
         this.permissions = permissions;
     }
 

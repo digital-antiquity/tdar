@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 
 public class UserRightsProxy implements Serializable {
 
@@ -24,7 +24,7 @@ public class UserRightsProxy implements Serializable {
     private String lastName;
     private String email;
     private String note;
-    private GeneralPermissions permission;
+    private Permissions permission;
     private Date until;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -93,11 +93,11 @@ public class UserRightsProxy implements Serializable {
         this.email = email;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 

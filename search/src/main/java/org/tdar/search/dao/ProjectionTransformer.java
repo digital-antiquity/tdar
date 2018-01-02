@@ -14,7 +14,6 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -68,8 +67,8 @@ public class ProjectionTransformer<I extends Indexable> {
         logger.trace("begin collection");
         Collection<Long> collectionIds = (Collection<Long>) (Collection) doc.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_IDS);
         for (ResourceCollection rc : datasetDao.findAll(ResourceCollection.class, collectionIds)) {
-            if(rc instanceof SharedCollection) {
-                r_.getSharedCollections().add((SharedCollection) rc);
+            if(rc instanceof ResourceCollection) {
+                r_.getManagedResourceCollections().add((ResourceCollection) rc);
             }
         }
 

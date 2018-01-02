@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCase {
@@ -36,8 +36,8 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
         Map<String,String> docUnorderdValMap = new HashMap<>();
         docUnorderdValMap.put("proxies[0].id", "121");
         docUnorderdValMap.put("proxies[1].id", "5349");
-        docUnorderdValMap.put("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
-        docUnorderdValMap.put("proxies[1].permission", GeneralPermissions.VIEW_ALL.name());
+        docUnorderdValMap.put("proxies[0].permission", Permissions.MODIFY_RECORD.name());
+        docUnorderdValMap.put("proxies[1].permission", Permissions.VIEW_ALL.name());
         docUnorderdValMap.put("proxies[0].displayName", "Michelle Elliott");
         docUnorderdValMap.put("proxies[1].displayName", "Joshua Watts");
 
@@ -48,11 +48,11 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
         submitForm();
         assertTextPresentInPage(docValMap.get("image.title"));
         clickLinkWithText(PERMISSIONS);
-        setInput("proxies[0].permission", GeneralPermissions.VIEW_ALL.name());
-        setInput("proxies[1].permission", GeneralPermissions.VIEW_ALL.name());
+        setInput("proxies[0].permission", Permissions.VIEW_ALL.name());
+        setInput("proxies[1].permission", Permissions.VIEW_ALL.name());
         submitForm();
         assertFalse(getCurrentUrlPath().contains(PERMISSIONS));
-        assertFalse(getPageCode().contains(GeneralPermissions.MODIFY_METADATA.name()));
+        assertFalse(getPageCode().contains(Permissions.MODIFY_METADATA.name()));
         assertTextPresentInPage(docValMap.get("image.title"));
     }
 
@@ -77,7 +77,7 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
         submitForm();
         clickLinkOnPage(PERMISSIONS);
         Map<String,String> docUnorderdValMap = new HashMap<>();
-        docUnorderdValMap.put("invites[0].permission", GeneralPermissions.MODIFY_RECORD.name());
+        docUnorderdValMap.put("invites[0].permission", Permissions.MODIFY_RECORD.name());
         docUnorderdValMap.put("invites[0].firstName", "Bert");
         docUnorderdValMap.put("invites[0].lastName", YAGER);
         docUnorderdValMap.put("invites[0].email", "Yager@riverschool.net");

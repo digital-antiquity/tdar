@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 
 public class UserPermissionCacheKey {
 
@@ -28,7 +28,7 @@ public class UserPermissionCacheKey {
 
     private int key;
 
-    public UserPermissionCacheKey(Person person, GeneralPermissions permission, Collection<Long> collectionIds) {
+    public UserPermissionCacheKey(Person person, Permissions permission, Collection<Long> collectionIds) {
         HashCodeBuilder hcb = new HashCodeBuilder(39, 5);
         // forcing to HashSet so we can deal with sets or lists being sent in
         this.key = hcb.append(person.getId()).append(permission).append(new HashSet<Long>(collectionIds)).toHashCode();

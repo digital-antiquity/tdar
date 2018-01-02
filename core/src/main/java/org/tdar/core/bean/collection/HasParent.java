@@ -1,6 +1,6 @@
 package org.tdar.core.bean.collection;
 
-public interface HasParent<C extends HierarchicalCollection> {
+public interface HasParent {
 
-    abstract C getParent();
+    abstract ResourceCollection getParent();
 }

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Dataset;
@@ -314,7 +314,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
+        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_METADATA);
     }
 
     @Override

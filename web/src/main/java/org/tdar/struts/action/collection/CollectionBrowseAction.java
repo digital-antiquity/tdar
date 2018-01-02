@@ -11,7 +11,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.exception.SearchException;
@@ -42,7 +42,7 @@ public class CollectionBrowseAction extends AbstractLookupController<ResourceCol
     public void prepare() throws Exception {
         setRecordsPerPage(250);
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
-        csqo.setType(CollectionType.SHARED);
+        csqo.setType(CollectionResourceSection.MANAGED);
         setResults(collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), csqo, this, this).getResults());
     }
 

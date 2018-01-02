@@ -8,10 +8,10 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -88,14 +88,14 @@ public class DataTableColumnDao extends HibernateBase<DataTableColumn> {
         codingSheet.setDate(Calendar.getInstance().get(Calendar.YEAR));
         codingSheet.setGenerated(true);
         codingSheet.setAccount(dataset.getAccount());
-        codingSheet.getAuthorizedUsers().add(new AuthorizedUser(user, user, GeneralPermissions.MODIFY_RECORD));
+        codingSheet.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.MODIFY_RECORD));
 
         save(codingSheet);
         if (dataset != null) {
             codingSheet.setProject(dataset.getProject());
-            for (SharedCollection collection : dataset.getRightsBasedResourceCollections()) {
-                if (collection instanceof SharedCollection) {
-                    codingSheet.getSharedCollections().add((SharedCollection) collection);
+            for (ResourceCollection collection : dataset.getManagedResourceCollections()) {
+                if (collection instanceof ResourceCollection) {
+                    codingSheet.getManagedResourceCollections().add((ResourceCollection) collection);
                 }
             }
         }

@@ -3,7 +3,6 @@ package org.tdar.struts.action.codingSheet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
@@ -23,7 +22,6 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CodingSheetService;

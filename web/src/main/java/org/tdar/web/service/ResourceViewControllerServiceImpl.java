@@ -11,9 +11,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -154,8 +152,8 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
      */
     @Override
     @Transactional(readOnly = true)
-    public void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<SharedCollection> effectiveShares,
-            List<ListCollection> effectiveResourceCollections,
+    public void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<ResourceCollection> effectiveShares,
+            List<ResourceCollection> effectiveResourceCollections,
             List<AuthorizedUser> authorizedUsers) {
         authorizedUsers.addAll(resourceCollectionService.getAuthorizedUsersForResource(auth.getItem(), auth.getAuthenticatedUser()));
         effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(auth.getItem()));
@@ -168,27 +166,37 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ResourceCollection> getVisibleCollections(AuthWrapper<Resource> auth) {
+    public List<ResourceCollection> getVisibleManagedCollections(AuthWrapper<Resource> auth) {
         List<ResourceCollection> visibleCollections = new ArrayList<>();
-        visibleCollections.addAll(getViewableListResourceCollections(auth));
         visibleCollections.addAll(getViewableSharedResourceCollections(auth));
         return visibleCollections;
     }
 
-    private Set<SharedCollection> getViewableSharedResourceCollections(AuthWrapper<Resource> auth) {
+    /* (non-Javadoc)
+     * @see org.tdar.web.service.ResourceViewControllerServ#getVisibleCollections(org.tdar.struts.data.AuthWrapper)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ResourceCollection> getVisibleUnmanagedCollections(AuthWrapper<Resource> auth) {
+        List<ResourceCollection> visibleCollections = new ArrayList<>();
+        visibleCollections.addAll(getViewableListResourceCollections(auth));
+        return visibleCollections;
+    }
+
+    private Set<ResourceCollection> getViewableSharedResourceCollections(AuthWrapper<Resource> auth) {
 
         // if nobody logged in, just get the shared+visible collections
-        Set<SharedCollection> collections = new HashSet<>(auth.getItem().getVisibleSharedResourceCollections());
-        addViewableCollections(collections, auth.getItem().getSharedCollections(), auth);
+        Set<ResourceCollection> collections = new HashSet<>(auth.getItem().getVisibleSharedResourceCollections());
+        addViewableCollections(collections, auth.getItem().getManagedResourceCollections(), auth);
         return collections;
     }
 
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
     // shared+invisible+canEdit
-    private Set<ListCollection> getViewableListResourceCollections(AuthWrapper<Resource> auth) {
+    private Set<ResourceCollection> getViewableListResourceCollections(AuthWrapper<Resource> auth) {
 
         // if nobody logged in, just get the shared+visible collections
-        Set<ListCollection> collections = new HashSet<>();
+        Set<ResourceCollection> collections = new HashSet<>();
         collections.addAll(auth.getItem().getVisibleUnmanagedResourceCollections());
         // if authenticated, also add the collections that the user can modify
         addViewableCollections(collections, auth.getItem().getUnmanagedResourceCollections(), auth);

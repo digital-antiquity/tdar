@@ -4,7 +4,7 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.struts.action.AbstractStatisticsAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -19,11 +19,11 @@ public class CollectionStatisticsAction extends AbstractStatisticsAction impleme
 
     private static final long serialVersionUID = 1653124517249681107L;
 
-    private SharedCollection collection;
+    private ResourceCollection collection;
 
     @Override
     public void prepare() throws Exception {
-        collection = getGenericService().find(SharedCollection.class, getId());
+        collection = getGenericService().find(ResourceCollection.class, getId());
         if (collection == null) {
             addActionError("collectionStatisticsAction.no_collection");
         }
@@ -31,11 +31,11 @@ public class CollectionStatisticsAction extends AbstractStatisticsAction impleme
         setupJson();
     }
 
-    public SharedCollection getCollection() {
+    public ResourceCollection getCollection() {
         return collection;
     }
 
-    public void setCollection(SharedCollection collection) {
+    public void setCollection(ResourceCollection collection) {
         this.collection = collection;
     }
 }
