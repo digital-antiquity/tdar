@@ -114,7 +114,7 @@ color: #7d7a77;
         <h3 class="sensory_data-mid-red red">Virtual</h3>
         <ul class="unstyled">
             <li>Remote Sensing Files</li>
-            <li>3D Scans</li>
+            <li>3D Scans (OBJ &amp; E57)</li>
         </ul>
         <strong>Examples</strong> Data about archaeological resources collected by various sensors, e.g., GPS, GIS, Resisitivity, GPR, and various sonar instruments</div>
 
@@ -162,7 +162,7 @@ color: #7d7a77;
             <li>Embargoing access to materials for 4 years</li>
         </ul>
         Once a file ismarked as confidential or is embargoed, only users you specify can view or download files.</div>
-    <div class="span6"><a href="http://www.tdar.org/wp-uploads/www.tdar.org//2012/10/bg-rights.png"><img alt="" class="alignnone size-full wp-image-161" height="279" src="http://www.tdar.org/wp-uploads/www.tdar.org//2012/10/bg-rights.png" title="bg-rights" width="477"></a></div>
+    <div class="span6"><a href="http://www.tdar.org/wp-content/uploads/2012/10/bg-rights.png"><img alt="" class="alignnone size-full wp-image-161" height="279" src="http://www.tdar.org/wp-content/uploads/2012/10/bg-rights.png" title="bg-rights" width="477"></a></div>
 </div>
 
 <hr>

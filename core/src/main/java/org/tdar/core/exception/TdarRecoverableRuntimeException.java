@@ -39,7 +39,7 @@ public class TdarRecoverableRuntimeException extends I18nRuntimeException {
     }
 
     public TdarRecoverableRuntimeException(Throwable cause) {
-        super(cause);
+        super( cause.getLocalizedMessage(), cause);
     }
 
     public TdarRecoverableRuntimeException(String message, String moreInfoUrlKey, List<?> values) {
