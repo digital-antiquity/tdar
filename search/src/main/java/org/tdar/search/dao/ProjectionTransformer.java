@@ -65,11 +65,14 @@ public class ProjectionTransformer<I extends Indexable> {
 
         // set collections
         logger.trace("begin collection");
-        Collection<Long> collectionIds = (Collection<Long>) (Collection) doc.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_IDS);
+        Collection<Long> collectionIds = (Collection<Long>) (Collection) doc.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS);
         for (ResourceCollection rc : datasetDao.findAll(ResourceCollection.class, collectionIds)) {
-            if(rc instanceof ResourceCollection) {
-                r_.getManagedResourceCollections().add((ResourceCollection) rc);
-            }
+            r_.getManagedResourceCollections().add((ResourceCollection) rc);
+        }
+        
+        Collection<Long> uCollectionIds = (Collection<Long>) (Collection) doc.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_UNMANAGED_IDS);
+        for (ResourceCollection rc : datasetDao.findAll(ResourceCollection.class, uCollectionIds)) {
+            r_.getUnmanagedResourceCollections().add((ResourceCollection) rc);
         }
 
         logger.trace("begin authorized users");

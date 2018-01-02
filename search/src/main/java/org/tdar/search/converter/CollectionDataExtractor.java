@@ -48,11 +48,15 @@ public class CollectionDataExtractor {
 	private HashSet<String> directUnamangedCollectionNames = new HashSet<>();	
 	
 	//This contains ALL collection ids (managed/unmanaged, and parents). 
-	private HashSet<Long> collectionIds = new HashSet<>();;
+	private HashSet<Long> managedCollectionIds = new HashSet<>();
+	
+    private HashSet<Long> unmanagedCollectionIds = new HashSet<>(); 
+
+	
 	private HashSet<String> collectionNames = new HashSet<>();
 	
 	//This ends up being the same as collectionsId. 
-	private HashSet<Long> allCollectionIds = new HashSet<>(); 
+	private HashSet<Long> allCollectionIds = new HashSet<>();
 
 
 	/*
@@ -137,9 +141,9 @@ public class CollectionDataExtractor {
 			directManagedCollectionNames.add(collection.getName());
 
 			// Add all this collection's heirarchy information to the lists.
-			collectionIds.add(collection.getId());
-			collectionIds.addAll(collection.getParentIds());
-			collectionIds.addAll(collection.getAlternateParentIds());
+			managedCollectionIds.add(collection.getId());
+			managedCollectionIds.addAll(collection.getParentIds());
+			managedCollectionIds.addAll(collection.getAlternateParentIds());
 			collectionNames.addAll(collection.getParentNameList());
 			collectionNames.addAll(collection.getAlternateParentNameList());
 		}
@@ -154,14 +158,14 @@ public class CollectionDataExtractor {
 			directUnamangedCollectionNames.add(collection.getName());
 	
 			// Add all this collection's heirarchy information to the lists.
-			collectionIds.add(collection.getId());
-			collectionIds.addAll(collection.getParentIds());
-			collectionIds.addAll(collection.getAlternateParentIds());
+			unmanagedCollectionIds.add(collection.getId());
+			unmanagedCollectionIds.addAll(collection.getParentIds());
+			unmanagedCollectionIds.addAll(collection.getAlternateParentIds());
 			collectionNames.addAll(collection.getParentNameList());
 			collectionNames.addAll(collection.getAlternateParentNameList());
 		}
 
-		allCollectionIds.addAll(collectionIds);
+		allCollectionIds.addAll(managedCollectionIds);
 	}
 
 	public HashSet<Long> getDirectManagedCollectionIds() {
@@ -172,12 +176,12 @@ public class CollectionDataExtractor {
 		this.directManagedCollectionIds = directCollectionIds;
 	}
 
-	public HashSet<Long> getCollectionIds() {
-		return collectionIds;
+	public HashSet<Long> getManagedCollectionIds() {
+		return managedCollectionIds;
 	}
 
-	public void setCollectionIds(HashSet<Long> collectionIds) {
-		this.collectionIds = collectionIds;
+	public void setManagedCollectionIds(HashSet<Long> collectionIds) {
+		this.managedCollectionIds = collectionIds;
 	}
 
 	public HashSet<Long> getAllCollectionIds() {
@@ -219,4 +223,12 @@ public class CollectionDataExtractor {
 	public void setDirectUnmanagedCollectionNames(HashSet<String> listCollectionNames) {
 		this.directUnamangedCollectionNames = listCollectionNames;
 	}
+
+    public HashSet<Long> getUnmanagedCollectionIds() {
+        return unmanagedCollectionIds;
+    }
+
+    public void setUnmanagedCollectionIds(HashSet<Long> unmanagedCollectionIds) {
+        this.unmanagedCollectionIds = unmanagedCollectionIds;
+    }
 }

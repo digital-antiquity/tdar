@@ -422,7 +422,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         //map.put(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, rightsExtractor.getListCollectionIds());
         
         
-        map.put(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, 		rightsExtractor.getCollectionIds());
+        map.put(QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS, 		rightsExtractor.getManagedCollectionIds());
+        map.put(QueryFieldNames.RESOURCE_COLLECTION_UNMANAGED_IDS, 		rightsExtractor.getUnmanagedCollectionIds());
+        // is used in a keyword search allowing us to boost relevancy on collection name
         map.put(QueryFieldNames.RESOURCE_COLLECTION_NAME, 				rightsExtractor.getCollectionNames());
         map.put(QueryFieldNames.RESOURCE_COLLECTION_IDS, 				rightsExtractor.getAllCollectionIds());
 
@@ -437,7 +439,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         Map<String, Object> map = ResourceDocumentConverter.indexCollectionInformation(doc, r);
         addRequiredField(r, doc);
         replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS);
-        replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
+        replaceField(doc, map, QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS);
 //        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS);
 //        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS);
 //        replaceField(doc, map, QueryFieldNames.RESOURCE_LIST_COLLECTION_NAME);

@@ -128,7 +128,7 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
 //            idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, Operator.OR, ids));
 //            qb.append(idGroup);
 //        } else {
-            qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, indexable.getId()));
+            qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS, indexable.getId()));
 //        }
         runContainedInQuery(term, user, result, provider, qb);
         return result;
@@ -169,7 +169,7 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         	
         }
         else{
-        	setupCollectionLookup(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, searchParams.getCollectionIds());
+        	setupCollectionLookup(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS, searchParams.getCollectionIds());
         }
 
         ReservedSearchParameters reservedSearchParameters = searchParams.getReservedSearchParameters();
