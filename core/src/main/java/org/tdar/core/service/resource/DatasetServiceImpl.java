@@ -93,102 +93,12 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     private FileAnalyzer analyzer;
 
     /*
-     * Translates a @link DataTableColumn based on the default
-     */
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.resource.DatasetService#translate(org.tdar.core.bean.resource.datatable.DataTableColumn)
-     */
-    @Override
-    @Transactional
-    public void translate(DataTableColumn column) {
-        getDao().translate(column, column.getDefaultCodingSheet());
-    }
-
-    /*
-     * Given a @link DataTableColumn and a @link CodingSheet, translate the column using the @link CodingSheet's rules. This creates a new column for the
-     * original data, and replaces the original data in the tdar_data database with the translated version
-     */
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.resource.DatasetService#translate(org.tdar.core.bean.resource.datatable.DataTableColumn,
-     * org.tdar.core.bean.resource.CodingSheet)
-     */
-    @Override
-    @Transactional
-    public boolean translate(final DataTableColumn column, final CodingSheet codingSheet) {
-        return getDao().translate(column, codingSheet);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.tdar.core.service.resource.DatasetService#retranslate(org.tdar.core.bean.resource.Dataset)
      */
     @Override
     @Transactional(readOnly = false)
     public void retranslate(Dataset dataset) {
         getDao().retranslate(dataset);
-    }
-
-    /*
-     * Convenience method for untranslate, then translate using column.getDefaultCodingSheet()
-     */
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.resource.DatasetService#retranslate(org.tdar.core.bean.resource.datatable.DataTableColumn)
-     */
-    @Override
-    @Transactional
-    public boolean retranslate(DataTableColumn column) {
-        return getDao().retranslate(column);
-    }
-
-    /*
-     * Convenience method for untranslate, then translate using column.getDefaultCodingSheet() for a collection of DataTableColumns
-     */
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.resource.DatasetService#retranslate(java.util.Collection)
-     */
-    @Override
-    @Transactional
-    public void retranslate(Collection<DataTableColumn> columns) {
-        getDao().retranslate(columns);
-    }
-
-    /*
-     * Untranslate a coding sheet (remove the mapped data column for the coding sheet and then rename the column from the original to the name specified in the
-     * 
-     * @link DataTableColumn
-     */
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.resource.DatasetService#untranslate(org.tdar.core.bean.resource.datatable.DataTableColumn)
-     */
-    @Override
-    @Transactional
-    public void untranslate(DataTableColumn column) {
-        getDao().untranslate(column);
-    }
-
-    /*
-     * Convenience method for a set of @link DataTableColumn
-     */
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.resource.DatasetService#translate(java.util.Set, org.tdar.core.bean.resource.CodingSheet)
-     */
-    @Override
-    @Transactional
-    public void translate(Set<DataTableColumn> columns, final CodingSheet codingSheet) {
-        getDao().translate(columns, codingSheet);
     }
 
     /*
@@ -626,7 +536,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         if (!columnsToTranslate.isEmpty()) {
             // create the translation file for this dataset.
             getLogger().debug("creating translated file");
-            retranslate(columnsToTranslate);
+            getDao().retranslate(columnsToTranslate);
             createTranslatedFile(dataset);
         }
         logDataTableColumns(dataTable, "data column metadata registration", authenticatedUser, startTime);

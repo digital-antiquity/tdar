@@ -530,14 +530,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             return null;
         }
         informationResourceFileDao.deleteTranslatedFiles(dataset);
-        // FIXME: remove synchronize once Hibernate learns more about unique constraints
-        // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
 
-        // getDao().synchronize();
-
-        // if (file.getLatestUploadedOrArchivalVersion().getUncompressedSizeOnDisk() > TdarConfiguration.getInstance().getMaxTranslatedFileSize()) {
-        // return null;
-        // }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {

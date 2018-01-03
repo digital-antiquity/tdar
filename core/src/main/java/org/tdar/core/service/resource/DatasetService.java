@@ -22,39 +22,9 @@ import com.opensymphony.xwork2.TextProvider;
 public interface DatasetService {
 
     /*
-     * Translates a @link DataTableColumn based on the default
+     * Convenience method for untranslate, then translate all columns in the dataset
      */
-    void translate(DataTableColumn column);
-
-    /*
-     * Given a @link DataTableColumn and a @link CodingSheet, translate the column using the @link CodingSheet's rules. This creates a new column for the
-     * original data, and replaces the original data in the tdar_data database with the translated version
-     */
-    boolean translate(DataTableColumn column, CodingSheet codingSheet);
-
     void retranslate(Dataset dataset);
-
-    /*
-     * Convenience method for untranslate, then translate using column.getDefaultCodingSheet()
-     */
-    boolean retranslate(DataTableColumn column);
-
-    /*
-     * Convenience method for untranslate, then translate using column.getDefaultCodingSheet() for a collection of DataTableColumns
-     */
-    void retranslate(Collection<DataTableColumn> columns);
-
-    /*
-     * Untranslate a coding sheet (remove the mapped data column for the coding sheet and then rename the column from the original to the name specified in the
-     * 
-     * @link DataTableColumn
-     */
-    void untranslate(DataTableColumn column);
-
-    /*
-     * Convenience method for a set of @link DataTableColumn
-     */
-    void translate(Set<DataTableColumn> columns, CodingSheet codingSheet);
 
     InformationResourceFile createTranslatedFile(Dataset dataset);
 

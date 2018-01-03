@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -52,6 +53,7 @@ import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -88,6 +90,9 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
 
     private static final String PATH = TestConstants.TEST_CODING_SHEET_DIR;
 
+    @Autowired
+    private DatasetDao datasetDao;
+    
     @Test
     @Rollback
     /**
@@ -170,7 +175,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         column.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
         column.setDefaultCodingSheet(codingSheet);
         genericService.save(column);
-        datasetService.translate(column, codingSheet);
+        datasetDao.translate(column, codingSheet);
 
         ResultMetadataWrapper resultsWrapper = datasetService.selectAllFromDataTable(firstTable, 0, 100, true, false);
         List<List<String>> selectAllFromDataTable = resultsWrapper.getResults();
