@@ -77,17 +77,16 @@ public class AuthorizedUser extends AbstractPersistable {
     @JoinColumn(nullable = false, name = "creator_id")
     private TdarUser createdBy;
 
-    @Column(name="resource_collection_id", insertable=false, updatable=false)
+    @Column(name = "resource_collection_id", insertable = false, updatable = false)
     private Long collectionId;
 
-    
-    @Column(name="account_id", insertable=false, updatable=false)
+    @Column(name = "account_id", insertable = false, updatable = false)
     private Long accountId;
 
-    @Column(name="integration_id", insertable=false, updatable=false)
+    @Column(name = "integration_id", insertable = false, updatable = false)
     private Long integrationId;
 
-    @Column(name="resource_id", insertable=false, updatable=false)
+    @Column(name = "resource_id", insertable = false, updatable = false)
     private Long resourceId;
 
     private transient boolean enabled = false;

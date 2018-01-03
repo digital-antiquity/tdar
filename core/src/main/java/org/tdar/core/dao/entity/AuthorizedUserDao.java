@@ -84,7 +84,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
         for (ResourceCollection collection : resource.getManagedResourceCollections()) {
-                ids.addAll(collection.getParentIds());
+            ids.addAll(collection.getParentIds());
             ids.add(collection.getId());
         }
         getLogger().trace("allowed to rights collection ids: {}", ids);
@@ -272,14 +272,14 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
 
     /**
      * find all AuthorizedUsers on Persistable where permissions are greater than specified (or all if null)
-     *  
+     * 
      * @param actor
      * @param source
      * @param editAnything
      * @param generalPermission
      * @return
      */
-    //FIXME: RENAME
+    // FIXME: RENAME
     public List<AuthorizedUser> checkSelfEscalation(TdarUser actor, HasAuthorizedUsers source, InternalTdarRights editAnything, Permissions generalPermission) {
         String q = QUERY_RIGHTS_EXPIRY_COLLECTION;
         if (source instanceof Resource) {
@@ -294,7 +294,7 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         if (generalPermission == null) {
             query.setParameter("perm", null);
         } else {
-        query.setParameter("perm", generalPermission.getEffectivePermissions() - 1);
+            query.setParameter("perm", generalPermission.getEffectivePermissions() - 1);
         }
         query.setParameter("id", source.getId());
         return query.list();

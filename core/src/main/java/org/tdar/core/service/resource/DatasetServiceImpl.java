@@ -95,7 +95,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Translates a @link DataTableColumn based on the default
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#translate(org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
@@ -108,8 +110,11 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      * Given a @link DataTableColumn and a @link CodingSheet, translate the column using the @link CodingSheet's rules. This creates a new column for the
      * original data, and replaces the original data in the tdar_data database with the translated version
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.DatasetService#translate(org.tdar.core.bean.resource.datatable.DataTableColumn, org.tdar.core.bean.resource.CodingSheet)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.DatasetService#translate(org.tdar.core.bean.resource.datatable.DataTableColumn,
+     * org.tdar.core.bean.resource.CodingSheet)
      */
     @Override
     @Transactional
@@ -117,7 +122,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         return getDao().translate(column, codingSheet);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#retranslate(org.tdar.core.bean.resource.Dataset)
      */
     @Override
@@ -129,7 +136,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Convenience method for untranslate, then translate using column.getDefaultCodingSheet()
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#retranslate(org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
@@ -141,7 +150,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Convenience method for untranslate, then translate using column.getDefaultCodingSheet() for a collection of DataTableColumns
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#retranslate(java.util.Collection)
      */
     @Override
@@ -155,7 +166,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      * 
      * @link DataTableColumn
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#untranslate(org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
@@ -167,7 +180,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Convenience method for a set of @link DataTableColumn
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#translate(java.util.Set, org.tdar.core.bean.resource.CodingSheet)
      */
     @Override
@@ -182,8 +197,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      * as the code. The translated version is stored on the @link InformationResourceFileVersion as a derivative
      */
 
-    
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#createTranslatedFile(org.tdar.core.bean.resource.Dataset)
      */
     @Override
@@ -192,7 +208,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         return getDao().createTranslatedFile(dataset, analyzer, informationResourceFileDao);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#reprocess(org.tdar.core.bean.resource.Dataset)
      */
     @Override
@@ -211,7 +229,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
                 latestVersions.add(latestUploadedVersion);
             }
 
-            analyzer.processFiles(latestVersions,true);
+            analyzer.processFiles(latestVersions, true);
             if (dataset.hasCodingColumns()) {
                 createTranslatedFile(dataset);
             }
@@ -220,11 +238,12 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         }
     }
 
-
     /*
      * Checks whether a @link Dataset can be mapped to an @link Ontology and thus, whether specific CodingValues can be mapped to that Ontology
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#canLinkDataToOntology(org.tdar.core.bean.resource.Dataset)
      */
     @Override
@@ -246,8 +265,11 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Log the DataTableColumn Information to XML to be stored in the ResourceRevisionLog
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.DatasetService#logDataTableColumns(org.tdar.core.bean.resource.datatable.DataTable, java.lang.String, org.tdar.core.bean.entity.TdarUser, java.lang.Long)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.DatasetService#logDataTableColumns(org.tdar.core.bean.resource.datatable.DataTable, java.lang.String,
+     * org.tdar.core.bean.entity.TdarUser, java.lang.Long)
      */
     @Override
     public void logDataTableColumns(DataTable dataTable, String message, TdarUser authenticatedUser, Long start) {
@@ -264,8 +286,12 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Takes a Coding Table within a larger data set and converts it to a tDAR CodingSheet
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.DatasetService#convertTableToCodingSheet(org.tdar.core.bean.entity.TdarUser, com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.resource.datatable.DataTableColumn, org.tdar.core.bean.resource.datatable.DataTableColumn, org.tdar.core.bean.resource.datatable.DataTableColumn)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.DatasetService#convertTableToCodingSheet(org.tdar.core.bean.entity.TdarUser, com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.resource.datatable.DataTableColumn, org.tdar.core.bean.resource.datatable.DataTableColumn,
+     * org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
     @Transactional
@@ -317,7 +343,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Find all Rows within a @link DataTable with Pagination. Used to browse a Data Table
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#selectAllFromDataTable(org.tdar.core.bean.resource.datatable.DataTable, int, int, boolean, boolean)
      */
     @Override
@@ -342,7 +370,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Extracts a specific Row of data from a tdardata database and returns a map object with it's contents pre-mapped to @link DataTableColumn entries
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#selectRowFromDataTable(org.tdar.core.bean.resource.datatable.DataTable, java.lang.Long, boolean)
      */
     @Override
@@ -368,8 +398,11 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      * Finds a set of Database rows from the TdarMetadata database that are associated with the String specified, and wraps them in a @link
      * ResultsMetadataWrapper
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.DatasetService#findRowsFromDataTable(org.tdar.core.bean.resource.datatable.DataTable, int, int, boolean, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.DatasetService#findRowsFromDataTable(org.tdar.core.bean.resource.datatable.DataTable, int, int, boolean,
+     * java.lang.String)
      */
     @Override
     @Transactional
@@ -390,7 +423,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#listRelationshipsForColumns(org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
@@ -413,7 +448,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      * Based on a set of @link DataTableColumn entries, and a @link Project we can will clear out the existing mappings; and then identify mappings that need to
      * be made.
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#prepareAndFindMappings(org.tdar.core.bean.resource.Project, java.util.Collection)
      */
     @Override
@@ -432,8 +469,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
             Dataset dataset = column.getDataTable().getDataset();
             if (dataset == null) {
                 throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column", Arrays.asList(column));
-            }
-            else if (ObjectUtils.notEqual(project, dataset.getProject())) {
+            } else if (ObjectUtils.notEqual(project, dataset.getProject())) {
                 throw new TdarRecoverableRuntimeException("datasetService.dataset_different_project", Arrays.asList(project, dataset.getProject()));
             }
             if (column.isMappingColumn()) {
@@ -447,7 +483,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Finds all Dataset Ids
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#findAllIds()
      */
     @Override
@@ -460,7 +498,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      * other resources in the project, e.g. a database of images. The mapping here is created using a field in the column that contains the filename of the file
      * to be mapped, and is associated with the filename associated with @InformationResourceFileVersion of any @link Resource in that @link Project.
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#remapColumns(java.util.List, org.tdar.core.bean.resource.Project)
      */
     @Override
@@ -469,7 +509,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         remapColumnsWithoutIndexing(columns, project);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#remapColumnsWithoutIndexing(java.util.List, org.tdar.core.bean.resource.Project)
      */
     @Override
@@ -488,7 +530,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column,false));
+                getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column, false));
             }
         }
     }
@@ -498,8 +540,11 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      * tDAR, iterate through each incoming DataTableColumn and update the real entries in the database. Once updated, re-translate, map, and other changes as
      * necessary.
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.DatasetService#updateColumnMetadata(com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.resource.Dataset, org.tdar.core.bean.resource.datatable.DataTable, java.util.List, org.tdar.core.bean.entity.TdarUser, java.lang.Long)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.DatasetService#updateColumnMetadata(com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.resource.Dataset,
+     * org.tdar.core.bean.resource.datatable.DataTable, java.util.List, org.tdar.core.bean.entity.TdarUser, java.lang.Long)
      */
     @Override
     @Transactional
@@ -545,8 +590,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
             if (!PersistableUtils.isNullOrTransient(defaultOntology)) {
                 if (incomingColumn.getColumnEncodingType().isSupportsOntology()) {
                     hasOntologies = true;
-                }
-                else {
+                } else {
                     incomingColumn.setTransientOntology(null);
                     getLogger().debug("column {} doesn't support ontologies - setting default ontology to null", incomingColumn);
                 }
@@ -604,8 +648,11 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      * Takes an existing @link Dataset and @link DataTable, and an incoming list of @link DataTableColumn entries, from the edit-column-metadata function in
      * tDAR, iterate through each incoming DataTableColumn and update the real entries in the database. Just handle resource-column-row mappings
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.DatasetService#updateColumnResourceMappingMetadata(com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.resource.Dataset, org.tdar.core.bean.resource.datatable.DataTable, java.util.List, org.tdar.core.bean.entity.TdarUser, java.lang.Long)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.DatasetService#updateColumnResourceMappingMetadata(com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.resource.Dataset, org.tdar.core.bean.resource.datatable.DataTable, java.util.List, org.tdar.core.bean.entity.TdarUser, java.lang.Long)
      */
     @Override
     @Transactional
@@ -662,11 +709,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
                 Objects.equals(incomingCodingSheet, existingCodingSheet));
         if (Objects.equals(incomingCodingSheet, existingCodingSheet)) {
             return false;
-        }
-        else if (incomingCodingSheet.isGenerated()) {
+        } else if (incomingCodingSheet.isGenerated()) {
             return existingCodingSheet != null;
-        }
-        else {
+        } else {
             return true;
         }
     }
@@ -676,7 +721,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      * 
      * http://www.postgresql.org/docs/9.1/static/functions-xml.html
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#selectTableAsXml(org.tdar.core.bean.resource.datatable.DataTable)
      */
     @Override
@@ -688,7 +735,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     /*
      * Setter for the tdardata postgres database which is not managed by hibernate
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#setTdarDataImportDatabase(org.tdar.db.model.PostgresDatabase)
      */
     @Override
@@ -696,7 +745,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         this.tdarDataImportDatabase = tdarDataImportDatabase;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#remapAllColumnsAsync(java.lang.Long, java.lang.Long)
      */
     @Override
@@ -706,7 +757,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#remapAllColumns(java.lang.Long, java.lang.Long)
      */
     @Override
@@ -731,7 +784,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         remapColumns(columns, project);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#setAnalyzer(org.tdar.filestore.FileAnalyzer)
      */
     @Override
@@ -740,7 +795,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         this.analyzer = analyzer;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetService#getAnalyzer()
      */
     @Override
@@ -757,10 +814,10 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     public List<Dataset> findAll() {
         return getDao().findAllSorted("title asc");
     }
-    
+
     @Override
     public List<Dataset> findAll(String string) {
         return getDao().findAllSorted(string);
     }
-    
+
 }

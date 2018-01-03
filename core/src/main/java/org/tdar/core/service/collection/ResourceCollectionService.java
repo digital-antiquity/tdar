@@ -157,7 +157,7 @@ public interface ResourceCollectionService {
      * @param generalPermissions
      * @return
      */
-     Set<ResourceCollection> findFlattenedCollections(Person user, Permissions generalPermissions);
+    Set<ResourceCollection> findFlattenedCollections(Person user, Permissions generalPermissions);
 
     /**
      * Return the root resource collection of the provided resource collection. This method also populates the
@@ -235,7 +235,7 @@ public interface ResourceCollectionService {
     Set<ResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource);
 
     /**
-     * Given a resource and a user, find all of the collections that the resource has been added to 
+     * Given a resource and a user, find all of the collections that the resource has been added to
      * and that the user has access to.
      * 
      * @param resource
@@ -243,11 +243,12 @@ public interface ResourceCollectionService {
      * @return
      */
     List<ResourceCollection> getCollectionsForResourceAndUser(Resource resource, TdarUser user);
-    
+
     /**
      * Creates a new collection for a user given a collection name.
+     * 
      * @param collectionName
-     * @param collectionDescription 
+     * @param collectionDescription
      * @param user
      * @return
      */

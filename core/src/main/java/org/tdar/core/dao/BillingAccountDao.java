@@ -308,23 +308,23 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
             logger.debug("fast-tracking 'update' because we're still overdrawn ");
             logger.debug("    new: {}", helper.getNewItems());
             logger.debug("updated: {}", helper.getUpdatedItems());
-            
+
             helper.updateAccount();
-            if (helper.getAvailableNumberOfFiles() < 0) { 
+            if (helper.getAvailableNumberOfFiles() < 0) {
                 status = AccountAdditionStatus.NOT_ENOUGH_FILES;
             }
-            if (helper.getAvailableSpaceInBytes() < 0) { 
+            if (helper.getAvailableSpaceInBytes() < 0) {
                 status = AccountAdditionStatus.NOT_ENOUGH_SPACE;
             }
             boolean fullEvaluate = helper.requireFullEvaluationOfFlaggedAccount();
-            
+
             if (fullEvaluate == false) {
                 saveOrUpdate(account);
                 helper = null;
                 logger.trace(account.usedString());
                 return status;
             }
-        } 
+        }
 
         if (!hasUpdates || overdrawn || resourceEvaluator.isHasDeletedResources()) {
             logger.debug("re-evaluating all resources in account");
@@ -445,7 +445,8 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
      * @param status
      * @return
      */
-    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status_, TdarUser user) {
+    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status_,
+            TdarUser user) {
         AccountAdditionStatus status = status_;
         markResourcesAsFlagged(helper.getFlagged(), user);
         unMarkResourcesAsFlagged(helper.getUnflagged(), user);

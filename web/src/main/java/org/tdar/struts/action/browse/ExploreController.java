@@ -47,7 +47,7 @@ import org.tdar.web.service.HomepageService;
 @Component
 @Scope("prototype")
 @HttpsOnly
-public class ExploreController extends  AbstractAuthenticatableAction {
+public class ExploreController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = -2826087034735486222L;
 
@@ -69,7 +69,7 @@ public class ExploreController extends  AbstractAuthenticatableAction {
     private transient SerializationService serializationService;
     @Autowired
     private transient HomepageService homepageService;
-    
+
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
@@ -167,7 +167,6 @@ public class ExploreController extends  AbstractAuthenticatableAction {
         this.timelineData = list;
     }
 
-
     public List<BrowseYearCountCache> getScholarData() {
         return scholarData;
     }
@@ -192,7 +191,6 @@ public class ExploreController extends  AbstractAuthenticatableAction {
         this.recentResources = recentResources;
     }
 
-
     public HomepageDetails getHomepageGraphs() {
         return homepageGraphs;
     }
@@ -208,6 +206,5 @@ public class ExploreController extends  AbstractAuthenticatableAction {
     public void setResourceTypes(List<ResourceType> resourceTypes) {
         this.resourceTypes = resourceTypes;
     }
-
 
 }

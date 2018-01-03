@@ -72,8 +72,11 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         this.genericService = genericService;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.ResourceSearchService#buildCollectionResourceSearch(org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.ResourceSearchService#buildCollectionResourceSearch(org.tdar.search.query.LuceneSearchResultHandler,
+     * com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = true)
@@ -87,8 +90,11 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.ResourceSearchService#buildResourceContainedInSearch(org.tdar.core.bean.resource.Project, java.lang.String, org.tdar.core.bean.entity.TdarUser, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.ResourceSearchService#buildResourceContainedInSearch(org.tdar.core.bean.resource.Project, java.lang.String,
+     * org.tdar.core.bean.entity.TdarUser, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = true)
@@ -112,8 +118,11 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         searchService.handleSearch(qb, result, provider);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.ResourceSearchService#buildResourceContainedInSearch(org.tdar.core.bean.collection.VisibleCollection, java.lang.String, org.tdar.core.bean.entity.TdarUser, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.ResourceSearchService#buildResourceContainedInSearch(org.tdar.core.bean.collection.VisibleCollection,
+     * java.lang.String, org.tdar.core.bean.entity.TdarUser, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = true)
@@ -130,23 +139,26 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.ResourceSearchService#lookupResource(org.tdar.core.bean.entity.TdarUser, org.tdar.search.bean.ResourceLookupObject, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.ResourceSearchService#lookupResource(org.tdar.core.bean.entity.TdarUser, org.tdar.search.bean.ResourceLookupObject,
+     * org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> lookupResource(TdarUser user, ResourceLookupObject searchParams, LuceneSearchResultHandler<Resource> result,
             TextProvider support) throws SearchException, IOException {
- 
-    	//Construct a Query Builder object, add the data that we want to search for, then execute the search. 
-    	ResourceQueryBuilder queryBuilder = new ResourceQueryBuilder();
 
-    	//If a search term  or category ID is provided, then add it as a field to be searched. 
-    	if (StringUtils.isNotBlank(searchParams.getTerm()) || searchParams.getCategoryId() != null) {
+        // Construct a Query Builder object, add the data that we want to search for, then execute the search.
+        ResourceQueryBuilder queryBuilder = new ResourceQueryBuilder();
+
+        // If a search term or category ID is provided, then add it as a field to be searched.
+        if (StringUtils.isNotBlank(searchParams.getTerm()) || searchParams.getCategoryId() != null) {
             queryBuilder.append(new CategoryTermQueryPart(searchParams.getTerm(), searchParams.getCategoryId()));
         }
 
-    	//If a project Id is provided, add it as a field to be searched. 
+        // If a project Id is provided, add it as a field to be searched.
         if (PersistableUtils.isNotNullOrTransient(searchParams.getProjectId())) {
             queryBuilder.append(new ProjectIdLookupQueryPart(searchParams.getProjectId()));
         }
@@ -155,26 +167,26 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
             queryBuilder.append(new GeneralSearchResourceQueryPart(searchParams.getGeneralQuery()));
         }
 
-        
-        //If we're not looking for the parent collections, then only search for the resources directly in the collection. 
+        // If we're not looking for the parent collections, then only search for the resources directly in the collection.
         if (searchParams.getIncludeParent() == Boolean.FALSE || searchParams.getIncludeParent() == null) {
-        	QueryPartGroup qgp = new QueryPartGroup(Operator.OR);
-        	qgp.append(createCollectionLookupQueryPart(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS, searchParams.getCollectionIds()));
-        	qgp.append(createCollectionLookupQueryPart(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_UNMANAGED_IDS, searchParams.getCollectionIds()));
-        	queryBuilder.append(qgp);
-        	
-        }
-        else{
-        	setupCollectionLookup(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS, searchParams.getCollectionIds());
+            QueryPartGroup qgp = new QueryPartGroup(Operator.OR);
+            qgp.append(createCollectionLookupQueryPart(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_MANAGED_IDS,
+                    searchParams.getCollectionIds()));
+            qgp.append(createCollectionLookupQueryPart(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_UNMANAGED_IDS,
+                    searchParams.getCollectionIds()));
+            queryBuilder.append(qgp);
+
+        } else {
+            setupCollectionLookup(searchParams, queryBuilder, QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS, searchParams.getCollectionIds());
         }
 
         ReservedSearchParameters reservedSearchParameters = searchParams.getReservedSearchParameters();
         reservedSearchParameters.setUseSubmitterContext(searchParams.isUseSubmitterContext());
         initializeReservedSearchParameters(reservedSearchParameters, user);
-        
+
         queryBuilder.append(reservedSearchParameters.toQueryPartGroup(support));
         queryBuilder.appendFilter(reservedSearchParameters.getFilters());
-        
+
         searchService.handleSearch(queryBuilder, result, MessageHelper.getInstance());
         return result;
     }
@@ -191,23 +203,29 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         FieldQueryPart<Long> queryPart = createCollectionLookupQueryPart(searchParms, queryBuilder, queryFieldName, collectionIds);
         queryBuilder.append(queryPart);
     }
-    
-    private FieldQueryPart<Long> createCollectionLookupQueryPart(ResourceLookupObject searchParms, ResourceQueryBuilder queryBuilder, String queryFieldName, List<Long> collectionIds){
-    	Set<Long> filtered = new HashSet<>();
+
+    private FieldQueryPart<Long> createCollectionLookupQueryPart(ResourceLookupObject searchParms, ResourceQueryBuilder queryBuilder, String queryFieldName,
+            List<Long> collectionIds) {
+        Set<Long> filtered = new HashSet<>();
         for (Long id : collectionIds) {
             if (PersistableUtils.isNotNullOrTransient(id)) {
                 filtered.add(id);
             }
         }
-    	return new FieldQueryPart<Long>(queryFieldName, Operator.OR, filtered);
+        return new FieldQueryPart<Long>(queryFieldName, Operator.OR, filtered);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.ResourceSearchService#buildKeywordQuery(org.tdar.core.bean.keyword.Keyword, org.tdar.core.bean.keyword.KeywordType, org.tdar.search.bean.ReservedSearchParameters, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.ResourceSearchService#buildKeywordQuery(org.tdar.core.bean.keyword.Keyword, org.tdar.core.bean.keyword.KeywordType,
+     * org.tdar.search.bean.ReservedSearchParameters, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = true)
-    public LuceneSearchResultHandler<Resource> buildKeywordQuery(Keyword keyword, KeywordType keywordType, ReservedSearchParameters rsp, LuceneSearchResultHandler<Resource> result,
+    public LuceneSearchResultHandler<Resource> buildKeywordQuery(Keyword keyword, KeywordType keywordType, ReservedSearchParameters rsp,
+            LuceneSearchResultHandler<Resource> result,
             TextProvider provider, TdarUser user) throws SearchException, IOException {
 
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
@@ -219,8 +237,11 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.ResourceSearchService#buildAdvancedSearch(org.tdar.search.bean.AdvancedSearchQueryObject, org.tdar.core.bean.entity.TdarUser, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.ResourceSearchService#buildAdvancedSearch(org.tdar.search.bean.AdvancedSearchQueryObject,
+     * org.tdar.core.bean.entity.TdarUser, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = true)
@@ -245,12 +266,11 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
             try {
                 searchService.updateResourceCreators(group, 20);
             } catch (SearchException e) {
-                logger.error("issue hydrating creators",e);
+                logger.error("issue hydrating creators", e);
             }
             topLevelQueryPart.append(group.toQueryPartGroup(provider));
         }
         queryBuilder.append(topLevelQueryPart);
-
 
         if (topLevelQueryPart.isEmpty() || CollectionUtils.isNotEmpty(asqo.getAllGeneralQueryFields())) {
             asqo.setCollectionSearchBoxVisible(true);
@@ -261,7 +281,7 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
 
         queryBuilder.setDeemphasizeSupporting(true);
         searchService.handleSearch(queryBuilder, result, provider);
-        // dependent on handle search to hydrate 
+        // dependent on handle search to hydrate
         asqo.setSearchPhrase(topLevelQueryPart.getDescription(provider));
         return result;
     }
@@ -274,7 +294,9 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         return reserved.toQueryPartGroup(provider);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.search.service.query.ResourceSearchService#inflateSearchParameters(org.tdar.search.bean.SearchParameters)
      */
     @Override
@@ -299,8 +321,11 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.ResourceSearchService#generateQueryForRelatedResources(org.tdar.core.bean.entity.Creator, org.tdar.core.bean.entity.TdarUser, org.tdar.search.query.facet.FacetedResultHandler, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.ResourceSearchService#generateQueryForRelatedResources(org.tdar.core.bean.entity.Creator,
+     * org.tdar.core.bean.entity.TdarUser, org.tdar.search.query.facet.FacetedResultHandler, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = true)
@@ -372,8 +397,9 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         return result;
     }
 
-    @Transactional(readOnly =true)
-    public LuceneSearchResultHandler<Resource> findByResourceType(ResourceType resourceType, LuceneSearchResultHandler<Resource> result, TextProvider support) throws SearchException, IOException {
+    @Transactional(readOnly = true)
+    public LuceneSearchResultHandler<Resource> findByResourceType(ResourceType resourceType, LuceneSearchResultHandler<Resource> result, TextProvider support)
+            throws SearchException, IOException {
         ResourceQueryBuilder q = new ResourceQueryBuilder();
         q.setOperator(Operator.AND);
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();

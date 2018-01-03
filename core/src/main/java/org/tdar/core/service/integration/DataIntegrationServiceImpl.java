@@ -77,10 +77,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-
     @Autowired
     UserRightsProxyService proxyService;
-    
+
     @Autowired
     private IntegrationDatabase tdarDataImportDatabase;
 
@@ -108,7 +107,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
     @Autowired
     private SerializationService serializationService;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#setTdarDataImportDatabase(org.tdar.db.model.abstracts.IntegrationDatabase)
      */
     @Override
@@ -116,7 +117,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#updateMappedCodingRules(org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
@@ -168,7 +171,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#serializeIntegrationContext(java.util.List, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -178,7 +183,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         return sw.toString();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#findMappedCodingRules(org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
@@ -188,8 +195,11 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         return dataTableColumnDao.findMappedCodingRules(column, distinctColumnValues);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.integration.DataIntegrationService#createGeneratedCodingSheet(com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.resource.datatable.DataTableColumn, org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Ontology)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.integration.DataIntegrationService#createGeneratedCodingSheet(com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.resource.datatable.DataTableColumn, org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Ontology)
      */
     @Override
     @Transactional
@@ -224,7 +234,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         return codingSheet;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#convertCodingSheetToCSV(org.tdar.core.bean.resource.CodingSheet)
      */
     @Override
@@ -232,7 +244,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         return convertCodingSheetToCSV(sheet, sheet.getCodingRules());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#convertCodingSheetToCSV(org.tdar.core.bean.resource.CodingSheet, java.util.Collection)
      */
     @Override
@@ -247,7 +261,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         return sw.toString();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#getIntegrationSuggestions(java.util.Collection, boolean)
      */
     @Override
@@ -283,7 +299,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         return allOntologies;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#getFilteredOntologyNodes(org.tdar.core.service.integration.IntegrationColumn)
      */
     @Override
@@ -297,7 +315,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         return nodes;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#getNodeParticipationByColumn(java.util.List)
      */
     @Override
@@ -437,8 +457,11 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.integration.DataIntegrationService#generateModernIntegrationResult(java.lang.String, com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.integration.DataIntegrationService#generateModernIntegrationResult(java.lang.String, com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional
@@ -459,7 +482,6 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
                 col.buildNodeChildHierarchy(ontologyNodeDao);
             }
         }
-
 
         // logger.debug(serializationService.convertToXML(integrationContext));
 
@@ -495,7 +517,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         return result;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#storeResult(org.tdar.core.service.integration.ModernIntegrationDataResult)
      */
     @Override
@@ -518,7 +542,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         return ticket;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.DataIntegrationService#getTableDetails(java.util.List)
      */
     @Override
@@ -530,10 +556,10 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         proxy.getMappedOntologies().addAll(suggestions.keySet());
         return proxy;
     }
-    
+
     @Override
-    @Transactional(readOnly=false)
-    public void saveSettingsForController(DataIntegrationWorkflow persistable, TdarUser authenticatedUser, List<UserRightsProxy> proxies){
+    @Transactional(readOnly = false)
+    public void saveSettingsForController(DataIntegrationWorkflow persistable, TdarUser authenticatedUser, List<UserRightsProxy> proxies) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         proxyService.convertProxyToItems(proxies, authenticatedUser, authorizedUsers, null);
         CollectionRightsComparator comparator = new CollectionRightsComparator(persistable.getAuthorizedUsers(), authorizedUsers);
@@ -541,7 +567,7 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
             RightsResolver rco = authorizationService.getRightsResolverFor(persistable, authenticatedUser, InternalTdarRights.EDIT_ANYTHING);
             comparator.makeChanges(rco, persistable, authenticatedUser);
         }
-        comparator = null;        
+        comparator = null;
 
         genericDao.saveOrUpdate(persistable);
     }

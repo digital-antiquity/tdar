@@ -8,12 +8,14 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.base.GenericDao;
 
 @Service
-public class BatchActionServiceImpl implements BatchActionService  {
+public class BatchActionServiceImpl implements BatchActionService {
 
     @Autowired
     private GenericDao genericDao;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.batch.BatchActionService#run(T, org.tdar.core.service.batch.BatchActionType, org.tdar.core.bean.collection.SharedCollection)
      */
     @Override

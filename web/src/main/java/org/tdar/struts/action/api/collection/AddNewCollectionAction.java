@@ -22,7 +22,6 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
-import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
 @Namespace("/api/collection")
@@ -33,61 +32,62 @@ import com.opensymphony.xwork2.Validateable;
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
 @Results(value = { @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT),
-		@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream",
-				"jsonInputStream", "statusCode", "500" }) })
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream",
+                "jsonInputStream", "statusCode", "500" }) })
 public class AddNewCollectionAction extends AbstractJsonApiAction implements Validateable {
 
-	private static final long serialVersionUID = 1344077793459231299L;
+    private static final long serialVersionUID = 1344077793459231299L;
 
-	@Autowired
-	private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
 
-	private String collectionName;
-	private String collectionDescription;
+    private String collectionName;
+    private String collectionDescription;
 
-	private Long collectionId;
+    private Long collectionId;
 
     private Map<String, Object> jsonResult = new HashMap<String, Object>();
-	
-	@Action(value = "newcollection", results = {@Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }) })
-	@PostOnly
-	@WriteableSession
-	public String createNewResourceCollection() throws Exception {
-		
-		ResourceCollection rc =  resourceCollectionService.createNewResourceCollection(collectionName, collectionDescription,  getAuthenticatedUser());
-		collectionId = rc.getId();
-		
-		jsonResult.put("status", "success");
-		jsonResult.put("name", getCollectionName());
-		jsonResult.put("id", collectionId);
-		
-		setResultObject(jsonResult);
-		return SUCCESS;
-	}
 
-	@Override
-	public void validate() {
-		super.validate();
-		if(getCollectionName() == null || getCollectionName().trim().equals("")){
-			addActionError("addNewCollectionAction.collection_name_missing");
-		}
-	}
+    @Action(value = "newcollection",
+            results = { @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }) })
+    @PostOnly
+    @WriteableSession
+    public String createNewResourceCollection() throws Exception {
 
-	public Long getCollectionId() {
-		return collectionId;
-	}
+        ResourceCollection rc = resourceCollectionService.createNewResourceCollection(collectionName, collectionDescription, getAuthenticatedUser());
+        collectionId = rc.getId();
 
-	public void setCollectionId(Long collectionId) {
-		this.collectionId = collectionId;
-	}
+        jsonResult.put("status", "success");
+        jsonResult.put("name", getCollectionName());
+        jsonResult.put("id", collectionId);
 
-	public String getCollectionName() {
-		return collectionName;
-	}
+        setResultObject(jsonResult);
+        return SUCCESS;
+    }
 
-	public void setCollectionName(String collectionName) {
-		this.collectionName = collectionName;
-	}
+    @Override
+    public void validate() {
+        super.validate();
+        if (getCollectionName() == null || getCollectionName().trim().equals("")) {
+            addActionError("addNewCollectionAction.collection_name_missing");
+        }
+    }
+
+    public Long getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+    }
+
+    public String getCollectionName() {
+        return collectionName;
+    }
+
+    public void setCollectionName(String collectionName) {
+        this.collectionName = collectionName;
+    }
 
     public String getCollectionDescription() {
         return collectionDescription;

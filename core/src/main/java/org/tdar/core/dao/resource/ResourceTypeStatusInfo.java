@@ -20,7 +20,6 @@ public class ResourceTypeStatusInfo implements Serializable {
 
     private Integer total = 0;
 
-
     public Map<ResourceType, Integer> getResourceMap() {
         return resourceMap;
     }
@@ -44,9 +43,8 @@ public class ResourceTypeStatusInfo implements Serializable {
 
     }
 
-
     public Integer getTotal() {
-        return total ;
+        return total;
     }
 
     public List<List<Object>> getStatusData() {
@@ -65,7 +63,7 @@ public class ResourceTypeStatusInfo implements Serializable {
         return toReturn;
     }
 
-    public List<List<Object>>getResourceTypeData() {
+    public List<List<Object>> getResourceTypeData() {
         return createOutput(resourceMap);
     }
 }

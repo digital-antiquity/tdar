@@ -16,6 +16,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Formulate a Luence/SOLR query based on a ResourceAnnotation StringPair
+ * 
  * @author abrin
  *
  * @param <C>
@@ -48,7 +49,6 @@ public class AnnotationQueryPart<C> extends FieldQueryPart<StringPair> {
         super(field, values);
         this.descriptionLabel = descriptionLabel;
     }
-    
 
     @Override
     protected void appendPhrase(StringBuilder sb, int index) {
@@ -58,7 +58,6 @@ public class AnnotationQueryPart<C> extends FieldQueryPart<StringPair> {
         String phrase = PhraseFormatter.QUOTED.format(ResourceDocumentConverter.formatResourceAnnotation(key, value));
         sb.append(phrase);
     }
-
 
     @Override
     public String getDescription(TextProvider provider) {

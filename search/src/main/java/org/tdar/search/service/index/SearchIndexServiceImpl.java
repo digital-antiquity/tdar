@@ -71,8 +71,6 @@ import org.tdar.search.service.CoreNames;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.utils.PersistableUtils;
 
-import net.miginfocom.layout.AC;
-
 @Service
 @Transactional(readOnly = true)
 public class SearchIndexServiceImpl implements SearchIndexService {
@@ -406,7 +404,6 @@ public class SearchIndexServiceImpl implements SearchIndexService {
         AsyncUpdateReceiver activity = setupActivity(reciever, batch);
         batch.indexAll();
     }
-
 
     /**
      * Wipe everything from the index

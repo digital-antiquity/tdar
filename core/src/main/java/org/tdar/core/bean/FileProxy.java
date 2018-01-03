@@ -52,7 +52,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private String description;
     private Date fileCreatedDate;
     // used to help distinguish between user managed proxies and those that may have been created to work around an error
-//    private boolean createdByServer = false;
+    // private boolean createdByServer = false;
     private InformationResourceFile informationResourceFile;
     private InformationResourceFileVersion informationResourceFileVersion;
 
@@ -140,7 +140,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public void setOriginalFileVersionId(String originalFileVersionId) {
-        if (StringUtils.isEmpty(originalFileVersionId)) {} else {
+        if (StringUtils.isEmpty(originalFileVersionId)) {
+        } else {
             this.originalFileVersionId = Long.parseLong(originalFileVersionId);
         }
     }
@@ -264,30 +265,30 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public Date getFileCreatedDate() {
-        if(fileCreatedDate == null) {
+        if (fileCreatedDate == null) {
             return null;
         }
-        //implicitly convert java.sql.Date to java.util.Date
+        // implicitly convert java.sql.Date to java.util.Date
         this.fileCreatedDate = new Date(fileCreatedDate.getTime());
         return fileCreatedDate;
     }
 
     public Integer getYear() {
-        if(fileCreatedDate == null) {
+        if (fileCreatedDate == null) {
             return null;
         }
         return new DateTime(fileCreatedDate.getTime()).getYear();
     }
 
     public Integer getMonth() {
-        if(fileCreatedDate == null) {
+        if (fileCreatedDate == null) {
             return null;
         }
         return new DateTime(fileCreatedDate.getTime()).getMonthOfYear();
     }
 
     public Integer getDay() {
-        if(fileCreatedDate == null) {
+        if (fileCreatedDate == null) {
             return null;
         }
         return new DateTime(fileCreatedDate.getTime()).getDayOfMonth();

@@ -88,7 +88,7 @@ public class OverdrawnAccountUpdate extends AbstractScheduledBatchProcess<Billin
             map_.put("acronym", CONFIG.getSiteAcronym());
             map_.put("baseUrl", CONFIG.getBaseUrl());
             emailService.queueWithFreemarkerTemplate("overdrawn-user.ftl", map_, email_);
-            
+
         }
     }
 

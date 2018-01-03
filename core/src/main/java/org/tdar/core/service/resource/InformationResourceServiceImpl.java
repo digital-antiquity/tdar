@@ -49,7 +49,8 @@ import org.tdar.utils.PersistableUtils;
 
 @Service("informationResourceService")
 @Transactional
-public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBase<InformationResource, InformationResourceDao> implements InformationResourceService {
+public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBase<InformationResource, InformationResourceDao>
+        implements InformationResourceService {
 
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
@@ -65,14 +66,16 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
     private PersonalFilestoreService personalFilestoreService;
 
     private FileAnalyzer analyzer;
-    
 
     /*
      * Given a @link Resource and list of @link FileProxy objects, process the files and report any errors to the @link ActionMessageErrorSupport listener,
      * which is likely a controller.
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.InformationResourceService#importFileProxiesAndProcessThroughWorkflow(T, org.tdar.core.bean.entity.TdarUser, java.lang.Long, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.InformationResourceService#importFileProxiesAndProcessThroughWorkflow(T, org.tdar.core.bean.entity.TdarUser,
+     * java.lang.Long, java.util.List)
      */
     @Override
     @Transactional
@@ -85,10 +88,10 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
 
         // prepare the metadata
         FileProxyWrapper wrapper = new FileProxyWrapper(resource, analyzer, datasetDao, fileProxiesToProcess);
-        
+
         wrapper.processMetadataForFileProxies();
 
-        analyzer.processFiles(wrapper.getFilesToProcess(),  resource.getResourceType().isCompositeFilesEnabled());
+        analyzer.processFiles(wrapper.getFilesToProcess(), resource.getResourceType().isCompositeFilesEnabled());
 
         /*
          * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method
@@ -113,16 +116,17 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return errorsAndMessages;
     }
 
-
     /*
      * Given an @link InformationResource, find all of the latest versions and reprocess them.
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#reprocessInformationResourceFiles(T)
      */
     @Override
     @Transactional(readOnly = false)
-    public <T extends InformationResource>  ErrorTransferObject reprocessInformationResourceFiles(T ir) throws Exception {
+    public <T extends InformationResource> ErrorTransferObject reprocessInformationResourceFiles(T ir) throws Exception {
         List<InformationResourceFileVersion> latestVersions = new ArrayList<>();
         for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
             if (irFile.isDeleted()) {
@@ -156,7 +160,9 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return eto;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#findAllResources()
      */
     @Override
@@ -165,7 +171,9 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return getDao().findAll();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#findResourcesByDecade()
      */
     @Override
@@ -175,7 +183,9 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return getDao().findResourcesByDecade(Status.ACTIVE);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#findFileByFilename(org.tdar.core.bean.resource.InformationResource, java.lang.String)
      */
     @Override
@@ -184,7 +194,9 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return getDao().findFileByFilename(resource, filename);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#findRandomFeaturedResource(boolean, int)
      */
     @Override
@@ -192,7 +204,9 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return getDao().findRandomFeaturedResource(restrictToFiles, maxResults);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#findRandomFeaturedResourceInProject(boolean, org.tdar.core.bean.resource.Project, int)
      */
     @Override
@@ -200,7 +214,9 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return getDao().findRandomFeaturedResourceInProject(restrictToFiles, project, maxResults);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#findRandomFeaturedResourceInCollection(boolean, java.lang.Long, int)
      */
     @Override
@@ -213,7 +229,9 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return findRandomFeaturedResource(restrictToFiles, maxResults);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#findResourceCountsByYear()
      */
     @Override
@@ -223,18 +241,22 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return getDao().findResourcesByYear(Status.ACTIVE);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#getFeaturedItems()
      */
     @Override
     @Cacheable(value = Caches.HOMEPAGE_FEATURED_ITEM_CACHE)
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Resource> getFeaturedItems() {
         Long featuredCollectionId = TdarConfiguration.getInstance().getFeaturedCollectionId();
-        return  findRandomFeaturedResourceInCollection(true, featuredCollectionId, 5);
+        return findRandomFeaturedResourceInCollection(true, featuredCollectionId, 5);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#findByDoi(java.lang.String)
      */
     @Override
@@ -243,9 +265,9 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         return getDao().findByDoi(doi);
     }
 
-
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#setAnalyzer(org.tdar.filestore.FileAnalyzer)
      */
     @Override
@@ -254,7 +276,9 @@ public class InformationResourceServiceImpl  extends ServiceInterface.TypedDaoBa
         this.analyzer = analyzer;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceService#getAnalyzer()
      */
     @Override

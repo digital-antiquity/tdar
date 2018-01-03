@@ -9,16 +9,12 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.event.EventType;
-import org.tdar.core.event.TdarEvent;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ErrorHandling;
@@ -42,134 +38,134 @@ import com.opensymphony.xwork2.Validateable;
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
 @Results(value = { @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT),
-		@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream",
-				"jsonInputStream", "statusCode", "500" }) })
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream",
+                "jsonInputStream", "statusCode", "500" }) })
 public class AddResourceToCollectionAction extends AbstractJsonApiAction implements Preparable, Validateable {
 
-	private static final long serialVersionUID = 1344077793459231299L;
+    private static final long serialVersionUID = 1344077793459231299L;
 
-	@Autowired
-	private transient AuthorizationService authorizationService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
-	@Autowired
-	private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
 
-	private Resource resource;
+    private Resource resource;
 
-	private Long resourceId;
+    private Long resourceId;
 
-	private Long collectionId;
+    private Long collectionId;
 
-	private Boolean addAsManagedResource = false;
+    private Boolean addAsManagedResource = false;
 
-	private ResourceCollection resourceCollection;
+    private ResourceCollection resourceCollection;
 
-//	@Autowired
-//	private ApplicationEventPublisher publisher;
-	
-	@Action(value = "addtocollection", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
-	@WriteableSession
-	@PostOnly
-	public String addResourceToResourceCollection() throws Exception {
-		Map<String, Object> jsonResult = new HashMap<String, Object>();
-		
-		//verify they have permissions to the resource
-		jsonResult.put("status", "failure");
-		
-		//TODO change to TdarMessage
-		jsonResult.put("reason", "addResourceToCollectionAction.no_edit_permission");
-		
-		//if they want to add as managed resource
-		try {
-    		if (addAsManagedResource && authorizationService.canEdit(getAuthenticatedUser(), resource)){
-    				resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.MANAGED);
-//    				publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
-    				produceSuccessResult(jsonResult,  "managed");
-    		}
-    		
-    		//verify that they can add it to the requested collection
-    		else if(!addAsManagedResource && authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
-					resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.UNMANAGED);
-//					publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
-					produceSuccessResult(jsonResult,  "unmanaged");
-    		}
-		}
-		catch(Throwable e){
-		    jsonResult.put("status", "failure");
-		    jsonResult.put("type", 	 e.getMessage());
-		}
-		
-		setResultObject(jsonResult);
-		
-		return SUCCESS;
-	}
+    // @Autowired
+    // private ApplicationEventPublisher publisher;
+
+    @Action(value = "addtocollection", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
+    @WriteableSession
+    @PostOnly
+    public String addResourceToResourceCollection() throws Exception {
+        Map<String, Object> jsonResult = new HashMap<String, Object>();
+
+        // verify they have permissions to the resource
+        jsonResult.put("status", "failure");
+
+        // TODO change to TdarMessage
+        jsonResult.put("reason", "addResourceToCollectionAction.no_edit_permission");
+
+        // if they want to add as managed resource
+        try {
+            if (addAsManagedResource && authorizationService.canEdit(getAuthenticatedUser(), resource)) {
+                resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), getAuthenticatedUser(), true,
+                        ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.MANAGED);
+                // publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+                produceSuccessResult(jsonResult, "managed");
+            }
+
+            // verify that they can add it to the requested collection
+            else if (!addAsManagedResource && authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
+                resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true,
+                        ErrorHandling.NO_VALIDATION, resourceCollection, CollectionResourceSection.UNMANAGED);
+                // publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+                produceSuccessResult(jsonResult, "unmanaged");
+            }
+        } catch (Throwable e) {
+            jsonResult.put("status", "failure");
+            jsonResult.put("type", e.getMessage());
+        }
+
+        setResultObject(jsonResult);
+
+        return SUCCESS;
+    }
 
     private void produceSuccessResult(Map<String, Object> jsonResult, String type) {
         jsonResult.put("status", "success");
-        jsonResult.put("type", 	 type);
+        jsonResult.put("type", type);
         jsonResult.put("reason", "");
         jsonResult.put("resourceId", resourceId);
         jsonResult.put("collectionId", collectionId);
     }
 
-	@Override
-	public void validate() {
-		super.validate();
+    @Override
+    public void validate() {
+        super.validate();
 
-		if (PersistableUtils.isNullOrTransient(resource)
-				|| !authorizationService.canView(getAuthenticatedUser(), resource)) {
-			addActionError("addResourceToCollectionAction.no_edit_permission");
-		}
+        if (PersistableUtils.isNullOrTransient(resource)
+                || !authorizationService.canView(getAuthenticatedUser(), resource)) {
+            addActionError("addResourceToCollectionAction.no_edit_permission");
+        }
 
-		if (PersistableUtils.isNullOrTransient(resourceCollection)
-				|| !authorizationService.canView(getAuthenticatedUser(), resourceCollection)) {
-			addActionError("addResourceToCollectionAction.no_edit_permission");
-		}
-	
-		if(!authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection )){
-			addActionError("addResourceToCollectionAction.no_edit_permission");
-		}
-	}
+        if (PersistableUtils.isNullOrTransient(resourceCollection)
+                || !authorizationService.canView(getAuthenticatedUser(), resourceCollection)) {
+            addActionError("addResourceToCollectionAction.no_edit_permission");
+        }
 
-	@Override
-	public void prepare() throws Exception {
-		super.prepare();
-		resource = getGenericService().find(Resource.class, resourceId);
-		
-		resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
-	}
+        if (!authorizationService.canAddToCollection(getAuthenticatedUser(), resourceCollection)) {
+            addActionError("addResourceToCollectionAction.no_edit_permission");
+        }
+    }
 
-	public ResourceCollectionService getResourceCollectionService() {
-		return resourceCollectionService;
-	}
+    @Override
+    public void prepare() throws Exception {
+        super.prepare();
+        resource = getGenericService().find(Resource.class, resourceId);
 
-	public void setResourceCollectionService(ResourceCollectionService resourceCollectionService) {
-		this.resourceCollectionService = resourceCollectionService;
-	}
+        resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
+    }
 
-	public Long getResourceId() {
-		return resourceId;
-	}
+    public ResourceCollectionService getResourceCollectionService() {
+        return resourceCollectionService;
+    }
 
-	public void setResourceId(Long resourceId) {
-		this.resourceId = resourceId;
-	}
+    public void setResourceCollectionService(ResourceCollectionService resourceCollectionService) {
+        this.resourceCollectionService = resourceCollectionService;
+    }
 
-	public Long getCollectionId() {
-		return collectionId;
-	}
+    public Long getResourceId() {
+        return resourceId;
+    }
 
-	public void setCollectionId(Long collectionId) {
-		this.collectionId = collectionId;
-	}
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
 
-	public Boolean getAddAsManagedResource() {
-		return addAsManagedResource;
-	}
+    public Long getCollectionId() {
+        return collectionId;
+    }
 
-	public void setAddAsManagedResource(Boolean addAsManagedResource) {
-		this.addAsManagedResource = addAsManagedResource;
-	}
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+    }
 
+    public Boolean getAddAsManagedResource() {
+        return addAsManagedResource;
+    }
+
+    public void setAddAsManagedResource(Boolean addAsManagedResource) {
+        this.addAsManagedResource = addAsManagedResource;
+    }
 
 }

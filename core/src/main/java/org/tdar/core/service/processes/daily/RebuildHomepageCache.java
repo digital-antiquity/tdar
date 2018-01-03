@@ -48,14 +48,13 @@ public class RebuildHomepageCache extends AbstractScheduledProcess {
     public boolean shouldRunAtStartup() {
         return true;
     }
-    
-    
+
     @Override
     public void execute() {
         logger.info("rebuilding homepage cache");
         resourceService.evictHomepageMapCache();
         resourceService.getISOGeographicCounts();
-        
+
         resourceService.evictResourceCountCache();
         resourceService.getResourceCounts();
 
@@ -70,7 +69,7 @@ public class RebuildHomepageCache extends AbstractScheduledProcess {
 
         informationResourceService.getFeaturedItems();
         resourceService.evictHomepageFeaturedItemCache();
-        
+
         logger.info("done caching");
     }
 

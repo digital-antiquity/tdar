@@ -21,8 +21,10 @@ import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.EmailMessageType;
 
 import com.opensymphony.xwork2.Preparable;
+
 /**
- * Main page to backing permission processing page 
+ * Main page to backing permission processing page
+ * 
  * @author abrin
  *
  */
@@ -38,7 +40,7 @@ public class AdminPermissonsRequestAction extends AbstractProcessPermissonsActio
     private transient ResourceService resourceService;
 
     private RequestCollection custom;
-    
+
     @Action(value = "grant",
             results = {
                     @Result(name = SUCCESS, location = "grant-access.ftl"),
@@ -54,14 +56,14 @@ public class AdminPermissonsRequestAction extends AbstractProcessPermissonsActio
     }
 
     @Override
-	public List<Permissions> getAvailablePermissions() {
-    	if (getType() != null && getType() == EmailMessageType.CUSTOM) {
-    	    if (custom != null) {
-    	        return Arrays.asList(custom.getPermission());
-    	    }
-    	}
-		return super.getAvailablePermissions();
-	}
+    public List<Permissions> getAvailablePermissions() {
+        if (getType() != null && getType() == EmailMessageType.CUSTOM) {
+            if (custom != null) {
+                return Arrays.asList(custom.getPermission());
+            }
+        }
+        return super.getAvailablePermissions();
+    }
 
     public RequestCollection getCustom() {
         return custom;

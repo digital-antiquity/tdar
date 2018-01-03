@@ -18,9 +18,8 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         getFieldValues().add(term);
     }
 
-
     public DataValueQueryPart(String text, Operator operator, List<String> contents) {
-        super(QueryFieldNames.VALUE, text,operator, contents);
+        super(QueryFieldNames.VALUE, text, operator, contents);
     }
 
     @Override

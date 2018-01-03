@@ -89,7 +89,7 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
     @Override
     public Object getResultObject() {
         if (asyncActivity != null && StringUtils.isNotBlank(asyncActivity.getMessage())) {
-        getLogger().debug("getResultObject:{} - {}", asyncActivity.getMessage(), asyncActivity.getPercentComplete());
+            getLogger().debug("getResultObject:{} - {}", asyncActivity.getMessage(), asyncActivity.getPercentComplete());
         }
         return asyncActivity;
     }

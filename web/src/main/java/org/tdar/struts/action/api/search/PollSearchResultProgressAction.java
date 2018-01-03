@@ -31,7 +31,7 @@ import com.opensymphony.xwork2.Validateable;
 @Scope("prototype")
 @ParentPackage("default")
 @RequiresTdarUserGroup(TdarGroup.TDAR_USERS)
-public class PollSearchResultProgressAction extends AbstractAdvancedSearchController implements Preparable, Validateable  {
+public class PollSearchResultProgressAction extends AbstractAdvancedSearchController implements Preparable, Validateable {
 
     private static final long serialVersionUID = -7606256523280755196L;
 
@@ -41,60 +41,58 @@ public class PollSearchResultProgressAction extends AbstractAdvancedSearchContro
     private String key;
 
     private ResourceCollection resourceCollection;
-    
+
     private boolean async = true;
 
     private boolean addAsManaged = false;
-  
+
     @Autowired
     private WebSearchServiceImpl webSearchService;
 
     @Override
     public void prepare() throws Exception {
-    	if(!PersistableUtils.isNullOrTransient(getAuthenticatedUser())){
-    		key = webSearchService.constructKey(collectionId, getAuthenticatedUser().getId());
-    	}
+        if (!PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
+            key = webSearchService.constructKey(collectionId, getAuthenticatedUser().getId());
+        }
     }
-    
+
     @Override
     public void validate() {
-    	
-    	if(PersistableUtils.isNullOrTransient(getAuthenticatedUser())){
-    		addActionError("SaveSearchResultAction.not_logged_in");
-    	}
-    	
+
+        if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
+            addActionError("SaveSearchResultAction.not_logged_in");
+        }
+
         if (PersistableUtils.isNullOrTransient(collectionId)) {
             addActionError("SaveSearchResultAction.collection_missing");
         } else {
             resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
-            if(PersistableUtils.isNullOrTransient(resourceCollection)){
-            	addActionError("SaveSearchResultAction.invalid_collection");
+            if (PersistableUtils.isNullOrTransient(resourceCollection)) {
+                addActionError("SaveSearchResultAction.invalid_collection");
             }
         }
-    	super.validate();
+        super.validate();
     }
-    
 
     @IgnoreActivity
     @Action(value = "checkstatus", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
     @HttpForbiddenErrorResponseOnly
     public String checkStatusAsync() {
         AsynchronousStatus status = AsynchronousProcessManager.getInstance().findActivity(key);
-        Map<String, Object> resultObject  = new HashMap<String, Object>();
+        Map<String, Object> resultObject = new HashMap<String, Object>();
         if (status != null) {
             resultObject.put("status", status.getStatus());
             resultObject.put("message", status.getMessage());
             resultObject.put("percentComplete", status.getPercentComplete());
-        }
-        else {
+        } else {
             resultObject.put("status", "not running");
             resultObject.put("message", "there is no service process running");
-            resultObject.put("percentComplete", 0.0f);        	
+            resultObject.put("percentComplete", 0.0f);
         }
         setResult(resultObject);
         return SUCCESS;
     }
-    
+
     public boolean isWebObfuscation() {
         return webObfuscation;
     }

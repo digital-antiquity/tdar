@@ -79,7 +79,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
                 BodyContentHandler handler = new BodyContentHandler(indexedFileOutputStream);
                 // If we're dealing with a zip, read only the beginning of the file
                 stream = new FileInputStream(file);
-                try { 
+                try {
                     // if we're a PDF and we're really big... then we should use PDFBox to extract the text to protect memory
                     if ("pdf".equals(extension) && file.length() > ONE_GB) {
                         getLogger().debug("using fallback PDF model");
@@ -141,7 +141,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
 
     public void fallbackWriteFile(InputStream stream, BufferedOutputStream indexedFileOutputStream) throws IOException {
         PDDocument pdDoc = PDDocument.load(stream, MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L));
-        PDFTextStripper  pdfStripper = new PDFTextStripper();
+        PDFTextStripper pdfStripper = new PDFTextStripper();
         OutputStreamWriter writer = new OutputStreamWriter(indexedFileOutputStream);
         pdfStripper.writeText(pdDoc, writer);
         IOUtils.closeQuietly(writer);

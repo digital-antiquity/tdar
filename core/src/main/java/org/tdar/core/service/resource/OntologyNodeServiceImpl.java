@@ -21,9 +21,11 @@ import org.tdar.core.service.ServiceInterface;
  */
 @Service
 @Transactional
-public class OntologyNodeServiceImpl  extends ServiceInterface.TypedDaoBase<OntologyNode, OntologyNodeDao> implements OntologyNodeService {
+public class OntologyNodeServiceImpl extends ServiceInterface.TypedDaoBase<OntologyNode, OntologyNodeDao> implements OntologyNodeService {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyNodeService#getAllChildren(org.tdar.core.bean.resource.OntologyNode)
      */
     @Override
@@ -31,7 +33,9 @@ public class OntologyNodeServiceImpl  extends ServiceInterface.TypedDaoBase<Onto
         return getDao().getAllChildren(ontologyNode);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyNodeService#getHierarchyMap(java.util.List)
      */
     @Override
@@ -43,7 +47,9 @@ public class OntologyNodeServiceImpl  extends ServiceInterface.TypedDaoBase<Onto
         return hierarchyMap;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyNodeService#getAllChildren(java.util.List)
      */
     // FIXME: may want to aggregate / batch for efficiency
@@ -52,7 +58,9 @@ public class OntologyNodeServiceImpl  extends ServiceInterface.TypedDaoBase<Onto
         return getDao().getAllChildren(selectedOntologyNodes);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyNodeService#listDatasetsWithMappingsToNode(org.tdar.core.bean.resource.OntologyNode)
      */
     @Override
@@ -60,7 +68,9 @@ public class OntologyNodeServiceImpl  extends ServiceInterface.TypedDaoBase<Onto
         return getDao().findDatasetsUsingNode(node);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyNodeService#getParent(org.tdar.core.bean.resource.OntologyNode)
      */
     @Override

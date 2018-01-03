@@ -155,7 +155,7 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
         return provider;
     }
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     @Qualifier("DoiProvider")
     public void setProvider(ExternalIDProvider provider) {
         this.provider = provider;

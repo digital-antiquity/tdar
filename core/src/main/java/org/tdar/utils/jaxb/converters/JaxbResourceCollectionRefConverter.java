@@ -13,12 +13,12 @@ import org.tdar.utils.PersistableUtils;
 
 /**
  * This class is meant to help with serialization of ResourceCollections it provides a method for handling different cases separately:
- *  * Internal Resource Collections
- *  * Un-persisted Resource Collections
- *  * Persisted Resource Collections
- *  
- *  Persisted resource collections can be given a "reference" instead of a full XML representation.
- *   
+ * * Internal Resource Collections
+ * * Un-persisted Resource Collections
+ * * Persisted Resource Collections
+ * 
+ * Persisted resource collections can be given a "reference" instead of a full XML representation.
+ * 
  * @author abrin
  *
  */
@@ -50,15 +50,15 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
     @Override
     public ResourceCollection unmarshal(Persistable ref_) throws Exception {
         if (ref_ instanceof ResourceCollection) {
-            return (ResourceCollection)ref_;
+            return (ResourceCollection) ref_;
         }
-        
+
         if (ref_ == null || !(ref_ instanceof JAXBPersistableRef)) {
             return null;
         }
-        JAXBPersistableRef ref = (JAXBPersistableRef)ref_;
+        JAXBPersistableRef ref = (JAXBPersistableRef) ref_;
         Class<? extends Persistable> cls = reflectionService.getMatchingClassForSimpleName(ref.getType());
-        logger.debug("{} - {}" , cls, ref);
+        logger.debug("{} - {}", cls, ref);
         ResourceCollection rc = (ResourceCollection) genericDao.find(cls, ref.getId());
         if (rc == null) {
             logger.error("null collection!");
@@ -66,13 +66,12 @@ public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotatio
         ResourceCollection rc_ = null;
         if (cls.isAssignableFrom(ResourceCollection.class)) {
             rc_ = new ResourceCollection();
-//        } else if (cls.isAssignableFrom(InternalCollection.class)) {
-//            rc_ = new InternalCollection();
+            // } else if (cls.isAssignableFrom(InternalCollection.class)) {
+            // rc_ = new InternalCollection();
         }
         rc_.setId(ref.getId());
-//        rc = null;
+        // rc = null;
         return rc_;
     }
-
 
 }

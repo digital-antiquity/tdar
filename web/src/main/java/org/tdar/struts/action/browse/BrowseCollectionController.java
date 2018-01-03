@@ -61,7 +61,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
 
     @Autowired
     private CollectionSearchService collectionSearchService;
-    
+
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     private transient InputStream inputStream;
@@ -122,7 +122,6 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-
     public Persistable getPersistable() {
         return persistable;
     }
@@ -138,7 +137,6 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     public void setGroups(List<String> groups) {
         this.groups = groups;
     }
-
 
     public Long getContentLength() {
         return contentLength;

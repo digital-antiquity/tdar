@@ -119,7 +119,6 @@ public class AdminUserStatsExportAction extends AbstractAuthenticatableAction im
         return SUCCESS;
     }
 
-    
     public FileInputStream getInputStream() {
         return inputStream;
     }

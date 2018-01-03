@@ -35,7 +35,7 @@ public class ReindexResourcesInCollectionAction extends AbstractCollectionAdminA
     @Override
     @PostOnly
     @WriteableSession
-    @Action(value = "{id}", results={
+    @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
@@ -46,7 +46,7 @@ public class ReindexResourcesInCollectionAction extends AbstractCollectionAdminA
         }
         return SUCCESS;
     }
-    
+
     public boolean isAsync() {
         return async;
     }
@@ -54,6 +54,5 @@ public class ReindexResourcesInCollectionAction extends AbstractCollectionAdminA
     public void setAsync(boolean async) {
         this.async = async;
     }
-
 
 }

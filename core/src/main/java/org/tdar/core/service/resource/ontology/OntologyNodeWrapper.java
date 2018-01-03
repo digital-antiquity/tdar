@@ -20,7 +20,7 @@ public class OntologyNodeWrapper implements Serializable {
 
     public OntologyNodeWrapper() {
     }
-    
+
     public OntologyNodeWrapper(OntologyNode c) {
         this.iri = c.getIri();
         this.displayName = c.getDisplayName();

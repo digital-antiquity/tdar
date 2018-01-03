@@ -67,7 +67,7 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
     /**
      * @return
      */
-    public  List<ResourceCollection> findCollectionsOfParent(Long parent, Boolean visible) {
+    public List<ResourceCollection> findCollectionsOfParent(Long parent, Boolean visible) {
         String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_PARENT;
         Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         namedQuery.setParameter("parent", parent);
@@ -388,7 +388,8 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
     }
 
     public List<ResourceCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Permissions perm, boolean admin) {
-        Query<ResourceCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, ResourceCollection.class);
+        Query<ResourceCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO,
+                ResourceCollection.class);
         shared.setParameter("userId", authenticatedUser.getId());
         shared.setParameter("perm", perm.getEffectivePermissions() - 1);
         List<ResourceCollection> resultList = shared.getResultList();
@@ -473,27 +474,28 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.EMPTY_LIST;
         }
-        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS,ResourceCollection.class);
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_ALTERNATE_CHILDRENS, ResourceCollection.class);
         query.setParameterList("collectionIds", ids);
         return query.list();
     }
 
-    public  List<ResourceCollection> getAlternateChildrenTrees(Collection<ResourceCollection> allChildren, ResourceCollection collection) {
+    public List<ResourceCollection> getAlternateChildrenTrees(Collection<ResourceCollection> allChildren, ResourceCollection collection) {
         List<Long> ids = PersistableUtils.extractIds(allChildren);
         String qs = TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE;
 
         ids.add(collection.getId());
-        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(qs,ResourceCollection.class);
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(qs, ResourceCollection.class);
         query.setParameterList("collectionIds", ids);
         return query.list();
     }
 
     public Collection<HasAuthorizedUsers> findExpiringUsers(Date date) {
         ArrayList<HasAuthorizedUsers> toReturn = new ArrayList<>();
-        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION,ResourceCollection.class);
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION,
+                ResourceCollection.class);
         query.setParameter("date", date);
         toReturn.addAll(query.list());
-        Query<Resource> query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE,Resource.class);
+        Query<Resource> query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE, Resource.class);
         query2.setParameter("date", date);
         toReturn.addAll(query2.list());
 

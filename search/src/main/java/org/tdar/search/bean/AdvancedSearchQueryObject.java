@@ -20,7 +20,7 @@ public class AdvancedSearchQueryObject implements Serializable {
     private String searchPhrase;
     private String refinedBy;
     private List<String> allGeneralQueryFields = new ArrayList<>();
-    
+
     public String getSearchPhrase() {
         return searchPhrase;
     }
@@ -87,6 +87,7 @@ public class AdvancedSearchQueryObject implements Serializable {
     public void setCollectionSearchBoxVisible(boolean collectionSearchBoxVisible) {
         this.collectionSearchBoxVisible = collectionSearchBoxVisible;
     }
+
     public boolean isMultiCore() {
         return multiCore;
     }
@@ -98,9 +99,9 @@ public class AdvancedSearchQueryObject implements Serializable {
     public List<String> getAllGeneralQueryFields() {
         return allGeneralQueryFields;
     }
-    
+
     public void setAllGeneralQueryFields(List<String> getAllGeneralQueryFields) {
         this.allGeneralQueryFields = getAllGeneralQueryFields;
     }
-    
+
 }

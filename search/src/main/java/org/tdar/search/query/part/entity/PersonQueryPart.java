@@ -17,6 +17,7 @@ import org.tdar.search.query.part.StringAutocompletePart;
 
 /**
  * Search for a Person either with a specific person as an example, or with a wildcard entry that searches across everything
+ * 
  * @author abrin
  *
  */
@@ -27,7 +28,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
     }
 
     private boolean registered = false;
-    private boolean includeEmail   = false;
+    private boolean includeEmail = false;
 
     @Override
     public String generateQueryString() {
@@ -74,13 +75,12 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 setOperator(Operator.OR);
             }
 
-            if(pers instanceof TdarUser && StringUtils.isNotBlank(((TdarUser)pers).getUsername())){
-            		FieldQueryPart<String> username = new FieldQueryPart<>(QueryFieldNames.USERNAME, ((TdarUser)pers).getUsername());
-            		username.setBoost(4f);
+            if (pers instanceof TdarUser && StringUtils.isNotBlank(((TdarUser) pers).getUsername())) {
+                FieldQueryPart<String> username = new FieldQueryPart<>(QueryFieldNames.USERNAME, ((TdarUser) pers).getUsername());
+                username.setBoost(4f);
                 group.append(username);
             }
-            
-            
+
             if (StringUtils.isNotBlank(pers.getEmail())) {
                 if (isIncludeEmail()) {
                     ems.add(StringUtils.trim(pers.getEmail()));
@@ -117,7 +117,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                 formatted.add(institution);
             }
             FieldQueryPart<String> inst = new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME, formatted);
-//            inst.setPhraseFormatters(PhraseFormatter.ESCAPED);
+            // inst.setPhraseFormatters(PhraseFormatter.ESCAPED);
             group.append(inst);
             // group1.append(new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME_AUTO, insts));
         }

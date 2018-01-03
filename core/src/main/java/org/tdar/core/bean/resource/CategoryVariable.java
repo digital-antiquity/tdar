@@ -58,7 +58,7 @@ public class CategoryVariable extends AbstractPersistable implements Comparable<
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-//    @Length(max = FieldLength.FIELD_LENGTH_255)
+    // @Length(max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private CategoryType type;
 

@@ -28,7 +28,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class APIClient {
 
     private static final String UTF_8 = "UTF-8";
@@ -48,13 +47,14 @@ public class APIClient {
     private String baseUrl;
     private CloseableHttpClient httpClient;
     private Properties props;
-    
+
     /**
      * configure with specified base url
+     * 
      * @param baseSecureUrl
      */
     public APIClient(String baseSecureUrl) {
-        this(baseSecureUrl, TIMEOUT );
+        this(baseSecureUrl, TIMEOUT);
     }
 
     /**
@@ -89,9 +89,9 @@ public class APIClient {
      * @throws Exception
      */
     public ApiClientResponse apiLogin() throws IllegalStateException, Exception {
-        return apiLogin(props.getProperty("username"),props.getProperty("password"));
+        return apiLogin(props.getProperty("username"), props.getProperty("password"));
     }
-    
+
     /**
      * Login with specified usename / password
      * 
@@ -157,7 +157,7 @@ public class APIClient {
     }
 
     public long getDefaultAccount() {
-        return Long.parseLong((String)props.get("account.id"));
+        return Long.parseLong((String) props.get("account.id"));
     }
 
     /**
@@ -179,7 +179,7 @@ public class APIClient {
                 errors.add(f);
             }
         }
-        
+
         if (!CollectionUtils.isEmpty(errors)) {
             logger.error(">>>> Files don't exist for: {} -- {}", tdarId, files);
         }
@@ -197,7 +197,6 @@ public class APIClient {
         return toReturn;
     }
 
-    
     public ApiClientResponse uploadCollection(String docXml, Long tdarId) throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(baseUrl + API_INGEST_COLLECTION_UPLOAD);
 
@@ -248,7 +247,7 @@ public class APIClient {
     }
 
     public ApiClientResponse viewRecord(Long id) throws ClientProtocolException, IOException {
-        return get(id,"%s/api/view?id=%s");
+        return get(id, "%s/api/view?id=%s");
     }
 
     public ApiClientResponse viewCollection(Long id) throws ClientProtocolException, IOException {

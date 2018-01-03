@@ -59,7 +59,7 @@ public class DownloadTransferObject implements Serializable {
     private String dispositionPrefix;
     private TextProvider textProvider;
     private File coverPageLogo;
-    
+
     private DownloadService downloadService;
 
     public DownloadTransferObject(InformationResource resourceToDownload, TdarUser user, TextProvider textProvider, DownloadService downloadService,
@@ -167,8 +167,7 @@ public class DownloadTransferObject implements Serializable {
                             IOUtils.closeQuietly(zout);
                         }
                     }
-                }
-                );
+                });
         thread.start();
 
         return is;

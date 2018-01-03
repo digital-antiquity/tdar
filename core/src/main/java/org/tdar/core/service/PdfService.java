@@ -32,7 +32,8 @@ public interface PdfService {
             throws PdfCoverPageGenerationException;
 
     /**
-     * Can the system generate a coverpage for the provided file?  This method is non-deterministic.
+     * Can the system generate a coverpage for the provided file? This method is non-deterministic.
+     * 
      * @param irfv
      * @return
      */

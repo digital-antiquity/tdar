@@ -152,7 +152,7 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
     public ResourceType findResourceType(Number id) {
         Query<ResourceType> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_RESOURCETYPE);
         query.setParameter("id", id.longValue());
-        return  query.getSingleResult();
+        return query.getSingleResult();
     }
 
     @SuppressWarnings("rawtypes")
@@ -196,7 +196,7 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
                 BigInteger bigint = (BigInteger) objs[3];
                 ResourceType resourceType = ResourceType.valueOf((String) objs[1]);
                 String label = MessageHelper.getInstance().getText(resourceType.getPluralLocaleKey());
-                cache.add(new HomepageGeographicCache(code, resourceType, label ,count, bigint.longValue()));
+                cache.add(new HomepageGeographicCache(code, resourceType, label, count, bigint.longValue()));
                 if (!totals.containsKey(code)) {
                     totals.put(code, 0);
                 }
@@ -499,9 +499,7 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
             clearId(ra);
             clearId(ra.getResourceAnnotationKey());
         });
-        
-        
-        
+
     }
 
 }

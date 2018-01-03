@@ -168,5 +168,4 @@ public class GenericKeywordDao extends GenericDao {
         return (Number) criteria.uniqueResult();
     }
 
-
 }

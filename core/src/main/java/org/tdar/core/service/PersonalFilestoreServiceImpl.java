@@ -25,7 +25,7 @@ import org.tdar.filestore.personal.PersonalFilestoreFile;
  * @version $Rev$
  */
 @Service
-public class PersonalFilestoreServiceImpl implements PersonalFilestoreService  {
+public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Autowired
     private GenericDao genericDao;
@@ -33,7 +33,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService  {
     // FIXME: double check that won't leak memory
     private Map<TdarUser, PersonalFilestore> personalFilestoreCache = new WeakHashMap<TdarUser, PersonalFilestore>();
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.PersonalFilestoreService#createPersonalFilestoreTicket(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -42,8 +44,11 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService  {
         return createPersonalFilestoreTicket(person, PersonalFileType.UPLOAD);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.PersonalFilestoreService#createPersonalFilestoreTicket(org.tdar.core.bean.entity.TdarUser, org.tdar.filestore.personal.PersonalFileType)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.PersonalFilestoreService#createPersonalFilestoreTicket(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.filestore.personal.PersonalFileType)
      */
     @Override
     @Transactional
@@ -57,7 +62,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService  {
         return tfg;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.PersonalFilestoreService#getPersonalFilestore(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -70,7 +77,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService  {
         return personalFilestore;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.PersonalFilestoreService#findPersonalFilestoreTicket(java.lang.Long)
      */
     @Override
@@ -79,7 +88,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService  {
         return genericDao.find(PersonalFilestoreTicket.class, ticketId);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.PersonalFilestoreService#retrieveAllPersonalFilestoreFiles(java.lang.Long)
      */
     @Override
@@ -92,7 +103,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService  {
         return getPersonalFilestore(ticket.getSubmitter()).retrieveAll(ticket);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.PersonalFilestoreService#getPersonalFilestore(org.tdar.core.bean.PersonalFilestoreTicket)
      */
     @Override
@@ -100,7 +113,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService  {
         return getPersonalFilestore(ticket.getSubmitter());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.PersonalFilestoreService#getPersonalFilestore(java.lang.Long)
      */
     @Override
@@ -110,7 +125,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService  {
         return getPersonalFilestore(ticket);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.PersonalFilestoreService#store(org.tdar.core.bean.PersonalFilestoreTicket, java.io.File, java.lang.String)
      */
     @Override

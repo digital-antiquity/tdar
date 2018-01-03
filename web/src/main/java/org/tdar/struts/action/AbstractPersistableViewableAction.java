@@ -83,7 +83,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient FileSystemResourceService fileSystemResourceService;
-    
+
     private boolean redirectBadSlug;
     private String slug;
     private String slugSuffix;

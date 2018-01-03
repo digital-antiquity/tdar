@@ -8,11 +8,8 @@ import org.tdar.core.bean.Localizable;
 
 public enum EmailMessageType implements Localizable, HasLabel {
 
-    CONTACT("email-form/contact.ftl"),
-    REQUEST_ACCESS("email-form/access-request.ftl"),
-    SUGGEST_CORRECTION("email-form/correction.ftl"),
-    MERGE_PEOPLE("email-form/merge-people.ftl"),
-    CUSTOM("email-form/custom-request.ftl");
+    CONTACT("email-form/contact.ftl"), REQUEST_ACCESS("email-form/access-request.ftl"), SUGGEST_CORRECTION("email-form/correction.ftl"), MERGE_PEOPLE(
+            "email-form/merge-people.ftl"), CUSTOM("email-form/custom-request.ftl");
 
     private String templateName;
 
@@ -57,7 +54,7 @@ public enum EmailMessageType implements Localizable, HasLabel {
         return types;
     }
 
-	public static List<EmailMessageType> valuesWithoutCustom() {
+    public static List<EmailMessageType> valuesWithoutCustom() {
         ArrayList<EmailMessageType> types = new ArrayList<EmailMessageType>();
         for (EmailMessageType type : values()) {
             if (type != CUSTOM && type != MERGE_PEOPLE) {
@@ -65,6 +62,6 @@ public enum EmailMessageType implements Localizable, HasLabel {
             }
         }
         return types;
-	}
+    }
 
 }

@@ -6,8 +6,6 @@
  */
 package org.tdar.struts.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,7 +40,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     private static final long serialVersionUID = 2357805482356017885L;
 
-    //Input parameters
+    // Input parameters
     private String callback;
     private ProjectionModel projectionModel;
     private int minLookupLength = 3;
@@ -71,15 +69,14 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     @Autowired
     ObfuscationService obfuscationService;
-    
+
     @Autowired
     SerializationService serializationService;
 
     private Map<String, Object> result = new HashMap<>();
     private Class filter;
     private List<I> results = Collections.emptyList();
-    
-    
+
     public String getCallback() {
         return callback;
     }
@@ -91,7 +88,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     public int getMinLookupLength() {
         return minLookupLength;
     }
-
 
     public void setMinLookupLength(int minLookupLength) {
         this.minLookupLength = minLookupLength;
@@ -320,9 +316,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     }
 
     protected void cleanupResourceTypes() {
-            setResourceTypes(cleanupFacetOptions(getResourceTypes()));
+        setResourceTypes(cleanupFacetOptions(getResourceTypes()));
     }
-    
+
     // REQUIRED IF YOU WANT FACETING TO ACTUALLY WORK
     public void setResourceTypes(List<ResourceType> resourceTypes) {
         getReservedSearchParameters().setResourceTypes(resourceTypes);
@@ -336,10 +332,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     public Object getResultObject() {
         return getResult();
     }
-    
+
     public Class getJsonView() {
         return getFilter();
     }
+
     protected void prepareResult() {
         List<I> actual = new ArrayList<>();
         for (I obj : results) {
@@ -368,6 +365,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     /**
      * Specify the type of object that is being looked up
+     * 
      * @param lookupSource
      */
     public void setLookupSource(LookupSource lookupSource) {
@@ -427,7 +425,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     public void setFacetWrapper(FacetWrapper facetWrapper) {
         this.facetWrapper = facetWrapper;
     }
-
 
     @Override
     public DisplayOrientation getOrientation() {

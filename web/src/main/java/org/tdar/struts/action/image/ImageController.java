@@ -29,7 +29,6 @@ public class ImageController extends AbstractInformationResourceController<Image
 
     private static final long serialVersionUID = 8690371228267286260L;
 
-
     @Override
     public Set<String> getValidFileExtensions() {
         return getAnalyzer().getExtensionsForType(ResourceType.IMAGE);

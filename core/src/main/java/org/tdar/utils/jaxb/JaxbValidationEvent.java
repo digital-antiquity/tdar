@@ -60,7 +60,7 @@ public class JaxbValidationEvent implements Serializable {
         try {
             ExceptionUtils.getStackTrace(event.getLinkedException());
         } catch (NullPointerException npe) {
-            
+
         }
 
         return String.format("[%s] %s line: %s column: %s  { %s } %s ", getSeverity(), event.getMessage(), event.getLocator().getLineNumber(), event

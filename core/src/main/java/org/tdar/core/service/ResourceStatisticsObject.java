@@ -38,10 +38,9 @@ public class ResourceStatisticsObject {
         DateTime lastYear = DateTime.now().minusDays(255).withDayOfMonth(1);
         DateTime lastWeek = DateTime.now().minusDays(7);
 
-        
         Date lastWeekDate = lastWeek.toDate();
         Date lastYearDate = lastYear.toDate();
-        
+
         if (resource instanceof InformationResource) {
             for (InformationResourceFile file : ((InformationResource) resource).getInformationResourceFiles()) {
                 getFilenames().add(file.getFilename());
@@ -54,11 +53,11 @@ public class ResourceStatisticsObject {
     }
 
     private void setupDownloadUsage(Map<String, List<AggregateDownloadStatistic>> downloadStats, Date lastYearDate) {
-        for (int i=0; i< getFilenames().size(); i++) {
+        for (int i = 0; i < getFilenames().size(); i++) {
             String filename = getFilenames().get(i);
             for (AggregateDownloadStatistic stat : downloadStats.get(filename)) {
                 String key = format.format(stat.getAggregateDate());
-                String mkey = String.format("%02d-%s", stat.getMonth(),stat.getYear());
+                String mkey = String.format("%02d-%s", stat.getMonth(), stat.getYear());
                 String ykey = Integer.toString(stat.getYear());
                 DailyTotal dailyTotal = getOrCreate(stat, key, getAllMap());
                 dailyTotal.addTotalDownload(i, stat.getCount());
@@ -72,7 +71,7 @@ public class ResourceStatisticsObject {
         }
     }
 
-    private DailyTotal getOrCreate(AggregateDownloadStatistic stat, String mkey, Map<String,DailyTotal> map) {
+    private DailyTotal getOrCreate(AggregateDownloadStatistic stat, String mkey, Map<String, DailyTotal> map) {
         DailyTotal mtotal = map.get(mkey);
         if (mtotal == null) {
             mtotal = createEmptyDailyTotal(mkey);
@@ -84,13 +83,13 @@ public class ResourceStatisticsObject {
 
     private void setupDailyUsage(List<AggregateDayViewStatistic> usageStatsForResources, Date lastWeekDate, Date lastYearDate) {
         for (AggregateDayViewStatistic stat : usageStatsForResources) {
-            String key = String.format("%02d-%s", stat.getMonth(),stat.getYear());
+            String key = String.format("%02d-%s", stat.getMonth(), stat.getYear());
             String ykey = String.format("%s", stat.getYear());
             for (DailyTotal total : stat.getDailyTotals()) {
                 if (total.getDate().after(lastWeekDate)) {
-                    getDailyMap().put(total.getDateString(),total);
+                    getDailyMap().put(total.getDateString(), total);
                 }
-                
+
                 total.setTotalDownloads(createDownloadList());
                 getAllMap().put(total.getDateString(), total);
 
@@ -105,8 +104,8 @@ public class ResourceStatisticsObject {
                 atotal = createEmptyDailyTotal(ykey);
                 getAnnualMap().put(ykey, atotal);
             }
-            
-            //FIXME: this is not great, but the assumption in the DB is that the total here is Everything
+
+            // FIXME: this is not great, but the assumption in the DB is that the total here is Everything
             Long total_ = 0L;
             if (stat.getTotal() != null) {
                 total_ += stat.getTotal();
@@ -114,8 +113,8 @@ public class ResourceStatisticsObject {
             if (stat.getTotalBot() != null) {
                 total_ += stat.getTotalBot();
             }
-            atotal.addTotals(total_,stat.getTotalBot(), createDownloadList());
-//            logger.debug("{}:{} -- {} ", stat.getYear(), stat.getMonth(), total_);
+            atotal.addTotals(total_, stat.getTotalBot(), createDownloadList());
+            // logger.debug("{}:{} -- {} ", stat.getYear(), stat.getMonth(), total_);
         }
     }
 
@@ -125,10 +124,10 @@ public class ResourceStatisticsObject {
 
     private List<Integer> createDownloadList() {
         List<Integer> lst = new ArrayList<>();
-        for (int i=0;i< filenames.size();i++) {
+        for (int i = 0; i < filenames.size(); i++) {
             lst.add(0);
         }
-        
+
         return lst;
     }
 
@@ -179,6 +178,5 @@ public class ResourceStatisticsObject {
     public void setFilenames(List<String> filenames) {
         this.filenames = filenames;
     }
-
 
 }

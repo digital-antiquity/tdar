@@ -46,7 +46,7 @@ import org.tdar.utils.PersistableUtils;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespaces(value={@Namespace("/collection")})
+@Namespaces(value = { @Namespace("/collection") })
 public class ResourceCollectionController extends AbstractPersistableController<ResourceCollection> implements DataTableResourceDisplay {
 
     private static final long serialVersionUID = 1169442990022630650L;
@@ -63,14 +63,13 @@ public class ResourceCollectionController extends AbstractPersistableController<
     private transient SearchIndexService searchIndexService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
-    
+
     @Autowired
     private transient ProjectService projectService;
     @Autowired
     private transient ResourceService resourceService;
     @Autowired
     private transient AuthorizationService authorizationService;
-    
 
     private static final String RIGHTS = "rights";
     private List<ResourceCollection> allResourceCollections = new LinkedList<>();
@@ -96,7 +95,6 @@ public class ResourceCollectionController extends AbstractPersistableController<
     private ResourceCollection parentCollection;
     private ResourceCollection alternateParentCollection;
 
-
     @Override
     public boolean authorize() {
         if (isNullOrNew()) {
@@ -105,34 +103,27 @@ public class ResourceCollectionController extends AbstractPersistableController<
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
-    
-    
     private List<Long> toRemoveManaged = new ArrayList<>();
     private List<Long> toAddManaged = new ArrayList<>();
-    
+
     private List<Long> toRemoveUnmanaged = new ArrayList<>();
     private List<Long> toAddUnmanaged = new ArrayList<>();
-    
 
     public List<Long> getToRemoveManaged() {
         return toRemoveManaged;
     }
 
-
     public void setToRemoveManaged(List<Long> toRemove) {
         this.toRemoveManaged = toRemove;
     }
-
 
     public List<Long> getToAddManaged() {
         return toAddManaged;
     }
 
-
     public void setToAddManaged(List<Long> toAdd) {
         this.toAddManaged = toAdd;
     }
-
 
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
@@ -144,7 +135,6 @@ public class ResourceCollectionController extends AbstractPersistableController<
                 getPersistable());
         return publicResourceCollections;
     }
-
 
     @Override
     protected String save(ResourceCollection persistable) {
@@ -158,19 +148,18 @@ public class ResourceCollectionController extends AbstractPersistableController<
         cso.setAlternateParentId(getAlternateParentId());
         cso.setShouldSave(shouldSaveResource());
         cso.setFileProxy(generateFileProxy(getFileFileName(), getFile()));
-        
+
         cso.setToAdd(getToAddManaged());
         cso.setToRemove(getToRemoveManaged());
-        
+
         cso.setPublicToAdd(getToAddUnmanaged());
         cso.setPublicToRemove(getToRemoveUnmanaged());
-        
+
         resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
-        
+
         return SUCCESS;
     }
-
 
     public ResourceCollection getResourceCollection() {
         if (getPersistable() == null) {
@@ -198,9 +187,6 @@ public class ResourceCollectionController extends AbstractPersistableController<
     public boolean isBigCollection() {
         return (getPersistable().getManagedResources().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
-    
-    
-    
 
     @Override
     public void prepare() throws TdarActionException {
@@ -208,41 +194,38 @@ public class ResourceCollectionController extends AbstractPersistableController<
 
         parentCollection = prepareParent(parentId, parentCollectionName);
         alternateParentCollection = prepareParent(alternateParentId, alternateParentCollectionName);
-        
+
         setupOwnerField();
         if (PersistableUtils.isNotNullOrTransient(getOwner())) {
             TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
             getPersistable().setOwner(uploader);
         }
 
-        if(getParentCollection() != null) {
+        if (getParentCollection() != null) {
             parentId = getParentCollection().getId();
         }
-        if(getAlternateParentCollection() != null) {
-            alternateParentId =  getAlternateParentCollection().getId();
+        if (getAlternateParentCollection() != null) {
+            alternateParentId = getAlternateParentCollection().getId();
         }
 
-        if (PersistableUtils.isNotNullOrTransient(parentId) && PersistableUtils.isNullOrTransient((Persistable)getParentCollection())) {
+        if (PersistableUtils.isNotNullOrTransient(parentId) && PersistableUtils.isNullOrTransient((Persistable) getParentCollection())) {
             addActionError(getText("collectionController.type_mismatch"));
         }
 
     }
-    
-    
 
     private ResourceCollection prepareParent(Long pid, String parentName) {
         ResourceCollection parentC = null;
-        if(PersistableUtils.isNotNullOrTransient(pid)) {
+        if (PersistableUtils.isNotNullOrTransient(pid)) {
             parentC = getGenericService().find(getPersistableClass(), pid);
             getLogger().debug("lookup parent collection by id:{}  result:{}", pid, parentC);
-        }
-        else if(StringUtils.isNotBlank(parentName)) {
+        } else if (StringUtils.isNotBlank(parentName)) {
             parentC = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(), parentName);
             getLogger().debug("lookup parent collection by name:{}  results:{}", parentName, parentC);
         }
         return parentC;
     }
-    
+
     @Override
     public void validate() {
         super.validate();
@@ -251,20 +234,20 @@ public class ResourceCollectionController extends AbstractPersistableController<
 
     }
 
-
     private Long evaluteParent(Long _pid, ResourceCollection _currentParent, ResourceCollection _incomingParent) {
         Long _parentId = _pid;
-        if(PersistableUtils.isNotNullOrTransient(_incomingParent)) {
+        if (PersistableUtils.isNotNullOrTransient(_incomingParent)) {
             _parentId = _incomingParent.getId();
         }
-        
-        // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
+
+        // FIXME: this section smells like validation. Consider overriding validate() and moving it there.
         if (PersistableUtils.isNotNullOrTransient(_incomingParent) && PersistableUtils.isNotNullOrTransient(_currentParent)
                 && (_incomingParent.getParentIds().contains(_incomingParent.getId()) || getPersistable().getId().equals(_incomingParent.getId()))) {
             addActionError(getText("collectionController.cannot_set_self_parent"));
         }
         return _parentId;
     }
+
     @Override
     public void indexPersistable() {
         /*
@@ -278,8 +261,6 @@ public class ResourceCollectionController extends AbstractPersistableController<
             searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
         }
     }
-
-
 
     public List<SortOption> getSortOptions() {
         return SortOption.getOptionsForResourceCollectionPage();
@@ -314,9 +295,9 @@ public class ResourceCollectionController extends AbstractPersistableController<
     @Override
     public String loadAddMetadata() {
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
-            ResourceCollection parent = getGenericService().find(ResourceCollection.class,parentId);
+            ResourceCollection parent = getGenericService().find(ResourceCollection.class, parentId);
             if (parent != null) {
-                parentCollectionName =  parent.getName();
+                parentCollectionName = parent.getName();
             }
         }
         prepareDataTableSection();
@@ -334,8 +315,6 @@ public class ResourceCollectionController extends AbstractPersistableController<
         String result = super.edit();
         return result;
     }
-    
-    
 
     @Action(value = SAVE,
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
@@ -343,7 +322,7 @@ public class ResourceCollectionController extends AbstractPersistableController<
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = "edit.ftl"),
-                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT,  location = "rights?id=${id}")
+                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT, location = "rights?id=${id}")
             })
     @WriteableSession
     @PostOnly
@@ -357,7 +336,7 @@ public class ResourceCollectionController extends AbstractPersistableController<
      */
     public String save() throws TdarActionException {
         String save2 = super.save();
-        if (StringUtils.equals(save2,SUCCESS) && StringUtils.equalsAnyIgnoreCase(getAlternateSubmitAction(),ASSIGN_RIGHTS)) {
+        if (StringUtils.equals(save2, SUCCESS) && StringUtils.equalsAnyIgnoreCase(getAlternateSubmitAction(), ASSIGN_RIGHTS)) {
             return RIGHTS;
         }
         return save2;
@@ -457,6 +436,7 @@ public class ResourceCollectionController extends AbstractPersistableController<
             setOwnerProperName(getAuthenticatedUser().getProperName());
         }
     }
+
     public Long getViewCount() {
         return viewCount;
     }
@@ -513,7 +493,6 @@ public class ResourceCollectionController extends AbstractPersistableController<
         this.owner = owner;
     }
 
-
     public ResourceCollection getParentCollection() {
         return parentCollection;
     }
@@ -522,7 +501,6 @@ public class ResourceCollectionController extends AbstractPersistableController<
         this.parentCollection = parentCollection;
     }
 
-    
     public ResourceCollection getAlternateParentCollection() {
         return alternateParentCollection;
     }
@@ -547,23 +525,20 @@ public class ResourceCollectionController extends AbstractPersistableController<
         this.alternateParentCollectionName = alternateParentCollectionName;
     }
 
+    public List<Long> getToRemoveUnmanaged() {
+        return toRemoveUnmanaged;
+    }
 
-	public List<Long> getToRemoveUnmanaged() {
-		return toRemoveUnmanaged;
-	}
+    public void setToRemoveUnmanaged(List<Long> toRemoveUnmanaged) {
+        this.toRemoveUnmanaged = toRemoveUnmanaged;
+    }
 
+    public List<Long> getToAddUnmanaged() {
+        return toAddUnmanaged;
+    }
 
-	public void setToRemoveUnmanaged(List<Long> toRemoveUnmanaged) {
-		this.toRemoveUnmanaged = toRemoveUnmanaged;
-	}
-
-
-	public List<Long> getToAddUnmanaged() {
-		return toAddUnmanaged;
-	}
-
-	public void setToAddUnmanaged(List<Long> toAddUnmanaged) {
-		this.toAddUnmanaged = toAddUnmanaged;
-	}
+    public void setToAddUnmanaged(List<Long> toAddUnmanaged) {
+        this.toAddUnmanaged = toAddUnmanaged;
+    }
 
 }

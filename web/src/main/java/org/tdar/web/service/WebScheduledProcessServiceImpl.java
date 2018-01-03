@@ -40,10 +40,11 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         this.scheduledProcessService = scheduledProcessService;
     }
 
-    
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#evictCaches()
      */
     @Override
@@ -53,8 +54,10 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
             rssService.evictRssCache();
         }
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronQueueEmail()
      */
     @Override
@@ -63,8 +66,9 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         scheduledProcessService.queue(SendEmailProcess.class);
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronDailyEmail()
      */
     @Override
@@ -75,7 +79,9 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         scheduledProcessService.queue(SalesforceSyncProcess.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronDailyStats()
      */
     @Override
@@ -85,7 +91,9 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         scheduledProcessService.queue(DailyStatisticsUpdate.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronEmbargoNotices()
      */
     @Override
@@ -94,9 +102,10 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         logger.info("updating Embargo notices");
         scheduledProcessService.queue(EmbargoedFilesUpdateProcess.class);
     }
-    
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronUpdateDois()
      */
     @Override
@@ -106,7 +115,9 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         scheduledProcessService.queue(DoiProcess.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronUpdateAccountUsageHistory()
      */
     @Override
@@ -117,7 +128,9 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         scheduledProcessService.queue(AccountUsageHistoryLoggingTask.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronUpdateSitemap()
      */
     @Override
@@ -127,7 +140,9 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         scheduledProcessService.queue(SitemapGeneratorProcess.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronUpdateHomepage()
      */
     @Override
@@ -136,7 +151,9 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         scheduledProcessService.queue(RebuildHomepageCache.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronVerifyTdarFiles()
      */
     @Override
@@ -145,7 +162,9 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         scheduledProcessService.queue(WeeklyFilestoreLoggingProcess.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#updateOcurrenceStats()
      */
     @Override
@@ -154,7 +173,9 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
         scheduledProcessService.queue(OccurranceStatisticsUpdateProcess.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebScheduledProcessService#cronGenerateWeeklyStats()
      */
     @Override
@@ -162,7 +183,7 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
     public void cronGenerateWeeklyStats() {
         scheduledProcessService.queue(WeeklyStatisticsLoggingProcess.class);
     }
-    
+
     @Scheduled(cron = "50 0 0 * * SAT")
     public void removeOldNotifications() throws IOException {
         scheduledProcessService.queue(WeeklyUserNotificationCleanup.class);

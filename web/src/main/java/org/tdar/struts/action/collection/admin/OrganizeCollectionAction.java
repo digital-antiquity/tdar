@@ -26,15 +26,15 @@ public class OrganizeCollectionAction extends AbstractCollectionAdminAction {
     private ResourceCollectionService resourceCollectionService;
 
     private List<ResourceCollection> tree;
-    
+
     @Override
     @WriteableSession
-    @Action(value = "{id}", results={
+    @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = FREEMARKER, location = "../organize.ftl"),
     })
     public String execute() throws Exception {
-        setTree(resourceCollectionService.findAllChildCollectionsOnly((ResourceCollection)getCollection()));
-        getTree().add((ResourceCollection)getCollection());
+        setTree(resourceCollectionService.findAllChildCollectionsOnly((ResourceCollection) getCollection()));
+        getTree().add((ResourceCollection) getCollection());
         resourceCollectionService.reconcileCollectionTree(getTree(), getAuthenticatedUser(), PersistableUtils.extractIds(getTree()));
         return SUCCESS;
     }

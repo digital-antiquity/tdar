@@ -216,7 +216,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         if (comparator.rightsDifferent()) {
             logger.debug("{}", actor);
 
-            if (!authorizationService.canAdminiserUsersOn( actor, source)) {
+            if (!authorizationService.canAdminiserUsersOn(actor, source)) {
                 throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
             }
 
@@ -839,15 +839,13 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
     @Override
     @Transactional(readOnly = false)
     public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionResourceSection type) {
-        if (type == CollectionResourceSection.MANAGED && 
-        	(!authorizationService.canEditResource(authenticatedUser, resource, Permissions.MODIFY_RECORD) ||
-            !authorizationService.canRemoveFromCollection(authenticatedUser, collection))) {
+        if (type == CollectionResourceSection.MANAGED &&
+                (!authorizationService.canEditResource(authenticatedUser, resource, Permissions.MODIFY_RECORD) ||
+                        !authorizationService.canRemoveFromCollection(authenticatedUser, collection))) {
             throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
-        } 
-        else if (type == CollectionResourceSection.UNMANAGED && !authorizationService.canRemoveFromCollection(authenticatedUser, collection)) {
-        	throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
-        } 
-        else {
+        } else if (type == CollectionResourceSection.UNMANAGED && !authorizationService.canRemoveFromCollection(authenticatedUser, collection)) {
+            throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
+        } else {
             removeFromCollection(resource, collection, type);
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }

@@ -23,7 +23,7 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.HttpNotFoundErrorOnly;
 
-@Namespaces(value = { 
+@Namespaces(value = {
         @Namespace("/search"),
         @Namespace("/api/search") })
 @Component
@@ -44,11 +44,12 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
     private Long contentLength;
     private InputStream inputStream;
     private int statusCode = 200;
+
     @Action(value = "rss", results = { @Result(name = SUCCESS, type = "stream", params = {
             "documentName", "rssFeed", "formatOutput", "true", "inputName",
             "inputStream", "contentType", "application/rss+xml",
             "contentLength", "${contentLength}", "contentEncoding", "UTF-8" }),
-            @Result(name=ERROR, type=HTTPHEADER, params= {"error", "${statusCode}"})})
+            @Result(name = ERROR, type = HTTPHEADER, params = { "error", "${statusCode}" }) })
     public String viewRss() throws TdarActionException {
         try {
             setDefaultSort(SortOption.ID_REVERSE);

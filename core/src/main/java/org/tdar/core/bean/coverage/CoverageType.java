@@ -10,9 +10,7 @@ import org.tdar.core.bean.HasLabel;
  */
 public enum CoverageType implements HasLabel {
 
-    CALENDAR_DATE("Calendar Date"),
-    RADIOCARBON_DATE("Radiocarbon Date"),
-    NONE("None");
+    CALENDAR_DATE("Calendar Date"), RADIOCARBON_DATE("Radiocarbon Date"), NONE("None");
 
     private String label;
 

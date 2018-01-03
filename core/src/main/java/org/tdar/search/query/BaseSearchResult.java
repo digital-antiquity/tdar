@@ -24,7 +24,6 @@ public class BaseSearchResult<I extends Indexable> implements SearchResultHandle
     private TdarUser authenticatedUser;
     private String searchTitle;
     private String searchDescription;
-    
 
     @Override
     public SortOption getSortField() {
@@ -150,7 +149,6 @@ public class BaseSearchResult<I extends Indexable> implements SearchResultHandle
         return startRecord - recordsPerPage;
     }
 
-    
     @Override
     public int getDefaultRecordsPerPage() {
         return DEFAULT_RESULT_SIZE;
@@ -160,12 +158,11 @@ public class BaseSearchResult<I extends Indexable> implements SearchResultHandle
         return (getTotalRecords() > getStartRecord() + getRecordsPerPage());
     }
 
-
     @Override
     public DisplayOrientation getOrientation() {
         return null;
     }
-    
+
     @Override
     public boolean isBot() {
         return false;

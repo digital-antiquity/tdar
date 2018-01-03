@@ -49,8 +49,7 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
             public int compare(Email o1, Email o2) {
                 if (o1.getId() < o2.getId()) {
                     return 0;
-                }
-                else {
+                } else {
                     return 1;
                 }
             }
@@ -67,11 +66,10 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
 
     @Action(value = "changeEmailStatus",
             results = {
-                    @Result(name = SUCCESS, type=REDIRECT, location = "/admin/email"),
-                    @Result(name = INPUT, location = "email.ftl") }
-            )
-            @PostOnly
-            public String changeEmailStatus() {
+                    @Result(name = SUCCESS, type = REDIRECT, location = "/admin/email"),
+                    @Result(name = INPUT, location = "email.ftl") })
+    @PostOnly
+    public String changeEmailStatus() {
         emailService.changeEmailStatus(getEmailAction(), emails);
 
         return SUCCESS;

@@ -46,7 +46,7 @@ import com.opensymphony.xwork2.TextProvider;
  * @version $Rev$
  */
 @Service
-public class DownloadServiceImpl implements DownloadService  {
+public class DownloadServiceImpl implements DownloadService {
 
     private static final int DOWNLOAD_LOCK_CACHE_AGE_MINUTES = 5;
     private static final int MAX_DOWNLOADS = 10;
@@ -80,7 +80,9 @@ public class DownloadServiceImpl implements DownloadService  {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.download.DownloadService#registerDownload(java.util.List, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -91,13 +93,15 @@ public class DownloadServiceImpl implements DownloadService  {
             if (PersistableUtils.isNotNullOrTransient(user)) {
                 TdarUser writeableUser = genericService.markWritableOnExistingSession(user);
                 writeableUser.setTotalDownloads(writeableUser.getTotalDownloads() + stats.size());
-                logger.debug("totalDownloadForUser: {} {}",writeableUser.getId(),  writeableUser.getTotalDownloads());
+                logger.debug("totalDownloadForUser: {} {}", writeableUser.getId(), writeableUser.getTotalDownloads());
                 genericService.saveOrUpdate(writeableUser);
             }
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.download.DownloadService#constructDownloadTransferObject(org.tdar.core.service.download.DownloadTransferObject)
      */
     @Override
@@ -127,7 +131,9 @@ public class DownloadServiceImpl implements DownloadService  {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.download.DownloadService#releaseDownloadLock(org.tdar.core.bean.entity.TdarUser, java.util.List)
      */
     @Override
@@ -152,7 +158,9 @@ public class DownloadServiceImpl implements DownloadService  {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.download.DownloadService#enforceDownloadLock(org.tdar.core.bean.entity.TdarUser, java.util.List)
      */
     @Override
@@ -225,8 +233,12 @@ public class DownloadServiceImpl implements DownloadService  {
         // downloadMap.put(resourceFile, irFileVersion.getFilename());
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.download.DownloadService#validateDownload(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.file.InformationResourceFileVersion, org.tdar.core.bean.resource.InformationResource, boolean, com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.collection.DownloadAuthorization)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.download.DownloadService#validateDownload(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.file.InformationResourceFileVersion, org.tdar.core.bean.resource.InformationResource, boolean,
+     * com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.collection.DownloadAuthorization)
      */
     @Override
     @Transactional(readOnly = true)
@@ -246,11 +258,13 @@ public class DownloadServiceImpl implements DownloadService  {
         dto.setResult(DownloadResult.SUCCESS);
         return dto;
     }
-    
 
-    
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.download.DownloadService#handleDownload(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.file.InformationResourceFileVersion, org.tdar.core.bean.resource.InformationResource, boolean, com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.collection.DownloadAuthorization)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.download.DownloadService#handleDownload(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.file.InformationResourceFileVersion, org.tdar.core.bean.resource.InformationResource, boolean,
+     * com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.collection.DownloadAuthorization)
      */
     @Override
     @Transactional(readOnly = false)
@@ -272,12 +286,9 @@ public class DownloadServiceImpl implements DownloadService  {
         dto.setResult(DownloadResult.SUCCESS);
         return dto;
     }
-    
 
-    
-
-
-    private DownloadTransferObject setupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload, InformationResource resourceToDownload_,
+    private DownloadTransferObject setupDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
+            InformationResource resourceToDownload_,
             boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
         InformationResource resourceToDownload = resourceToDownload_;
         List<InformationResourceFileVersion> versionsToDownload = new ArrayList<>();
@@ -357,13 +368,14 @@ public class DownloadServiceImpl implements DownloadService  {
             return dto;
         }
 
-        dto.setVersionsToDownload(versionsToDownload);  
+        dto.setVersionsToDownload(versionsToDownload);
         return dto;
     }
 
     private File getCoverLogo(InformationResource resourceToDownload) {
         ResourceCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
-        if (whiteLabelCollection == null || whiteLabelCollection.getProperties() == null || !whiteLabelCollection.getProperties().getCustomDocumentLogoEnabled()) {
+        if (whiteLabelCollection == null || whiteLabelCollection.getProperties() == null
+                || !whiteLabelCollection.getProperties().getCustomDocumentLogoEnabled()) {
             return null;
         }
         return fileSystemResourceDao.getHostedFile(WhiteLabelFiles.PDF_COVERPAGE_FILENAME, FilestoreObjectType.COLLECTION, whiteLabelCollection.getId());
@@ -377,12 +389,16 @@ public class DownloadServiceImpl implements DownloadService  {
                 logger.error("FILE NOT FOUND: {} [{}]", version, path, e1);
             }
         } else {
-            logger.warn("FileNotFound (FilestoreConfigured?):: {} ",path);
+            logger.warn("FileNotFound (FilestoreConfigured?):: {} ", path);
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.download.DownloadService#validateDownload(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.file.InformationResourceFile, boolean, com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.collection.DownloadAuthorization)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.download.DownloadService#validateDownload(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.file.InformationResourceFile, boolean, com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.collection.DownloadAuthorization)
      */
     @Override
     @Transactional(readOnly = false)
@@ -394,8 +410,12 @@ public class DownloadServiceImpl implements DownloadService  {
         return validateDownload(authenticatedUser, fileVersion, null, includeCoverPage, textProvider, authorization);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.download.DownloadService#handleDownload(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.file.InformationResourceFile, boolean, com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.collection.DownloadAuthorization)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.download.DownloadService#handleDownload(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.bean.resource.file.InformationResourceFile, boolean, com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.collection.DownloadAuthorization)
      */
     @Override
     @Transactional(readOnly = false)

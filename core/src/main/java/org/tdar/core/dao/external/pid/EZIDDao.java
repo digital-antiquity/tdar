@@ -107,7 +107,7 @@ public class EZIDDao implements ExternalIDProvider {
 
     @Override
     public boolean isConfigured() {
-        if (httpclient == null)  {
+        if (httpclient == null) {
             return false;
         }
         if (StringUtils.isNotBlank(getDOIProviderHostname()) && StringUtils.isNotBlank(getDOIShoulder()) &&
@@ -315,7 +315,7 @@ public class EZIDDao implements ExternalIDProvider {
         }
 
         buildAnvlLine(responseBuilder, _STATUS, status);
-//        buildAnvlLine(responseBuilder, _EXPORT, "no");
+        // buildAnvlLine(responseBuilder, _EXPORT, "no");
         buildAnvlLine(responseBuilder, _TARGET, url);
         buildAnvlLine(responseBuilder, _PROFILE, DATACITE_PROFILE_NAME);
         return responseBuilder.toString();
@@ -337,8 +337,7 @@ public class EZIDDao implements ExternalIDProvider {
         if (StringUtils.isEmpty(s)) {
             return "";
         }
-        return s.replace("%", "%25").replace("\n", "%0A").
-                replace("\r", "%0D").replace(":", "%3A");
+        return s.replace("%", "%25").replace("\n", "%0A").replace("\r", "%0D").replace(":", "%3A");
     }
 
     /**

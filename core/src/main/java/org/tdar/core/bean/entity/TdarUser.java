@@ -29,7 +29,7 @@ import org.tdar.utils.json.JsonAdminLookupFilter;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "tdar_user")
 @XmlRootElement(name = "user")
 @Check(constraints = "username <> ''")
@@ -102,6 +102,7 @@ public class TdarUser extends Person {
         this(firstName, lastName, email, username);
         setId(id);
     }
+
     public TdarUser(String firstName, String lastName, String email) {
         super(firstName, lastName, email);
     }
@@ -112,7 +113,7 @@ public class TdarUser extends Person {
     }
 
     public TdarUser(Person person, String username) {
-        super(person.getFirstName(),person.getLastName(), person.getEmail());
+        super(person.getFirstName(), person.getLastName(), person.getEmail());
         this.setUsername(username);
     }
 

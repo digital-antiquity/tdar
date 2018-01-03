@@ -40,7 +40,6 @@ import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.Polygon;
 
-
 public class GisFileReaderTask extends AbstractTask {
 
     /**
@@ -62,7 +61,7 @@ public class GisFileReaderTask extends AbstractTask {
         for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
             FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             version.setTransientFile(new File(workingDir, version.getFilename()));
-            if(version.isPrimaryFile()) {
+            if (version.isPrimaryFile()) {
                 original = version;
             }
         }
@@ -93,8 +92,8 @@ public class GisFileReaderTask extends AbstractTask {
                 getLogger().info(tiffCov.toString());
                 // http://docs.geotools.org/latest/userguide/library/coverage/grid.html#coveragestack
 
-                
-                // to get all of the "points" marked: http://svn.osgeo.org/geotools/trunk/modules/unsupported/process-raster/src/main/java/org/geotools/process/raster/gs/RasterAsPointCollectionProcess.java
+                // to get all of the "points" marked:
+                // http://svn.osgeo.org/geotools/trunk/modules/unsupported/process-raster/src/main/java/org/geotools/process/raster/gs/RasterAsPointCollectionProcess.java
                 getLogger().info("env {} ", tiffCov.getEnvelope());
                 getLogger().info("CRS {} ", tiffCov.getCoordinateReferenceSystem());
                 getLogger().info("Geom {} ", tiffCov.getGridGeometry().toString());
@@ -113,7 +112,7 @@ public class GisFileReaderTask extends AbstractTask {
                 collection.add(feature1);
                 writeFeatureToGeoJson(original, writer, geoJson, fjson, collection);
 
-//                getLogger().debug(writer.toString());
+                // getLogger().debug(writer.toString());
 
                 getLogger().info(" {} ", sources);
                 // GeoTiffReader rdr = (GeoTiffReader) ((new GeoTiffFormat()).getReader(file));
@@ -139,7 +138,8 @@ public class GisFileReaderTask extends AbstractTask {
         }
     }
 
-    private void writeFeatureToGeoJson(InformationResourceFileVersion original, FileWriter fwriter, File geoJson, FeatureJSON fjson, DefaultFeatureCollection collection) {
+    private void writeFeatureToGeoJson(InformationResourceFileVersion original, FileWriter fwriter, File geoJson, FeatureJSON fjson,
+            DefaultFeatureCollection collection) {
         try {
             fjson.writeFeatureCollection(collection, fwriter);
             IOUtils.closeQuietly(fwriter);

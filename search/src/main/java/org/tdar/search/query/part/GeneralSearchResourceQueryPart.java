@@ -57,7 +57,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
     protected QueryPartGroup getQueryPart(String value) {
         Set<String> codes = new HashSet<>();
         if (StringUtils.isNotBlank(value) && SiteCodeExtractor.matches(value.toUpperCase())) {
-            codes.addAll(SiteCodeExtractor.extractSiteCodeTokens(value.toUpperCase(),true));
+            codes.addAll(SiteCodeExtractor.extractSiteCodeTokens(value.toUpperCase(), true));
             setUseProximity(false);
             logger.trace("Site code search: {}", codes);
         }
@@ -71,7 +71,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         FieldQueryPart<String> creatorPart = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, cleanedQueryString);
         FieldQueryPart<String> collectionNamesContent = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_COLLECTION_NAME, cleanedQueryString);
         queryPart.append(collectionNamesContent);
-        
+
         if (cleanedQueryString.contains(" ") && isUseProximity()) {
             creatorPart.setProximity(2);
         }

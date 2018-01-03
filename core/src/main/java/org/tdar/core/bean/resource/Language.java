@@ -13,38 +13,16 @@ import org.tdar.utils.MessageHelper;
  */
 public enum Language implements HasLabel, Localizable {
 
-    ENGLISH("English", "en", "eng"),
-    MULTIPLE("Multiple", "-", "mul"),
-    CATALONIAN("Catalonian","ca","cat"),
-    CHEROKEE("Cherokee", "", "chr"),
-    CHINESE("Chinese", "cn", "zho"),
-    CROATIAN("Croatian","hr","hrv"),
-    CZECH("Czech","cs","cze"),
-    DANISH("Danish","da","dan"),
-    DUTCH("Dutch", "nl", "nld"),
-    FINNISH("Finnish","fi","fin"),
-    FRENCH("French", "fr", "fra"),
-    GERMAN("German", "de", "deu"),
-    GREEK("Greek","el","gre"),
-    HUNGARIAN("Hungarian", "hu","hun"),
-    ICELANDIC("Icelandic","is","ice"),
-    ITALIAN("Italian","it","ita"),
-    JAPANESE("Japanese","ja","jpn"),
-    LATIN("Latin","la","lat"),
-    LATVIAN("Latvian","lv","lav"),
-    LITHUANIAN("Lithuanian","lt","lit"),
-    NORWEGIAN("Norwegian","no","nor"),
-    POLISH("Polish","pl","pol"),
-    PORTUGUESE("Portuguese", "pt", "por"),
-    RUSSIAN("Russian","ru","rus"), 
-    ROMANIAN("Romanian","ro","rum"),
-    SLOVAK("Slovak","sk","slo"),
-    SLOVENIAN("Slovenian", "sl","slv"),
-    SLOWAK("Slovak","sk","slo"),
-    SPANISH("Spanish", "sp", "spa"),
-    SWEDISH("Swedish","sv","swe"),
-    TURKISH("Turkish", "tr", "tur"),
-    UKRAINIAN("Ukrainian","uk", "ukr");
+    ENGLISH("English", "en", "eng"), MULTIPLE("Multiple", "-", "mul"), CATALONIAN("Catalonian", "ca", "cat"), CHEROKEE("Cherokee", "", "chr"), CHINESE(
+            "Chinese", "cn", "zho"), CROATIAN("Croatian", "hr", "hrv"), CZECH("Czech", "cs", "cze"), DANISH("Danish", "da", "dan"), DUTCH("Dutch", "nl",
+                    "nld"), FINNISH("Finnish", "fi", "fin"), FRENCH("French", "fr", "fra"), GERMAN("German", "de", "deu"), GREEK("Greek", "el",
+                            "gre"), HUNGARIAN("Hungarian", "hu", "hun"), ICELANDIC("Icelandic", "is", "ice"), ITALIAN("Italian", "it",
+                                    "ita"), JAPANESE("Japanese", "ja", "jpn"), LATIN("Latin", "la", "lat"), LATVIAN("Latvian", "lv",
+                                            "lav"), LITHUANIAN("Lithuanian", "lt", "lit"), NORWEGIAN("Norwegian", "no", "nor"), POLISH("Polish", "pl",
+                                                    "pol"), PORTUGUESE("Portuguese", "pt", "por"), RUSSIAN("Russian", "ru", "rus"), ROMANIAN("Romanian", "ro",
+                                                            "rum"), SLOVAK("Slovak", "sk", "slo"), SLOVENIAN("Slovenian", "sl", "slv"), SLOWAK("Slovak", "sk",
+                                                                    "slo"), SPANISH("Spanish", "sp", "spa"), SWEDISH("Swedish", "sv",
+                                                                            "swe"), TURKISH("Turkish", "tr", "tur"), UKRAINIAN("Ukrainian", "uk", "ukr");
 
     private final String label;
     private final String code;

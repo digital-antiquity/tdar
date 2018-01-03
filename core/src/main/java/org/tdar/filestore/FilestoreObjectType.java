@@ -5,25 +5,22 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 
 public enum FilestoreObjectType {
-        LOG,
-        RESOURCE,
-        CREATOR,
-        COLLECTION;
+    LOG, RESOURCE, CREATOR, COLLECTION;
 
-        public static FilestoreObjectType fromClass(Class<?> cls) {
-            if (Resource.class.isAssignableFrom(cls)) {
-                return RESOURCE;
-            }
-            if (ResourceCollection.class.isAssignableFrom(cls)) {
-                return COLLECTION;
-            }
-            if (Creator.class.isAssignableFrom(cls)) {
-                return CREATOR;
-            }
-            return null;
+    public static FilestoreObjectType fromClass(Class<?> cls) {
+        if (Resource.class.isAssignableFrom(cls)) {
+            return RESOURCE;
         }
-        
-        public String getRootDir() {
-            return name().toLowerCase();
+        if (ResourceCollection.class.isAssignableFrom(cls)) {
+            return COLLECTION;
         }
+        if (Creator.class.isAssignableFrom(cls)) {
+            return CREATOR;
+        }
+        return null;
+    }
+
+    public String getRootDir() {
+        return name().toLowerCase();
+    }
 }

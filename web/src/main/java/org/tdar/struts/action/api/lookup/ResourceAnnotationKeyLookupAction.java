@@ -45,7 +45,7 @@ public class ResourceAnnotationKeyLookupAction extends AbstractLookupController<
         getLogger().trace("looking up:'{}'", getTerm());
 
         try {
-            keySearchService.buildAnnotationSearch(term,this, getMinLookupLength(), this);
+            keySearchService.buildAnnotationSearch(term, this, getMinLookupLength(), this);
         } catch (SearchException | IOException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;

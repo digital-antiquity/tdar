@@ -31,7 +31,6 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.json.JsonProjectLookupFilter;
 
 /**
  * $Id$
@@ -43,7 +42,7 @@ import org.tdar.utils.json.JsonProjectLookupFilter;
  */
 @Transactional
 @Service
-public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, ProjectDao> implements ProjectService {
+public class ProjectServiceImpl extends ServiceInterface.TypedDaoBase<Project, ProjectDao> implements ProjectService {
 
     @Autowired
     private AuthorizedUserDao authorizedUserDao;
@@ -54,7 +53,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
     @Autowired
     private SerializationService serializationService;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#findBySubmitter(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -67,7 +68,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         return getDao().findBySubmitter(submitter);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#findByTitle(java.lang.String)
      */
     @Override
@@ -80,7 +83,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         return getDao().findByTitle(title);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#findAllSparseEditableProjects(org.tdar.core.bean.entity.Person)
      */
     @Override
@@ -92,7 +97,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         return getDao().findAllEditableProjects(person);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#findAllSparse()
      */
     @Override
@@ -101,7 +108,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         return getDao().findAllSparse();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#findAllResourcesInProject(org.tdar.core.bean.resource.Project, org.tdar.core.bean.resource.Status)
      */
     @Override
@@ -116,7 +125,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         return results;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#findRecentlyEditedResources(org.tdar.core.bean.entity.Person, int)
      */
     @Override
@@ -125,7 +136,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         return getDao().findSparseRecentlyEditedResources(updater, maxResults);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#findEmptyProjects(org.tdar.core.bean.entity.Person)
      */
     @Override
@@ -134,8 +147,9 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         return getDao().findEmptyProjects(updater);
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#findSparseTitleIdProjectListByPerson(org.tdar.core.bean.entity.TdarUser, boolean)
      */
     @Override
@@ -152,29 +166,36 @@ public class ProjectServiceImpl  extends ServiceInterface.TypedDaoBase<Project, 
         return editableResources;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#containsIntegratableDatasets(org.tdar.core.bean.resource.Project)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Boolean containsIntegratableDatasets(Project project) {
         return getDao().containsIntegratableDatasets(project);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ProjectService#containsIntegratableDatasets(java.util.List)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Boolean containsIntegratableDatasets(List<Long> projectIds) {
         return getDao().containsIntegratableDatasets(projectIds);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.ProjectService#getProjectAsJson(org.tdar.core.bean.resource.Project, org.tdar.core.bean.entity.TdarUser, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.ProjectService#getProjectAsJson(org.tdar.core.bean.resource.Project, org.tdar.core.bean.entity.TdarUser,
+     * java.lang.String)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Object getProjectAsJson(Project project, TdarUser user, String callback) {
         getLogger().trace("getprojectasjson called");
         Object result = new HashMap<String, Object>();

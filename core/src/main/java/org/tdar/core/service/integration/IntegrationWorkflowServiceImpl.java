@@ -32,7 +32,8 @@ import com.opensymphony.xwork2.TextProvider;
  * 
  */
 @Service
-public class IntegrationWorkflowServiceImpl  extends ServiceInterface.TypedDaoBase<DataIntegrationWorkflow, IntegrationWorkflowDao> implements IntegrationWorkflowService {
+public class IntegrationWorkflowServiceImpl extends ServiceInterface.TypedDaoBase<DataIntegrationWorkflow, IntegrationWorkflowDao>
+        implements IntegrationWorkflowService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -45,8 +46,11 @@ public class IntegrationWorkflowServiceImpl  extends ServiceInterface.TypedDaoBa
     @Autowired
     private transient OntologyNodeDao ontologyNodeDao;
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.integration.IntegrationWorkflowService#toIntegrationContext(org.tdar.core.bean.integration.DataIntegrationWorkflow, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.integration.IntegrationWorkflowService#toIntegrationContext(org.tdar.core.bean.integration.DataIntegrationWorkflow,
+     * com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional
@@ -58,8 +62,12 @@ public class IntegrationWorkflowServiceImpl  extends ServiceInterface.TypedDaoBa
         return context;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.integration.IntegrationWorkflowService#saveForController(org.tdar.core.bean.integration.DataIntegrationWorkflow, org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData, java.lang.String, org.tdar.core.bean.entity.TdarUser, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.integration.IntegrationWorkflowService#saveForController(org.tdar.core.bean.integration.DataIntegrationWorkflow,
+     * org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData, java.lang.String, org.tdar.core.bean.entity.TdarUser,
+     * com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = false)
@@ -72,7 +80,7 @@ public class IntegrationWorkflowServiceImpl  extends ServiceInterface.TypedDaoBa
             return result;
         }
         try {
-            logger.debug("{}",data);
+            logger.debug("{}", data);
             validateWorkflow(data, provider);
             persistable.markUpdated(authUser);
             if (PersistableUtils.isTransient(persistable)) {
@@ -90,8 +98,11 @@ public class IntegrationWorkflowServiceImpl  extends ServiceInterface.TypedDaoBa
         return result;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.integration.IntegrationWorkflowService#validateWorkflow(org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.integration.IntegrationWorkflowService#validateWorkflow(org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper,
+     * com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = true)
@@ -102,7 +113,9 @@ public class IntegrationWorkflowServiceImpl  extends ServiceInterface.TypedDaoBa
         data.validate(ontologyNodeDao, provider);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.integration.IntegrationWorkflowService#getWorkflowsForUser(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -111,8 +124,11 @@ public class IntegrationWorkflowServiceImpl  extends ServiceInterface.TypedDaoBa
         return getDao().getWorkflowsForUser(authorizedUser, authorizationService.isEditor(authorizedUser));
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.integration.IntegrationWorkflowService#deleteForController(com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.integration.DataIntegrationWorkflow, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.integration.IntegrationWorkflowService#deleteForController(com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.bean.integration.DataIntegrationWorkflow, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = false)

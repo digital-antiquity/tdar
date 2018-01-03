@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import org.tdar.core.bean.AbstractPersistable;
 
-@Table(name="homepage_featured_collection")
+@Table(name = "homepage_featured_collection")
 @Entity
 public class HomepageFeaturedCollections extends AbstractPersistable {
 
@@ -26,5 +26,5 @@ public class HomepageFeaturedCollections extends AbstractPersistable {
     public void setFeatured(ResourceCollection featured) {
         this.featured = featured;
     }
-    
+
 }

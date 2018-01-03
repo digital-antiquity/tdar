@@ -14,13 +14,14 @@ public class CollectionSearchQueryObject implements Serializable {
 
     private Long id;
     private Operator operator = Operator.AND;
-    
+
     private boolean includeHidden = true;
     private boolean limitToTopLevel = false;
     private List<String> allFields = new ArrayList<>();
     private Permissions permission;
     private List<String> titles = new ArrayList<>();
     private CollectionResourceSection type;
+
     public boolean isIncludeHidden() {
         return includeHidden;
     }

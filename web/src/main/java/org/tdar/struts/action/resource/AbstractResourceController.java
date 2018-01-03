@@ -205,7 +205,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateTransientAccountInfo(getResource());
-//            setActiveAccounts(new ArrayList<>(editService.determineActiveAccounts(getAuthenticatedUser(), getResource())));
+            // setActiveAccounts(new ArrayList<>(editService.determineActiveAccounts(getAuthenticatedUser(), getResource())));
             if (PersistableUtils.isNotNullOrTransient(getResource()) && PersistableUtils.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
@@ -432,9 +432,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
         editService.initializeResourceCreatorProxyLists(authWrapper, getAuthorshipProxies(), getCreditProxies());
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
-        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), effectiveShares, retainedSharedCollections, effectiveResourceCollections, retainedListCollections, shares, effectiveResourceCollections);
+        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), effectiveShares, retainedSharedCollections, effectiveResourceCollections,
+                retainedListCollections, shares, effectiveResourceCollections);
     }
-
 
     public List<String> getSiteNameKeywords() {
         if (CollectionUtils.isEmpty(siteNameKeywords)) {

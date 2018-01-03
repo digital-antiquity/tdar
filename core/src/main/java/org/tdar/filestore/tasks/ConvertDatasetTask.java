@@ -81,7 +81,7 @@ public class ConvertDatasetTask extends AbstractTask {
 
                 Set<DataTable> tablesToPersist = databaseConverter.execute();
                 if (CollectionUtils.isNotEmpty(databaseConverter.getMessages())) {
-                    for (String message :databaseConverter.getMessages()) {
+                    for (String message : databaseConverter.getMessages()) {
                         ExceptionWrapper wrapper = new ExceptionWrapper(message, "");
                         wrapper.setFatal(false);
                         getWorkflowContext().getExceptions().add(wrapper);
@@ -97,7 +97,7 @@ public class ConvertDatasetTask extends AbstractTask {
                         addDerivativeFile(versionToConvert, geoJsonFile, VersionType.GEOJSON);
                     }
                 }
-                
+
                 if ((indexedContents != null) && (indexedContents.length() > 0)) {
                     addDerivativeFile(versionToConvert, indexedContents, VersionType.INDEXABLE_TEXT);
                 }

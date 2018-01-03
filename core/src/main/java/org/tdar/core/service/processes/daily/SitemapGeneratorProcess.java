@@ -138,11 +138,11 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
     private int processCollections(WebSitemapGenerator wsg, ScrollableResults activeCollections) throws MalformedURLException {
         int totalCollections = 0;
         while (activeCollections.next()) {
-            ResourceCollection collection = (ResourceCollection)activeCollections.get(0);
+            ResourceCollection collection = (ResourceCollection) activeCollections.get(0);
             if (collection.isHidden()) {
                 continue;
             }
-            String url = UrlService.absoluteSecureUrl((ResourceCollection)collection);
+            String url = UrlService.absoluteSecureUrl((ResourceCollection) collection);
             addUrl(wsg, url);
             totalCollections++;
             if (totalCollections % 500 == 0) {

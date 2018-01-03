@@ -4,7 +4,6 @@ import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.search.query.QueryFieldNames;
 
-
 public class AnnotationKeyDocumentConverter extends AbstractSolrDocumentConverter {
 
     /*
@@ -12,7 +11,7 @@ public class AnnotationKeyDocumentConverter extends AbstractSolrDocumentConverte
      */
 
     public static SolrInputDocument convert(ResourceAnnotationKey key) {
-        
+
         SolrInputDocument doc = convertPersistable(key);
         doc.setField(QueryFieldNames.NAME, key.getKey());
         doc.setField(QueryFieldNames.GENERAL_TYPE, key.getAnnotationDataType());

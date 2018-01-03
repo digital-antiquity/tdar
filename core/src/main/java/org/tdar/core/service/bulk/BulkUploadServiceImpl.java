@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,9 +43,6 @@ import org.tdar.filestore.FileAnalyzer;
 import org.tdar.utils.Pair;
 import org.tdar.utils.activity.Activity;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 /**
  * The BulkUploadService support the bulk loading of resources into tDAR through
  * the user interface
@@ -56,7 +52,7 @@ import com.google.common.cache.CacheBuilder;
  */
 @Transactional
 @Service
-public class BulkUploadServiceImpl implements BulkUploadService  {
+public class BulkUploadServiceImpl implements BulkUploadService {
 
     @Autowired
     private ImportService importService;
@@ -79,9 +75,11 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.bulk.BulkUploadService#saveAsync(org.tdar.core.bean.resource.InformationResource, java.lang.Long, java.lang.Long, java.util.Collection, java.lang.Long)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.bulk.BulkUploadService#saveAsync(org.tdar.core.bean.resource.InformationResource, java.lang.Long, java.lang.Long,
+     * java.util.Collection, java.lang.Long)
      */
     @Override
     @Async
@@ -90,8 +88,11 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
         save(image, submitterId, ticketId, fileProxies, accountId);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.bulk.BulkUploadService#save(org.tdar.core.bean.resource.InformationResource, java.lang.Long, java.lang.Long, java.util.Collection, java.lang.Long)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.bulk.BulkUploadService#save(org.tdar.core.bean.resource.InformationResource, java.lang.Long, java.lang.Long,
+     * java.util.Collection, java.lang.Long)
      */
     @Override
     @Transactional
@@ -102,7 +103,7 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
             TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException("bulkUploadService.the_system_has_not_received_any_files");
             throw throwable;
         }
-        
+
         genericDao.clearCurrentSession();
         BulkUpdateReceiver asyncUpdateReceiver = new BulkUpdateReceiver(ticketId.toString());
         AsynchronousProcessManager.getInstance().addActivityToQueue(asyncUpdateReceiver);
@@ -119,7 +120,6 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
 
             logger.debug("ticketID:" + ticketId);
             Activity activity = registerActivity(fileProxies, submitter);
-
 
             logger.info("bulk: processing files, and then persisting");
             processFileProxiesIntoResources(fileProxies, resourceTemplate, submitter, asyncUpdateReceiver, resources);
@@ -155,8 +155,11 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
         resourceService.clearOneToManyIds(resourceTemplate);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.bulk.BulkUploadService#processFileProxiesIntoResources(java.util.Collection, org.tdar.core.bean.resource.InformationResource, org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.AsyncUpdateReceiver, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.bulk.BulkUploadService#processFileProxiesIntoResources(java.util.Collection, org.tdar.core.bean.resource.InformationResource,
+     * org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.AsyncUpdateReceiver, java.util.List)
      */
     @Override
     @Transactional
@@ -164,8 +167,8 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
             AsyncUpdateReceiver asyncUpdateReceiver, List<Resource> resources) {
         int count = 0;
         image.setSubmitter(authenticatedUser);
-        Map<String,FileProxy> map = new HashMap<>();
-        Map<String,InformationResource> rMap = new HashMap<>();
+        Map<String, FileProxy> map = new HashMap<>();
+        Map<String, InformationResource> rMap = new HashMap<>();
         for (FileProxy fileProxy : fileProxies) {
             logger.trace("processing: {}", fileProxy);
             try {
@@ -186,7 +189,8 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
                             new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", Arrays.asList(fileName)));
                     continue;
                 }
-                InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(authenticatedUser,image, suggestTypeForFile.getResourceClass(), true);
+                InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(authenticatedUser, image,
+                        suggestTypeForFile.getResourceClass(), true);
                 informationResource.setTitle(fileName);
                 informationResource.setId(null);
                 informationResource.setDescription("add description");
@@ -231,8 +235,8 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
     private ResourceCollection logAndPersist(AsyncUpdateReceiver receiver, List<Resource> resources, Long submitterId, Long accountId) {
         logger.info("bulk: setting final statuses and logging");
         TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
-        String title = "Bulk Upload:" + DateTime.now().toString( DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss"));
-        ResourceCollection collection = new ResourceCollection(title, title, submitter); 
+        String title = "Bulk Upload:" + DateTime.now().toString(DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss"));
+        ResourceCollection collection = new ResourceCollection(title, title, submitter);
         try {
             collection.markUpdated(submitter);
             collection.setSystemManaged(true);
@@ -297,7 +301,9 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
         activity.end();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.bulk.BulkUploadService#getResourceTypesSupportingBulkUpload()
      */
     @Override
@@ -306,7 +312,9 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.bulk.BulkUploadService#checkAsyncStatus(java.lang.Long)
      */
     @Override

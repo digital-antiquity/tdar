@@ -10,7 +10,7 @@ import org.tdar.utils.Pair;
  * finally, the "details" can be used to pass record specific info to be shared.
  */
 public interface AsyncUpdateReceiver {
-    
+
     void setPercentComplete(float complete);
 
     void setStatus(String status);

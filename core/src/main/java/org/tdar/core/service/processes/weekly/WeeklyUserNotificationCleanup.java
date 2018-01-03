@@ -46,7 +46,6 @@ public class WeeklyUserNotificationCleanup extends AbstractScheduledBatchProcess
             return;
         }
 
-        
         // if it's been sitting there for 6 months and the user has logged in after
         if (sixMonths.isAfter(new DateTime(note.getDateCreated()))
                 && note.getTdarUser() != null && note.getMessageType() == UserNotificationType.INFO
@@ -55,13 +54,13 @@ public class WeeklyUserNotificationCleanup extends AbstractScheduledBatchProcess
             genericDao.delete(note);
             return;
         }
-        
+
         // delete system broadcasts after 3 months
-        if (threeMonths.isAfter(new DateTime(note.getDateCreated())) && note.getMessageType()== UserNotificationType.SYSTEM_BROADCAST) {
+        if (threeMonths.isAfter(new DateTime(note.getDateCreated())) && note.getMessageType() == UserNotificationType.SYSTEM_BROADCAST) {
             getOldBroadcast().add(note);
             genericDao.delete(note);
             return;
-            
+
         }
     }
 

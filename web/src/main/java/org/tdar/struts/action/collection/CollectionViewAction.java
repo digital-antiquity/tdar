@@ -102,7 +102,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
     private transient BookmarkedResourceService bookmarkedResourceService;
     @Autowired
     private transient UserRightsProxyService userRightsProxyService;
-    
+
     private Long parentId;
     private List<ResourceCollection> collections = new LinkedList<>();
     private Long viewCount = 0L;
@@ -138,7 +138,6 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
         return resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(), getPersistable());
     }
 
-
     @Override
     public boolean authorize() throws TdarActionException {
         if (getResourceCollection() == null) {
@@ -168,7 +167,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
 
     @Override
     public Class<C> getPersistableClass() {
-        return (Class<C>) (Class)ResourceCollection.class;
+        return (Class<C>) (Class) ResourceCollection.class;
     }
 
     public List<SortOption> getSortOptions() {
@@ -182,10 +181,10 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
             ResourceCollectionViewStatistic rcvs = new ResourceCollectionViewStatistic(new Date(), getPersistable(), isBot());
             getGenericService().saveOrUpdate(rcvs);
         } else {
-//            setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
+            // setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
 
-        reSortFacets(this, (Sortable)getPersistable());
+        reSortFacets(this, (Sortable) getPersistable());
         return SUCCESS;
     }
 
@@ -208,7 +207,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
         findAllChildCollections.addAll(resourceCollectionService.findAlternateChildren(Arrays.asList(getId()), getAuthenticatedUser()));
         setCollections(new ArrayList<ResourceCollection>(findAllChildCollections));
         getLogger().trace("child collections: sort");
-//        Collections.sort(collections);
+        // Collections.sort(collections);
         getLogger().trace("child collections: end");
 
         setInvites(userRightsProxyService.findUserInvites(getPersistable()));
@@ -234,9 +233,9 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
             result = CollectionViewAction.SUCCESS_WHITELABEL;
         }
 
-//        if (SUCCESS.equals(result) && getPersistable().getType() == CollectionType.SHARED) {
-//            result = SUCCESS_SHARE;
-//        }
+        // if (SUCCESS.equals(result) && getPersistable().getType() == CollectionType.SHARED) {
+        // result = SUCCESS_SHARE;
+        // }
         return result;
     }
 
@@ -441,7 +440,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
      * @return
      */
     public boolean isBigCollection() {
-            return (((ResourceCollection) getPersistable()).getManagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        return (((ResourceCollection) getPersistable()).getManagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 
     public Long getViewCount() {
@@ -521,10 +520,10 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
      * @return
      */
     public boolean isSearchHeaderEnabled() {
-            CollectionDisplayProperties properties = getResourceCollection().getProperties();
-            if (properties != null && properties.getSearchEnabled()) {
-                return true;
-            }
+        CollectionDisplayProperties properties = getResourceCollection().getProperties();
+        if (properties != null && properties.getSearchEnabled()) {
+            return true;
+        }
         return false;
     }
 

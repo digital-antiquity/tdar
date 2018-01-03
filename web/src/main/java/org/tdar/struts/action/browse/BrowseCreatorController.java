@@ -100,11 +100,11 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
      * 
      */
     private static final long serialVersionUID = 7004124945674660779L;
-//    public static final String FOAF_XML = ".foaf.xml";
-//    public static final String SLASH = "/";
-//    public static final String XML = ".xml";
-//    public static final String CREATORS = "creators";
-//    public static final String EXPLORE = "explore";
+    // public static final String FOAF_XML = ".foaf.xml";
+    // public static final String SLASH = "/";
+    // public static final String XML = ".xml";
+    // public static final String CREATORS = "creators";
+    // public static final String EXPLORE = "explore";
     private String logoUrl;
     private Creator creator;
     private Long viewCount = 0L;
@@ -155,7 +155,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         return entityService.findAuthorityFromDuplicate(creator);
     }
 
-
     public boolean isEditable() {
         if (isEditorOrSelf()) {
             return true;
@@ -198,10 +197,10 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         if (isLogoAvailable()) {
             setLogoUrl(UrlService.creatorLogoUrl(creator));
         }
-        
-        if(creator instanceof Institution){
+
+        if (creator instanceof Institution) {
             getLogger().trace("find institutions");
-        	people.addAll(entityService.findPersonsByInstitution((Institution) creator));
+            people.addAll(entityService.findPersonsByInstitution((Institution) creator));
         }
         getLogger().trace("done prepare");
     }
@@ -241,7 +240,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             } catch (Exception e) {
                 getLogger().error("unable to set resource access statistics", e);
             }
-//            setViewCount(entityService.getCreatorViewCount(creator));
+            // setViewCount(entityService.getCreatorViewCount(creator));
         }
 
         if (!isEditor() && !PersistableUtils.isEqual(creator, getAuthenticatedUser())) {
@@ -255,7 +254,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
     }
-    
+
     private List<Person> people = new ArrayList<Person>();
 
     @SuppressWarnings("unchecked")
@@ -323,7 +322,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             }
             for (Facet facet : getFacetWrapper().getFacetResults().get(role)) {
                 // skip things in the ignoreId
-                if (NumberUtils.isNumber(facet.getRaw()) && CollectionUtils.isNotEmpty(ignoreIds) &&ignoreIds.contains(Long.parseLong(facet.getRaw()))) {
+                if (NumberUtils.isNumber(facet.getRaw()) && CollectionUtils.isNotEmpty(ignoreIds) && ignoreIds.contains(Long.parseLong(facet.getRaw()))) {
                     continue;
                 }
                 Facet stored = facetMap.get(facet.getUniqueKey());
@@ -390,7 +389,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
         return true;
     }
-
 
     public boolean isShowAdminInfo() {
         return isAuthenticated() && (isEditor() || Objects.equals(getId(), getAuthenticatedUser().getId()));
@@ -507,13 +505,13 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     public void setKeywordFacetMap(Map<String, Facet> keywordFacetMap) {
         this.keywordFacetMap = keywordFacetMap;
     }
-    
-    public List<Person> getPeople(){
-    	return people;
+
+    public List<Person> getPeople() {
+        return people;
     }
-  
-    public void setPeople(List<Person> peopleList ){
-    	people = peopleList;
+
+    public void setPeople(List<Person> peopleList) {
+        people = peopleList;
     }
 
 }

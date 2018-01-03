@@ -11,9 +11,7 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum DegreeType implements HasLabel, Localizable {
-    UNDERGRADUATE("Undergraduate Thesis"),
-    MASTERS("Masters Thesis"),
-    DOCTORAL("Doctoral Dissertation");
+    UNDERGRADUATE("Undergraduate Thesis"), MASTERS("Masters Thesis"), DOCTORAL("Doctoral Dissertation");
     private String label;
 
     private DegreeType(String label) {

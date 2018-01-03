@@ -9,12 +9,12 @@ import org.tdar.search.query.QueryFieldNames;
 
 /**
  * Search the full-text of a resource by Joining to the "contents" index and looking at the indexed full-text of a resource.
+ * 
  * @author abrin
  *
  */
 public class ContentQueryPart extends FieldQueryPart<String> {
 
-    
     public ContentQueryPart() {
     }
 
@@ -22,9 +22,8 @@ public class ContentQueryPart extends FieldQueryPart<String> {
         getFieldValues().add(term);
     }
 
-
     public ContentQueryPart(String text, Operator operator, List<String> contents) {
-        super(QueryFieldNames.CONTENT, text,operator, contents);
+        super(QueryFieldNames.CONTENT, text, operator, contents);
     }
 
     @Override
@@ -35,7 +34,8 @@ public class ContentQueryPart extends FieldQueryPart<String> {
         content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
         subq.append(content);
         subq.append(new FieldQueryPart<FileAccessRestriction>(QueryFieldNames.RESOURCE_ACCESS_TYPE, FileAccessRestriction.PUBLIC));
-        CrossCoreFieldJoinQueryPart<?> join = new CrossCoreFieldJoinQueryPart(QueryFieldNames.ID, QueryFieldNames.RESOURCE_ID, subq, LookupSource.CONTENTS.getCoreName());
+        CrossCoreFieldJoinQueryPart<?> join = new CrossCoreFieldJoinQueryPart(QueryFieldNames.ID, QueryFieldNames.RESOURCE_ID, subq,
+                LookupSource.CONTENTS.getCoreName());
         return join.generateQueryString();
     }
 }

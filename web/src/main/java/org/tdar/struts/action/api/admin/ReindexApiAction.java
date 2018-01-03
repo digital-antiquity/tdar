@@ -28,6 +28,7 @@ import com.opensymphony.xwork2.Preparable;
 
 /**
  * Creates a method to reindex a resource or collection of resources via an API
+ * 
  * @author abrin
  *
  */
@@ -42,16 +43,15 @@ public class ReindexApiAction extends AbstractAuthenticatableAction implements P
     private static final long serialVersionUID = 6402649954856208287L;
     private List<Long> ids = new ArrayList<>();
     private Long collectionId;
-    
+
     @Autowired
     private SearchIndexService searchIndexService;
-    
-    
+
     @Override
     public void prepare() {
-        
+
     }
-    
+
     @Action(value = "reindex", results = {
             @Result(name = SUCCESS, type = JSONRESULT)
     })
@@ -63,29 +63,29 @@ public class ReindexApiAction extends AbstractAuthenticatableAction implements P
             searchIndexService.index(c);
             searchIndexService.indexAllResourcesInCollectionSubTree(c);
         }
-        
+
         if (!CollectionUtils.isEmpty(getIds())) {
             List<Resource> resources = getGenericService().findAll(Resource.class, getIds());
             searchIndexService.indexCollection(resources);
         }
         return SUCCESS;
-        
+
     }
 
-	public Long getCollectionId() {
-		return collectionId;
-	}
+    public Long getCollectionId() {
+        return collectionId;
+    }
 
-	public void setCollectionId(Long collectionId) {
-		this.collectionId = collectionId;
-	}
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+    }
 
-	public List<Long> getIds() {
-		return ids;
-	}
+    public List<Long> getIds() {
+        return ids;
+    }
 
-	public void setIds(List<Long> ids) {
-		this.ids = ids;
-	}
-    
+    public void setIds(List<Long> ids) {
+        this.ids = ids;
+    }
+
 }

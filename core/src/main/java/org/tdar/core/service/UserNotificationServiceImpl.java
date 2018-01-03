@@ -25,14 +25,16 @@ import com.opensymphony.xwork2.TextProvider;
  * Handles requests to create or dismiss user notifications.
  */
 @Service
-public class UserNotificationServiceImpl implements UserNotificationService  {
+public class UserNotificationServiceImpl implements UserNotificationService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private GenericDao genericDao;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#find(java.lang.Long)
      */
     @Override
@@ -41,7 +43,9 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return genericDao.find(UserNotification.class, id);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#findAll()
      */
     @Override
@@ -50,7 +54,9 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return genericDao.findAll(UserNotification.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#findAll(org.tdar.core.bean.notification.UserNotificationType)
      */
     @Override
@@ -62,7 +68,9 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return query.getResultList();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#findAll(com.opensymphony.xwork2.TextProvider)
      */
     @Override
@@ -76,7 +84,9 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return allNotifications;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#getCurrentNotifications(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -86,8 +96,8 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         if (PersistableUtils.isNullOrTransient(user)) {
             return Collections.emptyList();
         }
-        List<UserNotification> notifications =
-                genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setParameter("userId", user.getId()).getResultList();
+        List<UserNotification> notifications = genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setParameter("userId", user.getId())
+                .getResultList();
         Date dismissedNotificationsDate = user.getDismissedNotificationsDate();
         if (dismissedNotificationsDate != null) {
             for (Iterator<UserNotification> iter = notifications.iterator(); iter.hasNext();) {
@@ -99,7 +109,9 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return notifications;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#broadcast(java.lang.String, org.tdar.core.bean.notification.UserNotificationDisplayType)
      */
     @Override
@@ -108,7 +120,9 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return createUserNotification(null, messageKey, UserNotificationType.SYSTEM_BROADCAST, displayType);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#info(org.tdar.core.bean.entity.TdarUser, java.lang.String)
      */
     @Override
@@ -117,8 +131,11 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return info(user, messageKey, UserNotificationDisplayType.NORMAL);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.UserNotificationService#info(org.tdar.core.bean.entity.TdarUser, java.lang.String, org.tdar.core.bean.notification.UserNotificationDisplayType)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.UserNotificationService#info(org.tdar.core.bean.entity.TdarUser, java.lang.String,
+     * org.tdar.core.bean.notification.UserNotificationDisplayType)
      */
     @Override
     @Transactional
@@ -126,7 +143,9 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return createUserNotification(user, messageKey, UserNotificationType.INFO, displayType);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#error(org.tdar.core.bean.entity.TdarUser, java.lang.String)
      */
     @Override
@@ -135,8 +154,11 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return error(user, messageKey, UserNotificationDisplayType.NORMAL);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.UserNotificationService#error(org.tdar.core.bean.entity.TdarUser, java.lang.String, org.tdar.core.bean.notification.UserNotificationDisplayType)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.UserNotificationService#error(org.tdar.core.bean.entity.TdarUser, java.lang.String,
+     * org.tdar.core.bean.notification.UserNotificationDisplayType)
      */
     @Override
     @Transactional
@@ -144,7 +166,9 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return createUserNotification(user, messageKey, UserNotificationType.ERROR, displayType);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#warning(org.tdar.core.bean.entity.TdarUser, java.lang.String)
      */
     @Override
@@ -153,8 +177,11 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return warning(user, messageKey, UserNotificationDisplayType.NORMAL);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.UserNotificationService#warning(org.tdar.core.bean.entity.TdarUser, java.lang.String, org.tdar.core.bean.notification.UserNotificationDisplayType)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.UserNotificationService#warning(org.tdar.core.bean.entity.TdarUser, java.lang.String,
+     * org.tdar.core.bean.notification.UserNotificationDisplayType)
      */
     @Override
     @Transactional
@@ -162,13 +189,16 @@ public class UserNotificationServiceImpl implements UserNotificationService  {
         return createUserNotification(user, messageKey, UserNotificationType.WARNING, displayType);
     }
 
-    private UserNotification createUserNotification(TdarUser user, String messageKey, UserNotificationType messageType, UserNotificationDisplayType displayType) {
+    private UserNotification createUserNotification(TdarUser user, String messageKey, UserNotificationType messageType,
+            UserNotificationDisplayType displayType) {
         UserNotification notification = new UserNotification(messageKey, messageType, displayType, user);
         genericDao.save(notification);
         return notification;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserNotificationService#dismiss(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.notification.UserNotification)
      */
     @Override

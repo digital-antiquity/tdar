@@ -51,19 +51,20 @@ public class CollectionDisplayProperties implements HasImage, Persistable {
     private Boolean hideCollectionSidebar = false;
 
     public CollectionDisplayProperties() {
-        this(false,false,false,false,false,false, false);
+        this(false, false, false, false, false, false, false);
     }
-    
-    public CollectionDisplayProperties(boolean whitelable, boolean customHeaderEnabled, boolean customLogoEnabled, boolean featuredResourceEnabled, boolean searchEnabled, boolean subCollectionEnabled, boolean hideCollectionSidebar) {
+
+    public CollectionDisplayProperties(boolean whitelable, boolean customHeaderEnabled, boolean customLogoEnabled, boolean featuredResourceEnabled,
+            boolean searchEnabled, boolean subCollectionEnabled, boolean hideCollectionSidebar) {
         this.whitelabel = whitelable;
-        this.customDocumentLogoEnabled= customLogoEnabled;
+        this.customDocumentLogoEnabled = customLogoEnabled;
         this.customHeaderEnabled = customHeaderEnabled;
-        this.featuredResourcesEnabled =featuredResourceEnabled;
+        this.featuredResourcesEnabled = featuredResourceEnabled;
         this.searchEnabled = searchEnabled;
         this.subCollectionsEnabled = subCollectionEnabled;
         this.hideCollectionSidebar = hideCollectionSidebar;
     }
-    
+
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     private String css;
@@ -76,7 +77,6 @@ public class CollectionDisplayProperties implements HasImage, Persistable {
             inverseJoinColumns = { @JoinColumn(
                     nullable = false, name = "resource_id") })
     private List<Resource> featuredResources = new ArrayList<>();
-
 
     @Transient
     private Institution institution;

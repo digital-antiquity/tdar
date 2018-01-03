@@ -79,7 +79,7 @@ public class CartBillingAccountController extends AbstractCartController {
         if (getInvoice() == null) {
             addActionError(getText("cartController.missing_invoice"));
         }
-        
+
         // rule: payment method required
         if (getInvoice().getPaymentMethod() == null) {
             addActionError(getText("cartController.valid_payment_method_is_required"));

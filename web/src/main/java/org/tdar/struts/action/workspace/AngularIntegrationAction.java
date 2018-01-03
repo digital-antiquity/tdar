@@ -51,7 +51,8 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @HttpsOnly
-public class AngularIntegrationAction extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>, Validateable {
+public class AngularIntegrationAction extends AbstractAuthenticatableAction
+        implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>, Validateable {
 
     private static final long serialVersionUID = -2356381511354062946L;
 
@@ -185,12 +186,12 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
     }
 
     public Boolean isEditable() {
-        return authorizationService.canEditWorkflow( getAuthenticatedUser(),workflow);
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(), workflow);
     }
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditWorkflow(getAuthenticatedUser(),workflow);
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(), workflow);
     }
 
     @Override
@@ -245,6 +246,5 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
     public int getMaxDataTables() {
         return TdarConfiguration.getInstance().getDataIntegrationMaximumDataTables();
     }
-
 
 }

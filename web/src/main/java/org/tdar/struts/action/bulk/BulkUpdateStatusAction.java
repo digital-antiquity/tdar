@@ -41,9 +41,9 @@ public class BulkUpdateStatusAction extends AbstractAuthenticatableAction implem
         }
         if (getStatus() != null) {
             getLogger().debug("{} {}%", getStatus().getMessage(), getStatus().getPercentComplete());
-        } 
+        }
     }
-    
+
     @Override
     public Object getResultObject() {
         return getStatus();
@@ -51,7 +51,7 @@ public class BulkUpdateStatusAction extends AbstractAuthenticatableAction implem
 
     @SkipValidation
     @Action(value = "checkstatus",
-            results = { @Result(name = SUCCESS, type = JSONRESULT )})
+            results = { @Result(name = SUCCESS, type = JSONRESULT) })
     @PostOnly
     public String checkStatus() {
         return SUCCESS;
@@ -60,7 +60,6 @@ public class BulkUpdateStatusAction extends AbstractAuthenticatableAction implem
     public Long getTicketId() {
         return ticketId;
     }
-
 
     public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;

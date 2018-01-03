@@ -40,7 +40,6 @@ public class SessionData implements Serializable {
         return String.format("Auth user: %s [object id: %s]", tdarUserId, super.toString());
     }
 
-
     public String[] getParameters() {
         return parameters;
     }

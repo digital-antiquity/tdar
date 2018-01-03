@@ -33,7 +33,8 @@ public class GeoLookupAction extends AbstractJsonApiAction implements Preparable
     @Autowired
     private GeoSearchService geoSearchService;
     private List<String> countries = new ArrayList<String>();
-    private Map<String,Object> err = new HashMap<>();
+    private Map<String, Object> err = new HashMap<>();
+
     public List<String> getCountries() {
         return countries;
     }
@@ -70,7 +71,7 @@ public class GeoLookupAction extends AbstractJsonApiAction implements Preparable
         setJsonObject(box);
     }
 
-    @Action(value="rlookup")
+    @Action(value = "rlookup")
     @Override
     public String execute() throws Exception {
         // TODO Auto-generated method stub

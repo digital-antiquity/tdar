@@ -10,5 +10,4 @@ public interface Indexable extends Persistable {
     @Override
     Long getId();
 
-
 }

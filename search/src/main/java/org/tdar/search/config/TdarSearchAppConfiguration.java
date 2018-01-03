@@ -10,12 +10,10 @@ import org.tdar.core.configuration.TdarAppConfiguration;
 @EnableCaching
 public class TdarSearchAppConfiguration extends TdarAppConfiguration implements HasSearchIndex {
 
-
     private static final long serialVersionUID = -4500782466973090097L;
 
     public boolean disableHibernateSearch() {
         return false;
     }
-    
 
 }

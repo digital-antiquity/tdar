@@ -23,14 +23,16 @@ public class UnauthenticatedDownloadAction extends AbstractDownloadController im
     @Actions(value = {
             @Action(value = "download/{informationResourceId}/{informationResourceFileVersionId}",
                     results = {
-                            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = DOWNLOAD_SINGLE_LANDING, params = { "ignoreParams", "informationResourceFileVersionId,informationResourceId" }),
+                            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = DOWNLOAD_SINGLE_LANDING,
+                                    params = { "ignoreParams", "informationResourceFileVersionId,informationResourceId" }),
                             @Result(name = DOWNLOAD_ALL, type = TDAR_REDIRECT,
                                     location = "/filestore/zip/${informationResourceId}"),
                             @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
                             @Result(name = LOGIN, type = FREEMARKER, location = "download-unauthenticated.ftl") }),
             @Action(value = "download/{informationResourceId}",
                     results = {
-                            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = DOWNLOAD_SINGLE_LANDING, params = { "ignoreParams", "informationResourceFileVersionId,informationResourceId" }),
+                            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = DOWNLOAD_SINGLE_LANDING,
+                                    params = { "ignoreParams", "informationResourceFileVersionId,informationResourceId" }),
                             @Result(name = DOWNLOAD_ALL, type = TDAR_REDIRECT,
                                     location = "/filestore/zip/${informationResourceId}"),
                             @Result(name = INPUT, type = "httpheader", params = { "error", "400", "errrorMessage", "no file specified" }),
@@ -39,6 +41,7 @@ public class UnauthenticatedDownloadAction extends AbstractDownloadController im
     @HttpsOnly
     /**
      * if authenticated and valid, pass through to download, otherwise pass through to login
+     * 
      * @return
      */
     public String download() {

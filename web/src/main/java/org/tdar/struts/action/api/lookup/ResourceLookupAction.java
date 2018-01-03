@@ -45,10 +45,10 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     private static final long serialVersionUID = 1328807454084572934L;
 
     public static final String SELECTED_RESULTS = "selectedResults";
-    public static final String MANAGED_RESULTS 	= "managedResourceResults";
+    public static final String MANAGED_RESULTS = "managedResourceResults";
     public static final String UNMANAGED_RESULTS = "unmanagedResourceResults";
 
-    //Inputs
+    // Inputs
     private Long projectId;
     private List<Long> collectionId;
     private String term;
@@ -57,12 +57,12 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     private boolean includeCompleteRecord = false;
     private Permissions permission = Permissions.VIEW_ALL;
     private boolean parentCollectionsIncluded = true;
-    
+
     /**
      * This is used for the TdarDatatable to request resources that are in the collection.
-     * This refers to the collection being edited. 
+     * This refers to the collection being edited.
      */
-    private Long selectResourcesFromCollectionid; 
+    private Long selectResourcesFromCollectionid;
 
     @Autowired
     private ResourceSearchService resourceSearchService;
@@ -73,15 +73,14 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     public String lookupResource() throws SolrServerException, IOException {
         setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");
-        
+
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
         if (!isIncludeCompleteRecord() || (getAuthenticatedUser() == null)) {
             setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
             getLogger().info("using projection {}, {}", isIncludeCompleteRecord(), getAuthenticatedUser());
         }
 
-        
-        //Set the search parameters 
+        // Set the search parameters
         ResourceLookupObject lookupParameters = new ResourceLookupObject();
         lookupParameters.setTerm(term);
         lookupParameters.setProjectId(projectId);
@@ -92,11 +91,10 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         lookupParameters.setPermission(permission);
         addCollectionIdsToLookup(lookupParameters);
         cleanupResourceTypes();
-        if (getSortField() != SortOption.RELEVANCE) 
-        	setSecondarySortField(SortOption.TITLE);
+        if (getSortField() != SortOption.RELEVANCE)
+            setSecondarySortField(SortOption.TITLE);
 
-        
-        //Run the search.
+        // Run the search.
         try {
             resourceSearchService.lookupResource(getAuthenticatedUser(), lookupParameters, this, this);
             getLogger().trace("resultObjects: {}", getResults());
@@ -105,68 +103,67 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             return ERROR;
         }
 
-        //Add the search results.
+        // Add the search results.
         processSearchResults();
-        
-        
-        //Return the results to the browser. 
+
+        // Return the results to the browser.
         if (isIncludeCompleteRecord()) {
-        	//If the full record is needed, then don't filter the JSON results. 
+            // If the full record is needed, then don't filter the JSON results.
             jsonifyResult(null);
         } else {
-        	//The filter will specify which fields to serialize. 
+            // The filter will specify which fields to serialize.
             jsonifyResult(JsonLookupFilter.class);
         }
         return SUCCESS;
     }
 
-	private void processSearchResults() {
-		//The results may contain lots of different resources, some that may be part of the collection and some that arent. 
-		//If a selectResourcesFromCollectionid is specified, then it means that only the resources belonging to that
-		//Collection should be returned in the page result.
-		//
-		//This means that the collection will be checked to make it exists, and if it does then the 
-		//search results will be iterated to check if the collection is part of the resources managed/unmanaged collection.
-		//if it is, then it will be added accordingly. 
-		if (PersistableUtils.isNotNullOrTransient(getSelectResourcesFromCollectionid())) {
+    private void processSearchResults() {
+        // The results may contain lots of different resources, some that may be part of the collection and some that arent.
+        // If a selectResourcesFromCollectionid is specified, then it means that only the resources belonging to that
+        // Collection should be returned in the page result.
+        //
+        // This means that the collection will be checked to make it exists, and if it does then the
+        // search results will be iterated to check if the collection is part of the resources managed/unmanaged collection.
+        // if it is, then it will be added accordingly.
+        if (PersistableUtils.isNotNullOrTransient(getSelectResourcesFromCollectionid())) {
             ResourceCollection collection = getGenericService().find(ResourceCollection.class, getSelectResourcesFromCollectionid());
             if (collection != null) {
                 Set<Long> resourceIds = new HashSet<Long>();
                 Set<Long> managedResourceIds = new HashSet<Long>();
                 Set<Long> unmanagedResourceIds = new HashSet<Long>();
-                
-                //Loop through the results, and add any them accordingly. 
+
+                // Loop through the results, and add any them accordingly.
                 for (Indexable result_ : getResults()) {
                     Resource resource = (Resource) result_;
                     if (resource != null && resource.isViewable()) {
-                        if(resource.getManagedResourceCollections().contains(collection)){
-                        	managedResourceIds.add(resource.getId()); 
-                        	resourceIds.add(resource.getId());
+                        if (resource.getManagedResourceCollections().contains(collection)) {
+                            managedResourceIds.add(resource.getId());
+                            resourceIds.add(resource.getId());
                         }
-                        
-                        if(resource.getUnmanagedResourceCollections().contains(collection)){
-                        	unmanagedResourceIds.add(resource.getId());
-                        	resourceIds.add(resource.getId());
+
+                        if (resource.getUnmanagedResourceCollections().contains(collection)) {
+                            unmanagedResourceIds.add(resource.getId());
+                            resourceIds.add(resource.getId());
                         }
                     }
                 }
-                
-                //This is what gets serialized as JSON. 
+
+                // This is what gets serialized as JSON.
                 getResult().put(SELECTED_RESULTS, resourceIds);
                 getResult().put(MANAGED_RESULTS, managedResourceIds);
                 getResult().put(UNMANAGED_RESULTS, unmanagedResourceIds);
             }
         }
-	}
+    }
 
-	private void addCollectionIdsToLookup(ResourceLookupObject lookupParameters) {
-		if (CollectionUtils.isNotEmpty(collectionId)) {
+    private void addCollectionIdsToLookup(ResourceLookupObject lookupParameters) {
+        if (CollectionUtils.isNotEmpty(collectionId)) {
             for (Long id : collectionId) {
-                //ResourceCollection rc = getGenericService().find(ResourceCollection.class, id);
-                lookupParameters.getCollectionIds().add(id);                    
+                // ResourceCollection rc = getGenericService().find(ResourceCollection.class, id);
+                lookupParameters.getCollectionIds().add(id);
             }
         }
-	}
+    }
 
     public String getTerm() {
         return term;

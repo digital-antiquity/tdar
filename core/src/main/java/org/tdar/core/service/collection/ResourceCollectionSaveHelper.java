@@ -20,7 +20,6 @@ public class ResourceCollectionSaveHelper {
     @SuppressWarnings("unchecked")
     public ResourceCollectionSaveHelper(Collection<ResourceCollection> incoming, Collection<ResourceCollection> existing_) {
 
-        
         Set<ResourceCollection> existing = new HashSet<>();
         Iterator<ResourceCollection> iterator = existing_.iterator();
         while (iterator.hasNext()) {
@@ -33,7 +32,7 @@ public class ResourceCollectionSaveHelper {
             if (in == null) {
                 continue;
             }
-            
+
             if (!idMap.containsKey(in.getId())) {
                 getToAdd().add(in);
             } else {

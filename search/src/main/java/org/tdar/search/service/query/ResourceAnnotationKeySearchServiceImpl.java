@@ -22,8 +22,11 @@ public class ResourceAnnotationKeySearchServiceImpl extends AbstractSearchServic
     @Autowired
     private SearchService<ResourceAnnotationKey> searchService;
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.ResourceAnnotationKeySearchService#buildAnnotationSearch(java.lang.String, org.tdar.search.query.LuceneSearchResultHandler, int, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.ResourceAnnotationKeySearchService#buildAnnotationSearch(java.lang.String,
+     * org.tdar.search.query.LuceneSearchResultHandler, int, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     public SearchResultHandler<ResourceAnnotationKey> buildAnnotationSearch(String term, LuceneSearchResultHandler<ResourceAnnotationKey> result, int min,

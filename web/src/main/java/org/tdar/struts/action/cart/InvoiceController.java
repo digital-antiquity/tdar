@@ -56,7 +56,6 @@ public class InvoiceController extends AbstractCartController {
     private PricingType pricingType = null;
     private Long accountId;
 
-
     @Autowired
     private transient InvoiceService invoiceService;
 
@@ -273,6 +272,5 @@ public class InvoiceController extends AbstractCartController {
     public void setAffiliations(List<UserAffiliation> affiliations) {
         this.affiliations = affiliations;
     }
-
 
 }

@@ -20,7 +20,7 @@ public class Facet implements Serializable {
     public Facet(String raw, String label, Long value, Class<?> facetClass) {
         this.setRaw(raw);
         this.label = label;
-        if (value!= null) {
+        if (value != null) {
             this.count = value;
         }
         this.className = facetClass;
@@ -54,7 +54,6 @@ public class Facet implements Serializable {
     public void setRaw(String raw) {
         this.raw = raw;
     }
-
 
     public Class<?> getClassName() {
         return className;

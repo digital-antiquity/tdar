@@ -82,8 +82,8 @@ public class ProcessPermissonsAction extends AbstractProcessPermissonsAction imp
         } else {
             String aMessage = "Access has been granted";
             if (expires != null) {
-                aMessage += " until "+ new SimpleDateFormat(DATE_FORMAT).format(expires);
-            } 
+                aMessage += " until " + new SimpleDateFormat(DATE_FORMAT).format(expires);
+            }
             addActionMessage(aMessage);
         }
         return SUCCESS;

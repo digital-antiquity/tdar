@@ -143,8 +143,11 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         return version;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceSaveControllerService#processTextInput(com.opensymphony.xwork2.TextProvider, java.lang.String, org.tdar.core.bean.resource.InformationResource)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceSaveControllerService#processTextInput(com.opensymphony.xwork2.TextProvider, java.lang.String,
+     * org.tdar.core.bean.resource.InformationResource)
      */
     @Override
     @Transactional(readOnly = false)
@@ -208,7 +211,9 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         throw new UnsupportedOperationException(provider.getText("abstractInformationResourceController.didnt_override", getClass().getSimpleName()));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceSaveControllerService#getLatestUploadedTextVersionText(org.tdar.core.bean.resource.InformationResource)
      */
     @Override
@@ -228,8 +233,11 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         return versionText;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceSaveControllerService#getFileProxiesToProcess(org.tdar.struts.data.AuthWrapper, com.opensymphony.xwork2.TextProvider, org.tdar.web.service.FileSaveWrapper, org.tdar.core.bean.FileProxy)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceSaveControllerService#getFileProxiesToProcess(org.tdar.struts.data.AuthWrapper, com.opensymphony.xwork2.TextProvider,
+     * org.tdar.web.service.FileSaveWrapper, org.tdar.core.bean.FileProxy)
      */
     @Override
     @Transactional(readOnly = false)
@@ -263,8 +271,11 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         return fileProxiesToProcess;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceSaveControllerService#handleUploadedFiles(org.tdar.struts.data.AuthWrapper, com.opensymphony.xwork2.TextProvider, java.util.Collection, java.lang.Long, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceSaveControllerService#handleUploadedFiles(org.tdar.struts.data.AuthWrapper, com.opensymphony.xwork2.TextProvider,
+     * java.util.Collection, java.lang.Long, java.util.List)
      */
     @Override
     @Transactional(readOnly = false)
@@ -333,7 +344,9 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceSaveControllerService#prepSequence(java.util.List)
      */
     @Override
@@ -349,7 +362,9 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         AbstractSequenced.applySequence(list);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceSaveControllerService#save(org.tdar.struts.data.AuthWrapper, org.tdar.web.service.ResourceControllerProxy)
      */
     @Override
@@ -444,8 +459,11 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
 
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceSaveControllerService#loadEffectiveResourceCollectionsForSave(org.tdar.struts.data.AuthWrapper, java.util.List, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceSaveControllerService#loadEffectiveResourceCollectionsForSave(org.tdar.struts.data.AuthWrapper, java.util.List,
+     * java.util.List)
      */
     @Override
     @Transactional(readOnly = true)
@@ -594,8 +612,11 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         kwds.addAll(toAdd);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceSaveControllerService#saveResourceProviderInformation(org.tdar.core.bean.resource.InformationResource, java.lang.String, org.tdar.core.service.ResourceCreatorProxy, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceSaveControllerService#saveResourceProviderInformation(org.tdar.core.bean.resource.InformationResource,
+     * java.lang.String, org.tdar.core.service.ResourceCreatorProxy, java.lang.String)
      */
     @Override
     @Transactional(readOnly = false)
@@ -622,8 +643,11 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceSaveControllerService#setupFileProxiesForSave(org.tdar.web.service.ResourceControllerProxy, org.tdar.struts.data.AuthWrapper, org.tdar.web.service.FileSaveWrapper, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceSaveControllerService#setupFileProxiesForSave(org.tdar.web.service.ResourceControllerProxy,
+     * org.tdar.struts.data.AuthWrapper, org.tdar.web.service.FileSaveWrapper, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = true)

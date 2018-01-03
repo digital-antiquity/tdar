@@ -26,21 +26,21 @@ import org.tdar.core.bean.resource.Resource;
  */
 @Entity
 @Table(name = "user_invite")
-//@Check(constraints = "email <> ''")
+// @Check(constraints = "email <> ''")
 public class UserInvite extends AbstractPersistable {
 
     private static final long serialVersionUID = 2915969311944606586L;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_created", nullable=false)
+    @Column(name = "date_created", nullable = false)
     private Date dateCreated = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_expires", nullable=true)
+    @Column(name = "date_expires", nullable = true)
     private Date dateExpires;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_redeemed", nullable=true)
+    @Column(name = "date_redeemed", nullable = true)
     private Date dateRedeemed;
 
     @ManyToOne
@@ -56,7 +56,7 @@ public class UserInvite extends AbstractPersistable {
     private TdarUser authorizer;
 
     private transient String note;
-    
+
     @ManyToOne
     @JoinColumn(nullable = false, name = "person_id")
     private Person user;

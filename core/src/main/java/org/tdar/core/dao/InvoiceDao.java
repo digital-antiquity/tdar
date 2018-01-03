@@ -27,13 +27,13 @@ import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.utils.MathUtils;
 
 @Component
-public class InvoiceDao extends HibernateBase<Invoice>{
+public class InvoiceDao extends HibernateBase<Invoice> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private BillingAccountDao accountDao;
-    
+
     public InvoiceDao() {
         super(Invoice.class);
     }
@@ -273,7 +273,7 @@ public class InvoiceDao extends HibernateBase<Invoice>{
         } catch (Exception e) {
             logger.error("exception ocurred in processing FLAGGED ACCOUNT", e);
         }
-        
+
         Coupon coupon = invoice.getCoupon();
         // grant rights to resource(s)
         if (coupon != null && !CollectionUtils.isEmpty(coupon.getResourceIds())) {
@@ -286,13 +286,12 @@ public class InvoiceDao extends HibernateBase<Invoice>{
                 res.markUpdated(invoice.getOwner());
                 res.setAccount(account);
                 account.getResources().add(res);
-                accountDao.updateQuota(account, account.getResources(),invoice.getOwner());
+                accountDao.updateQuota(account, account.getResources(), invoice.getOwner());
                 saveOrUpdate(res.getAuthorizedUsers());
                 saveOrUpdate(res);
-                logger.debug("{}",res);
+                logger.debug("{}", res);
             }
         }
     }
 
-    
 }

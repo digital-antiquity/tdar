@@ -34,7 +34,7 @@ public class UserActivityAction extends AbstractAuthenticatableAction implements
     private Long id;
     private TdarUser user;
     private List<ResourceRevisionLog> logs = new ArrayList<>();
-    
+
     @Autowired
     private EntityService entityService;
     @Autowired
@@ -45,10 +45,10 @@ public class UserActivityAction extends AbstractAuthenticatableAction implements
     public void prepare() throws Exception {
         this.user = genericService.find(TdarUser.class, id);
         if (user != null) {
-            setLogs(entityService.findChangesForUser(user, getFrom() ));
+            setLogs(entityService.findChangesForUser(user, getFrom()));
         }
     }
-    
+
     @Override
     @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = FREEMARKER, location = "activity.ftl"),
@@ -95,5 +95,5 @@ public class UserActivityAction extends AbstractAuthenticatableAction implements
     public void setFrom(Date from) {
         this.from = from;
     }
-    
+
 }

@@ -13,6 +13,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Search for resources in a project or the project itself (by id).
+ * 
  * @author abrin
  *
  */

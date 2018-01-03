@@ -30,15 +30,10 @@ import org.tdar.utils.MessageHelper;
  */
 @SuppressWarnings("unchecked")
 public enum Permissions implements HasLabel, Localizable {
-    NONE(-1000),
-    VIEW_ALL( 100, Resource.class, ResourceCollection.class),
-    MODIFY_METADATA(400, Resource.class, ResourceCollection.class),
-    MODIFY_RECORD(500, Resource.class, ResourceCollection.class),
-    ADD_TO_COLLECTION(4000,ResourceCollection.class),
-    REMOVE_FROM_COLLECTION(4500, ResourceCollection.class),
-    ADMINISTER_COLLECTION( 5000,ResourceCollection.class),
-    EDIT_ACCOUNT( 10000,BillingAccount.class),
-    EDIT_INTEGRATION( 2000,DataIntegrationWorkflow.class);
+    NONE(-1000), VIEW_ALL(100, Resource.class, ResourceCollection.class), MODIFY_METADATA(400, Resource.class, ResourceCollection.class), MODIFY_RECORD(500,
+            Resource.class, ResourceCollection.class), ADD_TO_COLLECTION(4000, ResourceCollection.class), REMOVE_FROM_COLLECTION(4500,
+                    ResourceCollection.class), ADMINISTER_COLLECTION(5000,
+                            ResourceCollection.class), EDIT_ACCOUNT(10000, BillingAccount.class), EDIT_INTEGRATION(2000, DataIntegrationWorkflow.class);
 
     private Integer effectivePermissions;
     private List<Class<? extends Persistable>> contexts;
@@ -47,7 +42,7 @@ public enum Permissions implements HasLabel, Localizable {
         this.setEffectivePermissions(effectivePermissions);
     }
 
-    Permissions(Integer effectivePermissions, Class<? extends Persistable> ... contexts) {
+    Permissions(Integer effectivePermissions, Class<? extends Persistable>... contexts) {
         this.setEffectivePermissions(effectivePermissions);
         this.setContexts(Arrays.asList(contexts));
     }
@@ -90,12 +85,10 @@ public enum Permissions implements HasLabel, Localizable {
         return permissions;
     }
 
-
-
     public static List<Permissions> resourcePermissions() {
         List<Permissions> permissions = new ArrayList<>(Arrays.asList(Permissions.values()));
-//        permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
-//        permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
+        // permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
+        // permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
         permissions.remove(Permissions.ADMINISTER_COLLECTION);
         permissions.remove(Permissions.ADD_TO_COLLECTION);
         permissions.remove(Permissions.REMOVE_FROM_COLLECTION);

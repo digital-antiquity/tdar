@@ -9,11 +9,11 @@ import org.tdar.core.service.SerializationService;
 
 /**
  * Convert a Resource to a proper JSON Linked Data String
+ * 
  * @author abrin
  *
  */
 public class SchemaOrgResourceTransformer extends AbstractSchemaOrgMetadataTransformer {
-
 
     private static final long serialVersionUID = 3523678951801372308L;
 

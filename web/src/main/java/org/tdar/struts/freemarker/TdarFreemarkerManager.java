@@ -28,7 +28,7 @@ public class TdarFreemarkerManager extends FreemarkerManager {
             config.setTemplateExceptionHandler(new TdarFreemarkerTemplateExceptionHandler());
         }
     }
-    
+
     @Override
     public ScopesHashModel buildTemplateModel(ValueStack stack, Object action, ServletContext servletContext, HttpServletRequest request,
             HttpServletResponse response, ObjectWrapper wrapper) {

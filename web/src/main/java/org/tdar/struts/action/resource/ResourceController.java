@@ -14,7 +14,6 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
 
-
 /**
  * $Id$
  * 
@@ -73,7 +72,6 @@ public class ResourceController extends AbstractAuthenticatableAction {
         return BILLING;
     }
 
-    
     public boolean isAllowedToCreateResource() {
         getLogger().trace("ppi: {}", getTdarConfiguration().isPayPerIngestEnabled());
         return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), null));
@@ -94,6 +92,5 @@ public class ResourceController extends AbstractAuthenticatableAction {
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
-
 
 }

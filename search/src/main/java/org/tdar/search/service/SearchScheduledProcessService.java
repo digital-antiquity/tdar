@@ -21,10 +21,10 @@ public class SearchScheduledProcessService {
         scheduledProcessService.queue(WeeklyResourcesAdded.class);
     }
 
-    
     @Scheduled(cron = "12 0 0 * * SUN")
     public void optimize() {
-        searchIndexService.optimizeAll();;
+        searchIndexService.optimizeAll();
+        ;
     }
 
 }

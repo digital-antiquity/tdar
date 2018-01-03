@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * $Id$
  * 
@@ -81,8 +80,8 @@ public class AsynchronousProcessManager {
         if (CollectionUtils.isEmpty(found)) {
             return null;
         }
-        
-        logger.debug("{}",found);
+
+        logger.debug("{}", found);
         return found.get(0);
     }
 
@@ -127,7 +126,6 @@ public class AsynchronousProcessManager {
         }
         return latest;
     }
-
 
     public synchronized void clearIndexingActivities() {
         Iterator<AsynchronousStatus> iter = activityQueue.iterator();

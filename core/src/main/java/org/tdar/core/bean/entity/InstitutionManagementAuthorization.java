@@ -16,9 +16,9 @@ import org.tdar.core.bean.AbstractPersistable;
 @Table(name = "institution_authorization")
 @XmlRootElement(name = "institution_authorization")
 /**
- * Class to manage users who can edit institutions.  The goal here is to allow users to "apply" to own an institution, and then add a workflow for staff to 
+ * Class to manage users who can edit institutions. The goal here is to allow users to "apply" to own an institution, and then add a workflow for staff to
  * authorize editing.
- *  
+ * 
  * @author abrin
  *
  */

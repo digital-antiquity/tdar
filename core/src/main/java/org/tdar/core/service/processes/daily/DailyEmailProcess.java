@@ -77,7 +77,6 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
         // get user accounts updated since yesterday @ midnight
         LocalDateTime yesterday = LocalDate.now().minusDays(1).atStartOfDay();
 
-
         List<TdarUser> people = entityService.findAllRegisteredUsers(NEW_USER_MAX_RESULTS).stream()
                 // remove empty user objects
                 .filter(Objects::nonNull)
@@ -99,7 +98,6 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
             emailService.queueWithFreemarkerTemplate("email_new_users.ftl", dataModel, email);
         }
     }
-
 
     private void sendQuarrantineEmail() {
         List<Email> emails = emailService.findEmailsWithStatus(Status.IN_REVIEW);

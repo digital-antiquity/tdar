@@ -34,61 +34,121 @@ public class NelNetTransactionResponseTemplate implements Serializable, Transact
     private String secret = "";
 
     public enum NelnetTransactionItemResponse {
-        TRANSACTION_TYPE("transactionType", "transactionType", 1),
-        TRANSACTION_STATUS("transactionStatus", "transactionStatus", 2),
-        TRANSACTION_SOURCE("transactionSource", "transactionSource", 3),
-        TRANSACTION_SOURCE_REF("transactionSourceRef", "transactionSourceRef", 4),
-        TRANSACTION_ID("transactionId", "transactionId", 5),
-        ORIGINAL_TRANSACTION_ID("originalTransactionId", "originalTransactionId", 6),
-        TRANSACTION_TOTAL("transactionTotalAmount", "transactionTotalAmount", 7),
-        TRANSACTION_DATE("transactionDate", "transactionDate", 8),
-        TRANSACTION_ACCOUNT_TYPE("transactionAcountType", "transactionAcountType", 9),
-        TRANSACTION_EFFECTIVE_DATE("transactionEffectiveDate", "transactionEffectiveDate", 10),
-        TRANSACTION_DESCRIPTION("transactionDescription", "transactionDescription", 11),
-        TRANSACTION_RESULT_DATE("transactionResultDate", "transactionResultDate", 12),
-        TRANSACTION_RESULT_EFFECTIVE_DATE("transactionResultEffectiveDate", "transactionResultEffectiveDate", 13),
-        TRANSACTION_RESULT_CODE("transactionResultCode", "transactionResultCode", 14),
-        TRANSACTION_RESULT_MESSAGE("transactionResultMessage", "transactionResultMessage", 15),
-        ORDER_NUMBER("orderNumber", "orderNumber", 16),
-        ORDER_TYPE("orderType", "orderType", 17),
-        ORDER_NAME("orderName", "orderName", 18),
-        ORDER_DESCRIPTION("orderDescription", "orderDescription", 19),
-        ORDER_AMOUNT("orderAmount", "orderAmount", 20),
-        ORDER_FEE("orderFee", "orderFee", 21),
-        ORDER_DUE_DATE("orderDueDate", "orderDueDate", 22),
-        ORDER_AMOUNT_DUE("orderAmountDue", "orderAmountDue", 23),
-        ORDER_BALANCE("orderBalance", "orderBalance", 24),
-        ORDER_CURRENT_STATUS_BALANCE("orderCurrentStatusBalance", "orderCurrentStatusBalance", 25),
-        ORDER_CURRENT_STATUS_AMOUNT_DUE("orderCurrentStatusAmountDue", "orderCurrentStatusAmountDue", 26),
-        PAYER_TYPE("payerType", "payerType", 27),
-        PAYER_IDENTIFIER("payerIdentifier", "payerIdentifier", 28),
-        PAYER_FULL_NAME("payerFullName", "payerFullName", 29),
-        ACTUAL_PAYER_TYPE("actualPayerType", "actualPayerType", 30),
-        ACTUAL_PAYER_IDENTIFIER("actualPayerIdentifier", "actualPayerIdentifier", 31),
-        ACTUAL_PAYER_FULL_NAME("actualPayerFullName", "actualPayerFullName", 32),
-        ACCOUNT_HOLDER_NAME("accountHolderName", "accountHolderName", 33),
-        STREET_ONE("streetOne", "streetOne", 34),
-        STREET_TWO("streetTwo", "streetTwo", 35),
-        CITY("city", "city", 36),
-        STATE("state", "state", 37),
-        ZIP("zip", "zip", 38),
-        COUNTRY("country", "country", 39),
-        DAYTIME_PHONE("daytimePhone", "daytimePhone", 40),
-        EVENING_PHONE("eveningPhone", "eveningPhone", 41),
-        EMAIL("email", "email", 42),
-        USER_CHOICE_1("userChoice1", "userChoice1", 43),
-        USER_CHOICE_2("userChoice2", "userChoice2", 44),
-        USER_CHOICE_3("userChoice3", "userChoice3", 45),
-        USER_CHOICE_4("userChoice4", "userChoice4", 46),
-        USER_CHOICE_5("userChoice5", "userChoice5", 47),
-        USER_CHOICE_6("userChoice6", "userChoice6", 48),
-        USER_CHOICE_7("userChoice7", "userChoice7", 49),
-        USER_CHOICE_8("userChoice8", "userChoice8", 50),
-        USER_CHOICE_9("userChoice9", "userChoice9", 51),
-        USER_CHOICE_10("userChoice10", "userChoice10", 52),
-        TIMESTAMP("Time Stamp", "timestamp", 53),
-        KEY("Key", "key", 54),
-        HASH("HASH", "hash", 1000);
+        TRANSACTION_TYPE("transactionType", "transactionType", 1), TRANSACTION_STATUS("transactionStatus", "transactionStatus", 2), TRANSACTION_SOURCE(
+                "transactionSource", "transactionSource", 3), TRANSACTION_SOURCE_REF("transactionSourceRef", "transactionSourceRef", 4), TRANSACTION_ID(
+                        "transactionId", "transactionId", 5), ORIGINAL_TRANSACTION_ID("originalTransactionId", "originalTransactionId", 6), TRANSACTION_TOTAL(
+                                "transactionTotalAmount", "transactionTotalAmount",
+                                7), TRANSACTION_DATE("transactionDate", "transactionDate", 8), TRANSACTION_ACCOUNT_TYPE("transactionAcountType",
+                                        "transactionAcountType", 9), TRANSACTION_EFFECTIVE_DATE("transactionEffectiveDate", "transactionEffectiveDate",
+                                                10), TRANSACTION_DESCRIPTION("transactionDescription", "transactionDescription", 11), TRANSACTION_RESULT_DATE(
+                                                        "transactionResultDate", "transactionResultDate", 12), TRANSACTION_RESULT_EFFECTIVE_DATE(
+                                                                "transactionResultEffectiveDate", "transactionResultEffectiveDate",
+                                                                13), TRANSACTION_RESULT_CODE("transactionResultCode", "transactionResultCode",
+                                                                        14), TRANSACTION_RESULT_MESSAGE("transactionResultMessage", "transactionResultMessage",
+                                                                                15), ORDER_NUMBER("orderNumber", "orderNumber", 16), ORDER_TYPE("orderType",
+                                                                                        "orderType",
+                                                                                        17), ORDER_NAME("orderName", "orderName", 18), ORDER_DESCRIPTION(
+                                                                                                "orderDescription", "orderDescription",
+                                                                                                19), ORDER_AMOUNT("orderAmount", "orderAmount", 20), ORDER_FEE(
+                                                                                                        "orderFee", "orderFee",
+                                                                                                        21), ORDER_DUE_DATE("orderDueDate", "orderDueDate",
+                                                                                                                22), ORDER_AMOUNT_DUE("orderAmountDue",
+                                                                                                                        "orderAmountDue", 23), ORDER_BALANCE(
+                                                                                                                                "orderBalance", "orderBalance",
+                                                                                                                                24), ORDER_CURRENT_STATUS_BALANCE(
+                                                                                                                                        "orderCurrentStatusBalance",
+                                                                                                                                        "orderCurrentStatusBalance",
+                                                                                                                                        25), ORDER_CURRENT_STATUS_AMOUNT_DUE(
+                                                                                                                                                "orderCurrentStatusAmountDue",
+                                                                                                                                                "orderCurrentStatusAmountDue",
+                                                                                                                                                26), PAYER_TYPE(
+                                                                                                                                                        "payerType",
+                                                                                                                                                        "payerType",
+                                                                                                                                                        27), PAYER_IDENTIFIER(
+                                                                                                                                                                "payerIdentifier",
+                                                                                                                                                                "payerIdentifier",
+                                                                                                                                                                28), PAYER_FULL_NAME(
+                                                                                                                                                                        "payerFullName",
+                                                                                                                                                                        "payerFullName",
+                                                                                                                                                                        29), ACTUAL_PAYER_TYPE(
+                                                                                                                                                                                "actualPayerType",
+                                                                                                                                                                                "actualPayerType",
+                                                                                                                                                                                30), ACTUAL_PAYER_IDENTIFIER(
+                                                                                                                                                                                        "actualPayerIdentifier",
+                                                                                                                                                                                        "actualPayerIdentifier",
+                                                                                                                                                                                        31), ACTUAL_PAYER_FULL_NAME(
+                                                                                                                                                                                                "actualPayerFullName",
+                                                                                                                                                                                                "actualPayerFullName",
+                                                                                                                                                                                                32), ACCOUNT_HOLDER_NAME(
+                                                                                                                                                                                                        "accountHolderName",
+                                                                                                                                                                                                        "accountHolderName",
+                                                                                                                                                                                                        33), STREET_ONE(
+                                                                                                                                                                                                                "streetOne",
+                                                                                                                                                                                                                "streetOne",
+                                                                                                                                                                                                                34), STREET_TWO(
+                                                                                                                                                                                                                        "streetTwo",
+                                                                                                                                                                                                                        "streetTwo",
+                                                                                                                                                                                                                        35), CITY(
+                                                                                                                                                                                                                                "city",
+                                                                                                                                                                                                                                "city",
+                                                                                                                                                                                                                                36), STATE(
+                                                                                                                                                                                                                                        "state",
+                                                                                                                                                                                                                                        "state",
+                                                                                                                                                                                                                                        37), ZIP(
+                                                                                                                                                                                                                                                "zip",
+                                                                                                                                                                                                                                                "zip",
+                                                                                                                                                                                                                                                38), COUNTRY(
+                                                                                                                                                                                                                                                        "country",
+                                                                                                                                                                                                                                                        "country",
+                                                                                                                                                                                                                                                        39), DAYTIME_PHONE(
+                                                                                                                                                                                                                                                                "daytimePhone",
+                                                                                                                                                                                                                                                                "daytimePhone",
+                                                                                                                                                                                                                                                                40), EVENING_PHONE(
+                                                                                                                                                                                                                                                                        "eveningPhone",
+                                                                                                                                                                                                                                                                        "eveningPhone",
+                                                                                                                                                                                                                                                                        41), EMAIL(
+                                                                                                                                                                                                                                                                                "email",
+                                                                                                                                                                                                                                                                                "email",
+                                                                                                                                                                                                                                                                                42), USER_CHOICE_1(
+                                                                                                                                                                                                                                                                                        "userChoice1",
+                                                                                                                                                                                                                                                                                        "userChoice1",
+                                                                                                                                                                                                                                                                                        43), USER_CHOICE_2(
+                                                                                                                                                                                                                                                                                                "userChoice2",
+                                                                                                                                                                                                                                                                                                "userChoice2",
+                                                                                                                                                                                                                                                                                                44), USER_CHOICE_3(
+                                                                                                                                                                                                                                                                                                        "userChoice3",
+                                                                                                                                                                                                                                                                                                        "userChoice3",
+                                                                                                                                                                                                                                                                                                        45), USER_CHOICE_4(
+                                                                                                                                                                                                                                                                                                                "userChoice4",
+                                                                                                                                                                                                                                                                                                                "userChoice4",
+                                                                                                                                                                                                                                                                                                                46), USER_CHOICE_5(
+                                                                                                                                                                                                                                                                                                                        "userChoice5",
+                                                                                                                                                                                                                                                                                                                        "userChoice5",
+                                                                                                                                                                                                                                                                                                                        47), USER_CHOICE_6(
+                                                                                                                                                                                                                                                                                                                                "userChoice6",
+                                                                                                                                                                                                                                                                                                                                "userChoice6",
+                                                                                                                                                                                                                                                                                                                                48), USER_CHOICE_7(
+                                                                                                                                                                                                                                                                                                                                        "userChoice7",
+                                                                                                                                                                                                                                                                                                                                        "userChoice7",
+                                                                                                                                                                                                                                                                                                                                        49), USER_CHOICE_8(
+                                                                                                                                                                                                                                                                                                                                                "userChoice8",
+                                                                                                                                                                                                                                                                                                                                                "userChoice8",
+                                                                                                                                                                                                                                                                                                                                                50), USER_CHOICE_9(
+                                                                                                                                                                                                                                                                                                                                                        "userChoice9",
+                                                                                                                                                                                                                                                                                                                                                        "userChoice9",
+                                                                                                                                                                                                                                                                                                                                                        51), USER_CHOICE_10(
+                                                                                                                                                                                                                                                                                                                                                                "userChoice10",
+                                                                                                                                                                                                                                                                                                                                                                "userChoice10",
+                                                                                                                                                                                                                                                                                                                                                                52), TIMESTAMP(
+                                                                                                                                                                                                                                                                                                                                                                        "Time Stamp",
+                                                                                                                                                                                                                                                                                                                                                                        "timestamp",
+                                                                                                                                                                                                                                                                                                                                                                        53), KEY(
+                                                                                                                                                                                                                                                                                                                                                                                "Key",
+                                                                                                                                                                                                                                                                                                                                                                                "key",
+                                                                                                                                                                                                                                                                                                                                                                                54), HASH(
+                                                                                                                                                                                                                                                                                                                                                                                        "HASH",
+                                                                                                                                                                                                                                                                                                                                                                                        "hash",
+                                                                                                                                                                                                                                                                                                                                                                                        1000);
         private String key;
         private String label;
         private int order;

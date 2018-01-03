@@ -32,15 +32,15 @@ public class AbstractSolrDocumentConverter {
         if (persist instanceof HasStatus) {
             Status status2 = ((HasStatus) persist).getStatus();
             doc.setField(QueryFieldNames.STATUS, status2.name());
-            status= status2;
+            status = status2;
         }
-        
+
         if (persist instanceof Hideable) {
             boolean hidden2 = ((Hideable) persist).isHidden();
             doc.setField(QueryFieldNames.HIDDEN, hidden2);
             hidden = hidden2;
         }
-        
+
         if (hidden == false && status == Status.ACTIVE) {
             doc.setField(QueryFieldNames.EFFECTIVELY_PUBLIC, true);
         } else {

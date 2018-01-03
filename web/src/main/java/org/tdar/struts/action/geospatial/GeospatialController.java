@@ -60,7 +60,7 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
         // FIXME: these should come from the analyzer
         // Note: aux.xml and shp.xml omitted because we know view layer logic will accept any .xml (so will server, for that matter)
         String[] geoexts = { "shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "jgw", "tfw",
-                "aux", "aux", "ovr", "rrd", "mxd", "lyr" }; //"adf",
+                "aux", "aux", "ovr", "rrd", "mxd", "lyr" }; // "adf",
         Collections.addAll(extensionsForTypes, geoexts);
 
         return extensionsForTypes;

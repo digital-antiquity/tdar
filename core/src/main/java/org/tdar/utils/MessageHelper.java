@@ -83,15 +83,15 @@ public class MessageHelper implements Serializable, TextProvider {
         return getMessage(lookup);
     }
 
-
     /**
      * Return the format string specified by the provided lookup key, or return the lookup key if no string exists with that key
+     * 
      * @param key
      * @return
      */
-    private static String getString(String key ) {
+    private static String getString(String key) {
         String str = key;
-        if(checkKey(key)) {
+        if (checkKey(key)) {
             str = getInstance().getBundle().getString(key);
         } else {
             if (!StringUtils.contains(key, " ")) {

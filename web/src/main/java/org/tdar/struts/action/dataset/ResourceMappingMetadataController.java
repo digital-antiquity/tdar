@@ -59,6 +59,7 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
     private Dataset getDataResource() {
         return getPersistable();
     }
+
     private Long startTime = -1L;
     private Long id;
     private List<DataTableColumn> columnsToRemap;
@@ -258,6 +259,5 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
     public Long getCurrentTime() {
         return System.currentTimeMillis();
     }
-
 
 }

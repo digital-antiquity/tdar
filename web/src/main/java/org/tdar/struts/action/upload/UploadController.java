@@ -1,8 +1,6 @@
 package org.tdar.struts.action.upload;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,8 +28,6 @@ import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonLookupFilter;
-
-import com.carrotsearch.hppc.Preallocable;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
@@ -152,7 +148,7 @@ public class UploadController extends AbstractAuthenticatableAction {
             return ERROR;
         }
     }
-    
+
     private Object resultObject;
     private Class jsonView;
 
@@ -169,11 +165,11 @@ public class UploadController extends AbstractAuthenticatableAction {
     public Object getResultObject() {
         return resultObject;
     }
-    
+
     public Class getJsonView() {
         return jsonView;
     }
-    
+
     // construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
     private void buildJsonError() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();

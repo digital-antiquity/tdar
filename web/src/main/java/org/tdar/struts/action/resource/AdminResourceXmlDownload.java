@@ -40,7 +40,7 @@ public class AdminResourceXmlDownload extends TdarBaseActionSupport implements P
 
     private Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 
-    @Action(value="xml", results = {
+    @Action(value = "xml", results = {
             @Result(name = TdarActionSupport.SUCCESS, type = "stream",
                     params = {
                             "contentType", "application/xml",
@@ -91,5 +91,5 @@ public class AdminResourceXmlDownload extends TdarBaseActionSupport implements P
     public void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
     }
-    
+
 }

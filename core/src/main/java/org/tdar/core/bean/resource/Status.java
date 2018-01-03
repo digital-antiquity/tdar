@@ -12,13 +12,7 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum Status implements HasLabel, Localizable {
-    DRAFT,
-    ACTIVE,
-    FLAGGED,
-    FLAGGED_ACCOUNT_BALANCE,
-    DUPLICATE,
-    DELETED;
-
+    DRAFT, ACTIVE, FLAGGED, FLAGGED_ACCOUNT_BALANCE, DUPLICATE, DELETED;
 
     @Override
     public String getLocaleKey() {

@@ -38,7 +38,6 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
-
 /**
  * $Id$
  * 
@@ -67,7 +66,7 @@ public class CodingSheetMappingController extends AbstractAuthenticatableAction 
     private transient CodingSheetService codingSheetService;
     @Autowired
     private transient DataTableService dataTableService;
-    
+
     private CodingSheet codingSheet;
     private List<OntologyNode> ontologyNodes;
     private List<CodingRule> codingRules;
@@ -105,7 +104,6 @@ public class CodingSheetMappingController extends AbstractAuthenticatableAction 
 
         return SUCCESS;
     }
-
 
     @WriteableSession
     @PostOnly

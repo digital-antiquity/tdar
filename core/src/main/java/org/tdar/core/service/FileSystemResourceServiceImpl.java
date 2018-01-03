@@ -20,7 +20,7 @@ import org.tdar.filestore.FilestoreObjectType;
  * 
  */
 @Service
-public class FileSystemResourceServiceImpl implements FileSystemResourceService  {
+public class FileSystemResourceServiceImpl implements FileSystemResourceService {
 
     @Autowired
     private FileSystemResourceDao fileSystemResourceDao;
@@ -28,20 +28,24 @@ public class FileSystemResourceServiceImpl implements FileSystemResourceService 
     Logger logger = LoggerFactory.getLogger(FileSystemResourceDao.class);
 
     // helper to load the PDF Template for the cover page
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.FileSystemResourceService#loadTemplate(java.lang.String)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public File loadTemplate(String path) throws IOException {
         return fileSystemResourceDao.loadTemplate(path);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.FileSystemResourceService#checkHostedFileAvailable(java.lang.String, org.tdar.filestore.FilestoreObjectType, java.lang.Long)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public boolean checkHostedFileAvailable(String filename, FilestoreObjectType type, Long id) {
         return fileSystemResourceDao.checkHostedFileAvailable(filename, type, id);
     }

@@ -19,7 +19,7 @@ public class DownloadLockInputStream extends BufferedInputStream implements Seri
     private DownloadTransferObject dto;
 
     public DownloadLockInputStream(InputStream in, DownloadTransferObject dto) {
-        super(in,TdarConfiguration.getInstance().getDownloadBufferSize());
+        super(in, TdarConfiguration.getInstance().getDownloadBufferSize());
         this.dto = dto;
         dto.registerDownloadLock();
     }

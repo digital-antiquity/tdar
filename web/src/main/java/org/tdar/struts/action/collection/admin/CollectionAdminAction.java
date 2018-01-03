@@ -46,7 +46,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-@Namespaces(value={
+@Namespaces(value = {
         @Namespace("/collection/admin"),
         @Namespace("/share/admin")
 })
@@ -80,7 +80,6 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
     private ArrayList<Status> selectedResourceStatuses = new ArrayList<>();
     private ArrayList<ResourceAccessType> fileAccessTypes = new ArrayList<>();
-
 
     @Override
     public void prepare() throws Exception {
@@ -116,7 +115,6 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     public ResourceCollection getCollection() {
         return (ResourceCollection) super.getCollection();
     }
-
 
     @Override
     @Action(value = "{id}", results = {
