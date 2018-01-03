@@ -123,13 +123,9 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         List<Long> ids = new ArrayList<>();
         ids.add(indexable.getId());
         QueryPartGroup idGroup = new QueryPartGroup(Operator.OR);
-//        if (indexable instanceof ListCollection) {
-//            ListCollection listCollection = (ListCollection) indexable;
-//            idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, Operator.OR, ids));
-//            qb.append(idGroup);
-//        } else {
-            qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS, indexable.getId()));
-//        }
+        idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_UNMANAGED_IDS, indexable.getId()));
+        idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS, indexable.getId()));
+        qb.append(idGroup);
         runContainedInQuery(term, user, result, provider, qb);
         return result;
     }
