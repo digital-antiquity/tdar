@@ -76,7 +76,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             while (allScrollable.next()) {
                 Resource object = (Resource) allScrollable.get(0);
                 String url = UrlService.absoluteSecureUrl(object);
-                addUrl(wsg, url);
+                addUrlHighPriority(wsg, url);
             }
 
             if (imageSitemapGeneratorEnabled) {
@@ -93,7 +93,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
                     continue;
                 }
                 String url = UrlService.absoluteSecureUrl(creator);
-                addUrl(wsg, url);
+                addUrlDefaultPriority(wsg, url);
                 totalCreator++;
                 if (totalCreator % 500 == 0) {
                     genericService.clearCurrentSession();
@@ -148,7 +148,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
                 continue;
             }
             String url = UrlService.absoluteSecureUrl((VisibleCollection)collection);
-            addUrl(wsg, url);
+            addUrlHighPriority(wsg, url);
             totalCollections++;
             if (totalCollections % 500 == 0) {
                 genericService.clearCurrentSession();
@@ -159,8 +159,11 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
         return totalCollections;
     }
 
-    private void addUrl(WebSitemapGenerator wsg, String url) throws MalformedURLException {
-        wsg.addUrl(new WebSitemapUrl.Options(url).changeFreq(ChangeFreq.WEEKLY).build());
+    private void addUrlHighPriority(WebSitemapGenerator wsg, String url) throws MalformedURLException {
+        wsg.addUrl(new WebSitemapUrl.Options(url).changeFreq(ChangeFreq.WEEKLY).priority(1.0).build());
+    }
+    private void addUrlDefaultPriority(WebSitemapGenerator wsg, String url) throws MalformedURLException {
+        wsg.addUrl(new WebSitemapUrl.Options(url).changeFreq(ChangeFreq.MONTHLY).priority(.5).build());
     }
 
     @Override
