@@ -92,6 +92,9 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
                 if (!creator.isBrowsePageVisible()) {
                     continue;
                 }
+                if (creator.getId().equals(135028) || creator.getId().equals(12729)) {
+                    continue;
+                }
                 String url = UrlService.absoluteSecureUrl(creator);
                 addUrlDefaultPriority(wsg, url);
                 totalCreator++;
