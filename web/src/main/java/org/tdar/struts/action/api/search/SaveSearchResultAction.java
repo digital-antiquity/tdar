@@ -75,7 +75,6 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
 
     @Override
     public void validate() {
-
         if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
             addActionError("SaveSearchResultAction.not_logged_in");
         }
@@ -90,7 +89,6 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
             }
         }
 
-        super.validate();
     }
 
     @Action(value = "saveResults", results = {
