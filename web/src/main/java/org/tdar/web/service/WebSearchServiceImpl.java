@@ -54,7 +54,13 @@ public class WebSearchServiceImpl {
 
     @Transactional(readOnly = false)
     @Async
-    public void saveSearchResultsForUserAsync(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId,
+    public AsynchronousStatus saveSearchResultsForUserAsync(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId,
+            boolean addAsManagedResource) throws SearchException, IOException {
+        return saveSearchResultsForUser(asqo, userId, resourceCollectionId, addAsManagedResource);
+    }
+    
+    @Transactional(readOnly = false)
+    public AsynchronousStatus saveSearchResultsForUser(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId,
             boolean addAsManagedResource) throws SearchException, IOException {
         logger.debug("called saveSearchResultsForUserAsync");
 
@@ -113,6 +119,7 @@ public class WebSearchServiceImpl {
             status.setCompleted();
             status.setPercentComplete(100f);
         }
+        return status;
     }
 
     /**
