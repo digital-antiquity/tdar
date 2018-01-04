@@ -32,7 +32,7 @@ import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.utils.MessageHelper;
 
 @Service
-public class WebSearchServiceImpl {
+public class WebSearchServiceImpl implements WebSearchService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -52,6 +52,10 @@ public class WebSearchServiceImpl {
     @Autowired
     private ApplicationEventPublisher publisher;
 
+    /* (non-Javadoc)
+     * @see org.tdar.web.service.WebSearchService#saveSearchResultsForUserAsync(org.tdar.search.bean.AdvancedSearchQueryObject, java.lang.Long, java.lang.Long, boolean)
+     */
+    @Override
     @Transactional(readOnly = false)
     @Async
     public AsynchronousStatus saveSearchResultsForUserAsync(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId,
@@ -59,6 +63,10 @@ public class WebSearchServiceImpl {
         return saveSearchResultsForUser(asqo, userId, resourceCollectionId, addAsManagedResource);
     }
     
+    /* (non-Javadoc)
+     * @see org.tdar.web.service.WebSearchService#saveSearchResultsForUser(org.tdar.search.bean.AdvancedSearchQueryObject, java.lang.Long, java.lang.Long, boolean)
+     */
+    @Override
     @Transactional(readOnly = false)
     public AsynchronousStatus saveSearchResultsForUser(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId,
             boolean addAsManagedResource) throws SearchException, IOException {
@@ -122,13 +130,10 @@ public class WebSearchServiceImpl {
         return status;
     }
 
-    /**
-     * This is a unique identifier for the Async status object.
-     * 
-     * @param collectionId
-     * @param userId
-     * @return
+    /* (non-Javadoc)
+     * @see org.tdar.web.service.WebSearchService#constructKey(java.lang.Long, java.lang.Long)
      */
+    @Override
     public String constructKey(Long collectionId, Long userId) {
         return "SaveSearchResult::" + collectionId + "::" + userId;
     }

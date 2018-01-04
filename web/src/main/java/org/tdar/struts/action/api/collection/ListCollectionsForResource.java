@@ -53,10 +53,6 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
     private Permissions permission = Permissions.REMOVE_FROM_COLLECTION;
     private Long resourceId;
 
-    public Class<? extends JacksonView> getJsonView() {
-        return JsonLookupFilter.class;
-    }
-
     @Action(value = "resourcecollections", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
     @Transactional(readOnly = true)
     /**
@@ -78,7 +74,7 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
         Map<String, ArrayList<ResourceCollection>> result = new HashMap<String, ArrayList<ResourceCollection>>();
         result.put("managed", managed);
         result.put("unmanaged", unmanaged);
-        setResultObject(result);
+        setJsonObject(result, JsonLookupFilter.class);
         return SUCCESS;
     }
 

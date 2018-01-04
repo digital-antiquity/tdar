@@ -24,7 +24,7 @@ import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.web.service.WebSearchServiceImpl;
+import org.tdar.web.service.WebSearchService;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -47,7 +47,7 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
     AsynchronousStatus saveSearchResultsForUserAsync = null;
 
     @Autowired
-    private WebSearchServiceImpl webSearchService;
+    private WebSearchService webSearchService;
 
     @Override
     public void prepare() throws Exception {

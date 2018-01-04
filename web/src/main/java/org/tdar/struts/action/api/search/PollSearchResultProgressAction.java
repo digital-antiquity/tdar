@@ -21,7 +21,7 @@ import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnl
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.IgnoreActivity;
-import org.tdar.web.service.WebSearchServiceImpl;
+import org.tdar.web.service.WebSearchService;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
@@ -47,7 +47,7 @@ public class PollSearchResultProgressAction extends AbstractAdvancedSearchContro
     private boolean addAsManaged = false;
 
     @Autowired
-    private WebSearchServiceImpl webSearchService;
+    private WebSearchService webSearchService;
 
     @Override
     public void prepare() throws Exception {

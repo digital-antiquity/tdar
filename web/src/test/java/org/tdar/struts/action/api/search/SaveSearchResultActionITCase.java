@@ -28,8 +28,8 @@ public class SaveSearchResultActionITCase extends AbstractSearchControllerITCase
 		controller.setQuery("TEST RESOURCE 123::FOR RESULT SAVE");
 		controller.validate();
 		controller.prepare();
+		controller.setAsync(false);
 		controller.saveSearchResultsToCollection();
-		Thread.sleep(1000);
 		
 		resource = null;
 		resourceCollection = null;

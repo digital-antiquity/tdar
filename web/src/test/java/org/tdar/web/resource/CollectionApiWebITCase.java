@@ -84,7 +84,7 @@ public class CollectionApiWebITCase extends AbstractAuthenticatedWebTestCase {
 	public void testRemoveResourceFromUnmanagedCollection(){
 		String url = "/api/collection/removefromcollection";
 		Map<String, String> params = new HashMap<String, String>();
-		params.put("resourceId", 	 "1");
+		params.put("resourceId", 	 "5000");
 		params.put("collectionId", 	 "1000");
 		params.put("type", "UNMANAGED");
 		
