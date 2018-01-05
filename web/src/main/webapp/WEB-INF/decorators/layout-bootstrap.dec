@@ -96,12 +96,14 @@ ${head}
     <meta name="keywords" content="tdar, database, archaeology, digital repository, Digital Antiquity, preservation, access"/>
 </#if> 
 
-<#if (persistable?has_content) && (persistable.description)?has_content && !persistable.description?contains("does not have a copy of this document")>
-    <meta name="description" content="${persistable.description?html}"/>
-    <meta name="keywords" content="${persistable.name?html}"/>
-<#elseif (persistable?has_content) && !(persistable.description)?has_content || persistable.description?contains("does not have a copy of this document")>
-    <meta name="description" content="${persistable.name?html}"/>
-    <meta name="keywords" content="${persistable.name?html}"/>
+<#if (persistable?has_content)>
+	<#if (persistable.description)?has_content && !persistable.description?contains("does not have a copy of this document")>
+	    <meta name="description" content="${persistable.description?html}"/>
+	    <meta name="keywords" content="${persistable.name?html}"/>
+	<#elseif !(persistable.description)?has_content || persistable.description?contains("does not have a copy of this document")>
+	    <meta name="description" content="${persistable.name?html}"/>
+	    <meta name="keywords" content="${persistable.name?html}"/>
+	</#if>
 </#if>
 
 
