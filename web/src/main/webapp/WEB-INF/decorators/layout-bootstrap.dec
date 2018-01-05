@@ -101,8 +101,18 @@ ${head}
 	    <meta name="description" content="${persistable.description?html}"/>
 	    <meta name="keywords" content="${persistable.name?html}"/>
 	<#elseif !(persistable.description)?has_content || persistable.description?contains("does not have a copy of this document")>
-	    <meta name="description" content="${persistable.name?html}"/>
-	    <meta name="keywords" content="${persistable.name?html}"/>
+	<#assign _name = "" />
+ 	    <#if (persistable.name?has_content)> 
+	       <#assign _name = persistable.name />
+	    </#if>
+ 	    <#if (persistable.title?has_content)> 
+	       <#assign _name = persistable.title />
+	    </#if>
+ 	    <#if (persistable.label?has_content)> 
+	       <#assign _name = persistable.label />
+	    </#if>
+	    <meta name="description" content="${_name?html}"/>
+	    <meta name="keywords" content="${_name?html}"/>
 	</#if>
 </#if>
 
