@@ -98,31 +98,27 @@
     </#macro>
 
    <#macro simpleHeaderLinks>
-    <meta name="totalResults" content="${totalRecords}"/>
-    <meta name="startIndex" content="${startRecord}"/>
-    <meta name="itemsPerPage" content="${recordsPerPage}"/>
-        <#if (nextPageStartRecord < totalRecords) >
-            <link rel="next" href="?startRecord=${nextPageStartRecord?c}"/>
-        </#if>
-        <#if  paginationHelper.hasPrevious() >
-        <link rel="previous" href="?<#if prevPageStartRecord !=0>startRecord=${prevPageStartRecord?c}</#if>" />
-        </#if>
-    </#macro>
+        <@headerLinks includeRss=false />
+   </#macro>
 
 
     <#macro headerLinks includeRss=false>
     <meta name="totalResults" content="${totalRecords}"/>
     <meta name="startIndex" content="${startRecord}"/>
     <meta name="itemsPerPage" content="${recordsPerPage}"/>
+    <#if !(persistable?has_content)>
+    <link rel="canonical" href="https://${hostName}<#noescape>${currentUrl}</#noescape>"/>
+    </#if>
+    
         <#if includeRss>
             <@rssUrlTag url=rssUrl />
         </#if>
         <#if (nextPageStartRecord < totalRecords) >
-        <link rel="next" href="<#noescape><@searchUrl ""><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl></#noescape>"/>
+        <link rel="next" href="<@searchUrl currentUrl><@s.param name="startRecord" value="${nextPageStartRecord?c}"/></@searchUrl>"/>
         </#if>
         <#if  paginationHelper.hasPrevious() >
         <link rel="previous"
-              href="<@searchUrl "" ><#if prevPageStartRecord !=0><@s.param name="startRecord" value="${prevPageStartRecord?c}" /><#else><@s.param name="startRecord" value="" /></#if></@searchUrl>"/>
+              href="<@searchUrl currentUrl ><#if prevPageStartRecord !=0><@s.param name="startRecord" value="${prevPageStartRecord?c}" /><#else><@s.param name="startRecord" value="" /></#if></@searchUrl>"/>
         </#if>
     </#macro>
 
@@ -131,7 +127,7 @@
     <a id="${linkId}"  href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
     </#macro>
 
-    <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url></#macro>
+    <#macro searchUrl path><@s.url escapeAmp="false" includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url></#macro>
 
     <#macro refineUrl actionName=actionName>
         <#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution","multi":"basic"}><#t>

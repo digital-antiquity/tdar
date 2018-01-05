@@ -9,13 +9,6 @@
 <link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
 <link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
 
-<#if (persistable.description)?has_content>
-<meta name="description" content="${persistable.description?html}"/>
-<#else>
-<meta name="description"
-      content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
-</#if>
-<meta name="keywords" content="tdar, database, archaeology, digital repository, Digital Antiquity, preservation, access"/>
 <#if !(test!false)>
 <script type="text/javascript">
     (function(d) {

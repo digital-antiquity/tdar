@@ -91,7 +91,34 @@ ${head}
     <#if contextPath?has_content>
     <base id="basePath" href="<@s.url value='/'/>">
     </#if>
-    
+
+<#if (homepage!false)>
+    <meta name="description"
+      content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
+    <meta name="keywords" content="tdar, database, archaeology, digital repository, Digital Antiquity, preservation, access"/>
+</#if> 
+
+<#if (persistable?has_content)>
+	<#if (persistable.description)?has_content && !persistable.description?contains("does not have a copy of this document")>
+	    <meta name="description" content="${persistable.description?html}"/>
+	    <meta name="keywords" content="${persistable.name?html}"/>
+	<#elseif !(persistable.description)?has_content || persistable.description?contains("does not have a copy of this document")>
+	<#assign _name = "" />
+ 	    <#if (persistable.name?has_content)> 
+	       <#assign _name = persistable.name />
+	    </#if>
+ 	    <#if (persistable.title?has_content)> 
+	       <#assign _name = persistable.title />
+	    </#if>
+ 	    <#if (persistable.label?has_content)> 
+	       <#assign _name = persistable.label />
+	    </#if>
+	    <meta name="description" content="${_name?html}"/>
+	    <meta name="keywords" content="${_name?html}"/>
+	</#if>
+</#if>
+
+
     <#if selenium>
     	<style>
     		#sidebar-right #notice, .subnavbar.affix, .subnavbar.affix-top, .popover {display:none;visibility:hidden}
