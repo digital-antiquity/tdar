@@ -60,13 +60,13 @@
 <#if !row.usingWorkflow>
     <@s.form action="/startWorkflow/?" method="POST">
         <@s.hidden name="id" value="${row.first.dropboxId}"/>
-        <@s.hidden name="path" value="${_path}"/>
+        <@s.hidden name="path" value="${path}"/>
         <@s.hidden name="phase" value="UPLOAD_TDAR"/>
         <@s.submit name="approve" value="Upload" />
     </@s.form>
     <@s.form action="/startWorkflow/?" method="POST">
         <@s.hidden name="id" value="${row.first.dropboxId}"/>
-        <@s.hidden name="path" value="${_path}"/>
+        <@s.hidden name="path" value="${path}"/>
         <@s.hidden name="phase" value="TO_PDFA"/>
         <@s.submit name="approve" value="PDF" />
     </@s.form>
