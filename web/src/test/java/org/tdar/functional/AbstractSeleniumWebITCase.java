@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.openqa.selenium.firefox.FirefoxOptions.FIREFOX_OPTIONS;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,6 +64,7 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogType;
@@ -309,9 +311,12 @@ public abstract class AbstractSeleniumWebITCase {
                 profile.setPreference("plugin.scan.plid.all", false);
                 DesiredCapabilities caps = DesiredCapabilities.firefox();
                 caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
-
+                FirefoxOptions options = new FirefoxOptions();
+                options.setBinary(fb);
+                options.setProfile(profile);
+                options.addCapabilities(caps);
                 // profile.setPreference("browser.download.dir","c:\\downloads");
-                rawDriver = new FirefoxDriver(fb, profile, caps);
+                rawDriver = new FirefoxDriver(options);
 
                 break;
             case CHROME:
