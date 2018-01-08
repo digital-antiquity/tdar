@@ -19,9 +19,10 @@
         <module>base</module>
         <!-- tdar "core" files -->
         <module>core</module>
+        <!--
         <module>search</module>
         <module>faims</module>
-        <!-- the tdar webapp -->
+        
         <module>web-base</module>
         <module>web-test</module>
         <module>struts-base</module>
@@ -29,7 +30,8 @@
         <module>web</module>
         <module>webservice/dataone</module>
         <module>webservice/oai-pmh</module>
-        <module>utils</module>
+            -->
+        <module>utils</module> 
     </modules>
 
 
