@@ -590,7 +590,6 @@
             </ul>
             
                 <div class="modal hide fade" id="modal">
-                
                 <#include 'vue-collection-widget.html' />
         </div>
     </div>

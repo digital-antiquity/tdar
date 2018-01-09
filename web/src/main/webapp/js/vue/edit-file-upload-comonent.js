@@ -25,14 +25,43 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         Vue.component('fpart', {
             template: "#fpart-template",
             props: ["file","index"],
-            data : function() {
-                return {
+            data : {
                     previousDeleteState : '',
                     xhr:undefined,
                     previousReplaceState: ''
-                }
             },
             computed: {
+                rowId: function() {
+                    return "files-row-" + this.index;
+                },
+                restrictionFieldName: function() {
+                    return "fileProxies["+this.index+"].restriction";
+                },
+                createdDateFieldName: function() {
+                    return "fileProxies["+this.index+"].fileCreatedDate";
+                },
+                fileIdFieldName: function() {
+                    return "fileProxies["+this.index+"].fileId";
+                },
+                filenameFieldName: function() {
+                    return "fileProxies["+this.index+"].filename";
+                },
+                sequenceNumberFieldName: function() {
+                    return "fileProxies["+this.index+"].sequenceNumber";
+                },
+                actionFieldName: function() {
+                    return "fileProxies["+this.index+"].action";
+                },
+                descriptionFieldName: function() {
+                    return "fileupload"+this.index+"";
+                },
+                wrapperId: function() {
+                    return "fileupload"+this.index+"Wrapper";
+                },
+                fileuploadId: function() {
+                    return "fileupload"+this.index;
+                },
+                
             },
             methods: {
                 markModified:function() {

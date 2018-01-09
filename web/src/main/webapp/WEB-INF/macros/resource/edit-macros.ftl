@@ -937,31 +937,25 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#if !ableToUploadFiles>
             <b>note:</b> you have not been granted permission to upload or modify files<br/>
         <#else>
-            <div class="row fileupload-buttonbar">
-                <div class="span2">
-                    <!-- The fileinput-button span is used to style the file input field as button -->
-            <span class="btn btn-success fileinput-button btn-block">
-                <i class="icon-plus icon-white"></i>
-                <span class="btn-lbl-singleclick">Add files...</span>
-                <span class="btn-lbl-doubleclick">Double-click to add files ...</span>
-            <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" class="${inputFileCss}">
-            </span>
-                </div>
-                <!-- The global progress information -->
-                <div class="span5 fileupload-progress fade">
-                    <!-- The global progress bar -->
-                    <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                        <div class="bar" style="width:0%;"></div>
-                    </div>
-                    <!-- The extended global progress information -->
-                    <div class="progress-extended">&nbsp;</div>
-                </div>
-            </div>
-            <!-- The loading indicator is shown during file processing -->
-            <div class="fileupload-loading"></div>
-            <!-- The table listing the files available for upload/download -->
+                <#assign uploadConfigId="uploadConfig"/>
+                <script id="uploadConfig" type="application/json">
+                 {"files":[<#list fileProxies as f>{name:"${f.name}",id:{f.id?c}}<#sep>,</#sep></#list>],
+                "url":"/upload/upload",
+                "ticketId":-1,
+                "resourceId": -1,
+                "userId": -1,
+                "validFormats":[<#list validFileExtensions as ext>"${ext}"<#sep>,</#sep></#list>],
+                "sideCarOnly":false,
+                "maxNumberOfFiles":50,
+                "requiredOptionalPairs":[]
+                }
+                </script>
+
+			<#include "../../content/resource/vue-file-upload-template.html"/>
         </#if>
-        <table id="files" role="presentation" class="table table-striped table-bordered">
+<#--  
+
+         <table id="files" role="presentation" class="table table-striped table-bordered">
             <tbody id="fileProxyUploadBody" class="files">
                 <#list fileProxies as fileProxy>
                 <#if fileProxy??>
@@ -971,8 +965,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             </tbody>
         </table>
         <div id="cancelledProxies" style="display:none">
-
         </div>
+ -->
     </div>
     </#macro>
     <#macro _fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1 proxy=blankFileProxy >
