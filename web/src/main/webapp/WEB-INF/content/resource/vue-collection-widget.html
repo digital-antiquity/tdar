@@ -8,22 +8,22 @@
           <form>
               <div>
                 <span data-content="A collection must be selected">Select a collection, or create one</span>
-                <div  style="padding-left:20px;" class="form-group">
+                <div class="form-group">
                   <div>
                     <selectize v-bind:options="options" v-model="selectedCollection" size="1"
                          data-max-options="100" data-config="collectionSelectizeOptions" id="collection-list" 
                          data-value-field='id' data-label-field='text' data-search-field='text' data-sort-field='text'>
                     </selectize>
                   </div>
-                  <div class="" v-if="isNaN(selectedCollection)" >
+                  <div style="margin-top:15px;" v-if="isNaN(selectedCollection)" >
                       <label for="newCollectionDescription">Collection Description</label>
-                      <textarea name="description" id='newCollectionDescription' v-model="newCollectionDescription"></textarea> 
+                      <textarea style="width:100%;padding:0" name="description" id='newCollectionDescription' v-model="newCollectionDescription"></textarea> 
                   </div>
               </div>
 
             <div v-if="canEdit">
                 <label>
-                    <input type="checkbox" v-model="managedResource" />
+                    <input type="checkbox" v-model="managedResource" checked="checked"/>
                      Grant rights to Edit this record to users of this collection
                 </label>
              </div>

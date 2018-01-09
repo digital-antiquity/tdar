@@ -24,6 +24,7 @@ TDAR.datatable = function() {
             tableSelector : '#dataTable',
             requestCallback : doNothingCallback,
             selectableRows : false,
+            isAdmin: false,
             
             rowSelectionCallback : doNothingCallback,
             "sAjaxSource" : TDAR.uri( 'api/lookup/resource'),
@@ -61,6 +62,7 @@ TDAR.datatable = function() {
         };
 
         $.extend(options, parms);
+        
         var $dataTable = $(options.tableSelector);
         
         $dataTable.data("toAdd", []);
@@ -445,11 +447,13 @@ TDAR.datatable = function() {
      */
     function fnRenderAddButtonsColumn(oObj) {
         // in spite of the name, aData is an object corresponding to the current row
-        var id = oObj.aData.id;
+        
+    	var oSettings = oObj.oSettings;
+    	var aData = oObj.aData;
+    	var id = aData.id;
         var mAttrId = "btnAddManagedId_" + id;
         var uAttrId = "btnAddUnmanagedId_" + id;
         var bAttrId = "btnAddBothId_" + id;
-        var id = oObj.aData.id;
         
         //this isn't right, becomes tightly coupled, but need a better way of doing it.
         var  $dataTable = $("#resource_datatable");
@@ -462,12 +466,11 @@ TDAR.datatable = function() {
         //This will set if the resource id is in the array of IDs to be removed/added. 
         var isBeingAddedToManaged 		= addManagedIds.indexOf(id) > -1;
         var isBeingAddedToUnmanaged		= addUnmanagedIds.indexOf(id) > -1;
-        
-        var isManaged   = oObj.aData.isManagedResult   == true;
-        var isUnmanaged = oObj.aData.isUnmanagedResult == true;
+
+        var isManaged   = aData.isManagedResult   == true;
+        var isUnmanaged = aData.isUnmanagedResult == true;
         
         var output = '<div class="btn-group">';
-        
         if(!isManaged){
         	//if the resource is manged, but has been put into the remove from managed
         	if(isBeingAddedToManaged){
@@ -505,6 +508,56 @@ TDAR.datatable = function() {
         }
         
         output += "</ul></div>";
+        return output;
+    }
+    
+    /**
+     * The Datatable settings are not being passed correctly to the fnRender callback
+     * So there's no way to get know what options were set in.
+     * 
+     * Instead a different callback was setup to circumvent that issue.
+     * 
+     * @param oObj
+     * @returns {string}
+     */
+    function fnRenderAddButtonsColumnManagedOnly(oObj) {
+        // in spite of the name, aData is an object corresponding to the current row
+        
+    	var oSettings = oObj.oSettings;
+    	var aData = oObj.aData;
+    	var id = aData.id;
+        var mAttrId = "btnAddManagedId_" + id;
+        var uAttrId = "btnAddUnmanagedId_" + id;
+        var bAttrId = "btnAddBothId_" + id;
+        
+        //this isn't right, becomes tightly coupled, but need a better way of doing it.
+        var  $dataTable = $("#resource_datatable");
+        
+        var addManagedIds 		= $dataTable.data("toAddManaged");
+        var addUnmanagedIds 	= $dataTable.data("toAddUnmanaged");
+        var removeManagedIds 	= $dataTable.data("toRemoveManaged");
+        var removeUnmanagedIds 	= $dataTable.data("toRemoveUnmanaged");
+        
+        //This will set if the resource id is in the array of IDs to be removed/added. 
+        var isBeingAddedToManaged 		= addManagedIds.indexOf(id) > -1;
+        var isBeingAddedToUnmanaged		= addUnmanagedIds.indexOf(id) > -1;
+
+        var isManaged   = aData.isManagedResult   == true;
+        var isUnmanaged = aData.isUnmanagedResult == true;
+        
+        var output = '<div class="btn-group">';
+        if(!isManaged){
+        	//if the resource is manged, but has been put into the remove from managed
+        	if(isBeingAddedToManaged){
+        		var sDisabled = ' disabled="disabled" ' ;
+        	}
+        	else {
+        		var sDisabled = '';
+        	}
+        	
+        	output += '<button type="button" id="'+mAttrId+'"'+sDisabled+'value="addManaged" class="btn">Add</button>';
+        }
+        output += "</div>";
         return output;
     }
     
@@ -581,6 +634,8 @@ TDAR.datatable = function() {
      * @private
      */
     function _setupDashboardDataTable(options) {
+    	
+    	console.log("Settign up Dashboard Datatable");
         var _options = $.extend({}, options);
         _extendSorting();
 
@@ -611,19 +666,25 @@ TDAR.datatable = function() {
                sWidth : '5em',
                 "bSortable" : false
             });
-           
-           aoColumns_.push({
+        }
+        
+        if(_options.enableUnmanagedCollections){
+        	aoColumns_.push({
 	        	"mData" : null, 
 	        	fnRender : fnRenderStatusColumn,
 	        	"bSortable" : false
 	        });
-           
-           aoColumns_.push({
-	        	"mData" : null,
-	        	fnRender : fnRenderAddButtonsColumn,
-	        	"bSortable" : false
-	        });  
         }
+        
+        if(_options.isClickable){
+	        aoColumns_.push({
+	        	"mData" : null,
+	        	fnRender : _options.enableUnmanagedCollections ? fnRenderAddButtonsColumn : fnRenderAddButtonsColumnManagedOnly,
+	        	"bSortable" : false,
+	        });
+        }
+        
+        
         var $dataTable = $('#resource_datatable');
         
         _registerLookupDataTable({
@@ -634,9 +695,11 @@ TDAR.datatable = function() {
             aoColumns : aoColumns_,
             // "sDom": "<'row'<'span9'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
             "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
-            sAjaxDataProp : 'resources',
+            "sAjaxDataProp" : 'resources',
             "oLanguage": {
-                "sZeroRecords": "No records found. <span id='fltrTxt'>Consider <a id='lnkResetFilters' href='javascript:void(0)'>expanding your search</a></span>"},
+                "sZeroRecords": "No records found. <span id='fltrTxt'>Consider <a id='lnkResetFilters' href='javascript:void(0)'>expanding your search</a></span>"
+        	},
+        	
             requestCallback : function(searchBoxContents) {
                 var parms =  {
                     title : searchBoxContents,
@@ -648,6 +711,7 @@ TDAR.datatable = function() {
                     'collectionId' : $("#collection-selector").val(),
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid
                 };
+                
                 if (!_options.isAdministrator && _options.limitContext == true ) {
                     parms['useSubmitterContext'] = true;
                 } else {
@@ -684,6 +748,10 @@ TDAR.datatable = function() {
             
         });
 
+        
+        //
+        //Sets event handlers for the selection filters. 
+        //
         var $cs = $("#collection-selector");
         var $ps = $("#project-selector");
         var $rdt = $("#resource_datatable");
@@ -731,7 +799,6 @@ TDAR.datatable = function() {
             }
             $rdt.dataTable().fnDraw();
         });
-
         _scrollOnPagination();
     }
     
@@ -770,19 +837,26 @@ TDAR.datatable = function() {
 	            "mDataProp" : "resourceTypeLabel",
 	            "bSortable" : false
 	        },
-	        
-	        {
+        ];
+        
+        //If the user is an admin, they should see an additional column for status. 
+        //This shows if the resosrce is managed/unmanaged. Regular users don't see this status. 
+        //see edit.ftl for the HTML. 
+        
+        
+        if(_options.enableUnmanagedCollections){
+        	aoColumns_.push({
 	        	"mData" : null, 
 	        	fnRender : fnRenderStatusColumn,
 	        	"bSortable" : false
-	        },
-	        
-	        {
-	        	"mData" : null,
-	        	fnRender : fnRenderRemoveButtonsColumn,
-	        	"bSortable" : false
-	        },
-        ];
+	        });
+        }
+        
+    	aoColumns_.push({
+        	"mData" : null,
+        	fnRender : fnRenderRemoveButtonsColumn,
+        	"bSortable" : false,
+        });
         
         var selector  = '#existing_resources_datatable';
         var $dataTable = $(selector);

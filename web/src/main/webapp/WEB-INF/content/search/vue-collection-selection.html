@@ -6,17 +6,19 @@
   
   <div class="modal-body modal-tall" >
      
+     <div id="progress-title" class="hide">
+     </div>
+     
 	<div class="progress progress-striped active hide" id="upload-progress" >
         <div id="upload-progress-status" class="bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 1%">
             <span id="current-progress"></span>
         </div>
     </div>
 	
-	
 	  <form id="upload-form">
 	      <div>
 	        <span data-content="A collection must be selected">Select a collection, or create one</span>
-	        <div  style="padding-left:20px;" class="form-group">
+	        <div class="form-group">
 	           <div>
 	             <selectize v-bind:options="options" v-model="selectedCollection" size="1"
 	                  data-max-options="100" data-config="collectionSelectizeOptions" id="collection-list" 
@@ -24,9 +26,9 @@
 	             </selectize>
 	           </div>
 	           
-	           <div class="" v-if="isNaN(selectedCollection)" >
+	           <div v-if="isNaN(selectedCollection)" style="margin-top:10px;" >
 	             <label for="newCollectionDescription">Collection Description</label>
-	             <textarea name="description" id='newCollectionDescription' v-model="newCollectionDescription"> </textarea> 
+	             <textarea name="description" style="width:100%;padding:0"  id='newCollectionDescription' v-model="newCollectionDescription"> </textarea> 
 	           </div>
 	        </div>
 	     </div>
@@ -34,7 +36,7 @@
   </div>
   
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     <a href="#" class="btn btn-primary"  v-on:click="saveResultsToCollection">Add to Collection</a>
   </div>
 </div>

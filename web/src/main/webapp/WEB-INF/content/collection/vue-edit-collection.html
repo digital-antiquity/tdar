@@ -15,7 +15,7 @@
 				<colgroup>
 					<col style="width: 10%">
 					<col style="width: 70%">
-					<col style="width: 10%">
+					<col style="width: 10%"  v-show="enableUnmanagedCollections">
 					<col style="width: 10%">
 				</colgroup>
 				<tr v-for="(resource,index) in managedAdditions"
@@ -25,7 +25,7 @@
 						v-model="managedAdditions[index].id" />
 					</td>
 					<td>{{ellipse(resource.title)}}</td>
-					<td>Managed</td>
+					<td v-show="enableUnmanagedCollections">Managed</td>
 					<td><a v-on:click='undoModification(resource.id,true,true)'
 						style="cursor: pointer">Undo</a></td>
 				</tr>
@@ -36,7 +36,7 @@
 						v-model="unmanagedAdditions[index].id" />
 					</td>
 					<td>{{ellipse(resource.title)}}</td>
-					<td>Unmanaged</td>
+					<td v-show="enableUnmanagedCollections">Unmanaged</td>
 					<td><a v-on:click='undoModification(resource.id,false,true)'
 						style="cursor: pointer">Undo</a></td>
 				</tr>

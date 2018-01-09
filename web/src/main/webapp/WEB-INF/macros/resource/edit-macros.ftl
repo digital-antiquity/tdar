@@ -1046,7 +1046,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     @param selectable:boolean render resources in the list with "selectable" rows,  which will render a checkbox
         as the first column in each row of the data table
 -->
-<#macro resourceDataTable showDescription=true selectable=false clickable=false limitToCollection=false idAddition="" span="span8">
+<#macro resourceDataTable showDescription=true selectable=false clickable=false limitToCollection=false idAddition="" span="span8" useUnmanagedCollections=false>
 
         <#--you are in a span9, but assume span8 so we fit inside well -->
         <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> 
@@ -1061,7 +1061,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                                 
                                 <div class="pull-right">
                                     <#if limitToCollection>
-                                        <label class="checkbox" style="font-weight:normal; ">
+                                        <label class="checkbox hidden" style="font-weight:normal; ">
                                             <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded${idAddition}">
                                             Show only selected resources
                                         </label>
@@ -1162,7 +1162,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <col style="" />
     
                         <#if clickable>
+                            <#if useUnmanagedCollections>
                             <col style="" />
+                            </#if>
                             <col style="" />
                         </#if>
                         
@@ -1177,8 +1179,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             </#if>
                                 <th>Title</th>
                                 <th>Type</th>
+                                
                             <#if clickable>
+                                <#if useUnmanagedCollections>
                                 <th>Status</th>
+                                </#if>
                                 <th>Add</th>
                             </#if>
                         </tr>
@@ -1191,7 +1196,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
                             <#if clickable>
+                                  <#if useUnmanagedCollections>
                                 <td>&nbsp;</td>
+                                </#if>
                                 <td>&nbsp;</td>
                             </#if>
                         </tr>

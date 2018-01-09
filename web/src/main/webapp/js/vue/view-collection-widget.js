@@ -82,7 +82,7 @@ var _init = function(appId) {
         
         
         showPermission:false,
-        managedResource: false,
+        managedResource: true,
         resourceId: -1,
         canEdit: false,
         collections: {managed:[], unmanaged:[]},
@@ -216,6 +216,8 @@ var _init = function(appId) {
          * "save results to collection" functions
          */
         _addResultsToCollection: function(collectionId){
+
+        	
         	
         	var url = $(this.$el).data("url");
         	var vapp = this;
@@ -223,7 +225,11 @@ var _init = function(appId) {
         	var progress = $("#upload-progress");
         	var form 	 = $("#upload-form");
         	var progressBar = $("#upload-progress-status");
+        	var title  = $("#progress-title");
         	this.lastSavedCollectionId = collectionId;
+        	
+        	title.show();
+        	title.text("Saving Results To Collection '"+$('#collection-list').text()+"'");
         	
         	axios.post("/api/search/"+url+"&collectionId="+collectionId).then(function(res) {
             	progress.show();
@@ -237,11 +243,14 @@ var _init = function(appId) {
         	var progress = $("#upload-progress");
         	var form 	 = $("#upload-form");
             var $select = $('#collection-list').selectize();
+            var title  = $("#progress-title");
+            
             var vapp = this;
             
             $select[0].selectize.clear();
             vapp._enableSubmitButton();
         	progress.hide();
+        	title.hide();
         	form.show();
         },
         
@@ -393,6 +402,7 @@ var _init = function(appId) {
         	    	console.log("Progress is 100%");
         	    	vapp._resetCollectionSelectionState();
         	    	$("#modal").modal('hide');
+        	    	
         	    }
         	    
         	}).catch(function(res){

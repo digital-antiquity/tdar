@@ -541,6 +541,11 @@
 
 </div>
 
+
+   <div class="modal hide fade" id="modal">
+                <#include 'vue-collection-widget.html' />
+    </div>
+
 <div id="sidebar-right" parse="true">
     <div class="beige white-border-bottom">
         <div class="iconbox">
@@ -578,7 +583,7 @@
                     </div>
                 </li>
             
-            <#if (authenticatedUser.id)?has_content>
+            <#if administrator>
                 <@list.bookmarkMediaLink resource />
                 <li class="media "><i class="icon-folder-open pull-left"></i>
                     <div class="media-body">
@@ -588,13 +593,9 @@
             </#if>
                 <@nav.shareSection />
             </ul>
-            
-                <div class="modal hide fade" id="modal">
-                
-                <#include 'vue-collection-widget.html' />
-        </div>
     </div>
     
+ 
         
     <h3>Basic Information</h3>
 
