@@ -1,0 +1,83 @@
+<div id="editCollectionApp">
+
+	<div id="divAddRemove">
+		<h2 v-show="pendingAdditions>0 || pendingRemovals>0">Modifications</h2>
+    
+		<div id="divToAdd">
+			<h4 v-show="pendingAdditions > 0">The following 
+			
+    			 {{pendingAdditionText}} 
+			
+			will be added
+				to the collection</h4>
+
+			<table id="tblToAdd" class="table table-condensed">
+				<colgroup>
+					<col style="width: 10%">
+					<col style="width: 70%">
+					<col style="width: 10%"  v-show="enableUnmanagedCollections">
+					<col style="width: 10%">
+				</colgroup>
+				<tr v-for="(resource,index) in managedAdditions"
+					v-bind:value="resource.id">
+					<td>{{resource.id}} <input type="hidden"
+						:id="'hrid'+resource.id" name="toAddManaged"
+						v-model="managedAdditions[index].id" />
+					</td>
+					<td>{{ellipse(resource.title)}}</td>
+					<td v-show="enableUnmanagedCollections">Managed</td>
+					<td><a v-on:click='undoModification(resource.id,true,true)'
+						style="cursor: pointer">Undo</a></td>
+				</tr>
+				<tr v-for="(resource,index) in unmanagedAdditions"
+					v-bind:value="resource.id">
+					<td>{{resource.id}} <input type="hidden"
+						:id="'hrid'+resource.id" name="toAddUnmanaged"
+						v-model="unmanagedAdditions[index].id" />
+					</td>
+					<td>{{ellipse(resource.title)}}</td>
+					<td v-show="enableUnmanagedCollections">Unmanaged</td>
+					<td><a v-on:click='undoModification(resource.id,false,true)'
+						style="cursor: pointer">Undo</a></td>
+				</tr>
+			</table>
+		</div>
+
+		<div id="divToRemove">
+			<h4 v-show="pendingRemovals > 0">The following {{pendingRemovalText}} will be removed
+				from the collection</h4>
+
+			<table id="tblToRemove" class="table table-condensed">
+				<colgroup>
+					<col style="width: 10%">
+					<col style="width: 70%">
+					<col style="width: 10%">
+					<col style="width: 10%">
+				</colgroup>
+				<tr v-for="(resource,index) in managedRemovals"
+					v-bind:value="resource.id">
+					<td>{{resource.id}} <input type="hidden"
+						:id="'hrid'+resource.id" name="toRemoveManaged"
+						v-model="managedRemovals[index].id" />
+					</td>
+					<td>{{ellipse(resource.title)}}</td>
+					<td>Managed</td>
+					<td><a v-on:click='undoModification(resource.id,true,false)'
+						style="cursor: pointer">Undo</a></td>
+				</tr>
+				<tr v-for="(resource,index) in unmanagedRemovals"
+					v-bind:value="resource.id">
+					<td>{{resource.id}} <input type="hidden"
+						:id="'hrid'+resource.id" name="toRemoveUnmanaged"
+						v-model="unmanagedRemovals[index].id" />
+					</td>
+					<td>{{ellipse(resource.title)}}</td>
+					<td>Unmanaged</td>
+					<td><a v-on:click='undoModification(resource.id,false,false)'
+						style="cursor: pointer">Undo</a></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+</div>
