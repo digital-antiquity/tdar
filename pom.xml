@@ -21,7 +21,7 @@
         <module>core</module>
         <module>search</module>
         <module>faims</module>
-        <!-- the tdar webapp -->
+        
         <module>web-base</module>
         <module>web-test</module>
         <module>struts-base</module>
@@ -29,7 +29,7 @@
         <module>web</module>
         <module>webservice/dataone</module>
         <module>webservice/oai-pmh</module>
-        <module>utils</module>
+        <module>utils</module> 
     </modules>
 
 
@@ -107,7 +107,6 @@
 
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         
-        <clover.licenseDir>/home/bamboo</clover.licenseDir>
         <!-- Following points to the profile directory to use for filtering 
             resources -->
         <!-- override by redefining in a profile. don't forget to 'clean' 
@@ -115,7 +114,7 @@
         <!-- Be warned: Eclipse may have a different active profile in play 
             to the command line -->
         <build.profile.id>default</build.profile.id>
-        <clover.version>4.1.2</clover.version>
+        <clover.version>4.2.1</clover.version>
         <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath> -->
     </properties>
 
@@ -870,6 +869,11 @@
     <profiles>
         <profile>
             <id>clover</id>
+            <activation>
+                <property>
+                    <name>!skipCloverSetup</name>
+                </property>
+            </activation>
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
                 <use.test.classpath>true</use.test.classpath>
@@ -878,11 +882,10 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <groupId>org.openclover</groupId>
                         <artifactId>clover-maven-plugin</artifactId>
                         <version>${clover.version}</version>
                         <configuration>
-                            <licenseLocation>${clover.licenseDir}/clover.license</licenseLocation>
                             <!-- <cloverDatabase>${clover.dir}/database.db</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database.db</cloverMergeDatabase> -->
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
@@ -921,7 +924,7 @@
             </build>
             <dependencies>
                 <dependency>
-                    <groupId>com.atlassian.clover</groupId>
+                    <groupId>org.openclover</groupId>
                     <artifactId>clover</artifactId>
                     <version>${clover.version}</version>
                 </dependency>
