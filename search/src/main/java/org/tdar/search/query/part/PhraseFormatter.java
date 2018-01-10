@@ -17,6 +17,7 @@ public enum PhraseFormatter {
 
     WILDCARD,
     ESCAPED,
+    EMBEDDED,
     QUOTED,
     ESCAPE_QUOTED, ESCAPED_EMBEDDED;
 
@@ -43,8 +44,10 @@ public enum PhraseFormatter {
                 return String.format("\"%s\"", value);
             case ESCAPE_QUOTED:
                 return QUOTED.format(ESCAPED.format(value));
+            case EMBEDDED:
+                return StringUtils.replace(value, "'", "\\'");
             case ESCAPED_EMBEDDED:
-                return StringUtils.replace(ESCAPED.format(value), "'", "\\'");
+                return EMBEDDED.format(ESCAPED.format(value));
 
             default:
                 return value;

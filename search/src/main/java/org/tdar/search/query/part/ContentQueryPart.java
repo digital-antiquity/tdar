@@ -15,6 +15,8 @@ import org.tdar.search.query.QueryFieldNames;
 public class ContentQueryPart extends FieldQueryPart<String> {
 
     
+    private boolean escaped = false;
+    
     public ContentQueryPart() {
     }
 
@@ -22,6 +24,11 @@ public class ContentQueryPart extends FieldQueryPart<String> {
         getFieldValues().add(term);
     }
 
+    public ContentQueryPart(String term, boolean escaped) {
+        getFieldValues().add(term);
+        this.escaped = escaped;
+    }
+    
 
     public ContentQueryPart(String text, Operator operator, List<String> contents) {
         super(QueryFieldNames.CONTENT, text,operator, contents);
@@ -32,10 +39,22 @@ public class ContentQueryPart extends FieldQueryPart<String> {
     public String generateQueryString() {
         QueryPartGroup subq = new QueryPartGroup(Operator.AND);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, getFieldValues());
-        content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
+        if (escaped) {
+            content.setPhraseFormatters(PhraseFormatter.EMBEDDED);
+        } else{
+            content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
+        }
         subq.append(content);
         subq.append(new FieldQueryPart<FileAccessRestriction>(QueryFieldNames.RESOURCE_ACCESS_TYPE, FileAccessRestriction.PUBLIC));
         CrossCoreFieldJoinQueryPart<?> join = new CrossCoreFieldJoinQueryPart(QueryFieldNames.ID, QueryFieldNames.RESOURCE_ID, subq, LookupSource.CONTENTS.getCoreName());
         return join.generateQueryString();
+    }
+
+    public boolean isEscaped() {
+        return escaped;
+    }
+
+    public void setEscaped(boolean escaped) {
+        this.escaped = escaped;
     }
 }

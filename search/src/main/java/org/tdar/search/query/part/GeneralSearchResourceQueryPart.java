@@ -87,11 +87,12 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         // we use the original value because we'd be esacping things we don't want to otherwise
         if (CollectionUtils.isNotEmpty(codes)) {
             FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, codes);
+            siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPED);
             siteCodePart.setBoost(SITE_CODE_BOOST);
             queryPart.append(siteCodePart);
         }
-        queryPart.append(new ContentQueryPart(cleanedQueryString));
-        queryPart.append(new DataValueQueryPart(cleanedQueryString));
+        queryPart.append(new ContentQueryPart(cleanedQueryString, true));
+        queryPart.append(new DataValueQueryPart(cleanedQueryString, true));
         return queryPart;
     }
 
