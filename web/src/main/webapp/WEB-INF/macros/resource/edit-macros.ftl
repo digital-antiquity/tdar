@@ -1158,20 +1158,21 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <#if selectable || clickable>
                             <col style="" />
                         </#if>
+                        
                         <col style="width: 60%" />
                         <col style="" />
-    
                         <#if clickable>
+
+                            <#--Renders an additional column for the Manage/Unmanged status if necessary  -->
                             <#if useUnmanagedCollections>
-                            <col style="" />
+                                <col style="" />
                             </#if>
+                            
+                            <#--Renders a column for the buttons to be displayed -->
                             <col style="" />
                         </#if>
                         
                     </colgroup>
-                    <#--
-                    -->
-                    
                     <thead>
                         <tr>
                             <#if selectable || clickable>
@@ -1182,12 +1183,13 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                                 
                             <#if clickable>
                                 <#if useUnmanagedCollections>
-                                <th>Status</th>
+                                    <th>Status</th>
                                 </#if>
-                                <th>Add</th>
+                                    <th>Add</th>
                             </#if>
                         </tr>
                     </thead>
+        
                     <tbody>
                         <tr>
                             <#if selectable || clickable>
@@ -1196,10 +1198,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
                             <#if clickable>
-                                  <#if useUnmanagedCollections>
-                                <td>&nbsp;</td>
+                                <#if useUnmanagedCollections>
+                                    <td>&nbsp;</td>
                                 </#if>
-                                <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
                             </#if>
                         </tr>
                     </tbody>
@@ -1207,8 +1209,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             
             </div>
         </div>
-
-
     <#nested />
     <br/>
 </#macro> 

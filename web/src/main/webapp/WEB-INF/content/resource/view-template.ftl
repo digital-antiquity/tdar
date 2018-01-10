@@ -595,13 +595,10 @@
                 <@nav.shareSection />
             </ul>
     </div>
-    
- 
         
     <h3>Basic Information</h3>
 
     <p>
-
     <ul class="unstyled-list">
         <#if resource.resourceProviderInstitution?? && resource.resourceProviderInstitution.id != -1>
             <li>

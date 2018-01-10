@@ -169,9 +169,7 @@
             </dl>
         </div>
 
-    <#assign useManagedCollections = false>
-    
-   
+    <#assign useManagedCollections = administrator>
 
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
@@ -234,12 +232,12 @@
                 </div>
           </div>
           <div id="addResources" class="tab-pane fade">
-                <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="span9">
+                <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="span9" useUnmanagedCollections=administrator>
                 </@edit.resourceDataTable>
           </div>
     </div>
     <#else>
-         <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection  span="span9" >
+         <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection  span="span9" useUnmanagedCollections=administrator>
          </@edit.resourceDataTable>
     </#if>
     
@@ -283,7 +281,7 @@
     $(function () {
         'use strict';
         TDAR.datatable.setupDashboardDataTable({
-            enableUnmanagedCollections : false,
+            enableUnmanagedCollections : ${(administrator!false)?string},
             isAdministrator: ${(editor!false)?string},
             limitContext: ${((!editor)!true)?string},
             isSelectable: false,
@@ -293,6 +291,7 @@
         });
         
          TDAR.datatable.setupCollectionResourcesDataTable({
+            enableUnmanagedCollections: ${(administrator!false)?string},
             isAdministrator: ${(editor!false)?string},
             limitContext: ${((!editor)!true)?string},
             isSelectable: false,
