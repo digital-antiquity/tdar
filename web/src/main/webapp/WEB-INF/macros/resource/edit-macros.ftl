@@ -868,26 +868,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <p><span class="label">Note:</span> You can only have <strong><#if !multipleFileUploadEnabled>1 file<#else>${maxUploadFilesPerRecord}
                         files</#if> </strong> per record</p>
                 </div>
-                <table id="uploadFiles" class="files table tableFormat">
-                </table>
-                <table id="files" class="files sortable">
-                    <thead>
-                    <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
-                        <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <#list fileProxies as fileProxy>
-                            <#if fileProxy??>
-                                <@_fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
-                            </#if>
-						<#else>
-                        <tr class="noFiles newRow">
-                            <td><em>no files uploaded</em></td>
-                        </tr>
-                        </#list>
-                    </tbody>
-                </table>
             </#if>
         </div>
         <@helptext.confidentialFile />
@@ -939,7 +919,15 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#else>
                 <#assign uploadConfigId="uploadConfig"/>
                 <script id="uploadConfig" type="application/json">
-                 {"files":[<#list fileProxies as f>{name:"${f.name}",id:{f.id?c}}<#sep>,</#sep></#list>],
+                 {"files":[<#list fileProxies as f>
+                                 <#local val = ""/>
+                <#if (f.fileCreatedDate)?has_content>
+                        <#local val = f.fileCreatedDate?string["MM/dd/yyyy"]>
+                    </#if>
+
+                 
+                 {filename:"${f.name}",sequenceNumber:"${f_index}",id:${f.id?c}, action:'NONE', fileId:${f.fileId?c}, restriction: "${f.restriction}",dateCreated:"${val}",description:'${f.description}'}<#sep>,</#sep>
+                 </#list>],
                 "url":"/upload/upload",
                 "ticketId":-1,
                 "resourceId": -1,
@@ -953,69 +941,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
 			<#include "../../content/resource/vue-file-upload-template.html"/>
         </#if>
-<#--  
-
-         <table id="files" role="presentation" class="table table-striped table-bordered">
-            <tbody id="fileProxyUploadBody" class="files">
-                <#list fileProxies as fileProxy>
-                <#if fileProxy??>
-                    <@_fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
-                </#if>
-            </#list>
-            </tbody>
-        </table>
-        <div id="cancelledProxies" style="display:none">
-        </div>
- -->
     </div>
-    </#macro>
-    <#macro _fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1 proxy=blankFileProxy >
-    <tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable fade existing-file in">
-
-        <td class="preview">
-        <#--
-                        <#if (proxy.informationResourceFile.latestThumbnail)?has_content>
-                <img src="<@s.url value="/filestore/${proxy.informationResourceFile.latestThumbnail.id?c}/thumbnail"/>">
-            </#if>
-            
-            -->
-        </td>
-        <td class="name">
-        	<#if versionId != -1>
-            <a href="<@s.url value='/filestore/get/${id?c}/${versionId?c}'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
-			</#if>
-            <span class="replacement-text"></span>
-        </td>
-        <td class="size"><span>${filesize} bytes</span></td>
-        <#if ableToUploadFiles>
-            <td colspan="2">
-
-                        <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right"
-                        style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;" />
-                <#local val = ""/>
-                <#if (proxy.fileCreatedDate)?has_content>
-                        <#local val = proxy.fileCreatedDate?string["MM/dd/yyyy"]>
-                    </#if>
-                <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
-                <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" cols="80" />
-
-            </td>
-
-            <td class="delete">
-                <button class="btn btn-danger delete-button" data-type="DELETE" data-url="">
-                    <i class="icon-trash icon-white"></i><span>Delete</span>
-                </button>
-            </td>
-            <td>
-
-                <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}">
-                <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}">
-                <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}">
-                <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value="${rowId}">
-
-            </td>
-        </#if>
-    </tr>
     </#macro>
 
 <#-- emit the right-sidebar section.  Note this gets parsed by sitemesh, so more content will go inside.
