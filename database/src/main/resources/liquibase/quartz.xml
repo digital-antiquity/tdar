@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd" context="production,test" >
+     
+     <changeSet id="prehistoric-rights2-1" author="abrin">
+         <addColumn tableName="authorized_user">
+            <column name="integration_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_user_integration" referencedTableName="data_integration_workflow" 
+            baseColumnNames="integration_id" baseTableName="authorized_user" referencedColumnNames="id"/>
+
+         <addColumn tableName="authorized_user">
+            <column name="account_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_user_account" referencedTableName="pos_account" 
+            baseColumnNames="account_id" baseTableName="authorized_user" referencedColumnNames="id"/>
+     
+     <sql>insert into authorized_user (creator_id, user_id, date_created, general_permission, general_permission_int,account_id) select owner_id, user_id, now(), 'EDIT_ACCOUNT',10000, account_id from pos_account a, pos_members m where a.id=m.account_id</sql> 
+     <sql>insert into authorized_user (creator_id, user_id, date_created, general_permission, general_permission_int,account_id) select owner_id, owner_id, now(), 'EDIT_ACCOUNT',10000, id from pos_account</sql> 
+
+     <sql>insert into authorized_user (creator_id, user_id, date_created, general_permission, general_permission_int,integration_id) select a.user_id, m.user_id, now(), 'EDIT_INTEGRATION',2000, integration_id from data_integration_workflow a, data_integration_users m where a.id=m.integration_id</sql> 
+     <sql>insert into authorized_user (creator_id, user_id, date_created, general_permission, general_permission_int,integration_id) select user_id, user_id, now(), 'EDIT_INTEGRATION',2000, id from data_integration_workflow</sql> 
+     
+     </changeSet>
+</databaseChangeLog>
+

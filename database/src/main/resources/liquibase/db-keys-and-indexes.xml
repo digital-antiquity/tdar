@@ -1,0 +1,1614 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd" context="test,schema,devinstance" >
+    <changeSet author="abrin (generated)" id="1412635782699-105">
+        <createTable tableName="weekly_popular_resource_cache">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="weekly_popular_resource_cache_pkey" />
+            </column>
+            <column name="resource_id" type="INT8" />
+        </createTable>
+    </changeSet>
+
+    <changeSet author="abrin (generated)" id="1412635782699-180">
+        <addPrimaryKey columnNames="id" constraintName="archive_pkey"
+            tableName="archive" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-181">
+        <addPrimaryKey columnNames="id" constraintName="audio_pkey"
+            tableName="audio" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-182">
+        <addPrimaryKey columnNames="id" constraintName="coding_sheet_pkey"
+            tableName="coding_sheet" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-183">
+        <addPrimaryKey columnNames="resource_id, collection_id"
+            constraintName="collection_resource_pkey" tableName="collection_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-184">
+        <addPrimaryKey columnNames="id" constraintName="dataset_pkey"
+            tableName="dataset" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-185">
+        <addPrimaryKey columnNames="id" constraintName="document_pkey"
+            tableName="document" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-186">
+        <addPrimaryKey columnNames="id" constraintName="geospatial_pkey"
+            tableName="geospatial" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-187">
+        <addPrimaryKey columnNames="id" constraintName="image_pkey"
+            tableName="image" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-188">
+        <addPrimaryKey columnNames="id"
+            constraintName="information_resource_pkey" tableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-189">
+        <addPrimaryKey columnNames="id" constraintName="institution_pkey"
+            tableName="institution" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-190">
+        <addPrimaryKey columnNames="id" constraintName="ontology_pkey"
+            tableName="ontology" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-191">
+        <addPrimaryKey columnNames="id" constraintName="person_pkey"
+            tableName="person" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-192">
+        <addPrimaryKey columnNames="user_id, account_id"
+            constraintName="pos_group_members_pkey" tableName="pos_group_members" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-193">
+        <addPrimaryKey columnNames="account_id, user_id"
+            constraintName="pos_members_pkey" tableName="pos_members" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-194">
+        <addPrimaryKey columnNames="id" constraintName="project_pkey"
+            tableName="project" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-195">
+        <addPrimaryKey columnNames="resource_id, culture_keyword_id"
+            constraintName="resource_culture_keyword_pkey" tableName="resource_culture_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-196">
+        <addPrimaryKey columnNames="resource_id, geographic_keyword_id"
+            constraintName="resource_geographic_keyword_pkey" tableName="resource_geographic_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-197">
+        <addPrimaryKey columnNames="resource_id, investigation_type_id"
+            constraintName="resource_investigation_type_pkey" tableName="resource_investigation_type" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-198">
+        <addPrimaryKey columnNames="resource_id, geographic_keyword_id"
+            constraintName="resource_managed_geographic_keyword_pkey"
+            tableName="resource_managed_geographic_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-199">
+        <addPrimaryKey columnNames="resource_id, material_keyword_id"
+            constraintName="resource_material_keyword_pkey" tableName="resource_material_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-200">
+        <addPrimaryKey columnNames="resource_id, other_keyword_id"
+            constraintName="resource_other_keyword_pkey" tableName="resource_other_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-201">
+        <addPrimaryKey columnNames="id" constraintName="resource_pkey"
+            tableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-202">
+        <addPrimaryKey columnNames="resource_id, site_name_keyword_id"
+            constraintName="resource_site_name_keyword_pkey" tableName="resource_site_name_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-203">
+        <addPrimaryKey columnNames="resource_id, site_type_keyword_id"
+            constraintName="resource_site_type_keyword_pkey" tableName="resource_site_type_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-204">
+        <addPrimaryKey columnNames="resource_id, temporal_keyword_id"
+            constraintName="resource_temporal_keyword_pkey" tableName="resource_temporal_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-205">
+        <addPrimaryKey columnNames="id" constraintName="sensory_data_pkey"
+            tableName="sensory_data" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-206">
+        <addPrimaryKey columnNames="id" constraintName="tdar_user_pkey"
+            tableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-207">
+        <addPrimaryKey columnNames="id" constraintName="video_pkey"
+            tableName="video" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-208">
+        <addUniqueConstraint columnNames="label"
+            constraintName="uk_23onskstj4bsw45hgv9jvoif9" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="temporal_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-209">
+        <addUniqueConstraint columnNames="resource_type"
+            constraintName="uk_2o8qxrhlrk2oa11byvt208153" deferrable="false"
+            disabled="false" initiallyDeferred="false"
+            tableName="homepage_cache_resource_type" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-210">
+        <addUniqueConstraint columnNames="label"
+            constraintName="uk_3i30vuv6paeichxcfuik0ykgu" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="investigation_type" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-211">
+        <addUniqueConstraint columnNames="person_id, resource_id"
+            constraintName="uk_4be0tg6ubnna6emeo4447a1vv" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="bookmarked_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-212">
+        <addUniqueConstraint columnNames="label"
+            constraintName="uk_7a7se8o9ugjt7gd0555dig53x" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="site_type_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-213">
+        <addUniqueConstraint columnNames="username"
+            constraintName="uk_7wvw2hmy3n1iw43ksih04y1fx" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-214">
+        <addUniqueConstraint columnNames="key"
+            constraintName="uk_f63anxckkfcj002dirbe6p4ik" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="resource_annotation_key" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-215">
+        <addUniqueConstraint columnNames="label"
+            constraintName="uk_fkkrxqw6nuyk3d2tdd7emgi0f" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="other_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-216">
+        <addUniqueConstraint
+            columnNames="information_resource_file_id, file_version, internal_type"
+            constraintName="uk_fltku4fwlvfyf6x2ibb1s1m4d" deferrable="false"
+            disabled="false" initiallyDeferred="false"
+            tableName="information_resource_file_version" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-217">
+        <addUniqueConstraint columnNames="email"
+            constraintName="uk_fwmwi44u55bo4rvwsv0cln012" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="person" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-218">
+        <addUniqueConstraint columnNames="label"
+            constraintName="uk_m4gr0i3ai6fsd8ccncd1qg1cl" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="material_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-219">
+        <addUniqueConstraint columnNames="label"
+            constraintName="uk_o6hyx2eoyr5g9ta3q4nasesaq" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="culture_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-220">
+        <addUniqueConstraint columnNames="label"
+            constraintName="uk_ohr2ilyny0sxya0nydeeamqo2" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="site_name_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-221">
+        <addUniqueConstraint columnNames="label"
+            constraintName="uk_p2mben3m0rc3e2ger94t3kpw7" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="geographic_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-222">
+        <addUniqueConstraint columnNames="name"
+            constraintName="uk_qhw15h5f7nc4g3ndva8sory1u" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="institution" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-223">
+        <addUniqueConstraint columnNames="code"
+            constraintName="uk_s70mhdn4gbxrkjqxyylc8apr8" deferrable="false"
+            disabled="false" initiallyDeferred="false" tableName="pos_coupon" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-224">
+        <addUniqueConstraint columnNames="date_accessed, resource_id"
+            constraintName="view_per_day" deferrable="false" disabled="false"
+            initiallyDeferred="false" tableName="resource_access_day_agg" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-225">
+        <addForeignKeyConstraint
+            baseColumnNames="category_variable_id" baseTableName="coding_sheet"
+            constraintName="fk_18egmpdlq2ow0cn9xn80rl118" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="category_variable" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-226">
+        <addForeignKeyConstraint
+            baseColumnNames="resourceannotationkey_id" baseTableName="resource_annotation"
+            constraintName="fk_1bflarkcv9jmnvpuknebkstk2" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource_annotation_key" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-227">
+        <addForeignKeyConstraint
+            baseColumnNames="parentinstitution_id" baseTableName="institution"
+            constraintName="fk_27e6cl0cjjiewahsnnuulirxf" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="institution" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-228">
+        <addForeignKeyConstraint
+            baseColumnNames="collection_id" baseTableName="collection_resource"
+            constraintName="fk_2pam5g6bvdgipr21qceli63ov" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="collection" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-229">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_material_keyword"
+            constraintName="fk_30k3tg4tqm4k7qx491n7i47h1" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-230">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_keyword_id" baseTableName="temporal_keyword"
+            constraintName="fk_3ceim5comxnm1c4sql9bp2mdi" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="temporal_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-231">
+        <addForeignKeyConstraint
+            baseColumnNames="information_resource_id" baseTableName="information_resource_file"
+            constraintName="fk_3qyh42tltt8fx1yafp92mil6n" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-232">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_site_type_keyword"
+            constraintName="fk_40st2vtexv8d0sp00bod648n3" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-233">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_note"
+            constraintName="fk_42q0m9egybxk2nkbl4jba07nf" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-234">
+        <addForeignKeyConstraint
+            baseColumnNames="site_type_keyword_id" baseTableName="resource_site_type_keyword"
+            constraintName="fk_44csm4xb07msalspfqreglt7g" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="site_type_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-235">
+        <addForeignKeyConstraint
+            baseColumnNames="category_variable_id" baseTableName="data_table_column"
+            constraintName="fk_48r03uxq4jlfg5w0jrdueh9ft" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="category_variable" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-236">
+        <addForeignKeyConstraint
+            baseColumnNames="owner_id" baseTableName="collection"
+            constraintName="fk_496k935i20qm8463yenj3b8gg" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-237">
+        <addForeignKeyConstraint
+            baseColumnNames="creator_id" baseTableName="creator_address"
+            constraintName="fk_4gaxqfwhw8sdvr8uv09fi2aqa" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="creator" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-238">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="person"
+            constraintName="fk_4ht90pj9rj91hj3dqhx5c40ut" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="creator" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-239">
+        <addForeignKeyConstraint
+            baseColumnNames="creator_id" baseTableName="creator_view_statistics"
+            constraintName="fk_4w19dkg6pbv400quwq8y5cde4" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="creator" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-240">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_keyword_id" baseTableName="site_type_keyword"
+            constraintName="fk_568qocikfisjqgdddoqm17w8s" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="site_type_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-241">
+        <addForeignKeyConstraint
+            baseColumnNames="proxyinstitution_id" baseTableName="tdar_user"
+            constraintName="fk_5ame3enbx589sg0x2te7j64yo" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="institution" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-242">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_site_name_keyword"
+            constraintName="fk_5dcc40909g5p2lxduorp1dhdp" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-243">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="document"
+            constraintName="fk_5f5rxv90kw86fqiuk1c9ijybn" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-244">
+        <addForeignKeyConstraint
+            baseColumnNames="owner_id" baseTableName="pos_account"
+            constraintName="fk_5i1yn0qua0ce19prjb5wpu7g7" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-245">
+        <addForeignKeyConstraint
+            baseColumnNames="address_id" baseTableName="pos_invoice"
+            constraintName="fk_6b7njgn3dtqtj73noh2ecarke" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="creator_address" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-246">
+        <addForeignKeyConstraint
+            baseColumnNames="parent_id" baseTableName="culture_keyword"
+            constraintName="fk_7952ch8b1pm4mt4ihcb3ocab6" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="culture_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-247">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_culture_keyword"
+            constraintName="fk_7nst7fx9f6n7wlbvm4hjiifjm" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-248">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="homepage_featured_item_cache"
+            constraintName="fk_7obpja9uwlhght2p7efo2gwgu" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-249">
+        <addForeignKeyConstraint
+            baseColumnNames="sourceresource_id" baseTableName="resource_relationship"
+            constraintName="fk_7q99f3wdgku5bwwu3uj267f2" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-250">
+        <addForeignKeyConstraint
+            baseColumnNames="project_id" baseTableName="information_resource"
+            constraintName="fk_7sh31j43t3v0q70d0m2p2ltoh" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="project" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-251">
+        <addForeignKeyConstraint
+            baseColumnNames="uploader_id" baseTableName="resource"
+            constraintName="fk_8d89yw0tjqovudnreb163ql09" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-252">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="geospatial"
+            constraintName="fk_8lco85d357n61gqu5drux0rmw" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="dataset" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-253">
+        <addForeignKeyConstraint
+            baseColumnNames="response_id" baseTableName="pos_invoice"
+            constraintName="fk_94xutew9nsc21k1r53aasrly1" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_transaction_log" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-254">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="related_comparative_collection"
+            constraintName="fk_9ja07c45licb230tw74km1aup" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-255">
+        <addForeignKeyConstraint
+            baseColumnNames="data_table_id" baseTableName="data_table_column"
+            constraintName="fk_9kve9fbbknx0f4nc89b59r1q6" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="data_table" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-256">
+        <addForeignKeyConstraint
+            baseColumnNames="submitter_id" baseTableName="resource"
+            constraintName="fk_9ucw7xr71tqdbb3nhv6hcwdgl" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-257">
+        <addForeignKeyConstraint
+            baseColumnNames="targetresource_id" baseTableName="resource_relationship"
+            constraintName="fk_adt9qfp6tyesa5363no933ga2" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-258">
+        <addForeignKeyConstraint
+            baseColumnNames="local_column_id" baseTableName="data_table_column_relationship"
+            constraintName="fk_ae8x8xakfrcq3y6t6vmk6651j" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="data_table_column" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-259">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_keyword_id" baseTableName="material_keyword"
+            constraintName="fk_aisnkmqjub02jb4tk4mdbb9ei" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="material_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-260">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="collection_resource"
+            constraintName="fk_aix61eelqfx4l7qjy2qqpemgt" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-261">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_keyword_id" baseTableName="culture_keyword"
+            constraintName="fk_aju6sj7d2xvcpadfvc6w57tom" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="culture_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-262">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="tdar_user"
+            constraintName="fk_akohu4sx3uyy8cct296imngbi" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="person" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-263">
+        <addForeignKeyConstraint
+            baseColumnNames="ontologynode_id" baseTableName="ontology_node_synonym"
+            constraintName="fk_attthjso8q59b97p9c5eonmaa" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="ontology_node" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-264">
+        <addForeignKeyConstraint
+            baseColumnNames="ontology_id" baseTableName="ontology_node"
+            constraintName="fk_b1bi7apaoxc7x5w4tftl9xuw3" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="ontology" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-265">
+        <addForeignKeyConstraint
+            baseColumnNames="relationship_id" baseTableName="data_table_column_relationship"
+            constraintName="fk_b3mlqhcs1949tyvik64uhhur1" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="data_table_relationship" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-266">
+        <addForeignKeyConstraint
+            baseColumnNames="executor_id" baseTableName="pos_invoice"
+            constraintName="fk_bb9sdg1ham2rf5jouya8qul99" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-267">
+        <addForeignKeyConstraint
+            baseColumnNames="sensory_data_id" baseTableName="sensory_data_scan"
+            constraintName="fk_bbetp1cmjicvtydwd0hfepab1" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="sensory_data" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-268">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="coverage_date"
+            constraintName="fk_bbg0lhjndknhd72fvv65is11s" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-269">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="audio"
+            constraintName="fk_cfo294m3j382xbsw5flwjdptk" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-270">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="image"
+            constraintName="fk_cl2q2iv49ca5qddr71w5vnf60" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-271">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_investigation_type"
+            constraintName="fk_cp89hl630xbvciy39hd9nbs06" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-272">
+        <addForeignKeyConstraint
+            baseColumnNames="account_id" baseTableName="resource"
+            constraintName="fk_cplwil752tym6yuar9dwoiiaf" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_account" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-273">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_creator"
+            constraintName="fk_cs3q3smniiu6pa9dq4m2newrk" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-274">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="latitude_longitude"
+            constraintName="fk_cwl69mjguj9th6v2vyuocvmjb" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-275">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="source_collection"
+            constraintName="fk_d3jcb2pagjy9fxehtesdhjeb8" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-276">
+        <addForeignKeyConstraint
+            baseColumnNames="geographic_keyword_id" baseTableName="resource_managed_geographic_keyword"
+            constraintName="fk_d5cmulrlh3bx7xg87otry956o" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="geographic_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-277">
+        <addForeignKeyConstraint
+            baseColumnNames="publisher_id" baseTableName="information_resource"
+            constraintName="fk_diry3wfnafeugm3k8fdcy9dka" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="institution" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-278">
+        <addForeignKeyConstraint
+            baseColumnNames="owner_id" baseTableName="pos_invoice"
+            constraintName="fk_dnpwc29c5pyfg7nsgrwlvrycs" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-279">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="coding_sheet"
+            constraintName="fk_dy3l4li1na4pa9cap9qi9gr8b" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-280">
+        <addForeignKeyConstraint
+            baseColumnNames="person_id" baseTableName="bookmarked_resource"
+            constraintName="fk_e4qlicr8gypjo7f9hmbfy2wm1" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-281">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_geographic_keyword"
+            constraintName="fk_ec7uapi66gdk763spc1xqqyrb" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-282">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="information_resource"
+            constraintName="fk_edd1fbvdgl3a0pvhvu7ec6h1" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-283">
+        <addForeignKeyConstraint
+            baseColumnNames="temporal_keyword_id" baseTableName="resource_temporal_keyword"
+            constraintName="fk_eds25f9xt5yg8mhest2vaa70v" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="temporal_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-284">
+        <addForeignKeyConstraint
+            baseColumnNames="provider_institution_id" baseTableName="information_resource"
+            constraintName="fk_eeaq5m1uqp0bf63poute20xtk" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="institution" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-285">
+        <addForeignKeyConstraint
+            baseColumnNames="account_id" baseTableName="pos_coupon"
+            constraintName="fk_eeduvfgcvr1x3yedfays4owg4" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_account" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-286">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_keyword_id" baseTableName="geographic_keyword"
+            constraintName="fk_eiy1rlb59bm73wut0cdsjwl6i" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="geographic_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-287">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_other_keyword"
+            constraintName="fk_er808w3pqxw1yv6lfde3l2458" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-288">
+        <addForeignKeyConstraint
+            baseColumnNames="mappeddatakeycolumn_id" baseTableName="information_resource"
+            constraintName="fk_f3buttko45k47pa7b7ye2yduj" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="data_table_column" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-289">
+        <addForeignKeyConstraint
+            baseColumnNames="default_ontology_id" baseTableName="coding_sheet"
+            constraintName="fk_fhf3iiiqmv9yw0nlf9evee87h" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="ontology" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-290">
+        <addForeignKeyConstraint
+            baseColumnNames="parent_id" baseTableName="category_variable"
+            constraintName="fk_g1kq93p572ipmo1403sfg4v6h" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="category_variable" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-291">
+        <addForeignKeyConstraint
+            baseColumnNames="person_id" baseTableName="resource_revision_log"
+            constraintName="fk_g6vuvanxo5smquovttjdib8lc" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-292">
+        <addForeignKeyConstraint
+            baseColumnNames="account_id" baseTableName="pos_group_members"
+            constraintName="fk_gctmihk7ir6ygqdnyqaodptd0" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-293">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_temporal_keyword"
+            constraintName="fk_gerxnuie0x6iyu73dgxyl6odq" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-294">
+        <addForeignKeyConstraint
+            baseColumnNames="account_id" baseTableName="pos_members"
+            constraintName="fk_gxnf4oai9rdnqlxtdsn9pjlsj" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_account" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-295">
+        <addForeignKeyConstraint
+            baseColumnNames="user_id" baseTableName="user_notification"
+            constraintName="fk_hrv2lmyjlt3ken6hk2f4sg1e" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-296">
+        <addForeignKeyConstraint
+            baseColumnNames="user_id" baseTableName="pos_members"
+            constraintName="fk_hx05eav379m0v3xlgvt59p1yn" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-297">
+        <addForeignKeyConstraint
+            baseColumnNames="geographic_keyword_id" baseTableName="resource_geographic_keyword"
+            constraintName="fk_iev8p8f3rq3rkhk510g6dfllw" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="geographic_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-298">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="project"
+            constraintName="fk_iorxovuhmukn9euwt6t2tecb5" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-299">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_creator_id" baseTableName="institution"
+            constraintName="fk_isapckuelgsd6wk9ohb9la9g7" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="institution" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-300">
+        <addForeignKeyConstraint
+            baseColumnNames="account_id" baseTableName="pos_invoice"
+            constraintName="fk_j0bhw0j0ike3ed1i06nfnbyki" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_account" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-301">
+        <addForeignKeyConstraint
+            baseColumnNames="submitter_id" baseTableName="personal_filestore_ticket"
+            constraintName="fk_j5yh6e1756j2kkqdcc4ssud77" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-302">
+        <addForeignKeyConstraint
+            baseColumnNames="creator_id" baseTableName="resource_creator"
+            constraintName="fk_j9vk81dl3gag3ow7yrvn2102w" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="creator" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-303">
+        <addForeignKeyConstraint
+            baseColumnNames="parent_id" baseTableName="site_type_keyword"
+            constraintName="fk_jgeoj0bgqiexx2vu430ejwgyu" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="site_type_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-304">
+        <addForeignKeyConstraint
+            baseColumnNames="updater_id" baseTableName="resource"
+            constraintName="fk_jrj1jbr6618rdvptc2o7sbqfi" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-305">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="archive"
+            constraintName="fk_k61xnruo4ofh131ye6dq2a9gw" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-306">
+        <addForeignKeyConstraint
+            baseColumnNames="dataset_id" baseTableName="data_table_relationship"
+            constraintName="fk_k8pej78125fd8sgag5x4onca6" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="dataset" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-307">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_collection_id" baseTableName="authorized_user"
+            constraintName="fk_kenihi6tej0comqok8nrqx8be" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="collection" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-308">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_creator_id" baseTableName="person"
+            constraintName="fk_kl9sledf3p2gsrhxdcj8lxfn8" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="person" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-309">
+        <addForeignKeyConstraint
+            baseColumnNames="other_keyword_id" baseTableName="resource_other_keyword"
+            constraintName="fk_kwpk21gf5g559bgvmjudd7iq0" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="other_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-310">
+        <addForeignKeyConstraint
+            baseColumnNames="collection_id" baseTableName="collection_parents"
+            constraintName="fk_l1xaxuq60xv8s39ey8nedpvb2" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="collection" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-311">
+        <addForeignKeyConstraint
+            baseColumnNames="user_id" baseTableName="pos_group_members"
+            constraintName="fk_l3rirlf2xpopbkwgnvd7ibkh7" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_account_group" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-312">
+        <addForeignKeyConstraint
+            baseColumnNames="sensory_data_id" baseTableName="sensory_data_image"
+            constraintName="fk_l4o8gyxxc17q6w3g8ew9ivhlh" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="sensory_data" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-313">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="sensory_data"
+            constraintName="fk_lbjc0ay9accr5sqy9qo43ii5g" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="dataset" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-314">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="video"
+            constraintName="fk_li6yi1ero2tgap180x6eymw3n" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-315">
+        <addForeignKeyConstraint
+            baseColumnNames="model_id" baseTableName="pos_billing_activity"
+            constraintName="fk_lj7r45dkwolii7qovsysjtka4" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_billing_model" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-316">
+        <addForeignKeyConstraint
+            baseColumnNames="activity_id" baseTableName="pos_item"
+            constraintName="fk_lln8ehf9yymb9ytny6kn5wkat" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_billing_activity" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-317">
+        <addForeignKeyConstraint
+            baseColumnNames="coupon_id" baseTableName="pos_invoice"
+            constraintName="fk_lp78j8ojl3nid7ikq2efhu123" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_coupon" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-318">
+        <addForeignKeyConstraint
+            baseColumnNames="category_variable_id" baseTableName="ontology"
+            constraintName="fk_m1chbe8ekbsmd7a1k1kula43l" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="category_variable" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-319">
+        <addForeignKeyConstraint
+            baseColumnNames="investigation_type_id" baseTableName="resource_investigation_type"
+            constraintName="fk_m1mriomvwcsl887516wmwj9xq" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="investigation_type" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-320">
+        <addForeignKeyConstraint
+            baseColumnNames="ontology_node_id" baseTableName="coding_rule"
+            constraintName="fk_meh5v0pysbaqt2wjumcxeb9kr" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="ontology_node" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-321">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_keyword_id" baseTableName="investigation_type"
+            constraintName="fk_mgmr63gcoeq49k683oak3vrie" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="investigation_type" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-322">
+        <addForeignKeyConstraint
+            baseColumnNames="foreign_column_id" baseTableName="data_table_column_relationship"
+            constraintName="fk_n9tm1tl3lb9ddvgvk10uqmqf0" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="data_table_column" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-323">
+        <addForeignKeyConstraint
+            baseColumnNames="account_group_id" baseTableName="pos_account"
+            constraintName="fk_ncleciyks9iy4ympcbqaeetqj" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_account_group" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-324">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="weekly_popular_resource_cache"
+            constraintName="fk_neepi9839dpagmwjo6952q1ap" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-325">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_managed_geographic_keyword"
+            constraintName="fk_nli75ai84xtoy3ld7q1lc8va3" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-326">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_keyword_id" baseTableName="site_name_keyword"
+            constraintName="fk_ok2qi8e5egl3ynlf74nm6kmxt" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="site_name_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-327">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="ontology"
+            constraintName="fk_olb52md06u0go94iii7xvvm8c" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-328">
+        <addForeignKeyConstraint
+            baseColumnNames="copyright_holder_id" baseTableName="information_resource"
+            constraintName="fk_orp8te4rjfyka96hg3gv4tllr" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="creator" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-329">
+        <addForeignKeyConstraint
+            baseColumnNames="categoryvariable_id" baseTableName="category_variable_synonyms"
+            constraintName="fk_oumts3e4myr4dnpx25b5g9fu4" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="category_variable" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-330">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_annotation"
+            constraintName="fk_ovaivejlfxh3tvuywgwqujssa" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-331">
+        <addForeignKeyConstraint
+            baseColumnNames="updater_id" baseTableName="collection"
+            constraintName="fk_ovb4wme14k7v2ii559y26so70" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-332">
+        <addForeignKeyConstraint
+            baseColumnNames="culture_keyword_id" baseTableName="resource_culture_keyword"
+            constraintName="fk_p04h1wrf5uq8y3ijaqougk1gi" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="culture_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-333">
+        <addForeignKeyConstraint
+            baseColumnNames="default_coding_sheet_id" baseTableName="data_table_column"
+            constraintName="fk_p40eqspwy3n24n7enw5wsnts7" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="coding_sheet" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-334">
+        <addForeignKeyConstraint
+            baseColumnNames="material_keyword_id" baseTableName="resource_material_keyword"
+            constraintName="fk_p877daev71jfrwnvvtg8081fi" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="material_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-335">
+        <addForeignKeyConstraint
+            baseColumnNames="modifier_id" baseTableName="pos_account_group"
+            constraintName="fk_pcy3mv8bsq5emr8s9bj5wh5bl" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-336">
+        <addForeignKeyConstraint
+            baseColumnNames="user_id" baseTableName="pos_coupon"
+            constraintName="fk_prdcg6x5cpxxamoryjml69gne" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-337">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="resource_access_statistics"
+            constraintName="fk_pupyqgfh2e087idc8r43pu072" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-338">
+        <addForeignKeyConstraint
+            baseColumnNames="dataset_id" baseTableName="data_table"
+            constraintName="fk_q93v44hohpayiys7q7grovrva" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="dataset" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-339">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="dataset"
+            constraintName="fk_qdxxdvjc4w5paj6uollxkk0xj" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-340">
+        <addForeignKeyConstraint
+            baseColumnNames="parent_id" baseTableName="collection"
+            constraintName="fk_qkf8863axr1y3i643tvwke94s" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="collection" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-341">
+        <addForeignKeyConstraint
+            baseColumnNames="coding_sheet_id" baseTableName="coding_rule"
+            constraintName="fk_qtpm2dq6pgeuyyflhaky62bm5" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="coding_sheet" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-342">
+        <addForeignKeyConstraint
+            baseColumnNames="modifier_id" baseTableName="pos_account"
+            constraintName="fk_quu01mo3rfnnly6ln305fv92" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-343">
+        <addForeignKeyConstraint
+            baseColumnNames="user_id" baseTableName="authorized_user"
+            constraintName="fk_rfkdociip1y0m5mgv9k27k8l7" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-344">
+        <addForeignKeyConstraint
+            baseColumnNames="default_ontology_id" baseTableName="data_table_column"
+            constraintName="fk_rgueig6o7few7xm4sqod3lomf" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="ontology" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-345">
+        <addForeignKeyConstraint
+            baseColumnNames="merge_keyword_id" baseTableName="other_keyword"
+            constraintName="fk_rinxpixwu31m885kxdw0h975l" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="other_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-346">
+        <addForeignKeyConstraint
+            baseColumnNames="id" baseTableName="institution"
+            constraintName="fk_ro8u7w3g9g70i90wpwc1b2jxw" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="creator" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-347">
+        <addForeignKeyConstraint
+            baseColumnNames="information_resource_file_id"
+            baseTableName="information_resource_file_download_statistics"
+            constraintName="fk_s1cvamd4k8h9wecu5go0owsmi" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource_file" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-348">
+        <addForeignKeyConstraint
+            baseColumnNames="institution_id" baseTableName="person"
+            constraintName="fk_s911la3s4muvouvgqnli2km0f" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="institution" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-349">
+        <addForeignKeyConstraint
+            baseColumnNames="owner_id" baseTableName="pos_account_group"
+            constraintName="fk_sgxxfexid6vcd0i3uw6i65bka" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="tdar_user" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-350">
+        <addForeignKeyConstraint
+            baseColumnNames="information_resource_file_id"
+            baseTableName="information_resource_file_version"
+            constraintName="fk_stb4bc5887i4tl98pyhpd21yp" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="information_resource_file" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-351">
+        <addForeignKeyConstraint
+            baseColumnNames="site_name_keyword_id" baseTableName="resource_site_name_keyword"
+            constraintName="fk_t2cnu9ud2wc3b91ysi2tu0dg3" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="site_name_keyword" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-352">
+        <addForeignKeyConstraint
+            baseColumnNames="resource_id" baseTableName="bookmarked_resource"
+            constraintName="fk_tcfe8j8ioonma4q58jorrpwb9" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="resource" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-353">
+        <addForeignKeyConstraint
+            baseColumnNames="invoice_id" baseTableName="pos_item"
+            constraintName="fk_tkwlaxwu3p0s130p1vq5fw5ur" deferrable="false"
+            initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+            referencedColumnNames="id" referencedTableName="pos_invoice" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-354">
+        <createIndex indexName="agg_dwnld_date" tableName="file_download_day_agg"
+            unique="false">
+            <column name="information_resource_file_id" />
+            <column name="date_accessed" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-355">
+        <createIndex indexName="agg_dwnld_year" tableName="file_download_day_agg"
+            unique="false">
+            <column name="information_resource_file_id" />
+            <column name="year" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-356">
+        <createIndex indexName="agg_res_date" tableName="resource_access_day_agg"
+            unique="false">
+            <column name="resource_id" />
+            <column name="date_accessed" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-357">
+        <createIndex indexName="agg_res_year" tableName="resource_access_day_agg"
+            unique="false">
+            <column name="resource_id" />
+            <column name="year" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-358">
+        <createIndex indexName="authorized_user_cid"
+            tableName="authorized_user" unique="false">
+            <column name="id" />
+            <column name="resource_collection_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-359">
+        <createIndex indexName="authorized_user_cid2"
+            tableName="authorized_user" unique="false">
+            <column name="user_id" />
+            <column name="resource_collection_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-360">
+        <createIndex indexName="authorized_user_perm"
+            tableName="authorized_user" unique="false">
+            <column name="resource_collection_id" />
+            <column name="general_permission_int" />
+            <column name="user_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-361">
+        <createIndex indexName="authorized_user_resource_collection_id_idx"
+            tableName="authorized_user" unique="false">
+            <column name="resource_collection_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-362">
+        <createIndex indexName="authorized_user_user_id_idx"
+            tableName="authorized_user" unique="false">
+            <column name="user_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-363">
+        <createIndex indexName="bookmarked_resource_person_id_idx"
+            tableName="bookmarked_resource" unique="false">
+            <column name="person_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-364">
+        <createIndex indexName="bookmarked_resource_resource_id_idx"
+            tableName="bookmarked_resource" unique="false">
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-365">
+        <createIndex indexName="cltkwd_appr" tableName="culture_keyword"
+            unique="false">
+            <column name="approved" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-366">
+        <createIndex indexName="coding_catvar_id" tableName="coding_sheet"
+            unique="false">
+            <column name="category_variable_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-367">
+        <createIndex indexName="coding_rule_coding_sheet_id_idx"
+            tableName="coding_rule" unique="false">
+            <column name="coding_sheet_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-368">
+        <createIndex indexName="coding_rule_ontology_node_id_idx"
+            tableName="coding_rule" unique="false">
+            <column name="ontology_node_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-369">
+        <createIndex indexName="coding_rule_term_index"
+            tableName="coding_rule" unique="false">
+            <column name="term" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-370">
+        <createIndex indexName="coding_sheet_default_ontology_id_idx"
+            tableName="coding_sheet" unique="false">
+            <column name="default_ontology_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-371">
+        <createIndex indexName="collection_owner_id_idx"
+            tableName="collection" unique="false">
+            <column name="owner_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-372">
+        <createIndex indexName="collection_parent_id_idx"
+            tableName="collection" unique="false">
+            <column name="parent_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-373">
+        <createIndex indexName="collection_updater_id_idx"
+            tableName="collection" unique="false">
+            <column name="updater_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-374">
+        <createIndex indexName="coverage_resid" tableName="coverage_date"
+            unique="false">
+            <column name="resource_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-375">
+        <createIndex indexName="creator_sequence" tableName="resource_creator"
+            unique="false">
+            <column name="resource_id" />
+            <column name="sequence_number" />
+            <column name="creator_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-376">
+        <createIndex indexName="creator_view_stats_count_id"
+            tableName="creator_view_statistics" unique="false">
+            <column name="creator_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-377">
+        <createIndex indexName="creatorid" tableName="resource_creator"
+            unique="false">
+            <column name="creator_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-378">
+        <createIndex indexName="culture_keyword_label_lc"
+            tableName="culture_keyword" unique="false">
+            <column name="lower((label)::text)" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-379">
+        <createIndex indexName="data_table_column_data_table_id_idx"
+            tableName="data_table_column" unique="false">
+            <column name="data_table_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-380">
+        <createIndex indexName="data_table_column_default_coding_sheet_id_idx"
+            tableName="data_table_column" unique="false">
+            <column name="default_coding_sheet_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-381">
+        <createIndex indexName="data_table_column_default_ontology_id_idx"
+            tableName="data_table_column" unique="false">
+            <column name="default_ontology_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-382">
+        <createIndex indexName="document_type_index"
+            tableName="document" unique="false">
+            <column name="document_type" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-383">
+        <createIndex indexName="file_download_stats_count_id"
+            tableName="information_resource_file_download_statistics"
+            unique="false">
+            <column name="information_resource_file_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-384">
+        <createIndex indexName="geographic_keyword_label_lc"
+            tableName="geographic_keyword" unique="false">
+            <column name="lower((label)::text)" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-385">
+        <createIndex indexName="idx_created" tableName="resource"
+            unique="false">
+            <column name="date_registered" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-386">
+        <createIndex indexName="infores_projid" tableName="information_resource"
+            unique="false">
+            <column name="project_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-387">
+        <createIndex indexName="infores_provid" tableName="information_resource"
+            unique="false">
+            <column name="provider_institution_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-388">
+        <createIndex indexName="information_resource_file_ir"
+            tableName="information_resource_file" unique="false">
+            <column name="information_resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-389">
+        <createIndex indexName="institution_name_lc"
+            tableName="institution" unique="false">
+            <column name="lower((name)::text)" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-390">
+        <createIndex indexName="ires_copyright" tableName="information_resource"
+            unique="false">
+            <column name="copyright_holder_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-391">
+        <createIndex indexName="ires_publisher" tableName="information_resource"
+            unique="false">
+            <column name="publisher_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-392">
+        <createIndex indexName="mgd_geogr_res"
+            tableName="resource_managed_geographic_keyword" unique="false">
+            <column name="geographic_keyword_id" />
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-393">
+        <createIndex indexName="ontology_catvar_id"
+            tableName="ontology" unique="false">
+            <column name="category_variable_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-394">
+        <createIndex indexName="ontology_node_index"
+            tableName="ontology_node" unique="false">
+            <column name="index" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-395">
+        <createIndex indexName="ontology_node_interval_end_index"
+            tableName="ontology_node" unique="false">
+            <column name="interval_end" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-396">
+        <createIndex indexName="ontology_node_interval_start_index"
+            tableName="ontology_node" unique="false">
+            <column name="interval_start" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-397">
+        <createIndex indexName="other_keyword_label_lc"
+            tableName="other_keyword" unique="false">
+            <column name="lower((label)::text)" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-398">
+        <createIndex indexName="person_instid" tableName="person"
+            unique="false">
+            <column name="institution_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-399">
+        <createIndex indexName="person_lc" tableName="person"
+            unique="false">
+            <column name="lower((first_name)::text)" />
+            <column name="lower((last_name)::text)" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-400">
+        <createIndex indexName="rck_culture_keyword_id"
+            tableName="resource_culture_keyword" unique="false">
+            <column name="culture_keyword_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-401">
+        <createIndex indexName="related_comparative_collection_resource_id_idx"
+            tableName="related_comparative_collection" unique="false">
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-402">
+        <createIndex indexName="res_submitterid" tableName="resource"
+            unique="false">
+            <column name="submitter_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-403">
+        <createIndex indexName="res_updaterid" tableName="resource"
+            unique="false">
+            <column name="updater_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-404">
+        <createIndex indexName="res_uploaderid" tableName="resource"
+            unique="false">
+            <column name="uploader_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-405">
+        <createIndex indexName="rescol_cid" tableName="collection_resource"
+            unique="false">
+            <column name="collection_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-406">
+        <createIndex indexName="rescol_rid" tableName="collection_resource"
+            unique="false">
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-407">
+        <createIndex indexName="rescreator_resid" tableName="resource_creator"
+            unique="false">
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-408">
+        <createIndex indexName="resid_geogkwdid" tableName="resource_geographic_keyword"
+            unique="false">
+            <column name="geographic_keyword_id" />
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-409">
+        <createIndex indexName="resid_matkwdid" tableName="resource_material_keyword"
+            unique="false">
+            <column name="material_keyword_id" />
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-410">
+        <createIndex indexName="resid_noteid" tableName="resource_note"
+            unique="false">
+            <column name="resource_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-411">
+        <createIndex indexName="resource_access_stats_count_id"
+            tableName="resource_access_statistics" unique="false">
+            <column name="id" />
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-412">
+        <createIndex indexName="resource_access_stats_id"
+            tableName="resource_access_statistics" unique="false">
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-413">
+        <createIndex indexName="resource_active" tableName="resource"
+            unique="false">
+            <column name="id" />
+            <column name="submitter_id" />
+            <column name="status" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-414">
+        <createIndex indexName="resource_active_draft"
+            tableName="resource" unique="false">
+            <column name="submitter_id" />
+            <column name="status" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-415">
+        <createIndex indexName="resource_collection_view_stats_count_id"
+            tableName="resource_collection_view_statistics" unique="false">
+            <column name="resource_collection_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-416">
+        <createIndex indexName="resource_id_keyid"
+            tableName="resource_annotation" unique="false">
+            <column name="resource_id" />
+            <column name="resourceannotationkey_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-417">
+        <createIndex indexName="resource_latlong" tableName="latitude_longitude"
+            unique="false">
+            <column name="resource_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-418">
+        <createIndex indexName="resource_status" tableName="resource"
+            unique="false">
+            <column name="id" />
+            <column name="status" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-419">
+        <createIndex indexName="resource_status2" tableName="resource"
+            unique="false">
+            <column name="status" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-420">
+        <createIndex indexName="resource_title_index"
+            tableName="resource" unique="false">
+            <column name="title" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-421">
+        <createIndex indexName="resource_type_index"
+            tableName="resource" unique="false">
+            <column name="resource_type" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-422">
+        <createIndex indexName="rgk_geographic_keyword_id"
+            tableName="resource_geographic_keyword" unique="false">
+            <column name="geographic_keyword_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-423">
+        <createIndex indexName="rit_investigation_type_id"
+            tableName="resource_investigation_type" unique="false">
+            <column name="investigation_type_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-424">
+        <createIndex indexName="rmk_material_keyword_id"
+            tableName="resource_material_keyword" unique="false">
+            <column name="material_keyword_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-425">
+        <createIndex indexName="site_name_keyword_label_lc"
+            tableName="site_name_keyword" unique="false">
+            <column name="lower((label)::text)" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-426">
+        <createIndex indexName="site_type_keyword_label_lc"
+            tableName="site_type_keyword" unique="false">
+            <column name="lower((label)::text)" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-427">
+        <createIndex indexName="sitetype_appr" tableName="site_type_keyword"
+            unique="false">
+            <column name="approved" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-428">
+        <createIndex indexName="source_collection_resource_id_idx"
+            tableName="source_collection" unique="false">
+            <column name="resource_id" />
+        </createIndex>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-429">
+        <createIndex indexName="temporal_label_lc"
+            tableName="temporal_keyword" unique="false">
+            <column name="lower((label)::text)" />
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>
