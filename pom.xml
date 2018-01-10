@@ -871,7 +871,7 @@
             <id>clover</id>
             <activation>
                 <property>
-                    <name>!skipCloverSetup</name>
+                    <name>skipCloverSetup</name>
                 </property>
             </activation>
             <properties>
