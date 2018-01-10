@@ -1,8 +1,8 @@
 <div id="uploadWidget" data-config="#${uploadConfigId}">
 
     <template id="fpart-template">
-        <tr v-bind:id="this.rowId">
-            <td>{{this.index}}</td>
+        <tr v-bind:id="rowId">
+            <td>{{index}}</td>
                     <td >
                         <label class="control-label">Filename</label>
                         <div class="controls controls-row">
@@ -86,7 +86,8 @@ file:                    {{file}}
           </tr>
       </thead>
       <tbody v-if="files.length > 0" v-for="(file,index) in files">
-      {{file}} {{index}}
+<tr><td>      {{file}} {{index}}</td></tr>
+
     <tr class="template-download fade existing-file in"  is="fpart" :index="index" :file="file"></tr>
       </tbody>
   </table>

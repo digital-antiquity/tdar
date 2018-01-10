@@ -25,10 +25,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         Vue.component('fpart', {
             template: "#fpart-template",
             props: ["file","index"],
-            data : {
+            data : function() {
+                return {
                     previousDeleteState : '',
-                    xhr:undefined,
+                    xhr : undefined,
                     previousReplaceState: ''
+                }
             },
             computed: {
                 rowId: function() {
@@ -268,6 +270,15 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                  });
              }
          },
+         fileUploadSubmit: function(e,data) {
+//             var dat = data.formData;
+//             console.log(dat);
+//             data.formData = {
+//                     uploadFile: dat.uploadFile,
+//                     ticketId: dat.ticketId,
+//                     ticketRequested: dat.ticketRequested
+//             }
+         },
          fileUploadAdd: function (e, data) {
              // add a file
            console.log('fileUploadAdd:',e, data);
@@ -281,7 +292,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
            // data.originalFiles = validFiles;
            console.log(validFiles);
 
-           var jqXHR = $('#fileupload').fileupload('send', {files: validFiles, ticketId: this.ticketId});
+           var extra = {uploadFile: validFiles};
+           var jqXHR = $('#fileupload').fileupload('send', extra);
 
            validFiles.forEach(function(file){
                var f = {
@@ -336,6 +348,17 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
          var up =  $('#fileupload').fileupload({
               url: this.url,
               dataType: 'json',
+              paramName: "uploadFile",
+              formData: function(form) {
+                  var data = [];
+                  if (this.ticketId == undefined || this.ticketId == -1) {
+                      data.push({name:"ticketRequested" , value:true});
+                  } else {
+                      data.push({name:"ticketId" , value:this.ticketId});
+                  }
+                  console.log(data);
+                  return data;
+              },
               progressall: function (e, data) {
                   var progress = parseInt(data.loaded / data.total * 100, 10);
                   _setProgress(progress);
@@ -346,12 +369,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
 
       up.bind('fileuploadadd', _app.fileUploadAdd)
           .bind('fileuploaddone', _app.fileUploadAddDone)
+          .bind('fileuploadsubmit', _app.fileUploadSubmit)
           .bind('fileuploadprogress', _app.updateFileProgress);
           // .bind('fileuploadfail', function (e, data) {console.log('fileUploadFail:',e);})
           // .bind('fileuploadstart', function (e) {console.log('fileUploadStart:',e);})
           // .bind('fileuploadstop', function (e) {console.log('fileUploadStop:',e);})
           // .bind('fileuploadchange', function (e, data) {console.log('fileUploadChange:',e);});
-          // .bind('fileuploadsubmit', function (e, data) {console.log('fileUploadSubmit:',e);})
           // .bind('fileuploadsend', function (e, data) {console.log('fileUploadSend:',e);})
           // .bind('fileuploadalways', function (e, data) {console.log('fileUploadAlways:',e);})
           // .bind('fileuploaddrop', function (e, data) {/* ... */})
