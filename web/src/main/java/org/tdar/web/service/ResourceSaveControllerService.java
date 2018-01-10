@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Sequenceable;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ErrorTransferObject;
@@ -57,20 +55,20 @@ public interface ResourceSaveControllerService {
     /**
      *     public void loadEffectiveResourceCollectionsForSave() {
         getLogger().debug("loadEffective...");
-        for (SharedCollection rc : getResource().getSharedCollections()) {
+        for (ResourceCollection rc : getResource().getResourceCollections()) {
             if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
-                getRetainedSharedCollections().add(rc);
+                getRetainedResourceCollections().add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }
         }
     }
     
      * @param auth
-     * @param retainedSharedCollections
+     * @param retainedResourceCollections
      * @param retainedListCollections
      */
-    void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections,
-            List<ListCollection> retainedListCollections);
+    void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<ResourceCollection> retainedSharedCollections,
+            List<ResourceCollection> retainedListCollections);
 
     void saveResourceProviderInformation(InformationResource resource, String resourceProviderInstitutionName,
             ResourceCreatorProxy copyrightHolderProxies, String publisherName);

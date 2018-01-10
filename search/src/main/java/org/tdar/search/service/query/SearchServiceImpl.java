@@ -160,12 +160,16 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         Map<Class, Map<Long, Persistable>> idLookupMap = new HashMap<>();
         for (Class<T> cls : lookupMap.keySet()) {
             List<T> hydrated = new ArrayList<>();
-            if (DeHydratable.class.isAssignableFrom(cls)) {
-                hydrated = genericService.populateSparseObjectsById(new ArrayList<>(lookupMap.get(cls)), cls);
-            } else {
-                hydrated = genericService.loadFromSparseEntities(lookupMap.get(cls), cls);
+            Set<T> c = lookupMap.get(cls);
+            if (CollectionUtils.isEmpty(c)) {
+                continue;
             }
-            logger.trace("toLookup: {} {} result: {}", cls, lookupMap.get(cls), hydrated);
+            if (DeHydratable.class.isAssignableFrom(cls)) {
+                hydrated = genericService.populateSparseObjectsById(new ArrayList<>(c), cls);
+            } else {
+                hydrated = genericService.loadFromSparseEntities(c, cls);
+            }
+            logger.debug("toLookup: {} {} result: {}", cls, c, hydrated);
 
             idLookupMap.put(cls, (Map<Long, Persistable>) PersistableUtils.createIdMap(hydrated));
         }

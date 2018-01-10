@@ -24,7 +24,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.UserRightsProxy;
@@ -90,7 +90,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         setupOwnerField();
         List<UserRightsProxy> proxies = new ArrayList<>();
         for (TdarUser user : authorizedMembers) {
-            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, GeneralPermissions.EDIT_ACCOUNT)));
+            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, Permissions.EDIT_ACCOUNT)));
         }
         //saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser)
         accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), proxies );

@@ -19,10 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.EntityService;
@@ -61,8 +61,8 @@ public class UserPermissionsITCase extends AbstractControllerITCase  implements 
         final Long pid = p.getId();
         // adminUser creates a a new image and assigns p as an authorized user
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
-        users.add(new AuthorizedUser(getAdminUser(), p, GeneralPermissions.MODIFY_RECORD));
-        SharedCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
+        users.add(new AuthorizedUser(getAdminUser(), p, Permissions.MODIFY_RECORD));
+        ResourceCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
         evictCache();
         ImageController imageController = generateNewInitializedController(ImageController.class);
         imageController.prepare();
@@ -101,16 +101,16 @@ public class UserPermissionsITCase extends AbstractControllerITCase  implements 
                 }
                 evictCache();
                 Image img = genericService.find(Image.class, imgId);
-                assertEquals("we should have cleared the collections list should not be empty now", 1, img.getSharedResourceCollections().size());
+                assertEquals("we should have cleared the collections list should not be empty now", 1, img.getManagedResourceCollections().size());
                 assertNotEquals("submitter and p should not be the same", img.getSubmitter().getId(), pid);
 
-                logger.debug("resource collections: {}", img.getSharedCollections());
+                logger.debug("resource collections: {}", img.getManagedResourceCollections());
 
                 List<AuthorizedUser> authUsers = resourceCollectionService.getAuthorizedUsersForResource(img, p_);
                 assertEquals("expecting authuser list should be empty now", 0, authUsers.size());
                 img.markUpdated(getAdminUser());
                 genericService.saveOrUpdate(img);
-                img.getSharedCollections().clear();
+                img.getManagedResourceCollections().clear();
                 genericService.saveOrUpdate(img);
                 img = null;
                 evictCache();
@@ -153,8 +153,8 @@ public class UserPermissionsITCase extends AbstractControllerITCase  implements 
         final Long pid = p.getId();
         // adminUser creates a a new image and assigns p as an authorized user
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
-        users.add(new AuthorizedUser(getAdminUser(), p, GeneralPermissions.MODIFY_RECORD));
-        SharedCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
+        users.add(new AuthorizedUser(getAdminUser(), p, Permissions.MODIFY_RECORD));
+        ResourceCollection coll = generateResourceCollection("test", "test", true, users, getUser(), null, null);
         evictCache();
         ImageController imageController = generateNewInitializedController(ImageController.class);
         imageController.prepare();
@@ -193,16 +193,16 @@ public class UserPermissionsITCase extends AbstractControllerITCase  implements 
                 }
                 evictCache();
                 Image img = genericService.find(Image.class, imgId);
-                assertEquals("we should have cleared the collections list should not be empty now", 1, img.getSharedResourceCollections().size());
+                assertEquals("we should have cleared the collections list should not be empty now", 1, img.getManagedResourceCollections().size());
                 assertNotEquals("submitter and p should not be the same", img.getSubmitter().getId(), pid);
 
-                logger.debug("resource collections: {}", img.getSharedCollections());
+                logger.debug("resource collections: {}", img.getManagedResourceCollections());
 
                 List<AuthorizedUser> authUsers = resourceCollectionService.getAuthorizedUsersForResource(img, p_);
                 assertEquals("expecting authuser list should be empty now", 0, authUsers.size());
                 img.markUpdated(getAdminUser());
                 genericService.saveOrUpdate(img);
-                img.getSharedCollections().clear();
+                img.getManagedResourceCollections().clear();
                 genericService.saveOrUpdate(img);
                 img = null;
                 evictCache();

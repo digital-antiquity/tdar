@@ -168,10 +168,10 @@ public class GenericServiceImpl implements GenericService  {
         }
         // get a unique set of Ids
         Map<Long, P> ids = PersistableUtils.createIdMap(sparseObjects);
-//        logger.info("{}", ids);
+        Set<Long> keySet = ids.keySet();
         // populate and put into a unique map
         @SuppressWarnings("unchecked")
-        Map<Long, P> skeletons = PersistableUtils.createIdMap((List<P>) genericDao.populateSparseObjectsById(ids.keySet(), cls));
+        Map<Long, P> skeletons = PersistableUtils.createIdMap((List<P>) genericDao.populateSparseObjectsById(keySet, cls));
 
         List<P> toReturn = new ArrayList<P>();
 

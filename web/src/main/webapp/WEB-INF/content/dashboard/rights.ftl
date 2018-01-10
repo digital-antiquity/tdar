@@ -44,7 +44,7 @@
             <thead>
             <tr>
                 <th>Collection (${allResourceCollections?size})</th>
-                <th>Resources</th>
+                <th colspan="2">Resources (Managed/Unmanaged)</th>
                 <th>Users</th>
                 <th>Action</th>
             </tr>
@@ -55,7 +55,8 @@
                 <td><a href="${collection.detailUrl}">${collection.name!'no name'}</a><br/>
                 <@common.truncate collection.description!'' 250 />
                     </td>
-                   <td>${(collection.resources![])?size}</td>
+                   <td>${(collection.managedResources![])?size}</td>
+                   <td>${(collection.unmanagedResources![])?size}</td>
                    <td>${(collection.authorizedUsers![])?size}</td>
                 <td>
                     <div class="btn-group inline">
@@ -67,34 +68,6 @@
             </#list>
             </tbody>
         </table>
-<#-- 
-        <table class="table" id="allResources">
-            <thead>
-                <tr>
-                <th>Name</th>
-                <th># of users</th>
-                <th>action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <#list internalCollections![] as collection>
-                <#if (collection.resources?size > 0 )>
-                    <#list collection.resources as resource>
-                        <tr>
-                        <td><a href="${resource.detailUrl}">${resource.title}</a></td>
-                        <td>${collection.authorizedUsers?size}</td>
-                        <td>
-                            <div class="btn-group">
-                              <a class="btn btn-mini" href="/${resource.urlNamespace}/${resource.id?c}/edit">Edit</a>
-                            </div>
-                        </td>
-                        </tr>
-                    </#list>
-                </#if>
-            </#list>
-            </tbody>
-        </table>
--->
     </#macro>
 
 

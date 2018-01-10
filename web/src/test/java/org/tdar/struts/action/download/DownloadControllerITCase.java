@@ -154,7 +154,7 @@ public class DownloadControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testDownloadController() throws IOException, InstantiationException, IllegalAccessException {
 
-        Document doc = generateDocumentWithFileAndUseDefaultUser();
+        Document doc = createAndSaveDocumentWithFileAndUseDefaultUser();
         genericService.saveOrUpdate(doc);
         final Long id = doc.getId();
         logger.debug("{}", doc.getFirstInformationResourceFile().getLatestPDF());
@@ -177,7 +177,7 @@ public class DownloadControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testDownloadControllerWithDeleted() throws IOException, InstantiationException, IllegalAccessException {
 
-        Document doc = generateDocumentWithFileAndUseDefaultUser();
+        Document doc = createAndSaveDocumentWithFileAndUseDefaultUser();
         doc.getFirstInformationResourceFile().setDeleted(true);
         genericService.saveOrUpdate(doc);
         final Long id = doc.getId();

@@ -21,8 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -81,7 +80,7 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
     public LuceneSearchResultHandler<Resource> buildCollectionResourceSearch(LuceneSearchResultHandler<Resource> result, TextProvider provider)
             throws SearchException, IOException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
-        qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
+        qb.append(new FieldQueryPart<CollectionResourceSection>(QueryFieldNames.COLLECTION_TYPE, CollectionResourceSection.MANAGED));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.HIDDEN, Boolean.FALSE));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         searchService.handleSearch(qb, result, provider);
@@ -124,17 +123,13 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         List<Long> ids = new ArrayList<>();
         ids.add(indexable.getId());
         QueryPartGroup idGroup = new QueryPartGroup(Operator.OR);
-        if (indexable instanceof ListCollection) {
-            ListCollection listCollection = (ListCollection) indexable;
-//            if (PersistableUtils.isNotNullOrTransient(listCollection.getIncludedCollection())) {
-//                ids.add(listCollection.getIncludedCollection().getId());
-////                idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, Operator.OR, ids));
-//            }
-            idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, Operator.OR, ids));
-            qb.append(idGroup);
-        } else {
+//        if (indexable instanceof ListCollection) {
+//            ListCollection listCollection = (ListCollection) indexable;
+//            idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, Operator.OR, ids));
+//            qb.append(idGroup);
+//        } else {
             qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, indexable.getId()));
-        }
+//        }
         runContainedInQuery(term, user, result, provider, qb);
         return result;
     }
@@ -159,13 +154,13 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
             q.append(new GeneralSearchResourceQueryPart(look.getGeneralQuery()));
         }
 
-        String colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS;
+//        String colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS;
         String shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
         if (look.getIncludeParent() == Boolean.FALSE || look.getIncludeParent() == null) {
-            colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS;
+//            colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS;
             shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
         }
-        setupCollectionLookup(look, q, colQueryField, look.getCollectionIds());
+//        setupCollectionLookup(look, q, colQueryField, look.getCollectionIds());
         setupCollectionLookup(look, q, shareQueryField, look.getShareIds());
 
         ReservedSearchParameters reservedSearchParameters = look.getReservedSearchParameters();

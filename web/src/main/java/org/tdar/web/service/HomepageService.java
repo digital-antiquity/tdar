@@ -3,7 +3,6 @@ package org.tdar.web.service;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.cache.HomepageResourceCountCache;

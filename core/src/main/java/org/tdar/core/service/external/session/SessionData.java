@@ -1,10 +1,7 @@
 package org.tdar.core.service.external.session;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.utils.PersistableUtils;
 

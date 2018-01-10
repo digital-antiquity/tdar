@@ -27,7 +27,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.UserAffiliation;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
@@ -1025,7 +1025,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         }
     }
 
-    public void createUserWithPermissions(int i, Person user, GeneralPermissions viewAll) {
+    public void createUserWithPermissions(int i, Person user, Permissions viewAll) {
         logger.info("setiting user [{}] to {} {}", i, user, viewAll);
         createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), user.getId());
         createInput("text", String.format(FMT_AUTHUSERS_NAME, i), user.getFirstName() + " " + user.getLastName());

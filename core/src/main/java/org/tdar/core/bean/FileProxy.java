@@ -26,8 +26,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 /**
  * $Id$
  * 

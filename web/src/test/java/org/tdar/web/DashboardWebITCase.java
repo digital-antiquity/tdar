@@ -3,7 +3,7 @@ package org.tdar.web;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.web.collection.CollectionWebITCase;
 
@@ -23,8 +23,8 @@ public class DashboardWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         clickLinkOnPage(CollectionWebITCase.PERMISSIONS);
         setInput("proxies[0].id", "121");
         setInput("proxies[1].id", "5349");
-        setInput("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
-        setInput("proxies[1].permission", GeneralPermissions.VIEW_ALL.name());
+        setInput("proxies[0].permission", Permissions.MODIFY_RECORD.name());
+        setInput("proxies[1].permission", Permissions.VIEW_ALL.name());
         setInput("proxies[0].displayName", MICHELLE_ELLIOT);
         setInput("proxies[1].displayName", "Joshua Watts");
         submitForm();

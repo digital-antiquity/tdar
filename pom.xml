@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>16.1.0-PREHISTORIC-SNAPSHOT</version>
+    <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
@@ -634,6 +634,12 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.knowm.xchart</groupId>
+            <artifactId>xchart</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

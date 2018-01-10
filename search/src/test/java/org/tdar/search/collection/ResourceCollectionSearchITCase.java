@@ -11,12 +11,10 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchIndexException;
@@ -32,7 +30,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
     public void init() {
         boolean first = true;
         for (String name : collectionNames) {
-            SharedCollection collection = new SharedCollection(name, name, getAdminUser());
+            ResourceCollection collection = new ResourceCollection(name, name,  getAdminUser());
             collection.setDescription(name);
             collection.markUpdated(collection.getOwner());
             genericService.saveOrUpdate(collection);
@@ -40,14 +38,14 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
                 collection.setOwner(getAdminUser());
                 collection.setHidden(true);
                 collection.markUpdated(collection.getOwner());
-                collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+                collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.ADMINISTER_COLLECTION));
                 genericService.saveOrUpdate(collection.getAuthorizedUsers());
                 genericService.saveOrUpdate(collection);
             }
             first = false;
             logger.debug("{} {} {}", collection.getId(), collection.getTitle(), collection.isHidden());
         }
-        SharedCollection find = genericService.find(SharedCollection.class, 1003L);
+        ResourceCollection find = genericService.find(ResourceCollection.class, 1003L);
         find.setHidden(false);
         genericService.saveOrUpdate(find);
         reindex();
@@ -81,9 +79,9 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
     @Test
     @Rollback
     public void testAddPermission() throws SearchException, SearchIndexException, IOException {
-        SharedCollection collection = createAndSaveNewResourceCollection("testRemove");
+        ResourceCollection collection = createAndSaveNewResourceCollection("testRemove");
         collection.getAuthorizedUsers().clear();
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), GeneralPermissions.REMOVE_FROM_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), Permissions.REMOVE_FROM_COLLECTION));
         genericService.saveOrUpdate(collection);
         searchIndexService.index(collection);
         // create collection
@@ -91,20 +89,20 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         // search for collection
         // remove permission
         // search for collection
-        assertCollectionMatch(collection, GeneralPermissions.ADD_TO_SHARE, true);
-        assertCollectionMatch(collection, GeneralPermissions.REMOVE_FROM_SHARE, true);
-        assertCollectionMatch(collection, GeneralPermissions.ADMINISTER_SHARE, false);
+        assertCollectionMatch(collection, Permissions.ADD_TO_COLLECTION, true);
+        assertCollectionMatch(collection, Permissions.REMOVE_FROM_COLLECTION, true);
+        assertCollectionMatch(collection, Permissions.ADMINISTER_COLLECTION, false);
         collection.getAuthorizedUsers().forEach(au -> {
-            au.setGeneralPermission(GeneralPermissions.MODIFY_METADATA);
+            au.setGeneralPermission(Permissions.MODIFY_METADATA);
         });
         genericService.saveOrUpdate(collection);
         searchIndexService.index(collection);
-        assertCollectionMatch(collection, GeneralPermissions.ADD_TO_SHARE, false);
-        assertCollectionMatch(collection, GeneralPermissions.REMOVE_FROM_SHARE, false);
-        assertCollectionMatch(collection, GeneralPermissions.ADMINISTER_SHARE, false);
+        assertCollectionMatch(collection, Permissions.ADD_TO_COLLECTION, false);
+        assertCollectionMatch(collection, Permissions.REMOVE_FROM_COLLECTION, false);
+        assertCollectionMatch(collection, Permissions.ADMINISTER_COLLECTION, false);
     }
 
-    private void assertCollectionMatch(SharedCollection collection, GeneralPermissions addToShare, boolean bool)
+    private void assertCollectionMatch(ResourceCollection collection, Permissions addToShare, boolean bool)
             throws SearchException, SearchIndexException, IOException {
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         logger.debug(" {} ~~ {} {}", bool, collection, addToShare);
@@ -152,10 +150,9 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         seen = false;
         for (ResourceCollection c : result.getResults()) {
             logger.debug("{} {}", c.getId(), c);
-            if (c.getId().equals(1002L) && c instanceof ListCollection) {
-                ListCollection shared = (ListCollection) c;
-                logger.debug("parent: {}", shared.getParent());
-                logger.debug("parent: {}", shared.isTopLevel());
+            if (c.getId().equals(1002L)) {
+                logger.debug("parent: {}", c.getParent());
+                logger.debug("parent: {}", c.isTopLevel());
                 seen = true;
             }
         }

@@ -1,7 +1,5 @@
 package org.tdar.web;
 
-import java.io.IOException;
-
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.web.resource.EditWebITCase;

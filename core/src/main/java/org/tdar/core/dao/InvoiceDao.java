@@ -18,7 +18,7 @@ import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.base.HibernateBase;
@@ -280,7 +280,7 @@ public class InvoiceDao extends HibernateBase<Invoice>{
             List<Resource> findAll = findAll(Resource.class, coupon.getResourceIds());
             for (Resource res : findAll) {
                 res = markWritableOnExistingSession(res);
-                AuthorizedUser e = new AuthorizedUser(invoice.getOwner(), invoice.getOwner(), GeneralPermissions.MODIFY_RECORD);
+                AuthorizedUser e = new AuthorizedUser(invoice.getOwner(), invoice.getOwner(), Permissions.MODIFY_RECORD);
                 e = markWritableOnExistingSession(e);
                 res.getAuthorizedUsers().add(e);
                 res.markUpdated(invoice.getOwner());

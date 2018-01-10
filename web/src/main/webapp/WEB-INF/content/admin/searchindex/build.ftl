@@ -47,19 +47,19 @@
         }
 
         function _checkStatus(data) {
-            if (data.percentDone == -1) {
+            if (data.percentComplete == -1) {
                 $("#idxBtn").removeAttr('disabled');
-            } else if (data.percentDone != 100) {
+            } else if (data.percentComplete != 100) {
                 var timeString = (new Date()).toLocaleTimeString();
-                updateProgressBar(data.percentDone);
-                document.title = "(" + data.percentDone + "%) Build ${siteAcronym} Index";
+                updateProgressBar(data.percentComplete);
+                document.title = "(" + data.percentComplete + "%) Build ${siteAcronym} Index";
                 if (data.errorHtml) {
                     $('#errors').show();
                     $('#errors').html(data.errorHtml)
                 }
-                if ($buildStatus.text() != data.phase) {
+                if ($buildStatus.text() != data.message && data.message != undefined && data.message != '') {
                     $buildLog.prepend("<br>[" + timeString + "] " + $buildStatus.text().replace("Current Status: ", ""));
-                    $buildStatus.empty().append(data.phase);
+                    $buildStatus.empty().append(data.message);
                 }
             } else {
                 updateProgressBar(100);
@@ -67,10 +67,9 @@
                 $buildStatus.empty().append("<span id='spanDone'>Done.</span>");
                 $("#idxBtn").removeAttr('disabled');
             }
-            setTimeout(updateProgress, 200);
+            setTimeout(updateProgress, 1000);
         }        
         function updateProgress() {
-        console.log("updateProgress");
             var url = "<@s.url value="/admin/searchindex/checkstatus"/>?userId=${authenticatedUser.id?c}&";
             $.post(url, function (data) {
                 _checkStatus(data);

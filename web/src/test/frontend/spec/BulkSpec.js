@@ -33,7 +33,7 @@ describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
                 {
                     percentDone: 45,
                     errors: [],
-                    phase: "testing phase"
+                    message: "testing phase"
                 })});
 
         expect($j("#buildStatus")).toHaveText("testing phase");
@@ -50,7 +50,7 @@ describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
                 {
                     percentDone: 100,
                     errors: [],
-                    phase: "should be done now"
+                    message: "should be done now"
                 })});
 
         expect($j("#buildStatus")).toHaveText("Upload complete.");
@@ -68,7 +68,7 @@ describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
                 {
                     percentDone: 88,
                     errors: ['yikes'],
-                    phase: "choking"
+                    message: "choking"
                 })});
 
         expect($j("#unspecifiedError")).toBeVisible();

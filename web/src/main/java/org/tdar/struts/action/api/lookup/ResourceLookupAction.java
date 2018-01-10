@@ -17,10 +17,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.exception.SearchException;
@@ -47,6 +45,8 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     private static final long serialVersionUID = 1328807454084572934L;
 
     public static final String SELECTED_RESULTS = "selectedResults";
+    public static final String MANAGED_RESULTS 	= "managedResourceResults";
+    public static final String UNMANAGED_RESULTS = "unmanagedResourceResults";
 
     private Long projectId;
     private List<Long> collectionId;
@@ -54,7 +54,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     private String query;
     private Long sortCategoryId;
     private boolean includeCompleteRecord = false;
-    private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
+    private Permissions permission = Permissions.VIEW_ALL;
 
     private boolean parentCollectionsIncluded = true;
 
@@ -83,12 +83,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         if (CollectionUtils.isNotEmpty(collectionId)) {
             for (Long id : collectionId) {
                 ResourceCollection rc = getGenericService().find(ResourceCollection.class, id);
-                if (rc instanceof SharedCollection) {
-                    look.getShareIds().add(id);
-                } 
-                if (rc instanceof ListCollection) {
-                    look.getCollectionIds().add(id);                    
-                }
+                look.getCollectionIds().add(id);                    
             }
         }
         look.setCategoryId(sortCategoryId);
@@ -113,15 +108,28 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             ResourceCollection collectionContainer = getGenericService().find(ResourceCollection.class, getSelectResourcesFromCollectionid());
             if (collectionContainer != null) {
                 Set<Long> resourceIds = new HashSet<Long>();
+                Set<Long> managedResourceIds = new HashSet<Long>();
+                Set<Long> unmanagedResourceIds = new HashSet<Long>();
                 for (Indexable result_ : getResults()) {
                     Resource resource = (Resource) result_;
+                    
+                    //This endpoint is used to display results in a collection for the datatable.
+                    //Should this include all resources including the ones in draft? 
                     if (resource != null && resource.isViewable()) {
-                        if (resource.getSharedCollections().contains(collectionContainer) || resource.getUnmanagedResourceCollections().contains(collectionContainer)) {
-                            resourceIds.add(resource.getId());
+                        if(resource.getManagedResourceCollections().contains(collectionContainer)){
+                        	managedResourceIds.add(resource.getId()); 
+                        	resourceIds.add(resource.getId());
+                        }
+                        
+                        if(resource.getUnmanagedResourceCollections().contains(collectionContainer)){
+                        	unmanagedResourceIds.add(resource.getId());
+                        	 resourceIds.add(resource.getId());
                         }
                     }
                 }
                 getResult().put(SELECTED_RESULTS, resourceIds);
+                getResult().put(MANAGED_RESULTS, managedResourceIds);
+                getResult().put(UNMANAGED_RESULTS, unmanagedResourceIds);
             }
         }
 
@@ -165,11 +173,11 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         this.includeCompleteRecord = includeCompleteRecord;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 

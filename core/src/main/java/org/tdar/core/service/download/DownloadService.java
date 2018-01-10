@@ -2,7 +2,6 @@ package org.tdar.core.service.download;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;

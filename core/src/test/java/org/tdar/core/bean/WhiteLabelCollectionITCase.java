@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.GenericService;
@@ -44,7 +44,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     }
 
     private Long setup() {
-        ListCollection rc = new ListCollection();
+        ResourceCollection rc = new ResourceCollection();
         rc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false,false));
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
@@ -71,9 +71,9 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     public void testLoad() {
         Long id = setup();
 
-        List<ListCollection> rcs = new ArrayList<>();
+        List<ResourceCollection> rcs = new ArrayList<>();
         // if configured correctly, hibernate should know to construct sql that includes both ResourceCollection & WhiteLabelCollection objects.
-        for (ListCollection rc : genericService.findAll(ListCollection.class)) {
+        for (ResourceCollection rc : genericService.findAll(ResourceCollection.class)) {
             if (rc != null && rc.getProperties() != null && rc.getProperties().getWhitelabel()) {
                 if (id.equals(rc.getId())) {
                     rcs.add(rc);
@@ -90,7 +90,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         // fixme: stop being so lazy and just write a createWhiteLabelCollection() method.
         testSave();
 
-        ListCollection wlc = genericService.findAll(ListCollection.class).iterator().next();
+        ResourceCollection wlc = genericService.findAll(ResourceCollection.class).iterator().next();
 
         Document document1 = createAndSaveNewResource(Document.class);
         Document document2 = createAndSaveNewResource(Document.class);
@@ -111,7 +111,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         document2 = null;
         genericService.synchronize();
         Document featuredDocument = genericService.find(Document.class, i2);
-        wlc = genericService.find(ListCollection.class, wlcId);
+        wlc = genericService.find(ResourceCollection.class, wlcId);
         logger.debug("wlcid:{},  resources:{}", wlcId, wlc.getUnmanagedResources());
         assertThat(wlc.getUnmanagedResources().size(), greaterThan(0));
         if (wlc.getProperties() == null) {
@@ -123,8 +123,8 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     }
 
     @SuppressWarnings("unused")
-    private ListCollection createAndSaveWhiteLabelCollection() {
-        ListCollection rc = new ListCollection();
+    private ResourceCollection createAndSaveWhiteLabelCollection() {
+        ResourceCollection rc = new ResourceCollection();
         rc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false,false));
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
@@ -140,8 +140,8 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testConvertToWhitelabelCollection() {
-        ListCollection resourceCollection = createAndSaveNewResourceCollection("normal collection", ListCollection.class);
-        ListCollection whitelabelCollection = resourceCollectionDao.convertToWhitelabelCollection(resourceCollection);
+        ResourceCollection resourceCollection = createAndSaveNewResourceCollection("normal collection");
+        ResourceCollection whitelabelCollection = resourceCollectionDao.convertToWhitelabelCollection(resourceCollection);
 
         assertThat(whitelabelCollection, is(not(nullValue())));
         assertThat(resourceCollection.getId(), is(whitelabelCollection.getId()));
@@ -151,8 +151,8 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testWhitelabelsetup() {
-        CollectionDisplayProperties props = new CollectionDisplayProperties(false,false,false,false,false,false, false);
-        ListCollection c = new ListCollection();
+        CollectionDisplayProperties props = new CollectionDisplayProperties(false,false,false,false,false,false,false);
+        ResourceCollection c = new ResourceCollection();
         c.setName("test");
         c.markUpdated(getAdminUser());
         c.setProperties(props);
@@ -163,8 +163,8 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testConvertToResourceCollection() {
-        ListCollection wlc = createAndSaveNewWhiteLabelCollection("fancy collection");
-        ListCollection rc = resourceCollectionDao.convertToResourceCollection(wlc);
+        ResourceCollection wlc = createAndSaveNewWhiteLabelCollection("fancy collection");
+        ResourceCollection rc = resourceCollectionDao.convertToResourceCollection(wlc);
 
         assertThat(rc, is(not(nullValue())));
         assertThat(rc, hasProperty("title", is("fancy collection")));

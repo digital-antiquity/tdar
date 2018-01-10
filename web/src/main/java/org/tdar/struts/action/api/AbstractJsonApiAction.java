@@ -61,6 +61,9 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
      *            object to stringify
      * @throws IOException
      */
+    protected final void setResultObject(Object obj) throws IOException {
+        setJsonObject(obj, null);
+    }
     protected final void setJsonObject(Object obj) throws IOException {
         setJsonObject(obj, null);
     }

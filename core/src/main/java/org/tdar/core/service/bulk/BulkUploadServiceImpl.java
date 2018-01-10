@@ -23,7 +23,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
@@ -35,6 +35,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.AsynchronousProcessManager;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.billing.BillingAccountService;
@@ -78,15 +79,6 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Cache<Long, BulkUpdateReceiver> asyncStatusMap;
-
-    public BulkUploadServiceImpl() {
-        asyncStatusMap = CacheBuilder.newBuilder()
-                .concurrencyLevel(4)
-                .maximumSize(100)
-                .expireAfterWrite(10, TimeUnit.MINUTES)
-                .build();
-    }
 
     /* (non-Javadoc)
      * @see org.tdar.core.service.bulk.BulkUploadService#saveAsync(org.tdar.core.bean.resource.InformationResource, java.lang.Long, java.lang.Long, java.util.Collection, java.lang.Long)
@@ -112,8 +104,8 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
         }
         
         genericDao.clearCurrentSession();
-        BulkUpdateReceiver asyncUpdateReceiver = new BulkUpdateReceiver();
-        asyncStatusMap.put(ticketId, asyncUpdateReceiver);
+        BulkUpdateReceiver asyncUpdateReceiver = new BulkUpdateReceiver(ticketId.toString());
+        AsynchronousProcessManager.getInstance().addActivityToQueue(asyncUpdateReceiver);
         TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
 
         // it is assumed that the the resourceTemplate is off the session when passed in, but make sure.
@@ -133,7 +125,7 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
             processFileProxiesIntoResources(fileProxies, resourceTemplate, submitter, asyncUpdateReceiver, resources);
             updateAccountQuotas(accountId, resources, asyncUpdateReceiver, submitter);
 
-            SharedCollection collection = logAndPersist(asyncUpdateReceiver, resources, submitterId, accountId);
+            ResourceCollection collection = logAndPersist(asyncUpdateReceiver, resources, submitterId, accountId);
             completeBulkUpload(accountId, asyncUpdateReceiver, activity, ticketId);
             asyncUpdateReceiver.setCollectionId(collection.getId());
         } catch (Throwable t) {
@@ -236,11 +228,11 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
      * Log each record to XML and put in the filestore, and persist the record
      * as needed, then let the @link AsyncUpdateReceiver know we're done
      */
-    private SharedCollection logAndPersist(AsyncUpdateReceiver receiver, List<Resource> resources, Long submitterId, Long accountId) {
+    private ResourceCollection logAndPersist(AsyncUpdateReceiver receiver, List<Resource> resources, Long submitterId, Long accountId) {
         logger.info("bulk: setting final statuses and logging");
         TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
         String title = "Bulk Upload:" + DateTime.now().toString( DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss"));
-        SharedCollection collection = new SharedCollection(title, title, submitter); 
+        ResourceCollection collection = new ResourceCollection(title, title, submitter); 
         try {
             collection.markUpdated(submitter);
             collection.setSystemManaged(true);
@@ -252,8 +244,8 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
                         resource.getResourceType(), submitter, resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
                 try {
-                    collection.getResources().add(resource);
-                    resource.getSharedCollections().add(collection);
+                    collection.getManagedResources().add(resource);
+                    resource.getManagedResourceCollections().add(collection);
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage, RevisionLogType.CREATE);
                     genericDao.saveOrUpdate(resource);
                 } catch (TdarRecoverableRuntimeException trex) {
@@ -319,7 +311,7 @@ public class BulkUploadServiceImpl implements BulkUploadService  {
      */
     @Override
     public BulkUpdateReceiver checkAsyncStatus(Long ticketId) {
-        return asyncStatusMap.getIfPresent(ticketId);
+        return (BulkUpdateReceiver) AsynchronousProcessManager.getInstance().findActivity(BulkUpdateReceiver.BULK_UPLOAD + ticketId.toString());
     }
 
 }
