@@ -22,6 +22,24 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
 
     var _init = function(widgetId) {
 
+        
+     // //https://github.com/blueimp/jQuery-File-Upload/wiki/API
+
+        var config = {
+                files:[],
+                url:TDAR.uri('upload/upload'),
+                ticketId: -1,
+                resourceId: -1,
+                userId: -1,
+                validFormats: [],
+                sideCarOnly: false,
+                maxNumberOfFiles: 50,
+               requiredOptionalPairs: [{required:[], optional:[]}]
+        };
+        if ($(widgetId).data('config') != undefined) {
+            console.log( $($(widgetId).data('config')).text() );
+          $.extend(config,JSON.parse($($(widgetId).data('config')).text()));  
+        }
         Vue.component('fpart', {
             template: "#fpart-template",
             props: ["file","index"],
@@ -118,23 +136,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 }
             }
         });
-// //https://github.com/blueimp/jQuery-File-Upload/wiki/API
 
-        var config = {
-                files:[],
-                url:TDAR.uri('upload/upload'),
-                ticketId: -1,
-                resourceId: -1,
-                userId: -1,
-                validFormats: [],
-                sideCarOnly: false,
-                maxNumberOfFiles: 50,
-               requiredOptionalPairs: [{required:[], optional:[]}]
-        };
-        if ($(widgetId).data('config') != undefined) {
-            console.log( $($(widgetId).data('config')).text() );
-          $.extend(config,JSON.parse($($(widgetId).data('config')).text()));  
-        }
         
    var app = new Vue({
      el: widgetId,
@@ -391,7 +393,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         init : _init,
         main : function() {
             var appId = '#uploadWidget';
-            if ($(appId).length > 0) {
+            if ($(appId).length == 1) {
                 TDAR.vuejs.uploadWidget.init(appId);
             }
         }

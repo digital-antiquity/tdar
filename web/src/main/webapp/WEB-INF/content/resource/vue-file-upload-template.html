@@ -1,107 +1,126 @@
+
+<template id="fpart-template">
+<tr v-bind:id="rowId">
+    <td>{{index}}</td>
+    <td><label class="control-label">Filename</label>
+        <div class="controls controls-row">
+            <div class="span5">
+                <div>
+                    <em class="replacement-text "></em>
+                </div>
+                <span class="name uneditable-input subtle inpux-xlarge"
+                    :title="file.name">{{file.name}}</span> <span
+                    class="help-inline">{{file.size}}</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Restriction</label>
+            <div class="controls">
+                <select :name="restrictionFieldName"
+                    v-model="file.restriction" id="proxy0_conf"
+                    class="fileProxyConfidential confidential-contact-required"
+                    style="padding-left: 20px;" datarestriction="PUBLIC">
+                    <option value="PUBLIC">Public</option>
+                    <option value="EMBARGOED_SIX_MONTHS">Embargoed
+                        Six Months</option>
+                    <option value="EMBARGOED_ONE_YEAR">Embargoed
+                        One Year</option>
+                    <option value="EMBARGOED_TWO_YEARS">Embargoed
+                        Two Years</option>
+                    <option value="EMBARGOED_FIVE_YEARS">Embargoed
+                        Five Years</option>
+                    <option value="CONFIDENTIAL">Confidential</option>
+                </select>
+
+            </div>
+            <label class="control-label" for="">Date Created</label>
+            <div class="controls controls-row">
+                <div class="span5">
+                    <div class="input-append">
+                        <input type="text" :name="createdDateFieldName"
+                            class="datepicker" placeholder="mm/dd/yyyy"
+                            v-model="file.dateCreated" value=""
+                            data-date-format="mm/dd/yyyy"> <span
+                            class="add-on"><i class="icon-th"></i></span>
+                    </div>
+
+                </div>
+            </div>
+            <label class="control-label">Description</label>
+            <div class="controls controls-row">
+                <div class="span5">
+                    <textarea class="input-block-level"
+                        :name="descriptionFieldName" rows="1"
+                        placeholder="Enter a description here"
+                        v-model="file.description"></textarea>
+                </div>
+            </div>
+        </div></td>
+    <td style="width: 10%"><span
+        class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block"
+        :id="wrapperId" style="width: 6em; text-align: left"> <i
+            class="icon-refresh icon-white"> </i> <span>Replace</span> <input
+            type="file" name="uploadFile" @change="replaceFileChange"
+            :id="fileuploadId" class="replace-file">
+    </span>
+        <button type="button" style="text-align: left"
+            v-if="file.replaceFile != undefined" @click="undoReplace"
+            class="btn btn-small btn-warning undo-replace-button btn-block"
+            title="Restore Original File">Cancel</button>
+
+
+
+        <div class="delete">
+            <button v-if="file.action != 'DELETE'"
+                class="btn btn-danger delete-button btn-small btn-block"
+                @click="deleteFile" data-type="DELETE" data-url=""
+                style="text-align: left">
+                <i class="icon-trash icon-white"></i> <span>Delete</span>
+            </button>
+            <button v-if="file.action == 'DELETE'"
+                class="btn btn-warning delete-button btn-small btn-block"
+                @click="unDeleteFile" data-type="DELETE" data-url=""
+                style="text-align: left">
+                <i class="icon-trash icon-white"></i> <span>Undelete</span>
+            </button>
+        </div>
+
+
+        <div class="fileProxyFields">
+            <input type="hidden" v-model="file.action"
+                class="fileAction" :name="actionFieldName" value="NONE">
+            <input type="hidden" class="fileId" :name="fileIdFieldName"
+                :value="file.id"> <input type="hidden"
+                class="fileReplaceName" :name="filenameFieldName"
+                :value="file.name"> <input type="hidden"
+                class="fileSequenceNumber"
+                name="sequenceNumberFieldName" value="1">
+        </div> file: {{file}}</td>
+</tr>
+</template>
+
 <div id="uploadWidget" data-config="#${uploadConfigId}">
 
-    <template id="fpart-template">
-        <tr v-bind:id="rowId">
-            <td>{{index}}</td>
-                    <td >
-                        <label class="control-label">Filename</label>
-                        <div class="controls controls-row">
-                            <div class="span5">
-                                <div><em class="replacement-text "></em></div>
-                                <span class="name uneditable-input subtle inpux-xlarge" :title="file.name">{{file.name}}</span>
-                                <span class="help-inline">{{file.size}}</span>
-                            </div>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">Restriction</label>
-                            <div class="controls">
-        <select :name="restrictionFieldName" v-model="file.restriction" id="proxy0_conf" class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;"  datarestriction="PUBLIC">
-            <option value="PUBLIC">Public</option>
-            <option value="EMBARGOED_SIX_MONTHS">Embargoed Six Months</option>
-            <option value="EMBARGOED_ONE_YEAR">Embargoed One Year</option>
-            <option value="EMBARGOED_TWO_YEARS">Embargoed Two Years</option>
-            <option value="EMBARGOED_FIVE_YEARS">Embargoed Five Years</option>
-            <option value="CONFIDENTIAL">Confidential</option>
-        </select>
-
-                            </div>
-                            <label class="control-label" for="">Date Created</label>
-                            <div class="controls controls-row">
-                                 <div class="span5">
-                                     <div class="input-append">
-                                        <input type="text" :name="createdDateFieldName" class="datepicker" placeholder="mm/dd/yyyy" v-model="file.dateCreated" value="" data-date-format="mm/dd/yyyy">
-                                        <span class="add-on"><i class="icon-th"></i></span>
-                                    </div>
-                             
-                                 </div>
-                            </div>
-                            <label class="control-label">Description</label>
-                            <div class="controls controls-row">
-                                <div class="span5">
-                                    <textarea class="input-block-level" :name="descriptionFieldName" rows="1" placeholder="Enter a description here" v-model="file.description"></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                    </td>
-                <td style="width:10%">
-
-            
-            <span class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" :id="wrapperId" style="width:6em;text-align:left">
-            <i class="icon-refresh icon-white"> </i>
-            <span>Replace</span>
-            <input type="file" name="uploadFile" @change="replaceFileChange" :id="fileuploadId" class="replace-file">
-        </span>
-                    <button type="button" style="text-align:left" v-if="file.replaceFile != undefined" @click="undoReplace" class="btn btn-small btn-warning undo-replace-button btn-block" title="Restore Original File">Cancel</button>
-            
-
-
-                        <div class="delete">
-                            <button v-if="file.action != 'DELETE'" class="btn btn-danger delete-button btn-small btn-block" @click="deleteFile" data-type="DELETE" data-url="" style="text-align:left ">
-                                <i class="icon-trash icon-white"></i>
-                                <span>Delete</span>
-                            </button>
-                            <button v-if="file.action == 'DELETE'" class="btn btn-warning delete-button btn-small btn-block" @click="unDeleteFile" data-type="DELETE" data-url="" style="text-align:left ">
-                                <i class="icon-trash icon-white"></i>
-                                <span>Undelete</span>
-                            </button>
-                        </div>
-            
-
-                    <div class="fileProxyFields">
-                        <input type="hidden" v-model="file.action" class="fileAction" :name="actionFieldName" value="NONE">
-                        <input type="hidden" class="fileId" :name="fileIdFieldName" :value="file.id">
-                        <input type="hidden" class="fileReplaceName" :name="filenameFieldName" :value="file.name">
-                        <input type="hidden" class="fileSequenceNumber" name="sequenceNumberFieldName" value="1">
-                    </div>
-file:                    {{file}}
-                </td>
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>action</th>
             </tr>
-    </template>
-  <table class="table">
-      <thead>
-          <tr>
-              <th></th>
-              <th>action</th>
-          </tr>
-      </thead>
-      <tbody v-if="files.length > 0" v-for="(file,index) in files">
-<tr><td>      {{file}} {{index}}</td></tr>
+        </thead>
+        <tbody v-if="files.length > 0" v-for="(file,index) in files">
+            <tr class="template-download fade existing-file in"
+                is="fpart" :index="index" :file="file"></tr>
+        </tbody>
+    </table>
 
-    <tr class="template-download fade existing-file in"  is="fpart" :index="index" :file="file"></tr>
-      </tbody>
-  </table>
-
-  <br />
+    <br />
     <!-- The fileinput-button span is used to style the file input field as button -->
-    <span class="btn btn-success fileinput-button">
-        <i class="glyphicon glyphicon-plus"></i>
-        <span>Select files...</span>
-        <!-- The file input field used as target for the file upload widget -->
+    <span class="btn btn-success fileinput-button"> <i
+        class="glyphicon glyphicon-plus"></i> <span>Select
+            files...</span> <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple>
-    </span>
-    <br>
-    <br>
+    </span> <br> <br>
     <!-- The global progress bar -->
     <div id="progress" class="progress">
         <div class="progress-bar progress-bar-success"></div>
@@ -110,5 +129,4 @@ file:                    {{file}}
     <!-- The container for the uploaded files -->
     <div id="files" class="files"></div>
 </div>
-    
-    
+

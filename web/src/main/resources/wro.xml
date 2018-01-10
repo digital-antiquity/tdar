@@ -111,7 +111,7 @@
 
         <js>/js/vue/vue-selectize.js</js>
         <js>/js/vue/view-collection-widget.js</js>
-        <js>/js/vue/edit-file-upload-comonent.js</js>
+        <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/edit-collection.js</js>
 
     </group>
