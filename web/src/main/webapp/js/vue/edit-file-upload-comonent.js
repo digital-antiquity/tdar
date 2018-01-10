@@ -350,6 +350,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
               dataType: 'json',
               paramName: "uploadFile",
               formData: function(form) {
+                  // override formData
                   var data = [];
                   if (this.ticketId == undefined || this.ticketId == -1) {
                       data.push({name:"ticketRequested" , value:true});
