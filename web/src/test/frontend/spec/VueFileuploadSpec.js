@@ -15,9 +15,10 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
         }
        
        function setConfig(conf) {
-           var c= JSON.stringify(conf);
-           $("#uploadConfig").text(c);
+           var c = JSON.stringify(conf);
            $("#uploadWidget").data("config","#uploadConfig");
+           $("#uploadWidget").append("<script id='uploadConfig'></script>");
+           $("#uploadConfig").text(c);
        }
 
         beforeEach(function() {
@@ -131,7 +132,37 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
+//            expect(vapp.validatePackage()).toBe(false);
             result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
+            expect(result).toBe(true);
+            expect(vapp.files).toHaveLength(2);
+            expect(vapp.validatePackage()).toBe(true);
+
+            
+            window.console.log("--------------------ccc---------------------")
+        });
+  
+
+        it("check complexPairs sidecar invalid", function() {
+            var conf = getBaseConfig();
+            conf.validFormats.push('.tif');
+            conf.validFormats.push('.jpg');
+            conf.validFormats.push('.tfw');
+            conf.validFormats.push('.jgw');
+            conf.requiredOptionalPairs.push({required:['.jpg'],optional:[".jgw"]});
+            conf.sideCarOnly = true;
+            setConfig(conf);            
+            jasmine.Ajax.stubRequest('/upload/upload').andReturn({
+                "responseText": 'success'
+              });
+
+            window.console.log("--------------------bbb---------------------")
+            var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
+            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jgw',size:1000,type:'jgw/object',lastModified:-1}]});
+            expect(result).toBe(true);
+            expect(vapp.files).toHaveLength(1);
+            expect(vapp.validatePackage()).toBe(false);
+            result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(2);
             expect(vapp.validatePackage()).toBe(true);
