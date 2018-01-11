@@ -103,6 +103,16 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         LuceneSearchResultHandler<Resource> result = new SearchResult<>();
         resourceSearchService.lookupResource(getAdminUser(), look, result , MessageHelper.getInstance());
     }
+    
+    @Test
+    public void testInvalidPhraseWithBrackets() throws ParseException, SearchException, SearchIndexException, IOException,SearchException, SearchIndexException {
+        SearchParameters sp = new SearchParameters();
+        AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
+        asqo.getSearchParameters().add(sp);
+        sp.getAllFields().add("AZ EE:5:12[ASM]");
+        LuceneSearchResultHandler<Resource> result = new SearchResult<>();
+        resourceSearchService.buildAdvancedSearch(asqo, getAdminUser(), result, MessageHelper.getInstance());
+    }
 
     @Test
     public void testInvalidWithColon() throws ParseException, SearchException, SearchIndexException, IOException,SearchException, SearchIndexException {
