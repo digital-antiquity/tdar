@@ -11,11 +11,17 @@ import org.tdar.search.query.QueryFieldNames;
  */
 public class DataValueQueryPart extends FieldQueryPart<String> {
 
+    private boolean escaped = false;
     public DataValueQueryPart() {
     }
 
     public DataValueQueryPart(String term) {
         getFieldValues().add(term);
+    }
+
+    public DataValueQueryPart(String term, boolean escaped) {
+        getFieldValues().add(term);
+        this.escaped = escaped;
     }
 
 
@@ -28,9 +34,18 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         QueryPartGroup subq = new QueryPartGroup(Operator.OR);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.VALUE, getFieldValues());
         content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
+        if (escaped) {
+            content.setPhraseFormatters(PhraseFormatter.EMBEDDED);
+        } else{
+            content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
+        }
         subq.append(content);
         FieldQueryPart<String> content2 = new FieldQueryPart<String>(QueryFieldNames.VALUE_PHRASE, getFieldValues());
-        content2.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
+        if (escaped) {
+            content2.setPhraseFormatters(PhraseFormatter.EMBEDDED);
+        } else{
+            content2.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
+        }
         subq.append(content2);
         @SuppressWarnings({ "rawtypes", "unchecked" })
         CrossCoreFieldJoinQueryPart join = new CrossCoreFieldJoinQueryPart(QueryFieldNames.ID, QueryFieldNames.ID, subq, LookupSource.DATA.getCoreName());

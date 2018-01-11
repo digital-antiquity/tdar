@@ -88,7 +88,9 @@ public class SiteCodeExtractor {
 
                 // for indexing we mutate to collapse common separators
                 if (mutate) {
-                    toReturn.add(code.replaceAll(SEP, ""));
+                    String str_ = code.replaceAll(SEP, "");
+                    str_ = str_.replaceAll("[\\[\\]\\(\\)]", "");
+                    toReturn.add(str_);
                 } else {
                     toReturn.add(code);
                 }
