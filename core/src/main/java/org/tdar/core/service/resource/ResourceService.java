@@ -9,7 +9,7 @@ import org.hibernate.ScrollableResults;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.RequestCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -279,7 +279,7 @@ public interface ResourceService {
 
     String getSchemaOrgJsonLD(Resource resource);
 
-    void updateBatch(BillingAccount account, SharedCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles,
+    void updateBatch(BillingAccount account, ResourceCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles,
             List<String> descriptions, TdarUser authenticatedUser);
 
     RequestCollection findCustom(Resource resource);

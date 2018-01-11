@@ -50,7 +50,7 @@ public class CollectionApiViewAction extends AbstractApiController implements Pr
     public void validate() {
         super.validate();
         if (PersistableUtils.isNullOrTransient(resource) || !authorizationService.canView(getAuthenticatedUser(), resource)) {
-            addActionError("cannot edit resource");
+            addActionError("addResourceToCollectionAction.no_edit_permission");
         }
     }
 

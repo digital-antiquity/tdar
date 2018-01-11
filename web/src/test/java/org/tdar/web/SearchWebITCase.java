@@ -14,7 +14,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -385,7 +385,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     // refine a collection search
     public void testModifyCollectionSearch() {
         String name = "superduper";
-        createTestCollection(CollectionType.SHARED, name, "description goes here", getSomeResources());
+        createTestCollection(CollectionResourceSection.MANAGED, name, "description goes here", getSomeResources());
         gotoPage("/search/collection");
         setInput("query", name);
         submitForm("Search");

@@ -7,11 +7,9 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.PersistableUtils;
 
@@ -22,7 +20,7 @@ import org.tdar.utils.PersistableUtils;
  *
  */
 public class CollectionDataExtractor {
-    
+
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Resource resource;
 
@@ -40,8 +38,6 @@ public class CollectionDataExtractor {
     private HashSet<Long> listCollectionIds = new HashSet<>();
     private HashSet<String> listCollectionNames = new HashSet<>();
 
-    
-
     /*
      * this function should introduce into the index all of the people who can
      * modify a record which is useful for limiting things on the project page
@@ -51,11 +47,11 @@ public class CollectionDataExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
             }
-            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, GeneralPermissions.MODIFY_METADATA, true));
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, Permissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
@@ -79,8 +75,8 @@ public class CollectionDataExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
-            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, GeneralPermissions.VIEW_ALL, true));
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, Permissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
@@ -96,35 +92,33 @@ public class CollectionDataExtractor {
     }
 
     public void extractHierarchy() {
-        for (SharedCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
             }
-            if (collection instanceof SharedCollection) {
-                SharedCollection shared = (SharedCollection)collection;
-                directCollectionIds.add(collection.getId());
-                directCollectionNames.add(shared.getName());
-                collectionNames.addAll(shared.getParentNameList());
-                collectionIds.addAll(shared.getParentIds());
-                collectionIds.add(shared.getId());
-                collectionIds.addAll(shared.getAlternateParentIds());
-                collectionNames.addAll(shared.getAlternateParentNameList());
-            }
+            ResourceCollection shared = (ResourceCollection) collection;
+            directCollectionIds.add(collection.getId());
+            directCollectionNames.add(shared.getName());
+            collectionNames.addAll(shared.getParentNameList());
+            collectionIds.addAll(shared.getParentIds());
+            collectionIds.add(shared.getId());
+            collectionIds.addAll(shared.getAlternateParentIds());
+            collectionNames.addAll(shared.getAlternateParentNameList());
         }
-        allCollectionIds.addAll(collectionIds);
-        for (ListCollection collection : resource.getUnmanagedResourceCollections()) {
+        for (ResourceCollection collection : resource.getUnmanagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
             }
 
-            if (collection instanceof ListCollection) {
-                ListCollection list = (ListCollection)collection;
-                getListCollectionIds().add(collection.getId());
-                directListCollectionIds.add(collection.getId());
-                getListCollectionNames().addAll(list.getParentNameList());
-                getListCollectionIds().addAll(list.getParentIds());
-            }
+            getCollectionIds().add(collection.getId());
+            getListCollectionIds().add(collection.getId());
+            directListCollectionIds.add(collection.getId());
+            getListCollectionNames().addAll(collection.getParentNameList());
+            getListCollectionIds().addAll(collection.getParentIds());
+            getCollectionNames().addAll(collection.getParentNameList());
+            getCollectionIds().addAll(collection.getParentIds());
         }
+        allCollectionIds.addAll(collectionIds);
         getListCollectionIds().addAll(directCollectionIds);
     }
 
@@ -191,5 +185,5 @@ public class CollectionDataExtractor {
     public void setDirectListCollectionIds(HashSet<Long> directListCollectionIds) {
         this.directListCollectionIds = directListCollectionIds;
     }
-    
+
 }

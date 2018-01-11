@@ -20,7 +20,6 @@ import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.utils.TestConfiguration;
 

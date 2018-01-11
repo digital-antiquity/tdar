@@ -9,11 +9,11 @@ import java.util.List;
 
 import org.junit.Before;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Resource;
@@ -37,15 +37,24 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         loginAdmin();
     }
 
-    public void createTestCollection(CollectionType collectionType, String name, String desc, List<? extends Resource> someResources) {
-        gotoPage(String.format("/%s/add", collectionType.getUrlNamespace()));
+    public void createTestCollection(CollectionResourceSection collectionType, String name, String desc, List<? extends Resource> someResources) {
+        gotoPage("/collection/add");
         setInput("resourceCollection.name", name);
         setInput("resourceCollection.description", desc);
 
+        String fieldPrefix;
+        if(collectionType == CollectionResourceSection.MANAGED){
+        	fieldPrefix = "toAddManaged";
+        }
+        else {
+        	fieldPrefix = "toAddUnmanaged";
+        }
+        
+        
         for (int i = 0; i < someResources.size(); i++) {
             Resource resource = someResources.get(i);
             // FIXME: we don't set id's in the form this way but setInput() doesn't understand 'resources.id' syntax. fix it so that it can.
-            String fieldName = "toAdd[" + i + "]";
+            String fieldName = fieldPrefix + "[" + i + "]";
             String fieldValue = "" + resource.getId();
             logger.debug("setting  fieldName:{}\t value:{}", fieldName, fieldValue);
             createInput("hidden", fieldName, fieldValue);
@@ -134,7 +143,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
     }
 
 
-    public void createUserFields(int i, Person user, GeneralPermissions perm, Long id) {
+    public void createUserFields(int i, Person user, Permissions perm, Long id) {
         if (id == null) {
             createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), ""); // leave the id blank
         } else {

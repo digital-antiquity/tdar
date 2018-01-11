@@ -3,7 +3,6 @@ package org.tdar.core.service.integration;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;

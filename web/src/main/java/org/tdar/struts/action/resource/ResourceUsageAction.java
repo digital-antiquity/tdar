@@ -11,7 +11,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
@@ -79,7 +79,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
+        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_METADATA);
     }
 
     @Override

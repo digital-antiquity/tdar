@@ -14,8 +14,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
 import static org.tdar.TestConstants.TEST_DOCUMENT_NAME;
-import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_RECORD;
-import static org.tdar.core.bean.entity.permissions.GeneralPermissions.VIEW_ALL;
+import static org.tdar.core.bean.entity.permissions.Permissions.MODIFY_RECORD;
+import static org.tdar.core.bean.entity.permissions.Permissions.VIEW_ALL;
 
 import java.io.File;
 import java.util.ArrayList;

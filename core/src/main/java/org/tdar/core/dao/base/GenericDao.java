@@ -33,8 +33,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.HasStatic;
@@ -227,11 +226,8 @@ public class GenericDao {
             return Collections.emptyList();
         }
         Query<P> query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP);
-        if (cls.isAssignableFrom(SharedCollection.class)) {
+        if (ResourceCollection.class.isAssignableFrom(cls)) {
             query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_SHARED_COLLECTION_LOOKUP);
-        }
-        if (cls.isAssignableFrom(ListCollection.class)) {
-            query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_LIST_COLLECTION_LOOKUP);
         }
         query.setParameter("ids", ids);
         query.setReadOnly(true);

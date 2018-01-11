@@ -1,6 +1,5 @@
 package org.tdar.struts.action.search;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,12 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -127,7 +123,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         getAsqo().setMultiCore(true);
         try {
             getFacetWrapper().facetBy(QueryFieldNames.OBJECT_TYPE, ObjectType.class);
-            getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionType.class);
+//            getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionResourceSection.class);
             getFacetWrapper().facetBy(QueryFieldNames.GENERAL_TYPE, LookupSource.class);
             getFacetWrapper().facetBy(QueryFieldNames.INTEGRATABLE, IntegratableOptions.class);
             getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_ACCESS_TYPE, ResourceAccessType.class);
@@ -227,12 +223,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         }
         getGroups().add(sp);
         sp.getFieldTypes().addAll(Arrays.asList(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
-        if (rc instanceof SharedCollection) {
-            sp.getShares().addAll(Arrays.asList((SharedCollection)rc, null));
-        } else {
-            sp.getCollections().addAll(Arrays.asList((ListCollection)rc, null));
-            
-        }
+        sp.getCollections().addAll(Arrays.asList((ResourceCollection)rc, null));
         sp.getAllFields().addAll(Arrays.asList(null, ""));
     }
 
@@ -349,11 +340,11 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         getReservedSearchParameters().setTypes(types);
     }
 
-    public List<CollectionType> getCollectionTypes() {
+    public List<CollectionResourceSection> getCollectionTypes() {
         return getReservedSearchParameters().getCollectionTypes();
     }
 
-    public void setCollectionTypes(List<CollectionType> types) {
+    public void setCollectionTypes(List<CollectionResourceSection> types) {
         getReservedSearchParameters().setCollectionTypes(types);
     }
 

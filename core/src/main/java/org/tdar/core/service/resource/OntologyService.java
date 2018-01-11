@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;

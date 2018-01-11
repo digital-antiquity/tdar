@@ -3,7 +3,6 @@ package org.tdar.core.service;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.ExternalKeywordMapping;
 import org.tdar.core.bean.keyword.GeographicKeyword;

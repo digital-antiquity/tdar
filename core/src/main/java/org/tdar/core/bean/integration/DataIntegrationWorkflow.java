@@ -1,7 +1,6 @@
 package org.tdar.core.bean.integration;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -10,9 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -31,7 +28,6 @@ import org.tdar.core.bean.Hideable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Viewable;
-import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;

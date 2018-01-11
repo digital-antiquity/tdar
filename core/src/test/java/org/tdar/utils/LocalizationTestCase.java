@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.service.ReflectionHelper;
-import org.tdar.core.service.ReflectionService;
-import org.tdar.core.service.ReflectionServiceImpl;
 
 public class LocalizationTestCase {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

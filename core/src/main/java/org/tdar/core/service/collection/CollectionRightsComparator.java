@@ -1,7 +1,6 @@
 package org.tdar.core.service.collection;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,16 +30,14 @@ import org.tdar.utils.PersistableUtils;
 public class CollectionRightsComparator {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionRightsComparator.class);
-    private Set<AuthorizedUser> currentUsers;
-    private Set<AuthorizedUser> incomingUsers;
+    private Set<AuthorizedUser> currentUsers = new HashSet<>();
+    private Set<AuthorizedUser> incomingUsers = new HashSet<>();
 
     private List<AuthorizedUser> additions = new ArrayList<>();
     private List<AuthorizedUser> deletions = new ArrayList<>();
     private List<AuthorizedUser> changes = new ArrayList<>();
 
     public CollectionRightsComparator(Set<AuthorizedUser> currentUsers, Collection<AuthorizedUser> incomingUsers) {
-        this.currentUsers = new HashSet<>();
-        this.incomingUsers = new HashSet<>();
         if (CollectionUtils.isNotEmpty(currentUsers)) {
             logger.debug("current users {}", currentUsers);
             this.currentUsers.addAll(currentUsers);

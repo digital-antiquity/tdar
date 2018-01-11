@@ -89,7 +89,7 @@
         <th>Collections:</th>
         <#list resources as resource>
         <td>
-            <#list resource.sharedResourceCollections as it>
+            <#list resource.managedResourceCollections as it>
                 <#if collections?seq_contains(it.id) >
                     <a href="${it.detailUrl}">${it.name}</a>
                 <#else>

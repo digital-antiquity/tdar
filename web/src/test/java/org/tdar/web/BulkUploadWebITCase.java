@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -35,8 +36,11 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.JacksonUtils;
+import org.tdar.core.service.bulk.BulkUpdateReceiver;
 import org.tdar.junit.RunWithTdarConfiguration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebRequest;
@@ -274,20 +278,28 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         loadStatusPage(statusPage);
         int count = 0;
         // fixme: parse this json and get the actual number,
-        while (!getPageCode().matches("(?s)(.*)percentDone\"(\\s*):(\\s*)100(.*)")) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                fail("InterruptedException during bulk upload.  sorry.");
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
+        try {
+            BulkUpdateReceiver readValue = mapper.readValue(getPageCode(), BulkUpdateReceiver.class);
+            if (readValue == null | readValue.getPercentComplete() < 100f) {
+                try {
+                    Thread.sleep(1000);
+                    loadStatusPage(statusPage);
+                    if (count == 100) {
+                        fail("we went through 1000 iterations of waiting for the upload to be imported... assuming something is wrong");
+                    }
+                    count++;
+                } catch (InterruptedException e) {
+                    fail("InterruptedException during bulk upload.  sorry.");
+                }
+                
             }
-            loadStatusPage(statusPage);
-            if (count == 100) {
-                fail("we went through 1000 iterations of waiting for the upload to be imported... assuming something is wrong");
+            if (expectSuccess && CollectionUtils.isNotEmpty(readValue.getAsyncErrors())) {
+                Assert.fail(getPageBodyCode());
             }
-            count++;
-        }// .contains("errors\":\"\"")
-        if (expectSuccess && !getPageCode().matches("(?s)(.*)errors\"(\\s*):(\\s*)\"\"(.*)")) {
-            Assert.fail(getPageBodyCode());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            fail(e1.getMessage());
         }
     }
 

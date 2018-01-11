@@ -5,9 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;

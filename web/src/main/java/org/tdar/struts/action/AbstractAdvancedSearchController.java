@@ -1,7 +1,6 @@
 package org.tdar.struts.action;
 
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,16 +15,10 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.core.bean.keyword.MaterialKeyword;
-import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -114,7 +107,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
      * @return true if this method translated a legacy search, false if this is
      *         not a legacy search
      */
-    private boolean processLegacySearchParameters() {
+    protected boolean processLegacySearchParameters() {
         // assumption: it's okay to wipe out the groups[] if we detect a legacy
         // request, and that you can't combine two different types (for
         // example: an id search combined with a uncontrolledCultureKeyword
@@ -195,19 +188,12 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         return null;
     }
 
+    
+    
     private String advancedSearch() throws TdarActionException, SolrServerException, IOException {
-        determineSearchTitle();
-        setMode("SEARCH");
-        // beforeSearch();
-
-        processCollectionProjectLimit();
-
+        prepareAdvancedSearchQueryObject();
+            
         try {
-            getAsqo().setExplore(explore);
-            getAsqo().setAllGeneralQueryFields(getAllGeneralQueryFields());
-            getAsqo().setQuery(query);
-            getAsqo().getSearchParameters().addAll(groups);
-            getAsqo().setReservedParams(getReservedSearchParameters());
             resourceSearchService.buildAdvancedSearch(getAsqo(), getAuthenticatedUser(), this, this);
             addActionMessages();
             updateDisplayOrientationBasedOnSearchResults();
@@ -226,8 +212,20 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         } else {
             return INPUT;
         }
-
     }
+
+	protected void prepareAdvancedSearchQueryObject() {
+		determineSearchTitle();
+        setMode("SEARCH");
+        // beforeSearch();
+
+        processCollectionProjectLimit();
+        getAsqo().setExplore(explore);
+        getAsqo().setAllGeneralQueryFields(getAllGeneralQueryFields());
+        getAsqo().setQuery(query);
+        getAsqo().getSearchParameters().addAll(groups);
+        getAsqo().setReservedParams(getReservedSearchParameters());
+	}
 
     private void addActionMessages() {
         for (SearchParameters sp: groups) {
@@ -269,11 +267,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             getLogger().debug("contextual search: collection {}", collectionId);
             ResourceCollection rc = getGenericService().find(ResourceCollection.class, collectionId);
             terms_.getFieldTypes().add(0, SearchFieldType.COLLECTION);
-            if (rc instanceof ListCollection) {
-                terms_.getCollections().add((ListCollection)rc);
-            } else {
-                terms_.getShares().add((SharedCollection)rc);
-            }
+            terms_.getCollections().add((ResourceCollection)rc);
             terms_.getAllFields().add(0, null);
             groups.add(terms_);
 
@@ -634,7 +628,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         types.remove(ObjectType.ARCHIVE);
         types.remove(ObjectType.AUDIO);
         types.remove(ObjectType.VIDEO);
-        types.remove(ObjectType.LIST_COLLECTION);
         return types;
     }
 

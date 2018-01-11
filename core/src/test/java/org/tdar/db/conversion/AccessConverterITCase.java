@@ -29,7 +29,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -110,12 +110,12 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         ds.setDescription("test");
         ds.markUpdated(getAdminUser());
         ds.setProject(genericService.find(Project.class, TestConstants.PROJECT_ID));
-        SharedCollection col = new SharedCollection();
+        ResourceCollection col = new ResourceCollection();
         col.markUpdated(getAdminUser());
         col.setName("test");
         col.setDescription("test");
         genericService.saveOrUpdate(col);
-        ds.getSharedCollections().add(col);
+        ds.getManagedResourceCollections().add(col);
         genericService.saveOrUpdate(ds);
         dataTable.setDataset(ds);
         CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), MessageHelper.getInstance(), dataTable.getColumnByName("basic_int"),

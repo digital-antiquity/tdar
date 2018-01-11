@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -28,7 +27,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -150,9 +149,9 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         project.setDescription("test");
         project.markUpdated(getBasicUser());
         genericService.save(project);
-        project.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        project.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
-        users.add(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        users.add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(project);
 //        resourceCollectionService.saveAuthorizedUsersForResource(project, users, true, getBasicUser());
         project.setSubmitter(getAdminUser());
@@ -175,10 +174,10 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         testResource.setProject(project_);
         genericService.saveOrUpdate(testResource);
         assertEquals(getBasicUser(), testResource.getSubmitter());
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), testResource, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), testResource, Permissions.MODIFY_METADATA));
 
         // create a new collection with an owner and three users that have each permission type (view, modify, admin)
-        SharedCollection testCollection = new SharedCollection();
+        ResourceCollection testCollection = new ResourceCollection();
         TdarUser testModify = createAndSaveNewPerson("a@b", "1234");
         TdarUser testOwner = createAndSaveNewPerson("a@b1", "12341");
         TdarUser testView = createAndSaveNewPerson("a@b2", "12341");
@@ -188,24 +187,24 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         genericService.save(testCollection);
 
         // add the resourceCollection to the project (and vice/versa)
-        project_.getSharedResourceCollections().add(testCollection);
+        project_.getManagedResourceCollections().add(testCollection);
         genericService.saveOrUpdate(testCollection);
         genericService.saveOrUpdate(project_);
         List<AuthorizedUser> users2 = new ArrayList<AuthorizedUser>();
-        users2.addAll(Arrays.asList(new AuthorizedUser(getAdminUser(), testModify, GeneralPermissions.MODIFY_RECORD), 
-                new AuthorizedUser(getAdminUser(), testView, GeneralPermissions.VIEW_ALL),
-                new AuthorizedUser(getAdminUser(),testAdmin, GeneralPermissions.ADMINISTER_SHARE)));
+        users2.addAll(Arrays.asList(new AuthorizedUser(getAdminUser(), testModify, Permissions.MODIFY_RECORD), 
+                new AuthorizedUser(getAdminUser(), testView, Permissions.VIEW_ALL),
+                new AuthorizedUser(getAdminUser(),testAdmin, Permissions.ADMINISTER_COLLECTION)));
         resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true,  getBasicUser(),RevisionLogType.EDIT);
         genericService.saveOrUpdate(testCollection);
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
-        logger.info("rc:{}", project_.getRightsBasedResourceCollections());
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testOwner, testResource, GeneralPermissions.MODIFY_METADATA));
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testView, testResource, GeneralPermissions.MODIFY_METADATA));
+        logger.info("rc:{}", project_.getManagedResourceCollections());
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testOwner, testResource, Permissions.MODIFY_METADATA));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testView, testResource, Permissions.MODIFY_METADATA));
 
         // THESE NEXT TESTS SHOULD BE TRUE IF INHERITANCE IS TURNED BACK ON FROM PROJECT -> RESOURCE
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testModify, testResource, GeneralPermissions.MODIFY_METADATA));
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource, GeneralPermissions.MODIFY_METADATA));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testModify, testResource, Permissions.MODIFY_METADATA));
+        assertFalse(authenticationAndAuthorizationService.canEditResource(testAdmin, testResource, Permissions.MODIFY_METADATA));
     }
 
     @Test
@@ -244,7 +243,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
     // create a new project and add it to a collection
     @Rollback
     public void testAddingToExistingCollection() throws Exception {
-        SharedCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
+        ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
         setIgnoreActionErrors(true);
         evictCache();
         assertNotNull(rc);
@@ -253,7 +252,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         ProjectController controller = tryAndSaveCollectionToController(rc);
         assertNotEquals(Action.SUCCESS, controller.save());
 
-        rc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getUser(), GeneralPermissions.ADMINISTER_SHARE));
+        rc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getUser(), Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(rc);
         evictCache();
         // try ... and should succeed now that we add the user + permissions
@@ -268,13 +267,13 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         Project loadedProject = genericService.find(Project.class, id);
         logger.info("{}", loadedProject);
         // confirm that the controller added the list of resource collections to the project
-        assertTrue("collection list shouldn't be empty", loadedProject.getRightsBasedResourceCollections().size() > 0);
+        assertTrue("collection list shouldn't be empty", loadedProject.getManagedResourceCollections().size() > 0);
 
         logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
         evictCache();
     }
 
-    private ProjectController tryAndSaveCollectionToController(SharedCollection rc) throws TdarActionException {
+    private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) throws TdarActionException {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
         controller.setAsync(false);
@@ -285,7 +284,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         project.setTitle("testing adding collection");
         project.setDescription("test");
         // controller expects incoming list of resource collections to be detached, so lets create one
-        SharedCollection detachedCollection = new SharedCollection();
+        ResourceCollection detachedCollection = new ResourceCollection();
         detachedCollection.setName(rc.getName());
         detachedCollection.setId(rc.getId());
         detachedCollection.setHidden(false);
@@ -315,11 +314,11 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         String name1 = "testing adhoc collection creation";
         String name2 = "yet another collection";
 
-        SharedCollection collection = new SharedCollection();
+        ResourceCollection collection = new ResourceCollection();
         collection.setName(name1);
         controller.getShares().add(collection);
 
-        collection = new SharedCollection();
+        collection = new ResourceCollection();
         collection.setName(name2);
         controller.getShares().add(collection);
 
@@ -332,7 +331,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         Project loadedProject = genericService.find(Project.class, id);
         assertNotNull(loadedProject);
         Collection<ResourceCollection> cols = new HashSet<>();
-        for (SharedCollection rrc : loadedProject.getRightsBasedResourceCollections()) {
+        for (ResourceCollection rrc : loadedProject.getManagedResourceCollections()) {
             cols.add((ResourceCollection)rrc);
         }
         assertUniqueCollections(cols, name1, name2);
@@ -351,8 +350,8 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
 
     }
 
-    private SharedCollection createNewEmptyCollection(String name) {
-        SharedCollection rc = new SharedCollection();
+    private ResourceCollection createNewEmptyCollection(String name) {
+        ResourceCollection rc = new ResourceCollection();
         Date date = new Date();
         TdarUser owner = new TdarUser("bob", "loblaw", "createNewEmptyCollection" + date.getTime() + "@tdar.net");
         genericService.save(owner);

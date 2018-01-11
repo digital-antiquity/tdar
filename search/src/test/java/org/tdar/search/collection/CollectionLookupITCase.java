@@ -9,14 +9,10 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchIndexException;
@@ -47,7 +43,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
     }
 
-    private SearchResult<ResourceCollection> search(TdarUser user, GeneralPermissions permission, String title)
+    private SearchResult<ResourceCollection> search(TdarUser user, Permissions permission, String title)
             throws SearchException, IOException {
         SearchResult<ResourceCollection> results = new SearchResult<>(100);
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
@@ -74,7 +70,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     private void setupCollections() throws SearchException, SearchIndexException, IOException {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         for (String collectionName : collectionNames) {
-            ResourceCollection e = new SharedCollection(collectionName, collectionName, getBasicUser());
+            ResourceCollection e = new ResourceCollection(collectionName, collectionName, getBasicUser());
             collections.add(e);
             e.markUpdated(getBasicUser());
 
@@ -86,7 +82,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicOwner() throws SearchException, IOException, SearchIndexException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.LIST, null);
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),  null);
         SearchResult<ResourceCollection> result = search(null, null, "test");
         assertTrue(result.getResults().contains(e));
     }
@@ -94,7 +90,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUser() throws SearchException, SearchIndexException, IOException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.LIST,  GeneralPermissions.ADD_TO_COLLECTION);
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),   Permissions.ADD_TO_COLLECTION);
         SearchResult<ResourceCollection> result = search(getBasicUser(), null, "test");
         assertTrue(result.getResults().contains(e));
     }
@@ -102,8 +98,8 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUserForModification() throws SearchException, SearchIndexException, IOException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.LIST, GeneralPermissions.REMOVE_FROM_COLLECTION);
-        SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP, "test");
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),  Permissions.REMOVE_FROM_COLLECTION);
+        SearchResult<ResourceCollection> result = search(getBasicUser(), Permissions.ADMINISTER_COLLECTION, "test");
         assertFalse(result.getResults().contains(e));
     }
 
@@ -111,7 +107,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleShareLookupFoundByBasicOwner() throws SearchException, SearchIndexException, IOException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.SHARED, GeneralPermissions.VIEW_ALL);
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),  Permissions.VIEW_ALL);
         SearchResult<ResourceCollection> result = search(null, null, "test");
         assertTrue(result.getResults().contains(e));
     }
@@ -119,7 +115,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleShareLookupFoundByBasicUser() throws SearchException, SearchIndexException, IOException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.SHARED,  GeneralPermissions.VIEW_ALL);
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),   Permissions.VIEW_ALL);
         SearchResult<ResourceCollection> result = search(getBasicUser(), null, "test");
         assertTrue(result.getResults().contains(e));
     }
@@ -127,18 +123,15 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleShareLookupFoundByBasicUserForModification() throws SearchException, SearchIndexException, IOException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.SHARED, GeneralPermissions.VIEW_ALL);
-        SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE, "test");
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(),  Permissions.VIEW_ALL);
+        SearchResult<ResourceCollection> result = search(getBasicUser(), Permissions.ADMINISTER_COLLECTION, "test");
         assertFalse(result.getResults().contains(e));
     }
 
-    private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, CollectionType type,GeneralPermissions permission)
+    private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, Permissions permission)
             throws SearchIndexException, IOException {
         assertFalse(getSessionUser().equals(getAdminUser()));
-        ResourceCollection e = new SharedCollection("a test", "a Name",  owner);
-        if (type == CollectionType.LIST) {
-            e = new ListCollection("a test", "a name", SortOption.TITLE, visible, owner);
-        }
+        ResourceCollection e = new ResourceCollection("a test", "a Name",  owner);
         e.markUpdated(owner);
         genericService.save(e);
         if (user != null && permission != null) {

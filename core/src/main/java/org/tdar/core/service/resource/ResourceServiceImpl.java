@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.RequestCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -470,18 +470,18 @@ public class ResourceServiceImpl implements ResourceService  {
                 resource.getAuthorizedUsers().add(newAuthorizedUser);
 
             }
-            for (SharedCollection collection : proxy.getRightsBasedResourceCollections()) {
-                 if (collection instanceof SharedCollection){
-                     SharedCollection shared = (SharedCollection)collection;
+            for (ResourceCollection collection : proxy.getManagedResourceCollections()) {
+                 if (collection instanceof ResourceCollection){
+                     ResourceCollection shared = (ResourceCollection)collection;
                      logger.info("adding to shared collection : {} ", collection);
                      if (collection.isTransient() && save) {
                          genericDao.save(shared);
                      } else {
                          // manage session (when called from bulk upload, need to make sure we're on the session, as the incomming may be on a different thread)
-                         shared = genericDao.find(SharedCollection.class, shared.getId());
+                         shared = genericDao.find(ResourceCollection.class, shared.getId());
                      }
-                     shared.getResources().add(resource);
-                     resource.getSharedCollections().add(shared);
+                     shared.getManagedResources().add(resource);
+                     resource.getManagedResourceCollections().add(shared);
                  } else {
                      throw new TdarRecoverableRuntimeException("resourceService.invalid_collectiontype");
                 }
@@ -922,7 +922,7 @@ public class ResourceServiceImpl implements ResourceService  {
      */
     @Override
     @Transactional(readOnly=false)
-    public void updateBatch(BillingAccount account, SharedCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
+    public void updateBatch(BillingAccount account, ResourceCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
         List<Resource> resources = new ArrayList<>();
         for (int i=0; i< ids.size(); i++) {
             Long id = ids.get(i);
@@ -949,9 +949,9 @@ public class ResourceServiceImpl implements ResourceService  {
                     ir.setDate(date);
                 }
             }
-            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getSharedCollections().contains(collectionToAdd)) { 
-                r.getSharedCollections().add(collectionToAdd);
-                collectionToAdd.getResources().add(r);
+            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getManagedResourceCollections().contains(collectionToAdd)) { 
+                r.getManagedResourceCollections().add(collectionToAdd);
+                collectionToAdd.getManagedResources().add(r);
             }
             if (different) {
                 ResourceRevisionLog rrl = new ResourceRevisionLog("Resource batch modified (basic)", r, authenticatedUser, RevisionLogType.EDIT);

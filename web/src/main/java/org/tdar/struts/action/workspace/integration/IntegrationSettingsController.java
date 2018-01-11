@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.external.AuthorizationService;
@@ -52,7 +52,7 @@ public class IntegrationSettingsController extends AbstractPersistableController
     protected String save(DataIntegrationWorkflow persistable) throws TdarActionException {
         List<UserRightsProxy> proxies = new ArrayList<>();
         for (TdarUser user : authorizedMembers) {
-            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, GeneralPermissions.EDIT_INTEGRATION)));
+            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, Permissions.EDIT_INTEGRATION)));
         }
         integrationService.saveSettingsForController(persistable, getAuthenticatedUser(), proxies);
         return SUCCESS_WORKSPACE;

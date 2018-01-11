@@ -2,10 +2,8 @@ package org.tdar.web.service;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -29,26 +27,10 @@ public interface ResourceEditControllerService {
     // and maintain original billing account).
     List<BillingAccount> determineActiveAccounts(TdarUser authenticatedUser, Resource resource);
 
-    void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<SharedCollection> effectiveShares,
-            List<SharedCollection> retainedSharedCollections,
-            List<ListCollection> effectiveResourceCollections, List<ListCollection> retainedListCollections, List<SharedCollection> shares,
-            List<ListCollection> resourceCollections);/*
-                                                      blic void loadEffectiveResourceCollectionsForEdit() {
-                                                      getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
-                                                      
-                                                      getLogger().debug("loadEffective...");
-                                                      for (SharedCollection rc : getResource().getSharedResourceCollections()) {
-                                                      if (authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
-                                                      getShares().add(rc);
-                                                      } else {
-                                                      getRetainedSharedCollections().add(rc);
-                                                      getLogger().debug("adding: {} to retained collections", rc);
-                                                      }
-                                                      }
-                                                      getLogger().debug("Shares: {}", getShares());
-                                                      }
-                                                      
-                                                      */
+    void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<ResourceCollection> effectiveShares,
+            List<ResourceCollection> retainedSharedCollections,
+            List<ResourceCollection> effectiveResourceCollections, List<ResourceCollection> retainedListCollections, List<ResourceCollection> shares,
+            List<ResourceCollection> resourceCollections);
 
     String loadFilesJson(InformationResource persistable);
 
