@@ -91,8 +91,8 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
             siteCodePart.setBoost(SITE_CODE_BOOST);
             queryPart.append(siteCodePart);
         }
-        queryPart.append(new ContentQueryPart(cleanedQueryString, true));
-        queryPart.append(new DataValueQueryPart(cleanedQueryString, true));
+        queryPart.append(new ContentQueryPart(cleanedQueryString, false));
+        queryPart.append(new DataValueQueryPart(cleanedQueryString, false));
         return queryPart;
     }
 
