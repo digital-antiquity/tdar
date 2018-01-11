@@ -918,6 +918,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <b>note:</b> you have not been granted permission to upload or modify files<br/>
         <#else>
                 <#assign uploadConfigId="uploadConfig"/>
+                 <!-- fixme, convert to json server-side -->
                 <script id="uploadConfig" type="application/json">
                  {"files":[<#list fileProxies as f>
                                  <#local val = ""/>
@@ -925,13 +926,19 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <#local val = f.fileCreatedDate?string["MM/dd/yyyy"]>
                     </#if>
 
-                 
-                 {filename:"${f.name}",sequenceNumber:"${f_index}",id:${f.id?c}, action:'NONE', fileId:${f.fileId?c}, restriction: "${f.restriction}",dateCreated:"${val}",description:'${f.description}'}<#sep>,</#sep>
+                 {"name":"${f.filename?js_string}","sequenceNumber":${f.sequenceNumber?c}, "action":"NONE", "fileId":${f.fileId?c}, "restriction": "${f.restriction}","dateCreated":"${val}","description":"${f.description?js_string}"}<#sep>,</#sep>
                  </#list>],
                 "url":"/upload/upload",
-                "ticketId":-1,
-                "resourceId": -1,
-                "userId": -1,
+                "ticketId": ${(ticket.id?c)!-1},
+                "resourceId": ${(id!-1)?c},
+                <#if multipleUpload??>
+                    "multipleUpload" : ${multipleUpload?string},
+                </#if>
+                <#if ableToUploadFiles??>
+                 "ableToUpload" : ${ableToUploadFiles?string},
+                </#if>
+                 "dataTableEnabled" : ${resource.resourceType.dataTableSupported?string},
+                "userId": ${authenticatedUser.id?c},
                 "validFormats":[<#list validFileExtensions as ext>"${ext}"<#sep>,</#sep></#list>],
                 "sideCarOnly":false,
                 "maxNumberOfFiles":50,

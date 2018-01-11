@@ -33,6 +33,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 userId: -1,
                 validFormats: [],
                 sideCarOnly: false,
+                ableToUpload:false,
                 maxNumberOfFiles: 50,
                requiredOptionalPairs: [{required:[], optional:[]}]
         };
@@ -42,7 +43,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         }
         Vue.component('fpart', {
             template: "#fpart-template",
-            props: ["file","index"],
+            props: ["file","index","editable"],
             data : function() {
                 return {
                     previousDeleteState : '',
@@ -56,6 +57,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 },
                 restrictionFieldName: function() {
                     return "fileProxies["+this.index+"].restriction";
+                },
+                inputDisabled: function() {
+                    return !this.editable;
                 },
                 createdDateFieldName: function() {
                     return "fileProxies["+this.index+"].fileCreatedDate";
@@ -73,7 +77,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     return "fileProxies["+this.index+"].action";
                 },
                 descriptionFieldName: function() {
-                    return "fileupload"+this.index+"";
+                    return "fileProxies["+this.index+"].description";
                 },
                 wrapperId: function() {
                     return "fileupload"+this.index+"Wrapper";
@@ -149,11 +153,15 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
           validFormats: config.validFormats,
           sideCarOnly: config.sideCarOnly,
           maxNumberOfFiles: config.maxNumberOfFiles,
-          requiredOptionalPairs: config.requiredOptionalPairs
+          requiredOptionalPairs: config.requiredOptionalPairs,
+          ableToUpload: config.ableToUpload
      },
      computed : {
          valid: function() {
              return this.validatePackage();
+         },
+         inputDisabled: function() {
+             return !this.ableToUpload;
          }
      },
      methods: {
@@ -305,6 +313,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                    type:file.type,
                    lastModified:file.lastModified,
                    status: 'queued',
+                   action:'ADD',
+                   restriction:'PUBLIC',
                    xhr: jqXHR
                };
                if (file.dontCreate == undefined || file.dontCreate == false) {
@@ -329,6 +339,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
               var ticket = data.result.ticket;
               console.log("ticket received: %s", JSON.stringify(ticket));
               Vue.set(this,"ticketId", data.result.ticket.id);
+              $("#ticketId").val(data.result.ticket.id);
           }
 
           active.forEach(function(pair) {
@@ -347,6 +358,10 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
      },
      mounted: function() {
          // setup
+         if (this.ableToUpload == undefined || this.ableToUpload == false) {
+             console.log('file upload disabled');
+             return;
+         }
          var up =  $('#fileupload').fileupload({
               url: this.url,
               dataType: 'json',

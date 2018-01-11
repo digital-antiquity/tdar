@@ -16,7 +16,7 @@
         <div class="control-group">
             <label class="control-label">Restriction</label>
             <div class="controls">
-                <select :name="restrictionFieldName"
+                <select :name="restrictionFieldName" :disabled="inputDisabled"
                     v-model="file.restriction" id="proxy0_conf"
                     class="fileProxyConfidential confidential-contact-required"
                     style="padding-left: 20px;" datarestriction="PUBLIC">
@@ -37,7 +37,7 @@
             <div class="controls controls-row">
                 <div class="span5">
                     <div class="input-append">
-                        <input type="text" :name="createdDateFieldName"
+                        <input type="text" :name="createdDateFieldName" :disabled="inputDisabled"
                             class="datepicker" placeholder="mm/dd/yyyy"
                             v-model="file.dateCreated" value=""
                             data-date-format="mm/dd/yyyy"> <span
@@ -49,7 +49,7 @@
             <label class="control-label">Description</label>
             <div class="controls controls-row">
                 <div class="span5">
-                    <textarea class="input-block-level"
+                    <textarea class="input-block-level" :disabled="inputDisabled"
                         :name="descriptionFieldName" rows="1"
                         placeholder="Enter a description here"
                         v-model="file.description"></textarea>
@@ -57,13 +57,14 @@
             </div>
         </div></td>
     <td style="width: 10%"><span
-        class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block"
+        class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" :disabled="inputDisabled"
         :id="wrapperId" style="width: 6em; text-align: left"> <i
-            class="icon-refresh icon-white"> </i> <span>Replace</span> <input
+            class="icon-refresh icon-white"> </i> <span>Replace</span> 
+            <input :disabled="inputDisabled"
             type="file" name="uploadFile" @change="replaceFileChange"
             :id="fileuploadId" class="replace-file">
     </span>
-        <button type="button" style="text-align: left"
+        <button type="button" style="text-align: left" :disabled="inputDisabled"
             v-if="file.replaceFile != undefined" @click="undoReplace"
             class="btn btn-small btn-warning undo-replace-button btn-block"
             title="Restore Original File">Cancel</button>
@@ -71,13 +72,13 @@
 
 
         <div class="delete">
-            <button v-if="file.action != 'DELETE'"
+            <button v-if="file.action != 'DELETE'" :disabled="inputDisabled"
                 class="btn btn-danger delete-button btn-small btn-block"
                 @click="deleteFile" data-type="DELETE" data-url=""
                 style="text-align: left">
                 <i class="icon-trash icon-white"></i> <span>Delete</span>
             </button>
-            <button v-if="file.action == 'DELETE'"
+            <button v-if="file.action == 'DELETE'" :disabled="inputDisabled"
                 class="btn btn-warning delete-button btn-small btn-block"
                 @click="unDeleteFile" data-type="DELETE" data-url=""
                 style="text-align: left">
@@ -110,16 +111,16 @@
         </thead>
         <tbody v-if="files.length > 0" v-for="(file,index) in files">
             <tr class="template-download fade existing-file in"
-                is="fpart" :index="index" :file="file"></tr>
+                is="fpart" :index="index" :file="file" :editable="ableToUpload"></tr>
         </tbody>
     </table>
 
     <br />
     <!-- The fileinput-button span is used to style the file input field as button -->
-    <span class="btn btn-success fileinput-button"> <i
+    <span class="btn btn-success fileinput-button" :disabled="inputDisabled" > <i
         class="glyphicon glyphicon-plus"></i> <span>Select
             files...</span> <!-- The file input field used as target for the file upload widget -->
-        <input id="fileupload" type="file" name="files[]" multiple>
+        <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </span> <br> <br>
     <!-- The global progress bar -->
     <div id="progress" class="progress">
