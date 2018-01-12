@@ -10,6 +10,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
                 userId: -1,
                 validFormats:[],
                 sideCarOnly:false,
+                ableToUpload:true,
                 maxNumberOfFiles:50,
                 requiredOptionalPairs:[]};
         }
