@@ -7,7 +7,6 @@
             $("body").on("click", ".bookmark-link", TDAR.bookmark.ajaxBookmark);
         }
     };
-
     
     var _applyCollectionMenu = function() {
         $('.bookmark-menu .dropdown-toggle').click(function() {
@@ -20,19 +19,10 @@
                     $(".dropdown-menu").children(".extra").remove();
                     var items = _buildCollectionTree(data);
                     $next.append(items);
+                    
+                    
                 });
             }
-        });
-        $("#addToCollection").click(function() {
-            var $menu = $(this);
-                var $next = $("ul.collection-list");
-                $next.children().remove();
-                $next.append($("<li class='extra'><img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' /></li>"));
-                $.getJSON( "/api/collection/tree?type=SHARED", function( data ) {
-                    $next.children().remove();
-                    var items = _buildCollectionTree(data);
-                    $next.append(items);
-                });
         });
         
     };

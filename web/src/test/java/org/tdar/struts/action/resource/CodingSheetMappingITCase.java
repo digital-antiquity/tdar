@@ -36,10 +36,10 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -408,13 +408,13 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
     public void testCodingSheetMappingRights() throws Exception {
         Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);        
         CodingSheet codingSheet = setupCodingSheet(EXCEL_FILE_NAME, EXCEL_FILE_PATH, ontology, null);
-        SharedCollection sharedCollection = createAndSaveNewResourceCollection("test");
+        ResourceCollection sharedCollection = createAndSaveNewResourceCollection("test");
         TdarUser person = createAndSaveNewPerson("aas23@.com", "asdasff");
-        sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, GeneralPermissions.ADMINISTER_SHARE));
-        sharedCollection.getResources().add(codingSheet);
+        sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, Permissions.ADMINISTER_COLLECTION));
+        sharedCollection.getManagedResources().add(codingSheet);
         genericService.saveOrUpdate(sharedCollection);
         genericService.saveOrUpdate(sharedCollection.getAuthorizedUsers());
-        codingSheet.getSharedCollections().add(sharedCollection);
+        codingSheet.getManagedResourceCollections().add(sharedCollection);
         codingSheet.getAuthorizedUsers().clear();
         genericService.saveOrUpdate(codingSheet);
         

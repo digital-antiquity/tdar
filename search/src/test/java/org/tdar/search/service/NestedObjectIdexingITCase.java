@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
@@ -45,20 +45,20 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     @Rollback(true)
     @Ignore("not really a test, but trying to use to bind save of collections...")
     public void testFlush() {
-        SharedCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
+        ResourceCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Dataset dc = createAndSaveNewDataset();
         for (int i=0;i < 10; i++) {
             Image image = createAndSaveNewInformationResource(Image.class);
             image.setTitle(i + ":"+ image.getTitle() );
-            collection.getResources().add(image);
-            image.getSharedCollections().add(collection);
+            collection.getManagedResources().add(image);
+            image.getManagedResourceCollections().add(collection);
             genericService.saveOrUpdate(image);
             genericService.saveOrUpdate(collection);
         }
         genericService.synchronize();
         logger.debug("===================");
-        collection.getResources().add(dc);
-        dc.getSharedCollections().add(collection);
+        collection.getManagedResources().add(dc);
+        dc.getManagedResourceCollections().add(collection);
         genericService.synchronize();
         logger.debug("===================");
 
@@ -70,12 +70,12 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     @Rollback(true)
     public void testIndexing() throws SearchException, SearchIndexException, IOException, ParseException {
 //        sessionFactory.getCurrentSession().
-        SharedCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
+        ResourceCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Image image = createAndSaveNewInformationResource(Image.class);
         genericService.synchronize();
         logger.debug("===================");
-        collection.getResources().add(image);
-        image.getSharedCollections().add(collection);
+        collection.getManagedResources().add(image);
+        image.getManagedResourceCollections().add(collection);
         logger.debug("{}", image);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(image);
@@ -98,8 +98,8 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         resourceSearchService.buildAdvancedSearch(asqo, getAdminUser(), result, MessageHelper.getInstance());
         assertTrue(result.getResults().contains(image));
 
-        collection.getResources().remove(image);
-        image.getSharedCollections().remove(collection);
+        collection.getManagedResources().remove(image);
+        image.getManagedResourceCollections().remove(collection);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(image);
         genericService.synchronize();

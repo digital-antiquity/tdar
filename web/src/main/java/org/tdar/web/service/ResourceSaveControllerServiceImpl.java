@@ -23,17 +23,16 @@ import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.SupportsResource;
-import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -284,7 +283,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         }
 
         if (!authorizationService.canDo(auth.getAuthenticatedUser(), item, InternalTdarRights.EDIT_ANY_RESOURCE,
-                GeneralPermissions.MODIFY_RECORD)) {
+                Permissions.MODIFY_RECORD)) {
             throw new TdarActionException(StatusCode.FORBIDDEN, "You do not have permissions to upload or modify files");
         }
         // abstractInformationResourceController.didnt_override=%s didn't override properly
@@ -390,33 +389,21 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         resourceService.saveResourceCreatorsFromProxies(proxies, authWrapper.getItem(), rcp.shouldSaveResource());
 
         resolveAnnotations(authWrapper, rcp);
-        List<SharedCollection> retainedSharedCollections = new ArrayList<>();
-        List<ListCollection> retainedListCollections = new ArrayList<>();
-        List<SharedCollection> shares = rcp.getShares();
-        List<ListCollection> resourceCollections = rcp.getResourceCollections();
+        List<ResourceCollection> retainedSharedCollections = new ArrayList<>();
+        List<ResourceCollection> retainedListCollections = new ArrayList<>();
+        List<ResourceCollection> shares = rcp.getShares();
+        List<ResourceCollection> resourceCollections = rcp.getResourceCollections();
 
         loadEffectiveResourceCollectionsForSave(authWrapper, retainedSharedCollections, retainedListCollections);
         logger.debug("retained collections:{}", retainedSharedCollections);
         logger.debug("retained list collections:{}", retainedListCollections);
         shares.addAll(retainedSharedCollections);
         resourceCollections.addAll(retainedListCollections);
-        ErrorTransferObject eto = null;
-
-        boolean notFlagged = true;
-        if (CONFIG.isPayPerIngestEnabled()) {
-            if (PersistableUtils.isNullOrTransient(rcp.getAccountId())) {
-                eto = new ErrorTransferObject();
-                eto.getActionErrors().add("accountService.account_is_null");
-                return eto;
-            }
-            BillingAccount account = genericService.find(BillingAccount.class, rcp.getAccountId());
-            notFlagged = !account.isFlagged();
-        }
 
         if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
-                GeneralPermissions.MODIFY_RECORD) && notFlagged) {
-            resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getSharedCollections(),
-                    authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+                Permissions.MODIFY_RECORD)) {
+            resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getManagedResourceCollections(),
+                    authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.MANAGED);
 
             if (!authorizationService.canEdit(authWrapper.getAuthenticatedUser(), authWrapper.getItem())) {
                 // addActionError("abstractResourceController.cannot_remove_collection");
@@ -427,7 +414,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             logger.debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }
         resourceCollectionService.saveResourceCollections(authWrapper.getItem(), resourceCollections, authWrapper.getItem().getUnmanagedResourceCollections(),
-                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, ListCollection.class);
+                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.UNMANAGED);
 
         if (rcp.getResource() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) rcp.getResource();
@@ -439,6 +426,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             }
         }
 
+        ErrorTransferObject eto = null;
         if (rcp.getResource() instanceof InformationResource) {
             InformationResource ir = (InformationResource) rcp.getResource();
             saveResourceProviderInformation(ir, rcp.getResourceProviderInstitutionName(), rcp.getCopyrightHolderProxies(), rcp.getPublisherName());
@@ -461,16 +449,16 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
      */
     @Override
     @Transactional(readOnly = true)
-    public void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<SharedCollection> retainedSharedCollections,
-            List<ListCollection> retainedListCollections) {
+    public void loadEffectiveResourceCollectionsForSave(AuthWrapper<Resource> auth, List<ResourceCollection> retainedSharedCollections,
+            List<ResourceCollection> retainedListCollections) {
         logger.debug("loadEffective... (save)");
-        for (SharedCollection rc : auth.getItem().getSharedCollections()) {
+        for (ResourceCollection rc : auth.getItem().getManagedResourceCollections()) {
             if (!authorizationService.canRemoveFromCollection(auth.getAuthenticatedUser(), rc)) {
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
-        for (ListCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
+        for (ResourceCollection rc : auth.getItem().getUnmanagedResourceCollections()) {
             if (!authorizationService.canRemoveFromCollection(auth.getAuthenticatedUser(), rc)) {
                 retainedListCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);

@@ -13,18 +13,18 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts.action.AbstractRightsController;
+import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
@@ -68,12 +68,14 @@ public class ResourceRightsController extends AbstractRightsController implement
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
 
-    private List<SharedCollection> shares = new ArrayList<>();
-    private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
-    private List<SharedCollection> effectiveShares = new ArrayList<>();
+    private List<ResourceCollection> shares = new ArrayList<>();
+    private List<ResourceCollection> retainedSharedCollections = new ArrayList<>();
+    private List<ResourceCollection> effectiveShares = new ArrayList<>();
+
+    private CollectionResourceSection type;
     @Override
     public boolean authorize() {
-        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_RECORD);
+        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_RECORD);
     }
 
     @Override
@@ -107,8 +109,8 @@ public class ResourceRightsController extends AbstractRightsController implement
         return SUCCESS;
     }
 
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
+    public List<Permissions> getAvailablePermissions() {
+        List<Permissions> permissions = Permissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
 
@@ -122,15 +124,15 @@ public class ResourceRightsController extends AbstractRightsController implement
         try {
             getLogger().debug("save proxies:{}", getProxies());
             AuthWrapper<Resource> auth = new AuthWrapper<Resource>(resource, false, getAuthenticatedUser(), false);
-            saveService.loadEffectiveResourceCollectionsForSave(auth, retainedSharedCollections, new ArrayList<ListCollection>());
+            saveService.loadEffectiveResourceCollectionsForSave(auth, retainedSharedCollections, new ArrayList<>());
             getLogger().debug("retained collections:{}", getRetainedSharedCollections());
             getShares().addAll(getRetainedSharedCollections());
             getLogger().debug("shares:{}", getShares());
             
             
 
-            resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getSharedCollections(),
-                    getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+            resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getManagedResourceCollections(),
+                    getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, type);
 
             if (!authorizationService.canEdit(getAuthenticatedUser(), getResource())) {
                 // addActionError("abstractResourceController.cannot_remove_collection");
@@ -167,8 +169,8 @@ public class ResourceRightsController extends AbstractRightsController implement
 
     @Override
     public void handleCollectionSave() {
-        resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getSharedCollections(),
-                getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+        resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getManagedResourceCollections(),
+                getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, getType());
     }
     
     @Override
@@ -183,28 +185,36 @@ public class ResourceRightsController extends AbstractRightsController implement
     
     
 
-    public List<SharedCollection> getRetainedSharedCollections() {
+    public List<ResourceCollection> getRetainedSharedCollections() {
         return retainedSharedCollections;
     }
 
-    public void setRetainedSharedCollections(List<SharedCollection> retainedSharedCollections) {
+    public void setRetainedSharedCollections(List<ResourceCollection> retainedSharedCollections) {
         this.retainedSharedCollections = retainedSharedCollections;
     }
 
-    public List<SharedCollection> getEffectiveShares() {
+    public List<ResourceCollection> getEffectiveShares() {
         return effectiveShares;
     }
 
-    public void setEffectiveShares(List<SharedCollection> effectiveShares) {
+    public void setEffectiveShares(List<ResourceCollection> effectiveShares) {
         this.effectiveShares = effectiveShares;
     }
 
-    public List<SharedCollection> getShares() {
+    public List<ResourceCollection> getShares() {
         return shares;
     }
 
-    public void setShares(List<SharedCollection> shares) {
+    public void setShares(List<ResourceCollection> shares) {
         this.shares = shares;
+    }
+
+    public CollectionResourceSection getType() {
+        return type;
+    }
+
+    public void setType(CollectionResourceSection type) {
+        this.type = type;
     }
 
 }

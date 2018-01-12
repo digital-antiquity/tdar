@@ -21,7 +21,6 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.balk.bean.TdarReference;
 import org.tdar.core.bean.AbstractPersistable;
 
 @Entity(name = "dropbox_items")

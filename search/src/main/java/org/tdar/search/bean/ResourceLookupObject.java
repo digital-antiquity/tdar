@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.utils.PersistableUtils;
 
 public class ResourceLookupObject implements Serializable {
@@ -18,7 +18,7 @@ public class ResourceLookupObject implements Serializable {
     private List<Long> collectionIds = new ArrayList<Long>();
     private List<Long> shareIds = new ArrayList<Long>();
     private Long categoryId;
-    private GeneralPermissions permission;
+    private Permissions permission;
     private boolean useSubmitterContext;
     private ReservedSearchParameters reservedSearchParameters;
     private SearchParameters searchParameters = new SearchParameters();
@@ -26,7 +26,7 @@ public class ResourceLookupObject implements Serializable {
     public ResourceLookupObject() {
     }
     
-    public ResourceLookupObject(String term, Long projectId, Boolean includeParent, Long collectionId, Long shareId, Long categoryId, GeneralPermissions permission, ReservedSearchParameters reservedSearchParameters) {
+    public ResourceLookupObject(String term, Long projectId, Boolean includeParent, Long collectionId, Long shareId, Long categoryId, Permissions permission, ReservedSearchParameters reservedSearchParameters) {
         this.term = term;
         this.projectId = projectId;
         this.includeParent = includeParent;
@@ -73,11 +73,11 @@ public class ResourceLookupObject implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 
@@ -125,11 +125,7 @@ public class ResourceLookupObject implements Serializable {
     }
 
     public List<Long> getShareIds() {
-        return shareIds;
+        return collectionIds;
     }
 
-    public void setShareIds(List<Long> shareIds) {
-        this.shareIds = shareIds;
-    }
-    
 }

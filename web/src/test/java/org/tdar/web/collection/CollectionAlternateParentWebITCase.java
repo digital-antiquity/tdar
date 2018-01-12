@@ -3,7 +3,7 @@ package org.tdar.web.collection;
 import java.util.ArrayList;
 
 import org.junit.Test;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class CollectionAlternateParentWebITCase extends AbstractAdminAuthenticatedWebTestCase {
@@ -15,21 +15,21 @@ public class CollectionAlternateParentWebITCase extends AbstractAdminAuthenticat
     public void testCreateRemoveAlternateParent() {
         String name = "my parent collection: " + System.currentTimeMillis();
         String desc = "description goes here: " + System.currentTimeMillis();
-        createTestCollection(CollectionType.SHARED, name, desc, new ArrayList<>());
+        createTestCollection(CollectionResourceSection.MANAGED, name, desc, new ArrayList<>());
         assertTextPresent(name);
         assertTextPresent(desc);
         Long parentId = extractTdarIdFromCurrentURL();
 
         String namea = "my alternate collection: " + System.currentTimeMillis();
         String desca = "description goes here: " + System.currentTimeMillis();
-        createTestCollection(CollectionType.SHARED, namea, desca, new ArrayList<>());
+        createTestCollection(CollectionResourceSection.MANAGED, namea, desca, new ArrayList<>());
         Long altId = extractTdarIdFromCurrentURL();
 
         String altUrl = getCurrentUrlPath();
         
         String namec = "my child collection: " + System.currentTimeMillis();
         String descc = "description goes here: " + System.currentTimeMillis();
-        createTestCollection(CollectionType.SHARED, namec, descc, new ArrayList<>());
+        createTestCollection(CollectionResourceSection.MANAGED, namec, descc, new ArrayList<>());
         Long childId = extractTdarIdFromCurrentURL();
         String childUrl = getCurrentUrlPath();
         clickLinkWithText("edit");

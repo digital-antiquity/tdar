@@ -834,3 +834,8 @@ tr .moremenu {
 tr:hover .moremenu {
     visibility: visible;
 }
+
+.modal-tall {
+	min-height:300px;
+	
+}

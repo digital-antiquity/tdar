@@ -1,6 +1,5 @@
 package org.tdar.core.service.workflow;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.WorkflowContext;

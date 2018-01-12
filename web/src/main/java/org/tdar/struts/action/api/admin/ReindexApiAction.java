@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.service.index.SearchIndexService;
@@ -59,7 +59,7 @@ public class ReindexApiAction extends AbstractAuthenticatableAction implements P
     @HttpForbiddenErrorResponseOnly
     public String execute() throws SearchIndexException, IOException {
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-            SharedCollection c = getGenericService().find(SharedCollection.class, collectionId);
+            ResourceCollection c = getGenericService().find(ResourceCollection.class, collectionId);
             searchIndexService.index(c);
             searchIndexService.indexAllResourcesInCollectionSubTree(c);
         }

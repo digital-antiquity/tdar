@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.InformationResource;
@@ -81,7 +81,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     private int maxRecentResources = 5;
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
-    private List<SharedCollection> allResourceCollections = new ArrayList<>();
+    private List<ResourceCollection> allResourceCollections = new ArrayList<>();
     private Set<BillingAccount> overdrawnAccounts = new HashSet<BillingAccount>();
     private List<InformationResource> resourcesWithErrors;
 
@@ -172,9 +172,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
-        TreeSet<SharedCollection> colls = new TreeSet<>(new TitleSortComparator());
-        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
-                SharedCollection.class)) {
+        TreeSet<ResourceCollection> colls = new TreeSet<>(new TitleSortComparator());
+        for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
             colls.add(rc);
         }
 
@@ -341,11 +340,11 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     }
 
     @DoNotObfuscate(reason = "not needed / performance test")
-    public List<SharedCollection> getAllResourceCollections() {
+    public List<ResourceCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(List<SharedCollection> resourceCollections) {
+    public void setAllResourceCollections(List<ResourceCollection> resourceCollections) {
         this.allResourceCollections = resourceCollections;
     }
 

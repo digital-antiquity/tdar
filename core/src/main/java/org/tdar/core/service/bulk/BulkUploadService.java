@@ -3,8 +3,6 @@ package org.tdar.core.service.bulk;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.TdarUser;

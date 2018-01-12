@@ -8,8 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.TdarUser;
@@ -53,8 +52,8 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<CoverageDate> coverageDates;
     private List<ResourceNote> resourceNotes;
-    private List<SharedCollection> shares;
-    private List<ListCollection> resourceCollections;
+    private List<ResourceCollection> shares;
+    private List<ResourceCollection> resourceCollections;
     private TdarUser submitter;
     private boolean save;
     private ResourceCreatorProxy copyrightHolderProxies;
@@ -215,19 +214,19 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
         this.resourceNotes = resourceNotes;
     }
 
-    public List<SharedCollection> getShares() {
+    public List<ResourceCollection> getShares() {
         return shares;
     }
 
-    public void setShares(List<SharedCollection> shares) {
+    public void setShares(List<ResourceCollection> shares) {
         this.shares = shares;
     }
 
-    public List<ListCollection> getResourceCollections() {
+    public List<ResourceCollection> getResourceCollections() {
         return resourceCollections;
     }
 
-    public void setResourceCollections(List<ListCollection> resourceCollections) {
+    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 

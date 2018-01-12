@@ -81,13 +81,13 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
 
         // create new resources (1) without file (1) with file (2) with file, ancient date, and already has DOI
         InformationResource generateInformationResourceWithUser = generateDocumentWithUser();
-        InformationResource file = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource file = createAndSaveDocumentWithFileAndUseDefaultUser();
         Project project = new Project();
         project.setTitle("test");
         project.setDescription("abcd");
         project.markUpdated(getAdminUser());
         genericService.saveOrUpdate(project);
-        InformationResource file2 = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource file2 = createAndSaveDocumentWithFileAndUseDefaultUser();
         file2.setDateUpdated(new Date(10000)); // forever ago -- should not register
         file2.setExternalId("1234");
         genericService.saveOrUpdate(file2);

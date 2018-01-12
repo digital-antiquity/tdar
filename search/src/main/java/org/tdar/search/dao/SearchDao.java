@@ -27,7 +27,7 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -185,7 +185,7 @@ public class SearchDao<I extends Indexable> {
 
             Enum enum1 = null;
             if (facetClass.equals(ResourceType.class)) {
-                for (CollectionType type : CollectionType.values()) {
+                for (CollectionResourceSection type : CollectionResourceSection.values()) {
                     if (name.equals(type.name())) {
                         enum1 = type;
                     }

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Validateable;
 

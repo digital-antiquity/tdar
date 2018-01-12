@@ -5,10 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.dao.base.GenericDao;
 import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.dao.UserDao;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.utils.dropbox.DropboxClient;
 
 @Component

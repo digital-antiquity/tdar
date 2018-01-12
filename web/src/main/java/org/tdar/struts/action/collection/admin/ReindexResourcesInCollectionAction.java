@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -41,9 +40,9 @@ public class ReindexResourcesInCollectionAction extends AbstractCollectionAdminA
     })
     public String execute() throws Exception {
         if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync((HierarchicalCollection)getCollection());
+            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getCollection());
         } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree((HierarchicalCollection)getCollection());
+            searchIndexService.indexAllResourcesInCollectionSubTree(getCollection());
         }
         return SUCCESS;
     }

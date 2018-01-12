@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.cache.Caches;
 import org.tdar.search.query.SearchResultHandler;
 
 import com.rometools.rome.feed.synd.SyndEntry;

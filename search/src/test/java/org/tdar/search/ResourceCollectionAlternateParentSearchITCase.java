@@ -9,7 +9,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
@@ -32,20 +32,20 @@ public class ResourceCollectionAlternateParentSearchITCase extends AbstractResou
         Long dsId = setupDataset(Status.ACTIVE);
         // setup beans
         Dataset d = genericService.find(Dataset.class, dsId); 
-        SharedCollection parent = createCollection("parent", getAdminUser());
-        SharedCollection alternate = createCollection("alternate", getAdminUser());
-        SharedCollection child = createCollection("child", getAdminUser());
-        SharedCollection grantChild = createCollection("actual", getAdminUser());
-        grantChild.getResources().add(d);
-        d.getSharedCollections().add(grantChild);
+        ResourceCollection parent = createCollection("parent", getAdminUser());
+        ResourceCollection alternate = createCollection("alternate", getAdminUser());
+        ResourceCollection child = createCollection("child", getAdminUser());
+        ResourceCollection grantChild = createCollection("actual", getAdminUser());
+        grantChild.getManagedResources().add(d);
+        d.getManagedResourceCollections().add(grantChild);
         genericService.saveOrUpdate(d);
         genericService.saveOrUpdate(grantChild);
         genericService.synchronize();
         d= null;
         // set alternate parent
-        resourceCollectionService.updateCollectionParentTo(getAdminUser(), grantChild, child, SharedCollection.class);
-        resourceCollectionService.updateCollectionParentTo(getAdminUser(), child, parent, SharedCollection.class);
-        resourceCollectionService.updateAlternateCollectionParentTo(getAdminUser(), child, alternate, SharedCollection.class);
+        resourceCollectionService.updateCollectionParentTo(getAdminUser(), grantChild, child);
+        resourceCollectionService.updateCollectionParentTo(getAdminUser(), child, parent);
+        resourceCollectionService.updateAlternateCollectionParentTo(getAdminUser(), child, alternate);
         genericService.saveOrUpdate(grantChild);
         genericService.saveOrUpdate(alternate);
         genericService.saveOrUpdate(child);
@@ -65,8 +65,8 @@ public class ResourceCollectionAlternateParentSearchITCase extends AbstractResou
         assertTrue("expected to find resource (alternate parent)", resultsContainId(result, dsId));
 }
 
-    private SharedCollection createCollection(String name, TdarUser tdarUser) {
-        SharedCollection c = new SharedCollection();
+    private ResourceCollection createCollection(String name, TdarUser tdarUser) {
+        ResourceCollection c = new ResourceCollection();
         c.setName(name);
         c.setDescription(name);
         c.markUpdated(tdarUser);

@@ -1,0 +1,40 @@
+<div id="collection-selection-form" data-url="<@search.searchUrl "saveResults" />">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Save Search To Collection</h3>
+  </div>
+  
+  <div class="modal-body modal-tall" >
+     
+	<div class="progress progress-striped active" id="upload-progress" >
+        <div id="upload-progress-status" class="bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 10%">
+            <span id="current-progress"></span>
+        </div>
+    </div>
+	
+	
+	  <form id="upload-form">
+	      <div>
+	        <span data-content="A collection must be selected">Select a collection, or create one</span>
+	        <div  style="padding-left:20px;" class="form-group">
+	           <div>
+	             <selectize v-bind:options="options" v-model="selectedCollection" size="1"
+	                  data-max-options="100" data-config="collectionSelectizeOptions" id="collection-list" 
+	                  data-value-field='id' data-label-field='text' data-search-field='text' data-sort-field='text'>
+	             </selectize>
+	           </div>
+	           
+	           <div class="" v-if="isNaN(selectedCollection)" >
+	             <label for="newCollectionDescription">Collection Description</label>
+	             <textarea name="description" id='newCollectionDescription' v-model="newCollectionDescription"> </textarea> 
+	           </div>
+	        </div>
+	     </div>
+	  </form>
+  </div>
+  
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <a href="#" class="btn btn-primary"  v-on:click="saveResultsToCollection">Add to Collection</a>
+  </div>
+</div>

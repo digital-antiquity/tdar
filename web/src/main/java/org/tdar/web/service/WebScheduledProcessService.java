@@ -2,9 +2,6 @@ package org.tdar.web.service;
 
 import java.io.IOException;
 
-import org.springframework.scheduling.annotation.Scheduled;
-import org.tdar.core.service.ScheduledProcessService;
-
 public interface WebScheduledProcessService {
 
     void evictCaches();

@@ -13,10 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -110,8 +108,7 @@ public class SearchParameters {
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
     private List<Resource> sparseProjects = new ArrayList<Resource>();
-    private List<ListCollection> collections = new ArrayList<>();
-    private List<SharedCollection> shares = new ArrayList<>();
+    private List<ResourceCollection> collections = new ArrayList<>();
 
     private List<Long> resourceIds = new ArrayList<Long>();
 
@@ -132,7 +129,7 @@ public class SearchParameters {
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes = new ArrayList<LatitudeLongitudeBox>();
     private List<ResourceType> resourceTypes = new ArrayList<>();
     private List<ObjectType> objectTypes = new ArrayList<>();
-    private List<CollectionType> collectionTypes = new ArrayList<CollectionType>();
+    private List<CollectionResourceSection> collectionTypes = new ArrayList<CollectionResourceSection>();
     private List<LookupSource> types = new ArrayList<>();
     private List<IntegratableOptions> integratableOptions = new ArrayList<IntegratableOptions>();
     private List<DocumentType> documentTypes = new ArrayList<DocumentType>();
@@ -330,7 +327,7 @@ public class SearchParameters {
             queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.GENERAL_TYPE,support_.getText("searchParameter.general_type"), Operator.OR, getTypes()));
         }
         if (CollectionUtils.isNotEmpty(getCollectionTypes())) {
-            queryPartGroup.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
+            queryPartGroup.append(new FieldQueryPart<CollectionResourceSection>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
         }
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
@@ -419,12 +416,9 @@ public class SearchParameters {
         queryPartGroup.append(spatialQueryPart);
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS,
-                support.getText("searchParameter.list_collection"), "listCollections.",
-                ListCollection.class, getOperator(), getCollections()));
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                SharedCollection.class, getOperator(), getShares()));
+                ResourceCollection.class, getOperator(), getCollections()));
         CreatorQueryPart<Creator> cqp = new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies);
         getActionMessages().addAll(cqp.getActionMessages());
         queryPartGroup.append(cqp);
@@ -446,8 +440,11 @@ public class SearchParameters {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <P extends Persistable> SkeletonPersistableQueryPart constructSkeletonQueryPart(String fieldName, String label, String prefix, Class<P> cls,
             Operator operator, List<P> values) {
+        if (CollectionUtils.isEmpty(values)){
+            return null;
+        }
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);
-        logger.trace("{} {} {} ", cls, prefix, values);
+        logger.debug("{} {} {} ", cls, prefix, values);
         if ((HasName.class.isAssignableFrom(cls) || ResourceCollection.class.isAssignableFrom(cls)) && StringUtils.isNotBlank(prefix)) {
             TitleQueryPart tqp = new TitleQueryPart();
             tqp.setPrefix(prefix);
@@ -574,20 +571,16 @@ public class SearchParameters {
         sparseProjects = projects;
     }
 
-    public List<ListCollection> getCollections() {
+    public List<ResourceCollection> getCollections() {
         return collections;
     }
 
-    public void setCollections(List<ListCollection> resourceCollections) {
+    public void setCollections(List<ResourceCollection> resourceCollections) {
         collections = resourceCollections;
     }
 
-    public List<SharedCollection> getShares() {
-        return shares;
-    }
-
-    public void setShares(List<SharedCollection> resourceCollections) {
-        shares = resourceCollections;
+    public List<ResourceCollection> getShares() {
+        return collections;
     }
 
     public List<String> getContents() {
@@ -685,11 +678,11 @@ public class SearchParameters {
         this.types = types;
     }
 
-    public List<CollectionType> getCollectionTypes() {
+    public List<CollectionResourceSection> getCollectionTypes() {
         return collectionTypes;
     }
 
-    public void setCollectionTypes(List<CollectionType> collectionTypes) {
+    public void setCollectionTypes(List<CollectionResourceSection> collectionTypes) {
         this.collectionTypes = collectionTypes;
     }
 

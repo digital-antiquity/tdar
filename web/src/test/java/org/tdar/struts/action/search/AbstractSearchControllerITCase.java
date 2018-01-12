@@ -37,6 +37,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.search.bean.ObjectType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
+import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.AbstractLookupController;
 
@@ -44,10 +45,6 @@ import com.opensymphony.xwork2.Action;
 
 @Transactional
 public abstract class AbstractSearchControllerITCase extends AbstractControllerITCase {
-
-    @Autowired
-    @Deprecated
-    protected AdvancedSearchController controller;
 
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
     protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
@@ -60,8 +57,6 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     @Before
     public void reset() {
         searchIndexService.purgeAll();
-        controller = generateNewInitializedController(AdvancedSearchController.class);
-        controller.setRecordsPerPage(50);
     }
 
     protected Long setupDataset() {
@@ -143,9 +138,9 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return docId;
     }
 
-    protected boolean resultsContainId(Long id) {
+    protected boolean resultsContainId(AbstractAdvancedSearchController controller_, Long id) {
         boolean found = false;
-        for (Resource r : controller.getResults()) {
+        for (Resource r : controller_.getResults()) {
             logger.trace(r.getId() + " " + r.getResourceType());
             if (id.equals(r.getId())) {
                 found = true;
@@ -184,7 +179,11 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
                     msg = ((InstitutionSearchAction) controller).searchInstitutions();
                     break;
                 case RESOURCE:
-                    msg = ((AdvancedSearchController) controller).search();
+                    if (controller instanceof AdvancedSearchDownloadAction) {
+                        msg = ((AdvancedSearchDownloadAction) controller).viewExcelReport();
+                    } else {
+                        msg = ((AdvancedSearchController) controller).search();
+                    }
                     break;
                 default:
                     fail();
@@ -204,64 +203,64 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         }
     }
 
-    protected void doSearch(String query) {
-        doSearch(query, false);
+    protected void doSearch(AbstractAdvancedSearchController controller_, String query) {
+        doSearch(controller_, query, false);
     }
 
-    protected void doSearch(String query, Boolean exceptions) {
+    protected void doSearch(AbstractAdvancedSearchController controller_, String query, Boolean exceptions) {
         evictCache();
-        controller.setQuery(query);
-        doSearch(controller, LookupSource.RESOURCE, exceptions);
-        logger.info("search (" + controller.getQuery() + ") found: " + controller.getTotalRecords());
+        controller_.setQuery(query);
+        doSearch(controller_, LookupSource.RESOURCE, exceptions);
+        logger.info("search (" + controller_.getQuery() + ") found: " + controller_.getTotalRecords());
     }
 
-    protected void setStatuses(Status... status) {
+    protected void setStatuses(AbstractAdvancedSearchController controller, Status... status) {
         controller.getIncludedStatuses().clear();
 
         controller.getIncludedStatuses().addAll(new ArrayList<Status>(Arrays.asList(status)));
     }
 
-    protected void setStatusAll() {
-        setStatuses(Status.values());
+    protected void setStatusAll(AbstractAdvancedSearchController controller) {
+        setStatuses(controller, Status.values());
     }
 
-    protected void logResults() {
-        for (Indexable r : controller.getResults()) {
+    protected void logResults(AbstractLookupController controller_) {
+        for (Indexable r : (List<Indexable>)controller_.getResults()) {
             logger.debug("Search Result:" + r);
         }
     }
 
-    protected void setResourceTypes(ResourceType ... resourceTypes) {
-        setResourceTypes(Arrays.asList(resourceTypes));
-    }
+//    protected void setResourceTypes(ResourceType ... resourceTypes) {
+//        setResourceTypes(Arrays.asList(resourceTypes));
+//    }
 
-    protected void setResourceTypes(List<ResourceType> resourceTypes) {
-        controller.getResourceTypes().clear();
-        controller.getResourceTypes().addAll(resourceTypes);
-    }
+//    protected void setResourceTypes(List<ResourceType> resourceTypes) {
+//        controller.getResourceTypes().clear();
+//        controller.getResourceTypes().addAll(resourceTypes);
+//    }
 
     @Override
     public TdarUser getSessionUser() {
         return null;
     }
 
-    protected SearchParameters firstGroup() {
+    protected SearchParameters firstGroup(AbstractAdvancedSearchController controller) {
         if (controller.getG().isEmpty()) {
             controller.getG().add(new SearchParameters());
         }
         return controller.getG().get(0);
     }
 
-    protected LatitudeLongitudeBox firstMap() {
+    protected LatitudeLongitudeBox firstMap(AbstractAdvancedSearchController controller) {
         return controller.getMap();
     }
 
 
-    protected void setObjectTypes(ObjectType ... resourceTypes) {
-        setObjectTypes(Arrays.asList(resourceTypes));
-    }
+//    protected void setObjectTypes(ObjectType ... resourceTypes) {
+//        setObjectTypes(Arrays.asList(resourceTypes));
+//    }
 
-    protected void setObjectTypes(List<ObjectType> resourceTypes) {
+    protected void setObjectTypes(AbstractAdvancedSearchController controller, List<ObjectType> resourceTypes) {
         controller.getObjectTypes().clear();
         controller.getObjectTypes().addAll(resourceTypes);
     }

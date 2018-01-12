@@ -27,13 +27,10 @@
                         + " rescol.id in (:resourceCollectionIds) and rescol.status='ACTIVE' "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
-                query = "SELECT distinct resCol from SharedCollection resCol where lower(trim(resCol.name)) like lower(trim(:name)) and resCol.status='ACTIVE' "),
-        @NamedQuery(
-                name = TdarNamedQueries.QUERY_LIST_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
-                query = "SELECT distinct resCol from ListCollection resCol where lower(trim(resCol.name)) like lower(trim(:name)) and resCol.status='ACTIVE' "),
+                query = "SELECT distinct resCol from ResourceCollection resCol where lower(trim(resCol.name)) like lower(trim(:name)) and resCol.status='ACTIVE' "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, 
-                query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId) and resCol.status='ACTIVE' and (:perm is null or authUser.effectiveGeneralPermission > :perm )"),
+                query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId) and resCol.status='ACTIVE' and (:perm is null or authUser.effectiveGeneralPermission > :perm )"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RIGHTS_EXPIRY_RESOURCE, 
                 query = "SELECT au from AuthorizedUser au where (exists (select c.id from ResourceCollection c where c.id=au.collectionId and c.id in (select p.id from Resource r left join r.resourceCollections as p where r.id=:id ) "
@@ -75,10 +72,7 @@
                 query = "SELECT new CodingSheet(res.id, res.title, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_SHARED_COLLECTION_LOOKUP,
-                query = "SELECT new SharedCollection(col.id, col.name, col.description, col.sortBy, col.hidden) FROM SharedCollection col where col.id in (:ids) "),
-        @NamedQuery(
-                name = TdarNamedQueries.QUERY_SPARSE_LIST_COLLECTION_LOOKUP,
-                query = "SELECT new ListCollection(col.id, col.name, col.description, col.sortBy, col.hidden) FROM ListCollection col where col.id in (:ids) "),
+                query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.hidden) FROM ResourceCollection col where col.id in (:ids) "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_RESOURCES,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
@@ -214,30 +208,21 @@
         ),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_PARENT,
-                query = "from SharedCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL))  and (hidden=:visible or :visible is NULL) and col.status='ACTIVE' "
-        ),
-        @NamedQuery(
-                name = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_PARENT,
-                query = "from ListCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and (hidden=:visible or :visible is NULL) and col.status='ACTIVE' "
+                query = "from ResourceCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL))  and (hidden=:visible or :visible is NULL) and col.status='ACTIVE' "
         ),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE,
-                query = "SELECT id from ResourceCollection as col where col.type not in ('INTERNAL') and col.hidden is false and col.status='ACTIVE'"
+                query = "SELECT id from ResourceCollection as col where col.hidden is false and col.status='ACTIVE'"
         ),
 
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER,
-                query = "select col from SharedCollection as col left join col.authorizedUsers as authorizedUser where "
-                        + "col.type in (:collectionTypes) and (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm) and col.status='ACTIVE' order by col.name"
-        ),
-        @NamedQuery(
-                name = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_AUTH_OWNER,
-                query = "select distinct col from ListCollection as col left join col.authorizedUsers as authorizedUser where "
-                        + "col.type in (:collectionTypes) and (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm) and col.status='ACTIVE' order by col.name"
+                query = "select col from ResourceCollection as col left join col.authorizedUsers as authorizedUser where "
+                        + "(authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm) and col.status='ACTIVE' order by col.name"
         ),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
-                query = "select distinct col from SharedCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=true and col.hidden=false and col.type!='INTERNAL' and col.status='ACTIVE' "
+                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.hidden=true and col.hidden=false and col.status='ACTIVE' "
         ),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,
@@ -351,7 +336,7 @@
         ),
         @NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_COLLECTION,
-                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.resources as res "
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.managedResources as res "
                         + " where coll.id in (:collectionIds)) and res.status in (:statuses) "
         ),
         @org.hibernate.annotations.NamedQuery(
@@ -441,19 +426,15 @@
                 query = "select account from BillingAccount account join account.invoices as invoice where invoice.id = :id"),
         @NamedQuery(
                 name = TdarNamedQueries.SHARED_COLLECTION_LIST_WITH_AUTHUSER,
-                query = "select rescol from SharedCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId and rescol.status='ACTIVE' "),
-
-        @NamedQuery(
-                name = TdarNamedQueries.LIST_COLLECTION_LIST_WITH_AUTHUSER,
-                query = "select rescol from ListCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId and rescol.status = 'ACTIVE' "),
-
+                query = "select rescol from ResourceCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId and rescol.status='ACTIVE' "
+                ),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED,
                 query = " SELECT distinct new Resource(res.id, res.title, res.resourceType) FROM Resource as res  where " +
                         " (TRUE=:allResourceTypes or res.resourceType in (:resourceTypes)) and (TRUE=:allStatuses or res.status in (:statuses) )  AND " +
                         " (res.submitter.id=:userId or exists (" +
                         " from ResourceCollection rescol  " +
-                        " join rescol.resources as colres " +
+                        " join rescol.managedResources as colres " +
                         " where " +
                         " colres.id = res.id and colres.status='ACTIVE'  and " +
                         " (TRUE=:admin or rescol.id in (:rescolIds) )))  "),
@@ -486,13 +467,10 @@
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES,
-                query = "select distinct res from SharedCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' order by res.id asc"),
-        @NamedQuery(
-                name = TdarNamedQueries.QUERY_LIST_COLLECTION_CHILDREN_RESOURCES,
-                query = "select distinct res from ListCollection rc left join rc.parentIds parentId join rc.unmanagedResources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' order by res.id asc"),
+                query = "select distinct res from ResourceCollection rc left join rc.parentIds parentId join rc.managedResources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' order by res.id asc"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
-                query = "select count(distinct res.id) from SharedCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
+                query = "select count(distinct res.id) from ResourceCollection rc left join rc.parentIds parentId join rc.managedResources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
         @NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
         @NamedQuery(
@@ -591,8 +569,8 @@
                         + "))"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH,
-                query = "select distinct s from SharedCollection s inner join s.authorizedUsers au where au.user=:user and (:admin is true or s.id in ("
-                        + "select s_.id from SharedCollection s_  left join s_.parentIds parentId where s_.id in (:collectionIds) or parentId in (:collectionIds) "
+                query = "select distinct s from ResourceCollection s inner join s.authorizedUsers au where au.user=:user and (:admin is true or s.id in ("
+                        + "select s_.id from ResourceCollection s_  left join s_.parentIds parentId where s_.id in (:collectionIds) or parentId in (:collectionIds) "
                         + "))"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_RESOURCES_SHARED_WITH_USERS,
@@ -601,8 +579,8 @@
                         + "))"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH_USERS,
-                query = "select distinct au.user from SharedCollection s inner join s.authorizedUsers au where  (s.id in ("
-                        + "select s_.id from SharedCollection s_  left join s_.parentIds parentId where s_.id in (:collectionIds) or parentId in (:collectionIds) "
+                query = "select distinct au.user from ResourceCollection s inner join s.authorizedUsers au where  (s.id in ("
+                        + "select s_.id from ResourceCollection s_  left join s_.parentIds parentId where s_.id in (:collectionIds) or parentId in (:collectionIds) "
                         + "))"),
         @NamedQuery(
                 name=TdarNamedQueries.FIND_USERINVITES_BY_COLLECTION,
@@ -633,10 +611,10 @@
                 query = "select r from Resource r join r.authorizedUsers au where au.dateExpires < :date and status in ('ACTIVE', 'DRAFT')"),
         @NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_CHILDRENS_TREE,
-                query = "from SharedCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from SharedCollection rc1 where rc1.alternateParent.id in :collectionIds )"),
+                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )"),
         @NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_LIST_CHILDRENS_TREE,
-                query = "from SharedCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from SharedCollection rc1 where rc1.alternateParent.id in :collectionIds )"),
+                query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.MONTHLY_USAGE_FOR_RESOURCE,
                 query = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId")

@@ -1,7 +1,6 @@
 package org.tdar.struts.action.search;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServerException;

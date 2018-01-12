@@ -93,7 +93,7 @@ public interface QueryFieldNames {
     String COLLECTION_HIDDEN_WITH_RESOURCES = "visibleInSearch";
 
     String RESOURCE_COLLECTION_DIRECT_SHARED_IDS = "directSharedCollectionIds";
-    String RESOURCE_LIST_COLLECTION_DIRECT_IDS = "directListCollectionIds";
+//    String RESOURCE_LIST_COLLECTION_DIRECT_IDS = "directListCollectionIds";
     String LAST_NAME_AUTO = "lastName_autocomplete";
     String FIRST_NAME_AUTO = "firstName_autocomplete";
     String NAME_AUTOCOMPLETE = "name_autocomplete";
@@ -137,8 +137,8 @@ public interface QueryFieldNames {
     String RESOURCE_ID = "resource.id";
     String CORE = "_core";
     String ACTIVE_GEOGRAPHIC_ISO = "geographic.ISO";
-    String RESOURCE_LIST_COLLECTION_NAME = "listCollections.name";
-    String RESOURCE_LIST_COLLECTION_IDS = "listCollectionIds";
+//    String RESOURCE_LIST_COLLECTION_NAME = "listCollections.name";
+//    String RESOURCE_LIST_COLLECTION_IDS = "listCollectionIds";
     String SERIES_NUMBER = "series.number";
     String PUBLISHER_LOCATION = "publisher.location";
     String PUBLISHER_ID = "publisher.id";

@@ -78,7 +78,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void findByFilename() throws InstantiationException, IllegalAccessException, FileNotFoundException {
-        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource ir = createAndSaveDocumentWithFileAndUseDefaultUser();
         InformationResourceFile foundFile = informationResourceService.findFileByFilename(ir, TestConstants.TEST_DOCUMENT_NAME);
         assertNotNull(foundFile);
         boolean found = false;
@@ -94,7 +94,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testCreateInformationResourceFile() throws InstantiationException, IllegalAccessException, FileNotFoundException {
-        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource ir = createAndSaveDocumentWithFileAndUseDefaultUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
@@ -128,7 +128,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testIndexableTextExtractionInPDF() throws InstantiationException, IllegalAccessException, IOException {
-        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource ir = createAndSaveDocumentWithFileAndUseDefaultUser();
         List<Long> irfvids = new ArrayList<Long>();
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         Map<VersionType, InformationResourceFileVersion> map = new HashMap<VersionType, InformationResourceFileVersion>();
@@ -147,7 +147,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testReprocessInformationResourceFile() throws Exception {
-        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource ir = createAndSaveDocumentWithFileAndUseDefaultUser();
 
         assertEquals(ir.getInformationResourceFiles().size(), 1);
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
@@ -205,7 +205,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDeleteInformationResourceFile() throws InstantiationException, IllegalAccessException, FileNotFoundException {
-        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource ir = createAndSaveDocumentWithFileAndUseDefaultUser();
         boolean seen = false;
         try {
             InformationResourceFile irFile = ir.getFirstInformationResourceFile();
@@ -229,7 +229,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testFileStatus() throws Exception {
-        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource ir = createAndSaveDocumentWithFileAndUseDefaultUser();
         for (InformationResourceFile file : ir.getInformationResourceFiles()) {
             file.setStatus(FileStatus.QUEUED);
             assertFalse(file.isProcessed());
@@ -247,7 +247,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     @Test
     public void testVersionDeletion() throws InstantiationException, IllegalAccessException, FileNotFoundException {
-        InformationResource ir = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource ir = createAndSaveDocumentWithFileAndUseDefaultUser();
         InformationResourceFile irFile = ir.getInformationResourceFiles().iterator().next();
         InformationResourceFileVersion version = getVersion(irFile, VersionType.WEB_LARGE);
         File file = version.getTransientFile();
