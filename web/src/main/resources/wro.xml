@@ -62,7 +62,6 @@
         <js>/js/tdar.datepicker.js</js>
         <js>/js/tdar.moreinfo.js</js>
         <js>/js/tdar.upload.js</js>
-        <js>/js/tdar.jquery-upload-validation.js</js>
         <js>/js/tdar.common.js</js>
         <js>/js/tdar.bulk.js</js>
         <js>/js/tdar.repeatrow.js</js>

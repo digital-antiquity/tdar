@@ -30,6 +30,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
@@ -96,6 +97,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private String fileInputMethod;
     private String fileTextInput;
     protected FileSaveWrapper fsw = new FileSaveWrapper();
+    private String uploadSettings;
 
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = null;
@@ -288,6 +290,20 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 fileProxies.add(new FileProxy(informationResourceFile));
             }
         }
+        
+        
+        FileUploadSettings settings = new FileUploadSettings();
+        settings.setAbleToUpload(isAbleToUploadFiles());
+        if (this instanceof DatasetController) {
+            settings.setDataTableEnabled(true);
+        }
+        settings.setFiles(fileProxies);
+        settings.setMultipleUpload(isMultipleFileUploadEnabled());
+        settings.setMaxNumberOfFiles(getMaxUploadFilesPerRecord());
+        settings.setResourceId(getId());
+        settings.setTicketId(getTicketId());
+        settings.setUserId(getAuthenticatedUser().getId());
+        settings.getValidFormats().addAll(getValidFileExtensions());
     }
 
     public FileProxy getBlankFileProxy() {
@@ -580,5 +596,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public void setFileTextInput(String fileTextInput) {
         this.fileTextInput = fileTextInput;
+    }
+
+    public String getUploadSettings() {
+        return uploadSettings;
+    }
+
+    public void setUploadSettings(String uploadSettings) {
+        this.uploadSettings = uploadSettings;
     }
 }
