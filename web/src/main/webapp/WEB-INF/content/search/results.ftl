@@ -74,7 +74,7 @@
             
                 <#if administrator>        
                     <li class="media">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_download"></use></svg>
+                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
                     <span>Save these results &raquo;
                         <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
                             

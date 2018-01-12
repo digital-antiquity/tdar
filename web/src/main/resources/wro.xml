@@ -49,6 +49,7 @@
         <js>/components/leaflet-choropleth/dist/choropleth.js</js>
         
         <js>/components/es6-promise/es6-promise.js</js>
+        <js>/components/es6-promise/es6-promise.auto.js</js>
         <!-- <js>/components/axios/dist/axios.js</js> -->
         <js>/components/qs/dist/qs.js</js>
         <!--  https://github.com/CliffCloud/Leaflet.Sleep -->
