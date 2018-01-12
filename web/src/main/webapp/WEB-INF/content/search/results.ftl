@@ -72,7 +72,7 @@
                     </#if></span>
                     </li>
             
-                <#if administrator>        
+                <#if editor>        
                     <li class="media">
                     <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
                     <span>Save these results &raquo;

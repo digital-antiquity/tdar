@@ -313,7 +313,7 @@
     <span class="Z3988" title="<#noescape>${openUrl!""}</#noescape>"></span>
 
     <#if resource.containsActiveKeywords >
-    <h2>Keywords</h2>
+    <h3>Keywords</h3>
         <#if resource.project?has_content && resource.project.id != -1 && resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
         <em>Note: Inherited values from this project are not available because the project is not active</em>
         </#if>
@@ -380,7 +380,7 @@
     </#macro>
 
         <#list resource.activeCoverageDates>
-        <h2>Temporal Coverage <#if editor && resource.inheritingTemporalInformation!false><small>(from project)</small></#if> </h2>
+        <h3>Temporal Coverage <#if editor && resource.inheritingTemporalInformation!false><small>(from project)</small></#if> </h3>
         <#items as coverageDate>
             <#assign value>
                 <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to
@@ -394,7 +394,7 @@
 
 
     <#if (resource.activeLatitudeLongitudeBoxes?has_content) || (userAbleToViewUnobfuscatedMap && geoJson?has_content)>
-    <h2>Spatial Coverage <#if editor && resource.inheritingSpatialInformation!false><small>(from project)</small></#if> </h2>
+    <h3>Spatial Coverage <#if editor && resource.inheritingSpatialInformation!false><small>(from project)</small></#if> </h3>
     <div class="title-data">
         <#if (resource.activeLatitudeLongitudeBoxes?has_content) >
             <#assign llb = resource.firstActiveLatitudeLongitudeBox />
@@ -462,7 +462,8 @@
 
 
     <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber")>
-    <h2>Notes <#if editor && resource.inheritingNoteInformation!false ><small>(from project)</small></#if> </h2>
+    <hr />
+    <h3>Notes <#if editor && resource.inheritingNoteInformation!false ><small>(from project)</small></#if> </h3>
         <#items as resourceNote>
             <@view.kvp key=resourceNote.type.label val=resourceNote.note />
         </#items>
@@ -585,7 +586,7 @@
             
                 <@list.bookmarkMediaLink resource />
                           
-                <#if administrator>
+                <#if editable>
                 <li class="media "><i class="icon-folder-open pull-left"></i>
                     <div class="media-body">
                         <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
