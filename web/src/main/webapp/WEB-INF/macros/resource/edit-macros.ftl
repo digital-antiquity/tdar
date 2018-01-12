@@ -926,7 +926,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <#local val = f.fileCreatedDate?string["MM/dd/yyyy"]>
                     </#if>
 
-                 {"name":"${f.filename?js_string}","sequenceNumber":${f.sequenceNumber?c}, "action":"NONE", "fileId":${f.fileId?c}, "restriction": "${f.restriction}","dateCreated":"${val}","description":"${f.description?js_string}"}<#sep>,</#sep>
+                 {"name":"${f.filename?js_string}","sequenceNumber":${f.sequenceNumber?c}, "action":"NONE", "fileId":${f.fileId?c}, "restriction": "${f.restriction}","dateCreated":"${val}","description":"${(f.description!'')?js_string}"}<#sep>,</#sep>
                  </#list>],
                 "url":"/upload/upload",
                 "ticketId": ${(ticket.id?c)!-1},
