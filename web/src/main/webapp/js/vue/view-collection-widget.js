@@ -74,7 +74,7 @@ var _init = function(appId) {
         selectedCollection: 0 ,
         pick:"existing", //For the radio button of existing or new collection. 
         options:[],
-        
+        umnamagedEnabled: true,
         newCollectionName:"",
         newCollectionDescription:"",
         managedCollectionsToRemove: [],
@@ -96,6 +96,10 @@ var _init = function(appId) {
         var $e = $(this.$el);
         if($e.data('resourceId')!=null){
 	        Vue.set(this, 'canEdit',$e.data('canEdit'));
+	        Vue.set(this, 'umnamagedEnabled',$e.data('umnamagedEnabled'));
+	        if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
+	            Vue.set(this,"managedResource",true);
+	        }
 		    Vue.set(this, 'resourceId',$e.data('resourceId'));
 		    this._getCollectionsForResource();
         }
@@ -124,6 +128,10 @@ var _init = function(appId) {
             this.newCollectionName="";
             this.newCollectionDescription="";
             this.managedResource = false;
+            if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
+                Vue.set(this,"managedResource",true);
+            }
+
             this.managedCollectionsToRemove = [];
             this.unmanagedCollectionsToRemove = [];
             var $select = $('#collection-list').selectize();
@@ -133,7 +141,11 @@ var _init = function(appId) {
         getCollections: function(){
         	console.log("Getting list of all available collections");
             var self = this;
-            axios.get("/api/lookup/collection?permission=ADMINISTER_COLLECTION").then(function(res) {
+            var permission = "ADD_TO_COLLECTION";
+            if (this.umnamagedEnabled == true) {
+                permission = ADD_TO_COLLECTION;
+            }
+            axios.get("/api/lookup/collection?permission=" + permission).then(function(res) {
                     self.items = res.data;
             });
         },
@@ -401,7 +413,7 @@ var _init = function(appId) {
         	    else {
         	    	console.log("Progress is 100%");
         	    	vapp._resetCollectionSelectionState();
-        	    	$("#modal").modal('hide');
+//        	    	$("#modal").modal('hide');
         	    	
         	    }
         	    

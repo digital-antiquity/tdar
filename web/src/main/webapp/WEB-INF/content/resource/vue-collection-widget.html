@@ -1,4 +1,4 @@
-<div id="add-resource-form" data-can-edit="${editable?c}" data-resource-id="${resource.id?c}">
+<div id="add-resource-form" data-can-edit="${editable?c}" data-resource-id="${resource.id?c}" data-umnamaged-enabled="${ (editor == false)?c}">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>Add to a Collection</h3>
@@ -23,7 +23,7 @@
 
             <div v-if="canEdit">
                 <label>
-                    <input type="checkbox" v-model="managedResource" checked="checked"/>
+                    <input type="checkbox" v-model="managedResource" checked="checked" :disabled="umnamagedEnabled" />
                      Grant rights to Edit this record to users of this collection
                 </label>
              </div>
@@ -32,10 +32,10 @@
                     <h3>Included as part of : </h3>
                     <ul id='existing-collections-list'>
                     <li v-for="collection in collections.managed">
-                        {{ellipse(collection.name)}} (managed) <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' style="cursor:pointer">Remove</a>
+                        {{ellipse(collection.name)}} <span v-show="umnamagedEnabled">(managed)</span> <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' style="cursor:pointer">Remove</a>
                     </li>
                     
-                    <li v-for="collection in collections.unmanaged">
+                    <li v-show="umnamagedEnabled" v-for="collection in collections.unmanaged">
                         {{ellipse(collection.name)}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")' style="cursor:pointer">Remove</a>
                     </li>
                     </ul>
