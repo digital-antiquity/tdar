@@ -4,8 +4,53 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.tdar.core.bean.FileProxy;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+/**
+ * transport object for our FileUploadWidget
+ * 
+ * 
+ * {"files":[<#list fileProxies as f>
+ * <#local val = ""/>
+ * <#if (f.fileCreatedDate)?has_content>
+ * <#local val = f.fileCreatedDate?string["MM/dd/yyyy"]>
+ * </#if>
+ * 
+ * {"name":"${f.filename?js_string}","sequenceNumber":${f.sequenceNumber?c}, "action":"NONE", "fileId":${(f.fileId!-1)?c}, "restriction":
+ * "${f.restriction}","dateCreated":"${val}","description":"${(f.description!'')?js_string}"}<#sep>,</#sep>
+ * </#list>],
+ * "url":"/upload/upload",
+ * "ticketId": ${(ticket.id?c)!-1},
+ * "resourceId": ${(id!-1)?c},
+ * <#if multipleUpload??>
+ * "multipleUpload" : ${multipleUpload?string},
+ * </#if>
+ * <#if ableToUploadFiles??>
+ * "ableToUpload" : ${ableToUploadFiles?string},
+ * </#if>
+ * "dataTableEnabled" : ${resource.resourceType.dataTableSupported?string},
+ * "userId": ${authenticatedUser.id?c},
+ * "validFormats":[<#list validFileExtensions as ext>".${ext}"<#sep>,</#sep></#list>],
+ * "sideCarOnly":false,
+ * "maxNumberOfFiles":${maxUploadFilesPerRecord},
+ * "requiredOptionalPairs":[]
+ * }
+ * 
+ * @author abrin
+ *
+ */
+@JsonInclude(value=Include.NON_ABSENT)
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class FileUploadSettings implements Serializable {
 
     private static final long serialVersionUID = -2111318200411438432L;
@@ -94,6 +139,8 @@ public class FileUploadSettings implements Serializable {
         this.url = url;
     }
 
+    @XmlElementWrapper(name = "files")
+    @XmlElement(name = "file")
     public List<FileProxy> getFiles() {
         return files;
     }
@@ -110,6 +157,8 @@ public class FileUploadSettings implements Serializable {
         this.maxNumberOfFiles = maxNumberOfFiles;
     }
 
+    @XmlElementWrapper(name = "requiredOptionalPairs")
+    @XmlElement(name = "requiredOptionalPair")
     public List<RequiredOptionalPairs> getRequiredOptionalPairs() {
         return requiredOptionalPairs;
     }

@@ -31,6 +31,7 @@ import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.geospatial.GeospatialController;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
@@ -133,8 +134,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected String save(InformationResource document) throws TdarActionException {
         // save basic metadata
         getLogger().debug("save ir");
-//        saveBasicResourceMetadata();
-        
+        // saveBasicResourceMetadata();
+
         // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();
         getResource().setProject(getProject());
@@ -158,7 +159,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         fsw.setTicketId(getTicketId());
         fsw.setUploadedFilesFileName(getUploadedFilesFileName());
         fsw.setUploadedFiles(getUploadedFiles());
-        AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(), isEditor());
+        AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(),
+                isEditor());
         resourceSaveControllerService.setupFileProxiesForSave(proxy, authWrapper, fsw, this);
         setHasFileProxyChanges(fsw.isFileProxyChanges());
         super.save(document);
@@ -254,9 +256,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         loadResourceProviderInformation();
         resourceViewControllerService.setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
-    
+
     @Autowired
     private SerializationService serializationService;
+
+    private String fileUploadSettings;
 
     @Override
     public String loadAddMetadata() {
@@ -266,6 +270,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         obfuscationService.obfuscate(obsProj, getAuthenticatedUser());
         Object proj = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(), null);
         json = serializationService.convertFilteredJsonForStream(proj, JsonProjectLookupFilter.class, null);
+        initializeFileProxies();
         return retval;
     }
 
@@ -290,20 +295,34 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                 fileProxies.add(new FileProxy(informationResourceFile));
             }
         }
-        
-        
+
         FileUploadSettings settings = new FileUploadSettings();
         settings.setAbleToUpload(isAbleToUploadFiles());
         if (this instanceof DatasetController) {
             settings.setDataTableEnabled(true);
         }
-        settings.setFiles(fileProxies);
+        if (this instanceof GeospatialController) {
+            settings.setSideCarOnly(true);
+        }
+        getLogger().debug("proxies: {} ({})", fileProxies, fileProxies.size());
+        settings.getFiles().addAll(fileProxies);
         settings.setMultipleUpload(isMultipleFileUploadEnabled());
         settings.setMaxNumberOfFiles(getMaxUploadFilesPerRecord());
         settings.setResourceId(getId());
         settings.setTicketId(getTicketId());
         settings.setUserId(getAuthenticatedUser().getId());
         settings.getValidFormats().addAll(getValidFileExtensions());
+        settings.getRequiredOptionalPairs().addAll(getRequiredOptionalPairs());
+        try {
+            setFileUploadSettings(serializationService.convertToJson(settings));
+        } catch (Throwable t) {
+            getLogger().error("{}", t, t);
+
+        }
+    }
+
+    public Collection<RequiredOptionalPairs> getRequiredOptionalPairs() {
+        return new ArrayList<>();
     }
 
     public FileProxy getBlankFileProxy() {
@@ -366,7 +385,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         return potentialParents;
     }
-
 
     @Autowired
     public void setFileAnalyzer(FileAnalyzer analyzer) {
@@ -508,8 +526,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public boolean isAbleToUploadFiles() {
         if (isAbleToUploadFiles == null) {
             isAbleToUploadFiles = resourceEditControllerService.isAbleToUploadFiles(getAuthenticatedUser(), getPersistable(), getActiveAccounts());
+            getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, getPersistable().getAccount());
         }
-        getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, getPersistable().getAccount());
 
         return isAbleToUploadFiles;
     }
@@ -576,8 +594,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return types;
     }
 
-
-
     public String getFileInputMethod() {
         return fileInputMethod;
     }
@@ -604,5 +620,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public void setUploadSettings(String uploadSettings) {
         this.uploadSettings = uploadSettings;
+    }
+
+    public String getFileUploadSettings() {
+        return fileUploadSettings;
+    }
+
+    public void setFileUploadSettings(String fileUploadSettings) {
+        this.fileUploadSettings = fileUploadSettings;
     }
 }

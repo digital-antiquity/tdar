@@ -26,6 +26,8 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * $Id$
  * 
@@ -53,7 +55,9 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private Date fileCreatedDate;
     // used to help distinguish between user managed proxies and those that may have been created to work around an error
 //    private boolean createdByServer = false;
+    @JsonIgnore
     private InformationResourceFile informationResourceFile;
+    @JsonIgnore
     private InformationResourceFileVersion informationResourceFileVersion;
 
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();

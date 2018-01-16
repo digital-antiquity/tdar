@@ -133,6 +133,7 @@
 
 <!--  fallback for testing -->
 <div v-if="false">
+<noscript>
     <#list fileProxies as p>
                 <assign fupval = ""/>
                 <#if (p.fileCreatedDate)?has_content>
@@ -146,7 +147,7 @@
                 <input type="hidden" name="fileProxies[${p_index}].action" value="${p.action}"/>
                 <input type="hidden" name="fileProxies[${p_index}].fileId" value="${(p.fileId!-1)?c}"/>
     </#list>
-
+</noscript>
 </div>
 
 
