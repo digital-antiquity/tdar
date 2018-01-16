@@ -1,3 +1,34 @@
+<div id='vueupload'>
+<div id="uploadWidget" data-config="#${uploadConfigId}">
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>action</th>
+            </tr>
+        </thead>
+        <tbody v-if="files.length > 0" v-for="(file,index) in files">
+            <tr class="template-download fade existing-file in"
+                is="fpart" :index="index" :file="file" :editable="ableToUpload"></tr>
+        </tbody>
+    </table>
+
+    <br />
+    <!-- The fileinput-button span is used to style the file input field as button -->
+    <span class="btn btn-success fileinput-button" :disabled="inputDisabled" > <i
+        class="glyphicon glyphicon-plus"></i> <span>Select
+            files...</span> <!-- The file input field used as target for the file upload widget -->
+        <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
+    </span> <br> <br>
+    <!-- The global progress bar -->
+    <div id="progress" class="progress">
+        <div class="progress-bar progress-bar-success"></div>
+    </div>
+    <div id="uploadstatus"></div>
+    <!-- The container for the uploaded files -->
+    <div id="files" class="files"></div>
+</div>
 
 <template id="fpart-template">
 <tr v-bind:id="rowId">
@@ -100,34 +131,23 @@
 </tr>
 </template>
 
-<div id="uploadWidget" data-config="#${uploadConfigId}">
+<!--  fallback for testing -->
+<div v-if="false">
+    <#list fileProxies as p>
+                <assign fupval = ""/>
+                <#if (p.fileCreatedDate)?has_content>
+                    <#assign fupval="p.fileCreatedDate?string['MM/dd/yyyy']" />
+                </#if>
+                <input type="hidden" name="fileProxies[${p_index}].restriction" value="${p.restriction}"/>
+                <input type="hidden" name="fileProxies[${p_index}].fileCreatedDate" value="${fupval}"/>
+                <input type="hidden" name="fileProxies[${p_index}].description" value="${p.description!''}"/>
+                <input type="hidden" name="fileProxies[${p_index}].filename" value="${p.filename}"/>
+                <input type="hidden" name="fileProxies[${p_index}].sequenceNumber" value="${p.sequenceNumber?c}"/>
+                <input type="hidden" name="fileProxies[${p_index}].action" value="${p.action}"/>
+                <input type="hidden" name="fileProxies[${p_index}].fileId" value="${p.fileId?c}"/>
+    </#list>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th></th>
-                <th>action</th>
-            </tr>
-        </thead>
-        <tbody v-if="files.length > 0" v-for="(file,index) in files">
-            <tr class="template-download fade existing-file in"
-                is="fpart" :index="index" :file="file" :editable="ableToUpload"></tr>
-        </tbody>
-    </table>
-
-    <br />
-    <!-- The fileinput-button span is used to style the file input field as button -->
-    <span class="btn btn-success fileinput-button" :disabled="inputDisabled" > <i
-        class="glyphicon glyphicon-plus"></i> <span>Select
-            files...</span> <!-- The file input field used as target for the file upload widget -->
-        <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
-    </span> <br> <br>
-    <!-- The global progress bar -->
-    <div id="progress" class="progress">
-        <div class="progress-bar progress-bar-success"></div>
-    </div>
-    <div id="uploadstatus"></div>
-    <!-- The container for the uploaded files -->
-    <div id="files" class="files"></div>
 </div>
 
+
+</div>
