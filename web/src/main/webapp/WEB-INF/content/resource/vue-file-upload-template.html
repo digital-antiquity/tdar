@@ -96,22 +96,22 @@
             :id="fileuploadId" class="replace-file">
     </span>
         <button type="button" style="text-align: left" :disabled="inputDisabled"
-            v-if="file.replaceFile != undefined" @click="undoReplace"
+            v-if="file.replaceFile != undefined" @click="undoReplace" type="button"
             class="btn btn-small btn-warning undo-replace-button btn-block"
             title="Restore Original File">Cancel</button>
 
 
 
         <div class="delete">
-            <button v-if="file.action != 'DELETE'" :disabled="inputDisabled"
+            <button v-if="file.action != 'DELETE'" :disabled="inputDisabled" type="button"
                 class="btn btn-danger delete-button btn-small btn-block"
-                @click="deleteFile" data-type="DELETE" data-url=""
+                @click="deleteFile" data-type="DELETE"
                 style="text-align: left">
                 <i class="icon-trash icon-white"></i> <span>Delete</span>
             </button>
-            <button v-if="file.action == 'DELETE'" :disabled="inputDisabled"
+            <button v-if="file.action == 'DELETE'" :disabled="inputDisabled" type="button"
                 class="btn btn-warning delete-button btn-small btn-block"
-                @click="unDeleteFile" data-type="DELETE" data-url=""
+                @click="unDeleteFile" data-type="DELETE"
                 style="text-align: left">
                 <i class="icon-trash icon-white"></i> <span>Undelete</span>
             </button>
@@ -144,7 +144,7 @@
                 <input type="hidden" name="fileProxies[${p_index}].filename" value="${p.filename}"/>
                 <input type="hidden" name="fileProxies[${p_index}].sequenceNumber" value="${p.sequenceNumber?c}"/>
                 <input type="hidden" name="fileProxies[${p_index}].action" value="${p.action}"/>
-                <input type="hidden" name="fileProxies[${p_index}].fileId" value="${p.fileId?c}"/>
+                <input type="hidden" name="fileProxies[${p_index}].fileId" value="${(p.fileId!-1)?c}"/>
     </#list>
 
 </div>

@@ -926,7 +926,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <#local val = f.fileCreatedDate?string["MM/dd/yyyy"]>
                     </#if>
 
-                 {"name":"${f.filename?js_string}","sequenceNumber":${f.sequenceNumber?c}, "action":"NONE", "fileId":${f.fileId?c}, "restriction": "${f.restriction}","dateCreated":"${val}","description":"${(f.description!'')?js_string}"}<#sep>,</#sep>
+                 {"name":"${f.filename?js_string}","sequenceNumber":${f.sequenceNumber?c}, "action":"NONE", "fileId":${(f.fileId!-1)?c}, "restriction": "${f.restriction}","dateCreated":"${val}","description":"${(f.description!'')?js_string}"}<#sep>,</#sep>
                  </#list>],
                 "url":"/upload/upload",
                 "ticketId": ${(ticket.id?c)!-1},
@@ -939,9 +939,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 </#if>
                  "dataTableEnabled" : ${resource.resourceType.dataTableSupported?string},
                 "userId": ${authenticatedUser.id?c},
-                "validFormats":[<#list validFileExtensions as ext>"${ext}"<#sep>,</#sep></#list>],
+                "validFormats":[<#list validFileExtensions as ext>".${ext}"<#sep>,</#sep></#list>],
                 "sideCarOnly":false,
-                "maxNumberOfFiles":50,
+                "maxNumberOfFiles":${maxUploadFilesPerRecord},
                 "requiredOptionalPairs":[]
                 }
                 </script>

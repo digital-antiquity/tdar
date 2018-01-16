@@ -165,6 +165,28 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
          }
      },
      methods: {
+         getCurrentNumberOfFiles: function(files) {
+             var _app = this;
+             var currentNumberOfFiles = 0;
+             files.forEach(function(f){
+                 if (f.action != 'DELETE') {
+                     var partOfPair = false;
+                     var ext = "." + f.name.split('.').pop();
+                     for (var i =0; i < _app.requiredOptionalPairs.length; i++) {
+                        var pair = _app.requiredOptionalPairs[i];
+                        if ($.inArray(ext , pair.optional) && files.length > 1)  {
+                            currentNumberOfFiles++;
+                            partOfPair = true;
+                            break;
+                        }
+                     }
+                     if (partOfPair == false) {
+                         currentNumberOfFiles++;
+                     }
+                 }
+             });
+             return currentNumberOfFiles;
+         },
          validatePackage: function() {
              if (this.requiredOptionalPairs == undefined || this.requiredOptionalPairs.length == 0) {
                  return true;
@@ -226,8 +248,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
              var validExt = undefined;
              // for valid extensions check if we match
              var fileName = file.name;
+             var _app = this;
              this.validFormats.forEach(function(ext){
-                 console.log("eval:",fileName,ext);
                  if (fileName.indexOf(ext, fileName.length - ext.length) !== -1) {
                      validExt = ext
                  }
@@ -238,8 +260,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
              }
              
              // check number of files
-             // FIXME: add check/subtraction for deleted files
-             if (this.files.length >= this.maxNumberOfFiles) {
+             var currentNumberOfFiles = this.getCurrentNumberOfFiles(this.files);
+             
+             if (currentNumberOfFiles >= this.maxNumberOfFiles) {
                  console.error("too many files", this.maximumNumberOfFiles);
                  return false;
              }
