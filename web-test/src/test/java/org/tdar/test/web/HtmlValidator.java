@@ -43,6 +43,9 @@ public class HtmlValidator {
             "Warning: missing </fieldset> before </div",
             "Warning: missing </form> before </div",
             "Warning: discarding unexpected </form",
+            "Warning: input isn't allowed in <table> elements",
+            "Error: assign is not recognized",
+            "Warning: discarding unexpected assign",
             "Warning: discarding unexpected </fieldset",
             "discarding unexpected </span>", "missing </span> before ",
             "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */
@@ -52,6 +55,7 @@ public class HtmlValidator {
             "inserting implicit <table>",
             " <div> isn't allowed in <table>",
             "missing <tr",
+            "missing </table> before </div",
             "discarding unexpected <table",
             "discarding unexpected hr"
     };
