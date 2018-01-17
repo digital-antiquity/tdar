@@ -54,7 +54,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private Integer sequenceNumber = 0;
     private String description;
     @JsonFormat
-    (shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+    (shape = JsonFormat.Shape.STRING, pattern = "MM-dd-yyyy")
     private Date fileCreatedDate;
     // used to help distinguish between user managed proxies and those that may have been created to work around an error
 //    private boolean createdByServer = false;
