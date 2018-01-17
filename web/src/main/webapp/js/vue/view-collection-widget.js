@@ -80,10 +80,10 @@ var _init = function(appId) {
         managedCollectionsToRemove: [],
         unmanagedCollectionsToRemove: [],
         
-        
         showPermission:false,
         managedResource: true,
         resourceId: -1,
+        administrator: false,
         canEdit: false,
         collections: {managed:[], unmanaged:[]},
         
@@ -94,7 +94,11 @@ var _init = function(appId) {
     
     mounted: function() {
         var $e = $(this.$el);
+        console.log("Calling mounting functions");
         if($e.data('resourceId')!=null){
+        	console.log("Mounted");
+        	Vue.set(this, 'administrator',$e.data('administrator'));
+        	console.log("Administrator is ",this.administrator);
 	        Vue.set(this, 'canEdit',$e.data('canEdit'));
 	        Vue.set(this, 'umnamagedEnabled',$e.data('umnamagedEnabled'));
 	        if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
@@ -229,8 +233,6 @@ var _init = function(appId) {
          */
         _addResultsToCollection: function(collectionId){
 
-        	
-        	
         	var url = $(this.$el).data("url");
         	var vapp = this;
 
@@ -352,7 +354,6 @@ var _init = function(appId) {
         	vapp.addToCollection();
         	vapp._processCollectionRemovals();
         	vapp._resetForm();
-        	$("#modal").modal('hide');
         },
         
         

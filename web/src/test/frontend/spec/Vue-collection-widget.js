@@ -16,7 +16,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     
     //cancelAddToCollectionChanges
     it("presses the cancel button to hide the modal window and reset the form.", function(done){
-    	var fix = setupFixture();
+    	var fix = setupFixture("true","true","111");
 
         // only install the moxios proxy ONCE the fixture has been setup
         moxios.install(axios);
@@ -95,25 +95,89 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     });
     
     
-    
     //addToCollection
     
+    
+    
+    
     //removeResourceFromCollection
+    it("removes a resource from a collection", function(done){
+    	var fix = setupFixture("true","true","111");
+
+        // only install the moxios proxy ONCE the fixture has been setup
+        moxios.install(axios);
+        // stub out moxios resquest/responses
+        moxios.stubRequest('/api/collection/resourcecollections?resourceId=111', {
+                status: 200,
+                response: {
+                	    "managed": [],
+                	    "unmanaged": [
+                	        {
+            	            "sortBy": "TITLE",
+            	            "id": 65989,
+            	            "name": "Brian's Test Collection",
+            	            "description": "",
+            	            "unmanagedResources": [
+                	                407547,
+                	                407544,
+                	                407545
+                	            ],
+                	            "resources": []
+                	        },
+                	        {
+                	            "name": "TEST (Brian)",
+                	            "id": 23471,
+                	            "description": "",
+                	            "formattedDescription": "",
+                	            "unmanagedResources": [
+                	                56291,
+                	                190440,
+                	                361448,
+                	                361456,
+                	                361459
+                	            ],
+                	            "resources": [
+                	                377141,
+                	                432277,
+                	                376849,
+                	                433427,
+                	                425996,
+                	                425961
+                	            ]
+                	        }
+                	    ]
+                }
+        });
+    	done();
+    });
+    
     ///api/lookup/collection?permission=ADMINISTER_COLLECTION
-    ///api/collection/resourcecollections?resourceId=111
+    it("gets a list of collections the user has permissions to", function(done){
+    	done();
+    });
     
     
+    it("prevents non-admins from selecting the box.",function(done){
+    	var fix = setupFixture("false","true","111");
+        var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
+        
+        vapp.$forceUpdate();
+        
+        Vue.nextTick(function() {
+        	expect(fix.find("#managedResource").is(":disabled")).toBe(true);
+        });
+    	done();
+    })
     
-    
+  
 
     it("gracefully handles page with no map elements", function(done) {
-    	var fix = setupFixture();
+    	var fix = setupFixture("true","true","111");
 
         // only install the moxios proxy ONCE the fixture has been setup
         moxios.install(axios);
 
         var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
-
         // stub out moxios resquest/responses
         moxios.stubRequest('/api/collection/resourcecollections?resourceId=111', {
                 status: 200,
@@ -143,7 +207,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         console.info("------------------------------------- vue ---------------------------------------");
     });
 
-    function setupFixture(){
+    function setupFixture(admin, editable, resourceid){
         // change the fixture path to point to our template
         jasmine.getFixtures().fixturesPath = "base/src/main/webapp/WEB-INF/content/resource/";
         
@@ -151,8 +215,9 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         var fixture = jasmine.getFixtures().read("vue-collection-widget.html");
         
         // set some IDs
-        fixture = fixture.replace("${editable?c}","false");
-        fixture = fixture.replace("${resource.id?c}","111");
+        fixture = fixture.replace("${administrator?c}",admin);
+        fixture = fixture.replace("${editable?c}",editable);
+        fixture = fixture.replace("${resource.id?c}",resourceid);
 
         // apply the fixxture
         var fix = jasmine.getFixtures().set(fixture);

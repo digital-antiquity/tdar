@@ -108,9 +108,9 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 											this.unmanagedAdditions)
 								} else {
 									console.debug("Removing " + id
-											+ " from unmanaged additions");
+											+ " from unmanaged removals");
 									this.removeFromArray(id,
-											this.managedRemovals)
+											this.unmanagedRemovals)
 								}
 							}
 

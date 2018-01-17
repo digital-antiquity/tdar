@@ -1,4 +1,4 @@
-<div id="add-resource-form" data-can-edit="${editable?c}" data-resource-id="${resource.id?c}" data-umnamaged-enabled="${ (editor == false)?c}">
+<div id="add-resource-form" data-administrator="${administrator?c}" data-can-edit="${editable?c}" data-resource-id="${resource.id?c}">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>Add to a Collection</h3>
@@ -17,13 +17,13 @@
                   </div>
                   <div style="margin-top:15px;" v-if="isNaN(selectedCollection)" >
                       <label for="newCollectionDescription">Collection Description</label>
-                      <textarea style="width:100%;padding:0" name="description" id='newCollectionDescription' v-model="newCollectionDescription"></textarea> 
+                      <textarea class="wide-textarea" name="description" id='newCollectionDescription' v-model="newCollectionDescription"></textarea> 
                   </div>
               </div>
 
             <div v-if="canEdit">
                 <label>
-                    <input type="checkbox" v-model="managedResource" checked="checked" :disabled="umnamagedEnabled" />
+                    <input type="checkbox" id="managedResource" v-model="managedResource" :checked="canEdit" :disabled="!administrator" />
                      Grant rights to Edit this record to users of this collection
                 </label>
              </div>
@@ -47,7 +47,7 @@
         </form>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges">Close</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges">Cancel</button>
     <a href="#" class="btn btn-primary"  v-on:click="saveAddToCollectionChanges">Save changes</a>
   </div>
 </div>  

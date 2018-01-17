@@ -910,7 +910,6 @@ TDAR.datatable = function() {
                     'term' : $("#existing_res_query").val(),
                     'projectId' : "",
                   
-                    'xxxEXISTINGRESOURCE' : true,
                 	//These are sent. 
                     'collectionId' : $("#metadataForm_id").val(),
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid,
@@ -985,7 +984,7 @@ TDAR.datatable = function() {
     		}
     	}
     	
-    	console.log("Remvoing from datatable data");
+    	console.log("Removing pending change from data");
     	_arrayRemove($dataTable.data(array),parseInt(id));
     	console.debug($dataTable);
     	var buttonId = "#"+btnId+id;

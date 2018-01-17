@@ -1,6 +1,7 @@
 package org.tdar.web.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -28,6 +29,7 @@ import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.utils.MessageHelper;
 
@@ -47,11 +49,14 @@ public class WebSearchServiceImpl implements WebSearchService {
     @Autowired
     private AuthorizationService authorizationService;
 
-    private Integer maxNumOfRecords = 100;
+    private Integer maxNumOfRecords = 1000;
 
     @Autowired
     private ApplicationEventPublisher publisher;
-
+    
+    @Autowired
+    private SearchIndexService searchIndexService;
+    
     /* (non-Javadoc)
      * @see org.tdar.web.service.WebSearchService#saveSearchResultsForUserAsync(org.tdar.search.bean.AdvancedSearchQueryObject, java.lang.Long, java.lang.Long, boolean)
      */
@@ -115,9 +120,11 @@ public class WebSearchServiceImpl implements WebSearchService {
                 // Add the resource to the collection and publish the event to add index.
                 resourceCollectionService.addResourceCollectionToResource(resource, currentResources, user, true, ErrorHandling.NO_VALIDATION, collection,
                         sectionToAddTo);
-                publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
             }
+            
+            publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
             // Update and set the status as completed.
+            
             status.setPercentComplete(100f);
             status.setCompleted();
         } catch (Throwable t) {
@@ -137,4 +144,12 @@ public class WebSearchServiceImpl implements WebSearchService {
     public String constructKey(Long collectionId, Long userId) {
         return "SaveSearchResult::" + collectionId + "::" + userId;
     }
+
+	public SearchIndexService getSearchIndexService() {
+		return searchIndexService;
+	}
+
+	public void setSearchIndexService(SearchIndexService searchIndexService) {
+		this.searchIndexService = searchIndexService;
+	}
 }
