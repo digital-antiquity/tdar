@@ -92,7 +92,7 @@
         :id="wrapperId" style="width: 6em; text-align: left"> <i
             class="icon-refresh icon-white"> </i> <span>Replace</span> 
             <input :disabled="inputDisabled"
-            type="file" name="uploadFile" @change="replaceFileChange"
+            type="file" name="replaceFile" @change="replaceFileChange"
             :id="fileuploadId" class="replace-file">
     </span>
         <button type="button" style="text-align: left" :disabled="inputDisabled"
@@ -139,6 +139,7 @@
                 <#if (p.fileCreatedDate)?has_content>
                     <#assign fupval="p.fileCreatedDate?string['MM-dd-yyyy']" />
                 </#if>
+                ${p.filename} (id: ${(p.fileId!-1)?c} ; ${p.restriction} dateCreated: ${fupval!''} description: ${p.description!''})
                 <input type="hidden" name="fileProxies[${p_index}].restriction" value="${p.restriction}"/>
                 <input type="hidden" name="fileProxies[${p_index}].fileCreatedDate" value="${fupval!''}"/>
                 <input type="hidden" name="fileProxies[${p_index}].description" value="${p.description!''}"/>

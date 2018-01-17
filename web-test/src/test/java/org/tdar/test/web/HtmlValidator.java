@@ -58,6 +58,7 @@ public class HtmlValidator {
             "inserting implicit <table>",
             " <div> isn't allowed in <table>",
             "missing <tr",
+            "plain text isn't allowed in <table> elements",
             "missing </table> before </div",
             "discarding unexpected <table",
             "discarding unexpected hr"
