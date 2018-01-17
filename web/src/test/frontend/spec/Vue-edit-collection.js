@@ -148,7 +148,6 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
           	expect(row).toContainText(resources[0]["title"]);
         });
         done();
-        
         console.info("------------------------------------- vue ---------------------------------------");
     });
     

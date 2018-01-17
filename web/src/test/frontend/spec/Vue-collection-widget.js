@@ -168,8 +168,6 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         });
     	done();
     })
-    
-  
 
     it("gracefully handles page with no map elements", function(done) {
     	var fix = setupFixture("true","true","111");
@@ -190,7 +188,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
             
         // make VueJS "tick" or re-render
         Vue.nextTick(function() {
-//              console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
+        	// console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
             // });
             //console.log(fix.find("#existing-collections-list").html()); 
             expect(fix.find("#existing-collections-list")).not.toHaveLength(0);

@@ -114,6 +114,7 @@ public class WebSearchServiceImpl implements WebSearchService {
                 recordsProcessed++;
                 Float percentDone = ((float) recordsProcessed / totalRecords) * 100;
                 status.setPercentComplete(percentDone);
+                status.setMessage(String.format("Saving %s of %s records", recordsProcessed,totalRecords));
                 status.update(status.getPercentComplete(), String.format("saving %s", resource.getTitle()));
                 logger.debug("{} percent complete", percentDone);
 
@@ -122,9 +123,8 @@ public class WebSearchServiceImpl implements WebSearchService {
                         sectionToAddTo);
             }
             
-            publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
             // Update and set the status as completed.
-            
+            searchIndexService.indexAllResourcesInCollectionSubTree(collection);
             status.setPercentComplete(100f);
             status.setCompleted();
         } catch (Throwable t) {

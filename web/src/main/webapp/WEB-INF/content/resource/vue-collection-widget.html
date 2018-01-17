@@ -1,4 +1,4 @@
-<div id="add-resource-form" data-administrator="${administrator?c}" data-can-edit="${editable?c}" data-resource-id="${resource.id?c}">
+<div id="add-resource-form" data-administrator="${administrator?c}" data-unmanaged-enabled="${administrator?c}" data-can-edit="${editable?c}" data-resource-id="${resource.id?c}">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3>Add to a Collection</h3>
@@ -23,7 +23,7 @@
 
             <div v-if="canEdit">
                 <label>
-                    <input type="checkbox" id="managedResource" v-model="managedResource" :checked="canEdit" :disabled="!administrator" />
+                    <input type="checkbox" id="managedResource" v-model="managedResource"  :disabled="!administrator" />
                      Grant rights to Edit this record to users of this collection
                 </label>
              </div>
@@ -31,11 +31,11 @@
                  <div>
                     <h3>Included as part of : </h3>
                     <ul id='existing-collections-list'>
-                    <li v-for="collection in collections.managed">
-                        {{ellipse(collection.name)}} <span v-show="umnamagedEnabled">(managed)</span> <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' style="cursor:pointer">Remove</a>
-                    </li>
+	                    <li v-for="collection in collections.managed">
+	                        {{ellipse(collection.name)}} <span v-show="unmanagedEnabled">(managed)</span> <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' style="cursor:pointer">Remove</a>
+	                    </li>
                     
-                    <li v-show="umnamagedEnabled" v-for="collection in collections.unmanaged">
+                    <li v-show="unmanagedEnabled" v-for="collection in collections.unmanaged">
                         {{ellipse(collection.name)}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")' style="cursor:pointer">Remove</a>
                     </li>
                     </ul>

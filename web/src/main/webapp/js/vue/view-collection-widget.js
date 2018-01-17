@@ -74,7 +74,7 @@ var _init = function(appId) {
         selectedCollection: 0 ,
         pick:"existing", //For the radio button of existing or new collection. 
         options:[],
-        umnamagedEnabled: true,
+        unmanagedEnabled: true,
         newCollectionName:"",
         newCollectionDescription:"",
         managedCollectionsToRemove: [],
@@ -100,8 +100,11 @@ var _init = function(appId) {
         	Vue.set(this, 'administrator',$e.data('administrator'));
         	console.log("Administrator is ",this.administrator);
 	        Vue.set(this, 'canEdit',$e.data('canEdit'));
-	        Vue.set(this, 'umnamagedEnabled',$e.data('umnamagedEnabled'));
+	        Vue.set(this, 'unmanagedEnabled',$e.data('unmanagedEnabled'));
+	        console.log("unmanagedEnabled",this.unmanagedEnabled);
+	        
 	        if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
+	        	console.log("Forcing resource to be managed");
 	            Vue.set(this,"managedResource",true);
 	        }
 		    Vue.set(this, 'resourceId',$e.data('resourceId'));
@@ -146,7 +149,7 @@ var _init = function(appId) {
         	console.log("Getting list of all available collections");
             var self = this;
             var permission = "ADD_TO_COLLECTION";
-            if (this.umnamagedEnabled == true) {
+            if (this.unmanagedEnabled == true) {
                 permission = ADD_TO_COLLECTION;
             }
             axios.get("/api/lookup/collection?permission=" + permission).then(function(res) {
