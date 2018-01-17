@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -290,9 +291,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private void initializeFileProxies() {
         fileProxies = new ArrayList<>();
-        for (InformationResourceFile informationResourceFile : getPersistable().getInformationResourceFiles()) {
-            if (!informationResourceFile.isDeleted()) {
-                fileProxies.add(new FileProxy(informationResourceFile));
+        if (getPersistable() != null && CollectionUtils.isNotEmpty(getPersistable().getInformationResourceFiles())) {
+            for (InformationResourceFile informationResourceFile : getPersistable().getInformationResourceFiles()) {
+                if (!informationResourceFile.isDeleted()) {
+                    fileProxies.add(new FileProxy(informationResourceFile));
+                }
             }
         }
 
@@ -526,7 +529,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public boolean isAbleToUploadFiles() {
         if (isAbleToUploadFiles == null) {
             isAbleToUploadFiles = resourceEditControllerService.isAbleToUploadFiles(getAuthenticatedUser(), getPersistable(), getActiveAccounts());
-            getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, getPersistable().getAccount());
+            BillingAccount account_ = null;
+            if (getPersistable() != null) {
+                account_ = getPersistable().getAccount();
+            }
+            getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, account_);
         }
 
         return isAbleToUploadFiles;

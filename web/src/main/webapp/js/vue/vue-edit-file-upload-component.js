@@ -262,8 +262,14 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
              // valdiate the file can be added to the resource/existing type
              var validExt = undefined;
              // for valid extensions check if we match
+             
+             // make sure that we're ok when data is coming from Vue via the file object vs. the FileProxy
+             if (file.name == undefined && file.filename != undefined) {
+                 file.name = file.filename;
+             } else {
+                 file.filename = file.name;
+             }
              var fileName = file.name;
-             file.filename = file.name;
              var _app = this;
              this.validFormats.forEach(function(ext){
                  if (fileName.indexOf(ext, fileName.length - ext.length) !== -1) {
