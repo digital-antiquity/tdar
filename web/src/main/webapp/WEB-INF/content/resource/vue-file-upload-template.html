@@ -40,7 +40,7 @@
                     <em class="replacement-text "></em>
                 </div>
                 <span class="name uneditable-input subtle inpux-xlarge"
-                    :title="file.name">{{file.name}}</span> <span
+                    :title="file.filename">{{file.filename}}</span> <span
                     class="help-inline">{{file.size}}</span>
             </div>
         </div>
@@ -70,7 +70,7 @@
                     <div class="input-append">
                         <input type="text" :name="createdDateFieldName" :disabled="inputDisabled"
                             class="datepicker" placeholder="mm/dd/yyyy"
-                            v-model="file.dateCreated" value=""
+                            v-model="file.fileCreatedDate" value=""
                             data-date-format="mm/dd/yyyy"> <span
                             class="add-on"><i class="icon-th"></i></span>
                     </div>
@@ -81,7 +81,7 @@
             <div class="controls controls-row">
                 <div class="span5">
                     <textarea class="input-block-level" :disabled="inputDisabled"
-                        :name="descriptionFieldName" rows="1"
+                        :name="descriptionFieldName" rows="2"
                         placeholder="Enter a description here"
                         v-model="file.description"></textarea>
                 </div>
@@ -122,9 +122,9 @@
             <input type="hidden" v-model="file.action"
                 class="fileAction" :name="actionFieldName" value="NONE">
             <input type="hidden" class="fileId" :name="fileIdFieldName"
-                :value="file.id"> <input type="hidden"
+                :value="file.fileId"> <input type="hidden"
                 class="fileReplaceName" :name="filenameFieldName"
-                :value="file.name"> <input type="hidden"
+                :value="file.filename"> <input type="hidden"
                 class="fileSequenceNumber"
                 name="sequenceNumberFieldName" value="1">
         </div> file: {{file}}</td>

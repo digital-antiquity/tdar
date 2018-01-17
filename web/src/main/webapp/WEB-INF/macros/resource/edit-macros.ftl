@@ -920,7 +920,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <#assign uploadConfigId="uploadConfig"/>
                 <script id="uploadConfig" type="application/json">
                 <#noescape>
-                ${fileUploadSettings}
+                ${fileUploadSettings!''}
                 </#noescape>
                 </script>
 
