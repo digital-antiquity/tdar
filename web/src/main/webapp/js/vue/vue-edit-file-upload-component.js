@@ -51,6 +51,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     previousReplaceState: ''
                 }
             },
+            mounted: function() {
+                console.log(this.el);
+                TDAR.datepicker.applyHidden($("input.datepicker", this.el));
+//                TDAR.datepicker.bind($("input.datepicker",$filesContainer));
+
+            },
             computed: {
                 rowId: function() {
                     return "files-row-" + this.index;
@@ -247,7 +253,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
              // valdiate the file can be added to the resource/existing type
              var validExt = undefined;
              // for valid extensions check if we match
-             var fileName = file.filename;
+             var fileName = file.name;
              var _app = this;
              this.validFormats.forEach(function(ext){
                  if (fileName.indexOf(ext, fileName.length - ext.length) !== -1) {
