@@ -53,8 +53,13 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             },
             mounted: function() {
                 console.log(this.el);
-                TDAR.datepicker.applyHidden($("input.datepicker", this.el));
-//                TDAR.datepicker.bind($("input.datepicker",$filesContainer));
+                var $picker = $("input.datepicker", this.el);
+                TDAR.datepicker.applyHidden($picker);
+                var _app = this;
+                $picker.on("datechanged",function(e){
+                    console.log("changing date", $picker.val());
+                    _app.updateCreatedDate($picker.val());
+                });
 
             },
             computed: {
@@ -94,6 +99,10 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 
             },
             methods: {
+                updateCreatedDate: function(date) {
+                    Vue.set(this.file,'fileCreatedDate',date);
+                    _app.markModified();
+                },
                 markModified:function() {
                     if (this.file.action == 'NONE' || this.file.action == undefined) {
                         Vue.set(this.file,"action","MODIFY_METADATA");
