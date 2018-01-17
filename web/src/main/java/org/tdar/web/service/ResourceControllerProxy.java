@@ -262,12 +262,12 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
                 setUncontrolledCultureKeywords(null);
             }
             if (ir.isInheritingSpatialInformation()) {
-                getLatitudeLongitudeBoxes().clear();
+                setLatitudeLongitudeBoxes(null);
                 setGeographicKeywords(null);
             }
             if (ir.isInheritingTemporalInformation()) {
                 setTemporalKeywords(null);
-                ir.getCoverageDates().clear();
+                setCoverageDates(null);
             }
             if (ir.isInheritingOtherInformation()) {
                 setOtherKeywords(null);
