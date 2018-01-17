@@ -254,6 +254,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
              var validExt = undefined;
              // for valid extensions check if we match
              var fileName = file.name;
+             file.filename = file.name;
              var _app = this;
              this.validFormats.forEach(function(ext){
                  if (fileName.indexOf(ext, fileName.length - ext.length) !== -1) {
