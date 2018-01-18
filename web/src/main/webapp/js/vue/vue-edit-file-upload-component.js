@@ -127,6 +127,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     console.log($("#fileupload" + this.index));
                     this.xhr.abort();
                     Vue.set(this.file, "replaceFile", undefined);
+                    Vue.set(this.file, "filename", this.file.originalFileName);
+                    Vue.set(this.file, "name", this.file.originalFileName);
                     _setProgress(0);
                     Vue.set(this.file, "progress", undefined);
                     // $("#fileupload" + this.index).reset();
@@ -137,11 +139,14 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                         return;
                     }
                     Vue.set(this, "previousReplaceState", this.file.action);
+                    Vue.set(this, "originalFileName", this.file.filename);
                     Vue.set(this.file, "action", "REPLACE");
                     
                     var valid = this.$parent.validateAdd(files[0],true);
                     if (valid) {
                         Vue.set(this.file, "replaceFile", files[0].filename);
+                        Vue.set(this.file, "filename", files[0].filename);
+                        Vue.set(this.file, "name", files[0].filename);
                         files[0].dontCreate = true;
                         files[0].filename = files[0].name;
                         var xhr = $('#fileupload').fileupload('send', {
