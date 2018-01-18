@@ -20,11 +20,11 @@ public class OntologySearchFilter extends AbstractIntegrationSearchFilter {
 
     @SuppressWarnings("unused")
     @Deprecated
-    //"ignore, required for hibernate"
+    // "ignore, required for hibernate"
     private void setHasDatasets(boolean b) {
-        
+
     }
-    
+
     public boolean isHasDatasets() {
         return !getDataTableIds().isEmpty();
     }
@@ -35,9 +35,9 @@ public class OntologySearchFilter extends AbstractIntegrationSearchFilter {
 
     @SuppressWarnings("unused")
     @Deprecated
-    //"ignore, required for hibernate"
+    // "ignore, required for hibernate"
     private void setPaddedDataTableIds(List<Long> id) {
-        
+
     }
 
     public List<Long> getPaddedDataTableIds() {

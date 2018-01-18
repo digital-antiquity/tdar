@@ -39,13 +39,13 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
 
     @Autowired
     protected transient SerializationService serializationService;
-    
+
     @Autowired
     protected transient ResourceCollectionService resourceCollectionService;
 
     @Autowired
     private AuthorizationService authorizationService;
-    
+
     @Override
     public void validate() {
         super.validate();
@@ -59,13 +59,13 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
             addActionError("cannot edit to colection");
         }
     }
-    
+
     @Override
     @WriteableSession
     @PostOnly
-    @Action(value="moveResource")
+    @Action(value = "moveResource")
     public String execute() throws Exception {
-        //FIXME: suoport types / placement
+        // FIXME: suoport types / placement
         resourceCollectionService.moveResource(resource, fromCollection, toCollection, getAuthenticatedUser());
         setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
         return super.execute();
@@ -81,7 +81,7 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
         this.resource = getGenericService().find(Resource.class, resourceId);
         this.fromCollection = getGenericService().find(ResourceCollection.class, fromCollectionId);
         this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
-        
+
     }
 
     public Long getResourceId() {
@@ -107,5 +107,5 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
     public void setToCollectionId(Long toCollectionId) {
         this.toCollectionId = toCollectionId;
     }
-    
+
 }

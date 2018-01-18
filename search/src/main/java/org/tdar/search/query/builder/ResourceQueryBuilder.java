@@ -21,11 +21,10 @@ import com.opensymphony.xwork2.TextProvider;
 public class ResourceQueryBuilder extends QueryBuilder implements HasCreator {
 
     private boolean creatorCreatedEmphasized;
-    
+
     public ResourceQueryBuilder() {
         setTypeLimit(LookupSource.RESOURCE.name());
     }
-    
 
     @Override
     public String getCoreName() {
@@ -42,12 +41,12 @@ public class ResourceQueryBuilder extends QueryBuilder implements HasCreator {
         if (CollectionUtils.isNotEmpty(params.getFilters())) {
             appendFilter(params.getFilters());
         }
-        
+
     }
 
     private boolean deemphasizeSupporting = true;
     private Set<String> boostType = null;
-    
+
     public boolean isDeemphasizeSupporting() {
         return deemphasizeSupporting;
     }
@@ -64,15 +63,12 @@ public class ResourceQueryBuilder extends QueryBuilder implements HasCreator {
         this.boostType = matches;
     }
 
-
     public boolean isCreatorCreatedEmphasized() {
         return creatorCreatedEmphasized;
     }
 
-
     public void setCreatorCreatedEmphasized(boolean creatorCreatedEmphasized) {
         this.creatorCreatedEmphasized = creatorCreatedEmphasized;
     }
-
 
 }

@@ -24,7 +24,6 @@ public class SerializeResourceRecordToXml extends AbstractScheduledBatchProcess<
     @Autowired
     SerializationService serializationService;
 
-
     @Override
     public String getDisplayName() {
         return "Serialize all resources to record.xml";

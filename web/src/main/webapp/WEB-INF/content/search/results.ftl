@@ -71,21 +71,23 @@
                         Login
                     </#if></span>
                     </li>
-                    
-                <li class="media">
-                <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_download"></use></svg>
-                <span>Save these results &raquo;
-                    <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
-                        
-                        <a id="saveSearchLink" href="#modal" data-toggle="modal">to Collection</a>
-                        
-                        <#if (totalRecords > maxDownloadRecords)>
-                            Limited to the first ${maxDownloadRecords} results.
-                        </#if>
-                    <#else>
-                        Login
-                    </#if></span>
+            
+                <#if editor>        
+                    <li class="media">
+                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+                    <span>Save these results &raquo;
+                        <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
+                            
+                            <a id="saveSearchLink" href="#modal" data-toggle="modal">to Collection</a>
+                            
+                            <#if (totalRecords > maxDownloadRecords)>
+                                Limited to the first ${maxDownloadRecords} results.
+                            </#if>
+                        <#else>
+                            Login
+                        </#if></span>
                     </li>
+                </#if>
             </ul>
                 <@rlist.displayWidget />
                 

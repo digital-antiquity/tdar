@@ -20,7 +20,7 @@ import org.tdar.utils.PersistableUtils;
  *
  */
 public class ResourceRightsExtractor {
-    
+
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Resource resource;
 
@@ -35,8 +35,6 @@ public class ResourceRightsExtractor {
     private HashSet<String> collectionNames = new HashSet<>();;
     private Set<String> directCollectionNames = new HashSet<>();
 
-    
-
     /*
      * this function should introduce into the index all of the people who can
      * modify a record which is useful for limiting things on the project page
@@ -45,7 +43,7 @@ public class ResourceRightsExtractor {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
         for (ResourceCollection collection : resource.getManagedResourceCollections()) {
-            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, Permissions.MODIFY_METADATA, true));
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, Permissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
@@ -70,7 +68,7 @@ public class ResourceRightsExtractor {
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
         for (ResourceCollection collection : resource.getManagedResourceCollections()) {
-            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, Permissions.VIEW_ALL, true));
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, Permissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
@@ -87,16 +85,16 @@ public class ResourceRightsExtractor {
 
     public void extractCollectionHierarchy() {
         Set<ResourceCollection> collections = new HashSet<>(resource.getManagedResourceCollections());
-//        collections.addAll(resource.getUnmanagedResourceCollections());
+        // collections.addAll(resource.getUnmanagedResourceCollections());
         for (ResourceCollection collection : collections) {
             if (collection instanceof ResourceCollection) {
                 directCollectionNames.add(((ResourceCollection) collection).getName());
                 if (collection instanceof ResourceCollection) {
-                ResourceCollection shared = (ResourceCollection)collection;
-                collectionNames.addAll(shared.getParentNameList());
-                collectionIds.addAll(shared.getAlternateParentIds());
-                collectionNames.addAll(shared.getAlternateParentNameList());
-                collectionIds.addAll(shared.getParentIds());
+                    ResourceCollection shared = (ResourceCollection) collection;
+                    collectionNames.addAll(shared.getParentNameList());
+                    collectionIds.addAll(shared.getAlternateParentIds());
+                    collectionNames.addAll(shared.getAlternateParentNameList());
+                    collectionIds.addAll(shared.getParentIds());
                 }
             }
         }
@@ -143,5 +141,5 @@ public class ResourceRightsExtractor {
     public void setDirectCollectionNames(Set<String> directCollectionNames) {
         this.directCollectionNames = directCollectionNames;
     }
-    
+
 }

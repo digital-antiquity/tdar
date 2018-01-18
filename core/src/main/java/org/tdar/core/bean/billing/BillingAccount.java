@@ -69,7 +69,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Length(max = FieldLength.FIELD_LENGTH_255, min=1)
+    @Length(max = FieldLength.FIELD_LENGTH_255, min = 1)
     @NotNull
     private String name;
 
@@ -81,12 +81,12 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     private Status status = Status.ACTIVE;
 
     @NotNull
-    @Column(name = "date_created", nullable=false)
+    @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
 
     @NotNull
-    @Column(name = "date_updated", nullable=false)
+    @Column(name = "date_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified = new Date();
 
@@ -354,7 +354,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         this.status = status;
     }
 
-
     public Long getFilesUsed() {
         return filesUsed;
     }
@@ -452,7 +451,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     public String availableString() {
         return String.format("f: %s s: %s", totalFiles - filesUsed, totalSpaceInBytes - spaceUsedInBytes);
     }
-
 
     @Override
     @Transient

@@ -55,19 +55,18 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     private String ownerProperName;
     private TdarUser owner;
 
-    
     @Override
     public void prepare() throws Exception {
         setupOwnerField();
         if (PersistableUtils.isNotNullOrTransient(getOwner())) {
             TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
             if (getPersistable() instanceof ResourceCollection) {
-                ((ResourceCollection)getPersistable()).setOwner(uploader);
+                ((ResourceCollection) getPersistable()).setOwner(uploader);
             }
         }
         getProxies().addAll(getInvites());
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -128,16 +127,15 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         }
         return SUCCESS;
     }
-    
+
     public void indexPersistable() throws SearchIndexException, IOException {
         if (getPersistable() instanceof Resource) {
-            searchIndexService.index((Resource)getPersistable()); 
-        } 
+            searchIndexService.index((Resource) getPersistable());
+        }
         if (getPersistable() instanceof ResourceCollection) {
-            searchIndexService.index((ResourceCollection)getPersistable()); 
-        } 
+            searchIndexService.index((ResourceCollection) getPersistable());
+        }
     }
-
 
     public abstract Persistable getPersistable();
 
@@ -147,7 +145,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
 
     public abstract void handleCollectionSave();
 
-
     protected void setupEdit() {
         if (getPersistable() instanceof ResourceCollection) {
             setOwner(((ResourceCollection) getPersistable()).getOwner());
@@ -155,12 +152,12 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         if (getPersistable() instanceof Resource) {
             setOwner(((Resource) getPersistable()).getSubmitter());
         }
-        
+
         setupOwnerField();
-        Collection<AuthorizedUser> users  = getLocalRightsCollection();
-            users.forEach(au -> {
-                proxies.add(new UserRightsProxy(au));
-            });
+        Collection<AuthorizedUser> users = getLocalRightsCollection();
+        users.forEach(au -> {
+            proxies.add(new UserRightsProxy(au));
+        });
 
         List<UserInvite> invites = userRightsProxyService.findUserInvites(getPersistable());
         if (CollectionUtils.isNotEmpty(invites)) {
@@ -175,11 +172,9 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         this.id = id;
     }
 
-
     public ResourceCollection getBlankShare() {
         return getBlankResourceCollection();
     }
-
 
     public ResourceCollection getBlankResourceCollection() {
         return new ResourceCollection();
@@ -191,8 +186,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
 
     public abstract Set<AuthorizedUser> getLocalRightsCollection();
 
-    
-
     protected void setupOwnerField() {
         if (PersistableUtils.isNotNullOrTransient(getOwner()) && StringUtils.isNotBlank(getOwner().getProperName())) {
             if (getOwner().getFirstName() != null && getOwner().getLastName() != null)
@@ -201,7 +194,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
             setOwnerProperName(getAuthenticatedUser().getProperName());
         }
     }
-
 
     public String getOwnerProperName() {
         return ownerProperName;
@@ -218,7 +210,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     public void setOwner(TdarUser owner) {
         this.owner = owner;
     }
-    
+
     public void setAsync(boolean async) {
         this.asyncSave = async;
     }
@@ -234,7 +226,5 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     public void setInvites(List<UserRightsProxy> invites) {
         this.invites = invites;
     }
-
-
 
 }

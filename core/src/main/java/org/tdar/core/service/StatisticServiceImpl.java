@@ -41,7 +41,7 @@ import com.opensymphony.xwork2.TextProvider;
  * 
  */
 @Service
-public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<AggregateStatistic, StatisticDao> implements StatisticsService {
+public class StatisticServiceImpl extends ServiceInterface.TypedDaoBase<AggregateStatistic, StatisticDao> implements StatisticsService {
 
     @Autowired
     private SerializationService serializationService;
@@ -51,7 +51,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
 
     private final Date startDate = new GregorianCalendar(2008, 1, 1).getTime();
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getResourceStatistics()
      */
     @Override
@@ -63,7 +65,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().getStatistics(startDate, new Date(), types.toArray(new StatisticType[0]));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getCollectionStatistics()
      */
     @Override
@@ -73,7 +77,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().getStatistics(startDate, new Date(), types.toArray(new StatisticType[0]));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getCurrentResourceStats()
      */
     @Override
@@ -82,7 +88,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().getCurrentResourceStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getUserStatistics()
      */
     @Override
@@ -92,7 +100,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().getStatistics(startDate, new Date(), types.toArray(new StatisticType[0]));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getFileAverageStats(java.util.List)
      */
     @Override
@@ -101,7 +111,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().getFileAverageStats(types);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getRepositorySizes()
      */
     @Override
@@ -111,7 +123,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().getStatistics(startDate, new Date(), types.toArray(new StatisticType[0]));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getResourceStatisticsWithFiles()
      */
     @Override
@@ -125,7 +139,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().getStatistics(startDate, new Date(), types.toArray(new StatisticType[0]));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getUserLoginStats()
      */
     @Override
@@ -134,7 +150,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().getUserLoginStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getFileStats(java.util.List)
      */
     @Override
@@ -143,17 +161,21 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().getFileStats(types);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#cleanupOldDailyStats(java.util.Date)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void cleanupOldDailyStats(Date date) {
         aggregateStatisticsDao.cleanupOldDailyStats(date);
-        
+
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#generateAggregateDailyDownloadData(java.util.Date)
      */
     @Override
@@ -162,7 +184,9 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         aggregateStatisticsDao.generateAggregateDailyDownloadData(date);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#countWeeklyEmails()
      */
     @Override
@@ -171,8 +195,11 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return getDao().countWeeklyEmails();
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.StatisticsService#getStatsForCollection(org.tdar.core.bean.collection.SharedCollection, com.opensymphony.xwork2.TextProvider, org.tdar.core.dao.resource.stats.DateGranularity)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.StatisticsService#getStatsForCollection(org.tdar.core.bean.collection.SharedCollection, com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.dao.resource.stats.DateGranularity)
      */
     @Override
     @Transactional(readOnly = true)
@@ -183,8 +210,11 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.StatisticsService#getStatsForAccount(org.tdar.core.bean.billing.BillingAccount, com.opensymphony.xwork2.TextProvider, org.tdar.core.dao.resource.stats.DateGranularity)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.StatisticsService#getStatsForAccount(org.tdar.core.bean.billing.BillingAccount, com.opensymphony.xwork2.TextProvider,
+     * org.tdar.core.dao.resource.stats.DateGranularity)
      */
     @Override
     @Transactional(readOnly = true)
@@ -208,48 +238,54 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         }
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#generateMonthlyResourceStats(org.joda.time.DateTime)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void generateMonthlyResourceStats(DateTime date) {
         aggregateStatisticsDao.updateMonthly(date);
-        
+
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#initializeNewAggregateEntries(org.joda.time.DateTime)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void initializeNewAggregateEntries(DateTime date) {
         aggregateStatisticsDao.createNewAggregateEntries(date);
-//        aggregateStatisticsDao.resetAnnualTable(date);
+        // aggregateStatisticsDao.resetAnnualTable(date);
     }
 
-
-
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.StatisticsService#getAggregateDownloadStatsForFile(org.tdar.core.dao.resource.stats.DateGranularity, java.util.Date, java.util.Date, java.lang.Long, java.lang.Long)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.StatisticsService#getAggregateDownloadStatsForFile(org.tdar.core.dao.resource.stats.DateGranularity, java.util.Date,
+     * java.util.Date, java.lang.Long, java.lang.Long)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<AggregateDownloadStatistic> getAggregateDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long iRFileId) {
         return aggregateStatisticsDao.getDownloadStatsForFile(granularity, start, end, minCount, iRFileId);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.StatisticsService#getUsageStatsForResource(org.tdar.core.bean.resource.Resource)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<AggregateDayViewStatistic> getUsageStatsForResource(Resource resource) {
         return aggregateStatisticsDao.getUsageStatsForResource(resource);
     }
-    
-    @Transactional(readOnly=true)
+
+    @Transactional(readOnly = true)
     @Override
     public ResourceStatisticsObject getUsageStatsObjectForResource(TextProvider provider, Resource resource) throws IOException {
         Map<String, List<AggregateDownloadStatistic>> downloadStats = new HashMap<String, List<AggregateDownloadStatistic>>();
@@ -263,5 +299,4 @@ public class StatisticServiceImpl  extends ServiceInterface.TypedDaoBase<Aggrega
         return rso;
     }
 
-    
 }

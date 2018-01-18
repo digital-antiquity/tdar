@@ -10,9 +10,12 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ServiceInterface;
 
 @Service
-public class InformationResourceFileVersionServiceImpl  extends ServiceInterface.TypedDaoBase<InformationResourceFileVersion, InformationResourceFileVersionDao> implements InformationResourceFileVersionService {
+public class InformationResourceFileVersionServiceImpl extends ServiceInterface.TypedDaoBase<InformationResourceFileVersion, InformationResourceFileVersionDao>
+        implements InformationResourceFileVersionService {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileVersionService#delete(org.tdar.core.bean.resource.file.InformationResourceFileVersion)
      */
     @Override
@@ -21,8 +24,11 @@ public class InformationResourceFileVersionServiceImpl  extends ServiceInterface
         delete(file, false);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.InformationResourceFileVersionService#delete(org.tdar.core.bean.resource.file.InformationResourceFileVersion, boolean)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.InformationResourceFileVersionService#delete(org.tdar.core.bean.resource.file.InformationResourceFileVersion,
+     * boolean)
      */
     @Override
     @Transactional(readOnly = false)
@@ -33,7 +39,9 @@ public class InformationResourceFileVersionServiceImpl  extends ServiceInterface
         getDao().delete(file, purge);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileVersionService#delete(java.util.Collection)
      */
     @Override
@@ -44,8 +52,11 @@ public class InformationResourceFileVersionServiceImpl  extends ServiceInterface
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.InformationResourceFileVersionService#deleteDerivatives(org.tdar.core.bean.resource.file.InformationResourceFileVersion)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.tdar.core.service.resource.InformationResourceFileVersionService#deleteDerivatives(org.tdar.core.bean.resource.file.InformationResourceFileVersion)
      */
     @Override
     @Transactional

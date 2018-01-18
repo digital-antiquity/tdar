@@ -85,7 +85,6 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
         int numSharedCollections = shareCollections.size();
         stats.add(generateStatistics(StatisticType.NUM_LIST_COLLECTIONS, numListCollections, ""));
 
-        
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, numSharedCollections + numListCollections, ""));
         stats.add(generateStatistics(StatisticType.NUM_SHARED_COLLECTIONS, numSharedCollections, ""));
         int whitelabelCount = 0;
@@ -93,13 +92,13 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
             findAllResourceCollections.clear();
             findAllResourceCollections.addAll(shareCollections);
         }
-        
+
         for (ResourceCollection c : findAllResourceCollections) {
             if (c.getProperties() != null && c.getProperties().getWhitelabel()) {
                 whitelabelCount++;
             }
         }
-        
+
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS_WHITE_LABEL, whitelabelCount, ""));
         stats.add(generateStatistics(StatisticType.NUM_EMAILS, statisticService.countWeeklyEmails(), ""));
         stats.add(generateStatistics(StatisticType.NUM_INTEGRATIONS, genericService.count(DataIntegrationWorkflow.class), ""));

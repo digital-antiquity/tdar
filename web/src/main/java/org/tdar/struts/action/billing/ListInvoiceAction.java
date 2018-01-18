@@ -32,13 +32,13 @@ public class ListInvoiceAction extends AbstractAuthenticatableAction {
 
     @Action(value = LIST_INVOICES, results = { @Result(name = SUCCESS, location = "list-invoices.ftl") })
     public String listInvoices() {
-            getInvoices().addAll(getGenericService().findAll(Invoice.class));
-            Collections.sort(getInvoices(), new Comparator<Invoice>() {
-                @Override
-                public int compare(Invoice o1, Invoice o2) {
-                    return ObjectUtils.compare(o2.getDateCreated(), o1.getDateCreated());
-                }
-            });
+        getInvoices().addAll(getGenericService().findAll(Invoice.class));
+        Collections.sort(getInvoices(), new Comparator<Invoice>() {
+            @Override
+            public int compare(Invoice o1, Invoice o2) {
+                return ObjectUtils.compare(o2.getDateCreated(), o1.getDateCreated());
+            }
+        });
         return SUCCESS;
     }
 

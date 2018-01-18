@@ -23,7 +23,6 @@ public class FileSystemResourceDao {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "target/tdar-web/";
 
-
     // helper to load the PDF Template for the cover page
     public File loadTemplate(String path) throws IOException, FileNotFoundException {
         Resource resource = resourceLoader.getResource(path);
@@ -44,12 +43,11 @@ public class FileSystemResourceDao {
         return template;
     }
 
-
     public boolean checkHostedFileAvailable(String filename, FilestoreObjectType type, Long id) {
         if (getHostedFile(filename, type, id) != null) {
             return true;
         }
-        
+
         return false;
     }
 

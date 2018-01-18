@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 @JsonInclude(Include.NON_EMPTY)
 @JsonAutoDetect
 public class AsynchronousStatus implements Serializable, AsyncUpdateReceiver {
@@ -44,8 +45,9 @@ public class AsynchronousStatus implements Serializable, AsyncUpdateReceiver {
 
     public AsynchronousStatus() {
         startTime = System.currentTimeMillis();
-        
+
     }
+
     public AsynchronousStatus(String key) {
         this();
         this.key = key;

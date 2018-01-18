@@ -50,7 +50,7 @@ public class CollectionRevisionLog extends AbstractPersistable {
 
     @ManyToOne(optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
-    @JoinColumn(name="collection_id")
+    @JoinColumn(name = "collection_id")
     private ResourceCollection resourceCollection;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -58,23 +58,21 @@ public class CollectionRevisionLog extends AbstractPersistable {
     private Date timestamp;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "revision_type", length = FieldLength.FIELD_LENGTH_25, nullable=true)
+    @Column(name = "revision_type", length = FieldLength.FIELD_LENGTH_25, nullable = true)
     private RevisionLogType type;
 
-    
     // the action taken
     @Column(name = "log_message", length = FieldLength.FIELD_LENGTH_512)
     @Length(max = FieldLength.FIELD_LENGTH_512)
     private String logMessage;
 
-    @JoinColumn(name="person_id")
+    @JoinColumn(name = "person_id")
     @ManyToOne(optional = false)
     private TdarUser person;
 
-
-    @Column(name="time_seconds", nullable=true)
+    @Column(name = "time_seconds", nullable = true)
     private Long timeInSeconds;
-    
+
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @XmlAttribute(name = "resourceRef")
     public ResourceCollection getResourceCollection() {
@@ -110,7 +108,6 @@ public class CollectionRevisionLog extends AbstractPersistable {
     public void setPerson(TdarUser actor) {
         this.person = actor;
     }
-
 
     public RevisionLogType getType() {
         return type;

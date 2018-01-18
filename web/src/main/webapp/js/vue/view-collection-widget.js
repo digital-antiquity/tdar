@@ -74,16 +74,16 @@ var _init = function(appId) {
         selectedCollection: 0 ,
         pick:"existing", //For the radio button of existing or new collection. 
         options:[],
-        
+        unmanagedEnabled: true,
         newCollectionName:"",
         newCollectionDescription:"",
         managedCollectionsToRemove: [],
         unmanagedCollectionsToRemove: [],
         
-        
         showPermission:false,
-        managedResource: false,
+        managedResource: true,
         resourceId: -1,
+        administrator: false,
         canEdit: false,
         collections: {managed:[], unmanaged:[]},
         
@@ -94,8 +94,19 @@ var _init = function(appId) {
     
     mounted: function() {
         var $e = $(this.$el);
+        console.log("Calling mounting functions");
         if($e.data('resourceId')!=null){
+        	console.log("Mounted");
+        	Vue.set(this, 'administrator',$e.data('administrator'));
+        	console.log("Administrator is ",this.administrator);
 	        Vue.set(this, 'canEdit',$e.data('canEdit'));
+	        Vue.set(this, 'unmanagedEnabled',$e.data('unmanagedEnabled'));
+	        console.log("unmanagedEnabled",this.unmanagedEnabled);
+	        
+	        if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
+	        	console.log("Forcing resource to be managed");
+	            Vue.set(this,"managedResource",true);
+	        }
 		    Vue.set(this, 'resourceId',$e.data('resourceId'));
 		    this._getCollectionsForResource();
         }
@@ -124,6 +135,10 @@ var _init = function(appId) {
             this.newCollectionName="";
             this.newCollectionDescription="";
             this.managedResource = false;
+            if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
+                Vue.set(this,"managedResource",true);
+            }
+
             this.managedCollectionsToRemove = [];
             this.unmanagedCollectionsToRemove = [];
             var $select = $('#collection-list').selectize();
@@ -133,7 +148,11 @@ var _init = function(appId) {
         getCollections: function(){
         	console.log("Getting list of all available collections");
             var self = this;
-            axios.get("/api/lookup/collection?permission=ADMINISTER_COLLECTION").then(function(res) {
+            var permission = "ADD_TO_COLLECTION";
+            if (this.unmanagedEnabled == true) {
+                permission = ADD_TO_COLLECTION;
+            }
+            axios.get("/api/lookup/collection?permission=" + permission).then(function(res) {
                     self.items = res.data;
             });
         },
@@ -202,22 +221,36 @@ var _init = function(appId) {
             });
         },
         
+        _disableSubmitButton: function(){
+        	$("#modal .btn-primary").addClass("disabled");
+        	$("#modal .btn-primary").prop("disabled",true);
+        },
         
+        _enableSubmitButton: function(){ 
+        	$("#modal .btn-primary").removeClass("disabled");
+        	$("#modal .btn-primary").prop("disabled",false);
+        },
         
         /**
          * "save results to collection" functions
          */
         _addResultsToCollection: function(collectionId){
+
         	var url = $(this.$el).data("url");
         	var vapp = this;
+
         	var progress = $("#upload-progress");
         	var form 	 = $("#upload-form");
+        	var progressBar = $("#upload-progress-status");
+        	var title  = $("#progress-title");
         	this.lastSavedCollectionId = collectionId;
         	
-        	//progress.show();
-        	form.hide();
+        	title.show();
+        	title.text("Saving Results To Collection '"+$('#collection-list').text()+"'");
         	
         	axios.post("/api/search/"+url+"&collectionId="+collectionId).then(function(res) {
+            	progress.show();
+            	form.hide();
         		console.log("Finished adding!!");
         		vapp.updateProgressBar(collectionId);
         	});
@@ -227,8 +260,14 @@ var _init = function(appId) {
         	var progress = $("#upload-progress");
         	var form 	 = $("#upload-form");
             var $select = $('#collection-list').selectize();
+            var title  = $("#progress-title");
+            
+            var vapp = this;
+            
             $select[0].selectize.clear();
+            vapp._enableSubmitButton();
         	progress.hide();
+        	title.hide();
         	form.show();
         },
         
@@ -259,12 +298,14 @@ var _init = function(appId) {
               }
 
             else if (isNaN(this.selectedCollection)) {
+                	console.log("Creating a new collection");
+                	console.log("Disabling submit button");
                     // post to create a new collection.
                     var data = {
                         collectionName: this.selectedCollection,
                         collectionDescription : this.newCollectionDescription
                     }
-                    
+                	
                     // On success, add the resource.
                     axios.post('/api/collection/newcollection',Qs.stringify(data)).then(function(res){
                             console.log("New Collection added");
@@ -316,9 +357,7 @@ var _init = function(appId) {
         	vapp.addToCollection();
         	vapp._processCollectionRemovals();
         	vapp._resetForm();
-        	$("#modal").modal('hide');
         },
-        
         
         
         /**
@@ -334,7 +373,9 @@ var _init = function(appId) {
             }
 
             else if (isNaN(this.selectedCollection)) {
-                    // post to create a new collection.
+            		vapp._disableSubmitButton();
+                    
+            		// post to create a new collection.
                     var data = {
                         collectionName: this.selectedCollection,
                         collectionDescription : this.newCollectionDescription
@@ -350,17 +391,18 @@ var _init = function(appId) {
                     );
                 }
             else { 
+            	vapp._disableSubmitButton();
                 vapp._addResultsToCollection(this.selectedCollection);
              }
         },
         
-        updateProgressBar:function(collectionId){
+        updateProgressBar: function(collectionId){
             var vapp = this;
             
         	axios.get('/api/search/checkstatus?collectionId='+collectionId).
         	then(function(res){
         	    var percentComplete = parseInt(res.data.percentComplete);
-        	    var progressBar = $("#progress-bar-status");
+        	    var progressBar = $("#upload-progress-status");
         	    
         	    console.log("progress is "+percentComplete+"%");
         	    progressBar.css("width", percentComplete + "%")
@@ -375,6 +417,8 @@ var _init = function(appId) {
         	    else {
         	    	console.log("Progress is 100%");
         	    	vapp._resetCollectionSelectionState();
+//        	    	$("#modal").modal('hide');
+        	    	
         	    }
         	    
         	}).catch(function(res){

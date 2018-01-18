@@ -31,10 +31,10 @@ public abstract class AbstractRequestAccessRegistrationAction<P extends Persista
     private AuthenticationService authenticationService;
 
     @Action(value = "process-request-registration",
-             interceptorRefs = { @InterceptorRef("registrationStack") },
+            interceptorRefs = { @InterceptorRef("registrationStack") },
             results = {
                     @Result(name = INPUT, location = "request-access-unauthenticated.ftl"),
-                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SUCCESS_REDIRECT_REQUEST_ACCESS)})
+                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SUCCESS_REDIRECT_REQUEST_ACCESS) })
     @HttpsOnly
     @PostOnly
     @WriteableSession
@@ -65,7 +65,6 @@ public abstract class AbstractRequestAccessRegistrationAction<P extends Persista
         processErrorObject(errors);
     }
 
-
     public RequestUserRegistration getRequestUserRegistration() {
         return requestRegistration;
     }
@@ -73,6 +72,5 @@ public abstract class AbstractRequestAccessRegistrationAction<P extends Persista
     public void setRequestUserRegistration(RequestUserRegistration requestUserRegistration) {
         this.requestRegistration = requestUserRegistration;
     }
-
 
 }

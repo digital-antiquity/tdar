@@ -21,7 +21,6 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/resource")
 public class ResourceDeleteAction extends AbstractDeleteAction<Resource> implements Preparable {
 
-
     private static final long serialVersionUID = -7593744067457475418L;
     @Autowired
     private transient ResourceService resourceService;

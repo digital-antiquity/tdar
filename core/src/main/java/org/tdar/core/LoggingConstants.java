@@ -6,5 +6,4 @@ public interface LoggingConstants {
     String TAG_AGENT = "tag_ua";
     String TAG_REQUEST_ID = "tag_rid";
 
-
 }

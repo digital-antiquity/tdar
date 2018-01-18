@@ -22,7 +22,7 @@ import org.tdar.core.service.external.AuthorizationService;
  */
 @Service
 @Transactional(readOnly = true)
-public class ObfuscationServiceImpl implements ObfuscationService  {
+public class ObfuscationServiceImpl implements ObfuscationService {
 
     protected static final transient Logger logger = LoggerFactory.getLogger(ObfuscationService.class);
 
@@ -34,10 +34,12 @@ public class ObfuscationServiceImpl implements ObfuscationService  {
 
     @Autowired
     private ObfuscationDao obfuscationDao;
-    
+
     private Boolean enabled = true;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ObfuscationService#obfuscate(java.util.Collection, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -48,7 +50,9 @@ public class ObfuscationServiceImpl implements ObfuscationService  {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ObfuscationService#getAuthenticationAndAuthorizationService()
      */
     @Override
@@ -56,24 +60,30 @@ public class ObfuscationServiceImpl implements ObfuscationService  {
         return authService;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ObfuscationService#obfuscate(org.tdar.core.bean.Obfuscatable, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = true)
     public void obfuscate(Obfuscatable target, TdarUser user) {
-        obfuscationDao.obfuscate(target,user, authService);
+        obfuscationDao.obfuscate(target, user, authService);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ObfuscationService#obfuscateObject(java.lang.Object, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     public void obfuscateObject(Object obj, TdarUser user) {
-        obfuscationDao.obfuscateObject(obj,user, authService);
+        obfuscationDao.obfuscateObject(obj, user, authService);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ObfuscationService#isWritableSession()
      */
     @Override
@@ -81,19 +91,22 @@ public class ObfuscationServiceImpl implements ObfuscationService  {
         return genericDao.isSessionWritable();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ObfuscationService#setObfuscationEnabled(java.lang.Boolean)
      */
     @Override
-    @Autowired(required=false)
+    @Autowired(required = false)
     @Qualifier("obfuscationEnabled")
     public void setObfuscationEnabled(Boolean enabled) {
         this.enabled = enabled;
         logger.trace("set enabled: {} ", enabled);
     }
 
-    
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ObfuscationService#obfuscationInterceptorEnabled()
      */
     @Override

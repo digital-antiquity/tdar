@@ -46,7 +46,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Autowired
     private transient FileAnalyzer analyzer;
-    
+
     @Autowired
     private transient BulkUploadService bulkUploadService;
 
@@ -58,7 +58,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     /**
      * Save basic metadata of the registering concept.
-     * @throws TdarActionException 
+     * 
+     * @throws TdarActionException
      * 
      */
     @Override
@@ -72,14 +73,14 @@ public class BulkUploadController extends AbstractInformationResourceController<
             addActionError(getText("bulkUploadController.no_files"));
             return INPUT;
         }
-        
+
         super.save(image);
         getLogger().debug("ticketId: {} ", getTicketId());
         getLogger().debug("proxy:    {}", getFileProxies());
         getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
 
         AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getImage(), isAuthenticated(), getAuthenticatedUser(), isEditor());
-        
+
         fsw.setBulkUpload(isBulkUpload());
         fsw.setFileProxies(getFileProxies());
         fsw.setTextInput(false);
@@ -89,7 +90,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         fsw.setUploadedFiles(getUploadedFiles());
 
         Collection<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, fsw, null);
-        
+
         setupAccountForSaving();
         getCreditProxies().clear();
         getGenericService().detachFromSession(getPersistable());
@@ -158,7 +159,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return bulkFileName;
     }
 
-
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return true;
@@ -173,7 +173,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
     public boolean isBulkUpload() {
         return true;
     }
-
 
     @Override
     protected void postSaveCleanup(String returnString) {

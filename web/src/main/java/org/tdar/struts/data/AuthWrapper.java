@@ -3,7 +3,7 @@ package org.tdar.struts.data;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 
-public  class AuthWrapper<P extends Persistable> {
+public class AuthWrapper<P extends Persistable> {
 
     private boolean authenticated = false;
     private TdarUser authenticatedUser;

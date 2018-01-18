@@ -47,7 +47,6 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-
 /**
  * The class reads an access db file, and converts it into other types of db
  * files.
@@ -119,16 +118,16 @@ public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
         logger.info(typeName);
         System.out.println("Reading content " + typeName);
         try {
-        logger.info("infO: {} {} ({})", dataStore.getInfo().getTitle(), dataStore.getInfo().getDescription(), dataStore.getInfo().getKeywords());
+            logger.info("infO: {} {} ({})", dataStore.getInfo().getTitle(), dataStore.getInfo().getDescription(), dataStore.getInfo().getKeywords());
         } catch (Error e) {
             logger.warn("exception in shapefile processing", e);
         }
         FeatureSource<?, ?> featureSource = dataStore.getFeatureSource(typeName);
         FeatureCollection<?, ?> collection = featureSource.getFeatures();
         FeatureIterator<?> iterator = collection.features();
-        
+
         dumpToGeoJson(collection);
-        
+
         // Filter filter = CQL.toFilter(text.getText());
         // SimpleFeatureCollection features = source.getFeatures(filter);
         // FeatureCollectionTableModel model = new FeatureCollectionTableModel(features);
@@ -158,7 +157,6 @@ public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
         targetDatabase.createTable(dataTable);
         ConversionStatisticsManager statisticsManager = new ConversionStatisticsManager(dataTable.getDataTableColumns());
 
-        
         try {
             @SuppressWarnings("unused")
             int rowCount = collection.size();

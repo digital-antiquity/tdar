@@ -41,7 +41,7 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     private GenericService genericService;
     @Autowired
     private IntegrationWorkflowService integrationService;
-    
+
     private List<Resource> findResourcesSharedWith = new ArrayList<>();
     private List<ResourceCollection> findCollectionsSharedWith = new ArrayList<>();
     private List<DataIntegrationWorkflow> integrations = new ArrayList<>();

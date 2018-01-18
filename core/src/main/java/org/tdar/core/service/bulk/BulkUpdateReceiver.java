@@ -9,9 +9,9 @@ public class BulkUpdateReceiver extends AsynchronousStatus {
     public BulkUpdateReceiver() {
         super();
     }
-    
+
     public BulkUpdateReceiver(String key) {
-        super(BULK_UPLOAD+key);
+        super(BULK_UPLOAD + key);
     }
 
     private static final long serialVersionUID = -4922744729683571221L;

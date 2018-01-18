@@ -69,7 +69,6 @@ public class SearchParameters {
         setOperator(operator);
     }
 
-    
     private List<String> filters = new ArrayList<>();
     private boolean explore = false;
     // user specified status that they do not have permissions to search for. probably because they are not logged in.
@@ -203,7 +202,7 @@ public class SearchParameters {
     public void setResourceTypes(List<ResourceType> resourceTypes) {
         this.resourceTypes = resourceTypes;
     }
-    
+
     public List<ResourceType> getResourceTypes() {
         return resourceTypes;
     }
@@ -324,17 +323,21 @@ public class SearchParameters {
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, support.getText("searchParameter.id"), Operator.OR, getResourceIds()));
         if (CollectionUtils.isNotEmpty(getTypes())) {
-            queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.GENERAL_TYPE,support_.getText("searchParameter.general_type"), Operator.OR, getTypes()));
+            queryPartGroup.append(
+                    new FieldQueryPart<LookupSource>(QueryFieldNames.GENERAL_TYPE, support_.getText("searchParameter.general_type"), Operator.OR, getTypes()));
         }
         if (CollectionUtils.isNotEmpty(getCollectionTypes())) {
-            queryPartGroup.append(new FieldQueryPart<CollectionResourceSection>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
+            queryPartGroup.append(new FieldQueryPart<CollectionResourceSection>(QueryFieldNames.COLLECTION_TYPE,
+                    support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
         }
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, support.getText("searchParameters.description"), getOperator(), this.getDescriptions()));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, support.getText("searchParameters.description"), getOperator(),
+                this.getDescriptions()));
 
-        queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(),contents));
-        FieldQueryPart<String> filenamePart = new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"), getOperator(), filenames);
+        queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(), contents));
+        FieldQueryPart<String> filenamePart = new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"), getOperator(),
+                filenames);
         filenamePart.setPhraseFormatters(Arrays.asList(PhraseFormatter.ESCAPE_QUOTED));
         queryPartGroup.append(filenamePart);
 
@@ -405,21 +408,22 @@ public class SearchParameters {
                 getUpdatedDates()));
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, support.getText("searchParameter.date"), getOperator(), getCreatedDates()));
 
-        queryPartGroup.append(new AnnotationQueryPart(QueryFieldNames.RESOURCE_ANNOTATION, support.getText("searchParameter.annotation"), getOperator(), getAnnotations()));
+        queryPartGroup.append(
+                new AnnotationQueryPart(QueryFieldNames.RESOURCE_ANNOTATION, support.getText("searchParameter.annotation"), getOperator(), getAnnotations()));
 
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
         SpatialQueryPart spatialQueryPart = new SpatialQueryPart(getLatitudeLongitudeBoxes());
         if (!latScaleUsed) {
             spatialQueryPart.ignoreScale(true);
         }
-//        getFilters().add(spatialQueryPart.getFilter());
+        // getFilters().add(spatialQueryPart.getFilter());
         queryPartGroup.append(spatialQueryPart);
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
                 ResourceCollection.class, getOperator(), getCollections()));
-        CreatorQueryPart<Creator> cqp = new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies);
+        CreatorQueryPart<? extends Creator> cqp = new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies);
         getActionMessages().addAll(cqp.getActionMessages());
         queryPartGroup.append(cqp);
 
@@ -440,7 +444,7 @@ public class SearchParameters {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <P extends Persistable> SkeletonPersistableQueryPart constructSkeletonQueryPart(String fieldName, String label, String prefix, Class<P> cls,
             Operator operator, List<P> values) {
-        if (CollectionUtils.isEmpty(values)){
+        if (CollectionUtils.isEmpty(values)) {
             return null;
         }
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);

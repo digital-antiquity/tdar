@@ -38,22 +38,23 @@ import org.tdar.core.bean.resource.HasAuthorizedUsers;
  */
 @Entity
 @Table(name = "data_integration_workflow")
-public class DataIntegrationWorkflow extends AbstractPersistable implements HasSubmitter, Updatable, Addressable, HasAuthorizedUsers, Indexable, Viewable, Hideable {
+public class DataIntegrationWorkflow extends AbstractPersistable
+        implements HasSubmitter, Updatable, Addressable, HasAuthorizedUsers, Indexable, Viewable, Hideable {
 
     private static final long serialVersionUID = -3687383363452908687L;
     private transient boolean viewable;
 
     public DataIntegrationWorkflow() {
     }
-    
+
     @Column(nullable = false, length = FieldLength.FIELD_LENGTH_255)
     private String title;
 
     @Column(length = FieldLength.FIELD_LENGTH_2048)
     private String description;
-    
-    @Column(name="hidden", nullable=false)
-    private boolean hidden  = true;
+
+    @Column(name = "hidden", nullable = false)
+    private boolean hidden = true;
 
     @Column(name = "json_data")
     @Lob
@@ -83,9 +84,8 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean,integration.dataIntegrationWorkflow.authorizedUsers")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
-
     public DataIntegrationWorkflow(String string, boolean b, TdarUser adminUser) {
-        this.title=string;
+        this.title = string;
         this.hidden = b;
         this.submitter = adminUser;
     }

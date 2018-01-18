@@ -12,14 +12,14 @@ public class TdarPieChart extends AbstractChart {
 
     private Map<String, Number> data;
 
-    public TdarPieChart(String title, int width, int height, String filename, Map<String,Number> data) {
+    public TdarPieChart(String title, int width, int height, String filename, Map<String, Number> data) {
         setTitle(title);
         setWidth(width);
         setHeight(height);
         setFilename(filename);
         this.data = data;
     }
-    
+
     @Override
     public File createChart() throws IOException {
         PieChart chart = new PieChartBuilder().width(getWidth()).height(getHeight()).title(getTitle()).build();

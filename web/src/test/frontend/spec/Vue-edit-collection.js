@@ -69,13 +69,6 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
 	        "url": "",
 	        "resourceType": "IMAGE",
 	        "date": 2013,
-	        "activeLatitudeLongitudeBoxes": [{
-	            "obfuscatedSouth": -33.50017852824229,
-	            "obfuscatedWest": 149.4635009765625,
-	            "obfuscatedNorth": -32.5190260278275,
-	            "obfuscatedEast": 150.2545166015625,
-	            "id": 388477
-	        }],
 	        "detailUrl": "/image/412680/0000ajpg",
 	        "urlNamespace": "image",
 	        "resourceTypeLabel": "Image",
@@ -87,13 +80,6 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
 	        "url": "",
 	        "resourceType": "IMAGE",
 	        "date": 2013,
-	        "activeLatitudeLongitudeBoxes": [{
-	            "obfuscatedSouth": -33.50017852824229,
-	            "obfuscatedWest": 149.4635009765625,
-	            "obfuscatedNorth": -32.5190260278275,
-	            "obfuscatedEast": 150.2545166015625,
-	            "id": 388477
-	        }],
 	        "detailUrl": "/image/412423/0000bjpg",
 	        "urlNamespace": "image",
 	        "resourceTypeLabel": "Image",
@@ -105,13 +91,6 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
 	        "url": "",
 	        "resourceType": "IMAGE",
 	        "date": 2013,
-	        "activeLatitudeLongitudeBoxes": [{
-	            "obfuscatedSouth": -33.50017852824229,
-	            "obfuscatedWest": 149.4635009765625,
-	            "obfuscatedNorth": -32.5190260278275,
-	            "obfuscatedEast": 150.2545166015625,
-	            "id": 388477
-	        }],
 	        "detailUrl": "/image/412681/0000bjpg",
 	        "urlNamespace": "image",
 	        "resourceTypeLabel": "Image",
@@ -123,13 +102,6 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
 	        "url": "",
 	        "resourceType": "IMAGE",
 	        "date": 2013,
-	        "activeLatitudeLongitudeBoxes": [{
-	            "obfuscatedSouth": -33.50017852824229,
-	            "obfuscatedWest": 149.4635009765625,
-	            "obfuscatedNorth": -32.5190260278275,
-	            "obfuscatedEast": 150.2545166015625,
-	            "id": 388477
-	        }],
 	        "detailUrl": "/image/413364/0001ajpg",
 	        "urlNamespace": "image",
 	        "resourceTypeLabel": "Image",
@@ -141,13 +113,6 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
 	        "url": "",
 	        "resourceType": "IMAGE",
 	        "date": 2013,
-	        "activeLatitudeLongitudeBoxes": [{
-	            "obfuscatedSouth": -33.50017852824229,
-	            "obfuscatedWest": 149.4635009765625,
-	            "obfuscatedNorth": -32.5190260278275,
-	            "obfuscatedEast": 150.2545166015625,
-	            "id": 388477
-	        }],
 	        "detailUrl": "/image/412424/0001ajpg",
 	        "urlNamespace": "image",
 	        "resourceTypeLabel": "Image",
@@ -183,7 +148,6 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
           	expect(row).toContainText(resources[0]["title"]);
         });
         done();
-        
         console.info("------------------------------------- vue ---------------------------------------");
     });
     

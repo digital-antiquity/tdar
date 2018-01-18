@@ -15,6 +15,6 @@ package org.tdar.core.bean;
 public interface HasName {
 
     String getName();
-    
+
     Long getId();
 }

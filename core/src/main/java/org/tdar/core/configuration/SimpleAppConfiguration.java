@@ -18,5 +18,4 @@ import org.springframework.context.annotation.FilterType;
 @Configuration
 public abstract class SimpleAppConfiguration extends AbstractAppConfiguration implements Serializable {
 
-
 }

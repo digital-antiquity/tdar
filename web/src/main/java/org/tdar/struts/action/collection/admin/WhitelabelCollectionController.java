@@ -32,7 +32,7 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
 
     @Autowired
     private transient AuthorizationService authorizationService;
-    
+
     private static final long serialVersionUID = 7148462451707301708L;
     private ResourceCollection collection;
     private Long id;
@@ -45,7 +45,6 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
         return SUCCESS;
     }
 
-    
     @WriteableSession
     @PostOnly
     @SkipValidation
@@ -56,11 +55,11 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
                     @Result(name = INPUT, location = "edit.ftl") })
     public String save() throws TdarActionException {
         getGenericService().saveOrUpdate(getCollection());
-//        getGenericService().saveOrUpdate(getCollection().getProperties());
+        // getGenericService().saveOrUpdate(getCollection().getProperties());
         getLogger().trace("{} {} {} ", getCollection().getId(), getCollection().getProperties().getSubtitle(), getCollection().getProperties().getWhitelabel());
         return SUCCESS;
     }
-    
+
     @Override
     public boolean authorize() throws TdarActionException {
         return authorizationService.canEdit(getAuthenticatedUser(), getCollection());
@@ -79,7 +78,7 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
     public Class<ResourceCollection> getPersistableClass() {
         return ResourceCollection.class;
     }
-    
+
     @Override
     public Persistable getPersistable() {
         return getCollection();
@@ -110,15 +109,12 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
         this.id = id;
     }
 
-
     public ResourceCollection getCollection() {
         return collection;
     }
-
 
     public void setCollection(ResourceCollection collection) {
         this.collection = collection;
     }
 
-    
 }

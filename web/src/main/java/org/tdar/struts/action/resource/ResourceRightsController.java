@@ -56,7 +56,6 @@ public class ResourceRightsController extends AbstractRightsController implement
 
     private static final String RIGHTS = "{id}";
 
-
     private Resource resource;
 
     @Autowired
@@ -73,6 +72,7 @@ public class ResourceRightsController extends AbstractRightsController implement
     private List<ResourceCollection> effectiveShares = new ArrayList<>();
 
     private CollectionResourceSection type;
+
     @Override
     public boolean authorize() {
         return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_RECORD);
@@ -103,7 +103,8 @@ public class ResourceRightsController extends AbstractRightsController implement
             @Result(name = SUCCESS, location = RIGHTS_FTL)
     })
     public String edit() throws TdarActionException {
-        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), effectiveShares, retainedSharedCollections, new ArrayList<>(), new ArrayList<>(), shares, new ArrayList<>());
+        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), effectiveShares, retainedSharedCollections, new ArrayList<>(), new ArrayList<>(),
+                shares, new ArrayList<>());
 
         setupEdit();
         return SUCCESS;
@@ -128,8 +129,6 @@ public class ResourceRightsController extends AbstractRightsController implement
             getLogger().debug("retained collections:{}", getRetainedSharedCollections());
             getShares().addAll(getRetainedSharedCollections());
             getLogger().debug("shares:{}", getShares());
-            
-            
 
             resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getManagedResourceCollections(),
                     getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, type);
@@ -158,7 +157,7 @@ public class ResourceRightsController extends AbstractRightsController implement
     public Set<AuthorizedUser> getLocalRightsCollection() {
         return resource.getAuthorizedUsers();
     }
-    
+
     public Resource getResource() {
         return resource;
     }
@@ -172,7 +171,7 @@ public class ResourceRightsController extends AbstractRightsController implement
         resourceCollectionService.saveResourceCollections(getResource(), getShares(), getResource().getManagedResourceCollections(),
                 getAuthenticatedUser(), true, ErrorHandling.VALIDATE_SKIP_ERRORS, getType());
     }
-    
+
     @Override
     public void handleLocalSave() {
         resourceCollectionService.saveResourceRights(getProxies(), getAuthenticatedUser(), getResource());
@@ -182,8 +181,6 @@ public class ResourceRightsController extends AbstractRightsController implement
     public boolean isRightsPage() {
         return true;
     }
-    
-    
 
     public List<ResourceCollection> getRetainedSharedCollections() {
         return retainedSharedCollections;

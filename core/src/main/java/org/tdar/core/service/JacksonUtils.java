@@ -19,8 +19,6 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
-
-
 public class JacksonUtils {
     static Logger logger = LoggerFactory.getLogger(JacksonUtils.class);
 

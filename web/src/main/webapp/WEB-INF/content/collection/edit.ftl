@@ -169,7 +169,7 @@
             </dl>
         </div>
 
-    
+    <#assign useManagedCollections = administrator>
 
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
@@ -197,17 +197,21 @@
                     <table class="display table table-striped table-bordered tableFormat" id="existing_resources_datatable">
                             <colgroup>
                                 <col style="width: 10%">
-                                <col style="width: 70%">
+                                <col style="width: 60%">
                                 <col style="">
+                                <#if useManagedCollections>
                                 <col style="">
+                                </#if>
                                 <col style="">
                             </colgroup>
                             <thead>
                                 <tr>
-                                    <th><!--input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle"-->id</th>
+                                    <th>ID</th>
                                     <th>Title</th>
                                     <th>Type</th>
+                                    <#if useManagedCollections>
                                     <th>Managed</th>
+                                    </#if>
                                     <th>Remove</th>
                                 </tr>
                             </thead>
@@ -216,7 +220,9 @@
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
                                     <td>&nbsp;</td>
+                                    <#if useManagedCollections>
                                     <td>&nbsp;</td>
+                                    </#if>
                                     <td>&nbsp;</td>
                                 </tr>
                             </tbody>
@@ -224,15 +230,14 @@
                                     
                     </div>
                 </div>
-           
           </div>
           <div id="addResources" class="tab-pane fade">
-                <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="span9">
+                <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="span9" useUnmanagedCollections=administrator>
                 </@edit.resourceDataTable>
           </div>
     </div>
     <#else>
-         <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection  span="span9" >
+         <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection  span="span9" useUnmanagedCollections=administrator>
          </@edit.resourceDataTable>
     </#if>
     
@@ -276,6 +281,7 @@
     $(function () {
         'use strict';
         TDAR.datatable.setupDashboardDataTable({
+            enableUnmanagedCollections : ${(administrator!false)?string},
             isAdministrator: ${(editor!false)?string},
             limitContext: ${((!editor)!true)?string},
             isSelectable: false,
@@ -285,6 +291,7 @@
         });
         
          TDAR.datatable.setupCollectionResourcesDataTable({
+            enableUnmanagedCollections: ${(administrator!false)?string},
             isAdministrator: ${(editor!false)?string},
             limitContext: ${((!editor)!true)?string},
             isSelectable: false,
@@ -293,7 +300,7 @@
         });
         
         var form = $("#metadataForm")[0];
-        vm = TDAR.vuejs.editcollectionapp.init();
+        vm = TDAR.vuejs.editcollectionapp.init({enableUnmanagedCollections: ${(editor!false)?string}});
         
         TDAR.common.initEditPage(form);
         TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");

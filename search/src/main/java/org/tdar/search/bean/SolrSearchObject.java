@@ -84,6 +84,7 @@ public class SolrSearchObject<I extends Indexable> {
     private StringBuilder facetText = new StringBuilder();
     private ProjectionModel projection;
     private String boost = "";
+
     public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
         this.builder = queryBuilder;
         this.coreName = queryBuilder.getCoreName();
@@ -98,18 +99,17 @@ public class SolrSearchObject<I extends Indexable> {
         if (handler.getSecondarySortField() != null) {
             addSortField(handler.getSecondarySortField(), sort);
         }
-        
+
         String _boost = "";
         if (queryBuilder instanceof ResourceQueryBuilder && handler.getSortField() == SortOption.RELEVANCE) {
             ResourceQueryBuilder qb = (ResourceQueryBuilder) queryBuilder;
-//            if (qb.getBoostType() != null) {
-//                boosts.add(String.format("{!boost b=\"if(exists(query({!v='resourceType:(%s)'})),10,1)\"}", StringUtils.join(qb.getBoostType(), " ")));
-//            }
+            // if (qb.getBoostType() != null) {
+            // boosts.add(String.format("{!boost b=\"if(exists(query({!v='resourceType:(%s)'})),10,1)\"}", StringUtils.join(qb.getBoostType(), " ")));
+            // }
             if (qb.isDeemphasizeSupporting()) {
                 _boost += " b=\"if(exists(query({!v='resourceType:(ONTOLOGY CODING_SHEET)'})),-10,1)\" ";
             }
 
-            
         }
         if (queryBuilder instanceof HasCreator && PersistableUtils.isNotNullOrTransient(handler.getAuthenticatedUser())) {
             _boost += String.format(" b=\"if(exists(query({!v='%s:%s'})),4,1)\" ", QueryFieldNames.SUBMITTER_ID, handler.getAuthenticatedUser().getId());
@@ -118,7 +118,7 @@ public class SolrSearchObject<I extends Indexable> {
             setSortParam(StringUtils.join(sort, ","));
         }
         if (StringUtils.isNotBlank(_boost)) {
-            boost = String.format("{!boost %s }",_boost);
+            boost = String.format("{!boost %s }", _boost);
         }
         handleFacets(handler);
     }
@@ -236,10 +236,9 @@ public class SolrSearchObject<I extends Indexable> {
 
         if (!CollectionUtils.isEmpty(pivotFields)) {
             solrQuery.setParam("stats", true);
-            solrQuery.setParam("facet.pivot", StringUtils.join(pivotFields,","));
+            solrQuery.setParam("facet.pivot", StringUtils.join(pivotFields, ","));
         }
 
-        
         String tag = String.format("p:%s u:%s", MDC.get(LoggingConstants.TAG_PATH), MDC.get(LoggingConstants.TAG_AGENT));
         solrQuery.setParam("_logtag", tag);
         if (facetText.length() > 0 || !CollectionUtils.isEmpty(pivotFields)) {
@@ -439,5 +438,4 @@ public class SolrSearchObject<I extends Indexable> {
         this.facetLimit = facetLimit;
     }
 
-    
 }

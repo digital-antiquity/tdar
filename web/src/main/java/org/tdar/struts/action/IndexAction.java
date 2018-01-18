@@ -72,7 +72,6 @@ public class IndexAction extends AbstractAuthenticatableAction {
 
     private boolean homepage = true;
 
-
     @Actions(value = {
             @Action(value = "", results = { @Result(name = SUCCESS, location = "about.ftl") }),
             @Action(value = "about", results = { @Result(name = SUCCESS, location = "about.ftl") }),
@@ -83,7 +82,7 @@ public class IndexAction extends AbstractAuthenticatableAction {
     public String about() {
         setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, isBot(), this));
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
-        featuredResources.forEach(r->{
+        featuredResources.forEach(r -> {
             if (r.getFirstLatitudeLongitudeBox() != null) {
                 r.getFirstLatitudeLongitudeBox().obfuscateAll();
             }
@@ -100,11 +99,11 @@ public class IndexAction extends AbstractAuthenticatableAction {
         }
         return SUCCESS;
     }
-    
+
     @Action(value = PAGE_NOT_FOUND, results = { @Result(name = PAGE_NOT_FOUND, type = TdarActionSupport.FREEMARKERHTTP,
             location = "/WEB-INF/content/errors/page-not-found.ftl", params = { "status", "404" }) })
     public String execute() {
-        homepage =false;
+        homepage = false;
         return PAGE_NOT_FOUND;
     }
 
@@ -161,7 +160,7 @@ public class IndexAction extends AbstractAuthenticatableAction {
     }
 
     public boolean isHomepage() {
-        return homepage ;
+        return homepage;
     }
 
     @Override

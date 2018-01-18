@@ -152,7 +152,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlType(name = "resource", propOrder = {})
 @XmlTransient
 public class Resource implements Persistable,
-        Comparable<Resource>, HasName, Updatable, Indexable, Validatable, 
+        Comparable<Resource>, HasName, Updatable, Indexable, Validatable,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, ConfidentialViewable, Addressable,
         DeHydratable, XmlLoggable, Slugable, HasAuthorizedUsers {
 
@@ -203,7 +203,7 @@ public class Resource implements Persistable,
         this(id, title);
         setResourceType(type);
     }
-    
+
     public Resource(Long id, String title, ResourceType resourceType, String description, Status status) {
         this(id, title, resourceType);
         setDescription(description);
@@ -251,10 +251,8 @@ public class Resource implements Persistable,
     @Column(name = "description_formatted")
     private String formattedDescription;
 
-    
-    
     @NotNull
-    @Column(name = "date_created", nullable=false)
+    @Column(name = "date_created", nullable = false)
     @JsonView({ JsonLookupFilter.class, JsonIntegrationSearchResultFilter.class })
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
@@ -293,7 +291,7 @@ public class Resource implements Persistable,
     private TdarUser updatedBy;
 
     @NotNull
-    @Column(name = "date_updated", nullable=false)
+    @Column(name = "date_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
@@ -399,9 +397,9 @@ public class Resource implements Persistable,
     private Set<SiteTypeKeyword> siteTypeKeywords = new LinkedHashSet<SiteTypeKeyword>();
 
     @OneToMany()
-    @JoinColumn(name = "resource_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT),nullable=true)
+    @JoinColumn(name = "resource_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT), nullable = true)
     // see https://hibernate.atlassian.net/browse/HHH-8805 can be removed with Hibernate 5,
-//    @ForeignKey(name = "none")
+    // @ForeignKey(name = "none")
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();
@@ -412,7 +410,7 @@ public class Resource implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @Where(clause="status='ACTIVE' ")
+    @Where(clause = "status='ACTIVE' ")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.sharedCollections")
     private Set<ResourceCollection> managedResourceCollections = new LinkedHashSet<>();
 
@@ -422,22 +420,22 @@ public class Resource implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @Where(clause="status='ACTIVE' ")
+    @Where(clause = "status='ACTIVE' ")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
-    @JoinTable(name = "unmanaged_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
-            nullable = false, name = "collection_id") })
+    @JoinTable(name = "unmanaged_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") },
+            inverseJoinColumns = { @JoinColumn(
+                    nullable = false, name = "collection_id") })
     @XmlTransient
-    @Where(clause="status='ACTIVE' ")
+    @Where(clause = "status='ACTIVE' ")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.unmanagedResourceCollections")
     private Set<ResourceCollection> unmanagedResourceCollections = new LinkedHashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
 
-    
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.resource.authorizedUsers")
@@ -710,7 +708,7 @@ public class Resource implements Persistable,
         return latitudeLongitudeBoxes;
     }
 
-    @JsonView({JsonProjectLookupFilter.class,JsonLookupFilter.class})
+    @JsonView({ JsonProjectLookupFilter.class, JsonLookupFilter.class })
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
         return getLatitudeLongitudeBoxes();
     }
@@ -733,7 +731,7 @@ public class Resource implements Persistable,
         if (logger.isTraceEnabled()) {
             logger.trace("{} : hasConfidentialFiles:{}\t latLongBox:{}", getId(), hasConfidentialFiles(), latLongBox);
             if (latLongBox != null) {
-                 logger.trace("valid: {}", latLongBox.isInitializedAndValid());
+                logger.trace("valid: {}", latLongBox.isInitializedAndValid());
             }
         }
         if (hasConfidentialFiles() || (latLongBox == null)) {
@@ -774,7 +772,7 @@ public class Resource implements Persistable,
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
         return getGeographicKeywords();
     }
-    
+
     public Set<GeographicKeyword> getActiveManagedGeographicKeywords() {
         return getManagedGeographicKeywords();
     }
@@ -1215,10 +1213,9 @@ public class Resource implements Persistable,
         return created;
     }
 
-
-    
     /**
      * Marking these as comments due to list collections not being currently implemented.
+     * 
      * @return
      */
     @XmlElementWrapper(name = "unmanagedResourceCollections")
@@ -1230,7 +1227,7 @@ public class Resource implements Persistable,
     public Set<ResourceCollection> getUnmanagedResourceCollections() {
         return unmanagedResourceCollections;
     }
-    
+
     public void setUnmanagedResourceCollections(Set<ResourceCollection> publicResourceCollections) {
         this.unmanagedResourceCollections = publicResourceCollections;
     }
@@ -1245,23 +1242,21 @@ public class Resource implements Persistable,
         return managedResourceCollections;
     }
 
-
-//    @Transient
-//    public Set<ResourceCollection> getRightsBasedResourceCollections() {
-//        Set<ResourceCollection> collections = new HashSet<>();
-//        if (CollectionUtils.isNotEmpty(getManagedResourceCollections())) {
-//            collections.addAll(getManagedResourceCollections());
-//        }
-//        Iterator<ResourceCollection> iterator = collections.iterator();
-//        while (iterator.hasNext()) {
-//            ResourceCollection next = iterator.next();
-//            if (next == null || CollectionUtils.isEmpty(next.getManagedResources())) {
-//                iterator.remove();
-//            }
-//        }
-//        return collections;
-//    }
-
+    // @Transient
+    // public Set<ResourceCollection> getRightsBasedResourceCollections() {
+    // Set<ResourceCollection> collections = new HashSet<>();
+    // if (CollectionUtils.isNotEmpty(getManagedResourceCollections())) {
+    // collections.addAll(getManagedResourceCollections());
+    // }
+    // Iterator<ResourceCollection> iterator = collections.iterator();
+    // while (iterator.hasNext()) {
+    // ResourceCollection next = iterator.next();
+    // if (next == null || CollectionUtils.isEmpty(next.getManagedResources())) {
+    // iterator.remove();
+    // }
+    // }
+    // return collections;
+    // }
 
     @Override
     @Transient
@@ -1328,13 +1323,12 @@ public class Resource implements Persistable,
         return true;
     }
 
-
     @Transient
     public Set<ResourceCollection> getVisibleSharedResourceCollections() {
         Set<ResourceCollection> collections = new LinkedHashSet<>();
         for (ResourceCollection collection : managedResourceCollections) {
             if (collection.isVisibleAndActive()) {
-                collections.add((ResourceCollection)collection);
+                collections.add((ResourceCollection) collection);
             }
         }
         return collections;
@@ -1406,7 +1400,6 @@ public class Resource implements Persistable,
         return null;
     }
 
-
     @XmlTransient
     public List<Creator<?>> getRelatedCreators() {
         List<Creator<?>> creators = new ArrayList<>();
@@ -1416,7 +1409,6 @@ public class Resource implements Persistable,
         creators.add(getSubmitter());
         return creators;
     }
-
 
     @JsonIgnore
     @XmlTransient
@@ -1721,9 +1713,8 @@ public class Resource implements Persistable,
         this.viewConfidential = editable;
     }
 
-    
-    @XmlElementWrapper(name="authorizedUsers")
-    @XmlElement(name="authorizedUser")
+    @XmlElementWrapper(name = "authorizedUsers")
+    @XmlElement(name = "authorizedUser")
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }

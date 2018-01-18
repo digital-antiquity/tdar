@@ -68,8 +68,8 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
             if (selectedAccount != null) {
                 id = selectedAccount.getId();
 
-                //billing managers may perform this action on accounts they do not have explicit permissions for
-                if(!getAccounts().contains(selectedAccount) && getAuthorizationService().isBillingManager(getAuthenticatedUser())) {
+                // billing managers may perform this action on accounts they do not have explicit permissions for
+                if (!getAccounts().contains(selectedAccount) && getAuthorizationService().isBillingManager(getAuthenticatedUser())) {
                     getAccounts().add(selectedAccount);
                 }
             }

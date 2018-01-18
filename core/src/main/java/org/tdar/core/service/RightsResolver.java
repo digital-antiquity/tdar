@@ -155,7 +155,7 @@ public class RightsResolver {
 
     public boolean canModifyUsersOn(HasAuthorizedUsers account) {
         Permissions minPerm = Permissions.getEditPermissionFor(account);
-        
+
         if (isAdmin()) {
             return true;
         }

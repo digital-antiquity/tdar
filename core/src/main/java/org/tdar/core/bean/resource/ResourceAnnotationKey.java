@@ -40,7 +40,6 @@ public class ResourceAnnotationKey extends AbstractPersistable implements Indexa
 
     private static final long serialVersionUID = 6596067112791213904L;
 
-    
     public ResourceAnnotationKey() {
     }
 
@@ -48,6 +47,7 @@ public class ResourceAnnotationKey extends AbstractPersistable implements Indexa
         this.key = key;
         this.resourceAnnotationType = ResourceAnnotationType.IDENTIFIER;
     }
+
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_annotation_type", length = FieldLength.FIELD_LENGTH_255)
     private ResourceAnnotationType resourceAnnotationType;

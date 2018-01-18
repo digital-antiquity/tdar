@@ -15,15 +15,16 @@ public abstract class AbstractBatchAction<C> implements Serializable {
     private GenericDao genericDao;
     private C existingValue;
     private C newValue;
-    
+
     public String prepareLog(Resource resource) {
-        String msg = String.format("changed %s from %s to %s", getFieldName(), getCurrentValue(resource), getNewValue() );
+        String msg = String.format("changed %s from %s to %s", getFieldName(), getCurrentValue(resource), getNewValue());
         return msg;
     }
-    
+
     abstract public void performAction(Resource resource, BatchActionType type);
-    
-    public void setup() {}
+
+    public void setup() {
+    }
 
     public void complete(Resource resource, String message) {
         ResourceRevisionLog log = new ResourceRevisionLog(message, resource, getUser(), RevisionLogType.EDIT);
@@ -66,6 +67,6 @@ public abstract class AbstractBatchAction<C> implements Serializable {
         this.existingValue = existingValue;
     }
 
-    public abstract C getCurrentValue(Resource resource); 
+    public abstract C getCurrentValue(Resource resource);
 
 }

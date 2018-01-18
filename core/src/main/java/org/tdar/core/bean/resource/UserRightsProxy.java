@@ -28,8 +28,9 @@ public class UserRightsProxy implements Serializable {
     private Date until;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    public UserRightsProxy() {}
-    
+    public UserRightsProxy() {
+    }
+
     public UserRightsProxy(UserInvite invite) {
         Person user = invite.getUser();
         setEmail(user.getEmail());
@@ -52,7 +53,7 @@ public class UserRightsProxy implements Serializable {
     public String toString() {
         return String.format("%s %s - [id:%s ; inviteId:%s] %s", getDisplayName(), getPermission(), getId(), getInviteId(), getEmail());
     }
-    
+
     public String getDisplayName() {
         return displayName;
     }
@@ -112,7 +113,7 @@ public class UserRightsProxy implements Serializable {
     public void setUntilDate(Date date) {
         this.until = date;
         logger.trace("{}", this.until);
-        }
+    }
 
     public Date getUntilDate() {
         return until;

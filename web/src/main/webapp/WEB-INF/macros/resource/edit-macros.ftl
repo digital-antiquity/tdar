@@ -951,7 +951,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     @param selectable:boolean render resources in the list with "selectable" rows,  which will render a checkbox
         as the first column in each row of the data table
 -->
-<#macro resourceDataTable showDescription=true selectable=false clickable=false limitToCollection=false idAddition="" span="span8">
+<#macro resourceDataTable showDescription=true selectable=false clickable=false limitToCollection=false idAddition="" span="span8" useUnmanagedCollections=false>
 
         <#--you are in a span9, but assume span8 so we fit inside well -->
         <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> 
@@ -966,7 +966,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                                 
                                 <div class="pull-right">
                                     <#if limitToCollection>
-                                        <label class="checkbox" style="font-weight:normal; ">
+                                        <label class="checkbox hidden" style="font-weight:normal; ">
                                             <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded${idAddition}">
                                             Show only selected resources
                                         </label>
@@ -1063,18 +1063,21 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <#if selectable || clickable>
                             <col style="" />
                         </#if>
+                        
                         <col style="width: 60%" />
                         <col style="" />
-    
                         <#if clickable>
-                            <col style="" />
+
+                            <#--Renders an additional column for the Manage/Unmanged status if necessary  -->
+                            <#if useUnmanagedCollections>
+                                <col style="" />
+                            </#if>
+                            
+                            <#--Renders a column for the buttons to be displayed -->
                             <col style="" />
                         </#if>
                         
                     </colgroup>
-                    <#--
-                    -->
-                    
                     <thead>
                         <tr>
                             <#if selectable || clickable>
@@ -1082,12 +1085,16 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             </#if>
                                 <th>Title</th>
                                 <th>Type</th>
+                                
                             <#if clickable>
-                                <th>Status</th>
-                                <th>Add</th>
+                                <#if useUnmanagedCollections>
+                                    <th>Status</th>
+                                </#if>
+                                    <th>Add</th>
                             </#if>
                         </tr>
                     </thead>
+        
                     <tbody>
                         <tr>
                             <#if selectable || clickable>
@@ -1096,8 +1103,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
                             <#if clickable>
-                                <td>&nbsp;</td>
-                                <td>&nbsp;</td>
+                                <#if useUnmanagedCollections>
+                                    <td>&nbsp;</td>
+                                </#if>
+                                    <td>&nbsp;</td>
                             </#if>
                         </tr>
                     </tbody>
@@ -1105,8 +1114,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             
             </div>
         </div>
-
-
     <#nested />
     <br/>
 </#macro> 

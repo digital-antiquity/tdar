@@ -17,7 +17,6 @@ import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.PersistableUtils;
 
-
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
@@ -38,10 +37,10 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
             addActionError(getText("transferAccountBalanceAction.toAccountNotSpecified"));
         }
 
-        if (!authorizationService.canAdministerAccount(getAuthenticatedUser(),getAccount())) {
+        if (!authorizationService.canAdministerAccount(getAuthenticatedUser(), getAccount())) {
             addActionError(getText("transferAccountBalanceAction.no_rights", Arrays.asList(getAccount())));
         }
-        if (!authorizationService.canAdministerAccount(getAuthenticatedUser(),toAccount)) {
+        if (!authorizationService.canAdministerAccount(getAuthenticatedUser(), toAccount)) {
             addActionError(getText("transferAccountBalanceAction.no_rights", Arrays.asList(getAccount())));
 
         }
@@ -55,11 +54,10 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
         toAccount = accountService.find(toAccountId);
     }
 
-    
     @Action(value = "{id}",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, location="../transfer.ftl"),
+                    @Result(name = SUCCESS, location = "../transfer.ftl"),
                     @Result(name = INPUT, location = "error.ftl")
             })
     @SkipValidation
@@ -68,9 +66,6 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
         return SUCCESS;
     }
 
-
-    
-    
     @Action(value = "{id}/transfer",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
@@ -80,7 +75,7 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
     @PostOnly
     public String transfer() throws TdarActionException {
         accountService.transferBalanace(getAuthenticatedUser(), getAccount(), toAccount, numberOfFiles);
-        addActionMessage(getText("transferAccountBalanceAction.success",Arrays.asList(getAccount(), toAccount)));
+        addActionMessage(getText("transferAccountBalanceAction.success", Arrays.asList(getAccount(), toAccount)));
         return SUCCESS;
     }
 

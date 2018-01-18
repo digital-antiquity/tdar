@@ -3,7 +3,6 @@ package org.tdar.struts.action.api.collection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -42,49 +41,51 @@ import com.opensymphony.xwork2.Validateable;
 @HttpsOnly
 public class ListCollectionsForResource extends AbstractJsonApiAction implements Preparable, Validateable {
 
-	private static final long serialVersionUID = 1344077793459231299L;
+    private static final long serialVersionUID = 1344077793459231299L;
 
-	@Autowired
-	private transient AuthorizationService authorizationService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
-	@Autowired
-	private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
 
-	private Resource resource;
-	private Permissions permission = Permissions.REMOVE_FROM_COLLECTION;
+    private Resource resource;
+    private Permissions permission = Permissions.REMOVE_FROM_COLLECTION;
     private Long resourceId;
 
-    public Class<? extends JacksonView> getJsonView(){
-    	return JsonLookupFilter.class;
-    }
-    
-	@Action(value = "resourcecollections", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
-	@Transactional(readOnly=true)
-	public String listCollectionsForResource() throws Exception {
-		TdarUser user = getAuthenticatedUser();
-		ArrayList<ResourceCollection> managed = new ArrayList<ResourceCollection>();
-		ArrayList<ResourceCollection> unmanaged = new ArrayList<ResourceCollection>();
-		getLogger().debug("Adding resource {}",resource);
+    @Action(value = "resourcecollections", results = { @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT) })
+    @Transactional(readOnly = true)
+    /**
+     * For a given resource, returns a JSON result containing all of the associated managed and unmanaged collections that
+     * the resource is part of.
+     * 
+     * @return
+     * @throws Exception
+     */
+    public String listCollectionsForResource() throws Exception {
+        TdarUser user = getAuthenticatedUser();
+        ArrayList<ResourceCollection> managed = new ArrayList<ResourceCollection>();
+        ArrayList<ResourceCollection> unmanaged = new ArrayList<ResourceCollection>();
+        getLogger().debug("listCollectionsForResource: {}", resource);
 
-		addToCollectionList(resource.getManagedResourceCollections(),user, managed);
-		addToCollectionList(resource.getUnmanagedResourceCollections(),user, unmanaged);
-		
-		Map<String, ArrayList<ResourceCollection>> result = new HashMap<String, ArrayList<ResourceCollection>>();
-		result.put("managed",	managed);
-		result.put("unmanaged", unmanaged);
-		
-		setResultObject(result);
-		return SUCCESS;
-	}
+        addToCollectionList(resource.getManagedResourceCollections(), user, managed);
+        addToCollectionList(resource.getUnmanagedResourceCollections(), user, unmanaged);
+
+        Map<String, ArrayList<ResourceCollection>> result = new HashMap<String, ArrayList<ResourceCollection>>();
+        result.put("managed", managed);
+        result.put("unmanaged", unmanaged);
+        setJsonObject(result, JsonLookupFilter.class);
+        return SUCCESS;
+    }
 
     private void addToCollectionList(Collection<ResourceCollection> collections, TdarUser user, ArrayList<ResourceCollection> managed) {
-        for(ResourceCollection resourceCollection : collections){
-			getLogger().debug("Checking collection {}",resourceCollection.getName());
-			if(testCollection(user, resourceCollection)){
-		        getLogger().debug("Adding collection {}",resourceCollection.getName());
-		        managed.add(resourceCollection);
-			}
-		}
+        for (ResourceCollection resourceCollection : collections) {
+            getLogger().debug("Checking collection {}", resourceCollection.getName());
+            if (testCollection(user, resourceCollection)) {
+                getLogger().debug("Adding collection {}", resourceCollection.getName());
+                managed.add(resourceCollection);
+            }
+        }
     }
 
     private boolean testCollection(TdarUser user, ResourceCollection resourceCollection) {
@@ -92,41 +93,40 @@ public class ListCollectionsForResource extends AbstractJsonApiAction implements
             return authorizationService.canAddToCollection(user, resourceCollection);
         }
         if (permission == Permissions.REMOVE_FROM_COLLECTION) {
-            return authorizationService.canRemoveFromCollection(user,resourceCollection);
+            return authorizationService.canRemoveFromCollection(user, resourceCollection);
         }
         return authorizationService.canEdit(user, resourceCollection);
     }
 
+    @Override
+    public void validate() {
+        super.validate();
 
-	@Override
-	public void validate() {
-		super.validate();
-		
-		if (PersistableUtils.isNullOrTransient(resource) || !authorizationService.canView(getAuthenticatedUser(), resource)) {
-			 addActionError("addResourceToCollectionAction.no_edit_permission");
-		}
-	}
+        if (PersistableUtils.isNullOrTransient(resource) || !authorizationService.canView(getAuthenticatedUser(), resource)) {
+            addActionError("addResourceToCollectionAction.no_edit_permission");
+        }
+    }
 
-	@Override
-	public void prepare() throws Exception {
-		resource = getGenericService().find(Resource.class, resourceId);
-	}
+    @Override
+    public void prepare() throws Exception {
+        resource = getGenericService().find(Resource.class, resourceId);
+    }
 
-	public ResourceCollectionService getResourceCollectionService() {
-		return resourceCollectionService;
-	}
+    public ResourceCollectionService getResourceCollectionService() {
+        return resourceCollectionService;
+    }
 
-	public void setResourceCollectionService(ResourceCollectionService resourceCollectionService) {
-		this.resourceCollectionService = resourceCollectionService;
-	}
+    public void setResourceCollectionService(ResourceCollectionService resourceCollectionService) {
+        this.resourceCollectionService = resourceCollectionService;
+    }
 
-	public Long getResourceId() {
-		return resourceId;
-	}
+    public Long getResourceId() {
+        return resourceId;
+    }
 
-	public void setResourceId(Long resourceId) {
-		this.resourceId = resourceId;
-	}
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
+    }
 
     public Permissions getPermission() {
         return permission;

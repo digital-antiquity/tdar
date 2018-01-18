@@ -86,7 +86,7 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             dataModel.put("resources", resources);
             dataModel.put("totalResources", resources.size());
             dataModel.put("collection", collection);
-            dataModel.put("collectionUrl",UrlService.absoluteUrl(collection));
+            dataModel.put("collectionUrl", UrlService.absoluteUrl(collection));
             emailService.queueWithFreemarkerTemplate("email_recent_resources.ftl", dataModel, email);
         }
 

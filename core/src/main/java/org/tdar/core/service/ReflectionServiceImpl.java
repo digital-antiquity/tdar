@@ -85,7 +85,6 @@ public class ReflectionServiceImpl implements ReflectionService {
         return matchingFields;
     }
 
-
     /**
      * Based on the field and the object passed in, call the getter and return the result
      * 
@@ -146,7 +145,7 @@ public class ReflectionServiceImpl implements ReflectionService {
     public Class<? extends Persistable> getMatchingClassForSimpleName(String name) throws ClassNotFoundException {
         logger.trace("scanning for: {}", name);
         scanForPersistables();
-//        logger.trace("scanning for {} in: {}", name, persistableLookup);
+        // logger.trace("scanning for {} in: {}", name, persistableLookup);
         return persistableLookup.get(name);
     }
 
@@ -178,7 +177,6 @@ public class ReflectionServiceImpl implements ReflectionService {
 
     @SuppressWarnings("unused")
     private static final ClassLoader classLoader = Document.class.getClassLoader();
-
 
     /**
      * Find all beans that implment the @link Persistable interface

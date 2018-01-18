@@ -1,6 +1,5 @@
 package org.tdar.struts.action.api.collection;
 
-import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,6 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.api.AbstractApiController;
@@ -30,7 +28,6 @@ import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnl
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.jaxb.JaxbParsingException;
-import org.tdar.utils.jaxb.JaxbResultContainer;
 
 import com.opensymphony.xwork2.Preparable;
 

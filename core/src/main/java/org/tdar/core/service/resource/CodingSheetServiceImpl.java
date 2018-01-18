@@ -53,7 +53,7 @@ import org.tdar.utils.PersistableUtils;
  */
 @Service
 @Transactional
-public class CodingSheetServiceImpl  extends ServiceInterface.TypedDaoBase<CodingSheet, CodingSheetDao> implements CodingSheetService {
+public class CodingSheetServiceImpl extends ServiceInterface.TypedDaoBase<CodingSheet, CodingSheetDao> implements CodingSheetService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -293,7 +293,7 @@ public class CodingSheetServiceImpl  extends ServiceInterface.TypedDaoBase<Codin
         return mappingIssues;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public boolean isOkToMapOntology(CodingSheet persistable) {
         Ontology defaultOntology = persistable.getDefaultOntology();
         if (PersistableUtils.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
@@ -308,7 +308,7 @@ public class CodingSheetServiceImpl  extends ServiceInterface.TypedDaoBase<Codin
     }
 
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     /**
      * We have a few special rules:
      * NULL , MISSING, and UNMAPPED
@@ -317,35 +317,35 @@ public class CodingSheetServiceImpl  extends ServiceInterface.TypedDaoBase<Codin
      */
     public List<CodingRule> addSpecialCodingRules(CodingSheet codingSheet, List<CodingRule> codingRules) {
         List<CodingRule> special = new ArrayList<>();
-            if (!TdarConfiguration.getInstance().includeSpecialCodingRules()) {
-                return special;
-            }
-            Map<String, CodingRule> codeToRuleMap = codingSheet.getCodeToRuleMap();
-            CodingRule _null = codeToRuleMap.get(CodingRule.NULL.getCode());
-            if (_null != null) {
-                codingRules.remove(_null);
-                special.add(_null);
-            } else {
-                special.add(CodingRule.NULL);
-            }
-
-            CodingRule _missing = codeToRuleMap.get(CodingRule.MISSING.getCode());
-            if (_missing != null) {
-                codingRules.remove(_missing);
-                special.add(_missing);
-            } else {
-                special.add(CodingRule.MISSING);
-            }
-
-            CodingRule _unmapped = codeToRuleMap.get(CodingRule.UNMAPPED.getCode());
-            if (_unmapped != null) {
-                codingRules.remove(_unmapped);
-                special.add(_unmapped);
-
-            } else {
-                special.add(CodingRule.UNMAPPED);
-            }
+        if (!TdarConfiguration.getInstance().includeSpecialCodingRules()) {
             return special;
+        }
+        Map<String, CodingRule> codeToRuleMap = codingSheet.getCodeToRuleMap();
+        CodingRule _null = codeToRuleMap.get(CodingRule.NULL.getCode());
+        if (_null != null) {
+            codingRules.remove(_null);
+            special.add(_null);
+        } else {
+            special.add(CodingRule.NULL);
+        }
+
+        CodingRule _missing = codeToRuleMap.get(CodingRule.MISSING.getCode());
+        if (_missing != null) {
+            codingRules.remove(_missing);
+            special.add(_missing);
+        } else {
+            special.add(CodingRule.MISSING);
+        }
+
+        CodingRule _unmapped = codeToRuleMap.get(CodingRule.UNMAPPED.getCode());
+        if (_unmapped != null) {
+            codingRules.remove(_unmapped);
+            special.add(_unmapped);
+
+        } else {
+            special.add(CodingRule.UNMAPPED);
+        }
+        return special;
     }
-    
+
 }

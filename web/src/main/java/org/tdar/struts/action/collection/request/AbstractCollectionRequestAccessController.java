@@ -13,18 +13,19 @@ import org.tdar.struts_base.action.TdarActionSupport;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT, location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
+        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT,
+                location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 })
 /**
  * Abstract class for backing unauthenticated requests (Login and Register)
+ * 
  * @author abrin
  *
  */
-public class AbstractCollectionRequestAccessController extends AbstractRequestAccessController<ResourceCollection>{
-
+public class AbstractCollectionRequestAccessController extends AbstractRequestAccessController<ResourceCollection> {
 
     private static final long serialVersionUID = 2209267919681648552L;
 
@@ -32,7 +33,7 @@ public class AbstractCollectionRequestAccessController extends AbstractRequestAc
     public String getTypeNamespace() {
         return "collection";
     }
-    
+
     public ResourceCollection getCollection() {
         return getPersistable();
     }

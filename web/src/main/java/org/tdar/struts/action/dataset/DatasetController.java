@@ -28,7 +28,6 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
 
     private static final long serialVersionUID = 2874916865886637108L;
 
-
     @Override
     protected String save(Dataset dataset) throws TdarActionException {
         getLogger().debug("Saving dataset: {}", dataset);

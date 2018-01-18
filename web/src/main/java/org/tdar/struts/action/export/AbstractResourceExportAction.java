@@ -50,7 +50,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     SerializationService serializationService;
 
     private String format(HasName item) {
-        return String.format("%s",item.getId());
+        return String.format("%s", item.getId());
     }
 
     @Override
@@ -80,7 +80,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         }
 
         BillingAccount account = getExportProxy().getAccount();
-        if (account != null && !authorizationService.canEditAccount(getAuthenticatedUser(),account)) {
+        if (account != null && !authorizationService.canEditAccount(getAuthenticatedUser(), account)) {
             addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(account))));
         }
 

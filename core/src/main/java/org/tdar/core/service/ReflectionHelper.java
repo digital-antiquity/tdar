@@ -39,7 +39,7 @@ public class ReflectionHelper {
      */
     public static <C> Set<Class<? extends C>> findClassesThatImplement(Class<C> cls) {
         Reflections reflection = new Reflections(ORG_TDAR);
-       return  reflection.getSubTypesOf(cls);
+        return reflection.getSubTypesOf(cls);
     }
 
     private static Map<String, Boolean> annotationLookupCache = new ConcurrentHashMap<String, Boolean>();
@@ -142,13 +142,12 @@ public class ReflectionHelper {
         while (iter.hasNext()) {
             Class<?> next = iter.next();
             if (next == null || next.getCanonicalName() == null || next.getSimpleName().contains("$1") || next.getCanonicalName().contains("$1")) {
-                staticLogger.trace("removing: {}",next);
+                staticLogger.trace("removing: {}", next);
                 iter.remove();
             }
         }
         return annotated.toArray(new Class<?>[0]);
     }
-    
 
     /**
      * Get the CamelCase name for a field
@@ -216,8 +215,6 @@ public class ReflectionHelper {
         return null;
     }
 
-    
-
     /**
      * Take the method name and try and replace it with the same
      * logic that Hibernate uses
@@ -281,5 +278,5 @@ public class ReflectionHelper {
     public static String generateSetterName(String name) {
         return generateName(SET, name);
     }
-    
+
 }

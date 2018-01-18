@@ -119,15 +119,15 @@ public class ModernIntegrationDataResult implements Serializable {
     public List<String> getPreviewColumnLabels() {
         List<String> labels = new ArrayList<String>();
         MessageHelper instance = MessageHelper.getInstance();
-        logger.debug("{}",integrationContext.getTempTable().getDataTableColumns());
+        logger.debug("{}", integrationContext.getTempTable().getDataTableColumns());
         for (DataTableColumn dtc : integrationContext.getTempTable().getDataTableColumns()) {
             String displayName = dtc.getPrettyDisplayName();
             labels.add(displayName);
             displayName = displayName.replace("mapped-", "");
 
             if (dtc.getName().endsWith(PostgresIntegrationDatabase.INTEGRATION_SUFFIX)) {
-                labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value",Arrays.asList(displayName)));
-                labels.add(instance.getText("dataIntegrationWorkbook.data_type_value",Arrays.asList(displayName)));
+                labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value", Arrays.asList(displayName)));
+                labels.add(instance.getText("dataIntegrationWorkbook.data_type_value", Arrays.asList(displayName)));
             }
         }
         return labels;

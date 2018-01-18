@@ -12,7 +12,6 @@ public abstract class AbstractWithContributorUserRegistration extends UserRegist
         super(h);
     }
 
-
     @Override
     public ErrorTransferObject validate(AuthenticationService authService, String remoteHost) {
         if (isAcceptTermsOfUseAndContributorAgreement()) {

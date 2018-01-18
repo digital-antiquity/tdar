@@ -10,7 +10,7 @@ public class ResourceCollectionQueryBuilder extends QueryBuilder implements HasC
     public ResourceCollectionQueryBuilder() {
         setTypeLimit(LookupSource.COLLECTION.name());
     }
-    
+
     @Override
     public String getCoreName() {
         return CoreNames.RESOURCES;

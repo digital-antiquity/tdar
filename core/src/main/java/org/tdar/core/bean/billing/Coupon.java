@@ -50,12 +50,11 @@ public class Coupon extends AbstractPersistable {
     @Column(name = "date_redeemed")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateRedeemed;
-    
+
     @ElementCollection
-    @CollectionTable(name = "coupon_resource", joinColumns = @JoinColumn(name = "coupon_id") )
+    @CollectionTable(name = "coupon_resource", joinColumns = @JoinColumn(name = "coupon_id"))
     @Column(name = "resource_id")
     private Set<Long> resourceIds = new HashSet<>();
-
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = true, name = "user_id")

@@ -135,11 +135,11 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     }
 
     @Override
-    @Actions( {
-            //fixme: there's a less-verbose way to define these three mappings.
+    @Actions({
+            // fixme: there's a less-verbose way to define these three mappings.
             @Action(value = "dashboard", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") }),
             @Action(value = "dashboard/", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") }),
-            @Action(value = "dashboard/resources", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") })})
+            @Action(value = "dashboard/resources", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") }) })
     public String execute() throws SolrServerException, IOException {
         getLogger().trace("recent resources");
         setupRecentResources();
@@ -199,7 +199,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
         advancedSearchQueryObject.getReservedParams().setUseSubmitterContext(true);
         advancedSearchQueryObject.getReservedParams().setDasboardQuery(true);
-        advancedSearchQueryObject.getReservedParams().setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE,Status.DRAFT, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE)));
+        advancedSearchQueryObject.getReservedParams()
+                .setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE)));
         SearchResult<Resource> request = new SearchResult<>();
         request.setFacetWrapper(new FacetWrapper());
         request.setRecordsPerPage(0);
@@ -208,7 +209,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 
         ResourceTypeStatusInfo info = new ResourceTypeStatusInfo();
         try {
-            FacetedResultHandler<Resource> result = (FacetedResultHandler<Resource>) resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, getAuthenticatedUser(), request, this);
+            FacetedResultHandler<Resource> result = (FacetedResultHandler<Resource>) resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject,
+                    getAuthenticatedUser(), request, this);
             activeResourceCount = result.getTotalRecords();
             FacetWrapper facetWrapper = result.getFacetWrapper();
             if (facetWrapper != null && MapUtils.isNotEmpty(facetWrapper.getFacetResults())) {
@@ -219,12 +221,12 @@ public class DashboardController extends AbstractAuthenticatableAction implement
                     });
                 }
                 if (CollectionUtils.isNotEmpty(facetResults.get(QueryFieldNames.STATUS))) {
-                facetWrapper.getFacetResults().get(QueryFieldNames.STATUS).forEach(facet -> {
-                    info.getStatusMap().put(Status.valueOf(facet.getRaw()), facet.getCount().intValue());
-                });
+                    facetWrapper.getFacetResults().get(QueryFieldNames.STATUS).forEach(facet -> {
+                        info.getStatusMap().put(Status.valueOf(facet.getRaw()), facet.getCount().intValue());
+                    });
                 }
             }
-        } catch (SearchException | IOException  e1) {
+        } catch (SearchException | IOException e1) {
             getLogger().error("issue generating map search", e1);
         }
 
@@ -274,7 +276,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     public void setBookmarkedResource(List<Resource> bookmarks) {
         this.bookmarkedResources = bookmarks;
     }
-
 
     public List<Project> getAllSubmittedProjects() {
         return allSubmittedProjects;

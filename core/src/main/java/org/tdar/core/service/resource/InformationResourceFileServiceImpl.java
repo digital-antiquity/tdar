@@ -21,12 +21,15 @@ import org.tdar.core.service.ServiceInterface;
 import org.tdar.utils.MessageHelper;
 
 @Service
-public class InformationResourceFileServiceImpl  extends ServiceInterface.TypedDaoBase<InformationResourceFile, InformationResourceFileDao> implements InformationResourceFileService {
+public class InformationResourceFileServiceImpl extends ServiceInterface.TypedDaoBase<InformationResourceFile, InformationResourceFileDao>
+        implements InformationResourceFileService {
 
     @Autowired
     private InformationResourceFileVersionDao informationResourceFileVersionDao;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileService#delete(org.tdar.core.bean.resource.file.InformationResourceFile)
      */
     @Override
@@ -43,7 +46,9 @@ public class InformationResourceFileServiceImpl  extends ServiceInterface.TypedD
     /*
      * Find @link InformationResourceFile entries with the specified @link FileStatus
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileService#findFilesWithStatus(org.tdar.core.bean.resource.file.FileStatus)
      */
     @Override
@@ -57,7 +62,9 @@ public class InformationResourceFileServiceImpl  extends ServiceInterface.TypedD
      * 
      * @throws NotImplementedException -- need to work through what should really happen here
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileService#purgeFromFilestore(org.tdar.core.bean.resource.file.InformationResourceFile)
      */
     @Override
@@ -68,7 +75,9 @@ public class InformationResourceFileServiceImpl  extends ServiceInterface.TypedD
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileService#deleteTranslatedFiles(org.tdar.core.bean.resource.file.InformationResourceFile)
      */
     @Override
@@ -80,7 +89,9 @@ public class InformationResourceFileServiceImpl  extends ServiceInterface.TypedD
     /*
      * Returns a Map of Extensions and count() for Files in the filestore
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileService#getAdminFileExtensionStats()
      */
     @Override
@@ -92,7 +103,9 @@ public class InformationResourceFileServiceImpl  extends ServiceInterface.TypedD
     /*
      * Given a @link InformationResourceFile grab the download count from the database and set the transient value on the InformationResourceFile
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileService#updateTransientDownloadCount(org.tdar.core.bean.resource.file.InformationResourceFile)
      */
     @Override
@@ -101,38 +114,48 @@ public class InformationResourceFileServiceImpl  extends ServiceInterface.TypedD
         irFile.setTransientDownloadCount(getDao().getDownloadCount(irFile).longValue());
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.InformationResourceFileService#findInformationResourcesWithFileStatus(org.tdar.core.bean.entity.Person, java.util.List, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.InformationResourceFileService#findInformationResourcesWithFileStatus(org.tdar.core.bean.entity.Person,
+     * java.util.List, java.util.List)
      */
     @Override
-    @Transactional(readOnly=true)
-    public List<InformationResource> findInformationResourcesWithFileStatus(Person authenticatedUser, List<Status> resourceStatus, List<FileStatus> fileStatus) {
+    @Transactional(readOnly = true)
+    public List<InformationResource> findInformationResourcesWithFileStatus(Person authenticatedUser, List<Status> resourceStatus,
+            List<FileStatus> fileStatus) {
         return getDao().findInformationResourcesWithFileStatus(authenticatedUser, resourceStatus, fileStatus);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileService#findScrollableVersionsForVerification()
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ScrollableResults findScrollableVersionsForVerification() {
         return getDao().findScrollableVersionsForVerification();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileService#findAllExpiredEmbargoFiles()
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<InformationResourceFile> findAllExpiredEmbargoFiles() {
         return getDao().findAllExpiredEmbargoes();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.InformationResourceFileService#findAllEmbargoFilesExpiringTomorrow()
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<InformationResourceFile> findAllEmbargoFilesExpiring() {
         return getDao().findAllEmbargoFilesExpiring();
     }

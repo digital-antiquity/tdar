@@ -24,6 +24,7 @@ public class EventBusResourceHolder<T extends ObjectContainer<?>> extends Resour
     /**
      * Adding a message, or ObjectContainer queues the event. To be safe we track the date added in nano-seconds, we dedup items
      * from the queue based on their ID and the date. The latter item is the one that we keep.
+     * 
      * @param message
      */
     public void addMessage(T message) {

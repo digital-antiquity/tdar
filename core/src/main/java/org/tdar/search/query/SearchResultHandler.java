@@ -26,7 +26,6 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     SortOption getSecondarySortField();
 
-
     /**
      * Sets the total number of records found by the SearchService.
      * When resultSize is less than startRecord + recordsPerPage, then there are more pages of results available.
@@ -65,15 +64,15 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
     String getSearchDescription();
 
     int getNextPageStartRecord();
-    
+
     int getPrevPageStartRecord();
 
     int getDefaultRecordsPerPage();
 
     void setSearchTitle(String description);
-    
+
     DisplayOrientation getOrientation();
-    
-    boolean isBot(); 
+
+    boolean isBot();
 
 }

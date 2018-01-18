@@ -6,7 +6,7 @@ import java.io.Serializable;
 import org.tdar.core.event.EventType;
 import org.tdar.core.service.event.ObjectContainer;
 
-public class SolrDocumentContainer extends ObjectContainer<File> implements Serializable  {
+public class SolrDocumentContainer extends ObjectContainer<File> implements Serializable {
 
     private static final String INDEX = "INDEX";
     private static final long serialVersionUID = 5991246263392007178L;

@@ -25,14 +25,14 @@ import com.opensymphony.xwork2.Preparable;
 public class IntegrationOntologyLookupAction extends AbstractJsonApiAction implements Preparable, SimpleSearchResultHandler {
 
     private static final long serialVersionUID = -1440176848488485510L;
-//    private Integer startRecord = 0;
-//    private Integer recordsPerPage = 100;
+    // private Integer startRecord = 0;
+    // private Integer recordsPerPage = 100;
     private OntologySearchFilter searchFilter = new OntologySearchFilter();
 
     @Autowired
     private transient OntologyService ontologyService;
-//    @Autowired
-//    private transient SerializationService serializationService;
+    // @Autowired
+    // private transient SerializationService serializationService;
 
     @Override
     public void prepare() {

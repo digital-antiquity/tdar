@@ -69,9 +69,9 @@ public class DataTable extends AbstractPersistable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTable")
     private List<DataTableColumn> dataTableColumns = new ArrayList<DataTableColumn>();
 
-    @Column(name="import_order")
+    @Column(name = "import_order")
     private Integer importOrder;
-    
+
     private transient Map<String, DataTableColumn> nameToColumnMap;
     private transient Map<Long, DataTableColumn> idToColumnMap;
     private transient Map<String, DataTableColumn> displayNameToColumnMap;
@@ -303,7 +303,6 @@ public class DataTable extends AbstractPersistable {
     public String getDatasetTitle() {
         return getDataset().getTitle();
     }
-
 
     @JsonView(JsonIntegrationDetailsFilter.class)
     public Long getDatasetId() {

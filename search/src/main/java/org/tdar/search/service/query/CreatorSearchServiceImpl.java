@@ -40,12 +40,15 @@ public class CreatorSearchServiceImpl<I extends Creator<?>> extends AbstractSear
     @Autowired
     private SearchService<Person> searchService;
 
-
-    /* (non-Javadoc)
-	 * @see org.tdar.search.service.query.CreatorSearchInterface#searchInstitution(java.lang.String, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.CreatorSearchInterface#searchInstitution(java.lang.String, org.tdar.search.query.LuceneSearchResultHandler,
+     * com.opensymphony.xwork2.TextProvider)
+     */
     @Override
-	public LuceneSearchResultHandler<I> searchInstitution(String name, LuceneSearchResultHandler<I> result, TextProvider provider) throws SearchException, IOException {
+    public LuceneSearchResultHandler<I> searchInstitution(String name, LuceneSearchResultHandler<I> result, TextProvider provider)
+            throws SearchException, IOException {
         InstitutionQueryBuilder iqb = new InstitutionQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
@@ -64,65 +67,69 @@ public class CreatorSearchServiceImpl<I extends Creator<?>> extends AbstractSear
         return StringUtils.equals(StringUtils.trim(query), "*");
     }
 
-    /* (non-Javadoc)
-	 * @see org.tdar.search.service.query.CreatorSearchInterface#findPerson(java.lang.String, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.CreatorSearchInterface#findPerson(java.lang.String, org.tdar.search.query.LuceneSearchResultHandler,
+     * com.opensymphony.xwork2.TextProvider)
+     */
     @Override
-	public LuceneSearchResultHandler<I> findPerson(String query, PersonSearchOption personSearchOption, LuceneSearchResultHandler<I> result, TextProvider provider) throws SearchException, IOException {
+    public LuceneSearchResultHandler<I> findPerson(String query, PersonSearchOption personSearchOption, LuceneSearchResultHandler<I> result,
+            TextProvider provider) throws SearchException, IOException {
         PersonQueryBuilder pqb = new PersonQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
         if (!isFindAll(query)) {
 
-        	TdarUser person = new TdarUser();
-        	//The person search option will only be populated if the search was submitted by an editor.
-        	if(personSearchOption==null){
-        		return findPerson(query, result, provider);
-        	}
+            TdarUser person = new TdarUser();
+            // The person search option will only be populated if the search was submitted by an editor.
+            if (personSearchOption == null) {
+                return findPerson(query, result, provider);
+            }
 
-        	//If the person search option is not null, then search by one or more of the other fields.
-        		PersonQueryPart personQueryPart = new PersonQueryPart();
-        		
-        		boolean searchAllFields = personSearchOption == PersonSearchOption.ALL_FIELDS;
-        		
-        		if(personSearchOption == PersonSearchOption.ALL_FIELDS){
-        			Person p_ = Person.fromName(query);
-        			person.setFirstName(p_.getFirstName()); 
-        			person.setLastName(p_.getLastName()); 
-        		}
-        		
-        		if(personSearchOption == PersonSearchOption.FIRST_NAME){
-        			person.setFirstName(query); 
-        		}
-        		
-        		if(personSearchOption == PersonSearchOption.LAST_NAME){
-        			person.setLastName(query); 
-        		}
-        		
-        		if(personSearchOption == PersonSearchOption.EMAIL || searchAllFields){
-        			person.setEmail(query);
-        			personQueryPart.setIncludeEmail(true);
-        		}
-        		
-        		if(personSearchOption == PersonSearchOption.USERNAME || searchAllFields){
-        			person.setUsername(query);
-        		}
-        		
-        		if(personSearchOption == PersonSearchOption.INSTITUTION || searchAllFields){
-        			person.setInstitution(new Institution(query));
-        		}
-        		
-        	
-        		personQueryPart.add(person);
-        		personQueryPart.setOperator(Operator.OR);
-        		group.append(personQueryPart);
-        		pqb.append(group);        		
+            // If the person search option is not null, then search by one or more of the other fields.
+            PersonQueryPart personQueryPart = new PersonQueryPart();
+
+            boolean searchAllFields = personSearchOption == PersonSearchOption.ALL_FIELDS;
+
+            if (personSearchOption == PersonSearchOption.ALL_FIELDS) {
+                Person p_ = Person.fromName(query);
+                person.setFirstName(p_.getFirstName());
+                person.setLastName(p_.getLastName());
+            }
+
+            if (personSearchOption == PersonSearchOption.FIRST_NAME) {
+                person.setFirstName(query);
+            }
+
+            if (personSearchOption == PersonSearchOption.LAST_NAME) {
+                person.setLastName(query);
+            }
+
+            if (personSearchOption == PersonSearchOption.EMAIL || searchAllFields) {
+                person.setEmail(query);
+                personQueryPart.setIncludeEmail(true);
+            }
+
+            if (personSearchOption == PersonSearchOption.USERNAME || searchAllFields) {
+                person.setUsername(query);
+            }
+
+            if (personSearchOption == PersonSearchOption.INSTITUTION || searchAllFields) {
+                person.setInstitution(new Institution(query));
+            }
+
+            personQueryPart.add(person);
+            personQueryPart.setOperator(Operator.OR);
+            group.append(personQueryPart);
+            pqb.append(group);
         }
         searchService.handleSearch(pqb, result, provider);
         return result;
     }
-    
-    public LuceneSearchResultHandler<I> findPerson(String name, LuceneSearchResultHandler<I> result, TextProvider provider) throws SearchException, IOException {
+
+    public LuceneSearchResultHandler<I> findPerson(String name, LuceneSearchResultHandler<I> result, TextProvider provider)
+            throws SearchException, IOException {
         PersonQueryBuilder pqb = new PersonQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
@@ -135,11 +142,15 @@ public class CreatorSearchServiceImpl<I extends Creator<?>> extends AbstractSear
         return result;
     }
 
-    /* (non-Javadoc)
-	 * @see org.tdar.search.service.query.CreatorSearchInterface#findInstitution(java.lang.String, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider, int)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.CreatorSearchInterface#findInstitution(java.lang.String, org.tdar.search.query.LuceneSearchResultHandler,
+     * com.opensymphony.xwork2.TextProvider, int)
+     */
     @Override
-	public LuceneSearchResultHandler<I> findInstitution(String institution, LuceneSearchResultHandler<I> result, TextProvider provider, int min) throws SearchException, IOException {
+    public LuceneSearchResultHandler<I> findInstitution(String institution, LuceneSearchResultHandler<I> result, TextProvider provider, int min)
+            throws SearchException, IOException {
         InstitutionQueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
         InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
         Institution testInstitution = new Institution(institution);
@@ -155,11 +166,15 @@ public class CreatorSearchServiceImpl<I extends Creator<?>> extends AbstractSear
         return result;
     }
 
-    /* (non-Javadoc)
-	 * @see org.tdar.search.service.query.CreatorSearchInterface#findPerson(org.tdar.core.bean.entity.Person, java.lang.String, java.lang.Boolean, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider, int)
-	 */
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.CreatorSearchInterface#findPerson(org.tdar.core.bean.entity.Person, java.lang.String, java.lang.Boolean,
+     * org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider, int)
+     */
     @Override
-	public LuceneSearchResultHandler<I> findPerson(Person person_, String term, Boolean registered, LuceneSearchResultHandler<I> result, TextProvider provider, int min) throws SearchException, IOException {
+    public LuceneSearchResultHandler<I> findPerson(Person person_, String term, Boolean registered, LuceneSearchResultHandler<I> result, TextProvider provider,
+            int min) throws SearchException, IOException {
         Person person = person_;
         if (person == null) {
             person = new Person();
@@ -186,7 +201,6 @@ public class CreatorSearchServiceImpl<I extends Creator<?>> extends AbstractSear
             valid = true;
         }
 
-        
         // ignore email field for unauthenticated users.
         if (SearchUtils.checkMinString(person.getEmail(), min)) {
             valid = true;
@@ -202,11 +216,11 @@ public class CreatorSearchServiceImpl<I extends Creator<?>> extends AbstractSear
                 }
             }
             if (registered == Boolean.TRUE) {
-                q.append(new FieldQueryPart<Boolean>(QueryFieldNames.REGISTERED,Boolean.TRUE));
+                q.append(new FieldQueryPart<Boolean>(QueryFieldNames.REGISTERED, Boolean.TRUE));
             }
             q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
             searchService.handleSearch(q, result, provider);
-        } 
+        }
         return result;
     }
 

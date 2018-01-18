@@ -165,10 +165,8 @@ public class SimpleKeywordViewAction extends AbstractKeywordController implement
         // TODO Auto-generated method stub
     }
 
-
-
     @Override
     public DisplayOrientation getOrientation() {
-        return orientation ;
+        return orientation;
     }
 }

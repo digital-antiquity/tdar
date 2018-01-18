@@ -44,7 +44,6 @@ public class DocumentController extends AbstractInformationResourceController<Do
         return true;
     }
 
-
     public DocumentType getDocumentType() {
         return documentType;
     }

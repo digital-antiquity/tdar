@@ -41,11 +41,11 @@ import com.opensymphony.xwork2.Validateable;
 public class CollectionBatchAction extends AbstractCollectionAdminAction implements Preparable, Validateable {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -4391259731930468732L;
-	
-	private Long accountId;
+     * 
+     */
+    private static final long serialVersionUID = -4391259731930468732L;
+
+    private Long accountId;
     private BillingAccount account;
 
     private Long projectId;
@@ -76,14 +76,14 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        
+
         if (!(getCollection() instanceof ResourceCollection)) {
             addActionError("makeWhiteLableAction.invalid_collection_type");
         }
 
         // COMMENTED OUT UNTIL WE FIGURE OUT What sort of collection should support this
         setResources(new ArrayList<>(((ResourceCollection) getCollection()).getManagedResources()));
-        Collections.sort(resources , new Comparator<Resource>() {
+        Collections.sort(resources, new Comparator<Resource>() {
             @Override
             public int compare(Resource o1, Resource o2) {
                 return PersistableUtils.compareIds(o1, o2);
@@ -120,7 +120,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
         }
         super.validate();
     }
-    
+
     @Override
     @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = FREEMARKER, location = "../batch.ftl"),

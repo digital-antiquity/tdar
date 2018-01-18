@@ -82,7 +82,7 @@ import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 
 @Service
-public class ResourceServiceImpl implements ResourceService  {
+public class ResourceServiceImpl implements ResourceService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -112,7 +112,9 @@ public class ResourceServiceImpl implements ResourceService  {
     @Autowired
     private GeoSearchService geoSearchService;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findSkeletonsForSearch(boolean, java.util.List)
      */
     @Override
@@ -121,7 +123,9 @@ public class ResourceServiceImpl implements ResourceService  {
         return datasetDao.findSkeletonsForSearch(trustCache, ids);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findOld(java.lang.Long)
      */
     @Override
@@ -130,7 +134,9 @@ public class ResourceServiceImpl implements ResourceService  {
         return datasetDao.findOld(ids);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findResourcesSubmittedByUser(org.tdar.core.bean.entity.Person)
      */
     @Override
@@ -139,7 +145,9 @@ public class ResourceServiceImpl implements ResourceService  {
         return datasetDao.findResourcesSubmittedByUser(person);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#find(java.lang.Long)
      */
     @Override
@@ -152,7 +160,9 @@ public class ResourceServiceImpl implements ResourceService  {
         return (R) datasetDao.find(Resource.class, id);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findAllSparseActiveResources()
      */
     @Override
@@ -161,17 +171,22 @@ public class ResourceServiceImpl implements ResourceService  {
         return datasetDao.findAllSparseActiveResources();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findRecentlyUpdatedItemsInLastXDays(int)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
         return datasetDao.findRecentlyUpdatedItemsInLastXDays(days);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.ResourceService#logResourceModification(T, org.tdar.core.bean.entity.TdarUser, java.lang.String, org.tdar.core.bean.resource.RevisionLogType)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.ResourceService#logResourceModification(T, org.tdar.core.bean.entity.TdarUser, java.lang.String,
+     * org.tdar.core.bean.resource.RevisionLogType)
      */
     @Override
     @Transactional
@@ -179,12 +194,16 @@ public class ResourceServiceImpl implements ResourceService  {
         logResourceModification(modifiedResource, person, message, null, type);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.ResourceService#logResourceModification(T, org.tdar.core.bean.entity.TdarUser, java.lang.String, java.lang.String, org.tdar.core.bean.resource.RevisionLogType, java.lang.Long)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.ResourceService#logResourceModification(T, org.tdar.core.bean.entity.TdarUser, java.lang.String, java.lang.String,
+     * org.tdar.core.bean.resource.RevisionLogType, java.lang.Long)
      */
     @Override
     @Transactional
-    public <T extends Resource> void  logResourceModification(T modifiedResource, TdarUser person, String message, String payload, RevisionLogType type, Long startTime) {
+    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, String payload, RevisionLogType type,
+            Long startTime) {
         ResourceRevisionLog log = new ResourceRevisionLog(message, modifiedResource, person, type);
         log.setTimestamp(new Date());
         log.setPayload(payload);
@@ -192,8 +211,11 @@ public class ResourceServiceImpl implements ResourceService  {
         genericDao.save(log);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.ResourceService#logResourceModification(T, org.tdar.core.bean.entity.TdarUser, java.lang.String, java.lang.String, org.tdar.core.bean.resource.RevisionLogType)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.ResourceService#logResourceModification(T, org.tdar.core.bean.entity.TdarUser, java.lang.String, java.lang.String,
+     * org.tdar.core.bean.resource.RevisionLogType)
      */
     @Override
     @Transactional
@@ -201,16 +223,20 @@ public class ResourceServiceImpl implements ResourceService  {
         logResourceModification(modifiedResource, person, message, payload, type, null);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findAllStatuses()
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Status> findAllStatuses() {
         return Arrays.asList(Status.values());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#incrementAccessCounter(org.tdar.core.bean.resource.Resource, boolean)
      */
     @Override
@@ -221,7 +247,9 @@ public class ResourceServiceImpl implements ResourceService  {
         genericDao.save(rac);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#updateTransientAccessCount(org.tdar.core.bean.resource.Resource)
      */
     @Override
@@ -230,7 +258,9 @@ public class ResourceServiceImpl implements ResourceService  {
         resource.setTransientAccessCount(datasetDao.getAccessCount(resource).longValue());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#countActiveResources(org.tdar.core.bean.resource.ResourceType)
      */
     @Override
@@ -239,7 +269,9 @@ public class ResourceServiceImpl implements ResourceService  {
         return datasetDao.countActiveResources(type);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#countActiveResourcesWithFiles(org.tdar.core.bean.resource.ResourceType)
      */
     @Override
@@ -248,7 +280,9 @@ public class ResourceServiceImpl implements ResourceService  {
         return datasetDao.countActiveResourcesWithFiles(type);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getISOGeographicCounts()
      */
     @Override
@@ -259,12 +293,13 @@ public class ResourceServiceImpl implements ResourceService  {
         return datasetDao.getISOGeographicCounts();
     }
 
-    
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getMappedDataForInformationResource(org.tdar.core.bean.resource.InformationResource, boolean)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource, boolean failOnMissing) {
         try {
             return datasetDao.getMappedDataForInformationResource(resource);
@@ -272,12 +307,14 @@ public class ResourceServiceImpl implements ResourceService  {
             logger.error("could not attach additional dataset data to resource", t);
             if (failOnMissing) {
                 throw t;
-            } 
+            }
             return new HashMap<>();
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#processManagedKeywords(org.tdar.core.bean.resource.Resource, java.util.Collection)
      */
     @Override
@@ -286,22 +323,31 @@ public class ResourceServiceImpl implements ResourceService  {
         geoSearchService.processManagedGeographicKeywords(resource, allLatLongBoxes);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.ResourceService#saveHasResources(R, boolean, org.tdar.core.service.resource.ResourceServiceImpl.ErrorHandling, java.util.Collection, java.util.Set, java.lang.Class)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.ResourceService#saveHasResources(R, boolean, org.tdar.core.service.resource.ResourceServiceImpl.ErrorHandling,
+     * java.util.Collection, java.util.Set, java.lang.Class)
      */
     @Override
     @Transactional
     /**
-     * Given a collection of hibernate-managed beans (the 'current' collection)  and another collection of transient beans (the 'incoming' collection),
-     * update the current collection to match the contents of the incoming collection. This method will associate all elements in the incoming collection 
-     * with the specified resource.  Contents of both collections should satisfy the HasResource interface.
+     * Given a collection of hibernate-managed beans (the 'current' collection) and another collection of transient beans (the 'incoming' collection),
+     * update the current collection to match the contents of the incoming collection. This method will associate all elements in the incoming collection
+     * with the specified resource. Contents of both collections should satisfy the HasResource interface.
      * 
-     * @param resource  the 'owner' of the elements in the incoming collection.  This method will associate all elements of the incoming collection with this resource.
-     * @param shouldSave if true,  this method will persist elements of the incoming collection.
-     * @param validateMethod determines what validation steps (if any) to perform on each element of the incoming collection
-     * @param incoming_ the incoming collection of HasResource elements.  
-     * @param current the current collection of HasResource elements.  This method will modify collection to contain the same elements as the incoming collection.
-     * @param cls type of the collection elements.
+     * @param resource
+     *            the 'owner' of the elements in the incoming collection. This method will associate all elements of the incoming collection with this resource.
+     * @param shouldSave
+     *            if true, this method will persist elements of the incoming collection.
+     * @param validateMethod
+     *            determines what validation steps (if any) to perform on each element of the incoming collection
+     * @param incoming_
+     *            the incoming collection of HasResource elements.
+     * @param current
+     *            the current collection of HasResource elements. This method will modify collection to contain the same elements as the incoming collection.
+     * @param cls
+     *            type of the collection elements.
      */
     public <H extends HasResource<R>, R extends Resource> void saveHasResources(R resource, boolean shouldSave, ErrorHandling validateMethod,
             Collection<H> incoming__,
@@ -387,47 +433,55 @@ public class ResourceServiceImpl implements ResourceService  {
         logger.debug("Resulting Collection of {}s ({}) : {} ", new Object[] { cls.getSimpleName(), current.size(), current });
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getResourceCounts()
      */
     @Override
     @Cacheable(value = Caches.HOMEPAGE_RESOURCE_COUNT_CACHE)
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<HomepageResourceCountCache> getResourceCounts() {
         return datasetDao.getResourceCounts();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getResourceCountAndStatusForUser(org.tdar.core.bean.entity.Person, java.util.List)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ResourceTypeStatusInfo getResourceCountAndStatusForUser(Person p, List<ResourceType> resourceTypes) {
         return datasetDao.getResourceCountAndStatusForUser(p, resourceTypes);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getResourceCount(org.tdar.core.bean.resource.ResourceType, org.tdar.core.bean.resource.Status)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Long getResourceCount(ResourceType resourceType, Status status) {
         return datasetDao.getResourceCount(resourceType, status);
     }
 
-//    /**
-//     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
-//     * 
-//     * @param proxy
-//     * @param resourceClass
-//     * @return
-//     */
-//    @Transactional
-//    public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass) {
-//        return createResourceFrom(proxy, resourceClass, true);
-//    }
+    // /**
+    // * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
+    // *
+    // * @param proxy
+    // * @param resourceClass
+    // * @return
+    // */
+    // @Transactional
+    // public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass) {
+    // return createResourceFrom(proxy, resourceClass, true);
+    // }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#clearOneToManyIds(T)
      */
     @Override
@@ -435,8 +489,11 @@ public class ResourceServiceImpl implements ResourceService  {
         datasetDao.clearOneToManyIds(resource, false);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.ResourceService#createResourceFrom(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource, java.lang.Class, boolean)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.ResourceService#createResourceFrom(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource,
+     * java.lang.Class, boolean)
      */
     @Override
     @Transactional
@@ -471,19 +528,19 @@ public class ResourceServiceImpl implements ResourceService  {
 
             }
             for (ResourceCollection collection : proxy.getManagedResourceCollections()) {
-                 if (collection instanceof ResourceCollection){
-                     ResourceCollection shared = (ResourceCollection)collection;
-                     logger.info("adding to shared collection : {} ", collection);
-                     if (collection.isTransient() && save) {
-                         genericDao.save(shared);
-                     } else {
-                         // manage session (when called from bulk upload, need to make sure we're on the session, as the incomming may be on a different thread)
-                         shared = genericDao.find(ResourceCollection.class, shared.getId());
-                     }
-                     shared.getManagedResources().add(resource);
-                     resource.getManagedResourceCollections().add(shared);
-                 } else {
-                     throw new TdarRecoverableRuntimeException("resourceService.invalid_collectiontype");
+                if (collection instanceof ResourceCollection) {
+                    ResourceCollection shared = (ResourceCollection) collection;
+                    logger.info("adding to shared collection : {} ", collection);
+                    if (collection.isTransient() && save) {
+                        genericDao.save(shared);
+                    } else {
+                        // manage session (when called from bulk upload, need to make sure we're on the session, as the incomming may be on a different thread)
+                        shared = genericDao.find(ResourceCollection.class, shared.getId());
+                    }
+                    shared.getManagedResources().add(resource);
+                    resource.getManagedResourceCollections().add(shared);
+                } else {
+                    throw new TdarRecoverableRuntimeException("resourceService.invalid_collectiontype");
                 }
             }
 
@@ -528,12 +585,14 @@ public class ResourceServiceImpl implements ResourceService  {
             return resource;
             // NOTE: THIS SHOULD BE THE LAST THING DONE AS IT BRINGS EVERYTHING BACK ONTO THE SESSION PROPERLY
         } catch (Exception exception) {
-            logger.error("{}",exception, exception);
+            logger.error("{}", exception, exception);
             throw new TdarRuntimeException(exception);
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#cloneSet(org.tdar.core.bean.resource.Resource, java.util.Set, java.util.Set)
      */
     @Override
@@ -554,47 +613,57 @@ public class ResourceServiceImpl implements ResourceService  {
         return targetCollection;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getResourceSpaceUsageStatistics(java.util.List, java.util.List)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Status> status) {
         return datasetDao.getResourceSpaceUsageStatistics(resourceId, status);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getResourceSpaceUsageStatisticsForProject(java.lang.Long, java.util.List)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForProject(Long id, List<Status> status) {
         return datasetDao.getResourceSpaceUsageStatisticsForProject(id, status);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getSpaceUsageForCollections(java.util.List, java.util.List)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
         return datasetDao.getSpaceUsageForCollections(collectionId, statuses);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getResourceSpaceUsageStatisticsForUser(java.util.List, java.util.List)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForUser(List<Long> accountId, List<Status> status) {
         return datasetDao.getResourceSpaceUsageStatisticsForUser(accountId, status);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getLogsForResource(org.tdar.core.bean.resource.Resource)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
         if (PersistableUtils.isNullOrTransient(resource)) {
             return Collections.emptyList();
@@ -602,20 +671,24 @@ public class ResourceServiceImpl implements ResourceService  {
         return datasetDao.getLogEntriesForResource(resource);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findAllResourceIdsWithFiles()
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Long> findAllResourceIdsWithFiles() {
         return datasetDao.findAllResourceIdsWithFiles();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getAllResourceTypes()
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<ResourceType> getAllResourceTypes() {
         ArrayList<ResourceType> arrayList = new ArrayList<>(Arrays.asList(ResourceType.values()));
         if (!TdarConfiguration.getInstance().isVideoEnabled()) {
@@ -629,7 +702,9 @@ public class ResourceServiceImpl implements ResourceService  {
         return arrayList;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findAllResourcesWithPublicImagesForSitemap(com.redfin.sitemapgenerator.GoogleImageSitemapGenerator)
      */
     @Override
@@ -639,7 +714,9 @@ public class ResourceServiceImpl implements ResourceService  {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findByTdarYear(org.tdar.search.query.SearchResultHandler, int)
      */
     @Override
@@ -648,7 +725,9 @@ public class ResourceServiceImpl implements ResourceService  {
         return datasetDao.findByTdarYear(resultHandler, year);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getWeeklyPopularResources()
      */
     @Override
@@ -657,13 +736,15 @@ public class ResourceServiceImpl implements ResourceService  {
     public List<Resource> getWeeklyPopularResources() {
         return getWeeklyPopularResources(10);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getWeeklyPopularResources(int)
      */
     @Override
-    @Transactional(readOnly=true)
-    public List<Resource> getWeeklyPopularResources(int count) {    
+    @Transactional(readOnly = true)
+    public List<Resource> getWeeklyPopularResources(int count) {
         int max = count;
         DateTime end = new DateTime();
         DateTime start = end.minusDays(7);
@@ -671,7 +752,9 @@ public class ResourceServiceImpl implements ResourceService  {
         return popular;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#saveResourceCreatorsFromProxies(java.util.Collection, org.tdar.core.bean.resource.Resource, boolean)
      */
     @Override
@@ -701,7 +784,9 @@ public class ResourceServiceImpl implements ResourceService  {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getDeletionIssues(com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.resource.Resource)
      */
     @Override
@@ -739,8 +824,11 @@ public class ResourceServiceImpl implements ResourceService  {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.ResourceService#deleteForController(org.tdar.core.bean.resource.Resource, java.lang.String, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.ResourceService#deleteForController(org.tdar.core.bean.resource.Resource, java.lang.String,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = false)
@@ -755,7 +843,7 @@ public class ResourceServiceImpl implements ResourceService  {
             reason = "reason not specified";
         }
         String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(), authUser, reason);
-        logResourceModification(resource, authUser, logMessage , null, RevisionLogType.DELETE);
+        logResourceModification(resource, authUser, logMessage, null, RevisionLogType.DELETE);
         resource.markUpdated(authUser);
         genericDao.delete(resource);
 
@@ -772,11 +860,11 @@ public class ResourceServiceImpl implements ResourceService  {
                     resource.setAccount(account);
                 }
             }
-            
+
             // if we have an account ... for some things we might not
             if (account != null) {
                 account = genericDao.markWritableOnExistingSession(account);
-                accountDao.updateQuota(account, toEvaluate,authUser);
+                accountDao.updateQuota(account, toEvaluate, authUser);
                 genericDao.saveOrUpdate(account);
             }
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
@@ -784,7 +872,9 @@ public class ResourceServiceImpl implements ResourceService  {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findAllActiveScrollableForSitemap()
      */
     @Override
@@ -792,101 +882,120 @@ public class ResourceServiceImpl implements ResourceService  {
     public ScrollableResults findAllActiveScrollableForSitemap() {
         return datasetDao.findAllActiveScrollableForSitemap();
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#evictHomepageMapCache()
      */
     @Override
-    @CacheEvict(value=Caches.HOMEPAGE_MAP_CACHE, allEntries=true)
-    @Transactional(readOnly=false)
+    @CacheEvict(value = Caches.HOMEPAGE_MAP_CACHE, allEntries = true)
+    @Transactional(readOnly = false)
     public void evictHomepageMapCache() {
         logger.debug("evicting homepage cache");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#evictResourceCountCache()
      */
     @Override
-    @CacheEvict(value=Caches.HOMEPAGE_RESOURCE_COUNT_CACHE, allEntries=true)
-    @Transactional(readOnly=false)
+    @CacheEvict(value = Caches.HOMEPAGE_RESOURCE_COUNT_CACHE, allEntries = true)
+    @Transactional(readOnly = false)
     public void evictResourceCountCache() {
         // TODO Auto-generated method stub
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#evictDecadeCountCache()
      */
     @Override
-    @CacheEvict(value=Caches.DECADE_COUNT_CACHE, allEntries=true)
-    @Transactional(readOnly=false)
+    @CacheEvict(value = Caches.DECADE_COUNT_CACHE, allEntries = true)
+    @Transactional(readOnly = false)
     public void evictDecadeCountCache() {
         // TODO Auto-generated method stub
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#evictBrowseYearCountCache()
      */
     @Override
-    @CacheEvict(value=Caches.BROWSE_DECADE_COUNT_CACHE, allEntries=true)
-    @Transactional(readOnly=false)
+    @CacheEvict(value = Caches.BROWSE_DECADE_COUNT_CACHE, allEntries = true)
+    @Transactional(readOnly = false)
     public void evictBrowseYearCountCache() {
         // TODO Auto-generated method stub
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#evictPopularResourceCache()
      */
     @Override
-    @CacheEvict(value=Caches.WEEKLY_POPULAR_RESOURCE_CACHE, allEntries=true)
-    @Transactional(readOnly=false)
+    @CacheEvict(value = Caches.WEEKLY_POPULAR_RESOURCE_CACHE, allEntries = true)
+    @Transactional(readOnly = false)
     public void evictPopularResourceCache() {
         // TODO Auto-generated method stub
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#evictHomepageFeaturedItemCache()
      */
     @Override
-    @CacheEvict(value=Caches.HOMEPAGE_FEATURED_ITEM_CACHE, allEntries=true)
-    @Transactional(readOnly=false)
+    @CacheEvict(value = Caches.HOMEPAGE_FEATURED_ITEM_CACHE, allEntries = true)
+    @Transactional(readOnly = false)
     public void evictHomepageFeaturedItemCache() {
         // TODO Auto-generated method stub
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#evictBrowseYearCountcache()
      */
     @Override
-    @CacheEvict(value=Caches.BROWSE_YEAR_COUNT_CACHE, allEntries=true)
-    @Transactional(readOnly=false)
+    @CacheEvict(value = Caches.BROWSE_YEAR_COUNT_CACHE, allEntries = true)
+    @Transactional(readOnly = false)
     public void evictBrowseYearCountcache() {
-        
+
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findMappedResources()
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ScrollableResults findMappedResources() {
         return findMappedResources(null);
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findMappedResources(org.tdar.core.bean.resource.Project)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ScrollableResults findMappedResources(Project p) {
         return datasetDao.findMappedResources(p);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getGoogleScholarTags(org.tdar.core.bean.resource.Resource)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public String getGoogleScholarTags(Resource resource) {
         StringWriter sw = new StringWriter();
         try {
@@ -900,12 +1009,14 @@ public class ResourceServiceImpl implements ResourceService  {
         }
         return sw.toString();
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#getSchemaOrgJsonLD(org.tdar.core.bean.resource.Resource)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public String getSchemaOrgJsonLD(Resource resource) {
         try {
             SchemaOrgResourceTransformer transformer = new SchemaOrgResourceTransformer();
@@ -917,14 +1028,18 @@ public class ResourceServiceImpl implements ResourceService  {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.ResourceService#updateBatch(org.tdar.core.bean.billing.BillingAccount, org.tdar.core.bean.collection.SharedCollection, java.util.List, java.util.List, java.util.List, java.util.List, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.ResourceService#updateBatch(org.tdar.core.bean.billing.BillingAccount,
+     * org.tdar.core.bean.collection.SharedCollection, java.util.List, java.util.List, java.util.List, java.util.List, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    @Transactional(readOnly=false)
-    public void updateBatch(BillingAccount account, ResourceCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
+    @Transactional(readOnly = false)
+    public void updateBatch(BillingAccount account, ResourceCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles,
+            List<String> descriptions, TdarUser authenticatedUser) {
         List<Resource> resources = new ArrayList<>();
-        for (int i=0; i< ids.size(); i++) {
+        for (int i = 0; i < ids.size(); i++) {
             Long id = ids.get(i);
             Integer date = dates.get(i);
             String title = titles.get(i);
@@ -933,23 +1048,23 @@ public class ResourceServiceImpl implements ResourceService  {
             r = genericDao.markWritableOnExistingSession(r);
             resources.add(r);
             boolean different = false;
-            if (!Objects.equals(title,  r.getTitle())) {
+            if (!Objects.equals(title, r.getTitle())) {
                 different = true;
                 r.setTitle(title);
             }
-            if (!Objects.equals(description,  r.getDescription())) {
+            if (!Objects.equals(description, r.getDescription())) {
                 different = true;
                 r.setDescription(description);
             }
-            
+
             if (r instanceof InformationResource) {
                 InformationResource ir = (InformationResource) r;
-                if (!Objects.equals(date,  ir.getDate())) {
+                if (!Objects.equals(date, ir.getDate())) {
                     different = true;
                     ir.setDate(date);
                 }
             }
-            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getManagedResourceCollections().contains(collectionToAdd)) { 
+            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getManagedResourceCollections().contains(collectionToAdd)) {
                 r.getManagedResourceCollections().add(collectionToAdd);
                 collectionToAdd.getManagedResources().add(r);
             }
@@ -960,9 +1075,9 @@ public class ResourceServiceImpl implements ResourceService  {
                 genericDao.saveOrUpdate(r);
             }
             logger.debug("processed: {}", r);
-//            throw new TdarRecoverableRuntimeException("error.not_implemented");
+            // throw new TdarRecoverableRuntimeException("error.not_implemented");
         }
-        
+
         if (PersistableUtils.isNotNullOrTransient(account)) {
             accountDao.updateQuota(account, resources, authenticatedUser);
         }
@@ -972,11 +1087,13 @@ public class ResourceServiceImpl implements ResourceService  {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceService#findCustom(org.tdar.core.bean.resource.Resource)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public RequestCollection findCustom(Resource resource) {
         return resourceCollectionDao.findCustomRequest(resource);
     }

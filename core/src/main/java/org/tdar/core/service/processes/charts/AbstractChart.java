@@ -14,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 
 @SuppressWarnings("restriction")
-public abstract class AbstractChart  {
-    
+public abstract class AbstractChart {
+
     private String outputDir = TdarConfiguration.getInstance().getTempDirectory().getAbsolutePath();
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -25,18 +25,18 @@ public abstract class AbstractChart  {
     private String filename;
 
     // Customize Chart
-    Color[] sliceColors = new Color[] { new Color(235,215,144),
-    new Color(214,184,75),
-    new Color(195,170,114),
-    new Color(160,157,91),
-    new Color(144,157,91),
-    new Color(220,118,18),
-    new Color(189,50,0),
-    new Color(102,0,0)};
-    
+    Color[] sliceColors = new Color[] { new Color(235, 215, 144),
+            new Color(214, 184, 75),
+            new Color(195, 170, 114),
+            new Color(160, 157, 91),
+            new Color(144, 157, 91),
+            new Color(220, 118, 18),
+            new Color(189, 50, 0),
+            new Color(102, 0, 0) };
+
     File renderAndExport(Chart bc) throws IOException {
         render(bc);
-        File file  = exportChart(bc, Paths.get(getOutputDir() + getFilename()));
+        File file = exportChart(bc, Paths.get(getOutputDir() + getFilename()));
         return file;
     }
 
@@ -49,20 +49,19 @@ public abstract class AbstractChart  {
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
         chart.getStyler().setPlotBorderVisible(false);
         chart.getStyler().setLegendBorderColor(Color.WHITE);
-    
+
     }
 
     public File exportChart(Chart chart, Path path_) throws IOException {
         Path path = path_.normalize();
         String filename = path.getFileName().toString();
         logger.debug("exporting: {}\t type:{}", path.toAbsolutePath());
-        //FIXME: NOT SURE THIS PATH IS RIGHT
+        // FIXME: NOT SURE THIS PATH IS RIGHT
         BitmapEncoder.saveBitmap(chart, filename, BitmapFormat.PNG);
         return new File(path.toFile(), filename + ".png");
-//      VectorGraphicsEncoder.saveVectorGraphic(chart, "./Sample_Chart", VectorGraphicsFormat.EPS);
+        // VectorGraphicsEncoder.saveVectorGraphic(chart, "./Sample_Chart", VectorGraphicsFormat.EPS);
     }
 
-    
     public int getHeight() {
         return height;
     }

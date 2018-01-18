@@ -129,9 +129,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
 @JsonInclude(value = Include.NON_NULL)
-//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-//@DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
-//@XmlSeeAlso(value = { ResourceCollection.class })
+// @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+// @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
+// @XmlSeeAlso(value = { ResourceCollection.class })
 @XmlRootElement(name = "resourceCollection")
 @SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
 public class ResourceCollection extends AbstractPersistable
@@ -140,8 +140,8 @@ public class ResourceCollection extends AbstractPersistable
 
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
 
-
-    public ResourceCollection(String title, String description, boolean hidden, SortOption sortOption, DisplayOrientation displayOrientation, TdarUser creator) {
+    public ResourceCollection(String title, String description, boolean hidden, SortOption sortOption, DisplayOrientation displayOrientation,
+            TdarUser creator) {
         setName(title);
         setDescription(description);
         setHidden(hidden);
@@ -149,7 +149,7 @@ public class ResourceCollection extends AbstractPersistable
         setOrientation(displayOrientation);
         setOwner(creator);
     }
-    
+
     public ResourceCollection(Long id, String title, String description, SortOption sortOption, boolean hidden) {
         setId(id);
         setName(title);
@@ -424,7 +424,6 @@ public class ResourceCollection extends AbstractPersistable
         this.setParent(resource.getParent());
     }
 
-    
     @XmlAttribute(name = "parentIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public ResourceCollection getParent() {
@@ -574,10 +573,9 @@ public class ResourceCollection extends AbstractPersistable
         this.secondarySortBy = secondarySortBy;
     }
 
-
-//    @XmlTransient
-    @XmlElementWrapper(name="authorizedUsers")
-    @XmlElement(name="authorizedUser")
+    // @XmlTransient
+    @XmlElementWrapper(name = "authorizedUsers")
+    @XmlElement(name = "authorizedUser")
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }
@@ -867,10 +865,10 @@ public class ResourceCollection extends AbstractPersistable
     public void setUnmanagedResourceIds(Set<Long> unmanagedResourceIds) {
         this.unmanagedResourceIds = unmanagedResourceIds;
     }
-    
+
     @Transient
     public int getSize() {
-        return CollectionUtils.size(managedResources) +CollectionUtils.size(unmanagedResources); 
+        return CollectionUtils.size(managedResources) + CollectionUtils.size(unmanagedResources);
     }
 
     public Boolean getVerified() {

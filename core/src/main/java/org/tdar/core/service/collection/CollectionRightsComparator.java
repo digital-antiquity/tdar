@@ -253,7 +253,5 @@ public class CollectionRightsComparator {
             }
         }
     }
-    
-
 
 }

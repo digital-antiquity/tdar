@@ -36,7 +36,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
 
     private String keywordType;
     private String term;
-    
+
     @Autowired
     KeywordSearchService<Keyword> keywordSearchService;
 

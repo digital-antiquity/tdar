@@ -57,7 +57,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     private DisplayOrientation orientation;
-    
+
     // error message of last resort. User entered something we did not
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
@@ -120,7 +120,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             getObjectTypes().add(ObjectType.from(rt));
         }
         getResourceTypes().clear();
-        
+
         // legacy search by id?
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             getLogger().trace("legacy api:  tdar id");
@@ -188,17 +188,15 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         return null;
     }
 
-    
-    
     private String advancedSearch() throws TdarActionException, SolrServerException, IOException {
         prepareAdvancedSearchQueryObject();
-            
+
         try {
             resourceSearchService.buildAdvancedSearch(getAsqo(), getAuthenticatedUser(), this, this);
             addActionMessages();
             updateDisplayOrientationBasedOnSearchResults();
         } catch (SearchPaginationException spe) {
-            getLogger().debug("pagination issue: {}", spe.getMessage() );
+            getLogger().debug("pagination issue: {}", spe.getMessage());
             throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,
                     TdarActionSupport.NOT_FOUND);
         } catch (TdarRecoverableRuntimeException | SearchException tdre) {
@@ -214,8 +212,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         }
     }
 
-	protected void prepareAdvancedSearchQueryObject() {
-		determineSearchTitle();
+    protected void prepareAdvancedSearchQueryObject() {
+        determineSearchTitle();
         setMode("SEARCH");
         // beforeSearch();
 
@@ -225,24 +223,23 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         getAsqo().setQuery(query);
         getAsqo().getSearchParameters().addAll(groups);
         getAsqo().setReservedParams(getReservedSearchParameters());
-	}
+    }
 
     private void addActionMessages() {
-        for (SearchParameters sp: groups) {
+        for (SearchParameters sp : groups) {
             for (String msg : sp.getActionMessages()) {
-                getLogger().debug("adding actionMessage:{}",msg);
+                getLogger().debug("adding actionMessage:{}", msg);
                 addActionMessage(msg);
             }
         }
         for (String msg : getReservedSearchParameters().getActionMessages()) {
-            getLogger().debug("adding actionMessage:{}",msg);
+            getLogger().debug("adding actionMessage:{}", msg);
             addActionMessage(msg);
         }
     }
 
     protected void updateDisplayOrientationBasedOnSearchResults() {
     }
-
 
     private boolean processedLimits = false;
 
@@ -254,7 +251,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
             groups.add(terms);
         }
-        
+
         if (processedLimits) {
             return;
         }
@@ -267,7 +264,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             getLogger().debug("contextual search: collection {}", collectionId);
             ResourceCollection rc = getGenericService().find(ResourceCollection.class, collectionId);
             terms_.getFieldTypes().add(0, SearchFieldType.COLLECTION);
-            terms_.getCollections().add((ResourceCollection)rc);
+            terms_.getCollections().add((ResourceCollection) rc);
             terms_.getAllFields().add(0, null);
             groups.add(terms_);
 
@@ -283,7 +280,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         }
 
     }
-
 
     @DoNotObfuscate(reason = "user submitted map")
     public LatitudeLongitudeBox getMap() {
@@ -462,8 +458,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setSearchTitle(getQuery());
         } else if (groups.size() > 0) {
             if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
-            setSearchTitle(getText("advancedSearchController.title_beginning_with_s",
-                    Arrays.asList(getFirstGroup().getStartingLetter())));
+                setSearchTitle(getText("advancedSearchController.title_beginning_with_s",
+                        Arrays.asList(getFirstGroup().getStartingLetter())));
                 // FIXME: only supports 1
             } else if (CollectionUtils.isNotEmpty(getFirstGroup().getCreationDecades())) {
                 setSearchTitle(getText("advancedSearchController.created_in_the_decade_s",
@@ -513,14 +509,12 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         this.letter = letter;
     }
 
-
     protected SearchParameters getFirstGroup() {
         if (groups.size() > 0) {
             return groups.get(0);
         }
         return null;
     }
-
 
     @Override
     public DisplayOrientation getOrientation() {
@@ -578,7 +572,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         return collectionSearchBoxVisible;
     }
 
-
     public String performResourceSearch() throws TdarActionException, SolrServerException, IOException {
         setLookupSource(LookupSource.RESOURCE);
         // we need this for tests to be able to change the projection model so
@@ -587,7 +580,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setProjectionModel(ProjectionModel.LUCENE);
         }
 
-        resetSearch  = processLegacySearchParameters();
+        resetSearch = processLegacySearchParameters();
 
         return advancedSearch();
 
@@ -622,7 +615,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     public void setObjectTypes(List<ObjectType> objectTypes) {
         getReservedSearchParameters().setObjectTypes(objectTypes);
     }
-    
+
     public List<ObjectType> getAllObjectTypes() {
         List<ObjectType> types = new ArrayList<>(Arrays.asList(ObjectType.values()));
         types.remove(ObjectType.ARCHIVE);

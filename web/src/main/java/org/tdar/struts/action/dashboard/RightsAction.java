@@ -44,7 +44,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
 
     private static final long serialVersionUID = 5576550365349636811L;
     private TreeSet<ResourceCollection> allResourceCollections = new TreeSet<>(new TitleSortComparator());
-    
 
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
@@ -83,7 +82,7 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         }
         getLogger().trace("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-                getAllResourceCollections().add(rc);
+            getAllResourceCollections().add(rc);
         }
         getLogger().trace("done ");
     }
@@ -98,7 +97,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         setFindUsersSharedWith(resourceCollectionService.findUsersSharedWith(getAuthenticatedUser()));
         getLogger().trace("done");
     }
-
 
     @DoNotObfuscate(reason = "not needed / performance test")
     public Set<ResourceCollection> getAllResourceCollections() {
@@ -132,7 +130,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
     public void setStatusData(String statusData) {
         this.statusData = statusData;
     }
-
 
     @Override
     public boolean isRightSidebar() {

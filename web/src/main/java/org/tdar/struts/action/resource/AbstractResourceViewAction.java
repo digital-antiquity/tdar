@@ -70,7 +70,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     private static final long serialVersionUID = 896347341133309643L;
 
-
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -99,10 +98,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private Map<DataTableColumn, String> mappedData;
 
     private List<UserInvite> invites;
-    
+
     @Autowired
     ResourceViewControllerService viewService;
-
 
     private List<ResourceCollection> visibleUnmanagedCollections;
 
@@ -113,7 +111,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     public String getGoogleScholarTags() throws Exception {
         return resourceService.getGoogleScholarTags(getResource());
     }
-
 
     @Override
     public String loadViewMetadata() throws TdarActionException {
@@ -138,10 +135,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         setInvites(userRightsProxyService.findUserInvites(getPersistable()));
         return SUCCESS;
     }
-    
+
     protected void loadCustomViewMetadata() throws TdarActionException {
     }
-
 
     @Override
     public boolean authorize() throws TdarActionException {
@@ -178,7 +174,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         }
 
     }
-
 
     public Resource getResource() {
         return getPersistable();
@@ -232,8 +227,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return creditProxies;
     }
 
-
     private List<ResourceCollection> visibleCollections = new ArrayList<>();
+
     /**
      * All shares and list collections
      * 
@@ -257,8 +252,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     public boolean isUserAbleToViewUnobfuscatedMap() {
         return isEditor() && authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_RPA_MEMBER);
     }
-
-
 
     private Boolean editable = null;
 
@@ -336,7 +329,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     public List<BillingAccount> getBillingAccounts() {
         return accountService.listAvailableAccountsForUser(getAuthenticatedUser());
     }
-
 
     public List<ResourceCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;

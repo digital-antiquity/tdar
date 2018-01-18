@@ -65,12 +65,10 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
         this.index = index;
     }
 
-
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private T parent;
 
-    
     /**
      * @param parent
      *            the parent to set

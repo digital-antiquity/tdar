@@ -1,8 +1,7 @@
 package org.tdar.filestore.personal;
 
 public enum PersonalFileType {
-    UPLOAD("uploads"),
-    INTEGRATION("integrations");
+    UPLOAD("uploads"), INTEGRATION("integrations");
 
     private final String pathname;
 

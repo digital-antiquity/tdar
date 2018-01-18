@@ -31,7 +31,7 @@ import org.tdar.filestore.FileAnalyzer;
 import org.tdar.utils.Pair;
 
 @Service
-public class DatasetImportServiceImpl implements DatasetImportService  {
+public class DatasetImportServiceImpl implements DatasetImportService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -47,14 +47,16 @@ public class DatasetImportServiceImpl implements DatasetImportService  {
     @Qualifier("target")
     private TargetDatabase tdarDataImportDatabase;
 
-    
     /*
      * When we import a @link Dataset, if there's an existing set of @link DataTable entries mapped to a Dataset, we reconcile each @link DataTable and @link
      * DataTableColunn on import such that if the old DataTables and Columns match the incomming, then we'll re-use the mappings. If they're different, their
      * either added or dropped respectively.
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.DatasetImportService#reconcileDataset(org.tdar.core.bean.resource.file.InformationResourceFile, org.tdar.core.bean.resource.Dataset, org.tdar.core.bean.resource.Dataset)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.DatasetImportService#reconcileDataset(org.tdar.core.bean.resource.file.InformationResourceFile,
+     * org.tdar.core.bean.resource.Dataset, org.tdar.core.bean.resource.Dataset)
      */
     @Override
     @Transactional(noRollbackFor = TdarRecoverableRuntimeException.class)
@@ -220,7 +222,6 @@ public class DatasetImportServiceImpl implements DatasetImportService  {
         return toReturn;
     }
 
-    
     /**
      * Using the existing column map, we try and find a matching @link DataTableColumn, if we do, we copy the values off of the
      * existing column before returning.
@@ -256,12 +257,13 @@ public class DatasetImportServiceImpl implements DatasetImportService  {
         existingNameToColumnMap.remove(normalizedColumnName);
     }
 
-    
     /*
      * Each @link CodingSheet is mapped to one or many @link Dataset records. Because of this, when we re-map a @link CodingSheet to a @link Ontology, we need
      * to retranslate each of the @link Dataset records
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.DatasetImportService#refreshAssociatedDataTables(org.tdar.core.bean.resource.CodingSheet)
      */
     @Override
@@ -281,5 +283,4 @@ public class DatasetImportServiceImpl implements DatasetImportService  {
         }
     }
 
-    
 }

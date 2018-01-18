@@ -15,16 +15,17 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.AsynchronousProcessManager;
 import org.tdar.core.service.AsynchronousStatus;
-import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.GeoRssMode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.web.service.WebSearchServiceImpl;
+import org.tdar.web.service.WebSearchService;
+
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
@@ -33,70 +34,58 @@ import com.opensymphony.xwork2.Validateable;
 @Scope("prototype")
 @ParentPackage("default")
 @RequiresTdarUserGroup(TdarGroup.TDAR_USERS)
-public class SaveSearchResultAction extends AbstractAdvancedSearchController implements Preparable, Validateable  {
+public class SaveSearchResultAction extends AbstractAdvancedSearchController implements Preparable, Validateable {
 
     private static final long serialVersionUID = -7606256523280755196L;
 
-    @Autowired
-    private transient SerializationService serializationService;
-
-    private GeoRssMode geoMode = GeoRssMode.POINT;
-    private boolean webObfuscation = false;
-    
     private Long collectionId;
     private String key;
 
     private ResourceCollection resourceCollection;
-    
-    private Map<String, Object> resultObject;
-
     private boolean async = true;
-
     private boolean addAsManaged = false;
-  
+    AsynchronousStatus saveSearchResultsForUserAsync = null;
+
     @Autowired
-    private WebSearchServiceImpl webSearchService;
+    private WebSearchService webSearchService;
 
     @Override
     public void prepare() throws Exception {
-    	if(!PersistableUtils.isNullOrTransient(getAuthenticatedUser())){
-    		// Construct a Key (proposal)
-    		key = webSearchService.constructKey(collectionId, getAuthenticatedUser().getId());
-    	
-	        // find whether the activity is in the queue
-	        AsynchronousStatus status = AsynchronousProcessManager.getInstance().findActivity(key);
-	        
-	        if (status != null) {
-	            addActionError("SaveSearchResultAction.currently_saving");
-	        }
-    	}
-    
+        if (!PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
+            // Construct a Key (proposal)
+            key = webSearchService.constructKey(collectionId, getAuthenticatedUser().getId());
+
+            // find whether the activity is in the queue
+            AsynchronousStatus status = AsynchronousProcessManager.getInstance().findActivity(key);
+
+            if (status != null) {
+                addActionError("SaveSearchResultAction.currently_saving");
+            }
+        }
+
     }
-    
+
     @Override
     public void validate() {
-    	
-    	if(PersistableUtils.isNullOrTransient(getAuthenticatedUser())){
-    		addActionError("SaveSearchResultAction.not_logged_in");
-    	}
-    	
+        if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
+            addActionError("SaveSearchResultAction.not_logged_in");
+        }
+
         if (PersistableUtils.isNullOrTransient(collectionId)) {
             addActionError("SaveSearchResultAction.collection_missing");
         } else {
             resourceCollection = getGenericService().find(ResourceCollection.class, collectionId);
-            
-            if(PersistableUtils.isNullOrTransient(resourceCollection)){
-            	addActionError("SaveSearchResultAction.invalid_collection");
+
+            if (PersistableUtils.isNullOrTransient(resourceCollection)) {
+                addActionError("SaveSearchResultAction.invalid_collection");
             }
         }
-    	
-    	super.validate();
+
     }
-    
 
     @Action(value = "saveResults", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) }
-    )
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
+    @PostOnly
     public String saveSearchResultsToCollection() throws TdarActionException {
         try {
             if (getSortField() == null) {
@@ -118,13 +107,13 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
 
             processLegacySearchParameters();
             if (isAsync()) {
-                webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
+                saveSearchResultsForUserAsync = webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
             } else {
-
+                saveSearchResultsForUserAsync = webSearchService.saveSearchResultsForUser(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
             }
             // invoke the UI to update/notify that results have been completed. jsonifyResult(JsonLookupFilter.class);
         }
- 
+
         /*
          * catch (TdarActionException tdae) {
          * return tdae.getResponse();
@@ -135,22 +124,6 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
             addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
         }
         return SUCCESS;
-    }
-
-    public GeoRssMode getGeoMode() {
-        return geoMode;
-    }
-
-    public void setGeoMode(GeoRssMode geoMode) {
-        this.geoMode = geoMode;
-    }
-
-    public boolean isWebObfuscation() {
-        return webObfuscation;
-    }
-
-    public void setWebObfuscation(boolean webObfuscation) {
-        this.webObfuscation = webObfuscation;
     }
 
     public Long getCollectionId() {

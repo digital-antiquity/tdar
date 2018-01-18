@@ -7,8 +7,11 @@ import java.util.List;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.utils.PersistableUtils;
 
+/**
+ * A POJO used to store the search parameters for a Solr search.
+ * 
+ */
 public class ResourceLookupObject implements Serializable {
-
 
     private static final long serialVersionUID = 5762691918094910192L;
     private String term;
@@ -22,22 +25,27 @@ public class ResourceLookupObject implements Serializable {
     private boolean useSubmitterContext;
     private ReservedSearchParameters reservedSearchParameters;
     private SearchParameters searchParameters = new SearchParameters();
-    
+
     public ResourceLookupObject() {
     }
-    
-    public ResourceLookupObject(String term, Long projectId, Boolean includeParent, Long collectionId, Long shareId, Long categoryId, Permissions permission, ReservedSearchParameters reservedSearchParameters) {
+
+    public ResourceLookupObject(String term, Long projectId, Boolean includeParent, Long collectionId, Long shareId, Long categoryId, Permissions permission,
+            ReservedSearchParameters reservedSearchParameters) {
         this.term = term;
         this.projectId = projectId;
         this.includeParent = includeParent;
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
             collectionIds.add(collectionId);
         }
+
+        // TODO: Is share id actually used anywhere??
         if (PersistableUtils.isNotNullOrTransient(shareId)) {
             shareIds.add(shareId);
         }
+
         this.categoryId = categoryId;
         this.permission = permission;
+
         this.setReservedSearchParameters(reservedSearchParameters);
     }
 
@@ -108,6 +116,11 @@ public class ResourceLookupObject implements Serializable {
         this.collectionIds = collectionIds;
     }
 
+    // Share ids just returns collection ids?
+    public List<Long> getShareIds() {
+        return collectionIds;
+    }
+
     public String getGeneralQuery() {
         return generalQuery;
     }
@@ -123,9 +136,4 @@ public class ResourceLookupObject implements Serializable {
     public void setUseSubmitterContext(boolean useSubmitterContext) {
         this.useSubmitterContext = useSubmitterContext;
     }
-
-    public List<Long> getShareIds() {
-        return collectionIds;
-    }
-
 }

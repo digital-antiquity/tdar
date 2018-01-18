@@ -46,7 +46,6 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
     @Autowired
     private CreatorSearchService<Person> creatorSearchService;
 
-
     @Action(value = "person", results = {
             @Result(name = SUCCESS, type = JSONRESULT)
     })
@@ -57,33 +56,33 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
         if (PersistableUtils.isNotNullOrTransient(getAuthenticatedUser())) {
             email_ = email;
         }
-        Person person = new Person(firstName, lastName,email_);
+        Person person = new Person(firstName, lastName, email_);
         if (StringUtils.isNotBlank(institution)) {
             Institution inst = new Institution(institution);
             person.setInstitution(inst);
         }
-        
+
         return findPerson(term, person, Boolean.parseBoolean(registered));
     }
 
-  public String findPerson(String term, Person person, boolean registered) throws SolrServerException, IOException {
-      this.setLookupSource(LookupSource.PERSON);
-      // TODO Auto-generated method stub
-          try {
-              creatorSearchService.findPerson(person, term, registered, this, this, getMinLookupLength());
-              // sanitize results if the user is not logged in
-          } catch (SearchException e) {
-              addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
-              return ERROR;
-          }
-          if (isEditor()) {
-              jsonifyResult(JsonAdminLookupFilter.class);
-          } else {
-              jsonifyResult(JsonLookupFilter.class);
-          }
-      return SUCCESS;
-  }
-  
+    public String findPerson(String term, Person person, boolean registered) throws SolrServerException, IOException {
+        this.setLookupSource(LookupSource.PERSON);
+        // TODO Auto-generated method stub
+        try {
+            creatorSearchService.findPerson(person, term, registered, this, this, getMinLookupLength());
+            // sanitize results if the user is not logged in
+        } catch (SearchException e) {
+            addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
+            return ERROR;
+        }
+        if (isEditor()) {
+            jsonifyResult(JsonAdminLookupFilter.class);
+        } else {
+            jsonifyResult(JsonLookupFilter.class);
+        }
+        return SUCCESS;
+    }
+
     public String getFirstName() {
         return firstName;
     }

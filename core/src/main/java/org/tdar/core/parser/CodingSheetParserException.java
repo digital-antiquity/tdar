@@ -39,7 +39,7 @@ public class CodingSheetParserException extends I18nException {
 
     public CodingSheetParserException(String message, Collection<String> contributingFactors) {
         // FIXME: don't concat contributing factors. rely on view logic for that.
-        super(message,  contributingFactors);
+        super(message, contributingFactors);
         this.contributingFactors.addAll(contributingFactors);
     }
 

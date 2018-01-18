@@ -21,9 +21,12 @@ import org.tdar.core.dao.resource.BookmarkedResourceDao;
  */
 @Transactional
 @Service
-public class BookmarkedResourceServiceImpl  extends ServiceInterface.TypedDaoBase<BookmarkedResource, BookmarkedResourceDao> implements BookmarkedResourceService {
+public class BookmarkedResourceServiceImpl extends ServiceInterface.TypedDaoBase<BookmarkedResource, BookmarkedResourceDao>
+        implements BookmarkedResourceService {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.BookmarkedResourceService#applyTransientBookmarked(java.util.Collection, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -31,7 +34,7 @@ public class BookmarkedResourceServiceImpl  extends ServiceInterface.TypedDaoBas
     public <R> void applyTransientBookmarked(Collection<R> resources, TdarUser person) {
         for (R resource_ : resources) {
             if (resource_ instanceof Resource) {
-                Resource resource = (Resource)resource_;
+                Resource resource = (Resource) resource_;
                 if (isAlreadyBookmarked(resource, person)) {
                     resource.setBookmarked(true);
                 }
@@ -39,7 +42,9 @@ public class BookmarkedResourceServiceImpl  extends ServiceInterface.TypedDaoBas
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.BookmarkedResourceService#isAlreadyBookmarked(org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -48,7 +53,9 @@ public class BookmarkedResourceServiceImpl  extends ServiceInterface.TypedDaoBas
         return getDao().isAlreadyBookmarked(resource, person);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.BookmarkedResourceService#bookmarkResource(org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -73,7 +80,9 @@ public class BookmarkedResourceServiceImpl  extends ServiceInterface.TypedDaoBas
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.BookmarkedResourceService#removeBookmark(org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -91,7 +100,9 @@ public class BookmarkedResourceServiceImpl  extends ServiceInterface.TypedDaoBas
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.BookmarkedResourceService#findBookmarkedResourcesByPerson(org.tdar.core.bean.entity.TdarUser, java.util.List)
      */
     @Override

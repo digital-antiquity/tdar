@@ -36,7 +36,7 @@ import org.tdar.utils.PersistableUtils;
  * @version $Rev$
  */
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "dataset")
 @XmlRootElement(name = "dataset")
 public class Dataset extends InformationResource {
@@ -44,7 +44,7 @@ public class Dataset extends InformationResource {
     private static final long serialVersionUID = -5796154884019127904L;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
-    //@IndexedEmbedded
+    // @IndexedEmbedded
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -88,8 +88,8 @@ public class Dataset extends InformationResource {
             @Override
             public int compare(DataTable o1, DataTable o2) {
                 if (o1.getImportOrder() != null && o2.getImportOrder() != null) {
-                return o1.getImportOrder().compareTo(o2.getImportOrder());
-                } 
+                    return o1.getImportOrder().compareTo(o2.getImportOrder());
+                }
                 return o1.getName().compareTo(o2.getName());
             }
         });
@@ -99,7 +99,6 @@ public class Dataset extends InformationResource {
     public void setDataTables(Set<DataTable> dataTables) {
         this.dataTables = dataTables;
     }
-
 
     /**
      * @param string

@@ -14,7 +14,7 @@ import org.tdar.struts.action.resource.AbstractResourceViewAction;
 public class ImageViewAction extends AbstractResourceViewAction<Image> {
 
     private static final long serialVersionUID = -5329847561530865453L;
-    
+
     @Override
     public Class<Image> getPersistableClass() {
         return Image.class;

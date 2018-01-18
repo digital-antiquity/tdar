@@ -26,7 +26,7 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/workspace/settings")
-@Result(name="workspace", location="/workspace/list",type=TdarActionSupport.REDIRECT)
+@Result(name = "workspace", location = "/workspace/list", type = TdarActionSupport.REDIRECT)
 public class IntegrationSettingsController extends AbstractPersistableController<DataIntegrationWorkflow> {
 
     private static final long serialVersionUID = -2663378965534285107L;
@@ -39,13 +39,13 @@ public class IntegrationSettingsController extends AbstractPersistableController
 
     @Autowired
     private transient DataIntegrationService integrationService;
-    
+
     @Override
     public boolean authorize() {
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return true;
         }
-        return authorizationService.canEditWorkflow( getAuthenticatedUser(),getPersistable());
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(), getPersistable());
     }
 
     @Override

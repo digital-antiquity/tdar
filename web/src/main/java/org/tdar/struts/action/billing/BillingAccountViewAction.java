@@ -40,7 +40,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     private List<Invoice> invoices = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
     private List<Coupon> coupons = new ArrayList<>();
-//    private BillingAccountGroup accountGroup;
+    // private BillingAccountGroup accountGroup;
     private List<TdarUser> authorizedMembers = new ArrayList<>();
     private Integer quantity = 1;
 
@@ -71,7 +71,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     public Class<BillingAccount> getPersistableClass() {
         return BillingAccount.class;
     }
-    
+
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
@@ -80,7 +80,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
             return;
         }
         setAccounts(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
-//        setAccountGroup(accountService.getAccountGroup(getAccount()));
+        // setAccountGroup(accountService.getAccountGroup(getAccount()));
         getAccount().getAuthorizedUsers().forEach(au -> {
             getAuthorizedMembers().add(au.getUser());
         });
@@ -149,37 +149,37 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         this.resources = resources;
     }
 
-   public Long getNumberOfFiles() {
-       return numberOfFiles;
-   }
+    public Long getNumberOfFiles() {
+        return numberOfFiles;
+    }
 
-   public void setNumberOfFiles(Long numberOfFiles) {
-       this.numberOfFiles = numberOfFiles;
-   }
+    public void setNumberOfFiles(Long numberOfFiles) {
+        this.numberOfFiles = numberOfFiles;
+    }
 
-   public Long getNumberOfMb() {
-       return numberOfMb;
-   }
+    public Long getNumberOfMb() {
+        return numberOfMb;
+    }
 
-   public void setNumberOfMb(Long numberOfMb) {
-       this.numberOfMb = numberOfMb;
-   }
+    public void setNumberOfMb(Long numberOfMb) {
+        this.numberOfMb = numberOfMb;
+    }
 
-   public Date getExipres() {
-       return getExpires();
-   }
+    public Date getExipres() {
+        return getExpires();
+    }
 
-   public void setExipres(Date exipres) {
-       this.setExpires(exipres);
-   }
+    public void setExipres(Date exipres) {
+        this.setExpires(exipres);
+    }
 
-   public Integer getQuantity() {
-       return quantity;
-   }
+    public Integer getQuantity() {
+        return quantity;
+    }
 
-   public void setQuantity(Integer quantity) {
-       this.quantity = quantity;
-   }
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public List<Invoice> getInvoices() {
         return invoices;

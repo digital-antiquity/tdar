@@ -11,7 +11,7 @@ public interface URLConstants {
     String WORKSPACE = "/workspace/list";
     String ADMIN = "/admin/internal";
     String PAGE_NOT_FOUND = "/page-not-found";
-//    String BOOKMARKS = DASHBOARD + "#bookmarks";
+    // String BOOKMARKS = DASHBOARD + "#bookmarks";
     String ENTITY_NAMESPACE = "browse/creators";
     String COLUMNS_RESOURCE_ID = "${resource.id}?startRecord=${startRecord}&recordsPerPage=${recordsPerPage}";
     String VIEW_RESOURCE_ID = "${resource.id}";

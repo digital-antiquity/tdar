@@ -46,7 +46,7 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
 
     @Autowired
     private AuthorizationService authorizationService;
-    
+
     @Override
     public void validate() {
         super.validate();
@@ -57,11 +57,11 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
             addActionError("addResourceToCollectionAction.no_edit_permission");
         }
     }
-    
+
     @Override
     @PostOnly
     @WriteableSession
-    @Action(value="moveCollection")
+    @Action(value = "moveCollection")
     public String execute() throws Exception {
         resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), collection, toCollection);
         searchIndexService.indexAllResourcesInCollectionSubTreeAsync(toCollection);
@@ -78,7 +78,7 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
     public void prepare() throws Exception {
         this.collection = getGenericService().find(ResourceCollection.class, collectionId);
         this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
-        
+
     }
 
     public Long getCollectionId() {
@@ -96,5 +96,5 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
     public void setToCollectionId(Long toCollectionId) {
         this.toCollectionId = toCollectionId;
     }
-    
+
 }

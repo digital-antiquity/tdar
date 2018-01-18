@@ -58,9 +58,7 @@ import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 
 @Service
-public class AuthorityManagementServiceImpl implements AuthorityManagementService  {
-
-
+public class AuthorityManagementServiceImpl implements AuthorityManagementService {
 
     @Autowired
     private ReflectionDao reflectionDao;
@@ -87,7 +85,9 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
             Person.class, Institution.class, TdarUser.class, IntegrationWorkflowData.class, BookmarkedResource.class, AuthorizedUser.class,
             ResourceCollection.class);
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.AuthorityManagementService#getReferrers(java.lang.Class, java.util.Collection)
      */
     @Override
@@ -106,7 +106,9 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         return referrers;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.AuthorityManagementService#getReferrerCounts(java.lang.Class, java.util.List)
      */
     @Override
@@ -125,7 +127,9 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         return countMap;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.AuthorityManagementService#getTotalReferrerCount(java.lang.Class, java.util.List)
      */
     @Override
@@ -139,7 +143,9 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         return total;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.AuthorityManagementService#getReferrerCountMaps(java.lang.Class, java.util.List)
      */
     @Override
@@ -166,8 +172,11 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
     }
 
     // TODO: jim you (probably) aren't handling one-to-many correctly yet.
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.AuthorityManagementService#updateReferrers(org.tdar.core.bean.entity.Person, java.lang.Class, java.util.Collection, java.lang.Long, org.tdar.core.service.authority.DupeMode, boolean)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.AuthorityManagementService#updateReferrers(org.tdar.core.bean.entity.Person, java.lang.Class, java.util.Collection,
+     * java.lang.Long, org.tdar.core.service.authority.DupeMode, boolean)
      */
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -254,7 +263,9 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         activity.end();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.AuthorityManagementService#countProtectedRecords(java.util.Collection)
      */
     @Override
@@ -346,8 +357,9 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         }
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.AuthorityManagementService#findPluralDups(java.lang.Class, org.tdar.core.bean.entity.Person, boolean)
      */
     @Override
@@ -388,7 +400,9 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.AuthorityManagementService#cleanupKeywordDups(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -404,7 +418,9 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         logger.debug("done pluralization");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.AuthorityManagementService#cleanupInstitutionsWithSpaces(org.tdar.core.bean.entity.TdarUser)
      */
     @Override

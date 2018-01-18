@@ -40,7 +40,7 @@ public class CreatorQueryPart<C extends Creator<?>> extends AbstractHydrateableQ
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private List<ResourceCreator> userInput = new ArrayList<>();
     private List<String> actionMessages = new ArrayList<>();
-    
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator, List<ResourceCreatorProxy> proxyList) {
         // set default of "or"

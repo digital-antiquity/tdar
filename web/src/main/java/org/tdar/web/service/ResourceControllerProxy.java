@@ -24,10 +24,11 @@ import com.opensymphony.xwork2.TextProvider;
 public class ResourceControllerProxy<R extends Resource> implements Serializable {
 
     private static final long serialVersionUID = 1130227916644870738L;
-    
+
     public ResourceControllerProxy(TextProvider provider) {
         this.provider = provider;
     }
+
     private R resource;
     private Ontology ontology;
     List<ResourceAnnotation> incomingAnnotations;
@@ -63,8 +64,6 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     private TextProvider provider;
     private Long categoryId;
     private Long subcategoryId;
-
-    
 
     public List<ResourceAnnotation> getIncomingAnnotations() {
         return incomingAnnotations;
@@ -328,7 +327,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     public void setCopyrightHolder(ResourceCreatorProxy copyrightHolderProxies) {
         this.setCopyrightHolderProxies(copyrightHolderProxies);
         // TODO Auto-generated method stub
-        
+
     }
 
     public ResourceCreatorProxy getCopyrightHolderProxies() {
@@ -357,7 +356,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
 
     public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;
-        
+
     }
 
     public void setFileProxies(List<FileProxy> fileProxiesToProcess) {
@@ -366,7 +365,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
 
     public void setValidFileExtensions(Collection<String> validFileExtensions) {
         this.validFileExtensions = validFileExtensions;
-        
+
     }
 
     public List<FileProxy> getFileProxiesToProcess() {
@@ -376,7 +375,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     public void setFileProxiesToProcess(List<FileProxy> fileProxiesToProcess) {
         this.fileProxiesToProcess = fileProxiesToProcess;
     }
-    
+
     public Long getTicketId() {
         return ticketId;
     }

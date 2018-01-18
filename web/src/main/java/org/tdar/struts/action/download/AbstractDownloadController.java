@@ -30,8 +30,7 @@ import com.opensymphony.xwork2.Preparable;
                         "inputName", "downloadTransferObject.inputStream",
                         "contentDisposition", "${downloadTransferObject.dispositionPrefix}filename=\"${downloadTransferObject.fileName}\"",
                         "contentLength", "${downloadTransferObject.contentLength}"
-                }
-        ),
+                }),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })

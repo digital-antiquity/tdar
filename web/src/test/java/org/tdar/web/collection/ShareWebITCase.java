@@ -153,7 +153,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Assert.assertTrue("this test needs at least 2 resources in the test DB", someResources.size() > removeCount);
         List<Resource> removedResources = new ArrayList<Resource>();
         for (int i = 0; i < removeCount; i++) {
-            createInput("hidden", "toRemove[" + i + "]", someResources.get(i).getId());
+            createInput("hidden", "toRemoveManaged[" + i + "]", someResources.get(i).getId());
             // htmlPage.getElementById("hrid" + someResources.get(i).getId()).remove();
             removedResources.add(someResources.remove(i));
         }

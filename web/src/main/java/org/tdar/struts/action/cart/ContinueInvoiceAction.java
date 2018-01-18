@@ -44,7 +44,7 @@ public class ContinueInvoiceAction extends AbstractAuthenticatableAction {
     public String execute() {
         getLogger().debug("setting invoice id {} on the session", invoiceId);
         getSessionData().setInvoiceId(invoiceId);
-        
+
         if (isAuthenticated()) {
             Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
             invoice.setOwner(getAuthenticatedUser());

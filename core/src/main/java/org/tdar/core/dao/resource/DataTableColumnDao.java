@@ -67,7 +67,8 @@ public class DataTableColumnDao extends HibernateBase<DataTableColumn> {
         if (dataset == null) {
             return Collections.emptyList();
         }
-        Query<DataTableColumn> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY, DataTableColumn.class);
+        Query<DataTableColumn> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY,
+                DataTableColumn.class);
         query.setParameter("datasetId", dataset.getId());
         return query.getResultList();
     }
@@ -75,7 +76,8 @@ public class DataTableColumnDao extends HibernateBase<DataTableColumn> {
     public CodingSheet setupGeneratedCodingSheet(DataTableColumn column, Dataset dataset, TdarUser user, TextProvider provider, Ontology ontology) {
         CodingSheet codingSheet = new CodingSheet();
         codingSheet.markUpdated(user);
-        codingSheet.setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName(), dataset.getTitle())));
+        codingSheet
+                .setTitle(provider.getText("dataIntegrationService.generated_coding_sheet_title", Arrays.asList(column.getDisplayName(), dataset.getTitle())));
         if (ontology != null) {
             codingSheet.setCategoryVariable(ontology.getCategoryVariable());
             codingSheet.setDefaultOntology(ontology);

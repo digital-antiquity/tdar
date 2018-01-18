@@ -55,8 +55,11 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
     @Autowired
     private transient InformationResourceFileService informationResourceFileService;
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceViewControllerServ#initializeResourceCreatorProxyLists(org.tdar.struts.data.AuthWrapper, java.util.List, java.util.List, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceViewControllerServ#initializeResourceCreatorProxyLists(org.tdar.struts.data.AuthWrapper, java.util.List,
+     * java.util.List, java.util.List)
      */
     @Override
     @Transactional(readOnly = true)
@@ -92,7 +95,9 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
         Collections.sort(creditProxies);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceViewControllerServ#updateResourceInfo(org.tdar.struts.data.AuthWrapper, boolean)
      */
     @Override
@@ -106,7 +111,9 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceViewControllerServ#updateInfoReadOnly(org.tdar.struts.data.AuthWrapper)
      */
     @Override
@@ -128,8 +135,11 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
     /*
      * Creating a simple transient boolean to handle visibility here instead of freemarker
      */
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceViewControllerServ#setTransientViewableStatus(org.tdar.core.bean.resource.InformationResource, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceViewControllerServ#setTransientViewableStatus(org.tdar.core.bean.resource.InformationResource,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = true)
@@ -147,8 +157,11 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
         return hasDeleted;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceViewControllerServ#loadSharesCollectionsAuthUsers(org.tdar.struts.data.AuthWrapper, java.util.List, java.util.List, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceViewControllerServ#loadSharesCollectionsAuthUsers(org.tdar.struts.data.AuthWrapper, java.util.List, java.util.List,
+     * java.util.List)
      */
     @Override
     @Transactional(readOnly = true)
@@ -161,7 +174,9 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceViewControllerServ#getVisibleCollections(org.tdar.struts.data.AuthWrapper)
      */
     @Override
@@ -172,7 +187,9 @@ public class ResourceViewControllerServiceImpl implements ResourceViewController
         return visibleCollections;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceViewControllerServ#getVisibleCollections(org.tdar.struts.data.AuthWrapper)
      */
     @Override

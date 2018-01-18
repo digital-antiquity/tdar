@@ -41,7 +41,6 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
     private static final String INTEGRATION_TABLE_NAME_COL = "tableName";
     public static final String INTEGRATION_SUFFIX = "_int";
 
-    
     @Override
     /**
      * Takes the IntegrationContext and produces a ModernIntegrationResult that contains the Excel Workbook and proxy information such as pivot data
@@ -98,15 +97,15 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
             }
 
             DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
-            Map<OntologyNode,Map<Set<String>,List<Long>>> map = new HashMap<>();
+            Map<OntologyNode, Map<Set<String>, List<Long>>> map = new HashMap<>();
             List<OntologyNode> filteredOntologyNodes = integrationColumn.getFilteredOntologyNodes();
             sortLeafToRoot(filteredOntologyNodes);
 
             // don't reuse nodes
-            Set<OntologyNode> ignoreNodes = new  HashSet<>();
+            Set<OntologyNode> ignoreNodes = new HashSet<>();
             for (OntologyNode userChosenNode : filteredOntologyNodes) {
                 logger.debug(" -- {} {}", userChosenNode, userChosenNode.getNumberOfParents());
-                // only add to the "seen nodes" when we're done with a node 
+                // only add to the "seen nodes" when we're done with a node
                 Set<OntologyNode> seenNodes = new HashSet<>();
                 for (DataTableColumn actualColumn : integrationColumn.getColumns()) {
                     // Map<DataTable,Set<String>> tableNodeSetMap = new HashMap();
@@ -115,21 +114,21 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                     seenNodes.add(userChosenNode);
                     // tableNodeSetMap.put(actualColumn.getDataTable(), nodeSet);
                     // check parent mapping logic to make sure that we don't apply to the grantparent if multiple nodes in tree are selected
-                    findAllChildNodesThatHaventBeenSeen(integrationColumn, filteredOntologyNodes, ignoreNodes, userChosenNode, seenNodes, actualColumn, nodeSet);
+                    findAllChildNodesThatHaventBeenSeen(integrationColumn, filteredOntologyNodes, ignoreNodes, userChosenNode, seenNodes, actualColumn,
+                            nodeSet);
 
                     if (CollectionUtils.isEmpty(nodeSet)) {
                         continue;
                     }
                     // keep track of the nodes in a map Node --> Mapping --> [tableIds]
-                    // only re-use when the node + mappings are 100% the same 
+                    // only re-use when the node + mappings are 100% the same
                     map.putIfAbsent(userChosenNode, new HashMap<>());
                     map.get(userChosenNode).putIfAbsent(nodeSet, new ArrayList<>());
                     map.get(userChosenNode).get(nodeSet).add(actualColumn.getDataTable().getId());
                 }
                 ignoreNodes.addAll(seenNodes);
             }
-            
-            
+
             for (Entry<OntologyNode, Map<Set<String>, List<Long>>> entry : map.entrySet()) {
                 OntologyNode node = entry.getKey();
                 for (Entry<Set<String>, List<Long>> vals : entry.getValue().entrySet()) {
@@ -137,7 +136,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                     Set<String> nodeSet = vals.getKey();
                     WhereCondition whereCond = new WhereCondition(column.getName());
                     WhereCondition tableCond = new WhereCondition(INTEGRATION_TABLE_NAME_COL);
-                    
+
                     tableCond.setInValues(tableIds);
 
                     whereCond.getInValues().addAll(nodeSet);
@@ -164,7 +163,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                 if (o1.getNumberOfParents() > o2.getNumberOfParents()) {
                     return -1;
                 }
-                
+
                 if (o1.getNumberOfParents() < o2.getNumberOfParents()) {
                     return 1;
                 }
@@ -173,7 +172,8 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
         });
     }
 
-    private void findAllChildNodesThatHaventBeenSeen(IntegrationColumn integrationColumn, List<OntologyNode> filteredOntologyNodes, Set<OntologyNode> ignoreNodes,
+    private void findAllChildNodesThatHaventBeenSeen(IntegrationColumn integrationColumn, List<OntologyNode> filteredOntologyNodes,
+            Set<OntologyNode> ignoreNodes,
             OntologyNode userChosenNode, Set<OntologyNode> seenNodes, DataTableColumn actualColumn, Set<String> nodeSet) {
         for (OntologyNode node_ : integrationColumn.getOntologyNodesForSelect()) {
             if (node_.isChildOf(userChosenNode) && !filteredOntologyNodes.contains(node_) && !ignoreNodes.contains(node_)) {
@@ -240,11 +240,11 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                     DataTableColumn integrationColumn = new DataTableColumn();
                     integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     integrationColumn.setName(name + INTEGRATION_SUFFIX);
-                    
-                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value",Arrays.asList(pretty)));
+
+                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(pretty)));
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
-//                    dtc.setDisplayName(integrationColumn.getDisplayName());
+                    // dtc.setDisplayName(integrationColumn.getDisplayName());
                 }
             }
         }
@@ -281,7 +281,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
         for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
             boolean isIntColumn = integrationColumn.isIntegrationColumn();
             DataTableColumn column = integrationColumn.getColumnForTable(table);
-            logger.trace("table: {} column: {} type: {} ", table , column, isIntColumn);
+            logger.trace("table: {} column: {} type: {} ", table, column, isIntColumn);
             if (column == null) {
                 builder.getColumns().add(null);
                 if (isIntColumn) {
@@ -301,12 +301,12 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                     }
                     boolean includeUnmapepdValues = true;
                     boolean includeUncodedValues = true;
-                    
+
                     if (includeUnmapepdValues) {
                         cond.setMoreInComment("unmapped values");
                         cond.getMoreInValues().addAll(column.getUnmappedDataValues());
                     }
-                    
+
                     if (includeUncodedValues) {
                         cond.addOrLikeValue(Database.NO_CODING_SHEET_VALUE + "%");
                     }
@@ -337,9 +337,9 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
             }
         }
         builder.getTableNames().add(table.getName());
-        
+
         builder.evaluateWhereForEmpty();
         return builder.toSql();
     }
-    
+
 }

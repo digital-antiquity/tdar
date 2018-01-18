@@ -44,7 +44,7 @@
             <thead>
             <tr>
                 <th>Collection (${allResourceCollections?size})</th>
-                <th colspan="2">Resources (Managed/Unmanaged)</th>
+                <th>Resources</th>
                 <th>Users</th>
                 <th>Action</th>
             </tr>
@@ -55,8 +55,7 @@
                 <td><a href="${collection.detailUrl}">${collection.name!'no name'}</a><br/>
                 <@common.truncate collection.description!'' 250 />
                     </td>
-                   <td>${(collection.managedResources![])?size}</td>
-                   <td>${(collection.unmanagedResources![])?size}</td>
+                   <td>${((collection.managedResources![])+(collection.unmanagedResources![]))?size}</td>
                    <td>${(collection.authorizedUsers![])?size}</td>
                 <td>
                     <div class="btn-group inline">

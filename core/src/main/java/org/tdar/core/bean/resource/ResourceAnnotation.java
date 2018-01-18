@@ -101,11 +101,11 @@ public class ResourceAnnotation extends AbstractPersistable implements HasResour
         if (StringUtils.isEmpty(resourceAnnotationKey.getKey())) {
             return false;
         }
-        
+
         if (StringUtils.isEmpty(value)) {
             return false;
         }
-        
+
         return true;
     }
 

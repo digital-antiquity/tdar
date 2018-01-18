@@ -53,7 +53,7 @@ public class Invoice extends AbstractPersistable implements Updatable {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @NotNull
-    @Column(name = "date_created", updatable=false)
+    @Column(name = "date_created", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
     // the confirmation id for this invoice
@@ -226,7 +226,7 @@ public class Invoice extends AbstractPersistable implements Updatable {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T coalesce( T... items) {
+    private <T> T coalesce(T... items) {
         for (T i : items) {
             if (i != null) {
                 return i;

@@ -30,7 +30,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 @Service
 @Transactional
-public class CollectionSearchServiceImpl extends AbstractSearchService implements CollectionSearchService   {
+public class CollectionSearchServiceImpl extends AbstractSearchService implements CollectionSearchService {
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -38,8 +38,11 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
     @Autowired
     private transient SearchService<ResourceCollection> searchService;
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.CollectionSearchService#buildResourceCollectionQuery(org.tdar.core.bean.entity.TdarUser, org.tdar.search.bean.CollectionSearchQueryObject, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.CollectionSearchService#buildResourceCollectionQuery(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.search.bean.CollectionSearchQueryObject, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     public LuceneSearchResultHandler<ResourceCollection> buildResourceCollectionQuery(TdarUser authenticatedUser, CollectionSearchQueryObject query,
@@ -60,7 +63,7 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
             }
         }
 
-//        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
+        // queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
         if (query.isLimitToTopLevel()) {
             queryBuilder.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, true));
         }
@@ -84,21 +87,21 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
         rightsPart.append(effectivePart);
         if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
             boolean viewAnything = authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser);
-            Permissions permission  = query.getPermission();
+            Permissions permission = query.getPermission();
             if (permission == null) {
                 permission = Permissions.NONE;
             }
-            
+
             if (permission.ordinal() <= Permissions.VIEW_ALL.ordinal()) {
                 // if view anything and empty or view all
                 if (viewAnything) {
                     rightsPart.clear();
-                    rightsPart.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, Arrays.asList(Status.ACTIVE,Status.DRAFT)));
+                    rightsPart.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
                 } else {
                     rightsPart.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
-                    
+
                 }
-                
+
             } else {
                 rightsPart.clear();
             }

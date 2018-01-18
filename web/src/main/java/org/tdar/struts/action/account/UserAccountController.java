@@ -59,7 +59,7 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
     private String passwordResetURL;
     private Long id;
     private String email;
-    
+
     @Autowired
     private AuthenticationService authenticationService;
 
@@ -101,7 +101,7 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
         }
         if (id != null) {
             Person person = getGenericService().find(Person.class, id);
-            // if our email passed matches... then pre-fill the form.  This helps with fishing of email addresses
+            // if our email passed matches... then pre-fill the form. This helps with fishing of email addresses
             if (StringUtils.equalsIgnoreCase(email, person.getEmail())) {
                 getReg().setupFrom(person);
             }

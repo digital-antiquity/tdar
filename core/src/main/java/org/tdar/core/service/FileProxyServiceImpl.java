@@ -25,7 +25,7 @@ import org.tdar.utils.HashQueue;
  * 
  */
 @Component
-public class FileProxyServiceImpl implements FileProxyService  {
+public class FileProxyServiceImpl implements FileProxyService {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -33,7 +33,9 @@ public class FileProxyServiceImpl implements FileProxyService  {
     @Autowired
     private PersonalFilestoreService filestoreService;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.FileProxyService#buildProxyQueue(java.util.List)
      */
     @Override
@@ -54,7 +56,9 @@ public class FileProxyServiceImpl implements FileProxyService  {
         return hashQueue;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.FileProxyService#reconcilePersonalFilestoreFilesAndFileProxies(java.util.List, java.lang.Long)
      */
     @Override
@@ -85,7 +89,9 @@ public class FileProxyServiceImpl implements FileProxyService  {
         return finalProxyList;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.FileProxyService#cullInvalidProxies(java.util.List)
      */
     @Override

@@ -100,8 +100,8 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
     private Integer recordsPerPage = 10;
 
     public enum PostSaveColumnMapActions implements HasLabel, Localizable {
-        SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
-        SAVE_MAP_THIS("Save, and return to this edit page", "Save, and return to this edit page");
+        SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"), SAVE_MAP_THIS("Save, and return to this edit page",
+                "Save, and return to this edit page");
 
         private String label;
         private String ontologyLabel;
@@ -159,7 +159,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
         }
         List<DataTableColumn> columns = initializePaginationHelper();
         setTableDescription(getDataTable().getDescription());
-        
+
         if (CollectionUtils.size(columns) > getRecordsPerPage()) {
             columns = columns.subList(getPaginationHelper().getFirstItem(), getPaginationHelper().getLastItem() + 1);
         }
@@ -209,7 +209,8 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
         initializePaginationHelper();
         getDataTable().setDescription(getTableDescription());
         try {
-            hasOntologies = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser(), startTime);
+            hasOntologies = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser(),
+                    startTime);
         } catch (Throwable tde) {
             getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
@@ -406,6 +407,5 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
     public Long getCurrentTime() {
         return System.currentTimeMillis();
     }
-
 
 }

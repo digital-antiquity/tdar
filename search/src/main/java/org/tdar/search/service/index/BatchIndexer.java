@@ -37,8 +37,6 @@ public class BatchIndexer implements Serializable {
     private List<LookupSource> sources;
     private TdarUser person;
 
-
-
     public BatchIndexer(GenericDao genericDao, DatasetDao datasetDao, SearchIndexService searchIndexService, List<LookupSource> sources, TdarUser person) {
         this.genericDao = genericDao;
         this.datasetDao = datasetDao;
@@ -46,7 +44,7 @@ public class BatchIndexer implements Serializable {
         this.person = person;
         this.sources = sources;
     }
-    
+
     public BatchIndexer(GenericDao genericDao, DatasetDao datasetDao, SearchIndexService searchIndexService) {
         this.genericDao = genericDao;
         this.datasetDao = datasetDao;
@@ -71,11 +69,11 @@ public class BatchIndexer implements Serializable {
             genericDao.markReadOnly();
             genericDao.setCacheModeForCurrentSession(CacheMode.IGNORE);
             Long total = 0L;
-            Map<Class<? extends Indexable>,Number> totals = new HashMap<>();
+            Map<Class<? extends Indexable>, Number> totals = new HashMap<>();
             for (LookupSource src : sources) {
                 if (src == LookupSource.DATA) {
                     Long count = datasetDao.countMappedResources().longValue();
-                    totals.put(DataTableRow.class,count);
+                    totals.put(DataTableRow.class, count);
                     continue;
                 }
                 for (Class<? extends Indexable> toIndex : src.getClasses()) {
@@ -89,9 +87,9 @@ public class BatchIndexer implements Serializable {
             for (LookupSource src : sources) {
                 searchIndexService.purgeCore(src);
                 for (Class<? extends Indexable> toIndex : src.getClasses()) {
-                    updateAllStatuses("initializing... ["+toIndex.getSimpleName()+": "+total+"]", counter.getPercent());
+                    updateAllStatuses("initializing... [" + toIndex.getSimpleName() + ": " + total + "]", counter.getPercent());
                     ScrollableResults scrollableResults = null;
-                    if ( src == LookupSource.DATA) {
+                    if (src == LookupSource.DATA) {
                         scrollableResults = datasetDao.findMappedResources(null);
                     } else {
                         scrollableResults = genericDao.findAllScrollable(toIndex);
@@ -104,7 +102,7 @@ public class BatchIndexer implements Serializable {
                 }
             }
 
-            complete(null,null);
+            complete(null, null);
         } catch (Throwable ex) {
             logger.warn("exception: {}", ex);
             if (activity != null) {
@@ -155,7 +153,7 @@ public class BatchIndexer implements Serializable {
             float totalProgress = count.getPercent();
             if ((numProcessed % divisor) == 0) {
                 String range = String.format("(%s - %s)", prevId, currentId);
-                //[6:05:41 PM PST] indexed 600 of 805539 SiteTypeKeyword(s) 48.528873 % (818 - 868)
+                // [6:05:41 PM PST] indexed 600 of 805539 SiteTypeKeyword(s) 48.528873 % (818 - 868)
                 message = String.format("indexed %s %s %s %% %s", numProcessed, MIDDLE, totalProgress, range);
                 updateAllStatuses(message, totalProgress);
                 if (logger.isTraceEnabled()) {
@@ -183,7 +181,7 @@ public class BatchIndexer implements Serializable {
         }
         scrollableResults.close();
     }
-    
+
     /**
      * The AsyncUpdateReciever allows us to pass data about the indexing back to the requester. The default one does nothing.
      * 

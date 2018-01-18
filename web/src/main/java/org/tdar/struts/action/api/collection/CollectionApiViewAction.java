@@ -29,7 +29,6 @@ import com.opensymphony.xwork2.Validateable;
 @HttpsOnly
 public class CollectionApiViewAction extends AbstractApiController implements Preparable, Validateable {
 
-
     private static final long serialVersionUID = 1344077793459231299L;
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -41,7 +40,7 @@ public class CollectionApiViewAction extends AbstractApiController implements Pr
     public String view() throws Exception {
         if (PersistableUtils.isNullOrTransient(getId()) || PersistableUtils.isNullOrTransient(resource)) {
             getLogger().debug("input");
-                return INPUT;
+            return INPUT;
         }
         return SUCCESS;
     }
@@ -53,7 +52,6 @@ public class CollectionApiViewAction extends AbstractApiController implements Pr
             addActionError("addResourceToCollectionAction.no_edit_permission");
         }
     }
-
 
     @Override
     public void prepare() throws Exception {
@@ -69,7 +67,7 @@ public class CollectionApiViewAction extends AbstractApiController implements Pr
             logMessage("API VIEWING", resource.getClass(), resource.getId(), title);
             getResultObject().setCollectionResult(resource);
         }
-        
+
     }
 
 }

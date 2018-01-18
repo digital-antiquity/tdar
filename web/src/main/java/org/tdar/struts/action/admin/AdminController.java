@@ -77,7 +77,7 @@ public class AdminController extends AbstractAuthenticatableAction {
 
     @Autowired
     WebScheduledProcessService webScheduledProcessService;
-    
+
     private List<ResourceRevisionLog> resourceRevisionLogs;
 
     private List<Pair<CultureKeyword, Integer>> uncontrolledCultureKeywordStats;
@@ -167,7 +167,6 @@ public class AdminController extends AbstractAuthenticatableAction {
         return SUCCESS;
     }
 
-
     public List<ResourceRevisionLog> getResourceRevisionLogs() {
         if (resourceRevisionLogs == null) {
             resourceRevisionLogs = getGenericService().findAllSorted(ResourceRevisionLog.class, "timestamp desc");
@@ -180,22 +179,22 @@ public class AdminController extends AbstractAuthenticatableAction {
         return SUCCESS;
     }
 
-//    @Action(value = "fix-pluralization", results = {
-//            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
-//    @WriteableSession
-//    @PostOnly
-//    public String cleanupPluralization() {
-//        authorityManagementService.cleanupKeywordDups(getAuthenticatedUser());
-//        return SUCCESS;
-//    }
-//
-//    @Action(value = "fix-institutions", results = {
-//            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
-//    @WriteableSession
-//    public String cleanupInstitutionNames() {
-//        authorityManagementService.cleanupInstitutionsWithSpaces(getAuthenticatedUser());
-//        return SUCCESS;
-//    }
+    // @Action(value = "fix-pluralization", results = {
+    // @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
+    // @WriteableSession
+    // @PostOnly
+    // public String cleanupPluralization() {
+    // authorityManagementService.cleanupKeywordDups(getAuthenticatedUser());
+    // return SUCCESS;
+    // }
+    //
+    // @Action(value = "fix-institutions", results = {
+    // @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
+    // @WriteableSession
+    // public String cleanupInstitutionNames() {
+    // authorityManagementService.cleanupInstitutionsWithSpaces(getAuthenticatedUser());
+    // return SUCCESS;
+    // }
 
     public List<Pair<CultureKeyword, Integer>> getUncontrolledCultureKeywordStats() {
         if (uncontrolledCultureKeywordStats == null) {

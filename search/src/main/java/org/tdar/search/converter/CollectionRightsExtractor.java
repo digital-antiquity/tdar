@@ -18,7 +18,7 @@ public class CollectionRightsExtractor {
     public CollectionRightsExtractor(ResourceCollection collection) {
         this.collection = collection;
     }
-    
+
     /*
      * Convenience Method that provides a list of users that match the permission
      */
@@ -30,15 +30,13 @@ public class CollectionRightsExtractor {
             }
         }
         if (collection_ instanceof ResourceCollection) {
-            ResourceCollection shared = (ResourceCollection)collection_;
+            ResourceCollection shared = (ResourceCollection) collection_;
             if ((shared.getParent() != null) && recurse) {
-            people.addAll(getUsersWhoCan(shared.getParent(), permission, recurse));
-        }
+                people.addAll(getUsersWhoCan(shared.getParent(), permission, recurse));
+            }
         }
         return people;
     }
-
-    
 
     /*
      * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection

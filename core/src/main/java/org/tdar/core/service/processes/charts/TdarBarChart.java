@@ -9,30 +9,28 @@ import java.util.Map;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
 
-
 @SuppressWarnings("restriction")
-public class TdarBarChart extends AbstractChart  {
+public class TdarBarChart extends AbstractChart {
 
     private Map<String, Map<String, Number>> data;
     private String xAxisLabel;
     private String yAxisLabel;
 
-
-    public TdarBarChart(String title, String xAxis, String yAxis, Map<String,Map<String,Number>> data, int width, int height, String filename) {
+    public TdarBarChart(String title, String xAxis, String yAxis, Map<String, Map<String, Number>> data, int width, int height, String filename) {
         super();
-        this.xAxisLabel = xAxis; // 
+        this.xAxisLabel = xAxis; //
         this.yAxisLabel = yAxis;
         this.data = data;
-        setTitle(title); 
+        setTitle(title);
         setWidth(width);
         setHeight(height);
         setFilename(filename);
     }
 
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public File createChart() throws IOException {
-        CategoryChart chart = new CategoryChartBuilder().width(getWidth()).height(getHeight()).title(getTitle()).xAxisTitle(xAxisLabel).yAxisTitle(yAxisLabel).build();
+        CategoryChart chart = new CategoryChartBuilder().width(getWidth()).height(getHeight()).title(getTitle()).xAxisTitle(xAxisLabel).yAxisTitle(yAxisLabel)
+                .build();
 
         chart.getStyler().setPlotGridHorizontalLinesVisible(false);
         chart.getStyler().setPlotGridVerticalLinesVisible(false);
@@ -49,9 +47,9 @@ public class TdarBarChart extends AbstractChart  {
         r2.put("c", 350);
 
         data.put("2002", r2);
-        data.keySet().forEach(row ->{
+        data.keySet().forEach(row -> {
             data.get(row).entrySet().forEach(vals -> {
-//                series.getData().add(new XYChart.Data<String, Number>(vals.getKey(), vals.getValue()));
+                // series.getData().add(new XYChart.Data<String, Number>(vals.getKey(), vals.getValue()));
                 chart.addSeries("test 1", Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 }), Arrays.asList(new Integer[] { 4, 5, 9, 6, 5 }));
 
             });
@@ -59,6 +57,5 @@ public class TdarBarChart extends AbstractChart  {
 
         return renderAndExport(chart);
     }
-
 
 }

@@ -53,16 +53,16 @@ public interface ResourceSaveControllerService {
             throws TdarActionException, IOException;
 
     /**
-     *     public void loadEffectiveResourceCollectionsForSave() {
-        getLogger().debug("loadEffective...");
-        for (ResourceCollection rc : getResource().getResourceCollections()) {
-            if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
-                getRetainedResourceCollections().add(rc);
-                getLogger().debug("adding: {} to retained collections", rc);
-            }
-        }
-    }
-    
+     * public void loadEffectiveResourceCollectionsForSave() {
+     * getLogger().debug("loadEffective...");
+     * for (ResourceCollection rc : getResource().getResourceCollections()) {
+     * if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
+     * getRetainedResourceCollections().add(rc);
+     * getLogger().debug("adding: {} to retained collections", rc);
+     * }
+     * }
+     * }
+     * 
      * @param auth
      * @param retainedResourceCollections
      * @param retainedListCollections

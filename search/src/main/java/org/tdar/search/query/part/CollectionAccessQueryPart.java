@@ -14,6 +14,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Query if the "user" has access to collection
+ * 
  * @author abrin
  *
  */

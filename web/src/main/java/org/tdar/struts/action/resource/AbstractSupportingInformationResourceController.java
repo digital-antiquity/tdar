@@ -46,9 +46,6 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         this.subcategories = subcategories;
     }
 
-
-
-
     @Override
     protected void loadCustomMetadata() throws TdarActionException {
         super.loadCustomMetadata();
@@ -87,12 +84,9 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         subcategories = new ArrayList<CategoryVariable>(categoryVariableService.find(categoryId).getSortedChildren());
     }
 
-
-
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return false;
     }
-
 
 }

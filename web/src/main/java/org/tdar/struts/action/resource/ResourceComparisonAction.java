@@ -63,10 +63,10 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         resources.addAll(genericService.findAll(Resource.class, ids));
         if (PersistableUtils.isNotNullOrTransient(getCollectionId())) {
             ResourceCollection rc = genericService.find(ResourceCollection.class, getCollectionId());
-                resources.addAll(((ResourceCollection)rc).getManagedResources());
-                for (ResourceCollection sc :resourceCollectionService.findAllChildCollectionsOnly((ResourceCollection)rc)) {
-                    resources.addAll(sc.getManagedResources());
-                }
+            resources.addAll(((ResourceCollection) rc).getManagedResources());
+            for (ResourceCollection sc : resourceCollectionService.findAllChildCollectionsOnly((ResourceCollection) rc)) {
+                resources.addAll(sc.getManagedResources());
+            }
         }
 
         for (Resource resource : resources) {

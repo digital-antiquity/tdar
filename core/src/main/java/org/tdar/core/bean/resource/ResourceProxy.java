@@ -83,7 +83,7 @@ public class ResourceProxy implements Serializable {
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<>();
 
     @Column(name = "date_created")
-//    @DateBridge(resolution = Resolution.DAY)
+    // @DateBridge(resolution = Resolution.DAY)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
@@ -104,7 +104,7 @@ public class ResourceProxy implements Serializable {
     private TdarUser updatedBy;
 
     @Column(name = "date_updated")
-//    @DateBridge(resolution = Resolution.MILLISECOND)
+    // @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
@@ -131,7 +131,7 @@ public class ResourceProxy implements Serializable {
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @Where(clause="collection_type='SHARED'")
+    @Where(clause = "collection_type='SHARED'")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> sharedCollections = new LinkedHashSet<>();
 
@@ -141,7 +141,7 @@ public class ResourceProxy implements Serializable {
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    @Where(clause="collection_type!='LIST'")
+    @Where(clause = "collection_type!='LIST'")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -151,7 +151,6 @@ public class ResourceProxy implements Serializable {
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.authorizedUsers")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
-    
     @OneToMany(fetch = FetchType.EAGER, targetEntity = ResourceCreator.class)
     @JoinColumn(name = "resource_id")
     @Immutable

@@ -25,7 +25,8 @@
     "vue": "^2.4.2",
     "axios":"0.17.0",
     "vue-resource": "^1.3.4",
-    "qs" : "https://github.com/ljharb/qs.git#6.5.1"
+    "qs" : "https://github.com/ljharb/qs.git#6.5.1",
+    "es6-promise":"https://github.com/stefanpenner/es6-promise.git"
   },
   "dependencies-cdn": {
     "README": "local dependency management, not managed by bower (see layout-bootstrap.dec)",

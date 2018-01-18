@@ -124,7 +124,6 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
         this.status = status;
     }
 
-
     @JsonView(JsonLookupFilter.class)
     public Long getOccurrence() {
         return occurrence;
@@ -161,7 +160,6 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
     public String getSynonymFormattedName() {
         return getLabel();
     }
-
 
     @Override
     @Transient

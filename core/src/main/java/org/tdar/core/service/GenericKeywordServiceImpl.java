@@ -38,7 +38,7 @@ import org.tdar.utils.PersistableUtils;
  * A generic service to support the majority of keyword functions.
  */
 @Service("genericKeywordSerice")
-public class GenericKeywordServiceImpl implements GenericKeywordService  {
+public class GenericKeywordServiceImpl implements GenericKeywordService {
 
     private static final String APPROVED = "approved";
 
@@ -51,7 +51,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
     @Autowired
     private SerializationService serializationService;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#findAllApproved(java.lang.Class)
      */
     @Override
@@ -60,7 +62,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.findAllByProperty(cls, APPROVED, true);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#findAllApprovedWithCache(java.lang.Class)
      */
     @Override
@@ -76,7 +80,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return findAllApproved(cls);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#findAllDescendants(java.lang.Class, H)
      */
     @Override
@@ -85,7 +91,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.findAllDescendants(cls, keyword);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#findOrCreateByLabels(java.lang.Class, java.util.List)
      */
     @Override
@@ -106,7 +114,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return set;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#findByLabel(java.lang.Class, java.lang.String)
      */
     @Override
@@ -118,7 +128,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.findByLabel(cls, label);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#findOrCreateByLabel(java.lang.Class, java.lang.String)
      */
     @Override
@@ -148,7 +160,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return keyword;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getUncontrolledCultureKeywordStats()
      */
     @Override
@@ -157,7 +171,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getUncontrolledCultureKeywordStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getControlledCultureKeywordStats()
      */
     @Override
@@ -166,7 +182,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getControlledCultureKeywordStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getGeographicKeywordStats()
      */
     @Override
@@ -175,7 +193,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getGeographicKeywordStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getInvestigationTypeStats()
      */
     @Override
@@ -184,7 +204,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getInvestigationTypeStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getMaterialKeywordStats()
      */
     @Override
@@ -193,7 +215,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getMaterialKeywordStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getOtherKeywordStats()
      */
     @Override
@@ -202,7 +226,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getOtherKeywordStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getSiteNameKeywordStats()
      */
     @Override
@@ -211,7 +237,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getSiteNameKeywordStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getControlledSiteTypeKeywordStats()
      */
     @Override
@@ -220,7 +248,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getControlledSiteTypeKeywordStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getUncontrolledSiteTypeKeywordStats()
      */
     @Override
@@ -229,7 +259,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getUncontrolledSiteTypeKeywordStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getTemporalKeywordStats()
      */
     @Override
@@ -238,7 +270,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.getTemporalKeywordStats();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#updateOccurranceValues()
      */
     @Override
@@ -247,7 +281,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         genericKeywordDao.updateOccuranceValues();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#findAuthority(org.tdar.core.bean.keyword.Keyword)
      */
     @Override
@@ -256,7 +292,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.findAuthority(kwd);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#saveKeyword(java.lang.String, java.lang.String, org.tdar.core.bean.keyword.Keyword, java.util.List)
      */
     @Override
@@ -296,7 +334,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         genericKeywordDao.saveOrUpdate(keyword);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#countActiveKeyword(org.tdar.core.bean.keyword.KeywordType, boolean)
      */
     @Override
@@ -305,7 +345,9 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.countActiveWithStatus(type, controlled);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#countActiveKeyword(org.tdar.core.bean.keyword.KeywordType)
      */
     @Override
@@ -314,11 +356,13 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return genericKeywordDao.countActiveWithStatus(type, null);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#getSchemaOrgJsonLD(org.tdar.core.bean.keyword.Keyword)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public String getSchemaOrgJsonLD(Keyword keyword) {
         try {
             SchemaOrgKeywordTransformer transformer = new SchemaOrgKeywordTransformer();
@@ -330,13 +374,15 @@ public class GenericKeywordServiceImpl implements GenericKeywordService  {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericKeywordService#findGeographicKeywordByCode(java.lang.String)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public GeographicKeyword findGeographicKeywordByCode(String code) {
-        return genericKeywordDao.findByProperty(GeographicKeyword.class, "code",StringUtils.upperCase(code ));
+        return genericKeywordDao.findByProperty(GeographicKeyword.class, "code", StringUtils.upperCase(code));
     }
 
 }

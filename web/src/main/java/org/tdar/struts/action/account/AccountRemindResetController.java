@@ -39,7 +39,7 @@ import org.tdar.struts_base.action.TdarActionSupport;
 @Scope("prototype")
 @HttpsOnly
 @CacheControl
-public class AccountRemindResetController extends AbstractAuthenticatableAction  {
+public class AccountRemindResetController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 1147098995283237748L;
 

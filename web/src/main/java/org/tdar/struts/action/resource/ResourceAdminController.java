@@ -42,7 +42,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
     public boolean isEditable() {
         return true;
     }
-    
+
     private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
     private static final long serialVersionUID = -2071449250711089300L;
     public static final String ADMIN = "admin";
@@ -112,6 +112,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
     public Resource getResource() {
         return resource;
     }
+
     public Resource getPersistable() {
         return resource;
     }

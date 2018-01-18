@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @JsonAutoDetect
 /**
  * Represents one DataTableColumn in one Integration Column
+ * 
  * @author abrin
  *
  */

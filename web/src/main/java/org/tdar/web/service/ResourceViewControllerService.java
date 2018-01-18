@@ -29,7 +29,7 @@ public interface ResourceViewControllerService {
             List<AuthorizedUser> authorizedUsers);
 
     List<ResourceCollection> getVisibleUnmanagedCollections(AuthWrapper<Resource> auth);
-    List<ResourceCollection> getVisibleManagedCollections(AuthWrapper<Resource> auth);
 
+    List<ResourceCollection> getVisibleManagedCollections(AuthWrapper<Resource> auth);
 
 }

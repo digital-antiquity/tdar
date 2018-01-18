@@ -10,12 +10,8 @@ import org.tdar.utils.MessageHelper;
  */
 public enum WorkflowPhase implements HasLabel, Localizable {
 
-    SETUP("Setup"),
-    PRE_PROCESS("Pre-Process"),
-    CREATE_DERIVATIVE("Create Derivative"),
-    CREATE_ARCHIVAL("Create Archival"),
-    POST_PROCESS("Post-Process"),
-    CLEANUP("Cleanup");
+    SETUP("Setup"), PRE_PROCESS("Pre-Process"), CREATE_DERIVATIVE("Create Derivative"), CREATE_ARCHIVAL("Create Archival"), POST_PROCESS(
+            "Post-Process"), CLEANUP("Cleanup");
 
     private String label;
 

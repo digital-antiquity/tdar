@@ -48,7 +48,6 @@ public class CartExternalPaymentResponseAction extends AbstractAuthenticatableAc
     @Autowired
     private transient PaymentTransactionProcessor paymentTransactionProcessor;
 
-
     @Autowired
     private transient InvoiceService invoiceService;
 

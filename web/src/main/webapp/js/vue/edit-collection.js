@@ -1,7 +1,13 @@
 TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 	"use strict";
 
-	var _init = function() {
+	var _init = function(params) {
+		var enableUnmanagedCollections = false;
+		
+		if(params!= null && params.enableUnmanagedCollections==true){
+			enableUnmanagedCollections  = true;
+		};
+		
 		var vm = new Vue(
 				{
 					el : '#editCollectionApp',
@@ -9,8 +15,10 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 						managedAdditions : [],
 						managedRemovals : [],
 						unmanagedAdditions : [],
-						unmanagedRemovals : []
+						unmanagedRemovals : [],
+						enableUnmanagedCollections: enableUnmanagedCollections
 					},
+					
 					mounted : function() {
 
 					},
@@ -100,9 +108,9 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 											this.unmanagedAdditions)
 								} else {
 									console.debug("Removing " + id
-											+ " from unmanaged additions");
+											+ " from unmanaged removals");
 									this.removeFromArray(id,
-											this.managedRemovals)
+											this.unmanagedRemovals)
 								}
 							}
 

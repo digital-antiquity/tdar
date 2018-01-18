@@ -40,7 +40,7 @@ public abstract class AbstractServletConfiguration {
             setFailureMessage(t.getMessage() + " (see initial exception for details)");
             logger.error("\r\n\r\n" + BAR + "\r\n" + t.getMessage() + "\r\n" + BAR + "\r\n", t);
         }
-        
+
         if (getAppPropertyPrefix() != null) {
             System.setProperty("appPrefix", getAppPropertyPrefix());
         }

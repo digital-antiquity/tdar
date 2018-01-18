@@ -27,12 +27,11 @@ public class MakeCollectionWhiteLabelAction extends AbstractCollectionAdminActio
 
     @Autowired
     private ResourceCollectionService resourceCollectionService;
-    
-    
+
     @Override
     @PostOnly
     @WriteableSession
-    @Action(value = "{id}", results={
+    @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
@@ -44,9 +43,9 @@ public class MakeCollectionWhiteLabelAction extends AbstractCollectionAdminActio
             setCollection(resourceCollectionService.convertToWhitelabelCollection(lc));
             getLogger().debug(getCollection().getDetailUrl());
         } catch (Exception e) {
-            getLogger().error("{}",e,e);
+            getLogger().error("{}", e, e);
         }
         return SUCCESS;
     }
-    
+
 }

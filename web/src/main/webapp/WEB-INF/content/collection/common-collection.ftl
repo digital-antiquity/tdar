@@ -239,7 +239,12 @@
 
         <div class="row">
             <div class="span4">
-                <@view.kvp key="Collection Type" val="${type} ${resourceCollection.systemManaged!false?string(' (System)','')}" />
+                <#local _type="Collection"/>
+                <#if resourceCollection.properties.whitelabel>
+                   <#local _type="Whitelabel"/>
+                </#if>
+
+                <@view.kvp key="Collection Type" val="${type} ${resourceCollection.systemManaged!false?string(' (System)', _type)}" />
             </div>
             <div class="span4">
                 <@view.kvp key="Hidden" val=resourceCollection.hidden?string />

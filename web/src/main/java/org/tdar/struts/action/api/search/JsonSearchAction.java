@@ -1,6 +1,5 @@
 package org.tdar.struts.action.api.search;
 
-import java.io.ByteArrayInputStream;
 import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -72,7 +71,6 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
             }
         }
     }
-    
 
     public GeoRssMode getGeoMode() {
         return geoMode;

@@ -35,9 +35,9 @@ import org.tdar.core.bean.FieldLength;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.GeographicKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "assertions",
-       joinColumns = @JoinColumn(name="geographic_keyword_id"))
- })
+        @AssociationOverride(name = "assertions",
+                joinColumns = @JoinColumn(name = "geographic_keyword_id"))
+})
 @XmlRootElement
 public class GeographicKeyword extends AbstractKeyword<GeographicKeyword> implements UncontrolledKeyword {
 
@@ -46,17 +46,12 @@ public class GeographicKeyword extends AbstractKeyword<GeographicKeyword> implem
     public GeographicKeyword(String string) {
         this.setLabel(string);
     }
-    
+
     public GeographicKeyword() {
     }
 
     public enum Level {
-        CONTINENT("Continent"),
-        COUNTRY("Country"),
-        STATE("State / Territory"),
-        COUNTY("County"),
-        CITY("City"),
-        FIPS_CODE("Fips Code");
+        CONTINENT("Continent"), COUNTRY("Country"), STATE("State / Territory"), COUNTY("County"), CITY("City"), FIPS_CODE("Fips Code");
 
         private String label;
 
@@ -77,8 +72,8 @@ public class GeographicKeyword extends AbstractKeyword<GeographicKeyword> implem
     @Enumerated(EnumType.STRING)
     @Column(length = FieldLength.FIELD_LENGTH_50)
     private Level level;
-    
-    @Column(length=FieldLength.FIELD_LENGTH_5)
+
+    @Column(length = FieldLength.FIELD_LENGTH_5)
     private String code;
 
     /**

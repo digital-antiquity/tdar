@@ -16,9 +16,12 @@ import org.tdar.core.service.ServiceInterface;
  * 
  */
 @Service
-public class ResourceRelationshipServiceImpl  extends ServiceInterface.TypedDaoBase<ResourceRelationship, ResourceRelationshipDao> implements ResourceRelationshipService {
+public class ResourceRelationshipServiceImpl extends ServiceInterface.TypedDaoBase<ResourceRelationship, ResourceRelationshipDao>
+        implements ResourceRelationshipService {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceRelationshipService#findRelatedResources(org.tdar.core.bean.resource.Resource)
      */
     @Override
