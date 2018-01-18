@@ -31,7 +31,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
             // set some IDs
             // apply the fixxture
             fixture = fixture.replace("${uploadConfigId}","uploadConfig");
-            fixture = fixture.replace("${uploadConfigId}","uploadConfig");
+            fixture = fixture.replace("${vueFilesFallback!'{{ files }}'}","{{files}}");
             var fix = jasmine.getFixtures().set(fixture);
             jasmine.Ajax.install();
 
