@@ -186,7 +186,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
              files.forEach(function(f){
                  if (f.action != 'DELETE') {
                      var partOfPair = false;
-                     var ext = "." + f.filename.split('.').pop();
+                     var ext = "." + f.filename.split('.').pop().toLowerCase();
                      for (var i =0; i < _app.requiredOptionalPairs.length; i++) {
                         var pair = _app.requiredOptionalPairs[i];
                         if ($.inArray(ext , pair.optional) && files.length > 1)  {
@@ -212,7 +212,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
              var pairs = new Array();
              // convert to a set
              this.files.forEach(function(file){
-                 var ext = file.filename.substring(file.filename.indexOf("."));
+                 var ext = file.filename.substring(file.filename.indexOf(".")).toLowerCase();
                  exts.push(ext);
                  var seen = false;
                  _app.requiredOptionalPairs.forEach(function(pair){
@@ -272,7 +272,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
              var fileName = file.name;
              var _app = this;
              this.validFormats.forEach(function(ext){
-                 if (fileName.indexOf(ext, fileName.length - ext.length) !== -1) {
+                 if (fileName.toLowerCase().indexOf(ext, fileName.length - ext.length) !== -1) {
                      validExt = ext
                  }
              });

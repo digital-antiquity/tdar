@@ -1,7 +1,7 @@
 (function (TDAR, $) {
     'use strict';
 
-    var _defaults = {format: "mm-dd-yyyy"}
+    var _defaults = {format: "mm/dd/yyyy"}
     //scan for any inputs with .datepicker class and initialize them.
     var _init = function() {
         $('input.datepicker').each(function(idx, el) {
@@ -10,7 +10,7 @@
     };
 
     var _bind = function(el) {
-        $(el).datepicker({autoclose:true, format: "mm-dd-yyyy"}).on('changeDate', _handleEvent);
+        $(el).datepicker({autoclose:true, format: "mm/dd/yyyy"}).on('changeDate', _handleEvent);
     }
 
     var _apply = function(el) {

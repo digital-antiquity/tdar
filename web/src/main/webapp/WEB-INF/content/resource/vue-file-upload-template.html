@@ -69,9 +69,9 @@
                 <div class="span5">
                     <div class="input-append">
                         <input type="text" :name="createdDateFieldName" :disabled="inputDisabled"
-                            class="datepicker" placeholder="mm-dd-yyyy"
+                            class="datepicker" placeholder="mm/dd/yyyy"
                             v-model="file.fileCreatedDate" value=""
-                            data-date-format="mm-dd-yyyy"> <span
+                            data-date-format="mm/dd/yyyy"> <span
                             class="add-on"><i class="icon-th"></i></span>
                     </div>
 
@@ -137,7 +137,7 @@
     <#list fileProxies as p>
                 <assign fupval = ""/>
                 <#if (p.fileCreatedDate)?has_content>
-                    <#assign fupval="p.fileCreatedDate?string['MM-dd-yyyy']" />
+                    <#assign fupval="p.fileCreatedDate?string['MM/dd/yyyy']" />
                 </#if>
                 ${p.filename} (id: ${(p.fileId!-1)?c} ; ${p.restriction} dateCreated: ${fupval!''} description: ${p.description!''})
                 <input type="hidden" name="fileProxies[${p_index}].restriction" value="${p.restriction}"/>
