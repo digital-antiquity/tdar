@@ -149,6 +149,11 @@
                 <input type="hidden" name="fileProxies[${p_index}].fileId" value="${(p.fileId!-1)?c}"/>
     </#list>
 </noscript>
+
+<!-- the following textarea is designed to handle the 'files' when a 'submit' is hit and then to support the issue when input is returned -->
+<textarea id="filesfallback" name='_vue_files_fallback'>
+{{ files }}
+</textarea>
 </div>
 
 
