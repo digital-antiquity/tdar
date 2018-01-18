@@ -106,7 +106,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private Boolean isAbleToUploadFiles = null;
 
-    // private List<PersonalFilestoreFile> pendingFiles;
+    // fallback for "input" case when we need to reinitialize the "files" object but don't have the current state from the controller
+    private String vueFilesFallback;
 
     private Long ticketId;
 
@@ -261,8 +262,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Autowired
     private SerializationService serializationService;
 
-    private String fileUploadSettings;
-
     @Override
     public String loadAddMetadata() {
         String retval = super.loadAddMetadata();
@@ -297,30 +296,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
                     fileProxies.add(new FileProxy(informationResourceFile));
                 }
             }
-        }
-
-        FileUploadSettings settings = new FileUploadSettings();
-        settings.setAbleToUpload(isAbleToUploadFiles());
-        if (this instanceof DatasetController) {
-            settings.setDataTableEnabled(true);
-        }
-        if (this instanceof GeospatialController) {
-            settings.setSideCarOnly(true);
-        }
-        getLogger().debug("proxies: {} ({})", fileProxies, fileProxies.size());
-        settings.getFiles().addAll(fileProxies);
-        settings.setMultipleUpload(isMultipleFileUploadEnabled());
-        settings.setMaxNumberOfFiles(getMaxUploadFilesPerRecord());
-        settings.setResourceId(getId());
-        settings.setTicketId(getTicketId());
-        settings.setUserId(getAuthenticatedUser().getId());
-        settings.getValidFormats().addAll(getValidFileExtensions());
-        settings.getRequiredOptionalPairs().addAll(getRequiredOptionalPairs());
-        try {
-            setFileUploadSettings(serializationService.convertToJson(settings));
-        } catch (Throwable t) {
-            getLogger().error("{}", t, t);
-
         }
     }
 
@@ -630,10 +605,36 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public String getFileUploadSettings() {
-        return fileUploadSettings;
+        FileUploadSettings settings = new FileUploadSettings();
+        settings.setAbleToUpload(isAbleToUploadFiles());
+        if (this instanceof DatasetController) {
+            settings.setDataTableEnabled(true);
+        }
+        if (this instanceof GeospatialController) {
+            settings.setSideCarOnly(true);
+        }
+        getLogger().debug("proxies: {} ({})", fileProxies, fileProxies.size());
+        settings.getFiles().addAll(fileProxies);
+        settings.setMultipleUpload(isMultipleFileUploadEnabled());
+        settings.setMaxNumberOfFiles(getMaxUploadFilesPerRecord());
+        settings.setResourceId(getId());
+        settings.setTicketId(getTicketId());
+        settings.setUserId(getAuthenticatedUser().getId());
+        settings.getValidFormats().addAll(getValidFileExtensions());
+        settings.getRequiredOptionalPairs().addAll(getRequiredOptionalPairs());
+        try {
+            return serializationService.convertToJson(settings);
+        } catch (Throwable t) {
+            getLogger().error("{}", t, t);
+            return "{}";
+        }
     }
 
-    public void setFileUploadSettings(String fileUploadSettings) {
-        this.fileUploadSettings = fileUploadSettings;
+    public String getVueFilesFallback() {
+        return vueFilesFallback;
+    }
+
+    public void setVueFilesFallback(String vueFilesFallback) {
+        this.vueFilesFallback = vueFilesFallback;
     }
 }
