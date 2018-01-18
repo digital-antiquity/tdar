@@ -89,5 +89,6 @@ public interface ResourceSearchService {
     LuceneSearchResultHandler<Resource> findByTdarYear(int year, LuceneSearchResultHandler<Resource> result, TextProvider support)
             throws SearchException, IOException;
 
-    LuceneSearchResultHandler<Resource> findByResourceType(ResourceType resourceType, LuceneSearchResultHandler<Resource> result, TextProvider support) throws SearchException, IOException;
+    LuceneSearchResultHandler<Resource> findByResourceType(ResourceType resourceType, LuceneSearchResultHandler<Resource> result, TextProvider support)
+            throws SearchException, IOException;
 }

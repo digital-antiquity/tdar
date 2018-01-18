@@ -22,7 +22,6 @@ public class CollectionDeleteAction extends AbstractDeleteAction<ResourceCollect
 
     private static final long serialVersionUID = 8210288974799774479L;
 
-    
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired

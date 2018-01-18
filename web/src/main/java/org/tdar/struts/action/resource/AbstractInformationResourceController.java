@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.LazyInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -30,6 +31,8 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.geospatial.GeospatialController;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
@@ -96,13 +99,15 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private String fileInputMethod;
     private String fileTextInput;
     protected FileSaveWrapper fsw = new FileSaveWrapper();
+    private String uploadSettings;
 
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = null;
 
     private Boolean isAbleToUploadFiles = null;
 
-    // private List<PersonalFilestoreFile> pendingFiles;
+    // fallback for "input" case when we need to reinitialize the "files" object but don't have the current state from the controller
+    private String vueFilesFallback;
 
     private Long ticketId;
 
@@ -131,8 +136,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected String save(InformationResource document) throws TdarActionException {
         // save basic metadata
         getLogger().debug("save ir");
-//        saveBasicResourceMetadata();
-        
+        // saveBasicResourceMetadata();
+
         // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();
         getResource().setProject(getProject());
@@ -156,7 +161,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         fsw.setTicketId(getTicketId());
         fsw.setUploadedFilesFileName(getUploadedFilesFileName());
         fsw.setUploadedFiles(getUploadedFiles());
-        AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(), isEditor());
+        AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(),
+                isEditor());
         resourceSaveControllerService.setupFileProxiesForSave(proxy, authWrapper, fsw, this);
         setHasFileProxyChanges(fsw.isFileProxyChanges());
         super.save(document);
@@ -252,7 +258,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         loadResourceProviderInformation();
         resourceViewControllerService.setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
-    
+
     @Autowired
     private SerializationService serializationService;
 
@@ -264,6 +270,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         obfuscationService.obfuscate(obsProj, getAuthenticatedUser());
         Object proj = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(), null);
         json = serializationService.convertFilteredJsonForStream(proj, JsonProjectLookupFilter.class, null);
+        initializeFileProxies();
         return retval;
     }
 
@@ -283,11 +290,17 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     private void initializeFileProxies() {
         fileProxies = new ArrayList<>();
-        for (InformationResourceFile informationResourceFile : getPersistable().getInformationResourceFiles()) {
-            if (!informationResourceFile.isDeleted()) {
-                fileProxies.add(new FileProxy(informationResourceFile));
+        if (getPersistable() != null && CollectionUtils.isNotEmpty(getPersistable().getInformationResourceFiles())) {
+            for (InformationResourceFile informationResourceFile : getPersistable().getInformationResourceFiles()) {
+                if (!informationResourceFile.isDeleted()) {
+                    fileProxies.add(new FileProxy(informationResourceFile));
+                }
             }
         }
+    }
+
+    public Collection<RequiredOptionalPairs> getRequiredOptionalPairs() {
+        return new ArrayList<>();
     }
 
     public FileProxy getBlankFileProxy() {
@@ -350,7 +363,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         return potentialParents;
     }
-
 
     @Autowired
     public void setFileAnalyzer(FileAnalyzer analyzer) {
@@ -492,8 +504,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public boolean isAbleToUploadFiles() {
         if (isAbleToUploadFiles == null) {
             isAbleToUploadFiles = resourceEditControllerService.isAbleToUploadFiles(getAuthenticatedUser(), getPersistable(), getActiveAccounts());
+            BillingAccount account_ = null;
+            if (getPersistable() != null) {
+                account_ = getPersistable().getAccount();
+            }
+            getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, account_);
         }
-        getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, getPersistable().getAccount());
 
         return isAbleToUploadFiles;
     }
@@ -560,8 +576,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return types;
     }
 
-
-
     public String getFileInputMethod() {
         return fileInputMethod;
     }
@@ -580,5 +594,47 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public void setFileTextInput(String fileTextInput) {
         this.fileTextInput = fileTextInput;
+    }
+
+    public String getUploadSettings() {
+        return uploadSettings;
+    }
+
+    public void setUploadSettings(String uploadSettings) {
+        this.uploadSettings = uploadSettings;
+    }
+
+    public String getFileUploadSettings() {
+        FileUploadSettings settings = new FileUploadSettings();
+        settings.setAbleToUpload(isAbleToUploadFiles());
+        if (this instanceof DatasetController) {
+            settings.setDataTableEnabled(true);
+        }
+        if (this instanceof GeospatialController) {
+            settings.setSideCarOnly(true);
+        }
+        getLogger().debug("proxies: {} ({})", fileProxies, fileProxies.size());
+        settings.getFiles().addAll(fileProxies);
+        settings.setMultipleUpload(isMultipleFileUploadEnabled());
+        settings.setMaxNumberOfFiles(getMaxUploadFilesPerRecord());
+        settings.setResourceId(getId());
+        settings.setTicketId(getTicketId());
+        settings.setUserId(getAuthenticatedUser().getId());
+        settings.getValidFormats().addAll(getValidFileExtensions());
+        settings.getRequiredOptionalPairs().addAll(getRequiredOptionalPairs());
+        try {
+            return serializationService.convertToJson(settings);
+        } catch (Throwable t) {
+            getLogger().error("{}", t, t);
+            return "{}";
+        }
+    }
+
+    public String getVueFilesFallback() {
+        return vueFilesFallback;
+    }
+
+    public void setVueFilesFallback(String vueFilesFallback) {
+        this.vueFilesFallback = vueFilesFallback;
     }
 }

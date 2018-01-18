@@ -24,5 +24,23 @@
      <sql>insert into authorized_user (creator_id, user_id, date_created, general_permission, general_permission_int,integration_id) select user_id, user_id, now(), 'EDIT_INTEGRATION',2000, id from data_integration_workflow</sql> 
      
      </changeSet>
+     <changeSet id="quartz-collections-1" author="abrin">
+     <sql>
+     update authorized_user set general_permission_int=40 where general_permission_int=4000;
+     update authorized_user set general_permission_int=50 where general_permission_int=4500;
+     update authorized_user set general_permission_int=40, general_permission='ADD_TO_SHARE' where general_permission='ADD_TO_COLLECTION';
+     update authorized_user set general_permission_int=50, general_permission='REMOVE_FROM_SHARE' where general_permission='REMOVE_FROM_COLLECTION';
+     </sql>
+     </changeSet>
+     <changeSet id="quartz-collections-2" author="abrin">
+        <sql>update authorized_user set general_permission='ADD_TO_COLLECTION' where general_permission='ADD_TO_SHARE'</sql>
+        <sql>update authorized_user set general_permission='REMOVE_FROM_COLLECTION' where general_permission='REMOVE_FROM_SHARE'</sql>
+        <sql>update authorized_user set general_permission='ADMINISTER_COLLECTION' where general_permission='ADMINISTER_SHARE'</sql>
+     </changeSet>
+     <changeSet id="quartz-collections-3" author="abrin">
+     <addColumn tableName="collection">
+        <column name="verified" type="boolean" defaultValueBoolean="false" />
+     </addColumn>
+     </changeSet>
 </databaseChangeLog>
 

@@ -51,16 +51,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class,
                 genericService.find(TdarUser.class, getBasicUserId()));
 
-        controller.setServletRequest(getServletRequest());
-        doSearch("");
-        assertEquals(Action.SUCCESS, controller.viewExcelReport());
-        assertFalse(controller.getSearchPhrase() + " should not have bold tag", controller.getSearchPhrase().toLowerCase().contains("<b>"));
-        File tempFile = File.createTempFile("report", ".xls");
-        FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
-        long copyLarge = IOUtils.copyLarge(controller.getInputStream(), fileOutputStream);
-
-        fileOutputStream.close();
-        logger.debug("tempFile: {}", tempFile);
+        File tempFile = search(controller);
 
         Workbook workbook = WorkbookFactory.create(new FileInputStream(tempFile));
         Sheet sheet = workbook.getSheet("results");
@@ -74,11 +65,19 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
             InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         // currentUser = getBasicUser();
-        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class,
-                genericService.find(TdarUser.class, getAdminUserId()));
+        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class, genericService.find(TdarUser.class, getAdminUserId()));
 
+        File tempFile = search(controller);
+
+        Workbook workbook = WorkbookFactory.create(new FileInputStream(tempFile));
+        Sheet sheet = workbook.getSheet("results");
+        Assert.assertTrue(sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT >  4);
+    }
+
+    private File search(AdvancedSearchDownloadAction controller) throws ParseException, TdarActionException, IOException, FileNotFoundException {
         controller.setServletRequest(getServletRequest());
-        doSearch("");
+
+        doSearch( controller,"");
         assertEquals(Action.SUCCESS, controller.viewExcelReport());
         assertFalse(controller.getSearchPhrase() + " should not have bold tag", controller.getSearchPhrase().toLowerCase().contains("<b>"));
         File tempFile = File.createTempFile("report", ".xls");
@@ -87,10 +86,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
         fileOutputStream.close();
         logger.debug("tempFile: {}", tempFile);
-
-        Workbook workbook = WorkbookFactory.create(new FileInputStream(tempFile));
-        Sheet sheet = workbook.getSheet("results");
-        Assert.assertTrue(sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT >  4);
+        return tempFile;
     }
 
     @Test
@@ -107,7 +103,6 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
         // controller = generateNewInitializedController(AdvancedSearchController.class);
 
         controller.setServletRequest(getServletRequest());
-        doSearch("");
         TdarActionException except = null;
         try {
             controller.viewExcelReport();

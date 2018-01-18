@@ -1,6 +1,9 @@
 package org.tdar.struts.action.geospatial;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.dataset.AbstractDatasetController;
+import org.tdar.struts.action.resource.RequiredOptionalPairs;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 
@@ -60,10 +64,50 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
         // FIXME: these should come from the analyzer
         // Note: aux.xml and shp.xml omitted because we know view layer logic will accept any .xml (so will server, for that matter)
         String[] geoexts = { "shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "jgw", "tfw",
-                "aux", "aux", "ovr", "rrd", "mxd", "lyr" }; //"adf",
+                "aux", "aux", "ovr", "rrd", "mxd", "lyr" }; // "adf",
         Collections.addAll(extensionsForTypes, geoexts);
 
         return extensionsForTypes;
+    }
+
+    @Override
+    public Collection<RequiredOptionalPairs> getRequiredOptionalPairs() {
+        List<RequiredOptionalPairs> pairs = new ArrayList<>();
+        RequiredOptionalPairs shapefile = new RequiredOptionalPairs();
+        shapefile.getRequired().add("shp");
+        shapefile.getRequired().add("shx");
+        shapefile.getRequired().add("dbf");
+        shapefile.getOptional().add("sbn");
+        shapefile.getOptional().add("sbx");
+        shapefile.getOptional().add("fbn");
+        shapefile.getOptional().add("fbx");
+        shapefile.getOptional().add("ain");
+        shapefile.getOptional().add("aih");
+        shapefile.getOptional().add("atx");
+        shapefile.getOptional().add("ixs");
+        shapefile.getOptional().add("mxs");
+        shapefile.getOptional().add("prj");
+        shapefile.getOptional().add("cbg");
+        shapefile.getOptional().add("ixs");
+        shapefile.getOptional().add("rrd");
+        pairs.add(shapefile);
+        RequiredOptionalPairs layer = new RequiredOptionalPairs();
+        layer.getRequired().add("lyr");
+        layer.getRequired().add("jpg");
+        layer.getOptional().add("mxd");
+        pairs.add(layer);
+
+        RequiredOptionalPairs geotiff = new RequiredOptionalPairs();
+        geotiff.getRequired().add("tif");
+        geotiff.getRequired().add("tiff");
+        geotiff.getOptional().add("tfw");
+        pairs.add(geotiff);
+        RequiredOptionalPairs geojpg = new RequiredOptionalPairs();
+        geojpg.getRequired().add("jpg");
+        geojpg.getRequired().add("jpeg");
+        geojpg.getOptional().add("jfw");
+        pairs.add(geojpg);
+        return pairs;
     }
 
     @Override

@@ -30,7 +30,7 @@ public class OntologyNodeDao extends HibernateBase<OntologyNode> {
     }
 
     public List<OntologyNode> getAllChildren(OntologyNode ontologyNode) {
-        Query<OntologyNode> query = getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN,OntologyNode.class);
+        Query<OntologyNode> query = getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN, OntologyNode.class);
         query.setParameter("ontologyId", ontologyNode.getOntology().getId());
         query.setParameter("intervalStart", ontologyNode.getIntervalStart());
         query.setParameter("intervalEnd", ontologyNode.getIntervalEnd());
@@ -38,7 +38,7 @@ public class OntologyNodeDao extends HibernateBase<OntologyNode> {
     }
 
     public List<OntologyNode> getAllChildrenWithIndexWildcard(OntologyNode ontologyNode) {
-        Query<OntologyNode> query = getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD,OntologyNode.class);
+        Query<OntologyNode> query = getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD, OntologyNode.class);
         query.setParameter("ontologyId", ontologyNode.getOntology().getId());
         String indexWildcardString = ontologyNode.getIndex() + ".%";
         query.setParameter("indexWildcardString", indexWildcardString);
@@ -71,11 +71,10 @@ public class OntologyNodeDao extends HibernateBase<OntologyNode> {
             query.setParameter("index", index);
 
             try {
-            	return (OntologyNode) query.getSingleResult();
-            }
-            catch(NoResultException e){
-            	getLogger().debug("No parent node was found for {} with index {}",node.getOntology().getId(), index);
-            	return null;
+                return (OntologyNode) query.getSingleResult();
+            } catch (NoResultException e) {
+                getLogger().debug("No parent node was found for {} with index {}", node.getOntology().getId(), index);
+                return null;
             }
         }
         return null;

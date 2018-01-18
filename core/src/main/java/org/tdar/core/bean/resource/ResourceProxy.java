@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -84,7 +83,7 @@ public class ResourceProxy implements Serializable {
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<>();
 
     @Column(name = "date_created")
-//    @DateBridge(resolution = Resolution.DAY)
+    // @DateBridge(resolution = Resolution.DAY)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
@@ -105,7 +104,7 @@ public class ResourceProxy implements Serializable {
     private TdarUser updatedBy;
 
     @Column(name = "date_updated")
-//    @DateBridge(resolution = Resolution.MILLISECOND)
+    // @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
@@ -132,9 +131,9 @@ public class ResourceProxy implements Serializable {
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @Where(clause="collection_type='SHARED'")
+    @Where(clause = "collection_type='SHARED'")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    private Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
+    private Set<ResourceCollection> sharedCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -142,7 +141,7 @@ public class ResourceProxy implements Serializable {
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    @Where(clause="collection_type!='LIST'")
+    @Where(clause = "collection_type!='LIST'")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -152,7 +151,6 @@ public class ResourceProxy implements Serializable {
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.authorizedUsers")
     private Set<AuthorizedUser> authorizedUsers = new LinkedHashSet<AuthorizedUser>();
 
-    
     @OneToMany(fetch = FetchType.EAGER, targetEntity = ResourceCreator.class)
     @JoinColumn(name = "resource_id")
     @Immutable
@@ -287,17 +285,17 @@ public class ResourceProxy implements Serializable {
         res.setDateUpdated(this.getDateUpdated());
         res.setId(this.getId());
         logger.trace("recursing down");
-        res.getSharedCollections().addAll(getSharedCollections());
+        res.getManagedResourceCollections().addAll(getSharedCollections());
         res.getAuthorizedUsers().addAll(getAuthorizedUsers());
         logger.trace("done generation");
         return res;
     }
 
-    public Set<SharedCollection> getSharedCollections() {
+    public Set<ResourceCollection> getSharedCollections() {
         return sharedCollections;
     }
 
-    public void setSharedCollections(Set<SharedCollection> resourceCollections) {
+    public void setSharedCollections(Set<ResourceCollection> resourceCollections) {
         this.sharedCollections = resourceCollections;
     }
 

@@ -353,7 +353,7 @@ public class InformationResourceFile extends AbstractSequenced<InformationResour
         for (InformationResourceFileVersion latestVersion : getLatestVersions()) {
             logger.trace("latest version {}", latestVersion);
             switch (latestVersion.getFileVersionType()) {
-            // FIXME: if no WEB_MEDIUM is available we probably want to return a WEB_SMALL if possible.
+                // FIXME: if no WEB_MEDIUM is available we probably want to return a WEB_SMALL if possible.
                 case WEB_LARGE:
                     currentVersion = latestVersion;
                     break;

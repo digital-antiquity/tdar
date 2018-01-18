@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  * 
  * @author abrin
  * 
-*/
+ */
 @JsonAutoDetect
 public class BrowseDecadeCountCache extends AbstractCountCache<BrowseDecadeCountCache, Integer> {
 

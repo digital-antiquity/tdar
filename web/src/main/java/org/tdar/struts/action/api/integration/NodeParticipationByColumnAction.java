@@ -79,7 +79,7 @@ public class NodeParticipationByColumnAction extends AbstractJsonApiAction imple
     public Class<? extends JacksonView> getJsonView() {
         return JsonIdNameFilter.class;
     }
-    
+
     @Action("node-participation")
     @PostOnly
     public String execute() throws IOException {

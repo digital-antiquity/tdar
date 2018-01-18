@@ -2,24 +2,21 @@ package org.tdar.search.query.part;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.search.converter.ResourceDocumentConverter;
 import org.tdar.utils.StringPair;
-import org.tdar.utils.range.Range;
 
 import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Formulate a Luence/SOLR query based on a ResourceAnnotation StringPair
+ * 
  * @author abrin
  *
  * @param <C>
@@ -52,7 +49,6 @@ public class AnnotationQueryPart<C> extends FieldQueryPart<StringPair> {
         super(field, values);
         this.descriptionLabel = descriptionLabel;
     }
-    
 
     @Override
     protected void appendPhrase(StringBuilder sb, int index) {
@@ -62,7 +58,6 @@ public class AnnotationQueryPart<C> extends FieldQueryPart<StringPair> {
         String phrase = PhraseFormatter.QUOTED.format(ResourceDocumentConverter.formatResourceAnnotation(key, value));
         sb.append(phrase);
     }
-
 
     @Override
     public String getDescription(TextProvider provider) {

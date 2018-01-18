@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class SiteCodeExtractor {
 
-    //https://en.wikipedia.org/wiki/Smithsonian_trinomial 
+    // https://en.wikipedia.org/wiki/Smithsonian_trinomial
     /*
      * (non-Javadoc)
      * 
@@ -50,26 +50,26 @@ public class SiteCodeExtractor {
             while (matcher.find()) {
                 String code = matcher.group(0).trim();
                 if (code.startsWith("(") && code.endsWith(")")) {
-                    code = code.substring(1, code.length() -1).trim();
+                    code = code.substring(1, code.length() - 1).trim();
                 }
                 // if we're just left with numbers, ignore it, likely a date
                 if (StringUtils.isNumeric(code)) {
                     continue;
                 }
 
-                if (StringUtils.containsAny(code, new char[] {'\r','\n'})) {
+                if (StringUtils.containsAny(code, new char[] { '\r', '\n' })) {
                     continue;
                 }
-                
+
                 if (StringUtils.endsWithAny(code, new String[] { ",", ":", "-" })) {
                     continue;
                 }
-                
+
                 // trying to deal with cases like: "150 0 0" and "2603 9"
-                if (code.contains(" ") && StringUtils.containsNone(code, new char[]{'-',':'})) {
+                if (code.contains(" ") && StringUtils.containsNone(code, new char[] { '-', ':' })) {
                     continue;
                 }
-                
+
                 // we're probably a citation part
                 if (code.matches("(19|20)\\d\\d:\\d+(\\-\\d+)?")) {
                     continue;
@@ -79,9 +79,9 @@ public class SiteCodeExtractor {
                 Matcher rangeMatcher = PAGE_RANGE_PATTERN.matcher(code);
                 if (rangeMatcher.matches()) {
                     // match page ranges
-                    // Hawaii is the only 'all numeric site code 
+                    // Hawaii is the only 'all numeric site code
                     if (!code.startsWith("50-")) {
-//                    if (Integer.parseInt(rangeMatcher.group(1)) < Integer.parseInt(rangeMatcher.group(2))) {
+                        // if (Integer.parseInt(rangeMatcher.group(1)) < Integer.parseInt(rangeMatcher.group(2))) {
                         continue;
                     }
                 }

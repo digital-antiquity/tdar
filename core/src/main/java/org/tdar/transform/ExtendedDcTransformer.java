@@ -12,7 +12,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -116,7 +116,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         }
 
         // add culture subjects
-        for (InvestigationType investigationType: toSortedList(source.getActiveInvestigationTypes())) {
+        for (InvestigationType investigationType : toSortedList(source.getActiveInvestigationTypes())) {
             dc.addSubject(getX().stripNonValidXMLCharacters(investigationType.getLabel()));
         }
 
@@ -142,8 +142,8 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
                 dc.addDate(getX().stripNonValidXMLCharacters(cov.toString()));
             }
         }
-        
-        for (SharedCollection coll : toSortedList(source.getVisibleSharedResourceCollections())) {
+
+        for (ResourceCollection coll : toSortedList(source.getVisibleSharedResourceCollections())) {
             dc.addIsPartOf(getX().stripNonValidXMLCharacters(coll.getName()));
         }
 
@@ -153,7 +153,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         }
 
         dc.addType(getX().stripNonValidXMLCharacters(source.getResourceType().getLabel()));
-        
+
         dc.addIdentifier(getX().stripNonValidXMLCharacters(source.getId().toString()));
         dc.addReferences(getX().stripNonValidXMLCharacters(UrlService.absoluteUrl(source)));
         for (LatitudeLongitudeBox longLat : toSortedList(source.getActiveLatitudeLongitudeBoxes())) {
@@ -222,7 +222,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             if (StringUtils.isNotBlank(doi)) {
                 dc.addIdentifier(getX().stripNonValidXMLCharacters(doi));
             }
-            
+
             if (source.getProject() != Project.NULL) {
                 dc.addIsPartOf(getX().stripNonValidXMLCharacters(source.getProjectTitle()));
             }
@@ -249,7 +249,6 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             if (source.getResourceType().toDcmiTypeString() != null) {
                 dc.addType(getX().stripNonValidXMLCharacters(source.getResourceType().toDcmiTypeString()));
             }
-            
 
             SortedSet<String> types = new TreeSet<>();
             for (InformationResourceFileVersion version : source.getLatestUploadedVersions()) {
@@ -300,7 +299,6 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             if (StringUtils.isNotBlank(issn)) {
                 dc.addIdentifier(getX().stripNonValidXMLCharacters(issn));
             }
-
 
             String seriesName = source.getSeriesName();
             String seriesNumber = source.getSeriesNumber();

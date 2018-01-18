@@ -42,7 +42,7 @@ import org.tdar.utils.PersistableUtils;
  * @version $Revision$
  */
 @Service("genericService")
-public class GenericServiceImpl implements GenericService  {
+public class GenericServiceImpl implements GenericService {
 
     @Autowired
     @Qualifier("genericDao")
@@ -50,8 +50,9 @@ public class GenericServiceImpl implements GenericService  {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findRandom(java.lang.Class, int)
      */
     @Override
@@ -60,7 +61,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findRandom(persistentClass, maxResults);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findRandomIds(java.lang.Class, int)
      */
     @Override
@@ -69,7 +72,9 @@ public class GenericServiceImpl implements GenericService  {
         return extractIds(findRandom(persistentClass, maxResults));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#setCacheModeForCurrentSession(org.hibernate.CacheMode)
      */
     @Override
@@ -77,7 +82,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.setCacheModeForCurrentSession(mode);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllIds(java.lang.Class)
      */
     @Override
@@ -86,7 +93,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAllIds(persistentClass);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findIdRange(java.lang.Class, long, long, int)
      */
     @Override
@@ -95,7 +104,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findIdRange(persistentClass, firstId, lastId, maxResults);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#extractIds(java.util.Collection)
      */
     @Override
@@ -103,7 +114,9 @@ public class GenericServiceImpl implements GenericService  {
         return PersistableUtils.extractIds(persistables);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#getCurrentSessionHashCode()
      */
     @Override
@@ -112,7 +125,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.getCurrentSessionHashCode();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findByExample(java.lang.Class, T, org.tdar.core.dao.base.GenericDao.FindOptions)
      */
     @Override
@@ -121,7 +136,9 @@ public class GenericServiceImpl implements GenericService  {
         return findByExample(persistentClass, entity, null, options);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findByExample(java.lang.Class, T, java.util.List, org.tdar.core.dao.base.GenericDao.FindOptions)
      */
     @Override
@@ -130,8 +147,11 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findByExample(persistentClass, entity, ignoredProperties, options);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.GenericService#findByExamples(java.lang.Class, java.util.Collection, java.util.List, org.tdar.core.dao.base.GenericDao.FindOptions)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.GenericService#findByExamples(java.lang.Class, java.util.Collection, java.util.List,
+     * org.tdar.core.dao.base.GenericDao.FindOptions)
      */
     @Override
     @Transactional(readOnly = false)
@@ -139,7 +159,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findByExamples(classToCreate, incomingCollection, ignoreProperties, options);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#loadFromSparseEntities(java.util.Collection, java.lang.Class)
      */
     @Override
@@ -148,7 +170,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.loadFromSparseEntities(incoming, cls);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#loadFromSparseEntity(P, java.lang.Class)
      */
     @Override
@@ -157,7 +181,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.loadFromSparseEntity(item, cls);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#populateSparseObjectsById(java.util.List, java.lang.Class)
      */
     @Override
@@ -168,10 +194,10 @@ public class GenericServiceImpl implements GenericService  {
         }
         // get a unique set of Ids
         Map<Long, P> ids = PersistableUtils.createIdMap(sparseObjects);
-//        logger.info("{}", ids);
+        Set<Long> keySet = ids.keySet();
         // populate and put into a unique map
         @SuppressWarnings("unchecked")
-        Map<Long, P> skeletons = PersistableUtils.createIdMap((List<P>) genericDao.populateSparseObjectsById(ids.keySet(), cls));
+        Map<Long, P> skeletons = PersistableUtils.createIdMap((List<P>) genericDao.populateSparseObjectsById(keySet, cls));
 
         List<P> toReturn = new ArrayList<P>();
 
@@ -187,7 +213,9 @@ public class GenericServiceImpl implements GenericService  {
         return toReturn;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findOrCreateById(java.lang.Class, E)
      */
     @Override
@@ -196,7 +224,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findOrCreateById(persistentClass, entity);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAll(java.lang.Class)
      */
     @Override
@@ -205,14 +235,17 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAll(persistentClass);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllWithCache(java.lang.Class)
      */
     @Override
     @Deprecated
     /**
      * Find all @link Persistable but use the cache object. If the cache is empty, populate it first
-     * @deprecated  This method no longer uses a cache.  Consider using hibernate query caches instead.
+     * 
+     * @deprecated This method no longer uses a cache. Consider using hibernate query caches instead.
      * @param persistentClass
      * @return
      */
@@ -221,7 +254,9 @@ public class GenericServiceImpl implements GenericService  {
         return findAll(persistentClass);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAll(java.lang.Class, int)
      */
     @Override
@@ -230,7 +265,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAll(persistentClass, maxResults);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllWithStatus(java.lang.Class, org.tdar.core.bean.resource.Status)
      */
     @Override
@@ -239,7 +276,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAllWithStatus(persistentClass, statuses);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllSorted(java.lang.Class)
      */
     @Override
@@ -248,7 +287,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAllSorted(persistentClass);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllSorted(java.lang.Class, java.lang.String)
      */
     @Override
@@ -257,7 +298,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAllSorted(persistentClass, orderBy);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllScrollable(java.lang.Class)
      */
     @Override
@@ -266,7 +309,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAllScrollable(persistentClass);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllActiveScrollable(java.lang.Class)
      */
     @Override
@@ -275,7 +320,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAllActiveScrollable(persistentClass);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllScrollable(java.lang.Class, int)
      */
     @Override
@@ -284,7 +331,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAllScrollable(persistentClass, batchSize);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#find(java.lang.Class, java.lang.Long)
      */
     @Override
@@ -293,7 +342,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.find(persistentClass, id);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAll(java.lang.Class, java.util.List)
      */
     @Override
@@ -302,7 +353,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAll(persistentClass, idlist);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findByProperty(java.lang.Class, java.lang.String, java.lang.Object)
      */
     @Override
@@ -311,7 +364,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findByProperty(persistentClass, propertyName, propertyValue);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#count(java.lang.Class)
      */
     @Override
@@ -320,7 +375,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.count(persistentClass);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#merge(T)
      */
     @Override
@@ -329,7 +386,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.merge(entity);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#update(java.lang.Object)
      */
     @Override
@@ -340,7 +399,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.update(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#save(java.lang.Object)
      */
     @Override
@@ -350,7 +411,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.save(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#synchronize()
      */
     @Override
@@ -359,7 +422,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.synchronize();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#persist(java.lang.Object)
      */
     @Override
@@ -369,7 +434,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.persist(entity);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#save(java.util.Collection)
      */
     @Override
@@ -379,7 +446,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.save(persistentCollection);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#detachFromSession(java.lang.Object)
      */
     @Override
@@ -388,7 +457,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.detachFromSession(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#detachFromSessionAndWarn(java.lang.Object)
      */
     @Override
@@ -397,7 +468,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.detachFromSessionAndWarn(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#saveOrUpdate(java.lang.Object)
      */
     @Override
@@ -407,7 +480,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.saveOrUpdate(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#saveOrUpdate(java.util.Collection)
      */
     @Override
@@ -443,7 +518,9 @@ public class GenericServiceImpl implements GenericService  {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#saveOrUpdate(java.lang.Object)
      */
     @Override
@@ -455,7 +532,9 @@ public class GenericServiceImpl implements GenericService  {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#delete(java.lang.Object)
      */
     @Override
@@ -465,7 +544,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.delete(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#delete(java.util.Collection)
      */
     @Override
@@ -474,7 +555,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.delete(persistentEntities);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#refresh(java.lang.Object)
      */
     @Override
@@ -483,7 +566,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.refresh(object);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#markReadOnly(java.lang.Object)
      */
     @Override
@@ -491,7 +576,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.markReadOnly(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#markWritable(O)
      */
     @Override
@@ -499,7 +586,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.markWritable(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#markUpdatable(O)
      */
     @Override
@@ -507,7 +596,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.markUpdatable(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#markWritableOnExistingSession(O)
      */
     @Override
@@ -515,7 +606,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.markWritableOnExistingSession(obj);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#clearCurrentSession()
      */
     @Override
@@ -523,7 +616,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.clearCurrentSession();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#markReadOnly()
      */
     @Override
@@ -531,7 +626,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.markReadOnly();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#markWritable()
      */
     @Override
@@ -539,7 +636,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.markWritable();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#isSessionOpen()
      */
     @Override
@@ -547,7 +646,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.isSessionOpen();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#getSessionStatistics()
      */
     @Override
@@ -556,7 +657,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.getSessionStatistics();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#getActiveSessionCount()
      */
     @Override
@@ -566,7 +669,9 @@ public class GenericServiceImpl implements GenericService  {
         return stats.getSessionOpenCount() - stats.getSessionCloseCount();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#deleteAll(java.lang.Class)
      */
     @Override
@@ -575,7 +680,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.deleteAll(persistentClass);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#forceDelete(java.lang.Object)
      */
     @Override
@@ -584,7 +691,9 @@ public class GenericServiceImpl implements GenericService  {
         genericDao.forceDelete(entity);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findActiveIds(java.lang.Class)
      */
     @Override
@@ -593,7 +702,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findActiveIds(class1);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllWithProfile(java.lang.Class, java.util.List, java.lang.String)
      */
     @Override
@@ -602,7 +713,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAllWithProfile(class1, ids, profileName);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#sessionContains(T)
      */
     @Override
@@ -610,7 +723,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.sessionContains(entity);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#findAllWithL2Cache(java.lang.Class)
      */
     @Override
@@ -618,7 +733,9 @@ public class GenericServiceImpl implements GenericService  {
         return genericDao.findAllWithL2Cache(persistentClass, null);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#evictFromCache(org.tdar.core.bean.Persistable)
      */
     @Override
@@ -627,7 +744,9 @@ public class GenericServiceImpl implements GenericService  {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.GenericService#countActive(java.lang.Class)
      */
     @Override

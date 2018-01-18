@@ -3,9 +3,6 @@ package org.tdar.core.service.resource;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
@@ -14,7 +11,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.cache.BrowseDecadeCountCache;
 import org.tdar.core.cache.BrowseYearCountCache;
-import org.tdar.core.cache.Caches;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.filestore.FileAnalyzer;
 

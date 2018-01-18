@@ -12,7 +12,8 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.utils.PersistableUtils;
 
 /**
- * Handle "Skeleton" records being passed in as search terms.  Keep a local query part that contains the hydrated version
+ * Handle "Skeleton" records being passed in as search terms. Keep a local query part that contains the hydrated version
+ * 
  * @author abrin
  *
  * @param <P>

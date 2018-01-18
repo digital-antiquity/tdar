@@ -15,7 +15,6 @@ public abstract class AbstractCollectionAdminAction extends AbstractAuthenticata
     private Long id;
     private ResourceCollection collection;
 
-
     @Autowired
     private AuthorizationService authorizationService;
 
@@ -28,7 +27,7 @@ public abstract class AbstractCollectionAdminAction extends AbstractAuthenticata
 
     @Override
     public void prepare() throws Exception {
-        setCollection(getGenericService().find(ResourceCollection.class,id));
+        setCollection(getGenericService().find(ResourceCollection.class, id));
     }
 
     public Long getId() {

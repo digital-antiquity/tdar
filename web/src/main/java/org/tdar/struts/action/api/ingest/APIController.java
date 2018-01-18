@@ -320,7 +320,6 @@ public class APIController extends AbstractApiController {
         this.processedFileNames = processedFileNames;
     }
 
-
     /**
      * @param importedRecord
      *            the importedRecord to set

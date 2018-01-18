@@ -52,7 +52,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @Cacheable
 @SuppressWarnings("rawtypes")
-//fixing generics issue -- suppression causes issues with AuthorityManagementService
+// fixing generics issue -- suppression causes issues with AuthorityManagementService
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.ResourceCreator")
 public class ResourceCreator extends AbstractSequenced<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
@@ -118,7 +118,7 @@ public class ResourceCreator extends AbstractSequenced<ResourceCreator> implemen
             id = creator.getId();
             properName = creator.getProperName();
         }
-        return String.format("%s[%s] (%s)", properName,id, role);
+        return String.format("%s[%s] (%s)", properName, id, role);
     }
 
     /*

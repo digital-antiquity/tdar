@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;

@@ -24,7 +24,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.UserRightsProxy;
@@ -77,7 +77,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         }
         return authorizationService.canEditAccount(getAuthenticatedUser(), getPersistable());
     }
-    
+
     public Invoice getInvoice() {
         return getGenericService().find(Invoice.class, invoiceId);
     }
@@ -85,18 +85,20 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     @Override
     protected String save(BillingAccount persistable) {
         try {
-        getLogger().info("invoiceId {}", getInvoiceId());
-        setSaveSuccessPath("billing");
-        setupOwnerField();
-        List<UserRightsProxy> proxies = new ArrayList<>();
-        for (TdarUser user : authorizedMembers) {
-            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, GeneralPermissions.EDIT_ACCOUNT)));
-        }
-        //saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser authenticatedUser)
-        accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), proxies );
+            getLogger().info("invoiceId {}", getInvoiceId());
+            setSaveSuccessPath("billing");
+            setupOwnerField();
+            List<UserRightsProxy> proxies = new ArrayList<>();
+            for (TdarUser user : authorizedMembers) {
+                proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, Permissions.EDIT_ACCOUNT)));
+            }
+            // saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser
+            // authenticatedUser)
+            accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), proxies);
         } catch (Exception e) {
-            getLogger().debug("{}",e,e);
-            addActionErrorWithException("cannot save", e);;
+            getLogger().debug("{}", e, e);
+            addActionErrorWithException("cannot save", e);
+            ;
         }
         return SUCCESS;
     }
@@ -125,7 +127,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         accountService.resetAccountTotalsToHaveOneFileLeft(getAccount(), getAuthenticatedUser());
         return SUCCESS;
     }
-
 
     // This is temporary until we break out CreateCouponCodeAction
     public List<Invoice> getInvoices() {
@@ -287,7 +288,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     public void setExpires(Date expires) {
         this.expires = expires;
     }
-
 
     public List<String> getAuthorizedUsersFullNames() {
         return authorizedUsersFullNames;

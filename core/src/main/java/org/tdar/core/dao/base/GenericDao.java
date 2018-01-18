@@ -33,8 +33,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.HasStatic;
@@ -70,9 +69,7 @@ public class GenericDao {
     private static final String SELECT_ID_FROM_HQL_ORDER_BY_ID_ASC = "select id from %s order by id asc";
 
     public enum FindOptions {
-        FIND_FIRST,
-        FIND_ALL,
-        FIND_FIRST_OR_CREATE;
+        FIND_FIRST, FIND_ALL, FIND_FIRST_OR_CREATE;
     }
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -227,17 +224,14 @@ public class GenericDao {
             return Collections.emptyList();
         }
         Query<P> query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP);
-        if (cls.isAssignableFrom(SharedCollection.class)) {
+        if (ResourceCollection.class.isAssignableFrom(cls)) {
             query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_SHARED_COLLECTION_LOOKUP);
-        }
-        if (cls.isAssignableFrom(ListCollection.class)) {
-            query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_LIST_COLLECTION_LOOKUP);
         }
         query.setParameter("ids", ids);
         query.setReadOnly(true);
         return query.getResultList();
     }
-    
+
     public boolean isSessionReadOnly() {
         return getCurrentSession().isDefaultReadOnly();
     }
@@ -254,7 +248,7 @@ public class GenericDao {
     }
 
     public <T> List<T> findAll(Class<T> cls, int maxResults) {
-        Query<T> query = getCurrentSession().createQuery(String.format(FROM_HQL, cls.getName()),cls);
+        Query<T> query = getCurrentSession().createQuery(String.format(FROM_HQL, cls.getName()), cls);
         if (maxResults > 0) {
             query.setMaxResults(maxResults);
         }
@@ -382,8 +376,8 @@ public class GenericDao {
     }
 
     public <T> ScrollableResults findAllActiveScrollable(Class<T> persistentClass) {
-        return getCriteria(persistentClass).add(Restrictions.eq("status", Status.ACTIVE)).
-                setCacheMode(CacheMode.IGNORE).setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
+        return getCriteria(persistentClass).add(Restrictions.eq("status", Status.ACTIVE)).setCacheMode(CacheMode.IGNORE)
+                .setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize())
                 .scroll(ScrollMode.FORWARD_ONLY);
     }
 
@@ -504,7 +498,7 @@ public class GenericDao {
     }
 
     private <T> void fireEvent(T entity) {
-            publisher.publishEvent(new TdarEvent(entity, EventType.CREATE_OR_UPDATE));
+        publisher.publishEvent(new TdarEvent(entity, EventType.CREATE_OR_UPDATE));
     }
 
     public <T> void forceDelete(T entity) {
@@ -575,7 +569,7 @@ public class GenericDao {
     public NativeQuery<?> getNativeQuery(String sql) {
         return getCurrentSession().createNativeQuery(sql);
     }
-    
+
     protected Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }

@@ -11,6 +11,7 @@ import org.tdar.core.service.SerializationService;
 
 /**
  * Convert a Keyword to a proper schema.org JSON LinkedData String
+ * 
  * @author abrin
  *
  */
@@ -20,7 +21,7 @@ public class SchemaOrgKeywordTransformer extends AbstractSchemaOrgMetadataTransf
 
     public String convert(SerializationService serializationService, Keyword keyword) throws IOException {
         Map<String, Object> jsonLd = new HashMap<String, Object>();
-        addGraphSection(new HashSet<>(Arrays.asList(keyword)),"keywords");
+        addGraphSection(new HashSet<>(Arrays.asList(keyword)), "keywords");
         jsonLd.put(GRAPH, getGraph().get(0).get("keywords"));
         addContextSection(jsonLd);
         String json = serializationService.convertToJson(jsonLd);

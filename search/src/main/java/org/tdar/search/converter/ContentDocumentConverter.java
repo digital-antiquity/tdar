@@ -35,7 +35,7 @@ public class ContentDocumentConverter extends AbstractSolrDocumentConverter {
                     logger.debug("file not found,{} ", irf);
                 }
             }
-//            logger.debug("{} {} {} {}", irf.getInformationResource().getId(), irf.getFilename(), irf.getRestriction());
+            // logger.debug("{} {} {} {}", irf.getInformationResource().getId(), irf.getFilename(), irf.getRestriction());
         }
         doc.setField(QueryFieldNames.FILENAME, irf.getFilename());
         addDateField(doc, irf.getFileCreatedDate(), QueryFieldNames.DATE);

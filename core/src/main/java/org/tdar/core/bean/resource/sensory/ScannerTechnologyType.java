@@ -14,11 +14,7 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum ScannerTechnologyType implements HasLabel, Localizable {
-    NONE("Not Specified"),
-    TIME_OF_FLIGHT("Time of Flight"),
-    PHASE_BASED("Phase-based"),
-    TRIANGULATION("Triangulation"),
-    COMBINED("Combined");
+    NONE("Not Specified"), TIME_OF_FLIGHT("Time of Flight"), PHASE_BASED("Phase-based"), TRIANGULATION("Triangulation"), COMBINED("Combined");
 
     private final String label;
     private final boolean active;

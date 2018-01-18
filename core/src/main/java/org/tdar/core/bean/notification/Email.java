@@ -34,7 +34,7 @@ public class Email extends AbstractPersistable {
     @Enumerated(EnumType.STRING)
     @Column(name = "message_type", length = FieldLength.FIELD_LENGTH_50)
     private EmailMessageType type;
-    
+
     @Column(name = "user_generated", nullable = false, columnDefinition = "boolean default TRUE")
     private boolean userGenerated = true;
 
@@ -66,10 +66,10 @@ public class Email extends AbstractPersistable {
     @Column(name = "error_message", length = FieldLength.FIELD_LENGTH_2048)
     private String errorMessage;
 
-    @ManyToOne(optional=true)
-    @JoinColumn(name="resource_id")
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "resource_id")
     private Resource resource;
-    
+
     public Status getStatus() {
         return status;
     }

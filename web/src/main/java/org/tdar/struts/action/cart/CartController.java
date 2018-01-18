@@ -57,7 +57,7 @@ public class CartController extends AbstractCartController {
 
     /**
      * This method will take the response and prepare it for the CC processing transaction; admin(s) will have additional rights. Ultimately, the redirect URL
-     * will open in a "new  frame" or window and the resulting window will poll for a response.
+     * will open in a "new frame" or window and the resulting window will poll for a response.
      * <p/>
      * <p/>
      * This is the 'launchpad' page were we hand-off control to the external payment processor. The action itself does very little -- most of functionality

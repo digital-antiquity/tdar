@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.service.EntityService;
@@ -44,8 +43,7 @@ import com.opensymphony.xwork2.Preparable;
 public class RightsAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 5576550365349636811L;
-    private TreeSet<SharedCollection> allResourceCollections = new TreeSet<>(new TitleSortComparator());
-    
+    private TreeSet<ResourceCollection> allResourceCollections = new TreeSet<>(new TitleSortComparator());
 
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
@@ -77,17 +75,14 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
     @SuppressWarnings("Duplicates")
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
-        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
-                SharedCollection.class)) {
-            if (rc.isTopCollection()) {
-                getAllResourceCollections().add((SharedCollection) rc);
+        for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
+            if (rc.isTopLevel()) {
+                getAllResourceCollections().add(rc);
             }
         }
         getLogger().trace("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-            if (rc instanceof SharedCollection) {
-                getAllResourceCollections().add((SharedCollection) rc);
-            }
+            getAllResourceCollections().add(rc);
         }
         getLogger().trace("done ");
     }
@@ -103,17 +98,15 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         getLogger().trace("done");
     }
 
-
     @DoNotObfuscate(reason = "not needed / performance test")
-    public Set<SharedCollection> getAllResourceCollections() {
+    public Set<ResourceCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(TreeSet<SharedCollection> resourceCollections) {
+    public void setAllResourceCollections(TreeSet<ResourceCollection> resourceCollections) {
         this.allResourceCollections = resourceCollections;
     }
 
- 
     public List<UserNotification> getCurrentNotifications() {
         return currentNotifications;
     }
@@ -137,7 +130,6 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
     public void setStatusData(String statusData) {
         this.statusData = statusData;
     }
-
 
     @Override
     public boolean isRightSidebar() {

@@ -41,7 +41,6 @@ import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.filestore.FilestoreObjectType;
 
-
 /**
  * Transactional service providing persistence access to OntologyS as well as OWL access to Ontology files.
  * 
@@ -51,7 +50,7 @@ import org.tdar.filestore.FilestoreObjectType;
  */
 @Service
 @Transactional
-public class OntologyServiceImpl  extends ServiceInterface.TypedDaoBase<Ontology, OntologyDao> implements OntologyService {
+public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology, OntologyDao> implements OntologyService {
 
     private OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -59,16 +58,20 @@ public class OntologyServiceImpl  extends ServiceInterface.TypedDaoBase<Ontology
     @Autowired
     FreemarkerService freemarkerService;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#findSparseOntologyList()
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Ontology> findSparseOntologyList() {
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.ONTOLOGY);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#shred(org.tdar.core.bean.resource.Ontology)
      */
     @Override
@@ -179,11 +182,13 @@ public class OntologyServiceImpl  extends ServiceInterface.TypedDaoBase<Ontology
         getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#toOntModel(org.tdar.core.bean.resource.Ontology)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public OntModel toOntModel(Ontology ontology) throws FileNotFoundException {
         Collection<InformationResourceFileVersion> files = ontology.getLatestVersions();
         int size = files.size();
@@ -210,11 +215,13 @@ public class OntologyServiceImpl  extends ServiceInterface.TypedDaoBase<Ontology
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#getChildren(java.util.List, org.tdar.core.bean.resource.OntologyNode)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<OntologyNode> getChildren(List<OntologyNode> allNodes, OntologyNode parent) {
         List<OntologyNode> toReturn = new ArrayList<>();
         if (parent == null) {
@@ -229,11 +236,13 @@ public class OntologyServiceImpl  extends ServiceInterface.TypedDaoBase<Ontology
         return toReturn;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#getRootElements(java.util.List)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<OntologyNode> getRootElements(List<OntologyNode> allNodes) {
         List<OntologyNode> toReturn = new ArrayList<>();
         for (OntologyNode currentNode : allNodes) {
@@ -245,7 +254,9 @@ public class OntologyServiceImpl  extends ServiceInterface.TypedDaoBase<Ontology
         return toReturn;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#getNumberOfMappedDataValues(org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
@@ -254,7 +265,9 @@ public class OntologyServiceImpl  extends ServiceInterface.TypedDaoBase<Ontology
         return getDao().getNumberOfMappedDataValues(dataTableColumn);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#isOntologyMapped(org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
@@ -263,17 +276,21 @@ public class OntologyServiceImpl  extends ServiceInterface.TypedDaoBase<Ontology
         return getDao().getNumberOfMappedDataValues(dataTableColumn) > 0;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#toOwlXml(java.lang.Long, java.lang.String)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public String toOwlXml(Long id, String fileTextInput) {
         OwlOntologyConverter converter = new OwlOntologyConverter();
         return converter.toOwlXml(id, fileTextInput, freemarkerService);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#findOntologies(org.tdar.core.dao.integration.search.OntologySearchFilter)
      */
     @Override
@@ -282,11 +299,13 @@ public class OntologyServiceImpl  extends ServiceInterface.TypedDaoBase<Ontology
         return getDao().findOntologies(searchFilter);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.OntologyService#prepareOntologyJson(org.tdar.core.bean.resource.Ontology)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public OntologyNodeWrapper prepareOntologyJson(Ontology ontology) {
         List<OntologyNode> nodes = ontology.getSortedOntologyNodes();
         Collections.reverse(nodes);

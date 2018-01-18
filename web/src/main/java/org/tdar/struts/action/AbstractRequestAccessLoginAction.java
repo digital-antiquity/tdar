@@ -21,8 +21,10 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+
 /**
  * Handle login for new users and pass back to request-access-action
+ * 
  * @author abrin
  *
  */
@@ -30,7 +32,6 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 public abstract class AbstractRequestAccessLoginAction<P extends Persistable> extends AbstractRequestAccessController<P> implements Validateable, Preparable {
-
 
     private static final long serialVersionUID = 5135435765017651014L;
 
@@ -74,7 +75,6 @@ public abstract class AbstractRequestAccessLoginAction<P extends Persistable> ex
         }
         return SUCCESS;
     }
-
 
     @Override
     public void validate() {

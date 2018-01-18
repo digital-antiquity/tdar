@@ -5,14 +5,9 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum PersonSearchOption implements HasLabel, Localizable {
-    
-    ALL_FIELDS("allFields"),
-    FIRST_NAME("firstName"),
-    LAST_NAME("lastName"),
-    USERNAME("username"),
-    INSTITUTION("institution"),
-    EMAIL("email");
-	
+
+    ALL_FIELDS("allFields"), FIRST_NAME("firstName"), LAST_NAME("lastName"), USERNAME("username"), INSTITUTION("institution"), EMAIL("email");
+
     private String fieldName = "";
 
     private PersonSearchOption() {
@@ -23,12 +18,11 @@ public enum PersonSearchOption implements HasLabel, Localizable {
         this.fieldName = fieldName;
     }
 
-
     @Override
     public String getLabel() {
         return MessageHelper.getMessage(getLocaleKey());
     }
-    
+
     @Override
     public String getLocaleKey() {
         return MessageHelper.formatLocalizableKey(this);

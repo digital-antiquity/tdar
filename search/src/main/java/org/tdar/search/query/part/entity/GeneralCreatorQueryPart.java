@@ -15,8 +15,9 @@ import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 
-/** 
+/**
  * Formulate a general search query for an Institution or Person
+ * 
  * @author abrin
  *
  */

@@ -169,16 +169,78 @@
             </dl>
         </div>
 
+    <#assign useManagedCollections = administrator>
+
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
-            <h2>Share Resources with other users</h2>
+                    
+            <h2>Resources</h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
-            <#assign showLimitToCollection = (actionName=='edit') && (resourceCollection.resources?size > 0)>
-            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection >
-
-            </@edit.resourceDataTable>
-
+            <#assign showLimitToCollection = (actionName=='edit') && ((resourceCollection.managedResources![])?size > 0 || (resourceCollection.unmanagedResources![])?size > 0)>
+        
+    <#if (resourceCollection.id?? &&  resourceCollection.id != -1 && resourceCollection.size > 0)> 
+        <ul class="nav nav-tabs" id="tabs">
+          <li class="active"><a data-toggle="tab" href="#existingResources" id="existingResourceTab">Resources in this collection</a></li>
+          <li><a data-toggle="tab" href="#addResources" id="addResourceTab">Add Resources to this collection</a></li>
+        </ul>
+        
+        <div class="tab-content">
+          <div id="existingResources" class="tab-pane fade in active">
+          
+                   <@s.textfield theme="tdar" name="_tdar.existing.query" id="existing_res_query" cssClass='span8'
+                            placeholder="Enter a full or partial title to filter results" />
+          
+                <#--The HTML table for resources. -->
+                <div class="row">
+                    <div class="span9">
+                    <table class="display table table-striped table-bordered tableFormat" id="existing_resources_datatable">
+                            <colgroup>
+                                <col style="width: 10%">
+                                <col style="width: 60%">
+                                <col style="">
+                                <#if useManagedCollections>
+                                <col style="">
+                                </#if>
+                                <col style="">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <#if useManagedCollections>
+                                    <th>Managed</th>
+                                    </#if>
+                                    <th>Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <td>&nbsp;</td>
+                                    <#if useManagedCollections>
+                                    <td>&nbsp;</td>
+                                    </#if>
+                                    <td>&nbsp;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                                    
+                    </div>
+                </div>
+          </div>
+          <div id="addResources" class="tab-pane fade">
+                <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="span9" useUnmanagedCollections=administrator>
+                </@edit.resourceDataTable>
+          </div>
+    </div>
+    <#else>
+         <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection  span="span9" useUnmanagedCollections=administrator>
+         </@edit.resourceDataTable>
+    </#if>
+    
             <div id="divNoticeContainer" style="display:none">
                 <div id="divAddProjectToCollectionNotice" class="alert">
                     <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="divAddProjectToCollectionNotice">×</button>
@@ -187,20 +249,9 @@
             </div>
 
         </div>
+    
+         <#include 'vue-edit-collection.html' />
 
-        <div id="divAddRemove">
-            <h2>Modifications</h2>
-
-            <div id="divToAdd">
-                <h4>The following resources will be added to the collection</h4>
-                <table id="tblToAdd" class="table table-condensed"></table>
-            </div>
-
-            <div id="divToRemove">
-                <h4>The following resources will be removed from the collection</h4>
-                <table id="tblToRemove" class="table table-condensed"></table>
-            </div>
-        </div>
 
             <@edit.submit fileReminder=false class="button btn submitButton btn-primary">
             <p><b>Where to go after save:</b><br/>
@@ -216,32 +267,50 @@
 
         <#noescape>
         <script type='text/javascript'>
-            //selectResourcesFromCollectionid
+        
+        //selectResourcesFromCollectionid
+        $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+            var table = $.fn.dataTable.fnTables(true);
+            if ( table.length > 0 ) {
+                  $(table).dataTable().fnAdjustColumnSizing();
+            }
+        })
 
-            $(function () {
-                TDAR.datatable.setupDashboardDataTable({
-                    isAdministrator: ${(editor!false)?string},
-                    limitContext: ${((!editor)!true)?string},
-                    isSelectable: true,
-                    showDescription: false,
-                    selectResourcesFromCollectionid: $("#metadataForm_id").val()
-                });
-            });
+    var vm;
 
-
-
-            $(function () {
-                'use strict';
-                var form = $("#metadataForm")[0];
-                TDAR.common.initEditPage(form);
-                TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
-                //TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
-                TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
-                        //remind users that adding a project does not also add the project's contents
-				$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
-                });
+    $(function () {
+        'use strict';
+        TDAR.datatable.setupDashboardDataTable({
+            enableUnmanagedCollections : ${(administrator!false)?string},
+            isAdministrator: ${(editor!false)?string},
+            limitContext: ${((!editor)!true)?string},
+            isSelectable: false,
+            isClickable: true,
+            showDescription: false,
+            selectResourcesFromCollectionid: $("#metadataForm_id").val()
+        });
+        
+         TDAR.datatable.setupCollectionResourcesDataTable({
+            enableUnmanagedCollections: ${(administrator!false)?string},
+            isAdministrator: ${(editor!false)?string},
+            limitContext: ${((!editor)!true)?string},
+            isSelectable: false,
+            showDescription: false,
+            selectResourcesFromCollectionid: $("#metadataForm_id").val()
+        });
+        
+        var form = $("#metadataForm")[0];
+        vm = TDAR.vuejs.editcollectionapp.init({enableUnmanagedCollections: ${(editor!false)?string}});
+        
+        TDAR.common.initEditPage(form);
+        TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
+        //TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
+        TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
+        TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
+        TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
+        //remind users that adding a project does not also add the project's contents
+		$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
+        });
         </script>
         </#noescape>
         <@edit.personAutocompleteTemplate />

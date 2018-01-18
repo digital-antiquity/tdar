@@ -32,8 +32,7 @@ public abstract class QueryBuilder extends QueryPartGroup {
     private List<String> filters = new ArrayList<>();
 
     public void appendFilter(List<String> filters) {
-        this.getFilters() .addAll(filters);
-        
+        this.getFilters().addAll(filters);
     }
 
     public List<String> getFilters() {
@@ -64,7 +63,7 @@ public abstract class QueryBuilder extends QueryPartGroup {
     public boolean isEmpty() {
         return super.isEmpty();
     }
-    
+
     public void setTypeLimit(String type) {
         this.type = type;
     }
@@ -72,6 +71,7 @@ public abstract class QueryBuilder extends QueryPartGroup {
     public String getType() {
         return type;
     }
+
     public abstract String getCoreName();
 
     @Override
@@ -80,11 +80,11 @@ public abstract class QueryBuilder extends QueryPartGroup {
         if (StringUtils.isBlank(type)) {
             return q;
         }
-        
+
         if (StringUtils.isBlank(q)) {
-            return String.format("%s:%s",QueryFieldNames.GENERAL_TYPE, type);
+            return String.format("%s:%s", QueryFieldNames.GENERAL_TYPE, type);
         }
         // bind to type
-        return String.format("%s:%s AND (%s)",QueryFieldNames.GENERAL_TYPE, type, q);
+        return String.format("%s:%s AND (%s)", QueryFieldNames.GENERAL_TYPE, type, q);
     }
 }

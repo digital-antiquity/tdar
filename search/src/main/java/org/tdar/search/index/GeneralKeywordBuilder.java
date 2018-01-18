@@ -34,7 +34,7 @@ public class GeneralKeywordBuilder implements Serializable {
         this.resource = resource;
         this.relatedDatasetData = relatedDatasetData;
     }
-    
+
     public String getKeywords() {
         StringBuilder sb = new StringBuilder();
         indexResource(resource, sb);
@@ -43,12 +43,12 @@ public class GeneralKeywordBuilder implements Serializable {
             if (resource instanceof SupportsResource) {
                 indexSupporting((SupportsResource) resource, sb);
             }
-            
+
             if (resource instanceof Document) {
-                indexDocument((Document)resource, sb);
+                indexDocument((Document) resource, sb);
             }
             if (resource instanceof Geospatial) {
-                indexGeospatial((Geospatial)resource, sb);
+                indexGeospatial((Geospatial) resource, sb);
             }
         }
         return sb.toString();
@@ -56,7 +56,7 @@ public class GeneralKeywordBuilder implements Serializable {
 
     @SuppressWarnings("unchecked")
     public void indexResource(Resource r, StringBuilder sb) {
-//        logger.trace("get keyword contents: {}", r.getId());
+        // logger.trace("get keyword contents: {}", r.getId());
         sb.append(r.getTitle()).append(" ").append(r.getDescription()).append(" ").append(" ");
         sb.append(r.getId()).append(" ");
         Collection<Keyword> kwds = r.getAllActiveKeywords();
@@ -133,11 +133,10 @@ public class GeneralKeywordBuilder implements Serializable {
     }
 
     public void indexDocument(Document doc, StringBuilder sb) {
-        sb.append(" ").append(doc.getBookTitle()).append(" ").
-        append(" ").append(doc.getIssn()).append(" ").append(doc.getIsbn()).append(" ").append(doc.getPublisher()).append(" ").
-        append(doc.getSeriesName());
+        sb.append(" ").append(doc.getBookTitle()).append(" ").append(" ").append(doc.getIssn()).append(" ").append(doc.getIsbn()).append(" ")
+                .append(doc.getPublisher()).append(" ").append(doc.getSeriesName());
     }
-    
+
     public void indexSupporting(SupportsResource ont, StringBuilder sb) {
         if (ont.getCategoryVariable() != null) {
             sb.append(ont.getCategoryVariable().getLabel()).append(" ");

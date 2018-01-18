@@ -45,7 +45,6 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
 
     private XmlEscapeHelper x;
 
-
     @Override
     public DublinCoreDocument transform(R source) {
         DublinCoreDocument dc = new DublinCoreDocument();

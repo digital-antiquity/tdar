@@ -341,8 +341,10 @@ public class PairtreeFilestore extends BaseFilestore {
      * Recursively check to see if the parent directories are empty and, if so,
      * delete them.
      * 
-     * @param {@link File} representing the directory to clean.
-     * @throws {@link IOException}
+     * @param {@link
+     *            File} representing the directory to clean.
+     * @throws {@link
+     *             IOException}
      */
     private void cleanEmptyParents(File dir) throws IOException {
         if (dir == null) {

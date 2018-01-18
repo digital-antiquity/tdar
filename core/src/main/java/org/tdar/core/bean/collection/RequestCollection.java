@@ -18,7 +18,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 
 @Entity
 @Table(name = "collection_request")
@@ -27,30 +27,30 @@ public class RequestCollection extends AbstractPersistable {
     private static final long serialVersionUID = 7801330626092697128L;
 
     @ElementCollection()
-    @CollectionTable(name = "collection_request_collection_ids", joinColumns = @JoinColumn(name = "collection_request_id") )
+    @CollectionTable(name = "collection_request_collection_ids", joinColumns = @JoinColumn(name = "collection_request_id"))
     @Column(name = "collection_id")
     private List<Long> collections = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "general_permission", length = FieldLength.FIELD_LENGTH_50)
-    private GeneralPermissions permission;
-    
+    private Permissions permission;
+
     @Column
     @Length(max = FieldLength.FIELD_LENGTH_500)
     private String name;
 
-    @Column(name="description_request")
+    @Column(name = "description_request")
     @Length(max = FieldLength.FIELD_LENGTH_500)
     private String descriptionRequest;
-    
-    @Column(name="description_response")
+
+    @Column(name = "description_response")
     @Length(max = FieldLength.FIELD_LENGTH_500)
     private String descriptionResponse;
-    
+
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "contact_id", nullable = false)
     private TdarUser contact;
-    
+
     public List<Long> getCollections() {
         return collections;
     }
@@ -59,11 +59,11 @@ public class RequestCollection extends AbstractPersistable {
         this.collections = collections;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 

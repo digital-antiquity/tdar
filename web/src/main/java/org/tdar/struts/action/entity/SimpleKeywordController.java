@@ -38,10 +38,8 @@ public class SimpleKeywordController extends AbstractKeywordController {
     private String description;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    
     @Autowired
     private transient GenericKeywordService genericKeywordService;
-
 
     @Action("edit")
     @HttpsOnly
@@ -51,7 +49,7 @@ public class SimpleKeywordController extends AbstractKeywordController {
         getMappings().addAll(getKeyword().getAssertions());
         return SUCCESS;
     }
-    
+
     @Action(value = "save", interceptorRefs = { @InterceptorRef("editAuthenticatedStack") }, results = {
             @Result(name = INPUT, location = "edit.ftl"),
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${keyword.detailUrl}")
@@ -76,16 +74,16 @@ public class SimpleKeywordController extends AbstractKeywordController {
         if (PersistableUtils.isNotNullOrTransient(byLabel) && !Objects.equals(getKeyword(), byLabel)) {
             addActionError(getText("simpleKeywordAction.label_duplicate"));
         }
-        
+
         for (ExternalKeywordMapping map : getMappings()) {
             if (map == null) {
                 continue;
             }
             if (StringUtils.isNotBlank(map.getRelation()) && map.getRelationType() == null) {
-                addActionError(getText("simpleKeywordAction.relation_missing"));                
+                addActionError(getText("simpleKeywordAction.relation_missing"));
             }
             if (StringUtils.isBlank(map.getRelation()) && map.getRelationType() != null) {
-                addActionError(getText("simpleKeywordAction.url_missing"));                
+                addActionError(getText("simpleKeywordAction.url_missing"));
             }
         }
     }
@@ -98,11 +96,10 @@ public class SimpleKeywordController extends AbstractKeywordController {
         this.label = label;
     }
 
-    
     public ExternalKeywordMapping getBlankMapping() {
         return new ExternalKeywordMapping();
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -111,7 +108,6 @@ public class SimpleKeywordController extends AbstractKeywordController {
         this.description = description;
     }
 
-    
     public List<RelationType> getRelationTypes() {
         return Arrays.asList(RelationType.values());
     }

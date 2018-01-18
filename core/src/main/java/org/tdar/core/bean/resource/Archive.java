@@ -12,7 +12,7 @@ import org.tdar.core.bean.entity.TdarUser;
  * @author Martin Paulo
  */
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "archive")
 @XmlRootElement(name = "archive")
 public class Archive extends InformationResource {

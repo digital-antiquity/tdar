@@ -3,7 +3,6 @@ package org.tdar.core.service;
 import java.io.File;
 import java.io.IOException;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.filestore.FilestoreObjectType;
 
 public interface FileSystemResourceService {

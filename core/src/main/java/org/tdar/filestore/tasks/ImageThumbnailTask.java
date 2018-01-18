@@ -130,19 +130,18 @@ public class ImageThumbnailTask extends AbstractTask {
 
         String msg = IJ.getErrorMessage();
 
-        
-        if (ijSource == null && StringUtils.containsIgnoreCase(ext,"tif")) {
+        if (ijSource == null && StringUtils.containsIgnoreCase(ext, "tif")) {
             try {
                 GeoTiffReader reader = new GeoTiffReader(sourceFile, new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE));
-                GridCoverage2D coverage=reader.read(null);
+                GridCoverage2D coverage = reader.read(null);
                 RenderedOp renderedImage = (RenderedOp) coverage.getRenderedImage();
-                
+
                 ijSource = new ImagePlus("", renderedImage.getAsBufferedImage());
-                msg  = null;
+                msg = null;
             } catch (DataSourceException dse) {
                 // we get -1 if it's not a geotiff, so ignore
-                if (StringUtils.equals(dse.getMessage(),"-1")) {
-                    //ignore, probably not a GeoTiff
+                if (StringUtils.equals(dse.getMessage(), "-1")) {
+                    // ignore, probably not a GeoTiff
                 } else if (StringUtils.contains(dse.getMessage(), "Raster to Model Transformation is not available")) {
                     // this is likely something like a Greyscale Image
                 } else {
@@ -154,7 +153,6 @@ public class ImageThumbnailTask extends AbstractTask {
                 msg = e.getMessage();
             }
         }
-        
 
         if (isJaiImageJenabled() && (ijSource == null)) {
             getLogger().debug("Unable to load source image with ImageJ: " + sourceFile);

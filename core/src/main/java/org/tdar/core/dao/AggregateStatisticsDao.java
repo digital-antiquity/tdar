@@ -14,9 +14,9 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.utils.PersistableUtils;
 
@@ -42,11 +42,8 @@ import com.opensymphony.xwork2.TextProvider;
 @Component
 public class AggregateStatisticsDao extends GenericDao {
 
-
-
     private static final String _BOT = "_bot";
     private static final String YYYY_MM_DD = "yyyy-MM-dd";
-
 
     /**
      * Returns access and download statistics for the set of resources for every year since 2010. Downloads are aggregated to the Resource Id.
@@ -133,7 +130,7 @@ public class AggregateStatisticsDao extends GenericDao {
             for (int j = 4; j < row.length; j++) {
                 numbers.add((Number) row[j]);
             }
-            results.addRowData(new ResourceStatWrapper(resource, numbers,labelKeys));
+            results.addRowData(new ResourceStatWrapper(resource, numbers, labelKeys));
         }
         getLogger().trace("return");
         return results;
@@ -164,7 +161,7 @@ public class AggregateStatisticsDao extends GenericDao {
             String date = start.toString(YYYY_MM_DD);
             viewSubQuerypart.append(String.format(TdarNamedQueries.DAY_VIEW_PART, date, start.getDayOfMonth(), start.getYear(), start.getMonthOfYear(), _BOT));
             viewSubQuerypart.append(", ");
-            viewSubQuerypart.append(String.format(TdarNamedQueries.DAY_VIEW_PART, date, start.getDayOfMonth(), start.getYear(), start.getMonthOfYear(),""));
+            viewSubQuerypart.append(String.format(TdarNamedQueries.DAY_VIEW_PART, date, start.getDayOfMonth(), start.getYear(), start.getMonthOfYear(), ""));
             downloadSubQuerypart.append(String.format(TdarNamedQueries.DAY_DOWNLAOD_PART, date));
             labelKeys.add(provider.getText("statisticsService.view_count_day_bot", Arrays.asList(date)));
             labelKeys.add(provider.getText("statisticsService.view_count_day", Arrays.asList(date)));
@@ -184,7 +181,8 @@ public class AggregateStatisticsDao extends GenericDao {
             sql += " where res.account_id=:id";
         }
         if (p instanceof ResourceCollection) {
-            sql += String.format(" left join collection_resource cr on cr.resource_id=res.id left join collection_parents cp on cr.collection_id=cp.collection_id where (cr.collection_id=:id or cp.parent_id=:id)");
+            sql += String.format(
+                    " left join collection_resource cr on cr.resource_id=res.id left join collection_parents cp on cr.collection_id=cp.collection_id where (cr.collection_id=:id or cp.parent_id=:id)");
         }
         return sql;
     }
@@ -212,7 +210,7 @@ public class AggregateStatisticsDao extends GenericDao {
             int month = start.getMonthOfYear();
             int year = start.getYear();
             downloadSubQuerypart.append(", ");
-            viewSubQuerypart.append(String.format(TdarNamedQueries.MONTH_VIEW_PART, month, year,_BOT));
+            viewSubQuerypart.append(String.format(TdarNamedQueries.MONTH_VIEW_PART, month, year, _BOT));
             viewSubQuerypart.append(", ");
             viewSubQuerypart.append(String.format(TdarNamedQueries.MONTH_VIEW_PART, month, year, ""));
             downloadSubQuerypart.append(String.format(TdarNamedQueries.MONTH_DOWNLOAD_PART, month, year));
@@ -230,7 +228,8 @@ public class AggregateStatisticsDao extends GenericDao {
 
     /**
      * Generate annual, aggregate usage stats for the range of specified years.
-     * @param p 
+     * 
+     * @param p
      * 
      * @param provider
      * @param start
@@ -248,9 +247,9 @@ public class AggregateStatisticsDao extends GenericDao {
                 viewSubQuerypart.append(", ");
             }
             downloadSubQuerypart.append(", ");
-            viewSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_VIEW_PART, i,_BOT));
+            viewSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_VIEW_PART, i, _BOT));
             viewSubQuerypart.append(", ");
-            viewSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_VIEW_PART,i, ""));
+            viewSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_VIEW_PART, i, ""));
             downloadSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_DOWNLOAD_PART, i));
             labelKeys.add(provider.getText("statisticsService.view_count_annual_bot", Arrays.asList(i)));
             labelKeys.add(provider.getText("statisticsService.view_count_annual", Arrays.asList(i)));
@@ -286,28 +285,28 @@ public class AggregateStatisticsDao extends GenericDao {
         query.executeUpdate();
     }
 
-    
     /**
      * not enabled ... the monthly currently works nicely
+     * 
      * @param date
      */
     public void resetAnnualTable(DateTime date) {
         Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.ANNUAL_RESOURCE_CLEANUP);
         query.setParameter("year", date.getYear());
         query.executeUpdate();
-        query = getCurrentSession().createSQLQuery(TdarNamedQueries.ANNUAL_RESOURCE_UPDATE );
+        query = getCurrentSession().createSQLQuery(TdarNamedQueries.ANNUAL_RESOURCE_UPDATE);
         query.setParameter("year", date.getYear());
         query.executeUpdate();
-        
+
     }
-    
+
     /**
      * inserts into the aggregate table the actual values for the last month
      * 
      * @param date
      */
     public void updateMonthly(DateTime date) {
-        // the daily values do not track overlaps, the monthly values do.  That is D1 + D1_bot go into total, but but D1 does not contain D1_bot
+        // the daily values do not track overlaps, the monthly values do. That is D1 + D1_bot go into total, but but D1 does not contain D1_bot
         DateTime midnight = date.withTimeAtStartOfDay();
         String sql = String.format(TdarNamedQueries.AGG_RESOURCE_INSERT_MONTH, date.getDayOfMonth(), midnight.toString(YYYY_MM_DD),
                 midnight.plusDays(1).toString(YYYY_MM_DD));
@@ -336,7 +335,7 @@ public class AggregateStatisticsDao extends GenericDao {
         List list = query.list();
         getLogger().trace("{}", list);
         for (Object o : list) {
-            Object[] obj = (Object[])o;
+            Object[] obj = (Object[]) o;
             Resource resource = find(Resource.class, ((Number) obj[1]).longValue());
             if (PersistableUtils.isNotNullOrTransient(resource)) {
                 resources.add(resource);
@@ -350,7 +349,6 @@ public class AggregateStatisticsDao extends GenericDao {
         query.setParameter("resourceId", resource.getId());
         return query.list();
     }
-
 
     @SuppressWarnings("unchecked")
     public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end,

@@ -18,7 +18,7 @@ import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
         @Result(name = "redirect-start", location = URLConstants.CART_ADD, type = TdarActionSupport.TDAR_REDIRECT)
 })
 /**
- * Base class for all cart based things. 
+ * Base class for all cart based things.
  *
  */
 public abstract class AbstractCartController extends AbstractAuthenticatableAction implements Preparable, ValidationWorkflowAware {

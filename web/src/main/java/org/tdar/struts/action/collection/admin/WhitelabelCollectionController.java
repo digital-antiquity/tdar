@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -28,13 +28,13 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Namespace("/collection/admin/whitelabel")
 @HttpsOnly
-public class WhitelabelCollectionController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<SharedCollection> {
+public class WhitelabelCollectionController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<ResourceCollection> {
 
     @Autowired
     private transient AuthorizationService authorizationService;
-    
+
     private static final long serialVersionUID = 7148462451707301708L;
-    private SharedCollection collection;
+    private ResourceCollection collection;
     private Long id;
 
     @SkipValidation
@@ -45,7 +45,6 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
         return SUCCESS;
     }
 
-    
     @WriteableSession
     @PostOnly
     @SkipValidation
@@ -56,11 +55,11 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
                     @Result(name = INPUT, location = "edit.ftl") })
     public String save() throws TdarActionException {
         getGenericService().saveOrUpdate(getCollection());
-//        getGenericService().saveOrUpdate(getCollection().getProperties());
+        // getGenericService().saveOrUpdate(getCollection().getProperties());
         getLogger().trace("{} {} {} ", getCollection().getId(), getCollection().getProperties().getSubtitle(), getCollection().getProperties().getWhitelabel());
         return SUCCESS;
     }
-    
+
     @Override
     public boolean authorize() throws TdarActionException {
         return authorizationService.canEdit(getAuthenticatedUser(), getCollection());
@@ -76,17 +75,17 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
     }
 
     @Override
-    public Class<SharedCollection> getPersistableClass() {
-        return SharedCollection.class;
+    public Class<ResourceCollection> getPersistableClass() {
+        return ResourceCollection.class;
     }
-    
+
     @Override
     public Persistable getPersistable() {
         return getCollection();
     }
 
     @Override
-    public void setPersistable(SharedCollection persistable) {
+    public void setPersistable(ResourceCollection persistable) {
         this.setCollection(persistable);
     }
 
@@ -110,15 +109,12 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
         this.id = id;
     }
 
-
-    public SharedCollection getCollection() {
+    public ResourceCollection getCollection() {
         return collection;
     }
 
-
-    public void setCollection(SharedCollection collection) {
+    public void setCollection(ResourceCollection collection) {
         this.collection = collection;
     }
 
-    
 }

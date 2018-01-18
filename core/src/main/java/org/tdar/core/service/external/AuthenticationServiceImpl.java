@@ -53,12 +53,11 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService  {
+public class AuthenticationServiceImpl implements AuthenticationService {
 
     private static final String USER_AGENT = "User-Agent";
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
-
 
     @Autowired
     private ApplicationEventPublisher publisher;
@@ -84,7 +83,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
 
     private AuthenticationProvider provider;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#findByUsername(java.lang.String)
      */
     @Override
@@ -100,7 +101,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
      * exposes the groups the user is a member of from the external Provider; exposes groups as a String, as the external provider may include other permissions
      * beyond just tDAR groups
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#getGroupMembership(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -113,7 +116,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
      * helpful for
      * a shutdown hook, as well as, for knowing when it's safe to deploy.
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#getCurrentlyActiveUsers()
      */
     @Override
@@ -123,7 +128,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return toReturn;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#findGroupMemberships(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -137,7 +144,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return toReturn;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#userHasPendingRequirements(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -149,7 +158,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
      * Not currently used; but would allow for the updating of a username in the external auth system by deleting the user and adding them again. In Crowd 2.8
      * this is builtin function; but it might not be for LDAP.
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#updateUsername(org.tdar.core.bean.entity.TdarUser, java.lang.String, java.lang.String)
      */
     @Override
@@ -180,8 +191,11 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
      * 
      * @param sessionData - the @SessionData object to intialize with the user's session / cookie information if logged in properly.
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthenticationService#authenticatePerson(org.tdar.core.service.external.auth.UserLogin, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.tdar.core.service.external.session.SessionData)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthenticationService#authenticatePerson(org.tdar.core.service.external.auth.UserLogin,
+     * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.tdar.core.service.external.session.SessionData)
      */
     @Override
     @Transactional
@@ -221,14 +235,14 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return result;
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void disableAccount(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse, TdarUser user) {
         user.setStatus(Status.DELETED);
         personDao.saveOrUpdate(user);
         getAuthenticationProvider().updateBasicUserInformation(user);
         logout(sessionData, servletRequest, servletResponse, user);
     }
-    
+
     private void setupAuthenticatedUser(TdarUser tdarUser, SessionData sessionData, HttpServletRequest request) {
 
         if (!tdarUser.isActive()) {
@@ -251,7 +265,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return request.getHeader(USER_AGENT);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#isMember(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.TdarGroup)
      */
     @Override
@@ -275,7 +291,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return greatestPermissionGroup.hasGreaterPermissions(requestedPermissionsGroup);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#findGroupWithGreatestPermissions(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -306,8 +324,11 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     /*
      * creates an authentication token (last step in authenticating); that tDAR can use for the entire session
      */
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthenticationService#createAuthenticationToken(org.tdar.core.bean.entity.TdarUser, org.tdar.core.service.external.session.SessionData)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthenticationService#createAuthenticationToken(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.core.service.external.session.SessionData)
      */
     @Override
     public void createAuthenticationToken(TdarUser person, SessionData session) {
@@ -317,7 +338,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     /*
      * Checks that a username to be added is valid
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#isValidUsername(java.lang.String)
      */
     @Override
@@ -332,7 +355,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     /*
      * This is separate to ensure that legacy usernames are supported by the system
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#isPossibleValidUsername(java.lang.String)
      */
     @Override
@@ -347,7 +372,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     /*
      * Checks that the email is a valid email address
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#isValidEmail(java.lang.String)
      */
     @Override
@@ -359,7 +386,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return email.matches(EMAIL_VALID_REGEX);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#clearPermissionsCache()
      */
     @Override
@@ -371,7 +400,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     /*
      * Removes a specific @link Person from the Permissions cache (e.g. when they log out).
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#clearPermissionsCache(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -380,8 +411,11 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         groupMembershipCache.remove(tdarUser);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthenticationService#addAndAuthenticateUser(org.tdar.core.service.external.auth.UserRegistration, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.tdar.core.service.external.session.SessionData)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthenticationService#addAndAuthenticateUser(org.tdar.core.service.external.auth.UserRegistration,
+     * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.tdar.core.service.external.session.SessionData)
      */
     @Override
     @Transactional(readOnly = false)
@@ -463,7 +497,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return result;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#updatePersonWithInvites(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -479,7 +515,7 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
 
             Date dateExpires = invite.getDateExpires();
             TdarUser authorizer = invite.getAuthorizer();
-            if (dateExpires != null ||  now.isAfter(new DateTime(dateExpires))) {
+            if (dateExpires != null || now.isAfter(new DateTime(dateExpires))) {
                 logger.debug("invite expired: {}", invite);
                 continue;
             }
@@ -492,9 +528,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
                 invite.getResourceCollection().getAuthorizedUsers().add(user);
                 personDao.saveOrUpdate(invite.getResourceCollection());
                 personDao.saveOrUpdate(user);
-                notices.get(authorizer).add((HasName)invite.getResourceCollection());
+                notices.get(authorizer).add((HasName) invite.getResourceCollection());
                 publisher.publishEvent(new TdarEvent(invite.getResourceCollection(), EventType.CREATE_OR_UPDATE));
-            } 
+            }
 
             if (invite.getResource() != null) {
                 invite.getResource().getAuthorizedUsers().add(user);
@@ -504,14 +540,17 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
                 publisher.publishEvent(new TdarEvent(invite.getResource(), EventType.CREATE_OR_UPDATE));
             }
 
-            //FIXME: REMOVE if rights changes work
+            // FIXME: REMOVE if rights changes work
         }
         emailService.sendUserInviteGrantedEmail(notices, person);
 
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthenticationService#checkToken(java.lang.String, org.tdar.core.service.external.session.SessionData, javax.servlet.http.HttpServletRequest)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthenticationService#checkToken(java.lang.String, org.tdar.core.service.external.session.SessionData,
+     * javax.servlet.http.HttpServletRequest)
      */
     @Override
     public AuthenticationResult checkToken(String token, SessionData sessionData, HttpServletRequest request) {
@@ -567,7 +606,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return incoming;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#setProvider(org.tdar.core.dao.external.auth.AuthenticationProvider)
      */
     @Override
@@ -582,7 +623,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#getProvider()
      */
     @Override
@@ -590,8 +633,11 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return provider;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthenticationService#logout(org.tdar.core.service.external.session.SessionData, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthenticationService#logout(org.tdar.core.service.external.session.SessionData,
+     * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = true)
@@ -601,7 +647,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         getAuthenticationProvider().logout(servletRequest, servletResponse, token, user);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#getSsoTokenFromRequest(javax.servlet.http.HttpServletRequest)
      */
     @Override
@@ -621,7 +669,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#getAuthenticationProvider()
      */
     @Override
@@ -629,7 +679,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return getProvider();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#getUserRequirements(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -648,7 +700,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return notifications;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#satisfyPrerequisite(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.AuthNotice)
      */
     @Override
@@ -664,8 +718,8 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
             case TOS_AGREEMENT:
                 user.setTosVersion(tosLatestVersion);
                 break;
-//            case GUEST_ACCOUNT:
-//                break;
+            // case GUEST_ACCOUNT:
+            // break;
         }
     }
 
@@ -679,8 +733,11 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.external.AuthenticationService#satisfyUserPrerequisites(org.tdar.core.service.external.session.SessionData, java.util.Collection)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthenticationService#satisfyUserPrerequisites(org.tdar.core.service.external.session.SessionData,
+     * java.util.Collection)
      */
     @Override
     @Transactional(readOnly = false)
@@ -699,7 +756,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
     /*
      * Normalize the username being passed in; we may need to do more than lowercase it, such as run it through a REGEXP.
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#normalizeUsername(java.lang.String)
      */
     @Override
@@ -709,7 +768,9 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
         return normalizedUsername;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.external.AuthenticationService#requestPasswordReset(java.lang.String)
      */
     @Override

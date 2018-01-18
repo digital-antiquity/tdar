@@ -29,8 +29,8 @@ import nu.validator.xml.SystemErrErrorHandler;
 public class HtmlValidator {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
-            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
+    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<selectize>", "</selectize>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
+            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute", "<template>", "</template>",
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
             "missing </a> before <div>",
@@ -38,11 +38,29 @@ public class HtmlValidator {
             "discarding unexpected </div",
             "discarding unexpected </a>",
             "missing </div> before link",
+            "missing </div> before <tr",
+            "Warning: missing <td",
+            "Warning: <noscript> isn't allowed in <table> elements",
+            "Warning: </noscript> isn't allowed in <table> elements",
+            "Warning: discarding unexpected </noscript>",
+            "Warning: missing </fieldset> before </div",
+            "Warning: missing </form> before </div",
+            "Warning: discarding unexpected </form",
+            "Warning: input isn't allowed in <table> elements",
+            "Error: assign is not recognized",
+            "Warning: discarding unexpected assign",
+            "Warning: discarding unexpected </fieldset",
             "discarding unexpected </span>", "missing </span> before ",
             "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */
             "input repeated attribute" /* radiobutton duplicate css */,
             "inserting implicit <br>",
             "replacing element</p>",
+            "inserting implicit <table>",
+            " <div> isn't allowed in <table>",
+            "missing <tr",
+            "plain text isn't allowed in <table> elements",
+            "missing </table> before </div",
+            "discarding unexpected <table",
             "discarding unexpected hr"
     };
     
@@ -311,11 +329,13 @@ public class HtmlValidator {
                     int lineNum = Integer.parseInt(part.trim().replace(",", ""));
                     String lineText = lines[lineNum - 1];
                     logger.debug("{}: {}", lineNum, lineText);
-                    if (lineText.toLowerCase().contains("http") || lineText.toLowerCase().contains("href")) {
+                    if (lineText.toLowerCase().contains("http") || lineText.toLowerCase().contains("href") || lineText.toLowerCase().contains("data-")) {
                         // NOTE: we may need to make this more strict in the future
                         // String substring = lineText.substring(lineText.toLowerCase().indexOf("http"));
                         skip = true;
                         logger.debug("skipping encoding in URL");
+                    } else {
+                        logger.error("encoding issue with link {}", lineText);
                     }
                 }
                 // FIXME: add regex to get line number from error: line 291 column 180 - Warning: unescaped & or unknown entity "&amount"
@@ -339,4 +359,10 @@ public class HtmlValidator {
         } // run tidy, providing an input and output stream
     }
 
+    
+    
+    
+    
+    
+    
 }

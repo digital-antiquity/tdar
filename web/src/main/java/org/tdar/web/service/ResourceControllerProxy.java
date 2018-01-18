@@ -8,8 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.TdarUser;
@@ -25,10 +24,11 @@ import com.opensymphony.xwork2.TextProvider;
 public class ResourceControllerProxy<R extends Resource> implements Serializable {
 
     private static final long serialVersionUID = 1130227916644870738L;
-    
+
     public ResourceControllerProxy(TextProvider provider) {
         this.provider = provider;
     }
+
     private R resource;
     private Ontology ontology;
     List<ResourceAnnotation> incomingAnnotations;
@@ -53,8 +53,8 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<CoverageDate> coverageDates;
     private List<ResourceNote> resourceNotes;
-    private List<SharedCollection> shares;
-    private List<ListCollection> resourceCollections;
+    private List<ResourceCollection> shares;
+    private List<ResourceCollection> resourceCollections;
     private TdarUser submitter;
     private boolean save;
     private ResourceCreatorProxy copyrightHolderProxies;
@@ -64,8 +64,6 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     private TextProvider provider;
     private Long categoryId;
     private Long subcategoryId;
-
-    
 
     public List<ResourceAnnotation> getIncomingAnnotations() {
         return incomingAnnotations;
@@ -215,19 +213,19 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
         this.resourceNotes = resourceNotes;
     }
 
-    public List<SharedCollection> getShares() {
+    public List<ResourceCollection> getShares() {
         return shares;
     }
 
-    public void setShares(List<SharedCollection> shares) {
+    public void setShares(List<ResourceCollection> shares) {
         this.shares = shares;
     }
 
-    public List<ListCollection> getResourceCollections() {
+    public List<ResourceCollection> getResourceCollections() {
         return resourceCollections;
     }
 
-    public void setResourceCollections(List<ListCollection> resourceCollections) {
+    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 
@@ -329,7 +327,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     public void setCopyrightHolder(ResourceCreatorProxy copyrightHolderProxies) {
         this.setCopyrightHolderProxies(copyrightHolderProxies);
         // TODO Auto-generated method stub
-        
+
     }
 
     public ResourceCreatorProxy getCopyrightHolderProxies() {
@@ -358,7 +356,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
 
     public void setTicketId(Long ticketId) {
         this.ticketId = ticketId;
-        
+
     }
 
     public void setFileProxies(List<FileProxy> fileProxiesToProcess) {
@@ -367,7 +365,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
 
     public void setValidFileExtensions(Collection<String> validFileExtensions) {
         this.validFileExtensions = validFileExtensions;
-        
+
     }
 
     public List<FileProxy> getFileProxiesToProcess() {
@@ -377,7 +375,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     public void setFileProxiesToProcess(List<FileProxy> fileProxiesToProcess) {
         this.fileProxiesToProcess = fileProxiesToProcess;
     }
-    
+
     public Long getTicketId() {
         return ticketId;
     }

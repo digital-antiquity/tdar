@@ -3,7 +3,6 @@ package org.tdar.struts.action.codingSheet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
@@ -23,7 +22,6 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CodingSheetService;
@@ -39,7 +37,6 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
-
 
 /**
  * $Id$
@@ -69,7 +66,7 @@ public class CodingSheetMappingController extends AbstractAuthenticatableAction 
     private transient CodingSheetService codingSheetService;
     @Autowired
     private transient DataTableService dataTableService;
-    
+
     private CodingSheet codingSheet;
     private List<OntologyNode> ontologyNodes;
     private List<CodingRule> codingRules;
@@ -107,7 +104,6 @@ public class CodingSheetMappingController extends AbstractAuthenticatableAction 
 
         return SUCCESS;
     }
-
 
     @WriteableSession
     @PostOnly

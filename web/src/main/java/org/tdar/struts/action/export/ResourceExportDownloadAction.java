@@ -48,7 +48,7 @@ public class ResourceExportDownloadAction extends TdarBaseActionSupport implemen
                             "inputName", "inputStream",
                             "contentDisposition", "Content-Disposition:attachment;filename=\"${filename}\""
                     }),
-            @Result(name = INPUT, location="request.ftl")
+            @Result(name = INPUT, location = "request.ftl")
     })
     public String execute() {
         return SUCCESS;
@@ -62,7 +62,7 @@ public class ResourceExportDownloadAction extends TdarBaseActionSupport implemen
         this.inputStream = inputStream;
     }
 
-    public String getFilename(){
+    public String getFilename() {
         return filename;
     }
 

@@ -37,9 +37,9 @@ public class CodingSheetViewAction extends AbstractSupportingResourceViewAction<
         // TODO Auto-generated method stub
         super.loadCustomViewMetadata();
         setMissingCodingKeys(dataTableService.getMissingCodingKeys(getPersistable(), getTablesUsingResource()));
-        
+
     }
-    
+
     public boolean isOkToMapOntology() {
         return codingSheetService.isOkToMapOntology(getPersistable());
     }

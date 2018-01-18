@@ -13,7 +13,8 @@ import org.tdar.utils.PersistableUtils;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
- * Query for a coding sheet or ontology that's associated with a category term or id 
+ * Query for a coding sheet or ontology that's associated with a category term or id
+ * 
  * @author abrin
  *
  */

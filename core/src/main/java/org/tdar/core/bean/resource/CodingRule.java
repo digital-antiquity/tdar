@@ -56,7 +56,7 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
         public String getTerm() {
             return "NULL";
         }
-        
+
         @Override
         public String getCode() {
             return "__NULL";
@@ -71,7 +71,6 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
             return true;
         }
 
-        
     };
 
     public static final CodingRule MISSING = new CodingRule() {
@@ -82,12 +81,12 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
         public String getTerm() {
             return "MISSING";
         }
-        
+
         @Override
         public String getCode() {
             return "__MISSING";
         }
-        
+
         public String getFormattedTerm() {
             return getTerm();
         }
@@ -97,7 +96,6 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
             return true;
         }
 
-        
     };
 
     public static final CodingRule UNMAPPED = new CodingRule() {
@@ -108,7 +106,7 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
         public String getTerm() {
             return "UNMAPPED";
         }
-        
+
         @Override
         public String getCode() {
             return "__UNMAPPED";
@@ -125,7 +123,6 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
 
     };
 
-    
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
     private CodingSheet codingSheet;

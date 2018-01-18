@@ -83,8 +83,9 @@ public class UserAgreementController extends AbstractAuthenticatableAction imple
 
         if (acceptClicked()) {
             return SUCCESS;
-        };
-        
+        }
+        ;
+
         if (declineClicked()) {
             String fmt = getText("userAgreementController.decline_message");
             addActionMessage(String.format(fmt, getSiteAcronym()));
@@ -95,7 +96,7 @@ public class UserAgreementController extends AbstractAuthenticatableAction imple
             }
         }
         authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
-        
+
         return NONE;
     }
 

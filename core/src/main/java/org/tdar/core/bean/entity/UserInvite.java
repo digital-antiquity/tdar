@@ -15,7 +15,7 @@ import javax.persistence.TemporalType;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 
 /**
@@ -26,21 +26,21 @@ import org.tdar.core.bean.resource.Resource;
  */
 @Entity
 @Table(name = "user_invite")
-//@Check(constraints = "email <> ''")
+// @Check(constraints = "email <> ''")
 public class UserInvite extends AbstractPersistable {
 
     private static final long serialVersionUID = 2915969311944606586L;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_created", nullable=false)
+    @Column(name = "date_created", nullable = false)
     private Date dateCreated = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_expires", nullable=true)
+    @Column(name = "date_expires", nullable = true)
     private Date dateExpires;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_redeemed", nullable=true)
+    @Column(name = "date_redeemed", nullable = true)
     private Date dateRedeemed;
 
     @ManyToOne
@@ -56,20 +56,20 @@ public class UserInvite extends AbstractPersistable {
     private TdarUser authorizer;
 
     private transient String note;
-    
+
     @ManyToOne
     @JoinColumn(nullable = false, name = "person_id")
     private Person user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "permission", length = FieldLength.FIELD_LENGTH_255)
-    private GeneralPermissions permissions;
+    private Permissions permissions;
 
-    public GeneralPermissions getPermissions() {
+    public Permissions getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(GeneralPermissions permissions) {
+    public void setPermissions(Permissions permissions) {
         this.permissions = permissions;
     }
 

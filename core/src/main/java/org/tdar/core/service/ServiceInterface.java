@@ -351,5 +351,4 @@ public interface ServiceInterface<T, S extends Dao<T>> {
         }
     }
 
-
 }

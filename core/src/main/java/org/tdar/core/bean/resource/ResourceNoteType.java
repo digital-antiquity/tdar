@@ -13,10 +13,7 @@ import org.tdar.utils.MessageHelper;
  * @version $Revision$
  */
 public enum ResourceNoteType implements HasLabel, Localizable {
-    GENERAL("General Note"),
-    REDACTION("Redaction Note"),
-    RIGHTS_ATTRIBUTION("Rights & Attribution"),
-    ADMIN("Administration Note");
+    GENERAL("General Note"), REDACTION("Redaction Note"), RIGHTS_ATTRIBUTION("Rights & Attribution"), ADMIN("Administration Note");
 
     private final String label;
 

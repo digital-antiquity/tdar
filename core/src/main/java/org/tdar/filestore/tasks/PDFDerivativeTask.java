@@ -43,7 +43,6 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         }
     }
 
-
     @Override
     public void run() throws Exception {
         for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
@@ -91,7 +90,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         outputFile.deleteOnExit();
 
         if (document != null) {
-//            ImageType imageType = determineImageType(color);
+            // ImageType imageType = determineImageType(color);
 
             try {
                 PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -129,10 +128,10 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         try {
             document = PDDocument.load(pdfFile, TdarConfiguration.getInstance().getPDFMemoryReadSetting());
 
-//            if (document.isEncrypted()) {
-//                getLogger().info("access permissions: " + document.getCurrentAccessPermission());
-//                getLogger().info("security manager: " + document.getCurrentAccessPermission());
-//            }
+            // if (document.isEncrypted()) {
+            // getLogger().info("access permissions: " + document.getCurrentAccessPermission());
+            // getLogger().info("security manager: " + document.getCurrentAccessPermission());
+            // }
 
             // try {
             // document.decrypt(password);
@@ -154,24 +153,24 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         return document;
     }
 
-//    private int determineImageType(ImageType color) {
-//        int imageType = 24;
-//        ImageType.valueOf(name)
-//        if ("bilevel".equalsIgnoreCase(color)) {
-//            imageType = BufferedImage.TYPE_BYTE_BINARY;
-//        } else if ("indexed".equalsIgnoreCase(color)) {
-//            imageType = BufferedImage.TYPE_BYTE_INDEXED;
-//        } else if ("gray".equalsIgnoreCase(color)) {
-//            imageType = BufferedImage.TYPE_BYTE_GRAY;
-//        } else if ("rgb".equalsIgnoreCase(color)) {
-//            imageType = BufferedImage.TYPE_INT_RGB;
-//        } else if ("rgba".equalsIgnoreCase(color)) {
-//            imageType = BufferedImage.TYPE_INT_ARGB;
-//        } else {
-//            getLogger().debug("Error: the number of bits per pixel must be 1, 8 or 24.");
-//        }
-//        return imageType;
-//    }
+    // private int determineImageType(ImageType color) {
+    // int imageType = 24;
+    // ImageType.valueOf(name)
+    // if ("bilevel".equalsIgnoreCase(color)) {
+    // imageType = BufferedImage.TYPE_BYTE_BINARY;
+    // } else if ("indexed".equalsIgnoreCase(color)) {
+    // imageType = BufferedImage.TYPE_BYTE_INDEXED;
+    // } else if ("gray".equalsIgnoreCase(color)) {
+    // imageType = BufferedImage.TYPE_BYTE_GRAY;
+    // } else if ("rgb".equalsIgnoreCase(color)) {
+    // imageType = BufferedImage.TYPE_INT_RGB;
+    // } else if ("rgba".equalsIgnoreCase(color)) {
+    // imageType = BufferedImage.TYPE_INT_ARGB;
+    // } else {
+    // getLogger().debug("Error: the number of bits per pixel must be 1, 8 or 24.");
+    // }
+    // return imageType;
+    // }
 
     @Override
     public String getName() {

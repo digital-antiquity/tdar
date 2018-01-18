@@ -11,7 +11,6 @@ import org.tdar.core.bean.Validatable;
  */
 public class StringPair extends Pair<String, String> implements Validatable {
 
-
     private static final long serialVersionUID = -737014414854726705L;
 
     public StringPair() {
@@ -22,23 +21,22 @@ public class StringPair extends Pair<String, String> implements Validatable {
         super(first, second);
     }
 
-
     public void setKey(String key) {
         setFirst(key);
     }
-    
+
     public void setValue(String value) {
         setSecond(value);
     }
-    
+
     public String getKey() {
         return getFirst();
     }
-    
+
     public String getValue() {
         return getSecond();
     }
-    
+
     @Override
     public boolean isValid() {
         if (StringUtils.isBlank(getFirst()) && StringUtils.isBlank(getSecond())) {

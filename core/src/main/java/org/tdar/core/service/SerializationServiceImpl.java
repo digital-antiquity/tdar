@@ -65,7 +65,6 @@ import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
 import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;
 import org.w3c.dom.Document;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,7 +77,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
  * class to help with marshalling and unmarshalling of resources
  */
 @Service
-public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectContainer>, SerializationService {
+public class SerializationServiceImpl implements TxMessageBus<LoggingObjectContainer>, SerializationService {
 
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     private boolean useTransactionalEvents = true;
@@ -96,7 +95,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         jaxbClasses = ReflectionHelper.scanForAnnotation(XmlElement.class, XmlRootElement.class);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#handleFilestoreEvent(org.tdar.core.event.TdarEvent)
      */
     @Override
@@ -153,7 +154,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return temp;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#logRecordXmlToFilestore(T)
      */
     @Override
@@ -176,7 +179,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         logger.trace("done saving");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#writeToFilestore(org.tdar.filestore.FilestoreObjectType, java.lang.Long, java.lang.String)
      */
     @Override
@@ -201,7 +206,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#convertToXML(java.lang.Object)
      */
     @Override
@@ -213,7 +220,10 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
     }
 
     private File schemaFile = null;
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#generateSchema()
      */
     @Override
@@ -236,7 +246,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return schemaFile;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#convertToXML(java.lang.Object, java.io.Writer)
      */
     @Override
@@ -261,7 +273,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return writer;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#convertToJson(java.lang.Object, java.io.Writer, java.lang.Class, java.lang.String)
      */
     @Override
@@ -274,7 +288,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         objectWriter.writeValue(writer, object);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#readObjectFromJson(java.lang.String, java.lang.Class)
      */
     @Override
@@ -284,20 +300,24 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return mapper.readValue(json, cls);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#readObjectFromJsonWithJAXB(java.lang.String, java.lang.Class)
      */
     @Override
     @Transactional(readOnly = true)
     public <C> C readObjectFromJsonWithJAXB(String json, Class<C> cls) throws IOException {
-        final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector( TypeFactory.defaultInstance() );
-        ObjectMapper mapper = JacksonUtils.initializeObjectMapper().setAnnotationIntrospector( jaxbIntrospector );
+        final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper().setAnnotationIntrospector(jaxbIntrospector);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         return mapper.readValue(json, cls);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#convertToJson(java.lang.Object)
      */
     @Override
@@ -313,7 +333,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
      * Takes an object, a @JsonView class (optional); and callback-name (optional); and constructs a JSON or JSONP object passing it back to the controller.
      * Most commonly used to produce a stream.
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#convertFilteredJsonForStream(java.lang.Object, java.lang.Class, java.lang.String)
      */
     @Override
@@ -349,7 +371,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return wrapper;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#convertToFilteredJson(java.lang.Object, java.lang.Class)
      */
     @Override
@@ -360,7 +384,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return writer.toString();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#convertToXML(java.lang.Object, org.w3c.dom.Document)
      */
     @Override
@@ -378,7 +404,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return document;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#parseXml(java.io.Reader)
      */
     @Override
@@ -386,7 +414,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return parseXml(null, reader);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#parseXml(java.lang.Class, java.io.Reader)
      */
     @Override
@@ -428,7 +458,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return toReturn;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#convertToXMLFragment(java.lang.Class, C, java.io.Writer)
      */
     @Override
@@ -443,7 +475,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#createGeoJsonFromResourceList(org.tdar.core.service.FeedSearchHelper)
      */
     @Override
@@ -461,11 +495,13 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         result.put("properties", helper.getSearchParams());
         StringWriter writer = new StringWriter();
         logger.debug("filter: {}", helper.getJsonFilter());
-//        convertToJson(result, writer, helper.getJsonFilter(), helper.getJsonCallback());
+        // convertToJson(result, writer, helper.getJsonFilter(), helper.getJsonCallback());
         return result;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#isUseTransactionalEvents()
      */
     @Override
@@ -473,7 +509,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         return useTransactionalEvents;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#setUseTransactionalEvents(boolean)
      */
     @Override
@@ -481,7 +519,9 @@ public class SerializationServiceImpl  implements TxMessageBus<LoggingObjectCont
         this.useTransactionalEvents = useTransactionalEvents;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.SerializationService#post(org.tdar.core.service.event.LoggingObjectContainer)
      */
     @Override

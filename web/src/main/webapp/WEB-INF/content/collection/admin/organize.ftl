@@ -20,7 +20,10 @@
 <#macro _collectionListItem rc>
         <li data-collectionid="${rc.id?c}" data-jstree='{"opened":true}'>${rc.name}
             <ul>
-                <#list rc.resources as resource>
+                <#list rc.managedResources as resource>
+                     <li data-jstree='{"opened":true, "type":"file"}' data-resourceid="${resource.id?c}">${resource.title} (${resource.id?c})<i data-url="${resource.detailUrl}" class="icon-share-alt"></i></li>
+                </#list>
+                <#list rc.unmanagedResources as resource>
                      <li data-jstree='{"opened":true, "type":"file"}' data-resourceid="${resource.id?c}">${resource.title} (${resource.id?c})<i data-url="${resource.detailUrl}" class="icon-share-alt"></i></li>
                 </#list>
                     <#list rc.transientChildren as child>

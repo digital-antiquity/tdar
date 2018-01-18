@@ -122,7 +122,7 @@ public abstract class BaseFilestore implements Filestore {
             version.setChecksum(formatDigest(digest));
             if (version.getVersionType().isArchival() || version.getVersionType().isUploaded()) {
                 File checksum = new File(file.getParentFile(), String.format("%s.%s", file.getName(), digest.getAlgorithm()));
-                FileUtils.write(checksum, version.getChecksum(),Charset.defaultCharset());
+                FileUtils.write(checksum, version.getChecksum(), Charset.defaultCharset());
             }
         }
         if (version.getDateCreated() == null) {
@@ -148,7 +148,7 @@ public abstract class BaseFilestore implements Filestore {
         }
         File logFile = new File(logdir, filename);
         try {
-            FileUtils.writeStringToFile(logFile, message,Charset.defaultCharset());
+            FileUtils.writeStringToFile(logFile, message, Charset.defaultCharset());
         } catch (IOException e) {
             logger.error("Unable to write logfile", e);
         }

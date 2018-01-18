@@ -101,7 +101,7 @@ public class GeoSearchService {
         Set<GeographicKeyword> geoSet = new HashSet<>();
         for (Map<String, Object> result : countryResults) {
             if (result.containsKey(nameField)) {
-                GeographicKeyword entityToFind = createGeoKeyword((String) result.get(nameField), level, (String)result.get(COL_CODE));
+                GeographicKeyword entityToFind = createGeoKeyword((String) result.get(nameField), level, (String) result.get(COL_CODE));
                 if (entityToFind != null) {
                     geoSet.add(entityToFind);
                 }
@@ -147,7 +147,6 @@ public class GeoSearchService {
         List<Map<String, Object>> findAllContinentsMatching = geoSearchDao.findAllContinentsMatching(latLong);
         return extractCols(findAllContinentsMatching, COL_CONTINENT_NAME, Level.CONTINENT);
     }
-
 
     public boolean isEnabled() {
         return geoSearchDao.isEnabled();

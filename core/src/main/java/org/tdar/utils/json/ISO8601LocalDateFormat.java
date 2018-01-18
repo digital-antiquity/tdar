@@ -16,11 +16,12 @@ public class ISO8601LocalDateFormat extends ISO8601DateFormat {
     TimeZone timeZone = null;
 
     /**
-     * Return DateFormat  instance that formats dates in the specified time zone.
+     * Return DateFormat instance that formats dates in the specified time zone.
+     * 
      * @param timeZone
      */
     public ISO8601LocalDateFormat(TimeZone timeZone) {
-        if(timeZone == null) {
+        if (timeZone == null) {
             this.timeZone = TimeZone.getDefault();
         }
     }
@@ -31,7 +32,6 @@ public class ISO8601LocalDateFormat extends ISO8601DateFormat {
     public ISO8601LocalDateFormat() {
         this(null);
     }
-
 
     @Override
     public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {

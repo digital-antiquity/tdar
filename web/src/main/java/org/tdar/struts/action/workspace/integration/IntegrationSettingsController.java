@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.external.AuthorizationService;
@@ -26,7 +26,7 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/workspace/settings")
-@Result(name="workspace", location="/workspace/list",type=TdarActionSupport.REDIRECT)
+@Result(name = "workspace", location = "/workspace/list", type = TdarActionSupport.REDIRECT)
 public class IntegrationSettingsController extends AbstractPersistableController<DataIntegrationWorkflow> {
 
     private static final long serialVersionUID = -2663378965534285107L;
@@ -39,20 +39,20 @@ public class IntegrationSettingsController extends AbstractPersistableController
 
     @Autowired
     private transient DataIntegrationService integrationService;
-    
+
     @Override
     public boolean authorize() {
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return true;
         }
-        return authorizationService.canEditWorkflow( getAuthenticatedUser(),getPersistable());
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(), getPersistable());
     }
 
     @Override
     protected String save(DataIntegrationWorkflow persistable) throws TdarActionException {
         List<UserRightsProxy> proxies = new ArrayList<>();
         for (TdarUser user : authorizedMembers) {
-            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, GeneralPermissions.EDIT_INTEGRATION)));
+            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, Permissions.EDIT_INTEGRATION)));
         }
         integrationService.saveSettingsForController(persistable, getAuthenticatedUser(), proxies);
         return SUCCESS_WORKSPACE;

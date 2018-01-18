@@ -60,6 +60,7 @@ public class Counter implements Serializable {
         }
         return divisor;
     }
+
     public int getDivisor() {
         return getDivisor(subTotal);
     }

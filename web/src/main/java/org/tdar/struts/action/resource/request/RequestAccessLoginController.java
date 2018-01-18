@@ -6,8 +6,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.AbstractRequestAccessLoginAction;
+
 /**
  * Handle login for new users and pass back to request-access-action
+ * 
  * @author abrin
  *
  */

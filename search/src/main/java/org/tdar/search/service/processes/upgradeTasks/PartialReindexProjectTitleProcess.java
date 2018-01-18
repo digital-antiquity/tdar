@@ -11,7 +11,6 @@ import org.tdar.search.service.index.SearchIndexService;
 @Component
 public class PartialReindexProjectTitleProcess extends AbstractScheduledBatchProcess<Resource> {
 
-
     private static final long serialVersionUID = -3612408699729429857L;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -20,6 +19,7 @@ public class PartialReindexProjectTitleProcess extends AbstractScheduledBatchPro
     private transient SearchIndexService searchIndexService;
 
     private boolean completed = false;
+
     @Override
     public boolean isSingleRunProcess() {
         return true;
@@ -46,14 +46,14 @@ public class PartialReindexProjectTitleProcess extends AbstractScheduledBatchPro
         completed = true;
     }
 
-    
     @Override
     public boolean isCompleted() {
         return completed;
     }
+
     public void process(Resource resource) {
     }
-    
+
     @Override
     public boolean shouldRunAtStartup() {
         return true;

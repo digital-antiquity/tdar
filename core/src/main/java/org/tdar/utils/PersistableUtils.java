@@ -20,7 +20,7 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.exception.TdarRuntimeException;
 
 public class PersistableUtils {
-    
+
     /**
      * Should only be invoked after performing basic checks within your equals(Object) method to ensure that it's not null and equivalent types.
      * 
@@ -54,7 +54,7 @@ public class PersistableUtils {
 
         // objects that are the same are equal
         if (a == b) {
-            logger.trace("object equality, {} , {}",a,b);
+            logger.trace("object equality, {} , {}", a, b);
             return true;
         }
 

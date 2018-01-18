@@ -50,7 +50,7 @@ public class ResourceRevisionLog extends AbstractPersistable {
 
     @ManyToOne(optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
-//    @ForeignKey(name = "none")
+    // @ForeignKey(name = "none")
     private Resource resource;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -58,10 +58,9 @@ public class ResourceRevisionLog extends AbstractPersistable {
     private Date timestamp;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "revision_type", length = FieldLength.FIELD_LENGTH_25, nullable=true)
+    @Column(name = "revision_type", length = FieldLength.FIELD_LENGTH_25, nullable = true)
     private RevisionLogType type;
 
-    
     // the action taken
     @Column(name = "log_message", length = FieldLength.FIELD_LENGTH_512)
     @Length(max = FieldLength.FIELD_LENGTH_512)
@@ -75,9 +74,9 @@ public class ResourceRevisionLog extends AbstractPersistable {
     @Column(name = "payload", nullable = true)
     private String payload;
 
-    @Column(name="time_seconds", nullable=true)
+    @Column(name = "time_seconds", nullable = true)
     private Long timeInSeconds;
-    
+
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @XmlAttribute(name = "resourceRef")
     public Resource getResource() {

@@ -80,7 +80,7 @@ public interface ImportService {
      * @return
      * @throws APIException
      */
-    <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, TdarUser authenticatedUser) throws APIException;
+    // <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, TdarUser authenticatedUser) throws APIException;
 
     ResourceCollection bringCollectionOntoSession(ResourceCollection importedRecord, TdarUser authenticatedUser, boolean validate) throws APIException;
 

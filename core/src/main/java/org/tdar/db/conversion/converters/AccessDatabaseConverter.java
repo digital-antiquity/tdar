@@ -232,7 +232,7 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
 
         setRelationships(extractRelationships(dataTableNameMap, linked));
     }
-    
+
     private Set<DataTableRelationship> extractRelationships(Map<String, DataTable> dataTableNameMap, Set<String> linked) throws IOException {
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (String tableName1 : getDatabase().getTableNames()) {

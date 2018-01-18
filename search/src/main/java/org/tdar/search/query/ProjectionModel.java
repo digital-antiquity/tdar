@@ -14,7 +14,7 @@ public enum ProjectionModel {
         if (this == ProjectionModel.LUCENE) {
             return Arrays.asList(QueryFieldNames.NAME, QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS,
                     QueryFieldNames.NAME_SORT, QueryFieldNames.SUBMITTER_ID, QueryFieldNames.PROJECT_TITLE, QueryFieldNames.PROJECT_ID,
-                    QueryFieldNames.RESOURCE_COLLECTION_IDS,
+                    QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS, QueryFieldNames.RESOURCE_COLLECTION_UNMANAGED_IDS,
                     QueryFieldNames.DESCRIPTION, QueryFieldNames.DATE, QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS,
                     QueryFieldNames.FILE_IDS, QueryFieldNames.STATUS, QueryFieldNames.RESOURCE_TYPE, QueryFieldNames.RESOURCE_ACCESS_TYPE);
         }

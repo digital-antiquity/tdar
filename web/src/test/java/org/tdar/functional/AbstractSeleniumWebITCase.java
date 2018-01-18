@@ -83,7 +83,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
@@ -1253,7 +1253,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("fileAsyncUpload")));
+        waitFor(ExpectedConditions.elementToBeClickable(By.id("fileupload")));
         // TEMPORARY FIX
         try {
             Thread.sleep(500);
@@ -1261,8 +1261,8 @@ public abstract class AbstractSeleniumWebITCase {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        waitFor((WebDriver driver) -> driver.findElement(By.id("fileAsyncUpload")).isEnabled());
-        find(By.id("fileAsyncUpload")).sendKeys(uploadFile.getAbsolutePath());
+        waitFor((WebDriver driver) -> driver.findElement(By.id("fileupload")).isEnabled());
+        find(By.id("fileupload")).sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");
         find("#proxy0_conf").val(restriction.name());
     }
@@ -1418,7 +1418,7 @@ public abstract class AbstractSeleniumWebITCase {
         return true;
     }
 
-    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
+    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, Permissions permissions) {
 
         WebElement blankField = find(By.name(nameField)).first();
         if (!selectAutocompleteValue(blankField, name, email, selector)) {
@@ -1699,7 +1699,7 @@ public abstract class AbstractSeleniumWebITCase {
     public void clearFileInputStyles() {
         // todo: we removed this back in rev 94d504cf5128:7082 as workaround to FirefoxDriver bug.
         // Try removing the workaround and seeing if the firefoxdriver bug is fixed.
-        WebElement input = find("#fileAsyncUpload").first();
+        WebElement input = find("#fileupload").first();
         showAsyncFileInput(input);
     }
 

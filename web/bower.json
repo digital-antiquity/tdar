@@ -4,10 +4,12 @@
   ],
   "dependencies": {
     "angular-modal-service": "0.4.0",
+    "blueimp-file-upload": "~9.19.2",
     "bootstrap": "~2.3.2",
     "bootstrap-datepicker-eyecon": "~1.0.0",
     "c3": "~0.4.11",
     "d3": "~3.5.17",
+    "datatables": "DataTables#~1.10.16",
     "DataTables": "~1.9.4",
     "DataTablesPlugins": "https://github.com/DataTables/Plugins.git#1.0.1",
     "jquery": "~1.11.3",
@@ -18,8 +20,13 @@
     "leaflet-cluster": "https://github.com/Leaflet/Leaflet.markercluster.git#v1.0.0",
     "leaflet-control-geocoder": "~1.5.3",
     "leaflet-draw": "https://github.com/Leaflet/Leaflet.draw.git#0.4.9",
-    "select2": "~4.0.3",
-    "svgxuse": "~1.1.17"
+    "selectize": "~0.12.4",
+    "svgxuse": "~1.1.17",
+    "vue": "^2.4.2",
+    "axios":"0.17.0",
+    "vue-resource": "^1.3.4",
+    "qs" : "https://github.com/ljharb/qs.git#6.5.1",
+    "es6-promise":"https://github.com/stefanpenner/es6-promise.git"
   },
   "dependencies-cdn": {
     "README": "local dependency management, not managed by bower (see layout-bootstrap.dec)",

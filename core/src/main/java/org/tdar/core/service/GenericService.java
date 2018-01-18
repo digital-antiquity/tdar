@@ -7,7 +7,6 @@ import java.util.Set;
 import org.hibernate.CacheMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.stat.Statistics;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Status;

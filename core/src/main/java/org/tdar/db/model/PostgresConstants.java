@@ -74,8 +74,7 @@ public interface PostgresConstants {
                     "view", "volatile", "when", "whenever", "where", "whitespace", "width_bucket", "window", "with", "within", "without", "work", "wrapper",
                     "write", "xml", "xmlagg", "xmlattributes", "xmlbinary", "xmlcast", "xmlcomment", "xmlconcat", "xmldeclaration", "xmldocument",
                     "xmlelement", "xmlexists", "xmlforest", "xmliterate", "xmlnamespaces", "xmlparse", "xmlpi", "xmlquery", "xmlroot", "xmlschema",
-                    "xmlserialize", "xmltable", "xmltext", "xmlvalidate", "year", "yes", "zone")
-            );
+                    "xmlserialize", "xmltable", "xmltext", "xmlvalidate", "year", "yes", "zone"));
     String SCHEMA_NAME = "public";
     int MAX_NAME_SIZE = 52;
     int MAX_ALLOWED_COLUMNS = 500;

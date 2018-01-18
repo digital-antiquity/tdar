@@ -87,7 +87,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         }
         super.prepare();
         contributor = getPersistable().isContributor();
-        if (getPersistable().getProxyInstitution() != null)  {
+        if (getPersistable().getProxyInstitution() != null) {
             setProxyInstitutionName(getPersistable().getProxyInstitution().getName());
         }
         setProxyNote(getPersistable().getProxyNote());
@@ -105,9 +105,8 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     @Validations(
             emails = { @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "email", key = "userAccountController.email_invalid") },
             stringLengthFields = { @StringLengthFieldValidator(type = ValidatorType.SIMPLE, fieldName = "contributorReason",
-                    key = "userAccountController.contributorReason_invalid", maxLength = "512") }
-            )
-            public String save(TdarUser person) {
+                    key = "userAccountController.contributorReason_invalid", maxLength = "512") })
+    public String save(TdarUser person) {
         validateAndProcessPasswordChange(); // TODO: this should just be in validate()
         if (validateAndProcessUsernameChange()) {
             // FIXME: logout?
@@ -121,11 +120,11 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
             authenticationService.getAuthenticationProvider().resetUserPassword(person);
         }
 
-        //We store basic user info in two places:  our database and also the authentication system (i.e. crowd).  If user changes basic info, we need to update
+        // We store basic user info in two places: our database and also the authentication system (i.e. crowd). If user changes basic info, we need to update
         // both systems.
         String info1 = "" + originalPersonInfo.getFirstName() + originalPersonInfo.getLastName() + originalPersonInfo.getEmail();
         String info2 = "" + getPerson().getFirstName() + getPerson().getLastName() + getPerson().getEmail();
-        if(!info1.equals(info2)) {
+        if (!info1.equals(info2)) {
             getLogger().info("basic user info changed for {} - updating crowd", getPerson().getUsername());
             getLogger().debug("changing basic info to: {}", info2);
             authenticationService.getAuthenticationProvider().updateBasicUserInformation(getPerson());
@@ -144,10 +143,10 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         }
         getPersistable().setContributorReason(contributorReason);
         getPersistable().setProxyNote(proxyNote);
-        if (Objects.equals(getPersistable().isContributor(),  Boolean.FALSE ) && Objects.equals(contributor, Boolean.TRUE)) {
+        if (Objects.equals(getPersistable().isContributor(), Boolean.FALSE) && Objects.equals(contributor, Boolean.TRUE)) {
             authenticationService.satisfyPrerequisite(getPersistable(), AuthNotice.CONTRIBUTOR_AGREEMENT);
         }
-        
+
         getPersistable().setContributor(contributor);
     }
 
@@ -301,6 +300,5 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     public void setContributorReason(String contributorReason) {
         this.contributorReason = contributorReason;
     }
-
 
 }

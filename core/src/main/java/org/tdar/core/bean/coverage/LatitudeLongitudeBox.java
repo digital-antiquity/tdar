@@ -35,7 +35,6 @@ import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-
 /**
  * $Id$
  * 
@@ -165,8 +164,8 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     protected Double getCenterLong(Double minLong, Double maxLong) {
         // print out in degrees
         if (maxLong < minLong) {
-//            logger.debug("min:" + minLong);
-//            logger.debug("max:" + maxLong);
+            // logger.debug("min:" + minLong);
+            // logger.debug("max:" + maxLong);
 
             // min is one side of the dateline and max is on the other
             if (maxLong < 0 && minLong > 0) {
@@ -328,7 +327,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return obfuscatedSouth;
     }
 
-
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
@@ -336,7 +334,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     public Double getObfuscatedNorth() {
         return obfuscatedNorth;
     }
-
 
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLongitude, depending on the setting of the isOkayToShowExactLocation switch
@@ -389,7 +386,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     public void obfuscateAll() {
         if (north != null && south != null) {
-            List<Double> dbls = Arrays.asList(north,south,east,west);
+            List<Double> dbls = Arrays.asList(north, south, east, west);
             int hashCode = dbls.hashCode();
             if (hash != hashCode) {
                 hash = hashCode;
@@ -632,7 +629,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         // set directly, as we don't want to reset the obfuscated values
         obfuscatedObjectDifferent = false;
         logger.trace("obfuscating latLong");
-        if (getObfuscatedNorth() == null ) {
+        if (getObfuscatedNorth() == null) {
             obfuscateAll();
         }
 

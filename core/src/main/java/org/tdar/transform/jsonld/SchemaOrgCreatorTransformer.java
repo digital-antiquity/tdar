@@ -18,6 +18,7 @@ import org.tdar.core.service.UrlService;
 
 /**
  * Convert a creator to a proper JSON Linked Data String
+ * 
  * @author abrin
  *
  */
@@ -55,7 +56,7 @@ public class SchemaOrgCreatorTransformer extends AbstractSchemaOrgMetadataTransf
             add(jsonLd, "schema:logo", imageUrl);
         }
 
-        if (CollectionUtils.isNotEmpty(creator.getAddresses()) && (creator instanceof Institution || ((Person)creator).getPhonePublic())) {
+        if (CollectionUtils.isNotEmpty(creator.getAddresses()) && (creator instanceof Institution || ((Person) creator).getPhonePublic())) {
             for (Address address : creator.getAddresses()) {
                 if (address.getType() == AddressType.MAILING) {
                     Map<String, Object> addLd = new HashMap<String, Object>();
@@ -73,14 +74,13 @@ public class SchemaOrgCreatorTransformer extends AbstractSchemaOrgMetadataTransf
                 }
             }
         }
-        
-        for (Creator<?> syn : (Set<Creator<?>>)creator.getSynonyms()) {
+
+        for (Creator<?> syn : (Set<Creator<?>>) creator.getSynonyms()) {
             jsonLd.put(RelationType.HAS_VERSION.getJsonKey(), syn.getDetailUrl());
         }
 
-
         addContextSection(jsonLd);
-        
+
         return ss.convertToJson(jsonLd);
     }
 }

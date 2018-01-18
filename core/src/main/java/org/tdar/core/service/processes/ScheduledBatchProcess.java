@@ -40,7 +40,6 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Abstr
     private int processStartId = -1;
     private int processEndId = -1;
 
-    
     public abstract void process(P persistable) throws Exception;
 
     @Override
@@ -180,7 +179,7 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Abstr
     public int getProcessStartId() {
         return processStartId;
     }
-    
+
     @Override
     public void setProcessStartId(int processStartId) {
         this.processStartId = processStartId;
@@ -195,6 +194,5 @@ public abstract class ScheduledBatchProcess<P extends Persistable> extends Abstr
     public void setProcessEndId(int processEndId) {
         this.processEndId = processEndId;
     }
-    
-    
+
 }

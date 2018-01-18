@@ -36,7 +36,8 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @HttpsOnly
-public abstract class AbstractIntegrationAction extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>, Validateable {
+public abstract class AbstractIntegrationAction extends AbstractAuthenticatableAction
+        implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>, Validateable {
 
     private static final long serialVersionUID = 7924205432529421539L;
 
@@ -51,7 +52,6 @@ public abstract class AbstractIntegrationAction extends AbstractAuthenticatableA
     private transient SerializationService serializationService;
     @Autowired
     private transient IntegrationWorkflowService integrationWorkflowService;
-
 
     private IntegrationWorkflowWrapper data;
 
@@ -84,7 +84,7 @@ public abstract class AbstractIntegrationAction extends AbstractAuthenticatableA
             }
         }
     }
-    
+
     public String getWorkflowJson() {
         return workflowJson;
     }
@@ -113,7 +113,7 @@ public abstract class AbstractIntegrationAction extends AbstractAuthenticatableA
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditWorkflow(getAuthenticatedUser(),workflow);
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(), workflow);
     }
 
     @Override

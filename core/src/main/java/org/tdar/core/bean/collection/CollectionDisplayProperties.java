@@ -14,13 +14,14 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 import org.opengis.annotation.XmlElement;
 import org.tdar.core.bean.HasImage;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
 
 @XmlElement("collectionDisplayProperties")
 @Embeddable
-public class CollectionDisplayProperties implements HasImage {
+public class CollectionDisplayProperties implements HasImage, Persistable {
     private static final long serialVersionUID = -3972164997710223460L;
 
     private transient Integer maxHeight;
@@ -50,19 +51,20 @@ public class CollectionDisplayProperties implements HasImage {
     private Boolean hideCollectionSidebar = false;
 
     public CollectionDisplayProperties() {
-        this(false,false,false,false,false,false, false);
+        this(false, false, false, false, false, false, false);
     }
-    
-    public CollectionDisplayProperties(boolean whitelable, boolean customHeaderEnabled, boolean customLogoEnabled, boolean featuredResourceEnabled, boolean searchEnabled, boolean subCollectionEnabled, boolean hideCollectionSidebar) {
+
+    public CollectionDisplayProperties(boolean whitelable, boolean customHeaderEnabled, boolean customLogoEnabled, boolean featuredResourceEnabled,
+            boolean searchEnabled, boolean subCollectionEnabled, boolean hideCollectionSidebar) {
         this.whitelabel = whitelable;
-        this.customDocumentLogoEnabled= customLogoEnabled;
+        this.customDocumentLogoEnabled = customLogoEnabled;
         this.customHeaderEnabled = customHeaderEnabled;
-        this.featuredResourcesEnabled =featuredResourceEnabled;
+        this.featuredResourcesEnabled = featuredResourceEnabled;
         this.searchEnabled = searchEnabled;
         this.subCollectionsEnabled = subCollectionEnabled;
         this.hideCollectionSidebar = hideCollectionSidebar;
     }
-    
+
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     private String css;
@@ -75,7 +77,6 @@ public class CollectionDisplayProperties implements HasImage {
             inverseJoinColumns = { @JoinColumn(
                     nullable = false, name = "resource_id") })
     private List<Resource> featuredResources = new ArrayList<>();
-
 
     @Transient
     private Institution institution;

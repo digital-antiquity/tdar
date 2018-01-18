@@ -18,6 +18,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Formulate a Luence/SOLR range query
+ * 
  * @author abrin
  *
  * @param <C>
@@ -28,7 +29,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     private boolean inclusive = true;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-//    private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd");
+    // private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd");
 
     @SafeVarargs
     public RangeQueryPart(String field, Range<C>... values) {
@@ -100,9 +101,9 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         }
 
         String objString = object.toString();
-//        if (StringUtils.isNumeric(objString) && StringUtils.isNotBlank(objString)) {
-//            return objString;
-//        }
+        // if (StringUtils.isNumeric(objString) && StringUtils.isNotBlank(objString)) {
+        // return objString;
+        // }
         return objString;
     }
 

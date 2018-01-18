@@ -34,7 +34,7 @@ import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Resource;
@@ -325,7 +325,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Transactional(readOnly = false)
     public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
-            EmailMessageType type, GeneralPermissions permission, Date expires) {
+            EmailMessageType type, Permissions permission, Date expires) {
         Email email = new Email();
         email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + ": " + resource.getTitle());
         email.setTo(requestor.getEmail());

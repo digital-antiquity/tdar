@@ -22,8 +22,8 @@ import com.opensymphony.xwork2.TextProvider;
 /**
  * @author abrin
  * 
- * This is the basic class for managing Lucene/Solr Queries. It handles a number of issues related to queries from building them out to formatting the
- * "text" description of the query part. The main entry into this class is "generateQueryString()"
+ *         This is the basic class for managing Lucene/Solr Queries. It handles a number of issues related to queries from building them out to formatting the
+ *         "text" description of the query part. The main entry into this class is "generateQueryString()"
  * 
  * @param <C>
  */
@@ -139,7 +139,8 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     /**
-     * Given a list of values (or a single one), prepend the text with the field name. Then append boost if needed  
+     * Given a list of values (or a single one), prepend the text with the field name. Then append boost if needed
+     * 
      * @param sb
      * @param fieldName
      */
@@ -159,7 +160,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     /**
-     * Format the specified value as a string, apply the phrase formatters, and then append it to the query.  
+     * Format the specified value as a string, apply the phrase formatters, and then append it to the query.
      * 
      * E.g. take a Institution, extract the name, format it and escape it ("Arizona\ State\ University"
      * 
@@ -200,6 +201,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
 
     /**
      * Either call "toString()" or get the name of the enum
+     * 
      * @param index
      * @return
      */
@@ -304,7 +306,6 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         return this;
     }
 
-    
     /**
      * Get a "Plain Text" version of the query
      */
@@ -352,27 +353,27 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.operator = operator;
     }
 
-//    /**
-//     * @param inverse
-//     *            the inverse to set
-//     */
-//    public void setInverse(boolean inverse) {
-//        this.inverse = inverse;
-//    }
+    // /**
+    // * @param inverse
+    // * the inverse to set
+    // */
+    // public void setInverse(boolean inverse) {
+    // this.inverse = inverse;
+    // }
 
-//    protected String getInverse() {
-//        if (isInverse()) {
-//            return NOT;
-//        }
-//        return "";
-//    }
-//
-//    /**
-//     * @return the inverse
-//     */
-//    public boolean isInverse() {
-//        return inverse;
-//    }
+    // protected String getInverse() {
+    // if (isInverse()) {
+    // return NOT;
+    // }
+    // return "";
+    // }
+    //
+    // /**
+    // * @return the inverse
+    // */
+    // public boolean isInverse() {
+    // return inverse;
+    // }
 
     public List<PhraseFormatter> getPhraseFormatters() {
         return phraseFormatters;
@@ -450,8 +451,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         StringBuilder builder = new StringBuilder(" ");
         if (getOperator() == Operator.OR) {
             builder.append(provider.getText("fieldQueryPart.or"));
-        }
-        else {
+        } else {
             builder.append(provider.getText("fieldQueryPart.and"));
         }
         builder.append(' ');
