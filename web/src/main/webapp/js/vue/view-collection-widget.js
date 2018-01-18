@@ -242,6 +242,7 @@ var _init = function(appId) {
         	var progress = $("#upload-progress");
         	var form 	 = $("#upload-form");
         	var progressBar = $("#upload-progress-status");
+        	var progressMessage = $("#progress-message");
         	var title  = $("#progress-title");
         	this.lastSavedCollectionId = collectionId;
         	
@@ -250,6 +251,7 @@ var _init = function(appId) {
         	
         	axios.post("/api/search/"+url+"&collectionId="+collectionId).then(function(res) {
             	progress.show();
+            	progressMessage.show();
             	form.hide();
         		console.log("Finished adding!!");
         		vapp.updateProgressBar(collectionId);
@@ -258,6 +260,7 @@ var _init = function(appId) {
         
         _resetCollectionSelectionState : function(){
         	var progress = $("#upload-progress");
+        	var progressMessage = $("#progress-message");
         	var form 	 = $("#upload-form");
             var $select = $('#collection-list').selectize();
             var title  = $("#progress-title");
@@ -267,6 +270,7 @@ var _init = function(appId) {
             $select[0].selectize.clear();
             vapp._enableSubmitButton();
         	progress.hide();
+        	progressMessage.hide();
         	title.hide();
         	form.show();
         },
@@ -396,15 +400,24 @@ var _init = function(appId) {
              }
         },
         
+        
+        
         updateProgressBar: function(collectionId){
             var vapp = this;
             
         	axios.get('/api/search/checkstatus?collectionId='+collectionId).
         	then(function(res){
         	    var percentComplete = parseInt(res.data.percentComplete);
-        	    var progressBar = $("#upload-progress-status");
+        	    var message = res.data.message;
         	    
+        	    var progressBar 	= $("#upload-progress-status");
+        	    var progressMessage = $("#progress-message");
         	    console.log("progress is "+percentComplete+"%");
+        	    
+        	    if(message=null){message = "";}
+        	    
+        	    progressMessage.text(message)
+        	    
         	    progressBar.css("width", percentComplete + "%")
         	      .attr("aria-valuenow", percentComplete)
         	      .text(percentComplete + "% Complete");
@@ -416,9 +429,11 @@ var _init = function(appId) {
         	    }
         	    else {
         	    	console.log("Progress is 100%");
+        	    	//display the complete message.
+        	    	var collection =  $('#collection-list').text();
+        	    	$("#progress-complete-text").text("Results successfully saved to "+collection);
+        	    	$("#progress-complete-alert").show();
         	    	vapp._resetCollectionSelectionState();
-//        	    	$("#modal").modal('hide');
-        	    	
         	    }
         	    
         	}).catch(function(res){
