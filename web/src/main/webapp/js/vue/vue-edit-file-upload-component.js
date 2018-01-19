@@ -17,6 +17,14 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
 
     var _setProgress = function(progress) {
         $('#progress .progress-bar').css('width', progress + '%');
+        if (progress == 100) {
+            $("#uploadstatus").html("Complete");
+        } else if (progress < 1) {
+            $("#uploadstatus").html("");
+        } else {
+            $("#uploadstatus").html("Uploading...");            
+        }
+
 
     }
 
@@ -439,7 +447,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     }
 
                 }
-
+                var _app = this;
                 var up = $('#fileupload').fileupload({
                     url : this.url,
                     dataType : 'json',
@@ -447,7 +455,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     formData : function(form) {
                         // override formData
                         var data = [];
-                        if (this.ticketId == undefined || this.ticketId == -1) {
+                        if (_app.ticketId == undefined || _app.ticketId == -1) {
                             data.push({
                                 name : "ticketRequested",
                                 value : true
@@ -455,7 +463,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                         } else {
                             data.push({
                                 name : "ticketId",
-                                value : this.ticketId
+                                value : _app.ticketId
                             });
                         }
                         console.log(data);

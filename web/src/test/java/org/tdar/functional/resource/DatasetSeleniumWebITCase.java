@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
@@ -113,6 +114,8 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         File replaceFile = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, "tab_mapping_dataset.tab");
         sel.sendKeys(replaceFile.getAbsolutePath());
         waitFor(".undo-replace-button");
+        waitFor(ExpectedConditions.attributeToBeNotEmpty(find(By.id("ticketId")).first(), "value"));
+
 
         submitForm();
 

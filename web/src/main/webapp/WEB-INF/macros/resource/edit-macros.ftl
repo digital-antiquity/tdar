@@ -827,7 +827,7 @@ to singleFileUpload, continue lifting useful logic here into singleFileUpload (e
 jquery validation hooks?)
 MARTIN: it's also used by the FAIMS Archive type on edit.
 -->
-<#-- emit file upload section for non-async uploads 
+<#-- emit file upload section for non-async uploads --> 
     <#macro upload uploadLabel="File" showMultiple=false divTitle="Upload File" showAccess=true>
         <@_sharedUploadFile>
             <@_singleFileUpload>
@@ -870,7 +870,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         </div>
         <@helptext.confidentialFile />
     </div>
-    </#macro> -->
+    </#macro> 
     <#macro _singleFileUpload typeLabel="${resource.resourceType.label}">
         <#if !ableToUploadFiles>
         <b>note:</b> you have not been granted permission to upload or modify files<br/>

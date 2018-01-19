@@ -1263,8 +1263,9 @@ public abstract class AbstractSeleniumWebITCase {
         }
         waitFor((WebDriver driver) -> driver.findElement(By.id("fileupload")).isEnabled());
         find(By.id("fileupload")).sendKeys(uploadFile.getAbsolutePath());
-        waitFor(".delete-button");
+        waitFor(ExpectedConditions.textToBePresentInElementLocated(By.id("uploadstatus"), "Complete"));
         find("#proxy0_conf").val(restriction.name());
+        waitFor(ExpectedConditions.attributeToBeNotEmpty(find(By.id("ticketId")).first(), "value"));
     }
 
     protected void prepIndexedFields(Collection<String> fieldNames) {
