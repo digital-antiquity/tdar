@@ -452,6 +452,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     url : this.url,
                     dataType : 'json',
                     paramName : "uploadFile",
+                    // required to ensure that we don't send two files separately and not use the same ticket
+                    singleFileUploads: false,
                     formData : function(form) {
                         // override formData
                         var data = [];

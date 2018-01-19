@@ -1282,14 +1282,15 @@ public abstract class AbstractSeleniumWebITCase {
     protected void expandAllTreeviews() {
         int giveupCount = 0;
         // yes, you really have to do this. the api has no "expand all" method.
-        WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
-        while (!visibleElements.isEmpty() && (giveupCount++ < 100)) {
-            waitFor(TdarExpectedConditions.stabilityOfElement(".expandable-hitarea"), Duration.of(10, ChronoUnit.SECONDS), Duration.of(125, ChronoUnit.MILLIS))
-                    .click();
-            // visibleElements.click();
-            visibleElements = find(".expandable-hitarea").visibleElements();
-        }
-        assertTrue("trying to expand all listview subtrees", giveupCount < 100);
+        executeJavascript("$(\".expandable-hitarea\").click();");
+//        WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
+//        while (!visibleElements.isEmpty() && (giveupCount++ < 100)) {
+//            waitFor(TdarExpectedConditions.stabilityOfElement(".expandable-hitarea"), Duration.of(10, ChronoUnit.SECONDS), Duration.of(125, ChronoUnit.MILLIS))
+//                    .click();
+//            // visibleElements.click();
+//            visibleElements = find(".expandable-hitarea").visibleElements();
+//        }
+//        assertTrue("trying to expand all listview subtrees", giveupCount < 100);
     }
 
     protected void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {

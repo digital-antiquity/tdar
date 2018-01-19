@@ -42,9 +42,4 @@
     </div>
     </#macro>
 
-    <#macro localJavascript>
-    $(document).ready(function() {
-	    $('#fileAsyncUpload').rules('add', 'asyncFilesRequired');
-    });
-    </#macro>
 </#escape>
