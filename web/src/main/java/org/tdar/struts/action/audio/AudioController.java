@@ -24,10 +24,6 @@ public class AudioController extends AbstractInformationResourceController<Audio
 
     private static final long serialVersionUID = -6026630423934668323L;
 
-    @Override
-    protected String save(Audio persistable) throws TdarActionException {
-        return super.save(persistable);
-    }
 
     @Override
     public Class<Audio> getPersistableClass() {

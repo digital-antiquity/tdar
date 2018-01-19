@@ -43,17 +43,8 @@ public class OntologyController extends AbstractSupportingInformationResourceCon
     @Autowired
     private transient OntologyService ontologyService;
 
-    /**
-     * Sets the various pieces of metadata on this ontology and then saves it.
-     * 
-     * @param ontology
-     * @throws TdarActionException
-     */
-    @Override
-    protected String save(Ontology ontology) throws TdarActionException {
-        String save2 = super.save(ontology);
-        saveCategories();
-        return save2;
+    public void saveCustomMetadata() {
+        super.saveCategories();
     }
 
     public Ontology getOntology() {

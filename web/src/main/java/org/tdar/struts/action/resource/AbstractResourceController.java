@@ -35,6 +35,7 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
@@ -193,7 +194,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public String save(Resource resource) {
         getLogger().debug("calling save");
         saveBasicResourceMetadata();
+        saveCustomMetadata();
+        resolvePostSaveAction(getPersistable());
         return SUCCESS;
+    }
+
+    public void saveCustomMetadata() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void resolvePostSaveAction(R persistable) {
+        // TODO Auto-generated method stub
+        
     }
 
     @Override
