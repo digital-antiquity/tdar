@@ -114,6 +114,8 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         File replaceFile = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, "tab_mapping_dataset.tab");
         sel.sendKeys(replaceFile.getAbsolutePath());
         waitFor(".undo-replace-button");
+        waitFor(ExpectedConditions.textToBePresentInElementLocated(By.id("uploadstatus"), "Complete"));
+
         waitFor(ExpectedConditions.attributeToBeNotEmpty(find(By.id("ticketId")).first(), "value"));
 
 

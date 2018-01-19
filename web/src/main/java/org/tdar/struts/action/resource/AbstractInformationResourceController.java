@@ -600,11 +600,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return uploadSettings;
     }
 
-    public void setUploadSettings(String uploadSettings) {
-        this.uploadSettings = uploadSettings;
-    }
 
     public String getFileUploadSettings() {
+        initializeFileProxies();
         FileUploadSettings settings = new FileUploadSettings();
         settings.setAbleToUpload(isAbleToUploadFiles());
         if (this instanceof DatasetController) {

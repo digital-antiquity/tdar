@@ -37,7 +37,7 @@ ${vueFilesFallback!'{{ files }}'}
 
 <template id="fpart-template">
 <tr v-bind:id="rowId">
-    <td>{{index}}</td>
+    <td>{{ 1 + index}}</td>
     <td><label class="control-label">Filename</label>
         <div class="controls controls-row">
             <div class="span5">
@@ -92,7 +92,10 @@ ${vueFilesFallback!'{{ files }}'}
                 </div>
             </div>
         </div></td>
-    <td style="width: 10%"><span
+    <td style="width: 10%">
+    <!--  only show replace when we have an originalFileVersionId (which means we round-tripped to the server) -->
+    <span v-if="file.originalFileVersionId != undefined ">
+    <span
         class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" :disabled="inputDisabled"
         :id="wrapperId" style="width: 6em; text-align: left"> <i
             class="icon-refresh icon-white"> </i> <span>Replace</span> 
@@ -104,7 +107,7 @@ ${vueFilesFallback!'{{ files }}'}
             v-if="file.replaceFile != undefined" @click="undoReplace"
             class="btn btn-small btn-warning undo-replace-button btn-block"
             title="Restore Original File">Cancel</button>
-
+      </span>
 
 
         <div class="delete">
