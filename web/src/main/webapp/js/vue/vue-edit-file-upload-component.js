@@ -357,6 +357,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 fileUploadAdd : function(e, data) {
                     // add a file
                     console.log('fileUploadAdd:', e, data);
+                    $(".submitButton, #fileAsyncUpload").prop("disabled", true);
+                    $(".fileinput-button").addClass("disabled");
+
                     var validFiles = new Array();
                     var _app = this;
                     data.originalFiles.forEach(function(file) {
@@ -396,11 +399,17 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     if (validFiles.length > 0) {
                         return true;
                     }
+                    this._enable();
                     return false;
+                },
+                _enable: function() {
+                    $(".submitButton, #fileAsyncUpload").prop("disabled", false);
+                    $(".fileinput-button").removeClass("disabled");
                 },
                 fileUploadAddDone : function(e, data) {
                     // complete the add action
                     var _app = this;
+                    this._enable();
                     var active = __matching(data.result.files, _app.files, "filename");
                     if (!data.result.ticket) {
                         return;
