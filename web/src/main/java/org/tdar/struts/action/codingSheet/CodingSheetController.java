@@ -36,9 +36,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     private static final long serialVersionUID = 377533801938016848L;
 
-    @Autowired
-    private transient CodingSheetService codingSheetService;
-
     private Ontology ontology;
 
     @Override

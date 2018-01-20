@@ -193,8 +193,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     public String save(Resource resource) {
         getLogger().debug("calling save");
-        saveBasicResourceMetadata();
         saveCustomMetadata();
+        saveBasicResourceMetadata();
         resolvePostSaveAction(getPersistable());
         return SUCCESS;
     }

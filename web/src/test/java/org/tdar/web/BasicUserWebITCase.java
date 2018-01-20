@@ -1,5 +1,6 @@
 package org.tdar.web;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -131,6 +132,9 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     public void testMinimalCreate() {
         for (ResourceType resourceType : ResourceType.values()) {
+            if (resourceType == ResourceType.ARCHIVE) {
+                continue;
+            }
             if (resourceType.isSupporting()) {
                 if (resourceType.isCodingSheet()) {
                     createMinimalResource(resourceType, "doh, a female dear\nfa, a long long way to run\n");
