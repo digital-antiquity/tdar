@@ -130,7 +130,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     protected String save(InformationResource document) throws TdarActionException {
         // save basic metadata
-        getLogger().debug("save ir");
 //        saveBasicResourceMetadata();
         
         // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
@@ -156,12 +155,26 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         fsw.setTicketId(getTicketId());
         fsw.setUploadedFilesFileName(getUploadedFilesFileName());
         fsw.setUploadedFiles(getUploadedFiles());
+        
+        
+        if (isBulkUpload()) {
+            super.save(getPersistable());
+            return bulkUploadSave();
+        }
+        getLogger().debug("save ir");
+
         AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(), isEditor());
         resourceSaveControllerService.setupFileProxiesForSave(proxy, authWrapper, fsw, this);
         setHasFileProxyChanges(fsw.isFileProxyChanges());
         super.save(document);
+        
         return SUCCESS;
 
+    }
+
+    protected String bulkUploadSave() throws TdarActionException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     protected void loadResourceProviderInformation() {
