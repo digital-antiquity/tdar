@@ -45,7 +45,7 @@ public class ResourceViewRedirectAction extends AbstractAuthenticatableAction {
     public String view() {
         setResource(getGenericService().find(Resource.class, getId()));
         if (getResource() == null) {
-            getLogger().error("trying to view information resource but it was null.");
+            getLogger().debug("trying to view information resource but it was null.");
             addActionError(getText("resourceController.not_found"));
             return NOT_FOUND;
         }
