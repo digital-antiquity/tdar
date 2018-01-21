@@ -56,23 +56,8 @@ public class SensoryDataController extends AbstractInformationResourceController
         Collections.sort(sensoryDataImages);
         Collections.sort(sensoryDataScans);
     }
-
-    /**
-     * Save basic metadata of the registering concept.
-     * 
-     * @param concept
-     * @throws TdarActionException
-     */
-    @Override
-    protected String save(SensoryData sensoryData) throws TdarActionException {
-        String result = super.save(sensoryData); 
-
-        saveCustomMetadata();
-
-        getGenericService().saveOrUpdate(sensoryData);
-        return result;
-    }
-
+    
+    
     public void saveCustomMetadata() {
         AbstractSequenced.applySequence(getSensoryDataImages());
         resourceService.saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataImages(),
