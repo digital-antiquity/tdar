@@ -97,7 +97,6 @@
         <js>/js/tdar.authority-management.js</js>
         <js>/js/tdar.auth.js</js>
         <js>/js/tdar.inheritance.js</js>
-        <js>/js/tdar.internalemail.js</js>
         <js>/js/tdar.download.js</js>
         <js>/js/tdar.pricing.js</js>
         <js>/js/tdar.contexthelp.js</js>
