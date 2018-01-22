@@ -20,7 +20,7 @@
         <!-- tdar "core" files -->
         <module>core</module>
         <module>search</module>
-        <module>faims</module>
+        <!-- <module>faims</module> -->
         
         <module>web-base</module>
         <module>web-test</module>
