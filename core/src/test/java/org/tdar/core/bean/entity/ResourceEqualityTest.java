@@ -11,6 +11,7 @@ import org.apache.commons.lang.ClassUtils;
 import org.junit.Test;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 
 public class ResourceEqualityTest {
@@ -26,8 +27,8 @@ public class ResourceEqualityTest {
     // w.r.t equality is the same as Object.equals() and Object.hashCode()
     public void testBaseEqualityShouldBeBasedOnIdentity() {
 
-        Resource r1 = new Resource();
-        Resource r2 = new Resource();
+        Document r1 = new Document();
+        Document r2 = new Document();
 
         assertNotSame("objects are not identical", r1, r2);
         r1.equals(r2);
