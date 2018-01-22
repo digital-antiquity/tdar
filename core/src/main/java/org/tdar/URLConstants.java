@@ -26,5 +26,7 @@ public interface URLConstants {
     String TDAR_NAMESPACE_URL = "http://www.tdar.org/namespace";
     String TDAR_NAMESPACE_PREFIX = "tdar";
     String BOOKMARKS = "/dashboard/bookmarks";
+    
+    String SEARCH = "/search";  
 
 }

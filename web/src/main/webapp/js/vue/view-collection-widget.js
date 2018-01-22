@@ -414,7 +414,7 @@ var _init = function(appId) {
         	    var progressMessage = $("#progress-message");
         	    console.log("progress is "+percentComplete+"%");
         	    
-        	    if(message=null){message = "";}
+        	    if(message==null){message = "";}
         	    
         	    progressMessage.text(message)
         	    
