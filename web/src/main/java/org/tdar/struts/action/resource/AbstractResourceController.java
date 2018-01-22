@@ -36,6 +36,7 @@ import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
@@ -195,8 +196,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getLogger().debug("calling save");
         saveCustomMetadata();
         saveBasicResourceMetadata();
+        String toReturn = SUCCESS;
+        if (resource instanceof InformationResource) {
+            try { 
+            toReturn = saveInformationResource(getPersistable());
+            } catch (TdarActionException e) {
+                addActionErrorWithException(e.getMessage(), e);
+                return INPUT;
+            }
+        }
         resolvePostSaveAction(getPersistable());
-        return SUCCESS;
+        return toReturn;
     }
 
     public void saveCustomMetadata() {
@@ -265,6 +275,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         getLogger().debug("success: {}", getSaveSuccessPath());
         return save2;
+    }
+
+    public String saveInformationResource(R persistable) throws TdarActionException {
+        return SUCCESS;
     }
 
     @SkipValidation
