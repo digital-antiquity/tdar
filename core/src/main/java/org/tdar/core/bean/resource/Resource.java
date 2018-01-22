@@ -153,7 +153,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "resource", propOrder = {})
 @XmlTransient
-public abstract class Resource implements Persistable,
+public class Resource implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable, 
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, ConfidentialViewable, Addressable,
         DeHydratable, XmlLoggable, Slugable, HasAuthorizedUsers {
