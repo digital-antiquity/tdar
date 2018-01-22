@@ -47,8 +47,8 @@
         <!-- LICENSE:CC Attribution 3.0 Unported -->
         <js>/components/leaflet/dist/leaflet.js</js>
         <js>/components/leaflet-choropleth/dist/choropleth.js</js>
-        <js>/components/select2/dist/js/select2.min.js</js>
-        <css>/components/select2/dist/css/select2.min.css</css>
+        <!-- <js>/components/select2/dist/js/select2.min.js</js> -->
+        <!-- <css>/components/select2/dist/css/select2.min.css</css> -->
         <!--  https://github.com/CliffCloud/Leaflet.Sleep -->
         <js>/includes/Leaflet.Sleep.js</js>
         <css>/components/leaflet/dist/leaflet.css</css>
@@ -71,8 +71,8 @@
         <js>/js/tdar.bulk.js</js>
         <js>/js/tdar.repeatrow.js</js>
         <js>/js/tdar.autocomplete.js</js>
-        <js>/js/tdar.select2-autocomplete.js</js>
-        <css>/css/tdar.select2.css</css>        
+        <!-- <js>/js/tdar.select2-autocomplete.js</js> -->
+        <!-- <css>/css/tdar.select2.css</css>         -->
         <js>/js/tdar.c3graphsupport.js</js>
         <js>/js/tdar.c3graph.js</js>
         <js>/js/tdar.validate.js</js>
