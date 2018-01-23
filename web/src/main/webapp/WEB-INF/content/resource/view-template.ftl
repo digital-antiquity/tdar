@@ -628,7 +628,7 @@
             _localJavaScript();
         }
 
-        TDAR.internalEmailForm.init();    
+//        TDAR.internalEmailForm.init();    
     });
 </script>
 

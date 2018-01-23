@@ -203,7 +203,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 addActionErrorWithException(e.getMessage(), e);
                 return INPUT;
             }
+            if (this instanceof BulkUploadController) {
+                resolvePostSaveAction(getPersistable());
+                return toReturn;
+            }
         }
+
         saveCustomMetadata();
         saveBasicResourceMetadata();
         resolvePostSaveAction(getPersistable());
