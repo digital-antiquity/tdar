@@ -105,7 +105,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             logger.info("({}) creators in sitemap", totalCreator);
             total += totalCreator;
 
-            ScrollableResults activeCollections = genericService.findAllScrollable(SharedCollection.class);
+            ScrollableResults activeCollections = genericService.findAllActiveScrollable(SharedCollection.class);
             int totalCollections = 0;
             total += processCollections(wsg, activeCollections);
             activeCollections = genericService.findAllScrollable(ListCollection.class);
@@ -147,7 +147,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
         int totalCollections = 0;
         while (activeCollections.next()) {
             T collection = (T) activeCollections.get(0);
-            if (collection.isHidden()) {
+            if (!collection.isVisibleAndActive()) {
                 continue;
             }
             String url = UrlService.absoluteSecureUrl((VisibleCollection)collection);
