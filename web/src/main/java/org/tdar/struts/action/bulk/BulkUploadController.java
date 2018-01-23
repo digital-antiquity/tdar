@@ -62,6 +62,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private long bulkContentLength;
 
     protected String bulkUploadSave() throws TdarActionException {
+        saveBasicResourceMetadata();
         Status oldStatus = getPersistable().getStatus();
         getPersistable().setStatus(Status.DELETED);
         getGenericService().markReadOnly(getPersistable());
