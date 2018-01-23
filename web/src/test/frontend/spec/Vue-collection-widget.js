@@ -9,27 +9,100 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         // uninstall the moxios proxy
         moxios.uninstall(axios);
     });
-
     
-    //saveAddToCollectionChanges
     
+    it("Creates a new collection", function(done){
+    	var fix = setupFixture("true","true","1");
+        moxios.install(axios);
+        
+        moxios.stubRequest('api/collection/newcollection', {
+        	    "name": "abc",
+        	    "id": 66061,
+        	    "status": "success"
+        });
+        
+        moxios.stubRequest('/api/collection/resourcecollections?resourceId=1', {
+            status: 200,
+            response: {
+            	    "managed": [],
+            	    "unmanaged": [
+            	        {
+        	            "sortBy": "TITLE",
+        	            "id": 66061,
+        	            "name": "Test",
+        	            "description": "",
+        	            "unmanagedResources": [
+            	                407547,
+            	                407544,
+            	                407545
+            	            ],
+            	            "resources": []
+            	        }
+            	    ]
+            }
+    });
+        
+        var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
+        
+        vapp.newCollectionName = "ABC";
+        vapp.addToCollection();
+        Vue.nextTick(function() {
+        	expect(vapp.collections.unmanaged[0].name).toBe("Test");
+        });
+        
+        done();
+    });
     
     //cancelAddToCollectionChanges
     it("presses the cancel button to hide the modal window and reset the form.", function(done){
-    	var fix = setupFixture("true","true","111");
+    	var fix = setupFixture("true","true","2");
 
         // only install the moxios proxy ONCE the fixture has been setup
         moxios.install(axios);
-        // stub out moxios resquest/responses
-        moxios.stubRequest('/api/collection/resourcecollections?resourceId=111', {
+        
+        //Mock a result with 2 existing Unmanaged collections. 
+        moxios.stubRequest('/api/collection/resourcecollections?resourceId=2', {
                 status: 200,
                 response: {
-                	    "managed": [],
+                	    "managed": [{
+            	            "sortBy": "TITLE",
+            	            "id": 65989,
+            	            "name": "Test Collection",
+            	            "description": "",
+            	            "unmanagedResources": [
+                	                407547,
+                	                407544,
+                	                407545
+                	            ],
+                	            "resources": []
+                	        },{
+                	            "sortBy": "TITLE",
+                	            "id": 65989,
+                	            "name": "Test Collection",
+                	            "description": "",
+                	            "unmanagedResources": [
+                    	                407547,
+                    	                407544,
+                    	                407545
+                    	            ],
+                    	            "resources": []
+                    	        },{
+                    	            "sortBy": "TITLE",
+                    	            "id": 65989,
+                    	            "name": "Test Collection",
+                    	            "description": "",
+                    	            "unmanagedResources": [
+                        	                407547,
+                        	                407544,
+                        	                407545
+                        	            ],
+                        	            "resources": []
+                        	        }],
                 	    "unmanaged": [
                 	        {
             	            "sortBy": "TITLE",
             	            "id": 65989,
-            	            "name": "Brian's Test Collection",
+            	            "name": "Test Collection",
             	            "description": "",
             	            "unmanagedResources": [
                 	                407547,
@@ -39,7 +112,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
                 	            "resources": []
                 	        },
                 	        {
-                	            "name": "TEST (Brian)",
+                	            "name": "Existing Unmanaged Collection",
                 	            "id": 23471,
                 	            "description": "",
                 	            "formattedDescription": "",
@@ -70,52 +143,66 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         
         // make VueJS "tick" or re-render
         Vue.nextTick(function() {
+        	//The initial state is to have one existing collection.
+        	//Verify that the collection is in the vue model.
         	expect(vapp.unmanagedCollectionsToRemove).toHaveLength(0);
             expect(fix.find("#existing-collections-list li")).not.toHaveLength(0);
-            expect(fix.find("#existing-collections-list")).toContainText('TEST (Brian)');
+            expect(fix.find("#existing-collections-list")).toContainText('Existing Unmanaged Collection');
             expect(vapp.collections.unmanaged).toHaveLength(2);
             
+            //Simulate clicking the remove link.
             vapp.removeResourceFromCollection(23471,'UNMANAGED');
  
+            
+            //Verify that the object is removed, and theres only one collection displayed. 
             Vue.nextTick(function() {
-               	 expect(vapp.unmanagedCollectionsToRemove).toHaveLength(1);
-            	 //expect(vapp.collections.unmanaged).toHaveLength(1);
+            	 expect(vapp.unmanagedCollectionsToRemove).toHaveLength(1);
+            	 console.debug(vapp.collections.unmanaged);
+            	 
+                expect(vapp.collections.unmanaged).toHaveLength(2);
             	vapp.cancelAddToCollectionChanges();
             });
             
             Vue.nextTick(function() {
             	expect(vapp.unmanagedCollectionsToRemove).toHaveLength(0);
            	 	expect(vapp.collections.unmanaged).toHaveLength(2);
-           	 	expect(fix.find("#existing-collections-list")).toContainText('TEST (Brian)');
+           	 	expect(fix.find("#existing-collections-list")).toContainText('Existing Unmanaged Collection');
            	 	expect(vapp.collections.unmanaged).toHaveLength(2);
             });
+            
             done();
         });
         
     });
     
-    
-    //addToCollection
-    
-    
-    
-    
     //removeResourceFromCollection
     it("removes a resource from a collection", function(done){
-    	var fix = setupFixture("true","true","111");
+    	var fix = setupFixture("true","true","3");
 
         // only install the moxios proxy ONCE the fixture has been setup
         moxios.install(axios);
+        
         // stub out moxios resquest/responses
-        moxios.stubRequest('/api/collection/resourcecollections?resourceId=111', {
+        moxios.stubRequest('/api/collection/resourcecollections?resourceId=3', {
                 status: 200,
                 response: {
-                	    "managed": [],
+                	    "managed": [  {
+            	            "sortBy": "TITLE",
+            	            "id": 65989,
+            	            "name": "Test Collection",
+            	            "description": "",
+            	            "unmanagedResources": [
+                	                407547,
+                	                407544,
+                	                407545
+                	            ],
+                	            "resources": []
+                	        }],
                 	    "unmanaged": [
                 	        {
             	            "sortBy": "TITLE",
             	            "id": 65989,
-            	            "name": "Brian's Test Collection",
+            	            "name": "Test Collection",
             	            "description": "",
             	            "unmanagedResources": [
                 	                407547,
@@ -125,7 +212,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
                 	            "resources": []
                 	        },
                 	        {
-                	            "name": "TEST (Brian)",
+                	            "name": "Existing Unmanaged Collection",
                 	            "id": 23471,
                 	            "description": "",
                 	            "formattedDescription": "",
@@ -148,17 +235,81 @@ describe("Vue-collection-widget.js: collection widget test", function() {
                 	    ]
                 }
         });
-    	done();
+        var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
+        vapp.$forceUpdate();
+
+        Vue.nextTick(function(){
+        	vapp.removeResourceFromCollection(vapp.collections.managed[0],"MANAGED");
+        	expect(vapp.collections.managed.length).toBe(0);
+        	expect(vapp.managedCollectionsToRemove.length).toBe(1);
+        });
+        done();
+        
     });
     
-    ///api/lookup/collection?permission=ADMINISTER_COLLECTION
     it("gets a list of collections the user has permissions to", function(done){
-    	done();
+    	var fix = setupFixture("false","true","4");
+        moxios.install(axios);
+
+       
+        moxios.stubRequest('/api/collection/resourcecollections?resourceId=4', {
+        	status: 200,
+            response:{
+            "managed": [
+                {
+                    "status": "ACTIVE",
+                    "name": "Test 1234",
+                    "description": "",
+                    "detailUrl": "/collection/66024/test-1234",
+                    "id": 66024
+                },
+                {
+                    "status": "ACTIVE",
+                    "name": "Cibola Prehistory Project (Collection)",
+                    "description": "",
+                    "detailUrl": "/collection/6995/cibola-prehistory-project-collection",
+                    "id": 6995
+                }
+            ],
+            "unmanaged": [
+                {
+                    "status": "ACTIVE",
+                    "name": "abc",
+                    "description": "",
+                    "detailUrl": "/collection/66061/abc",
+                    "id": 66061
+                },
+                {
+                    "status": "ACTIVE",
+                    "name": "New Test Collection",
+                    "description": "",
+                    "detailUrl": "/collection/66056/new-test-collection",
+                    "id": 66056
+                },
+                {
+                    "status": "ACTIVE",
+                    "name": "Test",
+                    "description": "",
+                    "detailUrl": "/collection/66057/test",
+                    "id": 66057
+                }
+            ]
+            }
+        });
+        var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
+        
+        vapp.$forceUpdate();
+        
+        Vue.nextTick(function() {
+	       	expect(vapp.collections.managed.length).toBe(2);
+	       	expect(vapp.collections.unmanaged.length).toBe(3);
+	    	done();
+        });
     });
     
     
     it("prevents non-admins from selecting the box.",function(done){
-    	var fix = setupFixture("false","true","111");
+    	var fix = setupFixture("false","true","5");
         var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
         
         vapp.$forceUpdate();
@@ -166,18 +317,18 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         Vue.nextTick(function() {
         	expect(fix.find("#managedResource").is(":disabled")).toBe(true);
         });
-    	done();
-    })
+        done();
+    });
 
     it("gracefully handles page with no map elements", function(done) {
-    	var fix = setupFixture("true","true","111");
+    	var fix = setupFixture("true","true","5");
 
-        // only install the moxios proxy ONCE the fixture has been setup
         moxios.install(axios);
 
         var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
+        
         // stub out moxios resquest/responses
-        moxios.stubRequest('/api/collection/resourcecollections?resourceId=111', {
+        moxios.stubRequest('/api/collection/resourcecollections?resourceId=5', {
                 status: 200,
                 response: {managed:[{id:5,name:'manhattan'}],unmanaged:[]}
         });

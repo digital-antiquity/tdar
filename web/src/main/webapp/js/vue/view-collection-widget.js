@@ -107,6 +107,7 @@ var _init = function(appId) {
 	        	console.log("Forcing resource to be managed");
 	            Vue.set(this,"managedResource",true);
 	        }
+	        
 		    Vue.set(this, 'resourceId',$e.data('resourceId'));
 		    this._getCollectionsForResource();
         }
@@ -178,17 +179,28 @@ var _init = function(appId) {
         },
         
         _getCollectionsForResource : function(){
-        	console.log("Getting all collections for the active resource");
+        	console.log("Getting all collections for the resource "+this.resourceId);
             var self = this;
-            var data = {
-                resourceId : this.resourceId
-            }
-            axios.get("/api/collection/resourcecollections?resourceId="+this.resourceId).then(function(response) {
+            var url = "/api/collection/resourcecollections?resourceId="+this.resourceId;
+            
+            console.log("Calling "+url);
+
+            var called = false;
+            axios.get(url).then(function(response) {
+            	console.log("response is:");
+            	console.debug(response.data);
+            	called = true;
+            	console.log("Managed collections: "+response.data.managed.length);
+            	console.log("Unmanaged collections: "+response.data.unmanaged.length);
                 Vue.set(self,'collections',response.data);
             }).catch(function(error){
                 console.error("An error ocurred getting a list of collections for this resource");
                 console.error(error);
             });
+            
+            console.log("This was called? ", called);
+            
+            
         },
         
         _removeResourceFromCollection: function(collectionId,section){
