@@ -15,8 +15,13 @@
             <@common.resourceUsageInfo />
 </div>
 </div>
+
 <div class="row">
 <div class="span9">
+
+
+
+
 
     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
             <#if term?has_content >Limited to: ${term}</#if>
@@ -40,6 +45,40 @@
         </tbody>
     </table>
             <@search.basicPagination "Records" />
+
+<br/>
+<br/>
+<h4>Revision History</h4>
+<table class="table tableFormat">
+    <tr>
+        <th>When</th>
+        <th>Who</th>
+        <th>What</th>
+        <th>Duration</th>
+        <th>Event</th>
+    </tr>
+    <#list logEntries as entry>
+        <tr>
+            <td>${entry.timestamp}</td>
+            <td>${(entry.person.properName)!''}</td>
+            <td>${entry.type!''}</td>
+            <td>${entry.timeInSeconds!'?'}</td>
+            <td>${entry.logMessage}</td>
+        </tr>
+    </#list>
+</table>
+
+<h4>Revisions</h4>
+    <table class="table">
+        <thead>
+            <tr><th>filename</th><th>date</th><th>size</th></tr>
+        </thead>
+        <tbody>
+            <#list xmlFiles as file>
+                <tr><td><a href="<@s.url value="/collection/admin/xml?id=${id?c}&filename=${file.name}"/>">${file.name}</a></td><td>${(file.lastModified())?number_to_datetime}</td><td>${file?length}</td></tr>
+            </#list>
+        </tbody>
+    </table>
 
 </div>
           <div class="span3">
