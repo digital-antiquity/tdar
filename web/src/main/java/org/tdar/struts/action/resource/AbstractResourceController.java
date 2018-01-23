@@ -191,24 +191,25 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return sw.toString();
     }
 
+
     @Override
     public String save(Resource resource) {
         getLogger().debug("calling save");
-        saveCustomMetadata();
-        saveBasicResourceMetadata();
         String toReturn = SUCCESS;
         if (resource instanceof InformationResource) {
             try { 
-            toReturn = saveInformationResource(getPersistable());
+                toReturn = saveInformationResource(getPersistable());
             } catch (TdarActionException e) {
                 addActionErrorWithException(e.getMessage(), e);
                 return INPUT;
             }
         }
+        saveCustomMetadata();
+        saveBasicResourceMetadata();
         resolvePostSaveAction(getPersistable());
         return toReturn;
     }
-
+    
     public void saveCustomMetadata() {
         // TODO Auto-generated method stub
         
