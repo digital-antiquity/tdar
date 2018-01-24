@@ -10,48 +10,6 @@ section.row.cols {
     margin-top: 3em !important;
 }
 
-
-
-div.barlabel {
-    top: 0;
-    z-index: 1000;
-    overflow: visible;
-    left: 0px;
-    position: relative;
-    display: block;
-    text-align: center;
-    font-size: smaller;
-    line-height: 1.2em;
-    vertical-align: top !important;
-    height: 1.5em;
-}
-
-.subnavbar {
-    z-index: 10000;
-}
-
-.lt-ie9 #messages{
-    display: block !important;
-    visibility: visible !important;
-}
-
-/* affix elements become fixed, so we need to specify new location (otherwise location after becoming fixed is undefined/browser-specific) */
-.subnavbar.affix {
-    top: 0;
-    left: 0;
-}
-
-#subnavbar2.affix {
-    width: 100% !important;
-    left: 0 !important;
-}
-
-/* TODO:// HACK: .affix navbar needs to be same width as ".container" for proper formatting, but to break out our navbar requires mucking w/ layout.dec */
-.subnavbar.affix-top.container {
-    /*shrink the navbar when it is not affixed (i.e. when it is .affix-top) */
-    width: auto
-}
-
 /* fix for file upload control to make it not make space for label */
 /*.template-download .controls {*/
 /*margin-left: 0px !important;*/
@@ -91,9 +49,6 @@ div.barlabel {
     line-height: 12px;
 }
 
-#recentlyEditedResources .recent-nav {
-    float: right;
-}
 
 .creatorPerson .controls.controls-row, .creatorInstitution .controls.controls-row {
     margin-left: 0px;
@@ -116,10 +71,6 @@ div.barlabel {
 .descriptionRow {border-bottom:1px solid #eee}
 
 
-.tableContainer {
-    background-color: #bebebe;
-}
-
 .bullet + .bullet:before {
     content: "\002022  "
 }
@@ -139,22 +90,6 @@ ul.inline > li.bullet a {
     background-color: transparent
 }
 
-.tableFormat a.title {
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.down-arrow {
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #555;
-    display: inline;
-    cursor: pointer;
-    cursor: hand;
-    position: relative;
-    left: 700px;
-    top: -32px;
-}
 
 .popover h2 {
     font-size: 13pt;
@@ -193,32 +128,6 @@ ol.MAP .listItemPart {
     font-size: 14px !important;
 }
 
-.resource-nav.navbar-static li a {
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-    background-image: none !important;
-}
-
-.navbar-static.affix {
-    width: 100% !important;
-    left: 0px !important;
-}
-
-.subnavbar.resource-nav {
-    margin: -3px 5px 25px 5px !important;
-}
-
-#fakeSubmitButton {
-    margin-top: 5px;
-}
-
-.tdar-slider .carousel-inner .item {
-    height: 310px !important;
-    margin-left: 80px;
-    margin-right: 80px;
-    margin-top: auto;
-    margin-bottom: auto;
-}
 
 .no-indent {
     margin-left: 0px !important;
@@ -248,14 +157,6 @@ code {
 
 aside.tdar-icon:before {
     margin: 0 5px 0 0;
-}
-
-
-.whitelabel-logo {
-    width: 15em;
-    max-height: 30em; /* don't mess w/ aspect ratio unless image is too tall */
-    margin-top: 1em;
-    margin-bottom: 1em;
 }
 
 h3>a {
@@ -333,17 +234,9 @@ h3>a {
 }
 
 
-.silhouette {
-    width: 40px;
-    padding-right: 6px;
-}
 
 p.copyright-notice {
     margin-top: 1em;
-}
-
-.barGraph {
-    position: relative;
 }
 
 .nowrap {
@@ -540,121 +433,6 @@ img.responsive-image {
     border-top: solid 2px #ddd;
 }
 
-/* Error banners are a more attention-grabbing form of user notifications. */
-.error-banner {
-    background: url(../images/caution.gif) 0.2em 0.2em;
-    background-repeat: no-repeat;
-    background-size: 1.5em;
-    margin-top: 3em;
-    padding: 0.2em 0.2em 0.2em 2em;
-    border: 2px solid #444;
-    color: black;
-}
-
-.error-banner {
-}
-
-.error-banner h1, .error-banner h2, .error-banner h3, .error-banner h4 {
-    color: #7a1501 /* "tDAR red" */
-}
-
-.bg-red {
-    background-color: #7a1501;
-}
-
-/* Put error codes in a block-level container w/ class of  .pull-right.error-codes to inset them in the
-upper-right corner. Individual codes should be wrapped in span.error-code elements */
-.error-banner > .pull-right.error-codes {
-    position: relative;
-    margin-left: -15px;
-    margin-top: 5px;
-    font-size: 8pt;
-    border-radius: 2px;
-    padding: 1px 3px 1px 3px;
-    border: 1px solid #dcc;
-    color: #555;
-}
-
-.error-banner .error-code {
-    font-family: monospace;
-    padding-right: 1em;
-}
-
-.error-code:last-child {
-    padding-right: inherit;
-}
-
-/* Overide bootstrap default error alert color. Note: avoid modifying anything other than fonts and colors, as the styles here
-are governed by several media queries and thus easy to screw up the formatting of various responsive profiles. */
-.alert.alert-error {
-    background-color: #fffecc;
-}
-
-.alert.alert-error p, .alert.alert-error ul, .alert.alert-error li {
-    color: #000;
-}
-
-.filter-ontology input + label {
-    position: relative;
-}
-
-.filter-ontology input[disabled] + label {
-    font-weight: normal !important;
-}
-
-.filter-ontology .inline-label {
-    clear: none;
-    display: inline-block;
-}
-
-.filter-ontology .wf-loading {
-    visibility: visible !important;
-}
-
-
-
-div.orgChart div.node.level1.special {
-    background-color: white;
-}
-
-
-.ontology-mapping .ui-autocomplete {
-    max-height: 144pt;
-    overflow-y: auto;
-    overflow-x: hidden;
-    line-height: 1em;
-}
-
-.ontology-mapping .ui-menu-item {
-    font-family: courier !Important;
-    white-space: pre !important;
-}
-
-.ontology-mapping .ui-widget {
-    font-family: courier;
-}
-
-/* IE 6 doesn't support max-height
- * we use height instead, but this forces the menu to always be this tall
- */
-* html .ontology-mapping .ui-autocomplete {
-    height: 144pt;
-    overflow-x: hidden;
-}
-
-.ontology-mapping .ui-menu .ui-menu-item {
-    border: 0px;
-    margin: 0px !important;
-    padding: 0px !important;
-}
-
-.ontology-mapping .ui-menu-item a {
-    border: 1px solid transparent;
-    min-height: 1em;
-    margin: 0px !important;
-    padding: 0px !important;
-}
-
 
 /* styles for purchasing pages  */
 .authpane, .cartpane {
@@ -805,28 +583,6 @@ kbd {
     vertical-align: middle;
 }
 
-
-/**
-JIM'S LIBRARY HACKS GO HERE
-**/
-
-
-.organize-bookmarks-container ol li h3 a{
-    font-size: 10pt !important;
-    line-height: normal;
-}
-
-.organize-bookmarks-container {
-
-}
-
-
-.organize-bookmarks-container ol {
-    margin: 0;
-}
-.organize-bookmarks-container ol li {
-    list-style-type: none;
-}
 
 tr .moremenu {
     visibility: hidden;

@@ -2,3 +2,12 @@
     background-color:#7a1501 !important;
     text-color:#FFF;
  }
+ 
+ #recentlyEditedResources .recent-nav {
+    float: right;
+}
+ 
+ 
+#emptyProjects li {
+    line-height:22px;
+}

@@ -296,45 +296,6 @@ header .welcome-drop ul {
     list-style: none;
 }
 
-#home {
-    background: url(../images/r4/bg-home.jpg) center 115px;
-    background-repeat: no-repeat;
-}
-
-.hero {
-    height: 281px;
-    position: relative;
-    margin-left: 60px;
-}
-
-.hero p {
-    margin: 18px 0;
-    /*	width: 552px;  */
-    font-weight: 500;
-    font-size: 18px;
-    line-height: 24px;
-}
-
-.hero ul, .hero li {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: inline;
-}
-
-.hero ul {
-    position: absolute;
-    top: -50px;
-    right: -11px;
-    background-color: rgba(106, 83, 58, 0.2);
-    padding: 12px 12px 12px 0;
-}
-
-.hero ul a {
-    float: left;
-    margin-left: 12px;
-    width: 105px;
-}
 
 #slider, #slider li {
     margin: 0;
@@ -378,209 +339,9 @@ header .welcome-drop ul {
     float: right;
 }
 
-.tdar-slider .carousel-control {
-    position: absolute;
-    top: 145px;
-}
-
-.carousel-control {
-    display: block;
-    width: 24px;
-    height: 38px;
-    background: url(../images/r4/btns-slider.png) 0 0;
-    background-repeat: no-repeat;
-    text-indent: -999em;
-    opacity: 0.5;
-    transition: opacity 0.1s ease-out;
-    -moz-transition: opacity 0.1s ease-out;
-    -webkit-transition: opacity 0.1s ease-out;
-}
-
-.car-btn:hover {
-    opacity: 1;
-}
-
-.carousel-control.left {
-    left: 0;
-}
-
-.carousel-control.right {
-    right: 0;
-    background-position: -24px 0;
-}
 
 .thumbnailLink {
     max-width:100%;
-}
-
-/* homepage */
-.bucket {
-    text-align: center;
-}
-
-.bucket .bucket-text {
-    text-align: justify;
-    min-height: 6em;
-}
-
-.bucket img {
-    margin: 40px 0 20px 0;
-}
-
-.bucket h3 {
-    margin: 0 0 8px 0;
-}
-
-.bucket p {
-    font-size: 13px;
-    line-height: 18px;
-    color: #7d7a77;
-    margin: 0 0 13px 0;
-}
-
-/* subnav bar */
-.subnav {
-    position: relative;
-    height: 60px;
-}
-
-#sub .subnav {
-    margin-bottom: 20px;
-}
-
-.subnav ul, .subnav li {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: inline;
-}
-
-.subnav ul.subnav-lft {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-.subnav ul.subnav-lft li {
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 60px;
-    height: 60px;
-    display: block;
-    float: left;
-    margin-right: 40px;
-}
-
-.subnav ul.subnav-lft li a {
-    color: #1b1a18;
-}
-
-.subnav ul.subnav-lft li a:hover, .subnav ul.subnav-lft li.current_page_item a {
-    color: #7a1501;
-}
-
-.subnav ul.subnav-lft li.current_page_item {
-    background: url(../images/r4/bg-subnav.png) bottom center;
-    background-repeat: no-repeat;
-}
-
-.subnav ul.subnav-rht {
-    position: absolute;
-    top: 0;
-    right: -11px;
-    padding: 12px 12px 12px 0;
-}
-
-.subnav ul.subnav-rht a, .subnav ul.subnav-rht form.form-unstyled input {
-    float: left;
-    margin-left: 12px;
-    width: 105px;
-}
-
-/* resource navigation toolbar */
-.resource-nav {
-    height: 40px;
-    margin: 40px 0px 40px 30px;
-    background: #f0eeeb;
-    float: left;
-}
-
-.lt-ie9 .resource-nav {
-    border-bottom: 40px solid #fff;
-}
-
-.resource-nav ul, .resource-nav li, .inline-menu li {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: inline;
-}
-
-.resource-nav li a {
-    float: left;
-}
-
-.resource-nav li span.disabled {
-    display: inline-block;
-}
-
-.resource-nav li a, .resource-nav li span.disabled {
-    font-weight: 700;
-    font-size: 12px;
-    line-height: 11px;
-    color: #7d7a77;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 16px 20px 9px 20px;
-    border-right: 1px solid #fff;
-}
-
-.resource-nav li span.disabled {
-    color: #ccc !important;
-}
-
-.lt-ie10 .resource-nav li a {
-    padding: 15px 20px 14px 40px !important;
-}
-
-.resource-nav li a:hover, .resource-nav li.active a {
-    color: #fff;
-    background: #7a1501;
-    text-decoration: none;
-}
-
-.resource-nav li.disabled a:hover {
-    background-color: inherit !important;
-    color: inherit !important;
-    text-decoration: none;
-}
-
-.resource-nav li.edit a {
-    background-position-y: -40px;
-}
-
-.resource-nav li.delete a {
-    background-position-y: -95px;
-}
-
-.resource-nav li.bookmark a {
-    background-position-y: -150px;
-}
-
-.resource-nav li.un-bookmark a {
-    background-position-y: -300px;
-}
-
-.resource-nav li.disabled.bookmark a {
-    background-position-y: -300px;
-}
-
-.resource-nav li.columns a {
-    background-position-y: -203px;
-}
-
-.resource-nav li.mapping a {
-    background-position: 12px -258px;
 }
 
 h1 {
@@ -591,12 +352,6 @@ h2 {
     font-weight: 700;
 }
 
-.why h1, .contrib h1, section h1 {
-    font-size: 60px;
-    line-height: 64px;
-    margin: 70px 0 0 40px;
-    letter-spacing: -1px;
-}
 
 #titlebar h1, article h1 {
     font-size: 45px;
@@ -660,31 +415,6 @@ h2 {
 .cols .title-data p {
     font-size: 12px;
     margin: -3px;
-}
-
-.tableFormat th, .tableFormat td {
-    font-size: 11px;
-    line-height: 14px;
-    margin: 0;
-    padding: 8px 10px;
-    border-collapse: collapse;
-    border-spacing: 0;
-    text-align: left;
-    border-bottom: 1px solid #fff;
-}
-
-.tableFormat th {
-    font-weight: 700;
-    background: #1b1a18;
-    color: #fff;
-}
-
-.tableFormat td {
-    background: #eee;
-}
-
-.tableFormat tr.alt td {
-    background: #ddd;
 }
 
 .cols .guide {
@@ -785,151 +515,19 @@ h2 {
     border-bottom: 1px solid #fff;
 }
 
-.why article h2, .why article p, .why article ul {
-    width: 350px;
-    margin: 0;
-}
-
 h1 span, h4 span {
     color: #7a1501;
     font-size: 80%;
 }
 
-.why article h2 {
-    font-size: 30px;
-    line-height: 30px;
-    margin-bottom: 15px;
-    font-weight: 700;
-}
 
-.why article p {
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 21px;
-    margin-bottom: 15px;
-}
 
-.why article ul {
-    margin: 0 0 20px 0;
-    padding: 0 0 0 20px;
-}
-
-.why article li {
-    font-size: 14px;
-    line-height: 20px;
-    color: #7d7a77;
-    margin: 0;
-    padding: 0;
-}
-
-.why li span {
-    color: #1b1a18;
-}
-
-.why article.find {
-    background: url(../images/r4/bg-find.png) top right;
-    background-repeat: no-repeat;
-    padding-bottom: 35px;
-}
-
-.why article.find h2, .why article.find p, .why article.find ul {
-    margin-left: 100px;
-}
-
-.why article.preserve {
-    padding: 43px 0 35px 0;
-    background: url(../images/r4/bg-preserve.png) 120px 30px;
-    background-repeat: no-repeat;
-    border-top: 1px solid #dadada;
-    border-bottom: 1px solid #dadada;
-}
-
-.why article.preserve h2, .why article.preserve p, .why article.preserve ul {
-    margin-left: 520px;
-}
-
-.why article.extend {
-    padding-top: 40px;
-    background: url(../images/r4/bg-extend.png) 520px 55px;
-    background-repeat: no-repeat;
-}
-
-.why article.extend h2, .why article.extend p, .why article.extend ul {
-    margin-left: 100px;
-}
 
 #titlebar h1, .searchresults h1 {
     margin: 0;
     padding: 0;
 }
 
-
-.pagin {
-    width: 100%;
-}
-
-.pagin td {
-    text-align: center;
-}
-
-.carousel-inner .item.prev, .carousel-inner .item.next {
-    visibility: hidden !important;
-    display: none !important;
-}
-
-.pagin td.prev, .pagin td.next {
-    font-weight: 700;
-    text-transform: uppercase;
-    width: 1px;
-}
-
-.pagin ul, .pagin li {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: inline-block;
-}
-
-.pagin li {
-    font-weight: 600;
-    font-size: 13px;
-    margin: 0 3px;
-}
-
-footer {
-    margin-top: 60px;
-    background: url(../images/r4/bg-footer.png) repeat;
-    padding: 50px 0;
-}
-
-footer h4 {
-    font-weight: 700;
-    font-size: 16px;
-    color: #fff;
-    margin: 0 0 15px 0;
-}
-
-.unstyled-list {
-    list-style: none;
-    margin-left: 0px;
-}
-
-footer ul, footer li {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    clear: left;
-    font-size: 13px;
-    line-height: 22px;
-}
-
-footer a {
-    color: #fff;
-}
-
-footer a:hover {
-    color: #f1d9bf;
-}
 
 /* Form Styles */
 .span12 hr {
@@ -951,9 +549,6 @@ header nav {
     z-index: 100;
 }
 
-nav ul {
-    padding-right: 10px !important;
-}
 
 .responsive-phone #sidebar-right {
     margin-left: 0px !important;
@@ -996,97 +591,6 @@ span.cartouche {
     height: 15px !important;
 }
 
-.resource-nav li i, i.bookmark-icon {
-    background: url(../images/r4/resource-types-large.gif);
-    background-repeat: no-repeat;
-    width: 18px;
-    height: 14px;
-    display: inline-block;
-}
-
-.resource-nav li i.tdar-icon-edit {
-    background-position: -31px -2437px !important;
-}
-
-.resource-nav li i.tdar-icon-edit-active, .resource-nav li:hover i.tdar-icon-edit {
-    background-position: -31px -2490px !important;
-}
-
-.resource-nav li i.tdar-icon-add {
-    background-position: -228px -2437px !important;
-}
-
-.resource-nav li i.tdar-icon-add-active, .resource-nav li:hover i.tdar-icon-add {
-    background-position: -228px -2490px !important;
-}
-
-.resource-nav li i.tdar-icon-view {
-    background-position: -1px -2437px !important;
-}
-
-.resource-nav li i.tdar-icon-view-active, .resource-nav li:hover i.tdar-icon-view {
-    background-position: -1px -2490px !important;
-}
-
-.resource-nav li i.tdar-icon-delete {
-    background-position: -56px -2437px !important;
-}
-
-.resource-nav li i.tdar-icon-delete-active, .resource-nav li:hover i.tdar-icon-delete {
-    background-position: -56px -2490px !important;
-}
-
-.resource-nav li i.tdar-icon-columns {
-    background-position: -84px -2437px !important;
-}
-
-.resource-nav li i.tdar-icon-columns-active, .resource-nav li:hover i.tdar-icon-columns {
-    background-position: -84px -2490px !important;
-}
-
-.resource-nav li i.tdar-icon-mapping {
-    width: 25px;
-    background-position: -111px -2437px !important;
-}
-
-.resource-nav li i.tdar-icon-mapping-active, .resource-nav li:hover i.tdar-icon-mapping {
-    width: 25px;
-    background-position: -111px -2490px !important;
-}
-
-.resource-nav li i.tdar-icon-mapping-disabled {
-    width: 25px;
-    background-position: -111px -2437px !important;
-}
-
-i.tdar-icon-bookmark {
-    background-position: -148px -2437px !important;
-}
-
-i.tdar-icon-bookmark-active, a:hover i.tdar-icon-bookmark-active, .resource-nav li:hover i.tdar-icon-bookmark {
-    background-position: -148px -2490px !important;
-}
-
-i.tdar-icon-bookmarked {
-    background-position: -179px -2437px !important;
-}
-
-i.tdar-icon-bookmarked-active, a:hover i.tdar-icon-bookmarked, .resource-nav li:hover i.tdar-icon-bookmarked {
-    background-position: -179px -2490px !important;
-}
-
-/* i.tdar-icon-bookmark-disabled {
-	background-position: -210px -2437px !important;
-}
- */
-i.tdar-icon-bookmark-disabled, a:hover i.tdar-icon-bookmark-disabled, .resource-nav li:hover i.tdar-icon-bookmark-disabled {
-    background-position: -208px -2437px !important;
-}
-
-#toolbars i {
-    margin-top: -4px;
-    margin-bottom: -2px;
-}
 
 .responsive-desktop .hidden-desktop, .hidden-desktop, responsive-desktop .hidden-phone {
     display: none;
@@ -1136,11 +640,6 @@ i.tdar-icon-bookmark-disabled, a:hover i.tdar-icon-bookmark-disabled, .resource-
     border-top-color: #7a1501 !important;
 }
 
-#infovis {
-    height: 300px;
-    overflow: hidden;
-}
-
 .center {
     text-align: center;
     vertical-align: middle;
@@ -1148,71 +647,6 @@ i.tdar-icon-bookmark-disabled, a:hover i.tdar-icon-bookmark-disabled, .resource-
 
 .nogrid .jqplot-grid-canvas {
     display: none;
-}
-
-#ontology-nodes .hidden-nodes {
-    display: none;
-    visibility: hidden;
-}
-
-div.orgChart h2 {
-    font-size: 10px !important;
-    font-family: helvetica !important;
-    line-height: 20px;
-}
-
-.orgChart div.node {
-    height: auto !important;
-    width: auto !important;
-    min-width: 80px;
-    min-height: 50px;
-}
-
-.hiddenChildren:after {
-    content: "(show more)";
-    font-size: 10px !important;
-    font-family: helvetica !important;
-}
-
-div#ontologyTarget {
-    background-color: #efefef;
-}
-
-/* Removes the default 20px margin and creates some padding space for the indicators and controls */
-.image-carousel.carousel {
-    margin-bottom: 10px;
-    padding: 0 40px 10px 40px;
-}
-
-/* Changes the position of the indicators */
-.carousel-indicators {
-    width: 100%;
-    top: auto;
-    bottom: 0px;
-    /* override bootstrap defaults so that page indicators don't overflow into thumbnail section when they wrap (e.g. carousel w/ 100's of images) */
-    /*margin-right: -19px;*/
-    position: inherit !important;
-    margin: 1em 0 0 0;
-}
-
-.image-carousel .carousel-indicators .active {
-    background: #333333;
-}
-
-.image-carousel .carousel-indicators span {
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    padding: 4px;
-    margin: 1pt;
-    width: 3px;
-    height: 3px;
-    display: inline-block;
-    background: #c0c0c0;
-}
-
-.jqplot-xaxis-tick {
-    text-align: center;
 }
 
 .smaller {
@@ -1361,60 +795,12 @@ hr.light {
 
 
 
-
-.ribbon-green {
-  z-index:1000;
-  font: bold 15px Sans-Serif;
-  color: #333;
-  text-align: center;
-  text-shadow: rgba(255,255,255,0.5) 0px 1px 0px;
-  -webkit-transform: rotate(-45deg);
-  -moz-transform:    rotate(-45deg);
-  -ms-transform:     rotate(-45deg);
-  -o-transform:      rotate(-45deg);
-  position: fixed;
-  padding: 7px 0;
-  left: -34px;
-  top: 11px;
-  width: 120px;
-  background-color: #BFDC7A;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#BFDC7A), to(#8EBF45)); 
-  background-image: -webkit-linear-gradient(top, #BFDC7A, #8EBF45); 
-  background-image:    -moz-linear-gradient(top, #BFDC7A, #8EBF45); 
-  background-image:     -ms-linear-gradient(top, #BFDC7A, #8EBF45); 
-  background-image:      -o-linear-gradient(top, #BFDC7A, #8EBF45); 
-  color: #6a6340;
-  -webkit-box-shadow: 0px 0px 3px rgba(0,0,0,0.3);
-  -moz-box-shadow:    0px 0px 3px rgba(0,0,0,0.3);
-  box-shadow:         0px 0px 3px rgba(0,0,0,0.3);
-}
-
-.ribbon-green:before, .ribbon-green:after {
-  content: "";
-  border-top:   3px solid #6e8900;   
-  border-left:  3px solid transparent;
-  border-right: 3px solid transparent;
-  position:absolute;
-  bottom: -3px;
-}
-
-.ribbon-green:before {
-  left: 0;
-}
-.ribbon-green:after {
-  right: 0;
-}
-
 ul .header-auto {
 	text-decoration:underline;
 }
 
 .break-word {
     overflow-wrap: break-word;
-}
-
-#divIntegrationHeader {
-    padding-top: 2em
 }
 
 .disabled {

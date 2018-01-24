@@ -1,6 +1,4 @@
-
 /** RSS-NEWS FEED **/
-
 #home .news ul, #home .news li {
     margin: 0;
     padding: 0;
@@ -51,3 +49,73 @@
     display: block;
 }
 
+#home {
+    background: url(../images/r4/bg-home.jpg) center 115px;
+    background-repeat: no-repeat;
+}
+
+.hero {
+    height: 281px;
+    position: relative;
+    margin-left: 60px;
+}
+
+.hero p {
+    margin: 18px 0;
+    /*	width: 552px;  */
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.hero ul, .hero li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: inline;
+}
+
+.hero ul {
+    position: absolute;
+    top: -50px;
+    right: -11px;
+    background-color: rgba(106, 83, 58, 0.2);
+    padding: 12px 12px 12px 0;
+}
+
+.hero ul a {
+    float: left;
+    margin-left: 12px;
+    width: 105px;
+}
+
+.bucket {
+    text-align: center;
+}
+
+.bucket .bucket-text {
+    text-align: justify;
+    min-height: 6em;
+}
+
+.bucket img {
+    margin: 40px 0 20px 0;
+}
+
+.bucket h3 {
+    margin: 0 0 8px 0;
+}
+
+.bucket p {
+    font-size: 13px;
+    line-height: 18px;
+    color: #7d7a77;
+    margin: 0 0 13px 0;
+}
+
+.why h1, .contrib h1, section h1 {
+    font-size: 60px;
+    line-height: 64px;
+    margin: 70px 0 0 40px;
+    letter-spacing: -1px;
+}
