@@ -306,7 +306,7 @@
         });
         
         var form = $("#metadataForm")[0];
-        vm = TDAR.vuejs.editcollectionapp.init({enableUnmanagedCollections: ${(administrator!false)?string}});
+        vm = TDAR.vuejs.editcollectionapp.init({enableUnmanagedCollections: ${(editor!false)?string}});
         
         TDAR.common.initEditPage(form);
         TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
