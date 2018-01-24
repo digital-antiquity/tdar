@@ -1,3 +1,25 @@
+    #jumbo {
+        background: url(../../Documents/workspace/tdar.src/web/src/main/webapp/images/r4/bg-home.jpg) center 20px;
+        background-repeat: no-repeat;
+    }
+    .jumbotron {background:none;}
+    
+    .jumbotron {
+        padding: 0px 0px 60px 0px !important;
+        margin: 0px;
+    }
+
+
+
+    .no-left-border {border-left:0px !important;}
+    .jumbo-search {
+        border:3px solid rgba(200,200,200,10);
+        border-radius: 5px;
+    }
+
+
+
+
 /** RSS-NEWS FEED **/
 #home .news ul, #home .news li {
     margin: 0;
@@ -54,40 +76,6 @@
     background-repeat: no-repeat;
 }
 
-.hero {
-    height: 281px;
-    position: relative;
-    margin-left: 60px;
-}
-
-.hero p {
-    margin: 18px 0;
-    /*	width: 552px;  */
-    font-weight: 500;
-    font-size: 18px;
-    line-height: 24px;
-}
-
-.hero ul, .hero li {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: inline;
-}
-
-.hero ul {
-    position: absolute;
-    top: -50px;
-    right: -11px;
-    background-color: rgba(106, 83, 58, 0.2);
-    padding: 12px 12px 12px 0;
-}
-
-.hero ul a {
-    float: left;
-    margin-left: 12px;
-    width: 105px;
-}
 
 .bucket {
     text-align: center;
