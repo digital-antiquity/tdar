@@ -20,7 +20,7 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 					},
 					
 					mounted : function() {
-
+						console.log("enableUnmanagedCollections is "+this.enableUnmanagedCollections);
 					},
 
 					computed : {

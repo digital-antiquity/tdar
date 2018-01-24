@@ -170,11 +170,17 @@
         </div>
 
     <#assign useManagedCollections = administrator>
+        <div id="divResourcesOptionsTips" style="display:none">
+        <ul>
+            <li>Use the 'Add' button to add items to the collection.</li>
+            <li>Use the 'Remove' button to remove items from the collection.</li>
+            <li>Use the 'Undo' link to cancel a pending change.</li>
+            <li>Navigate the pages in this list by clicking the left/right arrows at the bottom of this table.</li>
+            <li>Display and use the drop down filters by clicking 'More/Less Options' to limit the number
+                    of results.</li>
+        </div>
 
-        <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
-                    in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
-                    of results.">
-                    
+        <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="#divResourcesOptionsTips">
             <h2>Resources</h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && ((resourceCollection.managedResources![])?size > 0 || (resourceCollection.unmanagedResources![])?size > 0)>
@@ -300,7 +306,7 @@
         });
         
         var form = $("#metadataForm")[0];
-        vm = TDAR.vuejs.editcollectionapp.init({enableUnmanagedCollections: ${(editor!false)?string}});
+        vm = TDAR.vuejs.editcollectionapp.init({enableUnmanagedCollections: ${(administrator!false)?string}});
         
         TDAR.common.initEditPage(form);
         TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
