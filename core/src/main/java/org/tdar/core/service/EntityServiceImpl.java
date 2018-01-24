@@ -279,14 +279,15 @@ public class EntityServiceImpl  extends ServiceInterface.TypedDaoBase<Person, Pe
 
         Person blessedPerson = null;
         if (transientPerson instanceof TdarUser) {
-            String username = ((TdarUser) transientPerson).getUsername();
+            String username = StringUtils.trim(((TdarUser) transientPerson).getUsername());
+            
             if (StringUtils.isNotBlank(username)) {
                 blessedPerson = findByUsername(username);
             }
             logger.debug("find by username: {}, {}", username, blessedPerson);
         }
         
-        String email = transientPerson.getEmail();
+        String email = StringUtils.trim(transientPerson.getEmail());
         if (StringUtils.isNotBlank(email)  && blessedPerson == null) {
             blessedPerson = findByEmail(email);
         } else {
@@ -303,6 +304,10 @@ public class EntityServiceImpl  extends ServiceInterface.TypedDaoBase<Person, Pe
                     transientPerson.setInstitution(foundInstitution);
                 }
             }
+            // make sure we're trimmng
+            transientPerson.setEmail(StringUtils.trim(transientPerson.getEmail()));
+            transientPerson.setFirstName(StringUtils.trim(transientPerson.getFirstName()));
+            transientPerson.setLastName(StringUtils.trim(transientPerson.getLastName()));
             Set<Person> people = getDao().findByPerson(transientPerson);
             /*
              * Perhaps this should match only if FirstName and LastName are not empty, but I can see cases
@@ -349,6 +354,7 @@ public class EntityServiceImpl  extends ServiceInterface.TypedDaoBase<Person, Pe
      */
     @Transactional(readOnly = false)
     private Institution findOrSaveInstitution(Institution transientInstitution) {
+        transientInstitution.setName(StringUtils.trim(transientInstitution.getName()));
         Institution blessedInstitution = findInstitution(transientInstitution);
         if (blessedInstitution == null) {
             if ((transientInstitution == null) || transientInstitution.hasNoPersistableValues()) {

@@ -6,7 +6,7 @@
 <h1>Administrative info for <span>${resource.title}</span></h1>
 
 
-<h2>Resource Revision History</h2>
+<h2>Revision History</h2>
 <table class="table tableFormat">
     <tr>
         <th>When</th>
@@ -15,7 +15,7 @@
         <th>Duration</th>
         <th>Event</th>
     </tr>
-    <#list resourceLogEntries as entry>
+    <#list logEntries as entry>
         <tr>
             <td>${entry.timestamp}</td>
             <td>${(entry.person.properName)!''}</td>

@@ -1,8 +1,11 @@
 package org.tdar.struts.action.collection.admin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -16,17 +19,21 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.filestore.Filestore;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
@@ -80,6 +87,10 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
     private ArrayList<Status> selectedResourceStatuses = new ArrayList<>();
     private ArrayList<ResourceAccessType> fileAccessTypes = new ArrayList<>();
+    private Collection<File> xmlFiles;
+    private Set<CollectionRevisionLog> logEntries;
+
+    private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 
 
     @Override
@@ -100,6 +111,9 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
+
+        setXmlFiles(FILESTORE.listXmlRecordFiles(FilestoreObjectType.COLLECTION, getId()));
+        setLogEntries(getCollection().getCollectionRevisionLog());
 
         try {
             resourceSearchService.buildResourceContainedInSearch(getCollection(), getTerm(), getAuthenticatedUser(), this, this);
@@ -311,6 +325,22 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
 
     public void setFileAccessTypes(ArrayList<ResourceAccessType> fileAccessTypes) {
         this.fileAccessTypes = fileAccessTypes;
+    }
+
+    public Collection<File> getXmlFiles() {
+        return xmlFiles;
+    }
+
+    public void setXmlFiles(Collection<File> xmlFiles) {
+        this.xmlFiles = xmlFiles;
+    }
+
+    public Set<CollectionRevisionLog> getLogEntries() {
+        return logEntries;
+    }
+
+    public void setLogEntries(Set<CollectionRevisionLog> logEntries) {
+        this.logEntries = logEntries;
     }
 
 }
