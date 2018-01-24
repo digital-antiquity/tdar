@@ -76,7 +76,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             while (allScrollable.next()) {
                 Resource object = (Resource) allScrollable.get(0);
                 String url = UrlService.absoluteSecureUrl(object);
-                addUrl(wsg, url);
+                addUrlHighPriority(wsg, url);
             }
 
             if (imageSitemapGeneratorEnabled) {
@@ -92,8 +92,11 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
                 if (!creator.isBrowsePageVisible()) {
                     continue;
                 }
+                if (creator.getId().equals(135028L) || creator.getId().equals(12729L)) {
+                    continue;
+                }
                 String url = UrlService.absoluteSecureUrl(creator);
-                addUrl(wsg, url);
+                addUrlDefaultPriority(wsg, url);
                 totalCreator++;
                 if (totalCreator % 500 == 0) {
                     genericService.clearCurrentSession();
@@ -102,7 +105,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             logger.info("({}) creators in sitemap", totalCreator);
             total += totalCreator;
 
-            ScrollableResults activeCollections = genericService.findAllScrollable(SharedCollection.class);
+            ScrollableResults activeCollections = genericService.findAllActiveScrollable(SharedCollection.class);
             int totalCollections = 0;
             total += processCollections(wsg, activeCollections);
             activeCollections = genericService.findAllScrollable(ListCollection.class);
@@ -144,11 +147,11 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
         int totalCollections = 0;
         while (activeCollections.next()) {
             T collection = (T) activeCollections.get(0);
-            if (collection.isHidden()) {
+            if (!collection.isVisibleAndActive()) {
                 continue;
             }
             String url = UrlService.absoluteSecureUrl((ResourceCollection)collection);
-            addUrl(wsg, url);
+            addUrlHighPriority(wsg, url);
             totalCollections++;
             if (totalCollections % 500 == 0) {
                 genericService.clearCurrentSession();
@@ -159,8 +162,11 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
         return totalCollections;
     }
 
-    private void addUrl(WebSitemapGenerator wsg, String url) throws MalformedURLException {
-        wsg.addUrl(new WebSitemapUrl.Options(url).changeFreq(ChangeFreq.WEEKLY).build());
+    private void addUrlHighPriority(WebSitemapGenerator wsg, String url) throws MalformedURLException {
+        wsg.addUrl(new WebSitemapUrl.Options(url).changeFreq(ChangeFreq.WEEKLY).priority(1.0).build());
+    }
+    private void addUrlDefaultPriority(WebSitemapGenerator wsg, String url) throws MalformedURLException {
+        wsg.addUrl(new WebSitemapUrl.Options(url).changeFreq(ChangeFreq.MONTHLY).priority(.5).build());
     }
 
     @Override

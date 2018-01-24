@@ -128,12 +128,19 @@ public class AggregateStatisticsDao extends GenericDao {
         getLogger().trace("done sql");
         for (Object[] row : list) {
             List<Number> numbers = new ArrayList<>();
-            Resource resource = new Resource(((Number) row[0]).longValue(), (String) row[1], ResourceType.valueOf((String) row[2]), "",
-                    Status.valueOf((String) row[3]));
-            for (int j = 4; j < row.length; j++) {
-                numbers.add((Number) row[j]);
+            ResourceType rt = ResourceType.valueOf((String) row[2]);
+            try {
+                Resource resource = rt.getResourceClass().newInstance();
+                resource.setId(((Number) row[0]).longValue());
+                resource.setTitle((String) row[1]);
+                resource.setStatus(Status.valueOf((String) row[3]));
+                for (int j = 4; j < row.length; j++) {
+                    numbers.add((Number) row[j]);
+                }
+                results.addRowData(new ResourceStatWrapper(resource, numbers,labelKeys));
+            } catch (InstantiationException | IllegalAccessException e) {
+                getLogger().error(e.getMessage(),e);
             }
-            results.addRowData(new ResourceStatWrapper(resource, numbers,labelKeys));
         }
         getLogger().trace("return");
         return results;

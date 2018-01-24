@@ -46,7 +46,6 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
     private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
     private static final long serialVersionUID = -2071449250711089300L;
     public static final String ADMIN = "admin";
-    private List<ResourceRevisionLog> resourceLogEntries;
     private List<UserInvite> invites;
 
     private List<ResourceRevisionLog> logEntries;
@@ -79,7 +78,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
         } else {
             addActionError(getText("resourceAdminController.valid_resource_required"));
         }
-        setResourceLogEntries(resourceService.getLogsForResource(getResource()));
+        setLogEntries(resourceService.getLogsForResource(getResource()));
         getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
         userRightsProxyService.findUserInvites(getResource());
         getXmlFiles().addAll(FILESTORE.listXmlRecordFiles(FilestoreObjectType.RESOURCE, id));
@@ -91,14 +90,6 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
 
     public void setLogEntries(List<ResourceRevisionLog> logEntries) {
         this.logEntries = logEntries;
-    }
-
-    public List<ResourceRevisionLog> getResourceLogEntries() {
-        return resourceLogEntries;
-    }
-
-    public void setResourceLogEntries(List<ResourceRevisionLog> resourceLogEntries) {
-        this.resourceLogEntries = resourceLogEntries;
     }
 
     public Long getId() {

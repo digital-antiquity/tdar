@@ -520,6 +520,16 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
             <!-- LICENSE: Apache 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- Apache POI / HSSF - included via tika -->
         <dependency>

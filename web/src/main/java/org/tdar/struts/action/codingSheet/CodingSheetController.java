@@ -36,9 +36,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     private static final long serialVersionUID = 377533801938016848L;
 
-    @Autowired
-    private transient CodingSheetService codingSheetService;
-
     private Ontology ontology;
 
     @Override
@@ -47,14 +44,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         setOntology(getCodingSheet().getDefaultOntology());
     };
 
-    /**
-     * Save basic metadata of the registering concept.
-     * 
-     * @param concept
-     * @throws TdarActionException
-     */
     @Override
-    protected String save(CodingSheet codingSheet) throws TdarActionException {
+    public void saveCustomMetadata() {
         super.saveCategories();
 
         if (!PersistableUtils.isNullOrTransient(ontology)) {
@@ -62,7 +53,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
             ontology = getGenericService().find(Ontology.class, ontology.getId());
         }
         proxy.setOntology(ontology);
-        return  super.save(codingSheet);
     }
 
     /**

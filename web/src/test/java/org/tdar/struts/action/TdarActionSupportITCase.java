@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.struts.action.archive.ArchiveController;
+import org.tdar.struts.action.dataset.DatasetController;
 
 /**
  * The aim of this test is simple: to ensure that the path from TdarActionSupport through to the property file yields the expected results for the
@@ -20,11 +20,11 @@ import org.tdar.struts.action.archive.ArchiveController;
 public class TdarActionSupportITCase extends AbstractAdminControllerITCase {
 
     /** Our proxy for the abstract TdarActionSupport class */
-    private ArchiveController controller;
+    private DatasetController controller;
 
     @Before
     public void setUpArchiveController() {
-        controller = generateNewInitializedController(ArchiveController.class);
+        controller = generateNewInitializedController(DatasetController.class);
     }
 
     @Test

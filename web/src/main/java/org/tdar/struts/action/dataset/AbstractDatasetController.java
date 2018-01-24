@@ -26,7 +26,7 @@ import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.utils.PersistableUtils;
 
-public abstract class AbstractDatasetController<R extends InformationResource> extends AbstractInformationResourceController<R> {
+public abstract class AbstractDatasetController<R extends Dataset> extends AbstractInformationResourceController<R> {
 
     private static final long serialVersionUID = 6368347724977529964L;
 
@@ -66,11 +66,12 @@ public abstract class AbstractDatasetController<R extends InformationResource> e
 
     private Long dataTableId;
 
-    public void resolvePostSaveAction(Dataset persistable) {
-        setSaveSuccessPath(getPersistable().getResourceType().getUrlNamespace());
+    @Override
+    public void resolvePostSaveAction(R persistable) {
+        setSaveSuccessPath(persistable.getResourceType().getUrlNamespace());
         if (isHasFileProxyChanges()) {
             if ((persistable.getTotalNumberOfActiveFiles() > 0) && CollectionUtils.isNotEmpty(persistable.getDataTables())) {
-                setSaveSuccessPath(getPersistable().getUrlNamespace() + "/columns");
+                setSaveSuccessPath(persistable.getUrlNamespace() + "/columns");
             }
         }
     }
