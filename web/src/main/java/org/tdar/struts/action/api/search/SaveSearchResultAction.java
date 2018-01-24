@@ -96,9 +96,8 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
 
             setMode("json");
             setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-
             setLookupSource(LookupSource.RESOURCE);
-
+          
             // we need this for tests to be able to change the projection model so
             // we get full objects
             if (getProjectionModel() == null) {
@@ -106,6 +105,9 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
             }
 
             processLegacySearchParameters();
+            
+            prepareAdvancedSearchQueryObject();
+            
             if (isAsync()) {
                 saveSearchResultsForUserAsync = webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
             } else {

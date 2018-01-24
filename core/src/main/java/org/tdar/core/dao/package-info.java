@@ -396,7 +396,14 @@
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES,
-                query = "select distinct res from ResourceCollection rc left join rc.parentIds parentId join rc.managedResources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' order by res.id asc"),
+                query = "select r from Resource r "
+                		+ "left join r.managedResourceCollections as rc "
+                		+ "left join r.unmanagedResourceCollections as urc "
+                		+ "left join rc.parentIds parentId  "
+                		+ "left join urc.parentIds uparentId where "
+                		+ "((parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE') or "
+                		+ "((uparentId IN (:id) or urc.id=:id) and urc.status='ACTIVE')"
+                		),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
                 query = "select count(distinct res.id) from ResourceCollection rc left join rc.parentIds parentId join rc.managedResources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
