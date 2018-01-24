@@ -16,6 +16,7 @@ import org.tdar.struts.action.resource.AbstractSupportingInformationResourceCont
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
+
 /**
  * $Id$
  * 
@@ -35,9 +36,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     private static final long serialVersionUID = 377533801938016848L;
 
-    @Autowired
-    private transient CodingSheetService codingSheetService;
-
     private Ontology ontology;
 
     @Override
@@ -46,14 +44,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
         setOntology(getCodingSheet().getDefaultOntology());
     };
 
-    /**
-     * Save basic metadata of the registering concept.
-     * 
-     * @param concept
-     * @throws TdarActionException
-     */
     @Override
-    protected String save(CodingSheet codingSheet) throws TdarActionException {
+    public void saveCustomMetadata() {
         super.saveCategories();
 
         if (!PersistableUtils.isNullOrTransient(ontology)) {
@@ -61,7 +53,6 @@ public class CodingSheetController extends AbstractSupportingInformationResource
             ontology = getGenericService().find(Ontology.class, ontology.getId());
         }
         proxy.setOntology(ontology);
-        return super.save(codingSheet);
     }
 
     /**
@@ -79,8 +70,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     @Override
     public Set<String> getValidFileExtensions() {
-        // FIXME: was showing all valid dataset extensions
-        return new HashSet<>(Arrays.asList("csv", "xlsx", "xls"));
+        //FIXME: was showing all valid dataset extensions
+        return new HashSet<>(Arrays.asList("csv","xlsx","xls"));
     }
 
     @Override

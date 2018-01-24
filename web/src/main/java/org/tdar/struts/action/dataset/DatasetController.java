@@ -1,5 +1,7 @@
 package org.tdar.struts.action.dataset;
 
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -28,19 +30,7 @@ public class DatasetController extends AbstractDatasetController<Dataset> {
 
     private static final long serialVersionUID = 2874916865886637108L;
 
-    @Override
-    protected String save(Dataset dataset) throws TdarActionException {
-        getLogger().debug("Saving dataset: {}", dataset);
-        // save basic metadata
-        String save2 = super.save(dataset);
-        // getDatasetService().saveOrUpdate(dataset);
-        // HACK: implicitly cache fullUsers via call to getProjectAsJson() as workaround for TDAR-1162. This is the software equivalent of turning the radio up
-        // to mask weird sounds your engine is making
 
-        // getLogger().debug("{}", getFileProxies());
-        resolvePostSaveAction(dataset);
-        return save2;
-    }
 
     public void setDataset(Dataset dataset) {
         setPersistable(dataset);

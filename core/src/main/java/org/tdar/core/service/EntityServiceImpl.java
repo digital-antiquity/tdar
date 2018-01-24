@@ -51,7 +51,7 @@ import com.opensymphony.xwork2.TextProvider;
  */
 @Transactional(readOnly = true)
 @Service
-public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, PersonDao> implements EntityService {
+public class EntityServiceImpl  extends ServiceInterface.TypedDaoBase<Person, PersonDao> implements EntityService {
 
     @Autowired
     private transient InstitutionDao institutionDao;
@@ -67,9 +67,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
     @Autowired
     private transient BookmarkedResourceDao bookmarkedResourceDao;
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findPerson(java.lang.Long)
      */
     @Override
@@ -78,9 +76,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return find(id);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findAllRegisteredUsers(int)
      */
     @Override
@@ -89,9 +85,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().findAllRegisteredUsers(maxResults);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findAllRegisteredUsers()
      */
     @Override
@@ -100,9 +94,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().findAllRegisteredUsers(null);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findAllInstitutions()
      */
     @Override
@@ -111,9 +103,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return institutionDao.findAll();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findInstitutionByName(java.lang.String)
      */
     @Override
@@ -124,10 +114,8 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         }
         return institutionDao.findByName(name.trim());
     }
-
-    /*
-     * (non-Javadoc)
-     * 
+    
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findPersonsByInstitution(org.tdar.core.bean.entity.Institution)
      */
     @Override
@@ -138,10 +126,12 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         }
         return getDao().findPeopleByInstituion(institution);
     }
+    
+    
+    
+    
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findInstitution(long)
      */
     @Override
@@ -150,20 +140,16 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return institutionDao.find(id);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findInstitutionLike(java.lang.String)
      */
     @Override
     @Transactional(readOnly = true)
     public List<Institution> findInstitutionLike(String name) {
         return institutionDao.withNameLike(name);
-    }
+    }  
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findByEmail(java.lang.String)
      */
     @Override
@@ -175,9 +161,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().findByEmail(email.trim());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findUserByEmail(java.lang.String)
      */
     @Override
@@ -189,9 +173,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().findUserByEmail(email);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findByUsername(java.lang.String)
      */
     @Override
@@ -203,20 +185,16 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().findByUsername(username.trim());
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findSimilarPeople(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly=true)
     public List<Person> findSimilarPeople(TdarUser person) {
         return getDao().findSimilarPeople(person);
     }
-
-    /*
-     * (non-Javadoc)
-     * 
+    
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findByFullName(java.lang.String)
      */
     @Override
@@ -224,9 +202,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().findByFullName(fullName);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findFullUserResources(org.tdar.core.bean.entity.TdarUser, boolean)
      */
     @Override
@@ -234,9 +210,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return authorizedUserDao.findSparseEditableResources(person, isAdmin);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findOrSaveCreator(C)
      */
     @Override
@@ -271,8 +245,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         if (blessedPerson == null) {
             if (transientPerson.getInstitution() != null) {
                 Institution findOrSaveInstitution = findOrSaveInstitution(transientPerson.getInstitution());
-                transientPerson.setInstitution(findOrSaveInstitution);
-                ;
+                transientPerson.setInstitution(findOrSaveInstitution);;
             }
             if (transientPerson instanceof TdarUser && ((TdarUser) transientPerson).getProxyInstitution() != null) {
                 TdarUser transientUser = ((TdarUser) transientPerson);
@@ -285,9 +258,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return blessedPerson;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findPerson(org.tdar.core.bean.entity.Person)
      */
     @Override
@@ -308,19 +279,21 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
 
         Person blessedPerson = null;
         if (transientPerson instanceof TdarUser) {
-            String username = ((TdarUser) transientPerson).getUsername();
+            String username = StringUtils.trim(((TdarUser) transientPerson).getUsername());
+            
             if (StringUtils.isNotBlank(username)) {
                 blessedPerson = findByUsername(username);
             }
             logger.debug("find by username: {}, {}", username, blessedPerson);
         }
-
-        String email = transientPerson.getEmail();
-        if (StringUtils.isNotBlank(email) && blessedPerson == null) {
+        
+        String email = StringUtils.trim(transientPerson.getEmail());
+        if (StringUtils.isNotBlank(email)  && blessedPerson == null) {
             blessedPerson = findByEmail(email);
         } else {
             transientPerson.setEmail(null);// make sure it's null and not just blank or empty
         }
+
 
         // didn't find by email? cast the net a little wider...
         if (blessedPerson == null) {
@@ -331,6 +304,10 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
                     transientPerson.setInstitution(foundInstitution);
                 }
             }
+            // make sure we're trimmng
+            transientPerson.setEmail(StringUtils.trim(transientPerson.getEmail()));
+            transientPerson.setFirstName(StringUtils.trim(transientPerson.getFirstName()));
+            transientPerson.setLastName(StringUtils.trim(transientPerson.getLastName()));
             Set<Person> people = getDao().findByPerson(transientPerson);
             /*
              * Perhaps this should match only if FirstName and LastName are not empty, but I can see cases
@@ -377,6 +354,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
      */
     @Transactional(readOnly = false)
     private Institution findOrSaveInstitution(Institution transientInstitution) {
+        transientInstitution.setName(StringUtils.trim(transientInstitution.getName()));
         Institution blessedInstitution = findInstitution(transientInstitution);
         if (blessedInstitution == null) {
             if ((transientInstitution == null) || transientInstitution.hasNoPersistableValues()) {
@@ -390,9 +368,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return blessedInstitution;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findOrSaveResourceCreator(org.tdar.core.bean.entity.ResourceCreator)
      */
     @Override
@@ -401,9 +377,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         resourceCreator.setCreator(findOrSaveCreator(resourceCreator.getCreator()));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findAccessibleResourceCollections(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -412,9 +386,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return authorizedUserDao.findAccessibleResourceCollections(user);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#showRecentLogins()
      */
     @Override
@@ -423,9 +395,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().findRecentLogins();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#registerLogin(org.tdar.core.bean.entity.TdarUser, java.lang.String)
      */
     @Override
@@ -434,9 +404,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         getDao().registerLogin(authenticatedUser, userAgent);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findNumberOfActualContributors()
      */
     @Override
@@ -445,9 +413,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().findNumberOfActualContributors();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findAuthorityFromDuplicate(org.tdar.core.bean.entity.Creator)
      */
     @Override
@@ -463,9 +429,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findAllContributorIds()
      */
     @Override
@@ -474,9 +438,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().findAllContributorIds();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#updatePersonOcurrances()
      */
     @Override
@@ -485,9 +447,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         getDao().updateOccuranceValues();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#getCreatorViewCount(org.tdar.core.bean.entity.Creator)
      */
     @Override
@@ -499,9 +459,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().getCreatorViewCount(creator);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findResourceCreator(org.tdar.core.bean.entity.ResourceCreator)
      */
     @Override
@@ -522,9 +480,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#deleteForController(org.tdar.core.bean.entity.Creator, java.lang.String, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -535,9 +491,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         publisher.publishEvent(new TdarEvent(creator, EventType.CREATE_OR_UPDATE));
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#getDeletionIssues(com.opensymphony.xwork2.TextProvider, org.tdar.core.bean.entity.Creator)
      */
     @Override
@@ -546,11 +500,8 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.EntityService#saveInstitutionForController(org.tdar.core.bean.entity.Institution, java.lang.String, java.lang.String,
-     * org.tdar.core.bean.FileProxy)
+    /* (non-Javadoc)
+     * @see org.tdar.core.service.EntityService#saveInstitutionForController(org.tdar.core.bean.entity.Institution, java.lang.String, java.lang.String, org.tdar.core.bean.FileProxy)
      */
     @Override
     @Transactional(readOnly = false)
@@ -564,11 +515,8 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.EntityService#savePersonforController(org.tdar.core.bean.entity.Person, java.lang.String, java.lang.String,
-     * org.tdar.core.bean.FileProxy)
+    /* (non-Javadoc)
+     * @see org.tdar.core.service.EntityService#savePersonforController(org.tdar.core.bean.entity.Person, java.lang.String, java.lang.String, org.tdar.core.bean.FileProxy)
      */
     @Override
     @Transactional(readOnly = false)
@@ -579,7 +527,8 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         getLogger().debug("saving person: {} with institution {} ", person, institutionName);
         if (StringUtils.isBlank(institutionName)) {
             person.setInstitution(null);
-        } else {
+        }
+        else {
             // if the user changed the person's institution, find or create it
             Institution persistentInstitution = findOrSaveCreator(new Institution(institutionName));
             getLogger().debug("setting institution to persistent: " + persistentInstitution);
@@ -592,9 +541,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#getBookmarkedResourcesForUser(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -603,9 +550,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return bookmarkedResourceDao.findBookmarksResourcesByPerson(user);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#getAgreementCounts()
      */
     @Override
@@ -614,9 +559,7 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().getAgreementCounts();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#getAffiliationCounts()
      */
     @Override
@@ -625,48 +568,40 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         return getDao().getAffiliationCounts(false);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#getAffiliationCounts(boolean)
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly=true)
     public Map<UserAffiliation, Long> getAffiliationCounts(boolean b) {
         return getDao().getAffiliationCounts(true);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#getSchemaOrgJson(org.tdar.core.bean.entity.Creator, java.lang.String)
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly=true)
     public String getSchemaOrgJson(Creator<?> creator, String logoUrl) throws IOException {
         SchemaOrgCreatorTransformer transformer = new SchemaOrgCreatorTransformer();
         return transformer.convert(serializationService, creator, logoUrl);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#saveAddress(org.tdar.core.bean.entity.Address, org.tdar.core.bean.entity.Creator)
      */
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly=false)
     public void saveAddress(Address address2, Creator<?> creator) {
         creator.getAddresses().add(address2);
         getDao().saveOrUpdate(creator);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#deleteAddressForCreator(org.tdar.core.bean.entity.Address, org.tdar.core.bean.entity.Creator)
      */
     @Override
-    @Transactional(readOnly = false)
+    @Transactional(readOnly=false)
     public void deleteAddressForCreator(Address address, Creator<?> creator) {
         Address toDelete = address;
         getLogger().info("to delete: {} ", toDelete);
@@ -675,27 +610,23 @@ public class EntityServiceImpl extends ServiceInterface.TypedDaoBase<Person, Per
         // this is likely superflouous, but I'm tired
         getDao().delete(toDelete);
         getDao().saveOrUpdate(creator);
-
+        
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findChangesForUser(org.tdar.core.bean.entity.TdarUser, java.util.Date)
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly=true)
     public List<ResourceRevisionLog> findChangesForUser(TdarUser user, Date date) {
         return getDao().findChangesForUser(user, date);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
+    /* (non-Javadoc)
      * @see org.tdar.core.service.EntityService#findUser(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly=true)
     public TdarUser findUser(TdarUser user) {
         TdarUser found = (TdarUser) findPerson(user);
         if (PersistableUtils.isNotNullOrTransient(found)) {

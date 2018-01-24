@@ -47,11 +47,8 @@
         <!-- LICENSE:CC Attribution 3.0 Unported -->
         <js>/components/leaflet/dist/leaflet.js</js>
         <js>/components/leaflet-choropleth/dist/choropleth.js</js>
-        
-        <js>/components/es6-promise/es6-promise.js</js>
-        <js>/components/es6-promise/es6-promise.auto.js</js>
-        <!-- <js>/components/axios/dist/axios.js</js> -->
-        <js>/components/qs/dist/qs.js</js>
+        <!-- <js>/components/select2/dist/js/select2.min.js</js> -->
+        <!-- <css>/components/select2/dist/css/select2.min.css</css> -->
         <!--  https://github.com/CliffCloud/Leaflet.Sleep -->
         <js>/includes/Leaflet.Sleep.js</js>
         <css>/components/leaflet/dist/leaflet.css</css>
@@ -74,6 +71,8 @@
         <js>/js/tdar.bulk.js</js>
         <js>/js/tdar.repeatrow.js</js>
         <js>/js/tdar.autocomplete.js</js>
+        <!-- <js>/js/tdar.select2-autocomplete.js</js> -->
+        <!-- <css>/css/tdar.select2.css</css>         -->
         <js>/js/tdar.c3graphsupport.js</js>
         <js>/js/tdar.c3graph.js</js>
         <js>/js/tdar.validate.js</js>
@@ -98,7 +97,6 @@
         <js>/js/tdar.authority-management.js</js>
         <js>/js/tdar.auth.js</js>
         <js>/js/tdar.inheritance.js</js>
-        <js>/js/tdar.internalemail.js</js>
         <js>/js/tdar.download.js</js>
         <js>/js/tdar.pricing.js</js>
         <js>/js/tdar.contexthelp.js</js>
@@ -110,16 +108,6 @@
         <js>/js/maps/tdar.leaflet.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/js-emca-5.1-polyfill.js</js>
-
-        <!--Selectize  -->        
-        <js>/components/selectize/dist/js/standalone/selectize.js</js>
-        <css>/components/selectize/dist/css/selectize.css</css>
-
-
-        <js>/js/vue/vue-selectize.js</js>
-        <js>/js/vue/view-collection-widget.js</js>
-        <js>/js/vue/edit-collection.js</js>
-
     </group>
     <group name="ng-integrate">
 

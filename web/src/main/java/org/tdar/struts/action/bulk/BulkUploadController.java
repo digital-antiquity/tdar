@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,7 +24,10 @@ import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.FileSaveWrapper;
 import org.tdar.web.service.ResourceSaveControllerService;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$
@@ -46,7 +51,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Autowired
     private transient FileAnalyzer analyzer;
-
+    
     @Autowired
     private transient BulkUploadService bulkUploadService;
 
@@ -56,14 +61,8 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private String bulkFileName;
     private long bulkContentLength;
 
-    /**
-     * Save basic metadata of the registering concept.
-     * 
-     * @throws TdarActionException
-     * 
-     */
-    @Override
-    protected String save(Image image) throws TdarActionException {
+    protected String bulkUploadSave() throws TdarActionException {
+        saveBasicResourceMetadata();
         Status oldStatus = getPersistable().getStatus();
         getPersistable().setStatus(Status.DELETED);
         getGenericService().markReadOnly(getPersistable());
@@ -73,40 +72,40 @@ public class BulkUploadController extends AbstractInformationResourceController<
             addActionError(getText("bulkUploadController.no_files"));
             return INPUT;
         }
-
-        super.save(image);
-        getLogger().debug("ticketId: {} ", getTicketId());
-        getLogger().debug("proxy:    {}", getFileProxies());
-        getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
-
+        
+//        getLogger().debug("ticketId: {} ", getTicketId());
+//        getLogger().debug("proxy:    {}", getFileProxies());
+//        getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
+//
         AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getImage(), isAuthenticated(), getAuthenticatedUser(), isEditor());
-
-        fsw.setBulkUpload(isBulkUpload());
-        fsw.setFileProxies(getFileProxies());
-        fsw.setTextInput(false);
-        fsw.setMultipleFileUploadEnabled(isMultipleFileUploadEnabled());
-        fsw.setTicketId(getTicketId());
-        fsw.setUploadedFilesFileName(getUploadedFilesFileName());
-        fsw.setUploadedFiles(getUploadedFiles());
+//        
+//        fsw.setBulkUpload(isBulkUpload());
+//        fsw.setFileProxies(getFileProxies());
+//        fsw.setTextInput(false);
+//        fsw.setMultipleFileUploadEnabled(isMultipleFileUploadEnabled());
+//        fsw.setTicketId(getTicketId());
+//        fsw.setUploadedFilesFileName(getUploadedFilesFileName());
+//        fsw.setUploadedFiles(getUploadedFiles());
 
         Collection<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, fsw, null);
-
+        
         setupAccountForSaving();
         getCreditProxies().clear();
         getGenericService().detachFromSession(getPersistable());
-        setPersistable(null);
         getGenericService().detachFromSession(getAuthenticatedUser());
         // getGenericService().detachFromSession(getPersistable().getResourceCollections());
-        for (ResourceCreator rc : image.getResourceCreators()) {
-            getLogger().debug("resourceCreators:{} {}", rc, rc.getId());
-        }
+//        for (ResourceCreator rc : image.getResourceCreators()) {
+//            getLogger().debug("resourceCreators:{} {}", rc, rc.getId());
+//        }
 
         if (isAsync()) {
             getLogger().info("running asyncronously");
-            bulkUploadService.saveAsync(image, getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
+            bulkUploadService.saveAsync(getPersistable(), getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
+            setPersistable(null);
         } else {
             getLogger().info("running inline");
-            bulkUploadService.save(image, getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
+            bulkUploadService.save(getPersistable(), getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
+            setPersistable(null);
         }
         // setPersistable(null);
         return SUCCESS_ASYNC;
@@ -159,6 +158,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return bulkFileName;
     }
 
+
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return true;
@@ -173,6 +173,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     public boolean isBulkUpload() {
         return true;
     }
+
 
     @Override
     protected void postSaveCleanup(String returnString) {

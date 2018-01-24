@@ -34,12 +34,6 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
     private static final long serialVersionUID = 6576781526708737335L;
 
-    @Override
-    protected String save(Geospatial persistable) throws TdarActionException {
-        String save2 = super.save(persistable);
-        resolvePostSaveAction(getPersistable());
-        return save2;
-    }
 
     @Override
     public Class<Geospatial> getPersistableClass() {

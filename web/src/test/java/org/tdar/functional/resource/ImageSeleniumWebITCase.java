@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -86,7 +87,8 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
 
     @Test
-//    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.SELECT2 })
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.SELECT2 })
+    @Ignore
     public void testCreateImageEditSavehasResource()  {
         gotoPage("/image/add");
         WebElement form = find("#metadataForm").first();

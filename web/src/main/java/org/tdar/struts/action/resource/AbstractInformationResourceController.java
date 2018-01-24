@@ -127,12 +127,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Autowired
     private ResourceEditControllerServiceImpl resourceEditControllerService;
 
-    @Override
-    protected String save(InformationResource document) throws TdarActionException {
+    public String saveInformationResource(InformationResource document) throws TdarActionException {
         // save basic metadata
-        getLogger().debug("save ir");
-        // saveBasicResourceMetadata();
-
+//        saveBasicResourceMetadata();
+        
         // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();
         getResource().setProject(getProject());
@@ -156,13 +154,26 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         fsw.setTicketId(getTicketId());
         fsw.setUploadedFilesFileName(getUploadedFilesFileName());
         fsw.setUploadedFiles(getUploadedFiles());
-        AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(),
-                isEditor());
+        
+        
+        if (isBulkUpload()) {
+//            super.save(getPersistable());
+            return bulkUploadSave();
+        }
+        getLogger().debug("save ir");
+
+        AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(), isEditor());
         resourceSaveControllerService.setupFileProxiesForSave(proxy, authWrapper, fsw, this);
         setHasFileProxyChanges(fsw.isFileProxyChanges());
-        super.save(document);
+//        super.save(document);
+        
         return SUCCESS;
 
+    }
+
+    protected String bulkUploadSave() throws TdarActionException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     protected void loadResourceProviderInformation() {
@@ -253,7 +264,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         loadResourceProviderInformation();
         resourceViewControllerService.setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
-
+    
     @Autowired
     private SerializationService serializationService;
 
@@ -351,6 +362,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         return potentialParents;
     }
+
 
     @Autowired
     public void setFileAnalyzer(FileAnalyzer analyzer) {
@@ -559,6 +571,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         return types;
     }
+
+
 
     public String getFileInputMethod() {
         return fileInputMethod;

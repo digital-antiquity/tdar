@@ -351,15 +351,16 @@ public class DatasetDao extends ResourceDao<Dataset> {
             ResourceType resourceType = ResourceType.valueOf((String) scroll.get(3));
             String fileDescription = (String) scroll.get(4);
             Number imageId = (Number) scroll.get(5);
-            @SuppressWarnings("deprecation")
-            Resource res = new Resource(id.longValue(), title, resourceType);
-            markReadOnly(res);
-            String resourceUrl = UrlService.absoluteUrl(res);
-            String imageUrl = UrlService.thumbnailUrl(imageId.longValue());
-            if (StringUtils.isNotBlank(fileDescription)) {
-                description = fileDescription;
-            }
             try {
+                Resource res = resourceType.getResourceClass().newInstance();
+                res.setTitle(title);
+                res.setId(id.longValue());
+                markReadOnly(res);
+                String resourceUrl = UrlService.absoluteUrl(res);
+                String imageUrl = UrlService.thumbnailUrl(imageId.longValue());
+                if (StringUtils.isNotBlank(fileDescription)) {
+                    description = fileDescription;
+                }
                 ImageTag tag = new GoogleImageSitemapUrl.ImageTag(new URL(imageUrl)).title(cleanupXml(title)).caption(cleanupXml(description));
                 GoogleImageSitemapUrl iurl = new GoogleImageSitemapUrl.Options(new URL(resourceUrl)).addImage(tag).build();
                 gisg.addUrl(iurl);

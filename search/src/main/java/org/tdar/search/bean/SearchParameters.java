@@ -423,7 +423,7 @@ public class SearchParameters {
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
                 ResourceCollection.class, getOperator(), getCollections()));
-        CreatorQueryPart<? extends Creator> cqp = new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies);
+        CreatorQueryPart cqp = new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies);
         getActionMessages().addAll(cqp.getActionMessages());
         queryPartGroup.append(cqp);
 
