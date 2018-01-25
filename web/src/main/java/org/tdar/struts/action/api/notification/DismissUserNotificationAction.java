@@ -67,7 +67,6 @@ public class DismissUserNotificationAction extends AbstractJsonApiAction impleme
         } catch (Throwable t) {
             getLogger().error(t.getMessage(),t);
             addActionErrorWithException(t.getMessage(), t);
-//            throw t;
         }
     }
 
