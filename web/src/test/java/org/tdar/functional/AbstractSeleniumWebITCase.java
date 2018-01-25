@@ -236,6 +236,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     @Before
     public void beforeTest() throws IOException {
+        System.setProperty("java.awt.headless", "true");
         if (quitBrowserBetweenTests) {
             initBrowser();
         }
@@ -402,8 +403,8 @@ public abstract class AbstractSeleniumWebITCase {
             ;
         } catch (UnhandledAlertException uae) {
             logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
-            logout();
             driver.switchTo().alert().accept();
+            logout();
             driver.get("about://");
             ;
         } catch (Throwable ex) {
