@@ -178,6 +178,7 @@
             <li>Navigate the pages in this list by clicking the left/right arrows at the bottom of this table.</li>
             <li>Display and use the drop down filters by clicking 'More/Less Options' to limit the number
                     of results.</li>
+        </ul>
         </div>
 
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="#divResourcesOptionsTips">
