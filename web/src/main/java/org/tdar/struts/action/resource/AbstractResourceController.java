@@ -659,7 +659,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedResourceCollections()) {
-            if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+            if (authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 getShares().add(rc);
             } else {
                 retainedSharedCollections.add(rc);
@@ -667,7 +667,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             }
         }
         for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
-            if (authorizationService.canViewCollection(getAuthenticatedUser(),rc)) {
+            if (authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 getResourceCollections().add(rc);
             } else {
                 retainedListCollections.add(rc);
