@@ -23,6 +23,8 @@
                 },
                 error : function(data) {
                     var json = data.responseJSON;
+                    $("body").append(JSON.stringify(data));
+                    console.log(JSON.stringify(data))
                     alert(json);
                }
             });
