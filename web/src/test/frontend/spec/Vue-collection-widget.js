@@ -365,6 +365,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         
         // set some IDs
         fixture = fixture.replace("${administrator?c}",admin);
+        fixture = fixture.replace("${editor?c}",admin);
         fixture = fixture.replace("${editable?c}",editable);
         fixture = fixture.replace("${resource.id?c}",resourceid);
 
