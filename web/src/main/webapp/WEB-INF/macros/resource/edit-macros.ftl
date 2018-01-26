@@ -55,6 +55,17 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 </#if>
             </div>
         </div>
+                    <#if (effectiveShares?size > 0)>
+                <p id="effectiveCollectionsVisible"><i>The following collections cannot be modified because you do not have sufficient permissions:
+                <#assign comma =false>
+                <#list effectiveShares as share>
+                    <#if share.viewable>
+                        <#if comma>,</#if>${share.name}<#assign comma=true />
+                    </#if>
+                </#list>
+                </i></p>
+            </#if>
+
     <#else>
         <p>Collection selection is disabled because you don't have full rights on this resource.</p>    
     </#if>

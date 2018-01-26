@@ -165,9 +165,10 @@ public class ResourceRightsController extends AbstractRightsController implement
 
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedResourceCollections()) {
-            if (authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
+            if (authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 getShares().add(rc);
             } else {
+                authorizationService.applyTransientViewableFlag(rc, getAuthenticatedUser());
                 getRetainedSharedCollections().add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }

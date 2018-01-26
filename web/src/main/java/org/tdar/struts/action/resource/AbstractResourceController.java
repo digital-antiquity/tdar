@@ -662,6 +662,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             if (authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 getShares().add(rc);
             } else {
+                authorizationService.applyTransientViewableFlag(rc, getAuthenticatedUser());
                 retainedSharedCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }
