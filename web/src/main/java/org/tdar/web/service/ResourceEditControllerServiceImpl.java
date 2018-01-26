@@ -193,6 +193,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
             if (authorizationService.canRemoveFromCollection(authenticatedUser, rc)) {
                 shares.add(rc);
             } else {
+                authorizationService.applyTransientViewableFlag(rc, authenticatedUser);
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }

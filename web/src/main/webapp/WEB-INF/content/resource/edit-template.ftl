@@ -264,6 +264,16 @@
             <h2>${siteAcronym} Collections &amp; Project</h2>
             <!-- <h4>Add to a Collection</h4> -->
             <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
+            <#if (effectiveShares?size > 0)>
+            <p id="effectiveCollectionsVisible"><i>The following collections cannot be modified because you do not have sufficient permissions:
+            <#assign comma =false>
+            <#list effectiveShares as share>
+            <#if share.viewable>
+            <#if comma>,</#if>${share.name}<#assign comma=true />
+            </#if>
+            </#list>
+            </i></p>
+            </#if>
             <#assign _projectId = 'project.id' />
             <#if resource.id == -1 >
                 <#assign _projectId = request.getParameter('projectId')!'' />
