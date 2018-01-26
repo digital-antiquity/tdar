@@ -31,6 +31,7 @@ public class DownloadController extends AbstractDownloadController implements Pr
     private boolean forceAttachment = false;
 
     private ResourceCitationFormatter resourceCitation;
+
     @Actions(value = {
             @Action(value = "confirm/{informationResourceId}/{informationResourceFileVersionId}",
                     results = { @Result(name = CONFIRM, location = CONFIRM_DOWNLOAD_FTL) }),

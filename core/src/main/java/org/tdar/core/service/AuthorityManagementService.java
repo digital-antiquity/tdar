@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.ScrollableResults;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;

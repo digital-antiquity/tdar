@@ -147,7 +147,7 @@ public class SheetEvaluator {
         int numMergedRegions = sheet.getNumMergedRegions();
         for (int i = 0; i < numMergedRegions; i++) {
             CellRangeAddress region = sheet.getMergedRegion(i);
-            logger.trace("{},{}",region.getFirstRow(), region.getFirstColumn());
+            logger.trace("{},{}", region.getFirstRow(), region.getFirstColumn());
 
             // find overlap of current row in region
             if (rowIndex >= region.getFirstRow() && rowIndex <= region.getLastRow()) {

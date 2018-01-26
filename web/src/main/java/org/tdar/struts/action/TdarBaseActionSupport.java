@@ -34,7 +34,7 @@ import org.tdar.web.WebFileSystemResourceService;
 import ro.isdc.wro.model.resource.ResourceType;
 
 public class TdarBaseActionSupport extends TdarActionSupport {
-    
+
     @Autowired
     private transient WebFileSystemResourceService webFilesystemResourceService;
 
@@ -42,7 +42,6 @@ public class TdarBaseActionSupport extends TdarActionSupport {
     private transient AuthorizationService authorizationService;
 
     private boolean hideExceptionArea = false;
-
 
     /**
      * Return the default/suggested base url for static content (trailing slash removed, if present)
@@ -76,11 +75,11 @@ public class TdarBaseActionSupport extends TdarActionSupport {
             if (StringUtils.isBlank(s.getSlug()) && StringUtils.isBlank(a.getSlug())) {
                 return true;
             }
-//            logger.debug("action: {}, slug: {}", getActionName(), a.getSlug());
-//            if (Objects.equals(getActionName(), a.getSlug())) {
-//                return true;
-//            }
-            
+            // logger.debug("action: {}, slug: {}", getActionName(), a.getSlug());
+            // if (Objects.equals(getActionName(), a.getSlug())) {
+            // return true;
+            // }
+
             if (!Objects.equals(s.getSlug(), a.getSlug())) {
                 getLogger().trace("slug mismatch - wanted:{}   got:{}", s.getSlug(), a.getSlug());
                 if (action instanceof SearchResultHandler<?>) {
@@ -95,7 +94,6 @@ public class TdarBaseActionSupport extends TdarActionSupport {
         }
         return true;
     }
-    
 
     public List<String> getJavascriptFiles() {
         return webFilesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.JS);
@@ -112,7 +110,6 @@ public class TdarBaseActionSupport extends TdarActionSupport {
     public boolean isWebFilePreprocessingEnabled() {
         return webFilesystemResourceService.testWRO();
     }
-
 
     protected void addActionErrorWithException(String message, Throwable exception) {
         String trace = ExceptionUtils.getStackTrace(exception);
@@ -151,6 +148,7 @@ public class TdarBaseActionSupport extends TdarActionSupport {
     public void setHideExceptionArea(boolean hideExceptionArea) {
         this.hideExceptionArea = hideExceptionArea;
     }
+
     public boolean isErrorWarningSectionVisible() {
         if (hideExceptionArea) {
             return false;
@@ -175,7 +173,6 @@ public class TdarBaseActionSupport extends TdarActionSupport {
     public String getWroTempDirName() {
         return webFilesystemResourceService.getWroDir();
     }
-
 
     /**
      * Load up controller and then check that the user can execute function prior to calling action (used in prepare)
@@ -229,7 +226,6 @@ public class TdarBaseActionSupport extends TdarActionSupport {
         getLogger().info(String.format("%s is %s %s (%s): %s - %s", name, type.getLabel(), pc.getClass().getSimpleName(), pc.getId(), status, title));
     }
 
-
     public boolean isReindexing() {
         Activity indexingTask = ActivityManager.getInstance().getIndexingTask();
         if ((indexingTask != null) && !indexingTask.hasEnded()) {
@@ -280,14 +276,12 @@ public class TdarBaseActionSupport extends TdarActionSupport {
         abort(StatusCode.FORBIDDEN, FORBIDDEN, errorMessage);
     }
 
-    
     private WebConfig config = new WebConfig();
-    
+
     public WebConfig getConfig() {
         return config;
     }
 
-    
     public boolean isProduction() {
         return getTdarConfiguration().getServerEnvironmentStatus().equalsIgnoreCase(TdarConfiguration.PRODUCTION);
     }
@@ -295,9 +289,9 @@ public class TdarBaseActionSupport extends TdarActionSupport {
     public boolean isSelenium() {
         return getConfig().isSelenium();
     }
-    
+
     public Integer getMaxUploadFilesPerRecord() {
         return getTdarConfiguration().getMaxUploadFilesPerRecord();
     }
- 
+
 }

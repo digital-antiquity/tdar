@@ -35,12 +35,11 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
 
     @Autowired
     protected StatisticsService statisticsService;
-    
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String json;
 
-    
     protected void setupJson() {
         if (getStatsForAccount() == null || getStatsForAccount().empty()) {
             addActionError("abstractStatisticsAction.no_data");
@@ -54,7 +53,7 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
             logger.error("error setting json", e);
         }
     }
-    
+
     @Action(value = "{id}", results = { @Result(name = SUCCESS, location = "../stats.ftl") })
     @Override
     public String execute() throws Exception {
@@ -85,7 +84,6 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
     public void setGranularity(DateGranularity granularity) {
         this.granularity = granularity;
     }
-
 
     public String getJson() {
         return json;

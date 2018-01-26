@@ -110,7 +110,8 @@ public class NelNetPaymentDao implements PaymentTransactionProcessor {
      * (non-Javadoc)
      * 
      * @see
-     * org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#validateResponse(org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate
+     * org.tdar.core.dao.external.payment.nelnet.TransactionProcessor#validateResponse(org.tdar.core.dao.external.payment.nelnet.
+     * NelNetTransactionResponseTemplate
      * )
      */
     @Override

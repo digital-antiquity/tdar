@@ -55,12 +55,12 @@ public class BillingAccountGroup extends AbstractPersistable implements Updatabl
     private Status status = Status.ACTIVE;
 
     @NotNull
-    @Column(name = "date_created", nullable=false)
+    @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
 
     @NotNull
-    @Column(name = "date_updated", nullable=false)
+    @Column(name = "date_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified = new Date();
 

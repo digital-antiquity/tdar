@@ -1,8 +1,6 @@
 package org.tdar.struts.action.project;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,7 +49,6 @@ public class ProjectController extends AbstractResourceController<Project> {
     private SortOption secondarySortField;
     private SortOption sortField;
 
-
     /**
      * Projects contain no additional metadata beyond basic Resource metadata so saveBasicResourceMetadata() should work.
      */
@@ -73,7 +70,7 @@ public class ProjectController extends AbstractResourceController<Project> {
             searchIndexService.indexProject(getPersistable());
         }
     }
-    
+
     Object result;
 
     @Action(value = "json/{id}",
@@ -88,11 +85,11 @@ public class ProjectController extends AbstractResourceController<Project> {
     public Object getResultObject() {
         return result;
     }
-    
+
     public Class getJsonView() {
         return JsonProjectLookupFilter.class;
     }
-    
+
     public Project getProject() {
         return getPersistable();
     }

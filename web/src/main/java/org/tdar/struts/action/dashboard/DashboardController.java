@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.InformationResource;
@@ -81,7 +81,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     private int maxRecentResources = 5;
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
-    private List<SharedCollection> allResourceCollections = new ArrayList<>();
+    private List<ResourceCollection> allResourceCollections = new ArrayList<>();
     private Set<BillingAccount> overdrawnAccounts = new HashSet<BillingAccount>();
     private List<InformationResource> resourcesWithErrors;
 
@@ -135,11 +135,11 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     }
 
     @Override
-    @Actions( {
-            //fixme: there's a less-verbose way to define these three mappings.
+    @Actions({
+            // fixme: there's a less-verbose way to define these three mappings.
             @Action(value = "dashboard", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") }),
             @Action(value = "dashboard/", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") }),
-            @Action(value = "dashboard/resources", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") })})
+            @Action(value = "dashboard/resources", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") }) })
     public String execute() throws SolrServerException, IOException {
         getLogger().trace("recent resources");
         setupRecentResources();
@@ -172,9 +172,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
-        TreeSet<SharedCollection> colls = new TreeSet<>(new TitleSortComparator());
-        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
-                SharedCollection.class)) {
+        TreeSet<ResourceCollection> colls = new TreeSet<>(new TitleSortComparator());
+        for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
             colls.add(rc);
         }
 
@@ -200,7 +199,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
         advancedSearchQueryObject.getReservedParams().setUseSubmitterContext(true);
         advancedSearchQueryObject.getReservedParams().setDasboardQuery(true);
-        advancedSearchQueryObject.getReservedParams().setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE,Status.DRAFT, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE)));
+        advancedSearchQueryObject.getReservedParams()
+                .setStatuses(new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT, Status.FLAGGED, Status.FLAGGED_ACCOUNT_BALANCE)));
         SearchResult<Resource> request = new SearchResult<>();
         request.setFacetWrapper(new FacetWrapper());
         request.setRecordsPerPage(0);
@@ -209,7 +209,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 
         ResourceTypeStatusInfo info = new ResourceTypeStatusInfo();
         try {
-            FacetedResultHandler<Resource> result = (FacetedResultHandler<Resource>) resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, getAuthenticatedUser(), request, this);
+            FacetedResultHandler<Resource> result = (FacetedResultHandler<Resource>) resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject,
+                    getAuthenticatedUser(), request, this);
             activeResourceCount = result.getTotalRecords();
             FacetWrapper facetWrapper = result.getFacetWrapper();
             if (facetWrapper != null && MapUtils.isNotEmpty(facetWrapper.getFacetResults())) {
@@ -220,12 +221,12 @@ public class DashboardController extends AbstractAuthenticatableAction implement
                     });
                 }
                 if (CollectionUtils.isNotEmpty(facetResults.get(QueryFieldNames.STATUS))) {
-                facetWrapper.getFacetResults().get(QueryFieldNames.STATUS).forEach(facet -> {
-                    info.getStatusMap().put(Status.valueOf(facet.getRaw()), facet.getCount().intValue());
-                });
+                    facetWrapper.getFacetResults().get(QueryFieldNames.STATUS).forEach(facet -> {
+                        info.getStatusMap().put(Status.valueOf(facet.getRaw()), facet.getCount().intValue());
+                    });
                 }
             }
-        } catch (SearchException | IOException  e1) {
+        } catch (SearchException | IOException e1) {
             getLogger().error("issue generating map search", e1);
         }
 
@@ -275,7 +276,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     public void setBookmarkedResource(List<Resource> bookmarks) {
         this.bookmarkedResources = bookmarks;
     }
-
 
     public List<Project> getAllSubmittedProjects() {
         return allSubmittedProjects;
@@ -341,11 +341,11 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     }
 
     @DoNotObfuscate(reason = "not needed / performance test")
-    public List<SharedCollection> getAllResourceCollections() {
+    public List<ResourceCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(List<SharedCollection> resourceCollections) {
+    public void setAllResourceCollections(List<ResourceCollection> resourceCollections) {
         this.allResourceCollections = resourceCollections;
     }
 

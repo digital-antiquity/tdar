@@ -9,7 +9,7 @@ import org.hibernate.ScrollableResults;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.RequestCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -148,16 +148,22 @@ public interface ResourceService {
     void processManagedKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes);
 
     /**
-     * Given a collection of hibernate-managed beans (the 'current' collection)  and another collection of transient beans (the 'incoming' collection),
-     * update the current collection to match the contents of the incoming collection. This method will associate all elements in the incoming collection 
-     * with the specified resource.  Contents of both collections should satisfy the HasResource interface.
+     * Given a collection of hibernate-managed beans (the 'current' collection) and another collection of transient beans (the 'incoming' collection),
+     * update the current collection to match the contents of the incoming collection. This method will associate all elements in the incoming collection
+     * with the specified resource. Contents of both collections should satisfy the HasResource interface.
      * 
-     * @param resource  the 'owner' of the elements in the incoming collection.  This method will associate all elements of the incoming collection with this resource.
-     * @param shouldSave if true,  this method will persist elements of the incoming collection.
-     * @param validateMethod determines what validation steps (if any) to perform on each element of the incoming collection
-     * @param incoming_ the incoming collection of HasResource elements.  
-     * @param current the current collection of HasResource elements.  This method will modify collection to contain the same elements as the incoming collection.
-     * @param cls type of the collection elements.
+     * @param resource
+     *            the 'owner' of the elements in the incoming collection. This method will associate all elements of the incoming collection with this resource.
+     * @param shouldSave
+     *            if true, this method will persist elements of the incoming collection.
+     * @param validateMethod
+     *            determines what validation steps (if any) to perform on each element of the incoming collection
+     * @param incoming_
+     *            the incoming collection of HasResource elements.
+     * @param current
+     *            the current collection of HasResource elements. This method will modify collection to contain the same elements as the incoming collection.
+     * @param cls
+     *            type of the collection elements.
      */
     <H extends HasResource<R>, R extends Resource> void saveHasResources(R resource, boolean shouldSave, ErrorHandling validateMethod,
             Collection<H> incoming__,
@@ -193,7 +199,8 @@ public interface ResourceService {
     <T extends Resource> void clearOneToManyIds(T resource);
 
     /**
-     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type. This is really a deep copy method
+     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type. This is really a deep
+     * copy method
      * 
      * @param proxy
      * @param resourceClass
@@ -279,7 +286,7 @@ public interface ResourceService {
 
     String getSchemaOrgJsonLD(Resource resource);
 
-    void updateBatch(BillingAccount account, SharedCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles,
+    void updateBatch(BillingAccount account, ResourceCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles,
             List<String> descriptions, TdarUser authenticatedUser);
 
     RequestCollection findCustom(Resource resource);

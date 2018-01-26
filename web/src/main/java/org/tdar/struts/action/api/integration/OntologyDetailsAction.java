@@ -16,7 +16,6 @@ import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
-import org.tdar.utils.json.JsonIntegrationFilter;
 
 @Namespace("/api/integration")
 @ParentPackage("secured")

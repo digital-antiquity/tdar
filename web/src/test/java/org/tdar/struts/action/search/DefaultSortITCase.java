@@ -19,7 +19,7 @@ public class DefaultSortITCase extends AbstractSearchControllerITCase {
 
     @Test
     public void testAdvancedSearchDefaultSort() throws TdarActionException {
-        controller = generateNewInitializedController(AdvancedSearchController.class);
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class);
         controller.search();
         logger.info("sorting by: {} ", controller.getSortField());
         assertEquals(SortOption.getDefaultSortOption(), controller.getSortField());

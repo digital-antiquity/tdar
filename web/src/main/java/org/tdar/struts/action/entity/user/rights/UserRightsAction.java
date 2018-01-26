@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.Resource;
@@ -41,9 +41,9 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     private GenericService genericService;
     @Autowired
     private IntegrationWorkflowService integrationService;
-    
+
     private List<Resource> findResourcesSharedWith = new ArrayList<>();
-    private List<SharedCollection> findCollectionsSharedWith = new ArrayList<>();
+    private List<ResourceCollection> findCollectionsSharedWith = new ArrayList<>();
     private List<DataIntegrationWorkflow> integrations = new ArrayList<>();
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
 
@@ -58,7 +58,7 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
     public void prepare() throws Exception {
         this.user = genericService.find(TdarUser.class, id);
         getLogger().debug("find collections");
-        setFindCollectionsSharedWith(resourceCollectionService.findCollectionsSharedWith(getAuthenticatedUser(), getUser(), SharedCollection.class));
+        setFindCollectionsSharedWith(resourceCollectionService.findCollectionsSharedWith(getAuthenticatedUser(), getUser()));
         getLogger().debug("find resources");
         setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), user));
         getLogger().debug("find accounts");
@@ -120,11 +120,11 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         this.findResourcesSharedWith = findResourcesSharedWith;
     }
 
-    public List<SharedCollection> getFindCollectionsSharedWith() {
+    public List<ResourceCollection> getFindCollectionsSharedWith() {
         return findCollectionsSharedWith;
     }
 
-    public void setFindCollectionsSharedWith(List<SharedCollection> findCollectionsSharedWith) {
+    public void setFindCollectionsSharedWith(List<ResourceCollection> findCollectionsSharedWith) {
         this.findCollectionsSharedWith = findCollectionsSharedWith;
     }
 

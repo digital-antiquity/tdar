@@ -13,7 +13,8 @@ import org.tdar.core.bean.Persistable;
 
 @MappedSuperclass
 /**
- * Abtract class to manage download and view statistics 
+ * Abtract class to manage download and view statistics
+ * 
  * @author abrin
  *
  * @param <S>
@@ -27,8 +28,7 @@ public abstract class AbstractResourceStatistic<S extends Persistable> extends A
     @Temporal(TemporalType.TIMESTAMP)
     private Date date;
 
-
-    @Column(name="bot", nullable=false, columnDefinition="boolean default false")
+    @Column(name = "bot", nullable = false, columnDefinition = "boolean default false")
     private boolean bot;
 
     public abstract S getReference();

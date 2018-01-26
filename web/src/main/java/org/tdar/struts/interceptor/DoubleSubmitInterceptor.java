@@ -12,10 +12,10 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 
 /**
- * for controllers that expose a hidden parameter of doubleSubmitKey, check whether that key has been used or not, if it has, 
- * prevent it from being used concurrently with another request.  If we get a double-submit, we return immediately.  If we
- * are successful in processing, we remove the key.  This means that even if INPUT is returned by a form, we can still resubmit.
- *  
+ * for controllers that expose a hidden parameter of doubleSubmitKey, check whether that key has been used or not, if it has,
+ * prevent it from being used concurrently with another request. If we get a double-submit, we return immediately. If we
+ * are successful in processing, we remove the key. This means that even if INPUT is returned by a form, we can still resubmit.
+ * 
  * @author abrin
  *
  */
@@ -40,7 +40,7 @@ public class DoubleSubmitInterceptor implements Interceptor {
             logger.warn("double submit prevented");
             return TdarActionSupport.BAD_REQUEST;
         }
-        
+
         if (logger.isTraceEnabled()) {
             logger.trace("adding key:{}", key);
             logger.trace("      keys:{}", knownKeys);
@@ -55,7 +55,7 @@ public class DoubleSubmitInterceptor implements Interceptor {
             logger.trace("       keys:{}", knownKeys);
         }
         return result;
-        
+
     }
 
     @Override

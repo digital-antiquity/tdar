@@ -11,23 +11,10 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum MeasurementUnit implements HasLabel, Localizable {
-    KILOGRAM("kilogram", "kg"),
-    GRAM("gram", "g"),
-    MILLIGRAM("milligram", "mg"),
-    MICROGRAM("microgram", "mcg"),
-    KILOMETER("kilometer", "km"),
-    METER("meter", "m"),
-    CENTIMETER("centimeter", "cm"),
-    MILLIMETER("millimeter", "mm"),
-    SQUAR_METER("square meter", "m2"),
-    HECTARE("hectare", "ha"),
-    SQUARE_KM("square kilometer", "km2"),
-    MILLILITER("milliliter", "ml"),
-    CUBIC_CM("cubic centimeter", "cc"),
-    LITRE("liter", "l"),
-    DEGREE_LATITUDE("degree lat/long","deg"),
-    PARTS_PER_MILLION("parts per million", "ppm"),
-    YEAR("year", "year");
+    KILOGRAM("kilogram", "kg"), GRAM("gram", "g"), MILLIGRAM("milligram", "mg"), MICROGRAM("microgram", "mcg"), KILOMETER("kilometer", "km"), METER("meter",
+            "m"), CENTIMETER("centimeter", "cm"), MILLIMETER("millimeter", "mm"), SQUAR_METER("square meter", "m2"), HECTARE("hectare",
+                    "ha"), SQUARE_KM("square kilometer", "km2"), MILLILITER("milliliter", "ml"), CUBIC_CM("cubic centimeter", "cc"), LITRE("liter",
+                            "l"), DEGREE_LATITUDE("degree lat/long", "deg"), PARTS_PER_MILLION("parts per million", "ppm"), YEAR("year", "year");
 
     private String shortName;
     private String fullName;

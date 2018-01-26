@@ -32,9 +32,8 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
@@ -42,7 +41,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
@@ -89,7 +88,7 @@ import org.tdar.utils.PersistableUtils;
  */
 @Transactional
 @Service
-public class ImportServiceImpl implements ImportService  {
+public class ImportServiceImpl implements ImportService {
 
     @Autowired
     private FileAnalyzer fileAnalyzer;
@@ -114,7 +113,9 @@ public class ImportServiceImpl implements ImportService  {
 
     private transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ImportService#bringObjectOntoSession(R, org.tdar.core.bean.entity.TdarUser, boolean)
      */
     @Override
@@ -122,7 +123,9 @@ public class ImportServiceImpl implements ImportService  {
         return bringObjectOntoSession(incoming, authorizedUser, null, null, validate);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ImportService#bringObjectOntoSession(R, org.tdar.core.bean.entity.TdarUser, java.util.Collection, java.lang.Long, boolean)
      */
     @Override
@@ -145,7 +148,7 @@ public class ImportServiceImpl implements ImportService  {
         incomingResource.markUpdated(blessedAuthorizedUser);
 
         reconcilePersistableChildBeans(blessedAuthorizedUser, incomingResource);
-//        reflectionService.walkObject(incomingResource);
+        // reflectionService.walkObject(incomingResource);
         logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(blessedAuthorizedUser));
         incomingResource = genericService.merge(incomingResource);
         if (incomingResource instanceof InformationResource) {
@@ -155,9 +158,9 @@ public class ImportServiceImpl implements ImportService  {
         processFiles(blessedAuthorizedUser, proxies, incomingResource);
         geoSearchService.processManagedGeographicKeywords(incomingResource, incomingResource.getLatitudeLongitudeBoxes());
         if (created == true) {
-            GeneralPermissions administerShare = GeneralPermissions.ADMINISTER_SHARE;
-            if ( incomingResource instanceof Resource) {
-                administerShare = GeneralPermissions.MODIFY_RECORD;
+            Permissions administerShare = Permissions.ADMINISTER_COLLECTION;
+            if (incomingResource instanceof Resource) {
+                administerShare = Permissions.MODIFY_RECORD;
             }
             incomingResource.getAuthorizedUsers().add(new AuthorizedUser(blessedAuthorizedUser, blessedAuthorizedUser, administerShare));
         }
@@ -166,7 +169,9 @@ public class ImportServiceImpl implements ImportService  {
         return incomingResource;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ImportService#processFileProxies(R, java.util.Collection, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -192,13 +197,14 @@ public class ImportServiceImpl implements ImportService  {
      * @throws APIException
      * @throws IOException
      */
-    private <R extends Resource> void processFiles(TdarUser authorizedUser, Collection<FileProxy> proxies, R incomingResource) throws APIException, IOException {
+    private <R extends Resource> void processFiles(TdarUser authorizedUser, Collection<FileProxy> proxies, R incomingResource)
+            throws APIException, IOException {
         Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
         if (CollectionUtils.isNotEmpty(proxies)) {
             for (FileProxy proxy : proxies) {
                 String ext = FilenameUtils.getExtension(proxy.getFilename()).toLowerCase();
                 if (!extensionsForType.contains(ext)) {
-                    throw new APIException("importService.invalid_file_type", Arrays.asList("\"" +ext + "\"", StringUtils.join(extensionsForType, ", ")),
+                    throw new APIException("importService.invalid_file_type", Arrays.asList("\"" + ext + "\"", StringUtils.join(extensionsForType, ", ")),
                             StatusCode.FORBIDDEN);
                 }
             }
@@ -222,7 +228,8 @@ public class ImportServiceImpl implements ImportService  {
      * @return
      * @throws APIException
      */
-    private <R extends Resource> boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, R incomingResource, boolean created_) throws APIException {
+    private <R extends Resource> boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, R incomingResource, boolean created_)
+            throws APIException {
         boolean created = created_;
         if (PersistableUtils.isNotTransient(incomingResource)) {
             @SuppressWarnings("unchecked")
@@ -237,7 +244,7 @@ public class ImportServiceImpl implements ImportService  {
             }
 
             // check if the user can modify the record
-            if (!authenticationAndAuthorizationService.canEditResource(authorizedUser, existing, GeneralPermissions.MODIFY_RECORD)) {
+            if (!authenticationAndAuthorizationService.canEditResource(authorizedUser, existing, Permissions.MODIFY_RECORD)) {
                 throw new APIException(MessageHelper.getMessage("error.permission_denied"), StatusCode.UNAUTHORIZED);
             }
             if (incomingResource instanceof InformationResource) {
@@ -252,7 +259,9 @@ public class ImportServiceImpl implements ImportService  {
         return created;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ImportService#reconcilePersistableChildBeans(org.tdar.core.bean.entity.TdarUser, R)
      */
     @Override
@@ -264,11 +273,12 @@ public class ImportServiceImpl implements ImportService  {
         // knownObjects.put(makeKey(authorizedUser), authorizedUser);
         for (Pair<Field, Class<? extends Persistable>> pair : testReflection) {
             logger.trace("{}", pair);
-            Object content = reflectionService.callFieldGetter(incomingResource, pair.getFirst());
+            Field field = pair.getFirst();
+            Object content = reflectionService.callFieldGetter(incomingResource, field);
             if (content == null) {
                 continue;
             }
-            logger.trace("{}, {}", content, pair.getFirst());
+            logger.trace("{}, {}", content, field);
             if (Collection.class.isAssignableFrom(content.getClass())) {
                 List<Persistable> toAdd = new ArrayList<Persistable>();
                 @SuppressWarnings("unchecked")
@@ -284,8 +294,8 @@ public class ImportServiceImpl implements ImportService  {
                     if (p instanceof ResourceCollection) {
                         isResourceCollection = true;
                     }
-                    
-                    Persistable result = processIncoming(p, incomingResource, authorizedUser);
+
+                    Persistable result = processIncoming(p, incomingResource, field.getName(), authorizedUser);
                     if (result instanceof Sequenceable) {
                         ((Sequenceable<?>) result).setSequenceNumber(count);
                     }
@@ -300,8 +310,9 @@ public class ImportServiceImpl implements ImportService  {
                 }
                 originalList.addAll(toAdd);
             } else if (Persistable.class.isAssignableFrom(content.getClass())) {
-                logger.trace("setter: {}", pair.getFirst());
-                reflectionService.callFieldSetter(incomingResource, pair.getFirst(), processIncoming((Persistable) content, incomingResource, authorizedUser));
+                logger.trace("setter: {}", field);
+                reflectionService.callFieldSetter(incomingResource, field,
+                        processIncoming((Persistable) content, incomingResource, field.getName(), authorizedUser));
             }
         }
         return incomingResource;
@@ -342,7 +353,7 @@ public class ImportServiceImpl implements ImportService  {
         Set<AuthorizedUser> aus = new HashSet<>();
         if (incomingResource != null) {
             // for non-admins don't want to have to figure out rights check logic, so reject authorizedUsers
-            incomingResource.getRightsBasedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
+            incomingResource.getManagedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
             incomingResource.getUnmanagedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
             if (CollectionUtils.isNotEmpty(aus) && !authenticationAndAuthorizationService.isAdministrator(user)) {
                 throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
@@ -350,7 +361,9 @@ public class ImportServiceImpl implements ImportService  {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ImportService#cloneResource(R, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -363,7 +376,7 @@ public class ImportServiceImpl implements ImportService  {
 
         // serialize to XML -- gets the new copy of resource off the session, so we can reset IDs as needed
         // Long oldId = resource.getId();
-        
+
         String xml = serializationService.convertToXML(resource);
         @SuppressWarnings("unchecked")
         R rec = (R) serializationService.parseXml(new StringReader(xml));
@@ -397,15 +410,15 @@ public class ImportServiceImpl implements ImportService  {
             for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
                 latLong.obfuscate();
             }
-            rec.getSharedCollections().clear();
+            rec.getManagedResourceCollections().clear();
             rec.getAuthorizedUsers().clear();
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            for (SharedCollection rc : rec.getSharedCollections()) {
-                rc.getResources().add(rec);
+            for (ResourceCollection rc : rec.getManagedResourceCollections()) {
+                rc.getManagedResources().add(rec);
             }
         }
         genericService.detachFromSession(rec);
@@ -437,7 +450,9 @@ public class ImportServiceImpl implements ImportService  {
         return rec;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ImportService#resetOneToManyPersistableIds(R)
      */
     @Override
@@ -455,13 +470,13 @@ public class ImportServiceImpl implements ImportService  {
                 value.setId(null);
                 actual.add(value);
                 if (value instanceof CodingRule) {
-                    CodingRule rule = (CodingRule)value;
-                    CodingSheet sheet = (CodingSheet)rec;
+                    CodingRule rule = (CodingRule) value;
+                    CodingSheet sheet = (CodingSheet) rec;
                     rule.setCodingSheet(sheet);
                 }
                 if (value instanceof OntologyNode) {
-                    OntologyNode rule = (OntologyNode)value;
-                    Ontology sheet = (Ontology)rec;
+                    OntologyNode rule = (OntologyNode) value;
+                    Ontology sheet = (Ontology) rec;
                     rule.setOntology(sheet);
                 }
                 if (value instanceof DataTable) {
@@ -498,21 +513,25 @@ public class ImportServiceImpl implements ImportService  {
         crs.add(r);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ImportService#processIncoming(P, R, org.tdar.core.bean.entity.TdarUser)
      */
-    @Override
-    public <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, TdarUser authenticatedUser) throws APIException {
+    // @Override
+    public <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, String fieldName, TdarUser authenticatedUser)
+            throws APIException {
         // if we're not transient, find by id...
         if (PersistableUtils.isNotNullOrTransient(property)) {
-            return processExistingNonTransientEntity(property, resource);
+            return processExistingNonTransientEntity(property, fieldName, resource);
         }
 
-        return processTransientEntity(property, resource, authenticatedUser);
+        return processTransientEntity(property, resource, fieldName, authenticatedUser);
     }
 
     @SuppressWarnings("unchecked")
-    private <P extends Persistable, R extends Persistable> P processTransientEntity(P property, R resource, TdarUser authenticatedUser) throws APIException {
+    private <P extends Persistable, R extends Persistable> P processTransientEntity(P property, R resource, String fieldName, TdarUser authenticatedUser)
+            throws APIException {
         P toReturn = property;
         if (property instanceof Keyword) {
             Class<? extends Keyword> kwdCls = (Class<? extends Keyword>) property.getClass();
@@ -526,7 +545,7 @@ public class ImportServiceImpl implements ImportService  {
                     throw new APIException("importService.unsupported_keyword", Arrays.asList(property.getClass().getSimpleName()),
                             StatusCode.FORBIDDEN);
                 }
-                toReturn = (P)findByLabel;
+                toReturn = (P) findByLabel;
             } else {
                 toReturn = (P) genericKeywordService.findOrCreateByLabel(kwdCls, ((Keyword) property).getLabel());
             }
@@ -545,7 +564,7 @@ public class ImportServiceImpl implements ImportService  {
 
         if (property instanceof AuthorizedUser) {
             AuthorizedUser authorizedUser = (AuthorizedUser) property;
-            toReturn = (P)authorizedUser;
+            toReturn = (P) authorizedUser;
             TdarUser user = entityService.findUser(authorizedUser.getUser());
             if (user != null) {
                 authorizedUser.setUser(user);
@@ -556,52 +575,44 @@ public class ImportServiceImpl implements ImportService  {
 
         if (property instanceof DataTable) {
             DataTable dataTable = (DataTable) property;
-            dataTable.setDataset((Dataset)resource);
+            dataTable.setDataset((Dataset) resource);
             toReturn = (P) dataTable;
             for (DataTableColumn dataTableColumn : dataTable.getDataTableColumns()) {
                 dataTableColumn.setDataTable(dataTable);
                 logger.debug("{} {}", dataTableColumn, dataTableColumn.getDataTable());
                 CodingSheet codingSheet = dataTableColumn.getDefaultCodingSheet();
                 CategoryVariable categoryVariable = dataTableColumn.getCategoryVariable();
-                if (PersistableUtils.isNotNullOrTransient(codingSheet ) ) {
+                if (PersistableUtils.isNotNullOrTransient(codingSheet)) {
                     dataTableColumn.setDefaultCodingSheet(genericService.find(CodingSheet.class, codingSheet.getId()));
                     if (PersistableUtils.isNullOrTransient(dataTableColumn.getDefaultCodingSheet())) {
                         throw new TdarValidationException("importService.invalid_coding_sheet");
-                    }                    
+                    }
                 }
-                if (PersistableUtils.isNotNullOrTransient(categoryVariable ) ) {
+                if (PersistableUtils.isNotNullOrTransient(categoryVariable)) {
                     dataTableColumn.setCategoryVariable(genericService.find(CategoryVariable.class, categoryVariable.getId()));
                     if (PersistableUtils.isNullOrTransient(dataTableColumn.getCategoryVariable())) {
                         throw new TdarValidationException("importService.invalid_category_variable");
                     }
                 }
-                
+
             }
         }
-        
-        
-
-
 
         if (property instanceof ResourceCollection && resource instanceof Resource) {
             ResourceCollection collection = (ResourceCollection) property;
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
-            if (collection instanceof SharedCollection) {
-                resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
-                        authenticatedUser, true,
-                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, SharedCollection.class);
+            if (collection instanceof ResourceCollection) {
+                logger.debug("field:: {} , {}", fieldName, collection);
+                if (StringUtils.equals(Resource.RESOURCE_COLLECTIONS, fieldName)) {
+                    resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getManagedResourceCollections()),
+                            authenticatedUser, true,
+                            ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection) collection, CollectionResourceSection.MANAGED);
+                } else {
+                    resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getManagedResourceCollections()),
+                            authenticatedUser, true,
+                            ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection) collection, CollectionResourceSection.UNMANAGED);
 
-            }
-//            if (collection instanceof InternalCollection) {
-//                resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getInternalCollections()),
-//                        authenticatedUser, true,
-//                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (InternalCollection)collection, InternalCollection.class);
-//
-//            }
-            if (collection instanceof ListCollection) {
-                resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getUnmanagedResourceCollections(),
-                        authenticatedUser, true,
-                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (ListCollection)collection, ListCollection.class);
+                }
             }
             toReturn = null;
         }
@@ -619,8 +630,8 @@ public class ImportServiceImpl implements ImportService  {
                     toReturn = (P) Project.NULL;
                 } else if ((property instanceof Creator) && ((Creator<?>) property).hasNoPersistableValues()) {
                     toReturn = null;
-//                } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property) instanceof InternalCollection) {
-//                    toReturn = property;
+                    // } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property) instanceof InternalCollection) {
+                    // toReturn = property;
                 } else {
                     throw new APIException("importService.object_invalid", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);
                 }
@@ -629,21 +640,21 @@ public class ImportServiceImpl implements ImportService  {
         return toReturn;
     }
 
-    private <P extends Persistable, R extends Persistable> P processExistingNonTransientEntity(P property, R resource) {
+    private <P extends Persistable, R extends Persistable> P processExistingNonTransientEntity(P property, String fieldName, R resource) {
         Class<? extends Persistable> cls = property.getClass();
         Long id = property.getId();
         @SuppressWarnings("unchecked")
         P toReturn = (P) findById(cls, id);
-        if (toReturn instanceof SharedCollection && resource instanceof Resource) {
-            SharedCollection collection = (SharedCollection) toReturn;
+        if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
+            ResourceCollection collection = (ResourceCollection) toReturn;
             // making sure that the collection's creators and other things are on the sessions properly too
-            resetOwnerOnSession((ResourceCollection)collection);
-            collection.getResources().add((Resource) resource);
-            if (collection instanceof SharedCollection) {
-                ((Resource) resource).getSharedCollections().add((SharedCollection)collection);
-//            } else if (collection instanceof InternalCollection) {
-//                ((Resource) resource).getInternalCollections().add((InternalCollection)collection);
-//                
+            resetOwnerOnSession((ResourceCollection) collection);
+            collection.getManagedResources().add((Resource) resource);
+            if (collection instanceof ResourceCollection) {
+                ((Resource) resource).getManagedResourceCollections().add((ResourceCollection) collection);
+                // } else if (collection instanceof InternalCollection) {
+                // ((Resource) resource).getInternalCollections().add((InternalCollection)collection);
+                //
             }
         }
         if (toReturn instanceof Person) {
@@ -658,11 +669,11 @@ public class ImportServiceImpl implements ImportService  {
                 ((TdarUser) toReturn).setProxyInstitution(findById(Institution.class, inst.getId()));
             }
         }
-        
+
         if (toReturn instanceof DataTable && resource instanceof Dataset) {
-            ((Dataset)resource).getDataTables().add((DataTable) toReturn);
+            ((Dataset) resource).getDataTables().add((DataTable) toReturn);
         }
-        
+
         return toReturn;
     }
 
@@ -688,8 +699,11 @@ public class ImportServiceImpl implements ImportService  {
         return h;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.ImportService#bringCollectionOntoSession(org.tdar.core.bean.collection.ResourceCollection, org.tdar.core.bean.entity.TdarUser, boolean)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.ImportService#bringCollectionOntoSession(org.tdar.core.bean.collection.ResourceCollection, org.tdar.core.bean.entity.TdarUser,
+     * boolean)
      */
     @Override
     public ResourceCollection bringCollectionOntoSession(ResourceCollection importedRecord, TdarUser authenticatedUser, boolean validate) throws APIException {
@@ -697,7 +711,6 @@ public class ImportServiceImpl implements ImportService  {
         boolean created = true;
         // If the object already has a tDAR ID
         created = reconcileIncomingObjectWithExisting(authenticatedUser, incomingResource, created);
-
 
         if (validate) {
             validateInvalidImportFields(incomingResource, authenticatedUser);
@@ -715,24 +728,20 @@ public class ImportServiceImpl implements ImportService  {
         return incomingResource;
     }
 
-private void validateInvalidImportFields(ResourceCollection incomingResource, TdarUser user) throws APIException {
+    private void validateInvalidImportFields(ResourceCollection incomingResource, TdarUser user) throws APIException {
 
-//        if (incomingResource.getType() == CollectionType.INTERNAL) {
-//            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
-//        }
+        // if (incomingResource.getType() == CollectionType.INTERNAL) {
+        // throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
+        // }
 
-        if (incomingResource instanceof SharedCollection && CollectionUtils.isNotEmpty(((SharedCollection)incomingResource).getResources())) {
-            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
-        }
-
-        if (incomingResource instanceof ListCollection && CollectionUtils.isNotEmpty(((ListCollection) incomingResource).getUnmanagedResources())) {
+        if (incomingResource instanceof ResourceCollection && CollectionUtils.isNotEmpty(((ResourceCollection) incomingResource).getManagedResources())) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
         }
 
         if (CollectionUtils.isNotEmpty(incomingResource.getAuthorizedUsers()) && !authenticationAndAuthorizationService.isAdministrator(user)) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
         }
-}
+    }
 
     private boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, ResourceCollection incomingResource, boolean created_) throws APIException {
         boolean created = created_;
@@ -749,7 +758,7 @@ private void validateInvalidImportFields(ResourceCollection incomingResource, Td
                 throw new APIException(MessageHelper.getMessage("error.permission_denied"), StatusCode.UNAUTHORIZED);
             }
 
-            incomingResource.copyImmutableFieldsFrom(existing);
+            incomingResource.copyImmutableFieldsFrom((ResourceCollection) existing);
             // FIXME: could be trouble: the next line implicitly detaches the submitter we just copied to incomingResource
             genericService.detachFromSession(existing);
             created = false;

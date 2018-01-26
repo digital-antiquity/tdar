@@ -14,10 +14,7 @@ import org.tdar.utils.MessageHelper;
  */
 public enum UserNotificationType implements Comparable<UserNotificationType>, Localizable {
 
-    SYSTEM_BROADCAST,
-    ERROR,
-    WARNING,
-    INFO;
+    SYSTEM_BROADCAST, ERROR, WARNING, INFO;
 
     @Override
     public String getLocaleKey() {

@@ -24,7 +24,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("default")
 @HttpForbiddenErrorResponseOnly
-public class KeywordLinkedOpenDataAction extends AbstractJsonApiAction implements Preparable  {
+public class KeywordLinkedOpenDataAction extends AbstractJsonApiAction implements Preparable {
 
     private static final long serialVersionUID = -3861643422732697451L;
     private Long id;
@@ -33,7 +33,8 @@ public class KeywordLinkedOpenDataAction extends AbstractJsonApiAction implement
     private GenericService genericService;
     @Autowired
     private GenericKeywordService keywordService;
-    private Map<String,String> error = new HashMap<>();
+    private Map<String, String> error = new HashMap<>();
+
     @Override
     public void prepare() throws Exception {
         error.put("status", getText("error.object_does_not_exist"));
@@ -48,12 +49,12 @@ public class KeywordLinkedOpenDataAction extends AbstractJsonApiAction implement
             setJsonObject(error);
             return;
         }
-        
+
         String message = keywordService.getSchemaOrgJsonLD(resource);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }
 
-    @Action(value="{id}")
+    @Action(value = "{id}")
     @Override
     public String execute() throws Exception {
         return super.execute();
@@ -62,6 +63,7 @@ public class KeywordLinkedOpenDataAction extends AbstractJsonApiAction implement
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }

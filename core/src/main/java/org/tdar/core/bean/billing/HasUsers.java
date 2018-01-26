@@ -10,5 +10,4 @@ public interface HasUsers {
 
     void setAuthorizedMembers(Set<TdarUser> authorizedMembers);
 
-    
 }

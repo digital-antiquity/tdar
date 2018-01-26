@@ -6,10 +6,15 @@
  */
 package org.tdar.core.bean.collection;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -20,8 +25,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ConstraintMode;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -29,10 +32,9 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -41,20 +43,22 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.joda.time.DateTime;
@@ -68,11 +72,11 @@ import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Hideable;
-import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
@@ -80,10 +84,13 @@ import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.TitleSortComparator;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -120,31 +127,69 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlType(name = "collection")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
-@JsonIgnoreProperties(ignoreUnknown = true, allowGetters=true)
-@JsonInclude(value=Include.NON_NULL)
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
-@XmlSeeAlso(value = { SharedCollection.class, ListCollection.class })
+@JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
+@JsonInclude(value = Include.NON_NULL)
+// @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+// @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
+// @XmlSeeAlso(value = { ResourceCollection.class })
+@XmlRootElement(name = "resourceCollection")
 @SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
-public abstract class ResourceCollection extends AbstractPersistable
-        implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus , HasAuthorizedUsers, Sortable,
-        OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Hideable {
+public class ResourceCollection extends AbstractPersistable
+        implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus, HasAuthorizedUsers, Sortable,
+        OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Hideable, Comparable<ResourceCollection> {
 
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
+
+    public ResourceCollection(String title, String description, boolean hidden, SortOption sortOption, DisplayOrientation displayOrientation,
+            TdarUser creator) {
+        setName(title);
+        setDescription(description);
+        setHidden(hidden);
+        setSortBy(sortOption);
+        setOrientation(displayOrientation);
+        setOwner(creator);
+    }
+
+    public ResourceCollection(Long id, String title, String description, SortOption sortOption, boolean hidden) {
+        setId(id);
+        setName(title);
+        setDescription(description);
+        setHidden(hidden);
+        setSortBy(sortOption);
+
+    }
+
+    public ResourceCollection(String title, String description, TdarUser submitter) {
+        setName(title);
+        setDescription(description);
+        setHidden(false);
+        this.setOwner(submitter);
+        setSortBy(SortOption.TITLE);
+        setOrientation(DisplayOrientation.LIST);
+    }
+
+    public ResourceCollection(Document document, TdarUser tdarUser) {
+        markUpdated(tdarUser);
+        getManagedResources().add(document);
+        setHidden(false);
+        setSortBy(SortOption.TITLE);
+        setOrientation(DisplayOrientation.LIST);
+    }
+
+    public ResourceCollection() {
+        setSortBy(SortOption.TITLE);
+        setOrientation(DisplayOrientation.LIST);
+    }
 
     @Transient
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     private transient boolean changesNeedToBeLogged = false;
 
     private static final long serialVersionUID = -5308517783896369040L;
-    @Column(name="system_managed")
+    @Column(name = "system_managed")
     private Boolean systemManaged = Boolean.FALSE;
-
-    @Enumerated(EnumType.STRING)
-    @XmlTransient
-    @Column(name = "collection_type", updatable = false, insertable = false)
-    private CollectionType type;
-
+    @Column(name = "verified")
+    private Boolean verified = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
@@ -169,13 +214,15 @@ public abstract class ResourceCollection extends AbstractPersistable
     @NotNull
     private Date dateCreated;
 
+    private transient TreeSet<ResourceCollection> transientChildren = new TreeSet<>(new TitleSortComparator());
+
     @Column(nullable = false, name = "date_updated")
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
-    
+
     @OneToMany()
-    @JoinColumn(name = "collection_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT),nullable=true)
+    @JoinColumn(name = "collection_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT), nullable = true)
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CollectionRevisionLog> collectionRevisionLog = new HashSet<>();
@@ -187,16 +234,21 @@ public abstract class ResourceCollection extends AbstractPersistable
      * @return
      */
     @ElementCollection
-    @CollectionTable(name = "collection_resource", joinColumns = @JoinColumn(name = "collection_id") )
+    @CollectionTable(name = "collection_resource", joinColumns = @JoinColumn(name = "collection_id"))
     @Column(name = "resource_id")
     @Immutable
-    //fixme: replace resourceIds hack with service/dao with optimized DAO save() method. (TDAR-5605)
+    // fixme: replace resourceIds hack with service/dao with optimized DAO save() method. (TDAR-5605)
     private Set<Long> resourceIds = new HashSet<>();
 
+    @ElementCollection
+    @CollectionTable(name = "unmanaged_collection_resource", joinColumns = @JoinColumn(name = "collection_id"))
+    @Column(name = "resource_id")
+    @Immutable
+    // fixme: replace resourceIds hack with service/dao with optimized DAO save() method. (TDAR-5605)
+    private Set<Long> unmanagedResourceIds = new HashSet<>();
+
     private transient boolean created;
-    
-    
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "sort_order", length = FieldLength.FIELD_LENGTH_25)
     private SortOption sortBy = DEFAULT_SORT_OPTION;
@@ -212,11 +264,12 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "whitelabel", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "custom_header_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
-            @AttributeOverride(name = "custom_doc_logo_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
-            @AttributeOverride(name = "featured_resources_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
-            @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
-            @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection", columnDefinition="boolean default false")),
+            @AttributeOverride(name = "custom_header_enabled", column = @Column(table = "whitelabel_collection", columnDefinition = "boolean default false")),
+            @AttributeOverride(name = "custom_doc_logo_enabled", column = @Column(table = "whitelabel_collection", columnDefinition = "boolean default false")),
+            @AttributeOverride(name = "featured_resources_enabled",
+                    column = @Column(table = "whitelabel_collection", columnDefinition = "boolean default false")),
+            @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection", columnDefinition = "boolean default false")),
+            @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection", columnDefinition = "boolean default false")),
             @AttributeOverride(name = "subtitle", column = @Column(table = "whitelabel_collection")),
             @AttributeOverride(name = "hide_collection_sidebar", column = @Column(table = "whitelabel_collection")),
             @AttributeOverride(name = "css", column = @Column(table = "whitelabel_collection"))
@@ -235,9 +288,19 @@ public abstract class ResourceCollection extends AbstractPersistable
     private transient boolean viewable;
 
     @JsonView(JsonLookupFilter.class)
-    @Length(max = FieldLength.FIELD_LENGTH_500, min=1)
+    @Length(max = FieldLength.FIELD_LENGTH_500, min = 1)
     @NotNull
     private String name;
+
+    @ElementCollection()
+    @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id"))
+    @Column(name = "parent_id")
+    private Set<Long> parentIds = new HashSet<>();
+
+    @ElementCollection()
+    @CollectionTable(name = "collection_alternate_parents", joinColumns = @JoinColumn(name = "collection_id"))
+    @Column(name = "parent_id")
+    private Set<Long> alternateParentIds = new HashSet<>();
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
@@ -251,6 +314,134 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
 
+    @XmlTransient
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "managedResourceCollections", targetEntity = Resource.class)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
+    private Set<Resource> managedResources = new LinkedHashSet<Resource>();
+
+    @XmlTransient
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "unmanagedResourceCollections", targetEntity = Resource.class)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.unmanagedResources")
+    private Set<Resource> unmanagedResources = new LinkedHashSet<Resource>();
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private ResourceCollection parent;
+
+    @ManyToOne
+    @JoinColumn(name = "alternate_parent_id")
+    private ResourceCollection alternateParent;
+
+    // if you serialize this (even if just a list IDs, hibernate will request all necessary fields and do a traversion of the full resource graph (this could
+    // crash tDAR if > 100,000)
+    @XmlTransient
+    public Set<Resource> getManagedResources() {
+        return managedResources;
+    }
+
+    public void setManagedResources(Set<Resource> resources) {
+        this.managedResources = resources;
+    }
+
+    /*
+     * Get all of the resource collections via a tree (actually list of lists)
+     */
+    @Transient
+    @XmlTransient
+    // infinite loop because parentTree[0]==self
+    public List<ResourceCollection> getHierarchicalResourceCollections() {
+        ArrayList<ResourceCollection> parentTree = new ArrayList<>();
+        parentTree.add((ResourceCollection) this);
+        ResourceCollection collection = (ResourceCollection) this;
+        while (collection.getParent() != null) {
+            collection = (ResourceCollection) collection.getParent();
+            parentTree.add(0, collection);
+        }
+        return parentTree;
+    }
+
+    /*
+     * Default to sorting by name, but grouping by parentId, used for sorting int he tree
+     */
+    public int compareTo(ResourceCollection o) {
+        List<String> tree = getParentNameList();
+        List<String> tree_ = o.getParentNameList();
+        while (!tree.isEmpty() && !tree_.isEmpty() && (tree.get(0) == tree_.get(0))) {
+            tree.remove(0);
+            tree_.remove(0);
+        }
+        if (tree.isEmpty()) {
+            return -1;
+        } else if (tree_.isEmpty()) {
+            return 1;
+        } else {
+            return tree.get(0).compareTo(tree_.get(0));
+        }
+    }
+
+    @XmlTransient
+    @Transient
+    public List<String> getParentNameList() {
+        ArrayList<String> parentNameTree = new ArrayList<String>();
+        for (ResourceCollection collection : getHierarchicalResourceCollections()) {
+            parentNameTree.add(collection.getName());
+        }
+        return parentNameTree;
+    }
+
+    @Transient
+    @XmlTransient
+    public List<ResourceCollection> getVisibleParents() {
+        List<ResourceCollection> hierarchicalResourceCollections = getHierarchicalResourceCollections();
+        Iterator<ResourceCollection> iterator = hierarchicalResourceCollections.iterator();
+        while (iterator.hasNext()) {
+            ResourceCollection collection = iterator.next();
+            if (!(ResourceCollection.class.isAssignableFrom(collection.getClass())) || !collection.isHidden()) {
+                iterator.remove();
+            }
+        }
+        return hierarchicalResourceCollections;
+    }
+
+    @XmlAttribute(name = "altParentIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public ResourceCollection getAlternateParent() {
+        return alternateParent;
+    }
+
+    public void setAlternateParent(ResourceCollection alternateParent) {
+        this.alternateParent = alternateParent;
+    }
+
+    public void copyImmutableFieldsFrom(ResourceCollection resource) {
+        this.setDateCreated(resource.getDateCreated());
+        this.setOwner(resource.getOwner());
+        this.setAuthorizedUsers(new HashSet<>(resource.getAuthorizedUsers()));
+        this.setSystemManaged(resource.isSystemManaged());
+        ((ResourceCollection) this).getManagedResources().addAll(((ResourceCollection) resource).getManagedResources());
+        this.setParent(resource.getParent());
+    }
+
+    @XmlAttribute(name = "parentIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public ResourceCollection getParent() {
+        return parent;
+    }
+
+    public void setParent(ResourceCollection parent) {
+        this.parent = parent;
+    }
+
+    @XmlTransient
+    public Set<Resource> getUnmanagedResources() {
+        return unmanagedResources;
+    }
+
+    public void setUnmanagedResources(Set<Resource> unmanagedResources) {
+        this.unmanagedResources = unmanagedResources;
+    }
 
     @XmlAttribute
     @Override
@@ -287,21 +478,19 @@ public abstract class ResourceCollection extends AbstractPersistable
         return StringUtils.isNotBlank(getName());
     }
 
-    
-
     @Override
     public boolean isValid() {
-        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName());
+        logger.trace("owner: {} name: {} sort: {}", getOwner(), getName());
         if (!isValidForController()) {
             return false;
         }
-        
+
         if (sortBy == null) {
             return false;
         }
 
         return PersistableUtils.isNotNullOrTransient(getOwner());
-    }    
+    }
 
     @Override
     public String getTitle() {
@@ -351,6 +540,7 @@ public abstract class ResourceCollection extends AbstractPersistable
         }
         return true;
     }
+
     /**
      * @param sortBy
      *            the sortBy to set
@@ -383,18 +573,9 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.secondarySortBy = secondarySortBy;
     }
 
-
-    public CollectionType getType() {
-        return type;
-    }
-
-    protected void setType(CollectionType type) {
-        this.type = type;
-    }
-
-//    @XmlTransient
-    @XmlElementWrapper(name="authorizedUsers")
-    @XmlElement(name="authorizedUser")
+    // @XmlTransient
+    @XmlElementWrapper(name = "authorizedUsers")
+    @XmlElement(name = "authorizedUser")
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }
@@ -446,16 +627,14 @@ public abstract class ResourceCollection extends AbstractPersistable
         return dateCreated;
     }
 
-
     @Override
     public String toString() {
         String own = "no owner -1";
         if (owner != null) {
             own = owner.getProperName() + " " + owner.getId();
         }
-        return String.format("%s | %s | collection %s  (creator: %s)", getName(),  getType(), getId(), own);
+        return String.format("%s | collection %s  (creator: %s)", getName(), getId(), own);
     }
-
 
     @Override
     @Transient
@@ -522,18 +701,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.created = created;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void copyImmutableFieldsFrom(ResourceCollection resource) {
-        this.setDateCreated(resource.getDateCreated());
-        this.setOwner(resource.getOwner());
-        this.setType(resource.getType());
-        this.setAuthorizedUsers(new HashSet<>(resource.getAuthorizedUsers()));
-        this.setSystemManaged(resource.isSystemManaged());
-        if (resource instanceof SharedCollection && this instanceof SharedCollection) {
-            ((SharedCollection)this).getResources().addAll(((SharedCollection) resource).getResources());
-        }
-    }
-
     public Set<CollectionRevisionLog> getCollectionRevisionLog() {
         return collectionRevisionLog;
     }
@@ -550,14 +717,14 @@ public abstract class ResourceCollection extends AbstractPersistable
         if (getDateCreated() == null) {
             return false;
         }
-        
+
         if (DateTime.now().minusDays(7).isBefore(getDateCreated().getTime())) {
             return true;
         }
         return false;
     }
 
-    @XmlAttribute(required=false)
+    @XmlAttribute(required = false)
     public Boolean isSystemManaged() {
         if (systemManaged == null) {
             systemManaged = false;
@@ -576,7 +743,6 @@ public abstract class ResourceCollection extends AbstractPersistable
     public void setStatus(Status status) {
         this.status = status;
     }
-
 
     @Override
     @Transient
@@ -611,4 +777,105 @@ public abstract class ResourceCollection extends AbstractPersistable
         return status == Status.FLAGGED;
     }
 
+    public void setParentIds(Set<Long> parentIds) {
+        this.parentIds = parentIds;
+    }
+
+    @Transient
+    @ElementCollection
+    @XmlTransient
+    public Set<Long> getParentIds() {
+        return parentIds;
+    }
+
+    @Transient
+    @ElementCollection
+    @XmlTransient
+    public Set<Long> getAlternateParentIds() {
+        return alternateParentIds;
+    }
+
+    public void setAlternateParentIds(Set<Long> alternateParentIds) {
+        this.alternateParentIds = alternateParentIds;
+    }
+
+    @XmlTransient
+    @Transient
+    public Long getParentId() {
+        if (getParent() == null) {
+            return null;
+        }
+        return getParent().getId();
+    }
+
+    @Transient
+    public Long getAlternateParentId() {
+        if (getAlternateParent() == null) {
+            return null;
+        }
+        return getAlternateParent().getId();
+    }
+
+    @XmlTransient
+    @Transient
+    public TreeSet<ResourceCollection> getTransientChildren() {
+        return transientChildren;
+    }
+
+    public void setTransientChildren(TreeSet<ResourceCollection> transientChildren) {
+        this.transientChildren = transientChildren;
+    }
+
+    public Collection<String> getAlternateParentNameList() {
+        HashSet<String> names = new HashSet<>();
+        if (PersistableUtils.isNotNullOrTransient(getAlternateParent())) {
+            ResourceCollection hierarchicalCollection = getAlternateParent();
+            if (PersistableUtils.isNotNullOrTransient(hierarchicalCollection.getParent())) {
+                names.addAll(hierarchicalCollection.getParentNameList());
+            }
+            if (PersistableUtils.isNotNullOrTransient(hierarchicalCollection.getAlternateParent())) {
+                names.addAll(hierarchicalCollection.getAlternateParentNameList());
+            }
+        }
+        return names;
+    }
+
+    @XmlTransient
+    @Transient
+    public boolean isSubCollection() {
+        return !isTopLevel();
+    }
+
+    @XmlTransient
+    @Transient
+    public boolean isTopLevel() {
+        if ((getParent() == null) || (getParent().isHidden() == true)) {
+            return true;
+        }
+        return false;
+    }
+
+    @XmlElementWrapper(name = "unmanagedResources")
+    @XmlElement(name = "unmanagedResourceId")
+    public Set<Long> getUnmanagedResourceIds() {
+        return unmanagedResourceIds;
+    }
+
+    @Transient
+    public void setUnmanagedResourceIds(Set<Long> unmanagedResourceIds) {
+        this.unmanagedResourceIds = unmanagedResourceIds;
+    }
+
+    @Transient
+    public int getSize() {
+        return CollectionUtils.size(managedResources) + CollectionUtils.size(unmanagedResources);
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
 }

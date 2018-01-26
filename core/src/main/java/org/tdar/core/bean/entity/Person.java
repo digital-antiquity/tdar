@@ -38,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Table(name = "person", indexes = { @Index(name = "person_instid", columnList = "institution_id, id") })
-//@Indexed(index = "Person")
+// @Indexed(index = "Person")
 @XmlRootElement(name = "person")
 @Check(constraints = "email <> ''")
 public class Person extends Creator<Person> implements Comparable<Person>, Dedupable<Person>, Validatable {

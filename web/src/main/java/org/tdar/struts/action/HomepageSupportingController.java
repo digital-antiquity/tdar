@@ -68,18 +68,22 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     @Actions({
             @Action(value = "page-not-found", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP,
                     location = "/WEB-INF/content/errors/page-not-found.ftl", params = { "status", "404" }) }),
-            @Action(value = "not-found", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/page-not-found.ftl",
-                    params = { "status", "404" }) }),
-            @Action(value = "gone", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/resource-deleted.ftl",
-                    params = { "status", "410" }) }),
+            @Action(value = "not-found",
+                    results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/page-not-found.ftl",
+                            params = { "status", "404" }) }),
+            @Action(value = "gone",
+                    results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/resource-deleted.ftl",
+                            params = { "status", "410" }) }),
             // used by the AuthenticationInterceptor which seems to not be able to work with the FreemarkerHttpResult properly
             @Action(value = TdarActionSupport.UNAUTHORIZED, results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP,
                     location = "/WEB-INF/content/errors/unauthorized.ftl",
                     params = { "status", "401" }) }),
-            @Action(value = "access-denied", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/access-denied.ftl",
-                    params = { "status", "403" }) }),
-            @Action(value = "invalid-token", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/double-submit.ftl",
-                    params = { "status", "500" }) })
+            @Action(value = "access-denied",
+                    results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/access-denied.ftl",
+                            params = { "status", "403" }) }),
+            @Action(value = "invalid-token",
+                    results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/double-submit.ftl",
+                            params = { "status", "500" }) })
     })
     public String error() {
         return ERROR;
@@ -129,7 +133,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     @SkipValidation
     public String featuredItems() {
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
-        featuredResources.forEach(r->{
+        featuredResources.forEach(r -> {
             if (r.getFirstLatitudeLongitudeBox() != null) {
                 r.getFirstLatitudeLongitudeBox().obfuscateAll();
             }

@@ -1,9 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -11,10 +7,8 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
-import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ResourceStatisticsObject;
 import org.tdar.core.service.StatisticsService;
@@ -53,8 +47,6 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
 
     private ResourceStatisticsObject stats;
 
-
-
     @Override
     public void prepare() throws Exception {
         prepareAndLoad(this, RequestType.EDIT);
@@ -79,7 +71,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
+        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_METADATA);
     }
 
     @Override
@@ -101,6 +93,7 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
     public InternalTdarRights getAdminRights() {
         return InternalTdarRights.EDIT_ANY_RESOURCE;
     }
+
     public ResourceStatisticsObject getStats() {
         return stats;
     }

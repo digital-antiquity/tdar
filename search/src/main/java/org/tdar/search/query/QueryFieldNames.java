@@ -1,5 +1,11 @@
 package org.tdar.search.query;
 
+/**
+ * These field name represent fields in one of the SOLR indexes. (see resources-schema.xml, for example)
+ * 
+ * @author abrin
+ *
+ */
 public interface QueryFieldNames {
 
     String PROJECT_ID = "project.id";
@@ -67,7 +73,7 @@ public interface QueryFieldNames {
     String COLLECTION_USERS_WHO_CAN_VIEW = RESOURCE_USERS_WHO_CAN_VIEW;
     String COLLECTION_USERS_WHO_CAN_MODIFY = RESOURCE_USERS_WHO_CAN_MODIFY;
     // String RESOURCE_COLLECTION_PUBLIC_IDS = "publicCollectionIds";
-    String RESOURCE_COLLECTION_SHARED_IDS = "sharedCollectionIds";
+
     String RESOURCE_ACCESS_TYPE = "resourceAccessType";
     String PROPER_NAME = "properName";
     String RESOURCE_CREATORS_PROPER_NAME = "activeResourceCreators.creator." + PROPER_NAME;
@@ -92,8 +98,18 @@ public interface QueryFieldNames {
     String PROPER_AUTO = "name_autocomplete";
     String COLLECTION_HIDDEN_WITH_RESOURCES = "visibleInSearch";
 
-    String RESOURCE_COLLECTION_DIRECT_SHARED_IDS = "directSharedCollectionIds";
-    String RESOURCE_LIST_COLLECTION_DIRECT_IDS = "directListCollectionIds";
+    // These are resources that are directly part of the collection, but not including collection IDs of the parent or grandparent, etc. collections. (I.e. they
+    // are managed).
+    String RESOURCE_COLLECTION_DIRECT_MANAGED_IDS = "directSharedCollectionIds";
+
+    // all shared collections (current collection, plus all ancestors)
+    String RESOURCE_COLLECTION_MANAGED_IDS = "sharedCollectionIds";
+
+    // These are IDs of resources that are in the directly in the "List Collection" (i.e., unmanaged).
+    String RESOURCE_COLLECTION_DIRECT_UNMANAGED_IDS = "directListCollectionIds";
+
+    String RESOURCE_COLLECTION_UNMANAGED_IDS = "listCollectionIds";
+
     String LAST_NAME_AUTO = "lastName_autocomplete";
     String FIRST_NAME_AUTO = "firstName_autocomplete";
     String NAME_AUTOCOMPLETE = "name_autocomplete";
@@ -137,8 +153,6 @@ public interface QueryFieldNames {
     String RESOURCE_ID = "resource.id";
     String CORE = "_core";
     String ACTIVE_GEOGRAPHIC_ISO = "geographic.ISO";
-    String RESOURCE_LIST_COLLECTION_NAME = "listCollections.name";
-    String RESOURCE_LIST_COLLECTION_IDS = "listCollectionIds";
     String SERIES_NUMBER = "series.number";
     String PUBLISHER_LOCATION = "publisher.location";
     String PUBLISHER_ID = "publisher.id";

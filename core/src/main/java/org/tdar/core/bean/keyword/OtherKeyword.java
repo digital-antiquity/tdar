@@ -24,14 +24,13 @@ import org.hibernate.annotations.Check;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.OtherKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "assertions",
-       joinColumns = @JoinColumn(name="other_keyword_id"))
- })
+        @AssociationOverride(name = "assertions",
+                joinColumns = @JoinColumn(name = "other_keyword_id"))
+})
 @XmlRootElement
-public class OtherKeyword extends AbstractKeyword<OtherKeyword> implements UncontrolledKeyword{
+public class OtherKeyword extends AbstractKeyword<OtherKeyword> implements UncontrolledKeyword {
 
     private static final long serialVersionUID = -6649756235199570108L;
-
 
     public OtherKeyword() {
     }

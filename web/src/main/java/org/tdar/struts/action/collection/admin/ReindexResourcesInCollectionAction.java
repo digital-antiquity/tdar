@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -36,18 +35,18 @@ public class ReindexResourcesInCollectionAction extends AbstractCollectionAdminA
     @Override
     @PostOnly
     @WriteableSession
-    @Action(value = "{id}", results={
+    @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
         if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync((HierarchicalCollection)getCollection());
+            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getCollection());
         } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree((HierarchicalCollection)getCollection());
+            searchIndexService.indexAllResourcesInCollectionSubTree(getCollection());
         }
         return SUCCESS;
     }
-    
+
     public boolean isAsync() {
         return async;
     }
@@ -55,6 +54,5 @@ public class ReindexResourcesInCollectionAction extends AbstractCollectionAdminA
     public void setAsync(boolean async) {
         this.async = async;
     }
-
 
 }

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -127,7 +127,7 @@ public class ReprocessResourceController extends AbstractAuthenticatableAction i
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return getAuthorizationService().canEditResource(getAuthenticatedUser(), getResource(), GeneralPermissions.MODIFY_METADATA);
+        return getAuthorizationService().canEditResource(getAuthenticatedUser(), getResource(), Permissions.MODIFY_METADATA);
     }
 
     @Override

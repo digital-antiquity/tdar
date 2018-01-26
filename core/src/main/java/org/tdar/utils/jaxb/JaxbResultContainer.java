@@ -53,12 +53,12 @@ public class JaxbResultContainer implements Serializable, APIParameters {
         if (StringUtils.isNotBlank(message_)) {
             setMessage(message_);
         }
-        
-        String id_ = (String)object_.get(ID);
+
+        String id_ = (String) object_.get(ID);
         if (id_ != null && NumberUtils.isNumber(id_)) {
             id = Long.parseLong(id_);
         }
-        
+
         String apiKey_ = (String) object_.get(API_TOKEN);
         if (StringUtils.isNotBlank(apiKey_)) {
             apiToken = apiKey_;
@@ -69,19 +69,19 @@ public class JaxbResultContainer implements Serializable, APIParameters {
             sessionKeyName = sessionKeyName_;
         }
 
-            ActionErrorWrapper tas = (ActionErrorWrapper) invocation.getAction();
-            if (tas.hasActionErrors()) {
-                for (String actionError : tas.getErrorMessages()) {
-                    errors.add(tas.getText(actionError));
-                }
+        ActionErrorWrapper tas = (ActionErrorWrapper) invocation.getAction();
+        if (tas.hasActionErrors()) {
+            for (String actionError : tas.getErrorMessages()) {
+                errors.add(tas.getText(actionError));
             }
+        }
 
-            if (tas.hasFieldErrors()) {
-                for (Entry<String, List<String>> entry : tas.getFieldErrors().entrySet()) {
-                    errors.add(String.format("%s %s: %s", tas.getText("JaxbMapResultContainer.fieldError"),
-                            entry.getKey(), StringUtils.join(entry.getValue(), ";")));
-                }
+        if (tas.hasFieldErrors()) {
+            for (Entry<String, List<String>> entry : tas.getFieldErrors().entrySet()) {
+                errors.add(String.format("%s %s: %s", tas.getText("JaxbMapResultContainer.fieldError"),
+                        entry.getKey(), StringUtils.join(entry.getValue(), ";")));
             }
+        }
     }
 
     public List<String> getErrors() {

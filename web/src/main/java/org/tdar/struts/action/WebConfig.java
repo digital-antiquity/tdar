@@ -8,8 +8,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 public class WebConfig {
 
     private TdarConfiguration config = TdarConfiguration.getInstance();
-    
-    
+
     public String getThemeDir() {
         return config.getThemeDir();
     }
@@ -69,6 +68,7 @@ public class WebConfig {
     public String getIntegrationDocumentationUrl() {
         return config.getIntegrationDocumentationUrl();
     }
+
     public boolean isProduction() {
         return config.getServerEnvironmentStatus().equalsIgnoreCase(TdarConfiguration.PRODUCTION);
     }
@@ -145,7 +145,6 @@ public class WebConfig {
         return config.isSwitchableMapObfuscation();
     }
 
-
     public boolean isShouldAutoDownload() {
         return config.shouldAutoDownload();
     }
@@ -162,28 +161,25 @@ public class WebConfig {
         return config.allowAuthentication();
     }
 
- 
     public String getResourceCreatorRoleDocumentationUrl() {
         return config.getResourceCreatorRoleDocumentationUrl();
     }
- 
+
     public String getLeafletApiKey() {
         return config.getLeafletMapsApiKey();
     }
-    
 
     public List<String> getBarColors() {
         return config.getBarColors();
     }
-    
+
     public boolean isSelenium() {
         return config.isSelenium();
     }
-    
+
     public String getContactEmail() {
         return config.getContactEmail();
     }
-
 
     public String getCommentUrl() {
         return config.getCommentUrl();
@@ -204,7 +200,7 @@ public class WebConfig {
     public boolean isListCollectionsEnabled() {
         return config.isListCollectionsEnabled();
     }
- 
+
     public boolean isXmlExportEnabled() {
         return config.isXmlExportEnabled();
     }

@@ -24,15 +24,15 @@ public class ResourceExportRequestAction extends AbstractResourceExportAction {
 
     @Autowired
     private transient BillingAccountService billingAccountService;
-    
+
     private List<BillingAccount> accounts = new ArrayList<>();
-    
+
     @Override
     public void prepare() throws Exception {
         super.prepare();
         setAccounts(billingAccountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
     }
-    
+
     @Override
     @Action(value = "request", results = {
             @Result(name = SUCCESS, location = "request.ftl")
@@ -48,5 +48,5 @@ public class ResourceExportRequestAction extends AbstractResourceExportAction {
     public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
     }
-    
+
 }

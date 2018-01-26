@@ -11,8 +11,7 @@ package org.tdar.core.bean.notification;
  */
 public enum UserNotificationDisplayType {
 
-    NORMAL,
-    FREEMARKER;
+    NORMAL, FREEMARKER;
 
     public boolean isNormal() {
         return this == NORMAL;

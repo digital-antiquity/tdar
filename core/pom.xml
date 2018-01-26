@@ -30,6 +30,12 @@
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
         <dependency>
+            <groupId>org.knowm.xchart</groupId>
+            <artifactId>xchart</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+        
+        <dependency>
             <groupId>com.joestelmach</groupId>
             <artifactId>natty</artifactId>
             <version>0.13</version>
@@ -728,7 +734,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <!--  https://github.com/levigo/jbig2-imageio -->
+        <dependency>
+          <groupId>com.levigo.jbig2</groupId>
+          <artifactId>levigo-jbig2-imageio</artifactId>
+          <version>2.0</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>

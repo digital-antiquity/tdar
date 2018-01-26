@@ -21,7 +21,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DatasetImportService;
@@ -36,7 +35,7 @@ import org.tdar.filestore.WorkflowContext;
  * 
  */
 @Service
-public class WorkflowContextServiceImpl implements WorkflowContextService  {
+public class WorkflowContextServiceImpl implements WorkflowContextService {
 
     public final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -50,9 +49,9 @@ public class WorkflowContextServiceImpl implements WorkflowContextService  {
 
     @Autowired
     private ApplicationEventPublisher publisher;
-    
+
     @Autowired
-    public WorkflowContextServiceImpl (
+    public WorkflowContextServiceImpl(
             @Qualifier("target") TargetDatabase tdarDataImportDatabase, InformationResourceFileVersionService informationResourceFileVersionService,
             GenericDao genericDao, SerializationService serializationService, DatasetImportService datasetImportService,
             OntologyService ontologyService, CodingSheetService codingSheetService) {
@@ -66,7 +65,9 @@ public class WorkflowContextServiceImpl implements WorkflowContextService  {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.workflow.WorkflowContextService#processContext(org.tdar.filestore.WorkflowContext)
      */
     @Override
@@ -176,8 +177,11 @@ public class WorkflowContextServiceImpl implements WorkflowContextService  {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.workflow.WorkflowContextService#initializeWorkflowContext(org.tdar.core.service.workflow.workflows.Workflow, org.tdar.core.bean.resource.file.InformationResourceFileVersion)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.workflow.WorkflowContextService#initializeWorkflowContext(org.tdar.core.service.workflow.workflows.Workflow,
+     * org.tdar.core.bean.resource.file.InformationResourceFileVersion)
      */
     @Override
     public WorkflowContext initializeWorkflowContext(Workflow w, InformationResourceFileVersion... versions) {
@@ -201,6 +205,5 @@ public class WorkflowContextServiceImpl implements WorkflowContextService  {
         }
         return ctx;
     }
-
 
 }

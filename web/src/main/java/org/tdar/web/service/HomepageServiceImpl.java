@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -64,28 +64,33 @@ public class HomepageServiceImpl implements HomepageService {
     @Autowired
     private GenericService genericService;
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.HomepageService#getSearchAndHomepageGraphs(org.tdar.core.bean.entity.TdarUser, org.tdar.search.bean.AdvancedSearchQueryObject, org.tdar.search.query.facet.FacetedResultHandler, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.HomepageService#getSearchAndHomepageGraphs(org.tdar.core.bean.entity.TdarUser, org.tdar.search.bean.AdvancedSearchQueryObject,
+     * org.tdar.search.query.facet.FacetedResultHandler, com.opensymphony.xwork2.TextProvider)
      */
     @Override
-    @Transactional(readOnly=true)
-    public synchronized HomepageDetails getSearchAndHomepageGraphs(TdarUser authenticatedUser, AdvancedSearchQueryObject advancedSearchQueryObject, FacetedResultHandler<Resource> result, TextProvider provider) {
+    @Transactional(readOnly = true)
+    public synchronized HomepageDetails getSearchAndHomepageGraphs(TdarUser authenticatedUser, AdvancedSearchQueryObject advancedSearchQueryObject,
+            FacetedResultHandler<Resource> result, TextProvider provider) {
         setupResultForMapSearch(result);
 
         try {
-        resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, authenticatedUser, result, provider);
-        } catch (SearchException | IOException  e1) {
+            resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, authenticatedUser, result, provider);
+        } catch (SearchException | IOException e1) {
             logger.error("issue generating map search", e1);
         }
         return generateDetails(result);
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.HomepageService#generateDetails(org.tdar.search.query.facet.FacetedResultHandler)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public HomepageDetails generateDetails(FacetedResultHandler<Resource> result) {
         HomepageDetails details = new HomepageDetails();
 
@@ -126,17 +131,21 @@ public class HomepageServiceImpl implements HomepageService {
         return details;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.HomepageService#setupResultForMapSearch(org.tdar.search.query.facet.FacetedResultHandler)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void setupResultForMapSearch(FacetedResultHandler<Resource> result) {
         result.getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
         result.getFacetWrapper().setMapFacet(true);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.HomepageService#getHomepageGraphs(org.tdar.core.bean.entity.TdarUser, java.lang.Long, com.opensymphony.xwork2.TextProvider)
      */
     @Override
@@ -145,7 +154,7 @@ public class HomepageServiceImpl implements HomepageService {
         AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
         if (collectionId != null) {
             SearchParameters sp = new SearchParameters();
-            sp.getCollections().add(genericService.find(ListCollection.class, collectionId));
+            sp.getCollections().add(genericService.find(ResourceCollection.class, collectionId));
             advancedSearchQueryObject.getSearchParameters().add(sp);
         }
         SearchResult<Resource> result = new SearchResult<>();
@@ -157,7 +166,9 @@ public class HomepageServiceImpl implements HomepageService {
         return details;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.HomepageService#featuredItems(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -182,7 +193,9 @@ public class HomepageServiceImpl implements HomepageService {
         return featuredResources;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.HomepageService#resourceStats()
      */
     @Override
@@ -198,7 +211,9 @@ public class HomepageServiceImpl implements HomepageService {
         return homepageResourceCountCache;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.HomepageService#getMapJson()
      */
     @Override
@@ -213,7 +228,9 @@ public class HomepageServiceImpl implements HomepageService {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.HomepageService#getResourceCountsJson()
      */
     @Override

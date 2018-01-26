@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.balk.bean.PollType;
 import org.tdar.utils.dropbox.MetadataListener;
 

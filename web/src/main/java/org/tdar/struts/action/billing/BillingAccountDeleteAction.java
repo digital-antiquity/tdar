@@ -45,7 +45,7 @@ public class BillingAccountDeleteAction extends AbstractDeleteAction<BillingAcco
 
     @Override
     protected boolean canDelete() {
-        return authorizationService.canEditAccount( getAuthenticatedUser(), getPersistable());
+        return authorizationService.canEditAccount(getAuthenticatedUser(), getPersistable());
     }
 
 }

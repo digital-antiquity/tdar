@@ -28,7 +28,7 @@ public class ResourceAccessStatistic extends AbstractResourceStatistic<Resource>
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "resource_id")
     private Resource reference;
-    
+
     @Override
     public Resource getReference() {
         return reference;

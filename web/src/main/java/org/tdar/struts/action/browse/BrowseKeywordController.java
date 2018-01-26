@@ -67,7 +67,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private transient GenericService genericService;
     @Autowired
     private transient GeoSearchService geoSearchService;
-    
+
     private Long id;
     private KeywordType keywordType;
     private Keyword keyword;
@@ -245,7 +245,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     public void setRedirectBadSlug(boolean redirectBadSlug) {
         this.redirectBadSlug = redirectBadSlug;
     }
-    
+
     @Override
     public boolean isRightSidebar() {
         if (CollectionUtils.isEmpty(keyword.getAssertions()) && StringUtils.isBlank(geoJson)) {
@@ -270,14 +270,13 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         this.geoJson = geoJson;
     }
 
-//    public List<ResourceType> getResourceTypes() {
-//        return getReservedSearchParameters().getResourceTypes();
-//    }
-//
-//    // REQUIRED IF YOU WANT FACETING TO ACTUALLY WORK
-//    public void setResourceTypes(List<ResourceType> resourceTypes) {
-//        getReservedSearchParameters().setResourceTypes(resourceTypes);
-//    }
-
+    // public List<ResourceType> getResourceTypes() {
+    // return getReservedSearchParameters().getResourceTypes();
+    // }
+    //
+    // // REQUIRED IF YOU WANT FACETING TO ACTUALLY WORK
+    // public void setResourceTypes(List<ResourceType> resourceTypes) {
+    // getReservedSearchParameters().setResourceTypes(resourceTypes);
+    // }
 
 }

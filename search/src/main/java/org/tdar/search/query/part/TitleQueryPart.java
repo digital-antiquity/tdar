@@ -13,6 +13,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Abstracting out how to search for a resource or collection title
+ * 
  * @author abrin
  *
  */

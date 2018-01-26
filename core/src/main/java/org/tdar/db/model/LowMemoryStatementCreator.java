@@ -16,7 +16,7 @@ public class LowMemoryStatementCreator implements PreparedStatementCreator {
 
     @Override
     public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-        //FIXME: (TDAR-5580) we discard all plans to prevent postgres from using an obsolete plan of this statement. Remove this clumsy workaround.
+        // FIXME: (TDAR-5580) we discard all plans to prevent postgres from using an obsolete plan of this statement. Remove this clumsy workaround.
         con.nativeSQL("discard plans");
 
         final PreparedStatement statement = con.prepareStatement(getSql(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);

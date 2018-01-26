@@ -15,16 +15,10 @@ import org.apache.http.HttpStatus;
  */
 public enum StatusCode {
 
-    OK(HttpStatus.SC_OK, "SUCCESS"),
-    CREATED(HttpStatus.SC_CREATED, "CREATED"),
-    GONE(HttpStatus.SC_GONE, "GONE"),
-    UPDATED(HttpStatus.SC_ACCEPTED, "UPDATED"),
-    NOT_FOUND(HttpStatus.SC_NOT_FOUND, "NOT FOUND"),
-    UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED, "UNAUTHORIZED"),
-    BAD_REQUEST(HttpStatus.SC_BAD_REQUEST, "BAD REQUEST"),
-    UNKNOWN_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR, "UNKNOWN ERROR"),
-    FORBIDDEN(HttpStatus.SC_FORBIDDEN, "NOT ALLOWED"), 
-    NOT_IMPLEMENTED(HttpStatus.SC_NOT_IMPLEMENTED,"NOT IMPLEMENTED");
+    OK(HttpStatus.SC_OK, "SUCCESS"), CREATED(HttpStatus.SC_CREATED, "CREATED"), GONE(HttpStatus.SC_GONE, "GONE"), UPDATED(HttpStatus.SC_ACCEPTED,
+            "UPDATED"), NOT_FOUND(HttpStatus.SC_NOT_FOUND, "NOT FOUND"), UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED, "UNAUTHORIZED"), BAD_REQUEST(
+                    HttpStatus.SC_BAD_REQUEST, "BAD REQUEST"), UNKNOWN_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR, "UNKNOWN ERROR"), FORBIDDEN(
+                            HttpStatus.SC_FORBIDDEN, "NOT ALLOWED"), NOT_IMPLEMENTED(HttpStatus.SC_NOT_IMPLEMENTED, "NOT IMPLEMENTED");
 
     private final int httpStatusCode;
     private final String errorMessage;

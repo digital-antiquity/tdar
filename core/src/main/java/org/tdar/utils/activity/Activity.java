@@ -271,19 +271,19 @@ public class Activity implements Serializable {
     public void setUserId(Long tdarUserId) {
         this.userId = tdarUserId;
     }
-    
+
     public Long getUserId() {
         return userId;
     }
-    
+
     public void setUsername(String username) {
         this.username = username;
     }
-    
+
     public String getUsername() {
         return username;
     }
-    
+
     public boolean isBot() {
         return Activity.testUserAgent(getBrowser());
     }
@@ -294,5 +294,5 @@ public class Activity implements Serializable {
         }
         return pattern.matcher(userAgent).find();
     }
-    
+
 }

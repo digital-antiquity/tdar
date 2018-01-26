@@ -76,7 +76,7 @@ import org.tdar.utils.Pair;
  * 
  * @version $Revision$
  */
-@Component(value="target")
+@Component(value = "target")
 public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, RowOperations, PostgresConstants {
 
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
@@ -243,12 +243,12 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 }
                 return c1.compareTo(c2);
             }
-            
+
         });
         table.getDataTableColumns().forEach(dtc -> {
             builder.getColumns().add(dtc.getName());
             if (dtc.getDefaultCodingSheet() != null && includeGeneratedValues) {
-                builder.getColumns().add( generateOriginalColumnName(dtc));
+                builder.getColumns().add(generateOriginalColumnName(dtc));
             }
         });
         builder.getTableNames().add(table.getName());
@@ -817,7 +817,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         logger.debug(createTableStatement);
         jdbcTemplate.execute(createTableStatement);
     }
-
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)

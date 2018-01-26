@@ -8,16 +8,9 @@ import org.apache.commons.lang3.ObjectUtils;
 
 public enum TdarGroup implements HasLabel {
 
-    TDAR_ADMIN("tdar-admins", 1000),
-    TDAR_BILLING_MANAGER("tdar-billing", 600),
-    TDAR_EDITOR("tdar-editors", 500),
-    TDAR_API_USER("tdar-api-users", 20),
-    TDAR_RPA_MEMBER("tdar-rpa-member", 3),
-    TDAR_USERS("tdar-users", 1),
-    JIRA_USERS("jira-users", -1),
-    CONFLUENCE_USERS("confluence-users", -1),
-    UNAUTHORIZED("", -2), 
-    TDAR_BALK("tdar-balk",21);
+    TDAR_ADMIN("tdar-admins", 1000), TDAR_BILLING_MANAGER("tdar-billing", 600), TDAR_EDITOR("tdar-editors", 500), TDAR_API_USER("tdar-api-users",
+            20), TDAR_RPA_MEMBER("tdar-rpa-member", 3), TDAR_USERS("tdar-users",
+                    1), JIRA_USERS("jira-users", -1), CONFLUENCE_USERS("confluence-users", -1), UNAUTHORIZED("", -2), TDAR_BALK("tdar-balk", 21);
 
     private final String groupName;
     private final int permissionLevel;

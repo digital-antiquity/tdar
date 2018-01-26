@@ -18,17 +18,12 @@ import org.tdar.utils.MessageHelper;
  * @version $Revision$
  */
 public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
-    CODING_SHEET(10, "Dataset", "unknown", "Dataset", CodingSheet.class),
-    DATASET(3, "Dataset", "unknown", "Dataset", Dataset.class),
-    DOCUMENT(1, "Text", "document", "Book", Document.class),
-    IMAGE(2, "Still Image", "unknown", "Photograph", Image.class),
-    SENSORY_DATA(7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
-    GEOSPATIAL(6, "Dataset", "unknown", "Dataset", Geospatial.class),
-    ONTOLOGY(9, "Dataset", "unknown", "Dataset", Ontology.class),
-    PROJECT(5, "ItemList", Project.class),
-    VIDEO(4, "Moving Image", "unknown", "Movie", Video.class),
-    ARCHIVE(8, "Collection", "unknown", "SoftwareApplication", Archive.class),
-    AUDIO(11, "Sound", "unknown", "AudioObject", Audio.class);
+    CODING_SHEET(10, "Dataset", "unknown", "Dataset", CodingSheet.class), DATASET(3, "Dataset", "unknown", "Dataset", Dataset.class), DOCUMENT(1, "Text",
+            "document", "Book", Document.class), IMAGE(2, "Still Image", "unknown", "Photograph", Image.class), SENSORY_DATA(7, "Interactive Resource",
+                    "unknown", "Dataset", SensoryData.class), GEOSPATIAL(6, "Dataset", "unknown", "Dataset", Geospatial.class), ONTOLOGY(9, "Dataset",
+                            "unknown", "Dataset",
+                            Ontology.class), PROJECT(5, "ItemList", Project.class), VIDEO(4, "Moving Image", "unknown", "Movie", Video.class), ARCHIVE(8,
+                                    "Collection", "unknown", "SoftwareApplication", Archive.class), AUDIO(11, "Sound", "unknown", "AudioObject", Audio.class);
 
     /**
      * If possible, should match one of the strings referenced in the DcmiModsTypeMapper...
@@ -78,7 +73,6 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         }
         return StringUtils.uncapitalize(sb.toString());
     }
-
 
     public boolean isDataset() {
         return this == DATASET;
@@ -156,7 +150,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
             return null;
         }
     }
-    
+
     public static ResourceType fromNamespace(String namespace) {
         for (ResourceType rt : ResourceType.values()) {
             if (StringUtils.equals(rt.getUrlNamespace(), namespace)) {
@@ -205,7 +199,6 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         String urlToReturn = name();
         return urlToReturn.toLowerCase().replaceAll("_", "-");
     }
-
 
     public boolean hasDemensions() {
         switch (this) {
@@ -287,7 +280,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         }
         return type.hasDemensions();
     }
-    
+
     public boolean allowsMultipleFiles() {
         switch (this) {
             case DOCUMENT:
@@ -300,7 +293,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
 
     public static List<ResourceType> activeValues() {
         List<ResourceType> types = new ArrayList<>();
-        for (ResourceType rt: values()) {
+        for (ResourceType rt : values()) {
             if (rt == ARCHIVE || rt == ResourceType.VIDEO || rt == ResourceType.AUDIO) {
                 continue;
             }

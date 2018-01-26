@@ -11,7 +11,6 @@ import com.opensymphony.xwork2.Validateable;
 
 public abstract class AbstractCreatorController<T extends Creator<?>> extends AbstractPersistableController<T> implements Validateable {
 
-
     private static final long serialVersionUID = -2125910954088505227L;
 
     private File file;

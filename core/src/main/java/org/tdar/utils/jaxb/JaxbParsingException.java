@@ -21,6 +21,6 @@ public class JaxbParsingException extends Exception {
 
     @Override
     public String getMessage() {
-        return String.format("%s [%s]",super.getMessage(), events);
+        return String.format("%s [%s]", super.getMessage(), events);
     }
 }

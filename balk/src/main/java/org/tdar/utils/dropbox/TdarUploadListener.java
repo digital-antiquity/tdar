@@ -15,7 +15,8 @@ import javax.xml.bind.Marshaller;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.balk.service.ItemService;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -25,8 +26,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
-
-import org.tdar.balk.service.ItemService;
 
 public class TdarUploadListener implements MetadataListener {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -114,11 +113,11 @@ public class TdarUploadListener implements MetadataListener {
         object.setDescription(filename);
         object.setStatus(Status.DRAFT);
         object.setDate(2016);
-        SharedCollection rc = new SharedCollection();
+        ResourceCollection rc = new ResourceCollection();
         rc.setHidden(true);
         rc.setName(collection);
         rc.setDescription("(from dropbox)");
-        object.getSharedResourceCollections().add(rc);
+        object.getManagedResourceCollections().add(rc);
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);
         return writer.toString();

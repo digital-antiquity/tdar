@@ -39,9 +39,7 @@ public class BookmarkListAction extends AbstractAuthenticatableAction implements
 
     private static final long serialVersionUID = 7304652112195894291L;
 
-
     private List<Resource> bookmarkedResources;
-
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -66,8 +64,6 @@ public class BookmarkListAction extends AbstractAuthenticatableAction implements
         return SUCCESS;
     }
 
-
-
     public List<Resource> getBookmarkedResources() {
         return bookmarkedResources;
     }
@@ -87,12 +83,10 @@ public class BookmarkListAction extends AbstractAuthenticatableAction implements
         }
     }
 
-
     @Override
     public void prepare() {
         setupBookmarks();
     }
-
 
     public List<UserNotification> getCurrentNotifications() {
         return currentNotifications;

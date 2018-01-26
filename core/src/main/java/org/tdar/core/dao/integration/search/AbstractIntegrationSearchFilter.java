@@ -83,7 +83,7 @@ public class AbstractIntegrationSearchFilter implements Serializable {
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }
-    
+
     public List<Long> paddedIdList() {
         List<Long> padding = new ArrayList<>();
         padding.add(null);
@@ -92,11 +92,11 @@ public class AbstractIntegrationSearchFilter implements Serializable {
 
     @SuppressWarnings("unused")
     @Deprecated
-    //"ignore, required for hibernate"
+    // "ignore, required for hibernate"
     private void setSubmitterId(Long id) {
-        
+
     }
-    
+
     public Long getSubmitterId() {
         return getAuthorizedUser().getId();
     }
@@ -111,9 +111,9 @@ public class AbstractIntegrationSearchFilter implements Serializable {
 
     @SuppressWarnings("unused")
     @Deprecated
-    //"ignore, required for hibernate"
+    // "ignore, required for hibernate"
     private void setTitleLookup(String title) {
-        
+
     }
 
     // fixme: better way?

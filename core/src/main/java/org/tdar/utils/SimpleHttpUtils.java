@@ -114,7 +114,8 @@ public class SimpleHttpUtils {
             requestConfig = RequestConfig.custom().setConnectTimeout(timeoutInMs).setConnectionRequestTimeout(timeoutInMs).setSocketTimeout(timeoutInMs)
                     .build();
         }
-        CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).setDefaultRequestConfig(requestConfig).evictExpiredConnections().build();
+        CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).setDefaultRequestConfig(requestConfig).evictExpiredConnections()
+                .build();
         return httpclient;
     }
 

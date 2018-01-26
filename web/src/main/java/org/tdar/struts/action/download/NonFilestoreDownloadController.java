@@ -29,7 +29,8 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/files")
 @Component
 @Scope("prototype")
-/** a controller to manage file requests for creators and collections. At such point that these become more complex, such as needing to handle cover pages, 
+/**
+ * a controller to manage file requests for creators and collections. At such point that these become more complex, such as needing to handle cover pages,
  * or multiple files, this should be folded into our existing download controller using the FileStoreFile abstraction
  * 
  * @author abrin
@@ -42,8 +43,7 @@ import com.opensymphony.xwork2.Preparable;
                         "inputName", "stream",
                         "contentDisposition", "filename=\"${filename}\""
                 // ,"contentLength", "${downloadTransferObject.contentLength}"
-                }
-        ),
+                }),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" }) })
 public class NonFilestoreDownloadController extends TdarBaseActionSupport implements Preparable, Serializable {

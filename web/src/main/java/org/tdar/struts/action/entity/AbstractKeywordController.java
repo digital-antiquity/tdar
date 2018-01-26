@@ -25,7 +25,6 @@ public abstract class AbstractKeywordController extends AbstractAuthenticatableA
     private Keyword keyword;
     private List<ExternalKeywordMapping> mappings = new ArrayList<>();
 
-    
     public Keyword getKeyword() {
         return keyword;
     }

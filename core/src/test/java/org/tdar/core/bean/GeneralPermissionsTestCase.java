@@ -8,9 +8,8 @@ import java.util.List;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 
 public class GeneralPermissionsTestCase {
@@ -19,25 +18,18 @@ public class GeneralPermissionsTestCase {
     
     @Test
     public void getAvailableForResource() {
-        List<GeneralPermissions> availablePermissionsFor = GeneralPermissions.getAvailablePermissionsFor(Resource.class);
+        List<Permissions> availablePermissionsFor = Permissions.getAvailablePermissionsFor(Resource.class);
         logger.debug("rperm: {}", availablePermissionsFor);
-        assertTrue(availablePermissionsFor.contains(GeneralPermissions.MODIFY_METADATA));
-        assertFalse(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_SHARE));
+        assertTrue(availablePermissionsFor.contains(Permissions.MODIFY_METADATA));
+        assertFalse(availablePermissionsFor.contains(Permissions.ADMINISTER_COLLECTION));
     }
 
     @Test
     public void getAvailableForSharedCollection() {
-        List<GeneralPermissions> availablePermissionsFor = GeneralPermissions.getAvailablePermissionsFor(SharedCollection.class);
+        List<Permissions> availablePermissionsFor = Permissions.getAvailablePermissionsFor(ResourceCollection.class);
         logger.debug("sharedperm: {}", availablePermissionsFor);
-        assertTrue(availablePermissionsFor.contains(GeneralPermissions.MODIFY_METADATA));
-        assertTrue(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_SHARE));
+        assertTrue(availablePermissionsFor.contains(Permissions.MODIFY_METADATA));
+        assertTrue(availablePermissionsFor.contains(Permissions.ADMINISTER_COLLECTION));
     }
 
-    @Test
-    public void getAvailableForHierarchicalCollection() {
-        List<GeneralPermissions> availablePermissionsFor = GeneralPermissions.getAvailablePermissionsFor(HierarchicalCollection.class);
-        logger.debug("sharedperm: {}", availablePermissionsFor);
-        assertTrue(availablePermissionsFor.contains(GeneralPermissions.MODIFY_METADATA));
-        assertTrue(availablePermissionsFor.contains(GeneralPermissions.ADMINISTER_SHARE));
-    }
 }

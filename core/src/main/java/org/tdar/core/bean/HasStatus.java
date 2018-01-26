@@ -18,37 +18,38 @@ public interface HasStatus {
     /**
      * NOTE These default methods are here for the future, but Freemarker doesn't support default methods, so it causes failures
      * https://issues.apache.org/jira/browse/FREEMARKER-24
+     * 
      * @return
      */
 
     @Transient
     @XmlTransient
     public default boolean isDeleted() {
-        return getStatus() ==  Status.DELETED;
+        return getStatus() == Status.DELETED;
     }
 
     @Transient
     @XmlTransient
     public default boolean isActive() {
-        return getStatus() ==  Status.ACTIVE;
+        return getStatus() == Status.ACTIVE;
     }
 
     @Transient
     @XmlTransient
     public default boolean isDraft() {
-        return getStatus() ==  Status.DRAFT;
+        return getStatus() == Status.DRAFT;
     }
 
     @Transient
     @XmlTransient
     public default boolean isDuplicate() {
-        return getStatus() ==  Status.DUPLICATE;
+        return getStatus() == Status.DUPLICATE;
     }
 
     @Transient
     @XmlTransient
     public default boolean isFlagged() {
-        return getStatus() ==  Status.FLAGGED;
+        return getStatus() == Status.FLAGGED;
     }
 
 }

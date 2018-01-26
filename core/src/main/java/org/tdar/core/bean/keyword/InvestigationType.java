@@ -24,16 +24,17 @@ import org.hibernate.annotations.Check;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.InvestigationType")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "assertions",
-       joinColumns = @JoinColumn(name="investigation_type_id"))
- })
+        @AssociationOverride(name = "assertions",
+                joinColumns = @JoinColumn(name = "investigation_type_id"))
+})
 @XmlRootElement
 public class InvestigationType extends AbstractKeyword<InvestigationType> implements ControlledKeyword {
 
     private static final long serialVersionUID = 2557655317256194003L;
 
-    public InvestigationType() {}
-    
+    public InvestigationType() {
+    }
+
     public InvestigationType(String string) {
         setLabel(string);
     }

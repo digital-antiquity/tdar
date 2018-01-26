@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.StatusCode;
@@ -62,7 +61,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
 
     @Autowired
     private CollectionSearchService collectionSearchService;
-    
+
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     private transient InputStream inputStream;
@@ -79,7 +78,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         performLuceneQuery();
 
         if (isEditor()) {
-            List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, SharedCollection.class));
+            List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null));
             setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 
@@ -123,7 +122,6 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-
     public Persistable getPersistable() {
         return persistable;
     }
@@ -139,7 +137,6 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     public void setGroups(List<String> groups) {
         this.groups = groups;
     }
-
 
     public Long getContentLength() {
         return contentLength;

@@ -24,7 +24,7 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
     private Object value;
     private Condition condition = Condition.AND;
     private List<Object> inValues = new ArrayList<>();
-    // THIS MAY SEEM SILLY, but adding to be clearer when the SQL is produced what the second set of unmapped values is vs. the selected set  
+    // THIS MAY SEEM SILLY, but adding to be clearer when the SQL is produced what the second set of unmapped values is vs. the selected set
     private List<Object> moreInValues = new ArrayList<>();
     private String moreInComment;
     private String inComment;
@@ -85,7 +85,7 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
         if (CollectionUtils.isEmpty(inValues) && CollectionUtils.isEmpty(moreInValues)) {
             buildSimpleCondition(sb);
         } else {
-            addComment(sb,inComment);
+            addComment(sb, inComment);
             if (!CollectionUtils.isEmpty(inValues)) {
                 createInPart(sb, getInValues());
             }
@@ -100,13 +100,13 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
                 sb.append(" OR ").append(quote(column)).append(" IS NULL");
             }
         }
-        
+
         if (sb.length() > 0 && StringUtils.isNotBlank(likeValue)) {
             sb.append(" OR ");
             sb.append(quote(column)).append(" LIKE ");
-            sb.append(quote(likeValue,false));
+            sb.append(quote(likeValue, false));
         }
-        
+
         sb.insert(0, "(");
         sb.append(") ");
 

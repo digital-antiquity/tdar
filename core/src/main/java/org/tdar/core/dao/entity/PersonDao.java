@@ -77,10 +77,11 @@ public class PersonDao extends HibernateBase<Person> {
         people.addAll(query.getResultList());
         return people;
     }
-    
+
     @SuppressWarnings("unchecked")
     /**
      * Searches for all the people for a given institution, and returns a list sorted by last name, first name
+     * 
      * @param institution
      * @return
      */
@@ -89,7 +90,8 @@ public class PersonDao extends HibernateBase<Person> {
         Query<Person> query = getCurrentSession().getNamedQuery(QUERY_INSTITUTION_PEOPLE);
         query.setParameter("id", institution.getId());
         people.addAll(query.getResultList());
-        Collections.sort(people, (person1, person2)-> person1.getLastName().concat(person1.getFirstName()).compareTo(person2.getLastName().concat(person2.getFirstName())));
+        Collections.sort(people,
+                (person1, person2) -> person1.getLastName().concat(person1.getFirstName()).compareTo(person2.getLastName().concat(person2.getFirstName())));
         return people;
     }
 
@@ -144,7 +146,7 @@ public class PersonDao extends HibernateBase<Person> {
             try {
                 return find(result.get(0).longValue());
             } catch (Exception e) {
-                logger.error("could not find master for {} {}", dup, result,e);
+                logger.error("could not find master for {} {}", dup, result, e);
             }
         }
         return null;
@@ -328,6 +330,6 @@ public class PersonDao extends HibernateBase<Person> {
         }
         criteria.addOrder(Order.desc("timestamp"));
         return criteria.list();
-        }
+    }
 
 }

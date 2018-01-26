@@ -38,13 +38,13 @@ public class BillingActivity extends AbstractPersistable implements Comparable<B
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
-    @Column(updatable = false, name="num_hours")
+    @Column(updatable = false, name = "num_hours")
     private Integer numberOfHours = 0;
-    @Column(updatable = false, name="num_mb")
+    @Column(updatable = false, name = "num_mb")
     private Long numberOfMb = 0L;
-    @Column(updatable = false, name="num_resources")
+    @Column(updatable = false, name = "num_resources")
     private Long numberOfResources = 0L;
-    @Column(updatable = false, name="num_files")
+    @Column(updatable = false, name = "num_files")
     private Long numberOfFiles = 0L;
 
     @Enumerated(EnumType.STRING)
@@ -63,11 +63,11 @@ public class BillingActivity extends AbstractPersistable implements Comparable<B
     private Long minAllowedNumberOfFiles = 0L;
 
     // display values may be lower than actual values to give some wiggle room
-    @Column(name="display_num_mb")
+    @Column(name = "display_num_mb")
     private Long displayNumberOfMb;
-    @Column(name="display_num_resources")
+    @Column(name = "display_num_resources")
     private Long displayNumberOfResources;
-    @Column(name="display_num_files")
+    @Column(name = "display_num_files")
     private Long displayNumberOfFiles;
 
     @Column(updatable = false)
@@ -93,16 +93,23 @@ public class BillingActivity extends AbstractPersistable implements Comparable<B
     }
 
     /**
-     * Creates a new BilingActivity that contains the quota limits for usage. 
+     * Creates a new BilingActivity that contains the quota limits for usage.
+     * 
      * @param name
-     * @param price		The cost for the quota limits
-     * @param numHours	The number of hours available
-     * @param numberOfResources	The number of resources available
-     * @param numberOfFiles	The limit of the number of files
-     * @param numberOfMb	The limit of the amount of space, in megabytes
+     * @param price
+     *            The cost for the quota limits
+     * @param numHours
+     *            The number of hours available
+     * @param numberOfResources
+     *            The number of resources available
+     * @param numberOfFiles
+     *            The limit of the number of files
+     * @param numberOfMb
+     *            The limit of the amount of space, in megabytes
      * @param model
      */
-    public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb, BillingActivityModel model) {
+    public BillingActivity(String name, Float price, Integer numHours, Long numberOfResources, Long numberOfFiles, Long numberOfMb,
+            BillingActivityModel model) {
         this(name, price, model);
         setNumberOfHours(numHours);
         setNumberOfFiles(numberOfFiles);

@@ -11,16 +11,17 @@ public class DailyTotal {
     private String dateString;
     private Date date;
     private List<Integer> totalDownloads = new ArrayList<>();
-    
+
     public DailyTotal(Integer i1, Integer i2, String dateString, Date date, List<Integer> downloads) {
         this.setTotal(i1);
         this.setTotalBot(i2);
         this.setDate(date);
         this.setDateString(dateString);
         this.setTotalDownloads(downloads);
-    }    
+    }
+
     public DailyTotal(Integer i1, Integer i2, String dateString, Date date) {
-        this(i1,i2,dateString,date, null);
+        this(i1, i2, dateString, date, null);
     }
 
     public String getDateString() {
@@ -86,7 +87,7 @@ public class DailyTotal {
             return;
         }
         Integer integer = getTotalDownloads().get(i);
-        getTotalDownloads().set(i, integer  + count.intValue());
+        getTotalDownloads().set(i, integer + count.intValue());
 
     }
 
@@ -95,5 +96,5 @@ public class DailyTotal {
         addTotalBot(totalBot2);
         setTotalDownloads(createDownloadList);
     }
-    
+
 }

@@ -48,7 +48,7 @@ import org.tdar.utils.PersistableUtils;
 
 @Service
 @Transactional
-public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, InvoiceDao> implements InvoiceService {
+public class InvoiceServiceImpl extends ServiceInterface.TypedDaoBase<Invoice, InvoiceDao> implements InvoiceService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
@@ -69,7 +69,9 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
     @Autowired
     private transient UserNotificationService notificationService;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#getActiveBillingActivities()
      */
     @Override
@@ -78,12 +80,13 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
         return getDao().getActiveBillingActivities();
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#calculateCheapestActivities(org.tdar.core.bean.billing.Invoice)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public PricingOption calculateCheapestActivities(Invoice invoice) {
         PricingOption lowestByMB = getDao().getCheapestActivityBySpace(invoice.getNumberOfFiles(), invoice.getNumberOfMb());
         PricingOption lowestByFiles = getDao().getCheapestActivityByFiles(invoice.getNumberOfFiles(), invoice.getNumberOfMb(), false);
@@ -101,11 +104,13 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
         return lowestByMB;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#lookupExtraBillingActivities(java.util.List, java.util.List)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
 
     public Collection<BillingItem> lookupExtraBillingActivities(List<Long> extraItemIds, List<Integer> extraItemQuantities) {
         Map<Long, BillingActivity> actIdMap = PersistableUtils.createIdMap(getActiveBillingActivities());
@@ -123,8 +128,11 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
 
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.InvoiceService#processInvoice(org.tdar.core.bean.billing.Invoice, org.tdar.core.bean.entity.TdarUser, java.lang.String, java.util.Collection, org.tdar.core.service.billing.PricingOption.PricingType, java.lang.Long)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.InvoiceService#processInvoice(org.tdar.core.bean.billing.Invoice, org.tdar.core.bean.entity.TdarUser,
+     * java.lang.String, java.util.Collection, org.tdar.core.service.billing.PricingOption.PricingType, java.lang.Long)
      */
     @Override
     @Transactional(readOnly = false)
@@ -184,18 +192,20 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
         return invoice;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#redeemCode(org.tdar.core.bean.billing.Invoice, org.tdar.core.bean.entity.TdarUser, java.lang.String)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void redeemCode(Invoice invoice, TdarUser user, String code) {
         if (StringUtils.isEmpty(code)) {
             return;
         }
         // find and validate the coupon
         Coupon coupon = locateRedeemableCoupon(code, user);
-        logger.debug("{}",coupon);
+        logger.debug("{}", coupon);
         if (coupon == null) {
             throw new TdarRecoverableRuntimeException("invoiceService.cannot_redeem_coupon");
         }
@@ -254,7 +264,9 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#finalizePayment(org.tdar.core.bean.billing.Invoice, org.tdar.core.dao.external.payment.PaymentMethod)
      */
     @Override
@@ -291,7 +303,9 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
         return invoice;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#locateRedeemableCoupon(java.lang.String, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -304,17 +318,22 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
         return accountDao.findCoupon(code, user);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#checkCouponStillValidForCheckout(org.tdar.core.bean.billing.Coupon, org.tdar.core.bean.billing.Invoice)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
         accountDao.checkCouponStillValidForCheckout(coupon, invoice);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.billing.InvoiceService#processTransactionResponse(org.tdar.core.dao.external.payment.nelnet.TransactionResponse, org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.billing.InvoiceService#processTransactionResponse(org.tdar.core.dao.external.payment.nelnet.TransactionResponse,
+     * org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor)
      */
     @Override
     @Transactional(readOnly = false)
@@ -424,11 +443,13 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#updateInvoiceStatus(org.tdar.core.bean.billing.Invoice)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void updateInvoiceStatus(Invoice invoice) {
         // Assume that an invoice owner will always want to see the contributor menus.
         invoice.getOwner().setContributor(true);
@@ -449,7 +470,9 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#completeInvoice(org.tdar.core.bean.billing.Invoice)
      */
     @Override
@@ -460,17 +483,20 @@ public class InvoiceServiceImpl  extends ServiceInterface.TypedDaoBase<Invoice, 
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#getCheapestActivityByFiles(long, long, boolean)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public PricingOption getCheapestActivityByFiles(long filesUsed, long spaceUsedInMb, boolean b) {
         return getDao().getCheapestActivityByFiles(filesUsed, spaceUsedInMb, b);
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.billing.InvoiceService#getCheapestActivityBySpace(long, long)
      */
     @Override

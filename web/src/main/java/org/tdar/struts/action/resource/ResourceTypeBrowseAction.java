@@ -22,7 +22,7 @@ import org.tdar.utils.PaginationHelper;
 
 import com.opensymphony.xwork2.Preparable;
 
-@Namespaces(value={
+@Namespaces(value = {
         @Namespace("/document"),
         @Namespace("/image"),
         @Namespace("/project"),
@@ -41,28 +41,27 @@ public class ResourceTypeBrowseAction extends AbstractLookupController<Resource>
     private static final long serialVersionUID = 1L;
 
     private PaginationHelper paginationHelper;
-    
+
     private ResourceType resourceType;
-    
+
     @Autowired
     private transient ResourceSearchService resourceSearchService;
 
     @Override
     public void prepare() throws Exception {
-        String rt = StringUtils.replace(getNamespace(),"/","");
+        String rt = StringUtils.replace(getNamespace(), "/", "");
         resourceType = ResourceType.fromNamespace(rt);
         setRecordsPerPage(250);
-        setResults(resourceSearchService.findByResourceType(resourceType,this, this).getResults());
-        
+        setResults(resourceSearchService.findByResourceType(resourceType, this, this).getResults());
+
     }
-    
 
     @Override
     @Actions({
             @Action(value = "", results = { @Result(name = SUCCESS, location = "/WEB-INF/content/resource/list.ftl") }),
     })
     public String execute() throws SearchException, IOException {
-        
+
         return SUCCESS;
     }
 
@@ -84,7 +83,5 @@ public class ResourceTypeBrowseAction extends AbstractLookupController<Resource>
     public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
     }
-
-
 
 }

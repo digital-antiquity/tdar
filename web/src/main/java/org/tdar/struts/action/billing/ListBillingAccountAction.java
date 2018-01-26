@@ -29,10 +29,10 @@ public class ListBillingAccountAction extends AbstractAuthenticatableAction {
     private static final long serialVersionUID = -987101577591701115L;
 
     private List<BillingAccount> accounts = new ArrayList<>();
-    
+
     @Autowired
     private BillingAccountService accountService;
-    
+
     @Action(value = LIST)
     public String list() {
         getAccounts().addAll(accountService.findAll());

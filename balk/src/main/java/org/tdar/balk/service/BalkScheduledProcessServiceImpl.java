@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.balk.bean.PollType;
 import org.tdar.utils.dropbox.DropboxClient;
 import org.tdar.utils.dropbox.DropboxConfig;
-import org.tdar.utils.dropbox.DropboxConstants;
 import org.tdar.utils.dropbox.ToPersistListener;
 
 import com.dropbox.core.DbxException;

@@ -438,7 +438,7 @@ Auth Info
 <#list persistable.authorizedUsers as user>
   <li> ${user.user.id?c} | ${user.user.properName} | ${user.generalPermission}</li>
 </#list>
-<#list persistable.sharedCollections as share>
+<#list persistable.managedResourceCollections as share>
     <li>${share.id?c} - ${share.name}
     <ul>
         <#list share.authorizedUsers as user>

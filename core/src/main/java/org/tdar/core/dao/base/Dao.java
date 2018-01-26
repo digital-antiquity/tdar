@@ -30,7 +30,7 @@ public interface Dao<T> {
     T find(Long id);
 
     <C> C find(Class<C> cls, Long id);
-    
+
     /**
      * Returns all persistent T entities in the database.
      * 

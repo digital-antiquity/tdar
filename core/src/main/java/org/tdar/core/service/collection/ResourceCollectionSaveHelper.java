@@ -11,31 +11,28 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.utils.PersistableUtils;
 
-public class ResourceCollectionSaveHelper<C extends ResourceCollection> {
+public class ResourceCollectionSaveHelper {
 
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-    private Set<C> toDelete = new HashSet<>();
-    private Set<C> toAdd = new HashSet<>();
+    private Set<ResourceCollection> toDelete = new HashSet<>();
+    private Set<ResourceCollection> toAdd = new HashSet<>();
 
     @SuppressWarnings("unchecked")
-    public ResourceCollectionSaveHelper(Collection<C> incoming, Collection<? extends ResourceCollection> existing_, Class<C> cls) {
+    public ResourceCollectionSaveHelper(Collection<ResourceCollection> incoming, Collection<ResourceCollection> existing_) {
 
-        
-        Set<C> existing = new HashSet<>();
-        Iterator<? extends ResourceCollection> iterator = existing_.iterator();
+        Set<ResourceCollection> existing = new HashSet<>();
+        Iterator<ResourceCollection> iterator = existing_.iterator();
         while (iterator.hasNext()) {
             ResourceCollection c = iterator.next();
-            if (c.getClass().isAssignableFrom(cls)) {
-                existing.add((C)c);
-            }
+            existing.add(c);
         }
 
-        Map<Long, C> idMap = PersistableUtils.createIdMap(existing);
-        for (C in : incoming) {
+        Map<Long, ResourceCollection> idMap = PersistableUtils.createIdMap(existing);
+        for (ResourceCollection in : incoming) {
             if (in == null) {
                 continue;
             }
-            
+
             if (!idMap.containsKey(in.getId())) {
                 getToAdd().add(in);
             } else {
@@ -47,19 +44,19 @@ public class ResourceCollectionSaveHelper<C extends ResourceCollection> {
         }
     }
 
-    public Set<C> getToAdd() {
+    public Set<ResourceCollection> getToAdd() {
         return toAdd;
     }
 
-    public void setToAdd(Set<C> toAdd) {
+    public void setToAdd(Set<ResourceCollection> toAdd) {
         this.toAdd = toAdd;
     }
 
-    public Set<C> getToDelete() {
+    public Set<ResourceCollection> getToDelete() {
         return toDelete;
     }
 
-    public void setToDelete(Set<C> toDelete) {
+    public void setToDelete(Set<ResourceCollection> toDelete) {
         this.toDelete = toDelete;
     }
 }

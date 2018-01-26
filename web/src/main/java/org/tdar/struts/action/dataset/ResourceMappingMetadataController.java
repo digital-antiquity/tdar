@@ -13,7 +13,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -59,6 +59,7 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
     private Dataset getDataResource() {
         return getPersistable();
     }
+
     private Long startTime = -1L;
     private Long id;
     private List<DataTableColumn> columnsToRemap;
@@ -194,7 +195,7 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
 
     @Override
     public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
+        return authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_METADATA);
     }
 
     @Override
@@ -258,6 +259,5 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
     public Long getCurrentTime() {
         return System.currentTimeMillis();
     }
-
 
 }

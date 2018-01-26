@@ -10,13 +10,13 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision$
  */
-public interface Database
-{
+public interface Database {
     enum DatabaseType {
         ACCESS, DB2, EXCEL, POSTGRES
     };
 
     DatabaseType getDatabaseType();
+
     public static final String NO_CODING_SHEET_VALUE = "No coding sheet value for code:";
 
     int getMaxTableLength();

@@ -6,12 +6,7 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum FileAccessRestriction implements HasLabel, Localizable {
-    PUBLIC,
-    EMBARGOED_SIX_MONTHS,
-    EMBARGOED_ONE_YEAR,
-    EMBARGOED_TWO_YEARS,
-    EMBARGOED_FIVE_YEARS,
-    CONFIDENTIAL;
+    PUBLIC, EMBARGOED_SIX_MONTHS, EMBARGOED_ONE_YEAR, EMBARGOED_TWO_YEARS, EMBARGOED_FIVE_YEARS, CONFIDENTIAL;
 
     // Fixme: there is a 25% chance of this constant being incorrect ;-)
     private static final int ONE_YEAR = 365;

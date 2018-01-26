@@ -24,8 +24,7 @@ import org.tdar.struts_base.action.TdarActionSupport;
         @Result(name = TdarActionSupport.SUCCESS, type = "stream",
                 params = {
                         "inputName", "inputStream"
-                }
-        ),
+                }),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 

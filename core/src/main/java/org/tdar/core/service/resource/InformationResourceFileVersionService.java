@@ -2,7 +2,6 @@ package org.tdar.core.service.resource;
 
 import java.util.Collection;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 
 public interface InformationResourceFileVersionService {

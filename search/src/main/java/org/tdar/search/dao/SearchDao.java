@@ -27,7 +27,7 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -87,16 +87,16 @@ public class SearchDao<I extends Indexable> {
             logger.trace(solrParams.toQueryString());
         }
         try {
-        QueryResponse rsp = template.query(query.getCoreName(), solrParams);
-        query.processResults(rsp);
-        if (logger.isTraceEnabled()) {
-            logger.trace(rsp.toString());
-        }
-        convertProjectedResultIntoObjects(resultHandler, query);
-        query.markStartFacetSearch();
-        processFacets(rsp, resultHandler, provider);
-        logger.trace("completed fulltextquery setup");
-        query.markEndSearch();
+            QueryResponse rsp = template.query(query.getCoreName(), solrParams);
+            query.processResults(rsp);
+            if (logger.isTraceEnabled()) {
+                logger.trace(rsp.toString());
+            }
+            convertProjectedResultIntoObjects(resultHandler, query);
+            query.markStartFacetSearch();
+            processFacets(rsp, resultHandler, provider);
+            logger.trace("completed fulltextquery setup");
+            query.markEndSearch();
         } catch (SolrServerException e) {
             throw new SearchException(e.getMessage(), e);
         }
@@ -173,19 +173,19 @@ public class SearchDao<I extends Indexable> {
         for (Count c : field.getValues()) {
             String name = c.getName();
             String label = null;
-//            if (facetClass.equals(IntegratableOptions.class)) {
-//                // issue with how solr handles Yes/no values, it treats them as
-//                // booleans
-//                if (name.equalsIgnoreCase("false")) {
-//                    name = IntegratableOptions.NOT_INTEGRATABLE.name();
-//                } else if (name.equalsIgnoreCase("true")) {
-//                    name = IntegratableOptions.INTEGRATABLE.name();
-//                }
-//            }
+            // if (facetClass.equals(IntegratableOptions.class)) {
+            // // issue with how solr handles Yes/no values, it treats them as
+            // // booleans
+            // if (name.equalsIgnoreCase("false")) {
+            // name = IntegratableOptions.NOT_INTEGRATABLE.name();
+            // } else if (name.equalsIgnoreCase("true")) {
+            // name = IntegratableOptions.INTEGRATABLE.name();
+            // }
+            // }
 
             Enum enum1 = null;
             if (facetClass.equals(ResourceType.class)) {
-                for (CollectionType type : CollectionType.values()) {
+                for (CollectionResourceSection type : CollectionResourceSection.values()) {
                     if (name.equals(type.name())) {
                         enum1 = type;
                     }
@@ -223,16 +223,16 @@ public class SearchDao<I extends Indexable> {
         for (Count c : field.getValues()) {
             if (c.getCount() > 0) {
                 try {
-                HasLabel persistable = (HasLabel) idMap.get(Long.parseLong(c.getName()));
-                String label = persistable.getLabel();
-                logger.trace("  {} - {}", c.getCount(), label);
-                Facet f = new Facet(c.getName(), label, c.getCount(), facetClass);
-                if (persistable instanceof Addressable) {
-                    f.setDetailUrl(((Addressable) persistable).getDetailUrl());
-                }
-                facet.add(f);
+                    HasLabel persistable = (HasLabel) idMap.get(Long.parseLong(c.getName()));
+                    String label = persistable.getLabel();
+                    logger.trace("  {} - {}", c.getCount(), label);
+                    Facet f = new Facet(c.getName(), label, c.getCount(), facetClass);
+                    if (persistable instanceof Addressable) {
+                        f.setDetailUrl(((Addressable) persistable).getDetailUrl());
+                    }
+                    facet.add(f);
                 } catch (Exception e) {
-                    logger.error("error hydrating facet: {}",e, e);
+                    logger.error("error hydrating facet: {}", e, e);
                 }
             }
         }

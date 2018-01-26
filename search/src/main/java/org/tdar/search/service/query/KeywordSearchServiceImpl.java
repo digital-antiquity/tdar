@@ -36,14 +36,17 @@ public class KeywordSearchServiceImpl<I extends Keyword> extends AbstractSearchS
     @Autowired
     private SearchService<I> searchService;
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.KeywordSearchService#findKeyword(java.lang.String, java.lang.String, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider, int)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.KeywordSearchService#findKeyword(java.lang.String, java.lang.String, org.tdar.search.query.LuceneSearchResultHandler,
+     * com.opensymphony.xwork2.TextProvider, int)
      */
     @Override
     public LuceneSearchResultHandler<I> findKeyword(String term, String keywordType, LuceneSearchResultHandler<I> result, TextProvider provider, int min)
             throws SearchException, IOException {
         QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
-        
+
         if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {
             if (StringUtils.isNotBlank(term) && SiteCodeExtractor.matches(term)) {
                 FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, term);
@@ -60,7 +63,7 @@ public class KeywordSearchServiceImpl<I extends Keyword> extends AbstractSearchS
         group.setOperator(Operator.AND);
         if (SearchUtils.checkMinString(term, min)) {
             q.append(new StringAutocompletePart(QueryFieldNames.NAME_AUTOCOMPLETE, Arrays.asList(term)));
-       }
+        }
 
         // refine search to the correct keyword type
         group.append(new FieldQueryPart<String>(QueryFieldNames.GENERAL_TYPE, keywordType));

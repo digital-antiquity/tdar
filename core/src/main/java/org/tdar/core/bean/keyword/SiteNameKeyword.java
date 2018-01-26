@@ -24,20 +24,21 @@ import org.hibernate.annotations.Check;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.SiteNameKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "assertions",
-       joinColumns = @JoinColumn(name="site_name_keyword_id"))
- })
+        @AssociationOverride(name = "assertions",
+                joinColumns = @JoinColumn(name = "site_name_keyword_id"))
+})
 @XmlRootElement
 public class SiteNameKeyword extends AbstractKeyword<SiteNameKeyword> implements UncontrolledKeyword {
 
     private static final long serialVersionUID = 60750909588980398L;
 
-    public SiteNameKeyword() {}
-    
+    public SiteNameKeyword() {
+    }
+
     public SiteNameKeyword(String label) {
         this.setLabel(label);
     }
-    
+
     public String getSiteCode() {
         return getLabel();
     }

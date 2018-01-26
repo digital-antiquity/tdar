@@ -42,11 +42,12 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
 
     @Autowired
     private GenericDao genericDao;
-    
-    private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    
 
-    /* (non-Javadoc)
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserRightsProxyService#findUserInvites(org.tdar.core.bean.Persistable)
      */
     @Override
@@ -65,7 +66,9 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserRightsProxyService#findUserInvites(org.tdar.core.bean.resource.Resource)
      */
     @Override
@@ -74,7 +77,9 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
         return resourceCollectionDao.findUserInvites(resource);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserRightsProxyService#findUserInvites(org.tdar.core.bean.collection.ResourceCollection)
      */
     @Override
@@ -83,7 +88,9 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
         return resourceCollectionDao.findUserInvites(resourceCollection);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserRightsProxyService#findUserInvites(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -92,13 +99,14 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
         return resourceCollectionDao.findUserInvites(user);
     }
 
-    
-    
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.UserRightsProxyService#handleInvites(org.tdar.core.bean.entity.TdarUser, java.util.List, org.tdar.core.bean.resource.HasAuthorizedUsers)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.UserRightsProxyService#handleInvites(org.tdar.core.bean.entity.TdarUser, java.util.List,
+     * org.tdar.core.bean.resource.HasAuthorizedUsers)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void handleInvites(TdarUser authenticatedUser, List<UserInvite> invites, HasAuthorizedUsers c) {
         List<UserInvite> existing = resourceCollectionDao.findUserInvites(c);
         Map<Long, UserInvite> createIdMap = PersistableUtils.createIdMap(existing);
@@ -116,7 +124,7 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
                 }
 
                 // existing one
-                if (PersistableUtils.isNotNullOrTransient(invite.getId() )) {
+                if (PersistableUtils.isNotNullOrTransient(invite.getId())) {
                     UserInvite inv = createIdMap.get(invite.getId());
                     inv.setDateExpires(invite.getDateExpires());
                     inv.setPermissions(inv.getPermissions());
@@ -135,7 +143,8 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
                 // if the user is already a tDAR user, delete the invite, otherwise save it
                 if (invite.getUser() instanceof TdarUser) {
                     logger.debug("adding existing user: {}", invite.getUser());
-                    c.getAuthorizedUsers().add(new AuthorizedUser(authenticatedUser, (TdarUser) invite.getUser(), invite.getPermissions(), invite.getDateExpires()));
+                    c.getAuthorizedUsers()
+                            .add(new AuthorizedUser(authenticatedUser, (TdarUser) invite.getUser(), invite.getPermissions(), invite.getDateExpires()));
                     genericDao.delete(invite);
                 } else {
                     genericDao.saveOrUpdate(invite);
@@ -149,16 +158,18 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
         genericDao.delete(toDelete);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserRightsProxyService#convertProxyToItems(java.util.List, org.tdar.core.bean.entity.TdarUser, java.util.List, java.util.List)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void convertProxyToItems(List<UserRightsProxy> proxies, TdarUser authenticatedUser, List<AuthorizedUser> authorizedUsers, List<UserInvite> invites) {
         for (UserRightsProxy proxy : proxies) {
             if (proxy == null || proxy.isEmpty()) {
                 return;
-            } 
+            }
 
             if (proxy.getEmail() != null || proxy.getInviteId() != null) {
                 UserInvite invite = toInvite(proxy, authenticatedUser);
@@ -175,14 +186,16 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserRightsProxyService#toInvite(org.tdar.core.bean.resource.UserRightsProxy, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public UserInvite toInvite(UserRightsProxy proxy, TdarUser user) {
         UserInvite invite = new UserInvite();
-        if (PersistableUtils.isNotNullOrTransient(proxy.getInviteId() )) {
+        if (PersistableUtils.isNotNullOrTransient(proxy.getInviteId())) {
             invite = genericDao.find(UserInvite.class, proxy.getInviteId());
         } else {
             invite.setId(proxy.getInviteId());
@@ -200,28 +213,29 @@ public class UserRightsProxyServiceImpl implements UserRightsProxyService {
         return invite;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.UserRightsProxyService#toAuthorizedUser(org.tdar.core.bean.resource.UserRightsProxy)
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public AuthorizedUser toAuthorizedUser(UserRightsProxy proxy) {
         try {
             AuthorizedUser au = new AuthorizedUser();
             TdarUser user = genericDao.find(TdarUser.class, proxy.getId());
             logger.debug("{} {} {}", proxy, proxy.getId(), user);
-            if (user == null && PersistableUtils.isNotNullOrTransient(proxy.getId() )) {
+            if (user == null && PersistableUtils.isNotNullOrTransient(proxy.getId())) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
             }
             au.setUser(user);
             au.setGeneralPermission(proxy.getPermission());
             au.setDateExpires(proxy.getUntilDate());
             logger.trace("  {} ({})", au, proxy.getDisplayName());
-        return au;
+            return au;
         } catch (WrongClassException e) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_exists", Arrays.asList(proxy.getDisplayName()));
         }
     }
-
 
 }

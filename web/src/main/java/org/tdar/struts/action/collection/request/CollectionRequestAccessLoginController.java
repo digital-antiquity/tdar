@@ -6,8 +6,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.struts.action.AbstractRequestAccessController;
+
 /**
  * Handle login for new users and pass back to request-access-action
+ * 
  * @author abrin
  *
  */
@@ -15,8 +17,7 @@ import org.tdar.struts.action.AbstractRequestAccessController;
 @Namespace("/collection/request")
 @Component
 @Scope("prototype")
-public class CollectionRequestAccessLoginController extends AbstractRequestAccessController<ResourceCollection>{
-
+public class CollectionRequestAccessLoginController extends AbstractRequestAccessController<ResourceCollection> {
 
     private static final long serialVersionUID = -1206933248591765156L;
 
@@ -24,7 +25,7 @@ public class CollectionRequestAccessLoginController extends AbstractRequestAcces
     public String getTypeNamespace() {
         return "collection";
     }
-    
+
     public ResourceCollection getCollection() {
         return getPersistable();
     }
@@ -33,6 +34,5 @@ public class CollectionRequestAccessLoginController extends AbstractRequestAcces
     public Class<ResourceCollection> getPersistableClass() {
         return ResourceCollection.class;
     }
-
 
 }

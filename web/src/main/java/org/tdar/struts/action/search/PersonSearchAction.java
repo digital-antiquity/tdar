@@ -1,7 +1,6 @@
 package org.tdar.struts.action.search;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServerException;
@@ -33,17 +32,17 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
     private static final long serialVersionUID = -4399875145290579664L;
 
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(Person.class);
-    
-    //private List<PersonSearchOption> personSearchOptions = Arrays.asList(PersonSearchOption.values());
 
-    private String query;  
-    
+    // private List<PersonSearchOption> personSearchOptions = Arrays.asList(PersonSearchOption.values());
+
+    private String query;
+
     private PersonSearchOption personSearchOption;
-     
-	@Autowired
+
+    @Autowired
     private CreatorSearchService<Person> creatorSearchService;
 
-	@Action(value = "people", results = {
+    @Action(value = "people", results = {
             @Result(name = SUCCESS, location = "people.ftl"),
             @Result(name = INPUT, location = "person.ftl") })
     public String searchPeople() throws TdarActionException, SolrServerException, IOException {
@@ -52,7 +51,7 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
         setMode("PERSON");
         setLookupSource(LookupSource.PERSON);
         try {
-            creatorSearchService.findPerson(getQuery(),personSearchOption, this,this);
+            creatorSearchService.findPerson(getQuery(), personSearchOption, this, this);
         } catch (TdarRecoverableRuntimeException | SearchException trex) {
             addActionError(trex.getMessage());
             return INPUT;
@@ -65,19 +64,20 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
         sortOptions.remove(SortOption.RESOURCE_TYPE_REVERSE);
         return sortOptions;
     }
-    
 
     public void setSortOptions(List<SortOption> sortOptions) {
         this.sortOptions = sortOptions;
     }
-    
-  /*  public List<PersonSearchOption> getPersonSearchOptions(){
-    	return this.personSearchOptions;
-    }
-    
-    public void setPersonSearchOptions(List<PersonSearchOption> options){
-    	this.personSearchOptions = options;
-    }*/
+
+    /*
+     * public List<PersonSearchOption> getPersonSearchOptions(){
+     * return this.personSearchOptions;
+     * }
+     * 
+     * public void setPersonSearchOptions(List<PersonSearchOption> options){
+     * this.personSearchOptions = options;
+     * }
+     */
 
     public String getQuery() {
         return query;
@@ -86,14 +86,14 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
     public void setQuery(String query) {
         this.query = query;
     }
-    
-    public PersonSearchOption getPersonSearchOption() {
-		return personSearchOption;
-	}
 
-	public void setPersonSearchOption(PersonSearchOption personSearchOption) {
-		this.personSearchOption = personSearchOption;
-	}
+    public PersonSearchOption getPersonSearchOption() {
+        return personSearchOption;
+    }
+
+    public void setPersonSearchOption(PersonSearchOption personSearchOption) {
+        this.personSearchOption = personSearchOption;
+    }
 
     @Override
     public boolean isLeftSidebar() {

@@ -25,8 +25,10 @@ import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
+
 /**
  * Sends email for the request-access / contact action
+ * 
  * @author abrin
  *
  */
@@ -59,8 +61,8 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     private Map<String, String[]> params;
 
     @Action(value = "deliver", results = {
-            @Result(name = SUCCESS, type = REDIRECT, location="${resource.detailUrl}"),
-            @Result(name = INPUT, type = REDIRECT, location=AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS)
+            @Result(name = SUCCESS, type = REDIRECT, location = "${resource.detailUrl}"),
+            @Result(name = INPUT, type = REDIRECT, location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS)
     })
     @PostOnly
     public String execute() {
@@ -125,7 +127,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
 
     @Override
     public void prepare() {
-    	super.prepare();
+        super.prepare();
         h.checkForSpammers(true, getServletRequest().getRemoteHost(), null, false);
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Creator.class, toId);

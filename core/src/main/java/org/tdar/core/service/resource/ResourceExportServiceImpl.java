@@ -54,7 +54,7 @@ import org.tdar.utils.PersistableUtils;
 import com.google.common.base.Objects;
 
 @Service
-public class ResourceExportServiceImpl implements ResourceExportService  {
+public class ResourceExportServiceImpl implements ResourceExportService {
 
     private static final String EXPORT = "export";
     private static final String RESOURCE_XML = "resource.xml";
@@ -69,14 +69,16 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
 
     @Autowired
     private DatasetDao datasetDao;
-    
+
     @Autowired
     private EmailService emailService;
 
     @Autowired
     private SerializationService serializationService;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceExportService#export(org.tdar.core.service.resource.ResourceExportProxy, boolean)
      */
     @Override
@@ -87,7 +89,7 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
             resources.addAll(rep.getAccount().getResources());
         }
         if (PersistableUtils.isNotNullOrTransient(rep.getCollection())) {
-            resources.addAll(rep.getCollection().getResources());
+            resources.addAll(rep.getCollection().getManagedResources());
         }
         if (CollectionUtils.isNotEmpty(rep.getResources())) {
             resources.addAll(rep.getResources());
@@ -98,7 +100,9 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
         return export(rep.getFilename(), forReImport, resources);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceExportService#export(java.lang.String, boolean, java.util.List)
      */
     @Override
@@ -157,14 +161,16 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
     @Transactional(readOnly = true)
     private File writeToFile(File dir, Resource resource, String filename) throws Exception {
         String convertToXML = serializationService.convertToXML(resource);
-//        File type = new File("target/export/" + resource.getResourceType().name());
+        // File type = new File("target/export/" + resource.getResourceType().name());
         File file = new File(dir, filename);
 
         FileUtils.writeStringToFile(file, convertToXML);
         return file;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceExportService#setupResourceForReImport(R)
      */
     @Override
@@ -184,14 +190,13 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
             }
         }
 
-
         // remove internal
         resource.getAuthorizedUsers().clear();
         resource.getLatitudeLongitudeBoxes().forEach(llb -> clearId(llb));
-        resource.getSharedResourceCollections().forEach(rc -> {
+        resource.getManagedResourceCollections().forEach(rc -> {
             clearId(rc);
             rc.setResourceIds(null);
-            rc.getResources().clear();
+            rc.getManagedResources().clear();
         });
 
         datasetDao.clearOneToManyIds(resource, true);
@@ -213,7 +218,7 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
                 fileProxy.setAction(FileAction.ADD);
                 fileProxy.setOriginalFileVersionId(-1L);
                 proxies.add(fileProxy);
-                
+
             }
             ir.getInformationResourceFiles().clear();
             ir.setFileProxies(proxies);
@@ -225,7 +230,7 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
 
             if (resource instanceof Dataset) {
                 Dataset dataset = (Dataset) resource;
-//                dataset.setDataTables(null);
+                // dataset.setDataTables(null);
                 dataset.setRelationships(null);
             }
 
@@ -233,7 +238,7 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
                 CodingSheet codingSheet = (CodingSheet) resource;
                 codingSheet.setCodingRules(null);
                 codingSheet.setAssociatedDataTableColumns(null);
-//                codingSheet.setDefaultOntology(null);
+                // codingSheet.setDefaultOntology(null);
             }
 
             if (resource instanceof Ontology) {
@@ -246,23 +251,26 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
         return resource;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceExportService#clearId(org.tdar.core.bean.Persistable)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void clearId(Persistable p) {
         datasetDao.clearId(p);
     }
-
 
     private void nullifyCreator(Creator<?> creator) {
         datasetDao.nullifyCreator(creator);
     }
 
-    
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.resource.ResourceExportService#exportAsync(org.tdar.core.service.resource.ResourceExportProxy, boolean, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.resource.ResourceExportService#exportAsync(org.tdar.core.service.resource.ResourceExportProxy, boolean,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Async
@@ -290,7 +298,7 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
         }
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void sendEmail(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
         Email email = new Email();
         email.setTo(authenticatedUser.getEmail());
@@ -305,11 +313,13 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
         emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.ResourceExportService#retrieveFile(java.lang.String)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public File retrieveFile(String filename) throws FileNotFoundException {
         if (StringUtils.isBlank(filename)) {
             throw new FileNotFoundException();
@@ -321,7 +331,7 @@ public class ResourceExportServiceImpl implements ResourceExportService  {
         }
         return zipFile;
         // TODO Auto-generated method stub
-        
+
     }
 
 }

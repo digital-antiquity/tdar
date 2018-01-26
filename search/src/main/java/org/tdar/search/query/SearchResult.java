@@ -11,14 +11,17 @@ public class SearchResult<I extends Indexable> extends BaseSearchResult<I> imple
 
     private static final long serialVersionUID = 8370261049894410532L;
     private FacetWrapper facetWrapper = new FacetWrapper();
-    private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;    
+    private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
     private DisplayOrientation orientation = null;
-    public SearchResult() {}
+
+    public SearchResult() {
+    }
+
     private boolean isBot = false;
+
     public SearchResult(int i) {
         setRecordsPerPage(i);
     }
-
 
     @Override
     public FacetWrapper getFacetWrapper() {
@@ -28,7 +31,6 @@ public class SearchResult<I extends Indexable> extends BaseSearchResult<I> imple
     public void setFacetWrapper(FacetWrapper facetWrapper) {
         this.facetWrapper = facetWrapper;
     }
-
 
     @Override
     public ProjectionModel getProjectionModel() {
@@ -47,11 +49,9 @@ public class SearchResult<I extends Indexable> extends BaseSearchResult<I> imple
         this.orientation = orientation;
     }
 
-
     public boolean isBot() {
         return isBot;
     }
-
 
     public void setBot(boolean isBot) {
         this.isBot = isBot;

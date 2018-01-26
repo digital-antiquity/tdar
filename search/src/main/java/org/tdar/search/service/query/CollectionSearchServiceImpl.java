@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
@@ -30,7 +30,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 @Service
 @Transactional
-public class CollectionSearchServiceImpl extends AbstractSearchService implements CollectionSearchService   {
+public class CollectionSearchServiceImpl extends AbstractSearchService implements CollectionSearchService {
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -38,13 +38,17 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
     @Autowired
     private transient SearchService<ResourceCollection> searchService;
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.CollectionSearchService#buildResourceCollectionQuery(org.tdar.core.bean.entity.TdarUser, org.tdar.search.bean.CollectionSearchQueryObject, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.CollectionSearchService#buildResourceCollectionQuery(org.tdar.core.bean.entity.TdarUser,
+     * org.tdar.search.bean.CollectionSearchQueryObject, org.tdar.search.query.LuceneSearchResultHandler, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     public LuceneSearchResultHandler<ResourceCollection> buildResourceCollectionQuery(TdarUser authenticatedUser, CollectionSearchQueryObject query,
             LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws SearchException, IOException {
         ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
+        queryBuilder.setCreatorCreatedEmphasized(true);
         queryBuilder.setOperator(Operator.AND);
 
         if (CollectionUtils.isNotEmpty(query.getAllFields())) {
@@ -59,7 +63,7 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
             }
         }
 
-//        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
+        // queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
         if (query.isLimitToTopLevel()) {
             queryBuilder.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, true));
         }
@@ -83,25 +87,22 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
         rightsPart.append(effectivePart);
         if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
             boolean viewAnything = authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser);
-            GeneralPermissions permission  = query.getPermission();
+            Permissions permission = query.getPermission();
             if (permission == null) {
-                permission = GeneralPermissions.NONE;
+                permission = Permissions.NONE;
             }
-            
-            if (permission.ordinal() <= GeneralPermissions.VIEW_ALL.ordinal()) {
+
+            if (permission.ordinal() <= Permissions.VIEW_ALL.ordinal()) {
                 // if view anything and empty or view all
                 if (viewAnything) {
                     rightsPart.clear();
-                    rightsPart.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, Arrays.asList(Status.ACTIVE,Status.DRAFT)));
+                    rightsPart.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
                 } else {
                     rightsPart.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
-                    
+
                 }
-                
-            }
-            
-            // if permission is greater than View, then we will use the permission part to build out the view
-            if (permission.ordinal() > GeneralPermissions.VIEW_ALL.ordinal()) {
+
+            } else {
                 rightsPart.clear();
             }
             CollectionAccessQueryPart queryPart = getPermissionsPart(authenticatedUser, query);
@@ -120,6 +121,7 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
     public LuceneSearchResultHandler<ResourceCollection> lookupCollection(TdarUser authenticatedUser, CollectionSearchQueryObject csqo,
             LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws SearchException, IOException {
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
+        q.setCreatorCreatedEmphasized(true);
         q.setOperator(Operator.AND);
         q.append(new AutocompleteTitleQueryPart(csqo.getTitles().get(0)));
 

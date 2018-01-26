@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @version $Revision: 543$
  */
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "image")
 @XmlRootElement(name = "image")
 public class Image extends InformationResource {

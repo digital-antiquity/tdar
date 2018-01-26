@@ -22,8 +22,9 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("default")
 @Namespace("/geographic")
 @Results(value = {
-        @Result(name=TdarActionSupport.SUCCESS, type=TdarActionSupport.REDIRECT, location="/browse/geographic-keyword/${keyword.id}/${keyword.slug}"),
-        @Result(name=GeographicRedirectAction.SUCCESS_TYPE, type=TdarActionSupport.REDIRECT, location="/browse/geographic-keyword/${keyword.id}/${keyword.slug}?resourceTypes=${resourceTypes}"),
+        @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.REDIRECT, location = "/browse/geographic-keyword/${keyword.id}/${keyword.slug}"),
+        @Result(name = GeographicRedirectAction.SUCCESS_TYPE, type = TdarActionSupport.REDIRECT,
+                location = "/browse/geographic-keyword/${keyword.id}/${keyword.slug}?resourceTypes=${resourceTypes}"),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.REDIRECT, location = "/not-found", params = { "status", "404" })
 })
 public class GeographicRedirectAction extends TdarBaseActionSupport implements Preparable {
@@ -35,7 +36,7 @@ public class GeographicRedirectAction extends TdarBaseActionSupport implements P
     private String code;
     private GeographicKeyword keyword;
     private ResourceType resourceTypes;
-    
+
     @Override
     public void prepare() throws Exception {
         if (StringUtils.isNotBlank(getCode())) {
@@ -55,7 +56,7 @@ public class GeographicRedirectAction extends TdarBaseActionSupport implements P
         }
         return TdarActionSupport.SUCCESS;
     }
-    
+
     public String getCode() {
         return code;
     }

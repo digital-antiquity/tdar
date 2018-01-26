@@ -20,7 +20,7 @@ import org.tdar.core.bean.FieldLength;
  * @version $Revision: 543$
  */
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "geospatial")
 @XmlRootElement(name = "geospatial")
 public class Geospatial extends Dataset {

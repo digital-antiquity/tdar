@@ -15,6 +15,7 @@ import org.tdar.search.query.part.StringAutocompletePart;
 
 /**
  * Search for an Institution using an autocomplete (e.g. left match everything)
+ * 
  * @author abrin
  *
  */

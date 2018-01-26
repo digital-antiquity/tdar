@@ -29,46 +29,27 @@ import org.tdar.core.bean.AbstractPersistable;
 public class AggregateStatistic extends AbstractPersistable {
 
     public enum StatisticType {
-        NUM_USERS("# of Users"),
-        NUM_IMAGE("# of Images"),
-        NUM_DATASET("# of Data Sets"),
-        NUM_PROJECT("# of Projects"),
-        NUM_DOCUMENT("# of Documents"),
-        NUM_CODING_SHEET("# of Coding Sheets"),
-        NUM_ONTOLOGY("# of Ontologies"),
-        NUM_SENSORY_DATA("# of Sensory Data Objects"),
-        NUM_VIDEO("# of Videos"),
-        NUM_GIS("# of GeoSpatial Objects"),
-        NUM_ARCHIVES("# of Archive Objects"),
-        NUM_AUDIO("# of Audio Files"),
+        NUM_USERS("# of Users"), NUM_IMAGE("# of Images"), NUM_DATASET("# of Data Sets"), NUM_PROJECT("# of Projects"), NUM_DOCUMENT(
+                "# of Documents"), NUM_CODING_SHEET("# of Coding Sheets"), NUM_ONTOLOGY("# of Ontologies"), NUM_SENSORY_DATA(
+                        "# of Sensory Data Objects"), NUM_VIDEO(
+                                "# of Videos"), NUM_GIS("# of GeoSpatial Objects"), NUM_ARCHIVES("# of Archive Objects"), NUM_AUDIO("# of Audio Files"),
 
-        NUM_VIDEO_WITH_FILES("# of Videos with Files"),
-        NUM_IMAGE_WITH_FILES("# of Images with Files"),
-        NUM_DATASET_WITH_FILES("# of Data Sets with Files"),
-        NUM_DOCUMENT_WITH_FILES("# of Documents with Files"),
-        NUM_CODING_SHEET_WITH_FILES("# of Coding Sheets with Files"),
-        NUM_ONTOLOGY_WITH_FILES("# of Ontologies with Files"),
-        NUM_SENSORY_DATA_WITH_FILES("# of Sensory Data Objects with Files"),
-        NUM_GIS_WITH_FILES("# of GeoSpatial Objects with Files"),
-        NUM_ARCHIVES_WITH_FILES("# of Archive Objects with Files"),
-        NUM_AUDIO_WITH_FILES("# of Audio  with Files"),
+        NUM_VIDEO_WITH_FILES("# of Videos with Files"), NUM_IMAGE_WITH_FILES("# of Images with Files"), NUM_DATASET_WITH_FILES(
+                "# of Data Sets with Files"), NUM_DOCUMENT_WITH_FILES("# of Documents with Files"), NUM_CODING_SHEET_WITH_FILES(
+                        "# of Coding Sheets with Files"), NUM_ONTOLOGY_WITH_FILES("# of Ontologies with Files"), NUM_SENSORY_DATA_WITH_FILES(
+                                "# of Sensory Data Objects with Files"), NUM_GIS_WITH_FILES("# of GeoSpatial Objects with Files"), NUM_ARCHIVES_WITH_FILES(
+                                        "# of Archive Objects with Files"), NUM_AUDIO_WITH_FILES("# of Audio  with Files"),
 
-        NUM_COLLECTIONS("# of Collections"),
-        NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size"),
-        NUM_EMAILS("# of Emails"), NUM_CULTURE("# of Culture Keywords (Controled)"),
-        NUM_UNCONTROLLED_CULTURE("# of Culture Keywords (Uncontroled)"),
-        NUM_GEOGRAPHIC("# of Geographic Keywords"),
-        NUM_INVESTIGATION("# of Investigation Types"),
-        NUM_MATERIAL("# of Material Types"),
-        NUM_OTHER("# of Other Keywords"),
-        NUM_TEMPORAL("# of Temporal Keywords"),
-        NUM_SITE_NAME("# of Site Name Keywords"),
-        NUM_SITE_TYPE("# of Site Type Keywords (Controled)"),
-        NUM_UNCONTROLLED_SITE_TYPE("# of Site Type Keywords (Uncontroled)"), 
-        NUM_COLLECTIONS_WHITE_LABEL("# of White Label Collections"), 
-        NUM_SHARED_COLLECTIONS("# of Shared Collections"),
-        NUM_LIST_COLLECTIONS("# of List Collections"), 
-        NUM_INTEGRATIONS("# of Data Integrations");
+        NUM_COLLECTIONS("# of Collections"), NUM_ACTUAL_CONTRIBUTORS("# of Contributors"), REPOSITORY_SIZE("Repository Size"), NUM_EMAILS(
+                "# of Emails"), NUM_CULTURE("# of Culture Keywords (Controled)"), NUM_UNCONTROLLED_CULTURE(
+                        "# of Culture Keywords (Uncontroled)"), NUM_GEOGRAPHIC(
+                                "# of Geographic Keywords"), NUM_INVESTIGATION("# of Investigation Types"), NUM_MATERIAL(
+                                        "# of Material Types"), NUM_OTHER("# of Other Keywords"), NUM_TEMPORAL("# of Temporal Keywords"), NUM_SITE_NAME(
+                                                "# of Site Name Keywords"), NUM_SITE_TYPE("# of Site Type Keywords (Controled)"), NUM_UNCONTROLLED_SITE_TYPE(
+                                                        "# of Site Type Keywords (Uncontroled)"), NUM_COLLECTIONS_WHITE_LABEL(
+                                                                "# of White Label Collections"), NUM_SHARED_COLLECTIONS(
+                                                                        "# of Shared Collections"), NUM_LIST_COLLECTIONS(
+                                                                                "# of List Collections"), NUM_INTEGRATIONS("# of Data Integrations");
 
         private String label;
 

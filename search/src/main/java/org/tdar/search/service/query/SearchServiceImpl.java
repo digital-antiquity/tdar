@@ -160,12 +160,16 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         Map<Class, Map<Long, Persistable>> idLookupMap = new HashMap<>();
         for (Class<T> cls : lookupMap.keySet()) {
             List<T> hydrated = new ArrayList<>();
-            if (DeHydratable.class.isAssignableFrom(cls)) {
-                hydrated = genericService.populateSparseObjectsById(new ArrayList<>(lookupMap.get(cls)), cls);
-            } else {
-                hydrated = genericService.loadFromSparseEntities(lookupMap.get(cls), cls);
+            Set<T> c = lookupMap.get(cls);
+            if (CollectionUtils.isEmpty(c)) {
+                continue;
             }
-            logger.trace("toLookup: {} {} result: {}", cls, lookupMap.get(cls), hydrated);
+            if (DeHydratable.class.isAssignableFrom(cls)) {
+                hydrated = genericService.populateSparseObjectsById(new ArrayList<>(c), cls);
+            } else {
+                hydrated = genericService.loadFromSparseEntities(c, cls);
+            }
+            logger.debug("toLookup: {} {} result: {}", cls, c, hydrated);
 
             idLookupMap.put(cls, (Map<Long, Persistable>) PersistableUtils.createIdMap(hydrated));
         }
@@ -207,7 +211,9 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         return partList;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.search.service.query.SearchService#filterStatusList(java.util.List, org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -217,7 +223,9 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         authorizationService.removeIfNotAllowed(statusList, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.search.service.query.SearchService#sanitize(java.lang.String)
      */
     @Override
@@ -226,7 +234,9 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         return m.replaceAll("$1\\\\$2$3");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.search.service.query.SearchService#updateResourceCreators(org.tdar.search.bean.SearchParameters, java.lang.Integer)
      */
     @Override
@@ -263,7 +273,7 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
             logger.debug("{} -- {}", rc.getCreator(), rc.getCreator().getSynonyms());
         }
         if (!CollectionUtils.isEmpty(unresolvedNames)) {
-//            throw new SearchException(MessageHelper.getMessage("searchService.cannot_resolve_creator", Arrays.asList(unresolvedNames)));
+            // throw new SearchException(MessageHelper.getMessage("searchService.cannot_resolve_creator", Arrays.asList(unresolvedNames)));
         }
         logger.trace("result: {} ", proxies);
     }
@@ -308,8 +318,11 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         proxy.setResolved(list);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.SearchService#addResourceTypeFacetToViewPage(org.tdar.search.query.builder.ResourceQueryBuilder, java.util.List, org.tdar.search.query.SearchResultHandler)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.SearchService#addResourceTypeFacetToViewPage(org.tdar.search.query.builder.ResourceQueryBuilder, java.util.List,
+     * org.tdar.search.query.SearchResultHandler)
      */
     @Override
     public void addResourceTypeFacetToViewPage(ResourceQueryBuilder qb, List<ResourceType> selectedResourceTypes, SearchResultHandler<?> handler) {
@@ -323,7 +336,9 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.search.service.query.SearchService#findMostRecentResources(long, org.tdar.core.bean.entity.TdarUser, com.opensymphony.xwork2.TextProvider)
      */
     @Override
@@ -344,8 +359,11 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         return (List<Resource>) ((List<?>) result.getResults());
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.search.service.query.SearchService#findRecentResourcesSince(java.util.Date, org.tdar.core.bean.entity.TdarUser, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.search.service.query.SearchService#findRecentResourcesSince(java.util.Date, org.tdar.core.bean.entity.TdarUser,
+     * com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -365,7 +383,9 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         return (List<Resource>) ((List<?>) result.getResults());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.search.service.query.SearchService#facetBy(java.lang.Class, java.util.Collection, org.tdar.search.query.SearchResultHandler)
      */
     @Override

@@ -51,8 +51,7 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     protected abstract void dumpData() throws IOException, Exception;
 
     private List<String> messages = new ArrayList<>();
-    
-    
+
     @Override
     public List<String> getMessages() {
         return messages;

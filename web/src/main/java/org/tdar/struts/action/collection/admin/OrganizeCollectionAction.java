@@ -9,7 +9,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
@@ -25,25 +25,25 @@ public class OrganizeCollectionAction extends AbstractCollectionAdminAction {
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
-    private List<SharedCollection> tree;
-    
+    private List<ResourceCollection> tree;
+
     @Override
     @WriteableSession
-    @Action(value = "{id}", results={
+    @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = FREEMARKER, location = "../organize.ftl"),
     })
     public String execute() throws Exception {
-        setTree(resourceCollectionService.findAllChildCollectionsOnly((SharedCollection)getCollection(), SharedCollection.class));
-        getTree().add((SharedCollection)getCollection());
-        resourceCollectionService.reconcileCollectionTree(getTree(), getAuthenticatedUser(), PersistableUtils.extractIds(getTree()), SharedCollection.class);
+        setTree(resourceCollectionService.findAllChildCollectionsOnly((ResourceCollection) getCollection()));
+        getTree().add((ResourceCollection) getCollection());
+        resourceCollectionService.reconcileCollectionTree(getTree(), getAuthenticatedUser(), PersistableUtils.extractIds(getTree()));
         return SUCCESS;
     }
 
-    public List<SharedCollection> getTree() {
+    public List<ResourceCollection> getTree() {
         return tree;
     }
 
-    public void setTree(List<SharedCollection> tree) {
+    public void setTree(List<ResourceCollection> tree) {
         this.tree = tree;
     }
 

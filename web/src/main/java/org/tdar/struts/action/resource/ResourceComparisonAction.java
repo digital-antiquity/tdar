@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -65,18 +63,14 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         resources.addAll(genericService.findAll(Resource.class, ids));
         if (PersistableUtils.isNotNullOrTransient(getCollectionId())) {
             ResourceCollection rc = genericService.find(ResourceCollection.class, getCollectionId());
-            if (rc instanceof ListCollection) {
-                resources.addAll(((ListCollection) rc).getUnmanagedResources());
-            } else {
-                resources.addAll(((SharedCollection)rc).getResources());
-                for (SharedCollection sc :resourceCollectionService.findAllChildCollectionsOnly((SharedCollection)rc, SharedCollection.class)) {
-                    resources.addAll(sc.getResources());
-                }
+            resources.addAll(((ResourceCollection) rc).getManagedResources());
+            for (ResourceCollection sc : resourceCollectionService.findAllChildCollectionsOnly((ResourceCollection) rc)) {
+                resources.addAll(sc.getManagedResources());
             }
         }
 
         for (Resource resource : resources) {
-            if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD)) {
+            if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, Permissions.MODIFY_RECORD)) {
                 addActionError(getText("abstractPersistableController.unable_to_view_edit"));
                 break;
             }
@@ -102,7 +96,7 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 latitudeLongitude.addAll(PersistableUtils.extractIds(r.getActiveLatitudeLongitudeBoxes()));
                 notes.addAll(PersistableUtils.extractIds(r.getActiveResourceNotes()));
                 coverage.addAll(PersistableUtils.extractIds(r.getActiveCoverageDates()));
-                collections.addAll(PersistableUtils.extractIds(r.getSharedResourceCollections()));
+                collections.addAll(PersistableUtils.extractIds(r.getManagedResourceCollections()));
                 annotations.addAll(PersistableUtils.extractIds(r.getActiveResourceAnnotations()));
                 first = false;
             } else {
@@ -121,7 +115,7 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 notes = intersection(notes, toSet(r.getActiveResourceNotes()));
 
                 coverage = intersection(coverage, toSet(r.getActiveCoverageDates()));
-                collections = intersection(collections, toSet(r.getSharedResourceCollections()));
+                collections = intersection(collections, toSet(r.getManagedResourceCollections()));
                 annotations = intersection(annotations, toSet(r.getActiveResourceAnnotations()));
             }
         }

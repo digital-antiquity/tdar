@@ -22,7 +22,7 @@ import org.tdar.core.bean.FieldLength;
  * @author Martin Paulo
  */
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "audio")
 @XmlRootElement(name = "audio")
 public class Audio extends InformationResource {

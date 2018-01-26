@@ -25,7 +25,6 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/collection/admin/changeSubmitter")
 public class CollectionResourceResetSubmitterAction extends AbstractCollectionAdminAction implements Preparable {
 
-
     private static final long serialVersionUID = 5948960771249423227L;
 
     @Autowired
@@ -36,30 +35,30 @@ public class CollectionResourceResetSubmitterAction extends AbstractCollectionAd
 
     private Long submitterId;
     private TdarUser submitter;
-    
+
     @Override
     public void prepare() throws Exception {
         super.prepare();
         if (PersistableUtils.isNotNullOrTransient(submitterId)) {
-        this.submitter = genericService.find(TdarUser.class,submitterId);
-        if (submitter == null) {
-            addActionError("CollectionResourceResetSubmitterAction.specify_submitter");
-        }
+            this.submitter = genericService.find(TdarUser.class, submitterId);
+            if (submitter == null) {
+                addActionError("CollectionResourceResetSubmitterAction.specify_submitter");
+            }
         }
         if (this.submitter == null) {
             submitter = genericService.find(TdarUser.class, getTdarConfiguration().getAdminUserId());
         }
     }
-    
+
     @Override
     @PostOnly
     @WriteableSession
-    @Action(value = "{id}", results={
+    @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() {
         try {
-        resourceCollectionService.changeSubmitter(getCollection(), submitter, getAuthenticatedUser());
+            resourceCollectionService.changeSubmitter(getCollection(), submitter, getAuthenticatedUser());
         } catch (Exception e) {
             addActionError(e.getMessage());
             return INPUT;

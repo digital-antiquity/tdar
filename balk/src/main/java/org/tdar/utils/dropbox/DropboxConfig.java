@@ -15,8 +15,6 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuthNoRedirect;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
-
 public class DropboxConfig {
 
     private static DropboxConfig config;
