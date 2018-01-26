@@ -46,6 +46,15 @@ public class MockAwsEmailServiceImpl implements AwsEmailService {
 	public AwsMessage convertEmailToAwsMessage(Email email) {
 		// TODO Auto-generated method stub
 		return null;
-		
+	}
+	
+	private SendRawEmailResult getSuccessfulSendResult(){
+		SendRawEmailResult result  = new SendRawEmailResult();
+		return result;
+	}
+	
+	private SendRawEmailResult getFailedSendResult(){
+		SendRawEmailResult result  = new SendRawEmailResult();
+		return result;
 	}
 }

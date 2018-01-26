@@ -90,9 +90,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     }
     
     
-    @Test
+    @Test(expected=MessagingException.class)
     @Rollback
-    public void testSendAwsMail() throws IOException {
+    public void testBounceMailResponses() throws IOException, MessagingException {
         AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
         message.getEmail().setSubject("Subject");
     	message.getEmail().setMessage("This is a test message");
@@ -101,16 +101,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     	message.addData("firstName", "Brian");
     	message.addData("lastName", "Castellanos");
 		
-    	//message.getAttachments().add(new File("src/test/resources/asu_map_tempe_2008.pdf"));
-
     	emailService.renderAndUpdateEmailContent(message);
     	emailService.updateEmailSubject(message);
-    	
-		try {
-			emailService.renderAndSendMessage(message);
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		}
+		emailService.renderAndSendMessage(message);
     }   
     
     
@@ -118,7 +111,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testSendUserStats() throws MessagingException, IOException{
     		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
-    		Long billingAccountId = 76L;
+    		Long billingAccountId = 1L;
     		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
     		
     		emailService.sendUserStatisticEmail(user, billingAccount);

@@ -36,7 +36,11 @@ public class EmailStatisticsHelper {
 		Map<String, Number> map = new HashMap<String, Number>();
 		for (Resource r : resources) {
 			String mediaType = r.getResourceType().toDcmiTypeString();
-
+			
+			//The pie graph generator requires a label for the axis
+			if(mediaType.equals("")){ 
+				mediaType = "(Unknown)";
+			}
 			if (!map.containsKey(mediaType)) {
 				map.put(mediaType, 1);
 			} else {

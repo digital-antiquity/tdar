@@ -2,6 +2,9 @@ package org.tdar.utils;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -15,11 +18,11 @@ public class EmailStatisticsHelperTest extends AbstractIntegrationTestCase{
 	private EmailStatisticsHelper statsHelper = new EmailStatisticsHelper();
 	
 	@Test
-	public void testBillingAccountResources(){
+	public void testBillingAccountResources() throws IOException{
 		
 		createAndSaveNewUser();
-		
-		Long id = 418L;
+
+		Long id = 1L;
 		BillingAccount billingAccount = genericService.find(BillingAccount.class, id);
 		assertNotNull(billingAccount);
 		
@@ -30,8 +33,9 @@ public class EmailStatisticsHelperTest extends AbstractIntegrationTestCase{
 		
 		logger.debug("Data is : {}",data);
 		
-		TdarPieChart pieChart = new TdarPieChart("Tdar Pie Chart", 100, 100, "pie_chart", data);
+		TdarPieChart pieChart = new TdarPieChart("Tdar Pie Chart", 750, 750, "pie_chart", data);
 		
+		pieChart.createChart();
 		/*ChartGenerator chartGenerator = new ChartGenerator();
 		chartGenerator.execute(pieChart);
 		*/

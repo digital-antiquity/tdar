@@ -36,6 +36,7 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     	assertNotNull(accessKey);
     	assertNotNull(secretKey);
     }
+    
     @Test
     public void testTestAwsEmail(){
     	assertEquals(EmailType.TEST_EMAIL.getFromAddress(), "test@tdar.org");
