@@ -112,7 +112,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInCode("test user:MODIFY_RECORD");
         assertTextPresent(RETAIN_COLLECTION_2);
         clickLinkWithText("edit");
-        assertTextPresent(RETAIN_COLLECTION_2);
+        assertTextNotPresent(RETAIN_COLLECTION_2);
         submitForm();
         assertTextPresent(RETAIN_COLLECTION_2);
         assertTextNotPresent("the resource you requested is");

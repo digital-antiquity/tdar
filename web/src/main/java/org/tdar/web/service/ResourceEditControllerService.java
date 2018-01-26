@@ -2,7 +2,6 @@ package org.tdar.web.service;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -32,23 +31,7 @@ public interface ResourceEditControllerService {
     void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<SharedCollection> effectiveShares,
             List<SharedCollection> retainedSharedCollections,
             List<ListCollection> effectiveResourceCollections, List<ListCollection> retainedListCollections, List<SharedCollection> shares,
-            List<ListCollection> resourceCollections);/*
-                                                      blic void loadEffectiveResourceCollectionsForEdit() {
-                                                      getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
-                                                      
-                                                      getLogger().debug("loadEffective...");
-                                                      for (SharedCollection rc : getResource().getSharedResourceCollections()) {
-                                                      if (authorizationService.canViewCollection(getAuthenticatedUser(), rc)) {
-                                                      getShares().add(rc);
-                                                      } else {
-                                                      getRetainedSharedCollections().add(rc);
-                                                      getLogger().debug("adding: {} to retained collections", rc);
-                                                      }
-                                                      }
-                                                      getLogger().debug("Shares: {}", getShares());
-                                                      }
-                                                      
-                                                      */
+            List<ListCollection> resourceCollections);
 
     String loadFilesJson(InformationResource persistable);
 
