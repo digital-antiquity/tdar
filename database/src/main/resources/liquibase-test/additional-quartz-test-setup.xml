@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd" context="test" >
+    <changeSet id="integration-setup-auth" author="abrin">
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="EDIT_INTEGRATION"/>
+            <column name="general_permission_int" valueNumeric="2000"/>
+            <column name="user_id" valueNumeric="8092"/>
+            <column name="creator_id" valueNumeric="8092"/>
+            <column name="integration_id" valueNumeric="1000"/>
+        </insert>
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="EDIT_ACCOUNT"/>
+            <column name="general_permission_int" valueNumeric="10000"/>
+            <column name="user_id" valueNumeric="8094"/>
+            <column name="creator_id" valueNumeric="8094"/>
+            <column name="account_id" valueNumeric="1"/>
+        </insert>
+        <sql>
+        SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
+        SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

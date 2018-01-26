@@ -1,0 +1,39 @@
+<form id="MetadataForm" name="MetadataForm" action="/cart/process-choice" method="post" enctype="multipart/form-data"
+        class="form-horizontal disableFormNavigate" novalidate="novalidate">
+    <table class="table pTable">
+        <tbody>
+        <tr>
+            <th class="borderRight">
+                # of Files
+            </th>
+            <td class="custom" style="text-align:center">
+                <input type="text" name="invoice.numberOfFiles" maxlength="9" value=""
+                        id="MetadataForm_invoice_numberOfFiles" class="integer span2 orderinfo"></td>
+        </tr>
+        <tr>
+            <th class="borderRight">
+                Total File Size (MB)
+            </th>
+            <td class="custom" style="text-align:center">
+                <input type="text" name="invoice.numberOfMb" maxlength="9" value="" id="MetadataForm_invoice_numberOfMb"
+                        class="integer span2 orderinfo"></td>
+        </tr>
+        <tr>
+            <th class="borderRight">
+                Cost
+            </th>
+            <td class="custom" style="text-align:center">
+                $<span class="red" id="price">0.00</span>
+            </td>
+        </tr>
+        <tr>
+            <th class="borderRight"></th>
+            <td class="custom">
+                <div class="center">
+                    <button class="button btn btn-primary tdar-button">Continue</button>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
