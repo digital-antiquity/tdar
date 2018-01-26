@@ -265,7 +265,7 @@
             <!-- <h4>Add to a Collection</h4> -->
             <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
             <#if (effectiveShares?size > 0)>
-            <p><i>The following collections cannot be modified because you do not have sufficient permissions:
+            <p id="effectiveCollectionsVisible"><i>The following collections cannot be modified because you do not have sufficient permissions:
             <#assign comma =false>
             <#list effectiveShares as share>
             <#if share.viewable>
