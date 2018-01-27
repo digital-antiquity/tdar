@@ -1021,4 +1021,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 	public String getAwsQueueName(){
 		return assistant.getStringProperty("aws.queuename");
 	}
+	
+	public String getEmailAttachmentsDirectory(){
+		//TODO populate this from tdar.properties.
+        return assistant.getStringProperty("hosted.file.store.location", "/home/tdar/email-attachments");
+	}
+	
 }

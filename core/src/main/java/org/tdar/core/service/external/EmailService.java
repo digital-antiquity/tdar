@@ -83,4 +83,12 @@ public interface EmailService {
 
 	SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException;
 
+	/**
+	 * 
+	 * @param message
+	 */
+	AwsMessage dequeueAwsMessage(AwsMessage message);
+	
+	AwsMessage dequeueAwsMessage(Long messageId);
+
 }

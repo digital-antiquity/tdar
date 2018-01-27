@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,9 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,16 +117,89 @@ public class EmailServiceImpl implements EmailService {
     public void queueAwsMessage(AwsMessage message){
 		//This will force rendering the entire message with attachments and mime boundaries. 
 		//The result will be a string which gets queued. 
-    	try {
-    		renderAndUpdateEmailContent(message);
-        	updateEmailSubject(message);
+	    	renderAndUpdateEmailContent(message);
+	    	updateEmailSubject(message);
+	    	queue(message.getEmail());
+    }
+    
+    @Override 
+    @Transactional(readOnly = true)
+    public AwsMessage dequeueAwsMessage(AwsMessage message){
+    		try {
 			MimeMessage mimeMessage = createMimeMessage(message);
 			String body = new String(getByteArray(mimeMessage));
 			message.getEmail().setMessage(body);
-			queue(message.getEmail());
 		} catch (MessagingException | IOException e) {
 			 logger.error("Could not create MIME message {} {} ", e);
 		}
+    		
+    		return message;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public AwsMessage dequeueAwsMessage(Long messageId){
+		Email email = genericDao.find(Email.class, messageId);
+    	
+    		return null;
+    }
+    
+    
+    /**
+     * Takes the attachements that are on the message, and saves them on disk. 
+     */
+     public void saveAttachments(AwsMessage awsMessage){
+    	 	String _attachmentDirectory  = TdarConfiguration.getInstance().getEmailAttachmentsDirectory();
+    	 	String _messageAttachmentDir = _attachmentDirectory+File.pathSeparator+awsMessage.getEmail().getId().toString();
+    	 	String _inlineAttachmentDir = _messageAttachmentDir+File.pathSeparator+"inline";
+    	 	String _mimeAttachmentDir = _messageAttachmentDir+File.pathSeparator+"mime";
+    	 	
+    	 	File attachmentDir = new File(_messageAttachmentDir);
+    	 	File inlineAttachments = new File(_inlineAttachmentDir);
+    	 	File mimeAttachments = new File(_mimeAttachmentDir);
+    	 
+    	 	if(!attachmentDir.exists()){
+    	 		attachmentDir.mkdir();
+    	 		inlineAttachments.mkdir();
+    	 		mimeAttachments.mkdir();
+    	 	}
+    	 	
+    	 	awsMessage.getInlineAttachments().forEach((fileName, file) -> {
+    	 		//Remember: the filename is needed so the inline image or  file renders correctly. The name needs to be the same
+    	 		//since its probably referenced somewhere in the HTML body of what it expects. 
+    	 		file.renameTo(new File(_mimeAttachmentDir+File.separator+fileName));
+    	 	});
+    	 	awsMessage.getAttachments().forEach(file -> {
+    	 		//Save the file to the attachment.
+    	 		file.renameTo(new File(_mimeAttachmentDir+File.separator+file.getName()));
+    	 	});
+     }
+
+   
+    
+     /**
+      * Go through the attachment directories and add the attachments back to the message. 
+      * @param awsMessage
+      */
+    public void retrieveAttachments(AwsMessage awsMessage){
+    		String _attachmentDirectory  = TdarConfiguration.getInstance().getEmailAttachmentsDirectory();
+    		String _messageAttachmentDir = _attachmentDirectory+File.pathSeparator+awsMessage.getEmail().getId().toString();
+    	 	String _inlineAttachmentDir = _messageAttachmentDir+File.pathSeparator+"inline";
+    	 	String _mimeAttachmentDir = _messageAttachmentDir+File.pathSeparator+"mime";
+
+    	 	//Check to see if the message attachment directory exists. if not, dont bother attaching files.
+    	 	File dir = new File(_messageAttachmentDir);
+    	 	if(!dir.exists()){
+    	 		return;
+    	 	}
+    	 	
+		FileUtils.listFiles(new File(_inlineAttachmentDir), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE).forEach(file -> {
+			awsMessage.addInlineAttachment(file.getName(), file);
+		});
+		
+		FileUtils.listFiles(new File(_mimeAttachmentDir), TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE).forEach(file -> {
+			awsMessage.addAttachment(file);
+		});
     }
     
     /*

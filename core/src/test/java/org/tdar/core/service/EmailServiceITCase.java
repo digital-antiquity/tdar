@@ -35,142 +35,140 @@ import org.tdar.core.service.external.MockMailSender;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
-    @Test
-    @Rollback
-    public void testMockMailSender() {
-        Person to = new Person(null, null, "toguy@tdar.net");
-        String mailBody = "this is a message body";
-        String subject = "this is a subject";
-        Email email = new Email();
-        email.addToAddress(to.getEmail());
-        email.setMessage(mailBody);
-        email.setSubject(subject);
-        emailService.send(email);
+	@Test
+	@Rollback
+	public void testMockMailSender() {
+		Person to = new Person(null, null, "toguy@tdar.net");
+		String mailBody = "this is a message body";
+		String subject = "this is a subject";
+		Email email = new Email();
+		email.addToAddress(to.getEmail());
+		email.setMessage(mailBody);
+		email.setSubject(subject);
+		emailService.send(email);
 
-        SimpleMailMessage received = checkMailAndGetLatest(mailBody);
+		SimpleMailMessage received = checkMailAndGetLatest(mailBody);
 
-        assertEquals(received.getSubject(), subject);
-        assertEquals(received.getText(), mailBody);
-        assertEquals(received.getFrom(), emailService.getFromEmail());
-        assertEquals(received.getTo()[0], to.getEmail());
+		assertEquals(received.getSubject(), subject);
+		assertEquals(received.getText(), mailBody);
+		assertEquals(received.getFrom(), emailService.getFromEmail());
+		assertEquals(received.getTo()[0], to.getEmail());
 
-        assertEquals(email.getStatus(), Status.SENT);
-        // implicit assumption that something that is marked sent has a sent-date
-        assertThat(email.getDateSent(), is(not(nullValue())));
-    }
-    
-    
-    @Test
-    public void testSendInviteEmail(){
-    	 Person to 	   = new Person("To", "Person", "bcastel1@asu.edu");
-    	 Person from 	   = new Person("From", "Somone", "toguy@tdar.net");
-    	 TdarUser fromUser = new TdarUser(from, "from");
-    	 UserInvite invite = new UserInvite();
-    	 invite.setPerson(to);
-    	 
-    	 Resource project = createAndSaveNewProject("Test Project");
-    	 assertEquals(project.getTitle(), "Test Project");
-    	 
-    	 invite.setResource(project);
-    	 emailService.sendUserInviteEmail(invite, fromUser);
-    }
+		assertEquals(email.getStatus(), Status.SENT);
+		// implicit assumption that something that is marked sent has a
+		// sent-date
+		assertThat(email.getDateSent(), is(not(nullValue())));
+	}
 
-    @Test
-    @Rollback
-    public void testSendTemplate() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("foo", "Hieronymous");
-        map.put("bar", "Basho");
-        Email email = new Email();
-        email.addToAddress("toguy@tdar.net");
-        email.setSubject("test");
-        emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
-        sendEmailProcess.execute();
-        assertTrue("expecting a mail in in the inbox", ((MockMailSender) emailService.getMailSender()).getMessages().size() > 0);
-    }
-    
-    
-    @Test(expected=MessagingException.class)
-    @Rollback
-    public void testBounceMailResponses() throws IOException, MessagingException {
-        AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
-        message.getEmail().setSubject("Subject");
-    	message.getEmail().setMessage("This is a test message");
-    	message.addData("foo", "foo");
-    	message.addData("bar", "bar");
-    	message.addData("firstName", "Brian");
-    	message.addData("lastName", "Castellanos");
-		
-    	emailService.renderAndUpdateEmailContent(message);
-    	emailService.updateEmailSubject(message);
+	@Test
+	public void testSendInviteEmail() {
+		Person to = new Person("To", "Person", "bcastel1@asu.edu");
+		Person from = new Person("From", "Somone", "toguy@tdar.net");
+		TdarUser fromUser = new TdarUser(from, "from");
+		UserInvite invite = new UserInvite();
+		invite.setPerson(to);
+
+		Resource project = createAndSaveNewProject("Test Project");
+		assertEquals(project.getTitle(), "Test Project");
+
+		invite.setResource(project);
+		emailService.sendUserInviteEmail(invite, fromUser);
+	}
+
+	@Test
+	@Rollback
+	public void testSendTemplate() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("foo", "Hieronymous");
+		map.put("bar", "Basho");
+		Email email = new Email();
+		email.addToAddress("toguy@tdar.net");
+		email.setSubject("test");
+		emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
+		sendEmailProcess.execute();
+		assertTrue("expecting a mail in in the inbox",
+				((MockMailSender) emailService.getMailSender()).getMessages().size() > 0);
+	}
+
+	@Test(expected = MessagingException.class)
+	@Rollback
+	public void testBounceMailResponses() throws IOException, MessagingException {
+		AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
+		message.getEmail().setSubject("Subject");
+		message.getEmail().setMessage("This is a test message");
+		message.addData("foo", "foo");
+		message.addData("bar", "bar");
+		message.addData("firstName", "Brian");
+		message.addData("lastName", "Castellanos");
+
+		emailService.renderAndUpdateEmailContent(message);
+		emailService.updateEmailSubject(message);
 		emailService.renderAndSendMessage(message);
-    }   
-    
-    
-    @Test
-    @Rollback
-    public void testSendUserStats() throws MessagingException, IOException{
-    		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
-    		Long billingAccountId = 1L;
-    		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
-    		
-    		emailService.sendUserStatisticEmail(user, billingAccount);
-        	//logger.debug("Email content is {}",message.getEmail().getMessage());
-    }
-    
-    
-    @Test
-    @Rollback
-    public void testCreateImages(){
-    	TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
+	}
+
+	@Test
+	@Rollback
+	public void testSendUserStats() throws MessagingException, IOException {
+		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
 		Long billingAccountId = 1L;
 		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
-		
-		
-		//Get the date granularity.
+
+		emailService.sendUserStatisticEmail(user, billingAccount);
+		// logger.debug("Email content is {}",message.getEmail().getMessage());
+	}
+
+	@Test
+	@Rollback
+	public void testCreateImages() {
+		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
+		Long billingAccountId = 1L;
+		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
+
+		// Get the date granularity.
 		Date date = emailStatsHelper.getStartDate(billingAccount.getResources());
 		DateGranularity granularity = emailStatsHelper.getDateGranularity(date);
 		StatsResultObject stats = emailStatsHelper.getAccountStatistics(billingAccount, granularity);
-		
-		//Generate temporary file names
-		String piechartFileName  = System.currentTimeMillis() + "_resource-piechart";
-		String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart";
-		String viewsFileName 	 = System.currentTimeMillis() + "_views-barchart";
 
-		//Generate the resources pie graph.
+		// Generate temporary file names
+		String piechartFileName = System.currentTimeMillis() + "_resource-piechart";
+		String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart";
+		String viewsFileName = System.currentTimeMillis() + "_views-barchart";
+
+		// Generate the resources pie graph.
 		Map<String, Number> pieChartData = emailStatsHelper.generateUserResourcesPieChartData(billingAccount);
 		File piechart = chartGenerator.generateResourcesPieChart(pieChartData, piechartFileName);
-		
-		//Generate the downloads graph
-		Map<String, Number> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount, stats);
+
+		// Generate the downloads graph
+		Map<String, Number> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount,
+				stats);
 		File barchart1 = chartGenerator.generateTotalDownloadsBarChart(totalDownloadsData, downloadsFileName);
-		
-		//Generate the total views graph
-		Map<String, Number> totalViewsData 	  = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
+
+		// Generate the total views graph
+		Map<String, Number> totalViewsData = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
 		File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
-    }
+	}
 
-    @Test
-    @Rollback
-    public void testEmailContent() throws IOException {    
-        AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
-        message.getEmail().setSubject("Subject");
-    	message.getEmail().setMessage("This is a test message");
-    	message.addData("foo", "foo");
-    	message.addData("bar", "bar");
-    	message.addData("firstName", "Brian");
-    	message.addData("lastName", "Castellanos");
+	@Test
+	@Rollback
+	public void testEmailContent() throws IOException {
+		AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
+		message.getEmail().setSubject("Subject");
+		message.getEmail().setMessage("This is a test message");
+		message.addData("foo", "foo");
+		message.addData("bar", "bar");
+		message.addData("firstName", "Brian");
+		message.addData("lastName", "Castellanos");
 
-    	emailService.renderAndUpdateEmailContent(message);
-    	emailService.updateEmailSubject(message);
-    	
-    	try {
+		emailService.renderAndUpdateEmailContent(message);
+		emailService.updateEmailSubject(message);
+
+		try {
 			emailService.renderAndSendMessage(message);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        getLogger().debug(message.getEmail().getMessage());
-    }
-    
+		getLogger().debug(message.getEmail().getMessage());
+	}
+
 }
