@@ -1,0 +1,35 @@
+
+.tableFormat th, .tableFormat td {
+    font-size: 11px;
+    line-height: 14px;
+    margin: 0;
+    padding: 8px 10px;
+    border-collapse: collapse;
+    border-spacing: 0;
+    text-align: left;
+    border-bottom: 1px solid #fff;
+}
+
+.tableFormat th {
+    font-weight: 700;
+    background: #1b1a18;
+    color: #fff;
+}
+
+.tableFormat td {
+    background: #eee;
+}
+
+.tableFormat tr.alt td {
+    background: #ddd;
+}
+
+.tableContainer {
+    background-color: #bebebe;
+}
+
+
+.tableFormat a.title {
+    font-weight: 600;
+    font-size: 16px;
+}

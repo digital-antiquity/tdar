@@ -1,3 +1,4 @@
+<#assign formControlClass="cls" >
 <!DOCTYPE html>
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
@@ -13,6 +14,8 @@
 <#global jquery_ui_version="1.11.4">
 <#global jquery_ui_css_version="1.11.4">
 <#global jquery_validate_version="1.15.1" >
+<#global bootstrapVersion="3.3.7" >
+
 <#assign pageType ="view">
 <#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
     <#assign pageType=actionName>
@@ -46,8 +49,8 @@
 
 <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
     <#if useCDN>
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/${bootstrapVersion}/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/${bootstrapVersion}/css/bootstrap.min.css" rel="stylesheet" media="print">
     <#else>
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
@@ -136,15 +139,30 @@ ${head}
     </#if>
     <@header.outdatedBrowserWarning />
 
+    <div class="container">
+        <header class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="navbar-header">
+                <a href="../" class="navbar-brand"><img src="/images/r4/bg-logo.png"/></a> </div>
+        
+        <nav class="" id="navbar"> 
+         <ul class="nav navbar-nav navbar-right"> 
+             <li><a href="#">News</a></li>
+             <li><a href="#">About</a></li>
+             <li><a href="#">Using tDAR</a></li>
+             <li><a href="#">Why tDAR</a></li>
+             <li><a href="#">Upload</a></li>
+         </ul> </nav>
+         
+         
+        </header>
+</div>
+
+<#if (homepage!false)>
+    <@dec.homepageHeader />
+</#if>
+
     <div class="${bs.container()}">
-        <div class="row">
-            <header class="span12">
-                <@dec.layout_header />
-            </header>
-        </div>
-        <#if (homepage!false)>
-            <@dec.homepageHeader />
-        </#if>
 
 		<#if searchHeaderEnabled!false>
 		</div>
@@ -266,33 +284,92 @@ ${head}
 
     </div>
     
-    <footer>
-        <div class="container">
-            <#include "/${config.themeDir}/footer.dec" />
-            <div>
-                <p>
-                    <small>
-                        <@s.text name="footer.build_num"/>: ${common.tdarBuildId}
+        <footer>
+            <div class="container">
+            <div class="row  screen">
+                <div class="col-lg-3 col-md-3">
+                    <h4>About</h4>
+                    <ul>
+                        <li><a href="http://www.tdar.org/news/">News</a></li>
+                        <li><a href="http://www.tdar.org/about/staff/">Our Team</a></li>
+                        <li><a href="http://www.digitalantiquity.org/">Organization</a></li>
+                        <li><a href="http://www.tdar.org/about/contact-us">Contact Us</a></li>
+                        <li><a href="http://www.tdar.org/about/history/">History</a></li>
+                        <li><a href="http://www.tdar.org/news/tdar-software-update-in-situ/">Current Version of tDAR</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <h4>Use</h4>
+                    <ul>
+                        <li><a href="http://www.guidestogoodpractice.org/">Guides to Good Practice</a></li>
+                        <li><a href="http://www.tdar.org/about/help/">Help &amp; Tutorials</a></li>
+                        <li><a href="http://www.tdar.org/about/policies/">Policies</a></li>
+                        <li><a href="http://www.tdar.org/why-tdar/contribute/">Contributing Resources to tDAR</a></li>
+                        <li><a href="http://www.tdar.org/about/pricing/">Pricing</a></li>
+                        <li><a href="http://www.tdar.org/why-tdar/compliance/">Compliance</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><a href="mailto:comments@tdar.org?subject=tDAR%20comments">comments@tdar.org</a>
+                        </li>
+                        <li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec on twitter</a></li>
+                        <li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
+
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <h4>Start Digging</h4>
+                    <ul>
+                        <li><a href="/search/results">Browse</a></li>
+                        <li><a href="/resource/add">Start a project &amp; add data</a></li>
+                        <li><a href="/login">Log In</a></li>
+                        <li><a href="/account/new">Sign Up</a></li>
+                    </ul>
+
+                </div>
+            </div>
+            <div class="row  screen" id="copyright">
+                <p class="copyright-notice span12">
+
+                    tDAR is the digital repository of <a href="http://www.digitalantiquity.org" target="_blank">Digital Antiquity</a>, a collaborative organization dedicated to enhancing preservation and
+                    access to the digital records
+                    of archaeological investigations. Hosted by <a href="http://www.asu.edu" target="_blank">Arizona State University</a>, <a href="http://www.tdar.org" target="_blank">tDAR</a> is
+                    supported by
+                    grants from the <a href="http://www.mellon.org" target="_blank">Andrew W. Mellon Foundation</a>, and the <a href="http://www.nsf.gov" target="_blank">National
+                    Science Foundation</a> (0433959
+                    and 0624341), and a grant jointly funded by the <a href="http://neh.gov/" target="_blank">National Endowment for the Humanities</a> (PX-50022-09) and
+                    the Higher Education Funding Council for
+                    England of the United Kingdom acting through the <a href="http://www.jisc.ac.uk/" target="_blank">Joint Information Systems Committee</a> (JISC). Any
+                    opinions, findings, conclusions
+                    or recommendations expressed in this material are those of the author(s) and do not necessarily reflect those of the National Science Foundation, the
+                    Mellon Foundation, the National Endowment
+                    for the Humanities or the Joint Information Systems Committee. <br>Copyright © 2017 Digital Antiquity. <a href="/credit">Design
+                    Info</a>
+                </p>
+            </div>            <div>
+                            <p>
+                                <small>                        <@s.text name="footer.build_num"/>: ${common.tdarBuildId}
                         <#if authenticatedUser??>
                             - <@s.text name="footer.logged_in_as"/>: <a
                                 href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.email}</a>
                                 <#if administrator>[administrator]<#else><#if editor>[editor]</#if></#if>
                         </#if>
-                    </small>
-                </p>
-            </div>
-        </div>
-
-    </footer>
+</small>
+                            </p>
+                        </div>
+                    </div>
+        </footer>
 
     <#if useCDN>
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/jquery.validate.min.js"></script>
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/additional-methods.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/${bootstrapVersion}/js/bootstrap.min.js"></script>
     <#else>
         <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
         <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
-        <script src="${staticHost}/includes/bootstrap-2.32/js/bootstrap.js"></script>
+        <script src="${staticHost}/includes/bootstrap-${bootstrapVersion}/js/bootstrap.js"></script>
     </#if>
 
 

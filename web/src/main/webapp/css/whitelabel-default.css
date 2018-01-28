@@ -38,4 +38,7 @@ strong.title, a.title {
 
 .whitelabel-logo {
     width: 15em;
+    max-height: 30em; /* don't mess w/ aspect ratio unless image is too tall */
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
