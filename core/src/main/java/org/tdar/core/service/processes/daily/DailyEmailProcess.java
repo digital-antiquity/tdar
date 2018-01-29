@@ -22,7 +22,7 @@ import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.email.AwsEmailService;
+import org.tdar.core.service.email.AwsEmailTransportService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 
@@ -93,9 +93,9 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
         	AwsMessage message = emailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getContactEmail());
         	message.setMap(initDataModel());
         	message.addData("users", people);
-            message.addData("totalUsers", people.size());
-            message.getEmail().setUserGenerated(false);
-        	message.getEmail().setDate(new Date());
+        message.addData("totalUsers", people.size());
+        message.setUserGenerated(false);
+        	message.setDate(new Date());
         	
         	emailService.queueAwsMessage(message);
         }
@@ -109,8 +109,8 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
         	message.setMap(initDataModel());
         	message.addData("emails", emails);
         	message.addData("totalEmails",emails.size());
-        	message.getEmail().setUserGenerated(false);
-        	message.getEmail().setDate(new Date());
+        	message.setUserGenerated(false);
+        	message.setDate(new Date());
         	
         	emailService.queueAwsMessage(message);
         }

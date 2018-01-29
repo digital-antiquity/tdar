@@ -14,7 +14,7 @@ import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
-public class MockAwsEmailServiceImpl implements AwsEmailService {
+public class MockAwsEmailServiceImpl implements AwsEmailTransportService {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private Regions awsRegion;
     private static final TdarConfiguration config = TdarConfiguration.getInstance();
@@ -38,16 +38,6 @@ public class MockAwsEmailServiceImpl implements AwsEmailService {
 		this.awsRegion = region;
 	}
 
-	/**
-	 * This method is used in the job scheduler to convert a queued email object back to an AwsMessage object
-	 * so that it can be sent as a mime message.
-	 */
-	@Override
-	public AwsMessage convertEmailToAwsMessage(Email email) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	private SendRawEmailResult getSuccessfulSendResult(){
 		SendRawEmailResult result  = new SendRawEmailResult();
 		return result;

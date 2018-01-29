@@ -19,12 +19,12 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.email.AwsEmailService;
+import org.tdar.core.service.email.AwsEmailTransportService;
 
 public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired 
-    protected AwsEmailService awsEmailService;
+    protected AwsEmailTransportService awsEmailService;
     
     @Test
     public void testAwsCredentials(){

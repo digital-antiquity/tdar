@@ -7,30 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.EmailType;
 
-public abstract class AwsMessage {
-	private EmailType emailType; 
-	private Email email;
+public abstract class AwsMessage extends Email {
+	private static final long serialVersionUID = -3526731367144223936L;
 	private Map<String, Object> map = new HashMap<>();
 	private List<File> attachments = new ArrayList<File>();
 	private Map<String, File> inlineAttachments = new HashMap<String, File>();
-	
-	public EmailType getEmailType() {
-		return emailType;
-	}
-	
-	public void setEmailType(EmailType emailType) {
-		this.emailType =  emailType;
-	}
-
-	public Email getEmail() {
-		return email;
-	}
-
-	public void setEmail(Email email) {
-		this.email = email;
-	}
 
 	public Map<String, Object> getMap() {
 		return map;

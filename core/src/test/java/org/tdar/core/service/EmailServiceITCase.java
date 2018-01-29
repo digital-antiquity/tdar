@@ -94,8 +94,8 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Rollback
 	public void testBounceMailResponses() throws IOException, MessagingException {
 		AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
-		message.getEmail().setSubject("Subject");
-		message.getEmail().setMessage("This is a test message");
+		message.setSubject("Subject");
+		message.setMessage("This is a test message");
 		message.addData("foo", "foo");
 		message.addData("bar", "bar");
 		message.addData("firstName", "Brian");
@@ -152,8 +152,8 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Rollback
 	public void testEmailContent() throws IOException {
 		AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
-		message.getEmail().setSubject("Subject");
-		message.getEmail().setMessage("This is a test message");
+		message.setSubject("Subject");
+		message.setMessage("This is a test message");
 		message.addData("foo", "foo");
 		message.addData("bar", "bar");
 		message.addData("firstName", "Brian");
@@ -168,7 +168,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		getLogger().debug(message.getEmail().getMessage());
+		getLogger().debug(message.getMessage());
 	}
 
 }

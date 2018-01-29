@@ -91,4 +91,6 @@ public interface EmailService {
 	
 	AwsMessage dequeueAwsMessage(Long messageId);
 
+	//Class<? extends AwsMessage> convertEmailToAwsMessage(Email email);
+
 }

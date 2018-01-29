@@ -22,9 +22,9 @@ public class TestAwsMessageTest {
 	
 	@Test
 	public void testEmailType() {
-		assertTrue(message.getEmailType()==null);
-		message.setEmailType(EmailType.TEST_EMAIL);
-		assertEquals(message.getEmailType(),EmailType.TEST_EMAIL);
+		assertTrue(message.getType()==null);
+		message.setType(EmailType.TEST_EMAIL);
+		assertEquals(message.getType(),EmailType.TEST_EMAIL);
 	}
 	
 	@Test
@@ -34,8 +34,8 @@ public class TestAwsMessageTest {
 	
 	@Test
 	public void testMessageNames(){
-		assertNull(message.getEmailType());
-		message.setEmailType(EmailType.TEST_EMAIL);
+		assertNull(message.getType());
+		message.setType(EmailType.TEST_EMAIL);
 
 		String firstName = "John";
 		String lastName  = "Doe";

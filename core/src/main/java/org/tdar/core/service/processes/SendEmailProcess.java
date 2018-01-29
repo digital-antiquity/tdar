@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.dao.base.GenericDao;
-import org.tdar.core.service.email.AwsEmailService;
+import org.tdar.core.service.email.AwsEmailTransportService;
 import org.tdar.core.service.external.EmailService;
 
 /**
@@ -36,7 +36,7 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
-    private AwsEmailService awsEmailService;
+    private AwsEmailTransportService awsEmailService;
 
     @Autowired
     @Qualifier("genericDao")
@@ -81,14 +81,9 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
                 emailService.send(email);
                 break;
             case AWS_QUEUED:
-            	
-            	//TODO Given a MIME message stored in plain-text, reconstruct the text into a RawMimeMessage,
-            	//that is convert it back to a byte array, set it as an AWS message, 
-            	// and tell the AWS service to send it as MultiPart message.
-            	
-            	AwsMessage awsMessage = awsEmailService.convertEmailToAwsMessage(email);
-            	//MimeMessage message   = awsEmailService.createMimeMessage(awsMessage);
-            	//awsEmailService.sendMultiPartMessage(message);
+            	    	AwsMessage awsMessage 	= emailService.dequeueAwsMessage((AwsMessage) email);
+            	    	//MimeMessage message   = awsEmailService.createMimeMessage(awsMessage);
+            	    	//awsEmailService.sendMultiPartMessage(message);
             	break;
             default:
                 break;
