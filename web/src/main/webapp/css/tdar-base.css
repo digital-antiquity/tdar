@@ -1,5 +1,36 @@
 header {height:95px;}
 
+
+.red {
+    color: #7a1501;
+}
+
+
+
+.tdar-btn-link {
+    padding: 0px;
+    color:  #7a1501;
+}
+
+button.tdar-button, input.tdar-button[type=button] {
+    border: none;
+}
+
+
+.serif {
+ font-family: "ff-tisa-web-pro", serif !important;
+}   
+
+.black {
+    color:#000;
+}
+
+.white {
+   color:white;
+   fill:white;
+}
+
+
 button.tdar-button, input.tdar-button[type=button] {
     border: none;
 }
@@ -35,6 +66,26 @@ a.button, .tdar-button, input.tdar-button[type=submit] {
     padding-top: 0;
     padding-bottom: 0;
 }
+
+
+
+/* Muted background color - when you want to de-emphasize a button in favor of another */
+a.button.muted, .tdar-button.muted, input.tdar-button.muted[type=submit] {
+    background-color: #686868;
+    color: #ffffff;
+}
+
+/* Button text is vertically-centered by default. For anchors that look like buttons, we fake vertical center by setting line-height same as button height */
+a.button{
+    line-height: 35px;
+    margin: 0 4px 0 0;
+}
+
+a.button:hover, .tdar-button:hover, input.tdar-button[type=submit]:hover {
+    background: #c74534;
+    text-decoration: none;
+}
+
 
 #foothumb .ht {
     max-height: 75px;
@@ -73,4 +124,11 @@ footer {
         url(/images/r4/bg-footer.png)
         repeat;
     padding: 50px 0;
+}
+
+
+
+.hidden {
+    display:none;
+    visibility:hidden;
 }
