@@ -78,7 +78,7 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.collection.ResourceCollectionService;
-import org.tdar.core.service.email.AwsEmailTransportService;
+import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailServiceImpl;

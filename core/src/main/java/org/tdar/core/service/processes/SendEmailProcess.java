@@ -1,5 +1,8 @@
 package org.tdar.core.service.processes;
 
+import java.io.IOException;
+
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.joda.time.DateTime;
@@ -11,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.dao.base.GenericDao;
-import org.tdar.core.service.email.AwsEmailTransportService;
+import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.external.EmailService;
 
 /**
@@ -35,7 +38,7 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
-    private AwsEmailTransportService awsEmailService;
+    private AwsEmailSender awsEmailService;
 
     @Autowired
     @Qualifier("genericDao")
@@ -80,7 +83,12 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
                 emailService.send(email);
                 break;
             case AWS_QUEUED:
-            		Email awsMessage 	= emailService.dequeueAwsMessage(email);
+            		email = emailService.dequeue(email);
+			try {
+				emailService.sendAwsHtmlMessage(email);
+			} catch (MessagingException | IOException e) {
+				logger.error("Couldn't send AWS message: {} ",e);
+			}
             	break;
             default:
                 break;

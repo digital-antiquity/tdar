@@ -9,6 +9,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -22,8 +23,6 @@ import org.tdar.core.bean.resource.Resource;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 public interface EmailService {
-
-	void queueAwsMessage(Email message);
 
 	/*
 	 * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
@@ -69,25 +68,51 @@ public interface EmailService {
 
 	String getFromEmail();
 
+	/**
+	 * Creates a MimeMessage for use on internal functions. 
+	 * @param message
+	 * @return
+	 * @throws MessagingException
+	 */
 	MimeMessage createMimeMessage(Email message) throws MessagingException;
 
+	/**
+	 * Generates a new message 
+	 * @param emailType
+	 * @param to
+	 * @return
+	 */
 	Email createMessage(EmailType emailType, String to);
 
-	void renderAndUpdateEmailContent(Email message);
-
-	void updateEmailSubject(Email message);
-
-	byte[] getByteArray(MimeMessage message) throws IOException, MessagingException;
-
-	SendRawEmailResult renderAndSendMessage(Email message) throws MessagingException, IOException;
-
 	/**
-	 * 
+	 * Forces the message to render the contents into the Freemarker template, then update the email message with the contents. 
 	 * @param message
 	 */
-	Email dequeueAwsMessage(Email message);
+	void renderAndUpdateEmailContent(Email message);
+
+	/**
+	 * Forces the message to render the subject line with as determined by the message class's createEmailSubject() call. 
+	 * @param message
+	 */
+	void updateEmailSubject(Email message);
+
 	
-	Email dequeueAwsMessage(Long messageId);
+	/**
+	 * Updates the email content, creates the subject line, creates a Mime message, then sends it. 
+	 * @param message
+	 * @return
+	 * @throws MessagingException
+	 * @throws IOException
+	 */
+	SendRawEmailResult renderAndSendMessage(Email message) throws MessagingException, IOException;
+
+	Email dequeue(Email message);
+
+	void sendUserStatisticEmail(TdarUser user, BillingAccount billingAccount);
+
+	Email generateUserStatisticsEmail(TdarUser user, BillingAccount billingAccount);
+
+	SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException;
 
 	//Class<? extends AwsMessage> convertEmailToAwsMessage(Email email);
 

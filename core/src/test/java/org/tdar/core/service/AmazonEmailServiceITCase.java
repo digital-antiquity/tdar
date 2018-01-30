@@ -2,28 +2,18 @@ package org.tdar.core.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.email.AwsEmailTransportService;
+import org.tdar.core.service.email.AwsEmailSender;
 
 public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired 
-    protected AwsEmailTransportService awsEmailService;
+    protected AwsEmailSender awsEmailService;
     
     @Test
     public void testAwsCredentials(){

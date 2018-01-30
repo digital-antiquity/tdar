@@ -32,7 +32,7 @@ import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
  * @author briancastellanos
  *
  */
-public class AwsEmailTransportServiceImpl implements AwsEmailTransportService {
+public class AwsEmailSenderImpl implements AwsEmailSender {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private static final TdarConfiguration config = TdarConfiguration.getInstance();
 

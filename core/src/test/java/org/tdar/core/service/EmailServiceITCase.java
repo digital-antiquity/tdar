@@ -29,13 +29,10 @@ import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
-import org.tdar.core.service.email.MockAwsEmailServiceImpl;
 import org.tdar.core.service.external.MockMailSender;
 
-public class EmailServiceITCase extends AbstractIntegrationTestCase {
+public class EmailServiceITCase extends AbstractIntegrationTestCase { 
 
-	
-	
 	@Test
 	@Rollback
 	public void testQueueMessage(){
@@ -166,13 +163,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		message.addData("firstName", "Brian");
 		message.addData("lastName", "Castellanos");
 
-		emailService.renderAndUpdateEmailContent(message);
-		emailService.updateEmailSubject(message);
-
 		try {
 			emailService.renderAndSendMessage(message);
 		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		getLogger().debug(message.getMessage());

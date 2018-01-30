@@ -11,7 +11,7 @@ import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
-public interface AwsEmailTransportService {
+public interface AwsEmailSender {
 	SendEmailResult sendMessage(Email message);
 	SendRawEmailResult sendMultiPartMessage(RawMessage message) throws IOException, MessagingException;
 	void setAwsRegion(Regions region);

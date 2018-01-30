@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
@@ -87,11 +88,15 @@ public class Email extends AbstractPersistable {
     @ManyToOne(optional=true)
     @JoinColumn(name="resource_id")
     private Resource resource;
-    
-    
+
+    @Transient
     private Map<String, Object> map = new HashMap<>();
-	private List<File> attachments = new ArrayList<File>();
-	private Map<String, File> inlineAttachments = new HashMap<String, File>();
+    
+    @Transient
+    private List<File> attachments = new ArrayList<File>();
+	
+    @Transient
+    private Map<String, File> inlineAttachments = new HashMap<String, File>();
 
 	public Map<String, Object> getMap() {
 		return map;
@@ -100,6 +105,7 @@ public class Email extends AbstractPersistable {
 	public void setMap(Map<String, Object> map) {
 		this.map = map;
 	}
+
 
 	public List<File> getAttachments() {
 		return attachments;

@@ -13,7 +13,7 @@ import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
-public class MockAwsEmailServiceImpl implements AwsEmailTransportService {
+public class MockAwsEmailSenderServiceImpl implements AwsEmailSender {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private Regions awsRegion;
     private static final TdarConfiguration config = TdarConfiguration.getInstance();
