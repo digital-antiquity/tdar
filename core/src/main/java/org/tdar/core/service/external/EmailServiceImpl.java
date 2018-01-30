@@ -49,7 +49,6 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
-import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.notification.aws.BasicAwsMessage;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -114,7 +113,7 @@ public class EmailServiceImpl implements EmailService {
 	 */
     @Override
 	@Transactional(readOnly = true)
-    public void queueAwsMessage(AwsMessage message){
+    public void queueAwsMessage(Email message){
 		//This will force rendering the entire message with attachments and mime boundaries. 
 		//The result will be a string which gets queued. 
 	    	renderAndUpdateEmailContent(message);
@@ -124,7 +123,7 @@ public class EmailServiceImpl implements EmailService {
     
     @Override 
     @Transactional(readOnly = true)
-    public AwsMessage dequeueAwsMessage(AwsMessage message){
+    public Email dequeueAwsMessage(Email message){
     		message.getType().getEmailClass().cast(message);
 		retrieveAttachments(message);
 		return message;
@@ -132,8 +131,8 @@ public class EmailServiceImpl implements EmailService {
     
     @Override
     @Transactional(readOnly = true)
-    public AwsMessage dequeueAwsMessage(Long messageId){
-    		AwsMessage email = (AwsMessage) genericDao.find(Email.class, messageId);
+    public Email dequeueAwsMessage(Long messageId){
+    		Email email = genericDao.find(Email.class, messageId);
 		return email;
     }
     
@@ -141,7 +140,7 @@ public class EmailServiceImpl implements EmailService {
     /**
      * Takes the attachements that are on the message, and saves them on disk. 
      */
-     public void saveAttachments(AwsMessage awsMessage){
+     public void saveAttachments(Email awsMessage){
     	 	String _attachmentDirectory  = TdarConfiguration.getInstance().getEmailAttachmentsDirectory();
     	 	String _messageAttachmentDir = _attachmentDirectory+File.pathSeparator+awsMessage.getId().toString();
     	 	String _inlineAttachmentDir = _messageAttachmentDir+File.pathSeparator+"inline";
@@ -174,7 +173,7 @@ public class EmailServiceImpl implements EmailService {
       * Go through the attachment directories and add the attachments back to the message. 
       * @param awsMessage
       */
-    public void retrieveAttachments(AwsMessage awsMessage){
+    public void retrieveAttachments(Email awsMessage){
     		String _attachmentDirectory  = TdarConfiguration.getInstance().getEmailAttachmentsDirectory();
     		String _messageAttachmentDir = _attachmentDirectory+File.pathSeparator+awsMessage.getId().toString();
     	 	String _inlineAttachmentDir	 = _messageAttachmentDir+File.pathSeparator+"inline";
@@ -219,7 +218,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
 	@Transactional(readOnly = false)
     public void sendUserInviteEmail(UserInvite invite, TdarUser from) {
-    	AwsMessage message = createMessage(EmailType.INVITE, invite.getUser().getEmail());
+    	Email message = createMessage(EmailType.INVITE, invite.getUser().getEmail());
     	message.setUserGenerated(false);
     	message.addData("invite", 	invite);
     	message.addData("from", 	from);
@@ -436,7 +435,7 @@ public class EmailServiceImpl implements EmailService {
     		}
     	}
     	
-    	AwsMessage message = createMessage(emailType, requestor.getEmail());
+    	Email message = createMessage(emailType, requestor.getEmail());
     	message.addData("requestor", requestor);
     	message.addData("resource", resource);
     	message.addData("expires", expires);
@@ -483,7 +482,7 @@ public class EmailServiceImpl implements EmailService {
 	@Transactional(readOnly = false)
     public void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person) {
         for (Entry<TdarUser, List<HasName>> entry : notices.entrySet()) {
-        	AwsMessage message = createMessage(EmailType.INVITE_ACCEPTED, entry.getKey().getEmail());
+        	Email message = createMessage(EmailType.INVITE_ACCEPTED, entry.getKey().getEmail());
             message.addData("owner", entry.getKey());
             message.addData("items", entry.getValue());
             message.addData("user", person);
@@ -499,7 +498,7 @@ public class EmailServiceImpl implements EmailService {
 
     
 	@Override
-	public MimeMessage createMimeMessage(AwsMessage message) throws MessagingException {
+	public MimeMessage createMimeMessage(Email message) throws MessagingException {
 		Session session = Session.getInstance(new Properties());
 		MimeMessage mimeMessage = new MimeMessage(session);
 
@@ -559,7 +558,7 @@ public class EmailServiceImpl implements EmailService {
 		File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
 		
 		//Construct the message and attach the graphs.
-		AwsMessage message = createMessage(EmailType.MONTHLY_USER_STATISTICS, user.getEmail());
+		Email message = createMessage(EmailType.MONTHLY_USER_STATISTICS, user.getEmail());
 		message.addData("resources",emailStatsHelper.getTopResources(billingAccount));
 		message.addData("user", user);
 		message.addData("availableSpace",  billingAccount.getAvailableSpaceInBytes());
@@ -584,8 +583,8 @@ public class EmailServiceImpl implements EmailService {
 	 * @return AwsEmail a new instance
 	 */
 	@Override
-	public AwsMessage createMessage(EmailType emailType, String to) {
-		AwsMessage awsEmail = null;
+	public Email createMessage(EmailType emailType, String to) {
+		Email awsEmail = null;
 		if(emailType.getEmailClass()!=null){
 			try {
 				awsEmail = emailType.getEmailClass().newInstance();
@@ -607,7 +606,7 @@ public class EmailServiceImpl implements EmailService {
 		}
 		
 		awsEmail.setSubject("");
-		awsEmail .setTo(to);
+		awsEmail.setTo(to);
 		
 
 		return awsEmail;
@@ -645,7 +644,7 @@ public class EmailServiceImpl implements EmailService {
 	 * email bean
 	 */
 	@Override
-	public void renderAndUpdateEmailContent(AwsMessage message) {
+	public void renderAndUpdateEmailContent(Email message) {
 		String templateName = null;
 		try {
 			templateName = message.getType().getTemplateLocation();
@@ -661,7 +660,7 @@ public class EmailServiceImpl implements EmailService {
 	 * Forces the message to re-render dynamically created subject line.
 	 */
 	@Override
-	public void updateEmailSubject(AwsMessage message){
+	public void updateEmailSubject(Email message){
 		message.setSubject(message.createSubjectLine());
 	}
     
@@ -682,7 +681,7 @@ public class EmailServiceImpl implements EmailService {
 	 * then creates an MIME version and sends it via AWS.
 	 */
 	@Override
-	public SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException{
+	public SendRawEmailResult renderAndSendMessage(Email message) throws MessagingException, IOException{
 		updateEmailSubject(message);
 		renderAndUpdateEmailContent(message);
 		MimeMessage mimeMessage = createMimeMessage(message);

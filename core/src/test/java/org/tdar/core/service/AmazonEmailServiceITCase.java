@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.notification.EmailType;
-import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.email.AwsEmailTransportService;
 

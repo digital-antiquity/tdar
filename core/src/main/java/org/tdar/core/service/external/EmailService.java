@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
@@ -18,14 +17,13 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
-import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.resource.Resource;
 
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 public interface EmailService {
 
-	void queueAwsMessage(AwsMessage message);
+	void queueAwsMessage(Email message);
 
 	/*
 	 * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
@@ -71,25 +69,25 @@ public interface EmailService {
 
 	String getFromEmail();
 
-	MimeMessage createMimeMessage(AwsMessage message) throws MessagingException;
+	MimeMessage createMimeMessage(Email message) throws MessagingException;
 
-	AwsMessage createMessage(EmailType emailType, String to);
+	Email createMessage(EmailType emailType, String to);
 
-	void renderAndUpdateEmailContent(AwsMessage message);
+	void renderAndUpdateEmailContent(Email message);
 
-	void updateEmailSubject(AwsMessage message);
+	void updateEmailSubject(Email message);
 
 	byte[] getByteArray(MimeMessage message) throws IOException, MessagingException;
 
-	SendRawEmailResult renderAndSendMessage(AwsMessage message) throws MessagingException, IOException;
+	SendRawEmailResult renderAndSendMessage(Email message) throws MessagingException, IOException;
 
 	/**
 	 * 
 	 * @param message
 	 */
-	AwsMessage dequeueAwsMessage(AwsMessage message);
+	Email dequeueAwsMessage(Email message);
 	
-	AwsMessage dequeueAwsMessage(Long messageId);
+	Email dequeueAwsMessage(Long messageId);
 
 	//Class<? extends AwsMessage> convertEmailToAwsMessage(Email email);
 

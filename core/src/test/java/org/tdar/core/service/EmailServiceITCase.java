@@ -26,7 +26,6 @@ import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
-import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
@@ -35,6 +34,14 @@ import org.tdar.core.service.external.MockMailSender;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
+	
+	
+	@Test
+	@Rollback
+	public void testQueueMessage(){
+		
+	}
+	
 	@Test
 	@Rollback
 	public void testMockMailSender() {
@@ -93,7 +100,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Test(expected = MessagingException.class)
 	@Rollback
 	public void testBounceMailResponses() throws IOException, MessagingException {
-		AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
+		Email message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
 		message.setSubject("Subject");
 		message.setMessage("This is a test message");
 		message.addData("foo", "foo");
@@ -151,7 +158,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Test
 	@Rollback
 	public void testEmailContent() throws IOException {
-		AwsMessage message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
+		Email message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
 		message.setSubject("Subject");
 		message.setMessage("This is a test message");
 		message.addData("foo", "foo");

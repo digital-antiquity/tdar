@@ -7,7 +7,7 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.tdar.core.bean.notification.aws.AwsMessage;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.configuration.TdarConfiguration;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -39,7 +39,7 @@ public class AwsEmailTransportServiceImpl implements AwsEmailTransportService {
 	private Regions awsRegion = Regions.US_WEST_2;
 
 	@Override
-	public SendEmailResult sendMessage(AwsMessage awsMessage) {
+	public SendEmailResult sendMessage(Email awsMessage) {
 		logger.debug("sendMessage() message={}", awsMessage);
 
 		Destination toEmail = new Destination().withToAddresses(awsMessage.getTo());

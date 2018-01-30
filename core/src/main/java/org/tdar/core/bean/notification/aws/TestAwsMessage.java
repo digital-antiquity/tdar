@@ -2,9 +2,15 @@ package org.tdar.core.bean.notification.aws;
 
 import java.util.Arrays;
 
+import org.tdar.core.bean.notification.Email;
 import org.tdar.utils.MessageHelper;
 
-public class TestAwsMessage extends AwsMessage {
+public class TestAwsMessage extends Email {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6057420297607199621L;
 
 	@Override
 	public String createSubjectLine() {

@@ -19,7 +19,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
-import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.email.AwsEmailTransportService;
@@ -90,7 +89,7 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(people)) {
-        	AwsMessage message = emailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getContactEmail());
+        	Email message = emailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getContactEmail());
         	message.setMap(initDataModel());
         	message.addData("users", people);
         message.addData("totalUsers", people.size());
@@ -105,7 +104,7 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
     private void sendQuarrantineEmail() {
         List<Email> emails = emailService.findEmailsWithStatus(Status.IN_REVIEW);
         if (CollectionUtils.isNotEmpty(emails)) {
-        	AwsMessage message = emailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getContactEmail());
+        	Email message = emailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getContactEmail());
         	message.setMap(initDataModel());
         	message.addData("emails", emails);
         	message.addData("totalEmails",emails.size());

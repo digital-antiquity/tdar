@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.email.AwsEmailTransportService;
 import org.tdar.core.service.external.EmailService;
@@ -81,9 +80,7 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
                 emailService.send(email);
                 break;
             case AWS_QUEUED:
-            	    	AwsMessage awsMessage 	= emailService.dequeueAwsMessage((AwsMessage) email);
-            	    	//MimeMessage message   = awsEmailService.createMimeMessage(awsMessage);
-            	    	//awsEmailService.sendMultiPartMessage(message);
+            		Email awsMessage 	= emailService.dequeueAwsMessage(email);
             	break;
             default:
                 break;

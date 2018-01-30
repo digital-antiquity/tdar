@@ -10,7 +10,6 @@ import org.tdar.core.bean.notification.aws.AccessRequestGrantedMessage;
 import org.tdar.core.bean.notification.aws.AccessRequestRejectedMessage;
 import org.tdar.core.bean.notification.aws.AdminQuarantineReviewMessage;
 import org.tdar.core.bean.notification.aws.AdminReportNewUsersMessage;
-import org.tdar.core.bean.notification.aws.AwsMessage;
 import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
 import org.tdar.core.bean.notification.aws.InviteMessage;
 import org.tdar.core.bean.notification.aws.MonthlyUserStatisticsMessage;
@@ -57,7 +56,7 @@ public enum EmailType implements Localizable, HasLabel {
 	 */
 	private String fromAddress;
 		
-	private Class<? extends AwsMessage> emailClass;
+	private Class<? extends Email> emailClass;
 	
 	private EmailType(String template){
 		this.templateLocation = template;
@@ -68,7 +67,7 @@ public enum EmailType implements Localizable, HasLabel {
 		this.setFromAddress(fromAddress);
 	}
 	
-	private EmailType(String template,  String fromAddress, Class<? extends AwsMessage> emailClass) {
+	private EmailType(String template,  String fromAddress, Class<? extends Email> emailClass) {
 		this(template, fromAddress);
 		this.setEmailClass(emailClass);
     }
@@ -137,11 +136,11 @@ public enum EmailType implements Localizable, HasLabel {
 		return templateLocation;
 	}
 
-	public Class<? extends AwsMessage> getEmailClass() {
+	public Class<? extends Email> getEmailClass() {
 		return emailClass;
 	}
 
-	public void setEmailClass(Class<? extends AwsMessage> emailClass) {
+	public void setEmailClass(Class<? extends Email> emailClass) {
 		this.emailClass = emailClass;
 	}
 	
