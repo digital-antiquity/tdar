@@ -2,9 +2,13 @@ package org.tdar.core.bean.notification.aws;
 
 import java.util.Arrays;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import org.tdar.core.bean.notification.Email;
 import org.tdar.utils.MessageHelper;
-
+@Entity
+@DiscriminatorValue("QUARANTINE_REVIEW")
 public class AdminQuarantineReviewMessage extends Email {
 	/**
 	 * 

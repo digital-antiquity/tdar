@@ -9,9 +9,14 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
@@ -30,6 +35,8 @@ import org.tdar.core.bean.resource.Resource;
 
 @Entity
 @Table(name = "email_queue")
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "aws_message_type", length = FieldLength.FIELD_LENGTH_50, discriminatorType = DiscriminatorType.STRING)
 public class Email extends AbstractPersistable {
 
     private static final String SEPARATOR_CHARS = ";";

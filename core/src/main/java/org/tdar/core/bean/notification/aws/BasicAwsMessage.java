@@ -1,7 +1,12 @@
 package org.tdar.core.bean.notification.aws;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import org.tdar.core.bean.notification.Email;
 
+@Entity
+@DiscriminatorValue("BASIC")
 public class BasicAwsMessage extends Email {
 
 	/**

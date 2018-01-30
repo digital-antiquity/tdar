@@ -79,16 +79,13 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
                 }
                 break;
             case QUEUED:
-                logger.debug("processing: {}", email);
-                emailService.send(email);
-                break;
-            case AWS_QUEUED:
             		email = emailService.dequeue(email);
-			try {
-				emailService.sendAwsHtmlMessage(email);
-			} catch (MessagingException | IOException e) {
-				logger.error("Couldn't send AWS message: {} ",e);
-			}
+                logger.debug("processing: {}", email);
+	    			try {
+	    				emailService.sendAwsHtmlMessage(email);
+	    			} catch (MessagingException | IOException e) {
+	    				logger.error("Couldn't send AWS message: {} ",e);
+	    			}
             	break;
             default:
                 break;

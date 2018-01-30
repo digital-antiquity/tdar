@@ -109,7 +109,6 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	@Transactional(readOnly = true)
 	public Email dequeue(Email message) {
-		message.getType().getEmailClass().cast(message);
 		retrieveAttachments(message);
 		return message;
 	}
@@ -214,7 +213,7 @@ public class EmailServiceImpl implements EmailService {
 		message.addData("invite", invite);
 		message.addData("from", from);
 		message.addData("to", invite.getUser());
-		message.setStatus(Status.AWS_QUEUED);
+		message.setStatus(Status.QUEUED);
 		setupBasicComponents(message.getMap());
 		queue(message);
 	}
