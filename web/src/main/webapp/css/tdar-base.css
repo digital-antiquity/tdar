@@ -1,6 +1,12 @@
 header {height:95px;}
 
 
+.carousel-control {
+    background-image: none !important;
+    filter: none  !important;
+    width: 3%;
+}
+
 .red {
     color: #7a1501;
 }
@@ -131,4 +137,23 @@ footer {
 .hidden {
     display:none;
     visibility:hidden;
+}
+
+
+
+h1 {
+    font-weight: 700;
+}
+
+h2 {
+    font-weight: 700;
+}
+
+
+
+
+.cols h1 {
+    margin: -5px 0 0 0 !important;
+    font-size: 30px;
+    line-height: 34px;
 }

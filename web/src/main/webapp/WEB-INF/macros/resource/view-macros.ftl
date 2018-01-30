@@ -761,7 +761,7 @@ View freemarker macros
                     Resources</a>
                 </p>
                 </div>
-            <div class="span4">
+            <div class="col-lg-4 col-md-4 col-sm-4">
                 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
                     <img title="map" alt="map" class="" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, config.googleMapsApiKey)}"/>
                 <#else>

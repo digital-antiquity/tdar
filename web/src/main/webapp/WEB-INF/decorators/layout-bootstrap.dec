@@ -263,7 +263,7 @@ ${head}
         <section class="${bs.row()} ${part}">
 
             <#if showLeftSidebar()>
-                <aside class="span3">
+                <aside class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                 ${page.properties["div.sidebar-left"]}
                 </aside>
             </#if>
@@ -275,7 +275,7 @@ ${head}
             </article>
 
             <#if showRightSidebar() >
-                <aside class="span3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
+                <aside class="col-lg-3 col-md-3 col-sm-3 col-xs-3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
                 ${page.properties["div.sidebar-right"]}
                 </aside>
             </#if>
