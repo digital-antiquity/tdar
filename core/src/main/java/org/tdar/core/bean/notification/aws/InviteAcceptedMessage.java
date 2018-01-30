@@ -6,6 +6,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.MessageHelper;
 
@@ -20,6 +21,6 @@ public class InviteAcceptedMessage extends Email {
 
 	@Override
 	public String createSubjectLine() {
-		return MessageHelper.getInstance().getText("EmailType.INVITE_ACCEPTED", Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
+		return MessageHelper.getInstance().getText(EmailType.INVITE_ACCEPTED.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
 	}
 }

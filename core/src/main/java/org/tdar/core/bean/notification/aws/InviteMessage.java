@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.MessageHelper;
 
@@ -23,7 +24,7 @@ public class InviteMessage extends Email {
 	public String createSubjectLine() {
 		String properName = ((TdarUser) getMap().get("from")).getProperName();
 		String tdar = TdarConfiguration.getInstance().getSiteAcronym();
-		return MessageHelper.getMessage("EmailType.INVITE",Arrays.asList(properName,tdar));
+		return MessageHelper.getMessage(EmailType.INVITE.getLocaleKey(),Arrays.asList(properName,tdar));
 	}
 
 }

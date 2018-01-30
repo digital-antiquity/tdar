@@ -61,7 +61,7 @@ public class Email extends AbstractPersistable {
     @Column(name = "subject", length = FieldLength.FIELD_LENGTH_1024)
     private String subject;
 
-    @Column(name="message_uuid", length = FieldLength.FIELD_LENGTH_32)
+    @Column(name="message_uuid", length = FieldLength.FIELD_LENGTH_50)
     private String messageUuid;
     
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })

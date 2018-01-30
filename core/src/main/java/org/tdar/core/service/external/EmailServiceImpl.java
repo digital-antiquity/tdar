@@ -119,18 +119,20 @@ public class EmailServiceImpl implements EmailService {
 	 */
 	public void saveAttachments(Email email) {
 		String _attachmentDirectory = TdarConfiguration.getInstance().getEmailAttachmentsDirectory();
-		String _messageAttachmentDir = _attachmentDirectory + File.pathSeparator + email.getId().toString();
-		String _inlineAttachmentDir = _messageAttachmentDir + File.pathSeparator + "inline";
-		String _mimeAttachmentDir = _messageAttachmentDir + File.pathSeparator + "mime";
+		String _messageAttachmentDir = _attachmentDirectory + email.getId().toString();
+		String _inlineAttachmentDir = _messageAttachmentDir + File.separator + "inline";
+		String _mimeAttachmentDir = _messageAttachmentDir + File.separator + "mime";
+		logger.debug("Saving email attachments to "+_messageAttachmentDir);
 
-		File attachmentDir = new File(_messageAttachmentDir);
+		File msgAttachmentsDir = new File(_messageAttachmentDir);
 		File inlineAttachments = new File(_inlineAttachmentDir);
 		File mimeAttachments = new File(_mimeAttachmentDir);
 
-		if (!attachmentDir.exists()) {
-			attachmentDir.mkdir();
-			inlineAttachments.mkdir();
-			mimeAttachments.mkdir();
+		if (!msgAttachmentsDir.exists()) {
+			logger.debug("Creating attachment directories");
+			msgAttachmentsDir.mkdirs();
+			inlineAttachments.mkdirs();
+			mimeAttachments.mkdirs();
 		}
 
 		email.getInlineAttachments().forEach((fileName, file) -> {
@@ -138,7 +140,7 @@ public class EmailServiceImpl implements EmailService {
 			// renders correctly. The name needs to be the same
 			// since its probably referenced somewhere in the HTML body of what
 			// it expects.
-			file.renameTo(new File(_mimeAttachmentDir + File.separator + fileName));
+			file.renameTo(new File(_inlineAttachmentDir + File.separator + fileName));
 		});
 		email.getAttachments().forEach(file -> {
 			// Save the file to the attachment.
@@ -154,9 +156,9 @@ public class EmailServiceImpl implements EmailService {
 	 */
 	public void retrieveAttachments(Email email) {
 		String _attachmentDirectory = TdarConfiguration.getInstance().getEmailAttachmentsDirectory();
-		String _messageAttachmentDir = _attachmentDirectory + File.pathSeparator + email.getId().toString();
-		String _inlineAttachmentDir = _messageAttachmentDir + File.pathSeparator + "inline";
-		String _mimeAttachmentDir = _messageAttachmentDir + File.pathSeparator + "mime";
+		String _messageAttachmentDir = _attachmentDirectory + File.separator + email.getId().toString();
+		String _inlineAttachmentDir = _messageAttachmentDir + File.separator + "inline";
+		String _mimeAttachmentDir = _messageAttachmentDir + File.separator + "mime";
 
 		// Check to see if the message attachment directory exists. if not, dont
 		// bother attaching files.
@@ -228,10 +230,10 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	@Transactional(readOnly = false)
 	public void queue(Email email) {
-		saveAttachments(email);
-		logger.debug("Queuing email {}", email);
 		enforceFromAndTo(email);
 		genericDao.save(email);
+		logger.debug("Queuing email {}", email);
+		saveAttachments(email);
 	}
 
 	private void enforceFromAndTo(Email email) {
@@ -549,7 +551,10 @@ public class EmailServiceImpl implements EmailService {
 		messageHelper.addInline("logo", logo);
 
 		mimeMessage = messageHelper.getMimeMessage();
-		mimeMessage.addHeader("x-tdar-message-id", message.getMessageUuid());
+		if(message.getMessageUuid()!=null && !message.getMessageUuid().equals("")){
+			mimeMessage.addHeader("x-tdar-message-id", message.getMessageUuid());
+		}
+		
 		return mimeMessage;
 	}
 
@@ -564,8 +569,7 @@ public class EmailServiceImpl implements EmailService {
 	public void sendUserStatisticEmail(TdarUser user, BillingAccount billingAccount) {
 		Email message = generateUserStatisticsEmail(user, billingAccount);
 		try {
-
-			renderAndSendMessage(message);
+			sendAwsHtmlMessage(message);
 		} catch (MessagingException | IOException e) {
 			logger.error("Couldn't send userStatisticsEmail: {} {}", e, e);
 		}
@@ -581,9 +585,9 @@ public class EmailServiceImpl implements EmailService {
 		StatsResultObject stats = emailStatsHelper.getAccountStatistics(billingAccount, granularity);
 
 		// Generate temporary file names
-		String piechartFileName = System.currentTimeMillis() + "_resource-piechart";
-		String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart";
-		String viewsFileName = System.currentTimeMillis() + "_views-barchart";
+		String piechartFileName = System.currentTimeMillis() + "_resource-piechart.png";
+		String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart.png";
+		String viewsFileName = System.currentTimeMillis() + "_views-barchart.png";
 
 		// Generate the resources pie graph.
 		Map<String, Number> pieChartData = emailStatsHelper.generateUserResourcesPieChartData(billingAccount);
@@ -604,9 +608,13 @@ public class EmailServiceImpl implements EmailService {
 		message.addData("user", user);
 		message.addData("availableSpace", billingAccount.getAvailableSpaceInBytes());
 		message.addData("availableFiles", billingAccount.getAvailableNumberOfFiles());
-		message.addInlineAttachment("resources", piechart);
-		message.addInlineAttachment("totalviews", barchart1);
-		message.addInlineAttachment("totaldownloads", barchart2);
+		message.addInlineAttachment("resources.png", piechart);
+		message.addInlineAttachment("totalviews.png", barchart1);
+		message.addInlineAttachment("totaldownloads.png", barchart2);
+		
+		
+		updateEmailSubject(message);
+		renderAndUpdateEmailContent(message);
 		return message;
 	}
 

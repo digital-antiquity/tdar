@@ -18,8 +18,8 @@
         </p>
         </td>
         <td>
-        <p style="float:right">
-            <img src="cid:resources" />
+        <p style="float:right;width:300px;">
+            <img src="cid:resources.png" />
         </p>
        </td>
        </tr>  
@@ -36,8 +36,8 @@
         </ul>
      </div>
         
-    <img src="cid:totalviews" />   
-    <img src="cid:totaldownloads" />   
+    <img src="cid:totalviews.png" />   
+    <img src="cid:totaldownloads.png" />   
     
     
     <div>

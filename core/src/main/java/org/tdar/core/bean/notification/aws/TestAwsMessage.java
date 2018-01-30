@@ -6,6 +6,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.utils.MessageHelper;
 
 @Entity
@@ -25,6 +26,6 @@ public class TestAwsMessage extends Email {
 		firstName = (String) getMap().get("firstName");
 		lastName  = (String) getMap().get("lastName");
 		
-		return MessageHelper.getMessage("EmailType.TEST_EMAIL", Arrays.asList(lastName, firstName));
+		return MessageHelper.getMessage(EmailType.TEST_EMAIL.getLocaleKey(), Arrays.asList(lastName, firstName));
 	}
 }

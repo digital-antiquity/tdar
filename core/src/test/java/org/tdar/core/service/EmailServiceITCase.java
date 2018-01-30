@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -15,6 +17,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
@@ -36,6 +39,12 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Test
 	@Rollback
 	public void testQueueMessage(){
+		
+	}
+	
+	@Test
+	@Rollback
+	public void testGenerateUserStatistics(){
 		
 	}
 	
@@ -120,6 +129,41 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		emailService.sendUserStatisticEmail(user, billingAccount);
 		// logger.debug("Email content is {}",message.getEmail().getMessage());
 	}
+	
+	
+	@Test
+	@Rollback(false)
+	public void testDequeuingUserStatsEmail(){
+		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
+		Long billingAccountId = 1L;
+		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
+		Email email = emailService.generateUserStatisticsEmail(user, billingAccount);
+		assertTrue("The message has a UUID", StringUtils.isNotBlank(email.getMessageUuid()));
+		logger.debug("The email UUID is {}",email.getMessageUuid());
+		emailService.queue(email);
+		Long emailId = email.getId();
+		email = null;
+	
+		
+		Email message = genericService.find(Email.class, emailId);
+		assertTrue("email id is not -1", emailId!=-1);
+		//assertTrue("Email doesn't have attachments", message.getInlineAttachments().size()==0);
+		emailService.dequeue(message);
+		
+		assertNotNull("Email has content",message.getMessage());
+		//logger.debug("The message content is : {}", message.getMessage());
+		assertTrue("email has 3 attachments",message.getInlineAttachments().size()==3);
+		
+		assertNotNull("The message has a UUID", message.getMessageUuid());
+		logger.debug("The UUID is {}", message.getMessageUuid());
+		
+		try {
+			emailService.sendAwsHtmlMessage(message);
+		} catch (MessagingException | IOException e) {
+			logger.debug("The message could not be sent: {} ",e);
+		}
+	}
+	
 
 	@Test
 	@Rollback

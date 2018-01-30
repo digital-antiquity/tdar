@@ -16,7 +16,6 @@ import org.tdar.core.service.processes.charts.TdarPieChart;
 public class StatsChartGeneratorImpl implements StatsChartGenerator {
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    
 	public File generateResourcesPieChart(Map<String, Number> data, String filename){
 		TdarPieChart chart = new TdarPieChart("", 300, 300, filename, data);
 		return runChart(chart);

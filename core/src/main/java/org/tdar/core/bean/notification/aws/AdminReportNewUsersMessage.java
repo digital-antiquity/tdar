@@ -6,6 +6,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.MessageHelper;
 
@@ -19,7 +20,7 @@ public class AdminReportNewUsersMessage extends Email {
 
 	@Override
 	public String createSubjectLine() {
-		return MessageHelper.getMessage("EmailType.ADMIN_NEW_USER_REPORT", Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym().toUpperCase(), getMap().get("totalUsers")));
+		return MessageHelper.getMessage(EmailType.ADMIN_NEW_USER_REPORT.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym().toUpperCase(), getMap().get("totalUsers")));
 	}
 
 }

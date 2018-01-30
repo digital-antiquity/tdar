@@ -4,6 +4,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.utils.MessageHelper;
 
 @Entity
@@ -16,6 +17,6 @@ public class MonthlyUserStatisticsMessage extends Email {
 
 	@Override
 	public String createSubjectLine() {
-		return MessageHelper.getMessage("EmailType.MONTHLY_USER_STATISTICS");
+		return MessageHelper.getMessage(EmailType.MONTHLY_USER_STATISTICS.getLocaleKey());
 	}
 }

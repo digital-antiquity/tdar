@@ -6,6 +6,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.utils.MessageHelper;
 @Entity
 @DiscriminatorValue("QUARANTINE_REVIEW")
@@ -17,8 +18,7 @@ public class AdminQuarantineReviewMessage extends Email {
 
 	@Override
 	public String createSubjectLine() {
-		//return String.format(getEmailType().getSubject(), getMap().get("totalEmails"));
-		return MessageHelper.getMessage("EmailType.ADMIN_QUARANTINE_REVIEW", Arrays.asList(getMap().get("totalEmails")));
+		return MessageHelper.getMessage(EmailType.ADMIN_QUARANTINE_REVIEW.getLocaleKey(), Arrays.asList(getMap().get("totalEmails")));
 	}
 
 }
