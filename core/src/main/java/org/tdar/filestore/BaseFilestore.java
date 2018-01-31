@@ -147,6 +147,7 @@ public abstract class BaseFilestore implements Filestore {
             logdir.mkdirs();
         }
         File logFile = new File(logdir, filename);
+        logFilestoreWrite(logFile);
         try {
             FileUtils.writeStringToFile(logFile, message, Charset.defaultCharset());
         } catch (IOException e) {

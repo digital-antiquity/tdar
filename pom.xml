@@ -36,7 +36,7 @@
     <properties>
         <lucene.version>7.1.0</lucene.version>
         <hibernate.version>5.2.12.Final</hibernate.version>
-        <spring.framework.version>5.0.2.RELEASE</spring.framework.version>
+        <spring.framework.version>5.0.3.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>9.4.1212</postgresql.jdbc.version>
         <servlet.api.version>3.1.0</servlet.api.version>
         <wro4j.version>1.8.0</wro4j.version>
