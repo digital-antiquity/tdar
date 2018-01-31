@@ -134,9 +134,13 @@ public class PairtreeFilestore extends BaseFilestore {
 
     @Override
     public void logFilestoreWrite(File outFile) {
+        logAction(outFile,"WRITE");
+    }
+
+    private void logAction(File outFile, String action) {
         File logFile = new File(baseStoreDirectory, FilestoreObjectType.LOG.getRootDir() + "/write.log");
         
-        String logLine = String.format("%s\t%s\n", new Date(), outFile.getAbsolutePath(),Charset.defaultCharset());
+        String logLine = String.format("%s\t%s\t%s\n", new Date(), outFile.getAbsolutePath(),Charset.defaultCharset(), action);
         synchronized (logFile) {
             try {
             FileUtils.writeStringToFile(logFile, logLine, Charset.defaultCharset(), true);
@@ -152,6 +156,7 @@ public class PairtreeFilestore extends BaseFilestore {
             rotate(outFile, rotate);
         }
 
+        // this isn't really rotation
         if (rotate == StorageMethod.DATE) {
             String baseName = FilenameUtils.getBaseName(outFile.getName());
             String ext = FilenameUtils.getExtension(outFile.getName());
@@ -159,7 +164,6 @@ public class PairtreeFilestore extends BaseFilestore {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss");
             String rotationTarget = String.format("%s.%s.%s", baseName, sdf.format(new Date()), ext);
             outFile = new File(outFile.getParentFile(), rotationTarget);
-
         }
         return outFile;
     }
@@ -324,6 +328,7 @@ public class PairtreeFilestore extends BaseFilestore {
     @Override
     public void purge(FilestoreObjectType type, FileStoreFileProxy version) throws IOException {
         File file = new File(getAbsoluteFilePath(type, version));
+        logFilestoreDelete(file);
         if (version.getType() == FilestoreObjectType.RESOURCE) {
             if (version.getVersionType().isDerivative() || version.getVersionType() == VersionType.TRANSLATED) {
                 FileUtils.deleteQuietly(file);
@@ -350,6 +355,11 @@ public class PairtreeFilestore extends BaseFilestore {
             FileUtils.deleteQuietly(file);
             cleanEmptyParents(file.getParentFile());
         }
+    }
+
+    @Override
+    public void logFilestoreDelete(File file) {
+        logAction(file, "DELETE");
     }
 
     /**

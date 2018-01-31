@@ -197,7 +197,7 @@ public abstract class BaseFilestore implements Filestore {
         logger.trace("\told: {} new: {}", object.getChecksum(), hex);
         return hex.trim().equalsIgnoreCase(object.getChecksum().trim());
     }
-
+    
     public DigestInputStream appendMessageDigestStream(InputStream content) {
         DigestInputStream digestInputStream = null;
         MessageDigest messageDigest = null;
@@ -274,6 +274,7 @@ public abstract class BaseFilestore implements Filestore {
             if (parentFile.exists()) {
                 try {
                     FileUtils.copyFile(parentFile, targetFile);
+                    logFilestoreWrite(targetFile);
                 } catch (IOException e) {
                     logger.warn("something happened when saving file", e);
                 }
