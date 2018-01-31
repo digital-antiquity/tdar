@@ -49,11 +49,19 @@ public interface EmailService {
 	 * @param recipients
 	 *            set of String varargs
 	 */
+	@Deprecated
 	void send(Email email);
 
+	/**
+	 * Deprecated method. use construct email instead, since it generates HTML emails. 
+	 */
+	@Deprecated
 	Email constructEmail(Person from, HasEmail to, Resource resource, String subject, String messageBody,
 			EmailType type);
-
+	/**
+	 * Deprecated method. use construct email instead, since it generates HTML emails. 
+	 */
+	@Deprecated
 	Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody,
 			EmailType type, Map<String, String[]> params);
 
@@ -96,7 +104,6 @@ public interface EmailService {
 	 */
 	void updateEmailSubject(Email message);
 
-	
 	/**
 	 * Updates the email content, creates the subject line, creates a Mime message, then sends it. 
 	 * @param message
@@ -107,13 +114,23 @@ public interface EmailService {
 	SendRawEmailResult renderAndSendMessage(Email message) throws MessagingException, IOException;
 
 	Email dequeue(Email message);
+	
+	void generateAndSendUserStatisticEmail(TdarUser user, BillingAccount billingAccount);
 
-	void sendUserStatisticEmail(TdarUser user, BillingAccount billingAccount);
-
+	/**
+	 * Creates a new statistics mesage and renders it
+	 * @param user
+	 * @param billingAccount
+	 * @return
+	 */
 	Email generateUserStatisticsEmail(TdarUser user, BillingAccount billingAccount);
 
+	/**
+	 * Sends an email message though the AWS gateway. 
+	 * @param message
+	 * @return
+	 * @throws MessagingException
+	 * @throws IOException
+	 */
 	SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException;
-
-	//Class<? extends AwsMessage> convertEmailToAwsMessage(Email email);
-
 }

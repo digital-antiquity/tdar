@@ -42,11 +42,6 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		
 	}
 	
-	@Test
-	@Rollback
-	public void testGenerateUserStatistics(){
-		
-	}
 	
 	@Test
 	@Rollback
@@ -126,7 +121,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		Long billingAccountId = 1L;
 		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
 
-		emailService.sendUserStatisticEmail(user, billingAccount);
+		emailService.generateAndSendUserStatisticEmail(user, billingAccount);
 		// logger.debug("Email content is {}",message.getEmail().getMessage());
 	}
 	

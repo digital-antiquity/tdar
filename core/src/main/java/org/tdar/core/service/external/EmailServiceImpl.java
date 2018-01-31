@@ -566,7 +566,7 @@ public class EmailServiceImpl implements EmailService {
 	 * @param billingAccount
 	 */
 	@Override
-	public void sendUserStatisticEmail(TdarUser user, BillingAccount billingAccount) {
+	public void generateAndSendUserStatisticEmail(TdarUser user, BillingAccount billingAccount) {
 		Email message = generateUserStatisticsEmail(user, billingAccount);
 		try {
 			sendAwsHtmlMessage(message);
@@ -611,8 +611,7 @@ public class EmailServiceImpl implements EmailService {
 		message.addInlineAttachment("resources.png", piechart);
 		message.addInlineAttachment("totalviews.png", barchart1);
 		message.addInlineAttachment("totaldownloads.png", barchart2);
-		
-		
+
 		updateEmailSubject(message);
 		renderAndUpdateEmailContent(message);
 		return message;
