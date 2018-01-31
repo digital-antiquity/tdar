@@ -37,6 +37,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -135,7 +136,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         logger.debug("//");
         scheduledProcessService.runNextScheduledProcessesInQueue();
 
-        SimpleMailMessage message = checkMailAndGetLatest("The following users registered with");
+        Email message = checkMailAndGetLatest("The following users registered with");
         assertThat(message, is( not( nullValue())));
 //        assertTrue(dailyEmailProcess.isCompleted());
     }
@@ -157,13 +158,13 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
             scheduledProcessService.runNextScheduledProcessesInQueue();
             count++;
         };
-        SimpleMailMessage received = checkMailAndGetLatest("reporting on files with issues");
+        Email received = checkMailAndGetLatest("reporting on files with issues");
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
-        assertTrue(received.getText().contains("not found"));
-        assertTrue("should find " + totalFiles.intValue(), received.getText().contains("Total Files: "+totalFiles.intValue()));
-        assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
+        assertTrue(received.getMessage().contains("not found"));
+        assertTrue("should find " + totalFiles.intValue(), received.getMessage().contains("Total Files: "+totalFiles.intValue()));
+        assertFalse(received.getMessage().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
-        assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
+        assertEquals(received.getTo(), getTdarConfiguration().getSystemAdminEmail());
     }
 
     @Autowired

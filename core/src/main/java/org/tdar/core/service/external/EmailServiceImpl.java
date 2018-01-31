@@ -266,13 +266,7 @@ public class EmailServiceImpl implements EmailService {
 		}
 		enforceFromAndTo(email);
 		try {
-			SimpleMailMessage message = new SimpleMailMessage();
-			// Message message = new MimeMessage(session);
-			message.setFrom(email.getFrom());
-			message.setSubject(email.getSubject());
-			message.setTo(email.getToAsArray());
-			message.setText(email.getMessage());
-			mailSender.send(message);
+			awsEmailService.sendMessage(email);
 			email.setStatus(Status.SENT);
 			email.setDateSent(new Date());
 		} catch (MailException me) {
@@ -526,37 +520,7 @@ public class EmailServiceImpl implements EmailService {
 		}
 	}
 
-	@Override
-	public MimeMessage createMimeMessage(Email message) throws MessagingException {
-		Session session = Session.getInstance(new Properties());
-		MimeMessage mimeMessage = new MimeMessage(session);
 
-		MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
-
-		messageHelper.setTo(message.getTo());
-		messageHelper.setFrom(message.getFrom());
-		messageHelper.setSubject(message.getSubject());
-		messageHelper.setText(message.getMessage(), true);
-
-		for (File file : message.getAttachments()) {
-			messageHelper.addAttachment(file.getName(), file);
-		}
-
-		for (String contentId : message.getInlineAttachments().keySet()) {
-			File file = message.getInlineAttachments().get(contentId);
-			messageHelper.addInline(contentId, file);
-		}
-
-		ClassPathResource logo = new ClassPathResource("tdar-logo.png");
-		messageHelper.addInline("logo", logo);
-
-		mimeMessage = messageHelper.getMimeMessage();
-		if(message.getMessageUuid()!=null && !message.getMessageUuid().equals("")){
-			mimeMessage.addHeader("x-tdar-message-id", message.getMessageUuid());
-		}
-		
-		return mimeMessage;
-	}
 
 	/**
 	 * Generates a summary of the user's resources by billing account and
@@ -670,18 +634,7 @@ public class EmailServiceImpl implements EmailService {
 		message.setSubject(message.createSubjectLine());
 	}
 
-	private RawMessage createRawMessage(MimeMessage message) throws IOException, MessagingException {
-		byte[] byteArray = getByteArray(message);
-		return new RawMessage(ByteBuffer.wrap(byteArray));
-	}
-
-	private byte[] getByteArray(MimeMessage message) throws IOException, MessagingException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		message.writeTo(outputStream);
-		return outputStream.toByteArray();
-	}
-
-	/**
+	/**   
 	 * Takes an AWS message, renders the Freemarker template to update the HTML
 	 * body, renders the subject line, then creates an MIME version and sends it
 	 * via AWS.
@@ -695,14 +648,7 @@ public class EmailServiceImpl implements EmailService {
 
 	@Override
 	public SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException {
-		MimeMessage mimeMessage = createMimeMessage(message);
-		RawMessage rawMessage = createRawMessage(mimeMessage);
-		return awsEmailService.sendMultiPartMessage(rawMessage);
-	}
-
-	public void createUserStatEmail(TdarUser user) {
-		// given a user, retrieve their billing account information.
-		// Given a billign account, retrieve all the resources.
+		return awsEmailService.sendMultiPartMessage(message);
 	}
 
 	public AwsEmailSender getAwsEmailService() {

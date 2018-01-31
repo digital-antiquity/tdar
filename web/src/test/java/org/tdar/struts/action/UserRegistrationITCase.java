@@ -20,6 +20,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.auth.UserLogin;
@@ -341,7 +342,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase implements 
         controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
         setupValidUserInController(controller);
         sendEmailProcess.execute();
-        SimpleMailMessage received = checkMailAndGetLatest("Your user name");
+        Email received = checkMailAndGetLatest("Your user name");
     }
 
     @Test

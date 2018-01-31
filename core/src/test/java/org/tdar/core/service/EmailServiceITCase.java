@@ -32,14 +32,15 @@ import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
+import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.external.MockMailSender;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase { 
 
 	@Test
 	@Rollback
-	public void testQueueMessage(){
-		
+	public void testUsingMockAwsObject(){
+		assertTrue("The object is an AWS mock", emailService.getAwsEmailService() instanceof MockAwsEmailSenderServiceImpl);
 	}
 	
 	
@@ -55,12 +56,12 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		email.setSubject(subject);
 		emailService.send(email);
 
-		SimpleMailMessage received = checkMailAndGetLatest(mailBody);
+		Email received = checkMailAndGetLatest(mailBody);
 
 		assertEquals(received.getSubject(), subject);
-		assertEquals(received.getText(), mailBody);
+		assertEquals(received.getMessage(), mailBody);
 		assertEquals(received.getFrom(), emailService.getFromEmail());
-		assertEquals(received.getTo()[0], to.getEmail());
+		assertEquals(received.getTo(), to.getEmail());
 
 		assertEquals(email.getStatus(), Status.SENT);
 		// implicit assumption that something that is marked sent has a
@@ -94,11 +95,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		email.setSubject("test");
 		emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
 		sendEmailProcess.execute();
-		assertTrue("expecting a mail in in the inbox",
-				((MockMailSender) emailService.getMailSender()).getMessages().size() > 0);
+		assertTrue("expecting a mail in in the inbox", ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages().size() > 0);
 	}
 
-	@Test(expected = MessagingException.class)
 	@Rollback
 	public void testBounceMailResponses() throws IOException, MessagingException {
 		Email message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");

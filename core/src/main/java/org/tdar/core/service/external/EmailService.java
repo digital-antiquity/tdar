@@ -76,13 +76,6 @@ public interface EmailService {
 
 	String getFromEmail();
 
-	/**
-	 * Creates a MimeMessage for use on internal functions. 
-	 * @param message
-	 * @return
-	 * @throws MessagingException
-	 */
-	MimeMessage createMimeMessage(Email message) throws MessagingException;
 
 	/**
 	 * Generates a new message 

@@ -77,6 +77,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.email.AwsEmailSender;
+import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailServiceImpl;
@@ -176,8 +177,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         protected void failed(Throwable e, Description description) {
             AbstractIntegrationTestCase.this.onFail(e, description);
         }
-
     };
+    
+    
 
     @Before
     public void announceTestStarting() {
@@ -185,8 +187,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         genericService.delete(genericService.findAll(Email.class));
         sendEmailProcess.setAllIds(null);
-        if (emailService.getMailSender() instanceof MockMailSender) {
-            ((MockMailSender) emailService.getMailSender()).getMessages().clear();
+        if (emailService.getAwsEmailService() instanceof MockAwsEmailSenderServiceImpl) {
+            ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages().clear();
         }
         if (TdarConfiguration.getInstance().shouldLogToFilestore()) {
             serializationService.setUseTransactionalEvents(false);
@@ -662,15 +664,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         assertTrue(message, CollectionUtils.isEmpty(results));
     }
 
-    public SimpleMailMessage checkMailAndGetLatest(String text) {
+    public Email checkMailAndGetLatest(String text) {
         sendEmailProcess.execute();
         sendEmailProcess.cleanup();
-        ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
+        List<Email> messages = ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages();
         logger.debug("{} messages ", messages.size());
-        SimpleMailMessage toReturn = null;
-        for (SimpleMailMessage msg : messages) {
+        Email toReturn = null;
+        for (Email msg : messages) {
             logger.debug("{} from:{} to:{}", msg.getSubject(), msg.getFrom(), msg.getTo());
-            if (msg.getText().contains(text)) {
+            if (msg.getMessage().contains(text)) {
                 toReturn = msg;
             }
         }

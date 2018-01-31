@@ -35,6 +35,7 @@ import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
@@ -221,10 +222,10 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = checkMailAndGetLatest("Transaction Status");
+        Email received = checkMailAndGetLatest("Transaction Status");
 
         assertTrue(received.getSubject().contains("Billing Transaction"));
-        assertTrue(received.getText().contains("Transaction Status"));
+        assertTrue(received.getMessage().contains("Transaction Status"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
     }
 

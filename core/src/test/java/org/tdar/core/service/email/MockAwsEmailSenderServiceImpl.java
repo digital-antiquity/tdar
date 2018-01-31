@@ -2,9 +2,18 @@ package org.tdar.core.service.email;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -17,31 +26,29 @@ public class MockAwsEmailSenderServiceImpl implements AwsEmailSender {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private Regions awsRegion;
     private static final TdarConfiguration config = TdarConfiguration.getInstance();
+	private List<Email> messages = new ArrayList<Email>();
 	
 	@Override
 	public SendEmailResult sendMessage(Email message) {
 		logger.debug("Mock object sending message message={}", message);
-		return new SendEmailResult();
+		logger.debug("sending this message: \n{}", message);
+        messages.add(message);
+        return new SendEmailResult();
 	}
 
-	@Override
-	public SendRawEmailResult sendMultiPartMessage(RawMessage message) throws IOException, MessagingException  {
-		logger.debug("Mock object sending multipart message message={}", message);
-		return null;
-	}
-	
 	@Override
 	public void setAwsRegion(Regions region){
 		this.awsRegion = region;
 	}
-
-	private SendRawEmailResult getSuccessfulSendResult(){
-		SendRawEmailResult result  = new SendRawEmailResult();
-		return result;
+	
+	@Override
+	public SendRawEmailResult sendMultiPartMessage(Email email) throws IOException, MessagingException {
+		logger.debug("Mock object sending multipart message message={}", email);
+		messages.add(email);
+        return new SendRawEmailResult();
 	}
 	
-	private SendRawEmailResult getFailedSendResult(){
-		SendRawEmailResult result  = new SendRawEmailResult();
-		return result;
+	public List<Email> getMessages() {
+        return messages;
 	}
 }

@@ -42,5 +42,27 @@
         <column name="verified" type="boolean" defaultValueBoolean="false" />
      </addColumn>
      </changeSet>
+     <changeSet author="bcastel1" id="emailTracking">
+        <addColumn tableName="email_queue">
+            <column name="aws_message_type" type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="email_queue">
+            <column name="message_uuid" type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="email_queue">
+            <column name="from_user_id" type="bigint" />
+        </addColumn>
+        <addColumn tableName="email_queue">
+            <column name="to_person_id" type="bigint" />
+        </addColumn>
+        
+        
+        <addForeignKeyConstraint constraintName="fk_email_from_user"
+            referencedTableName="tdar_user" referencedColumnNames="id"
+            baseTableName="email_queue" baseColumnNames="from_user_id" />
+        <addForeignKeyConstraint constraintName="fk_email_to_person"
+            referencedTableName="person" referencedColumnNames="id"
+            baseTableName="email_queue" baseColumnNames="to_person_id" />
+    </changeSet>
 </databaseChangeLog>
 
