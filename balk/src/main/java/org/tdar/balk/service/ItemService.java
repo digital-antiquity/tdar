@@ -56,6 +56,7 @@ import org.tdar.utils.dropbox.DropboxConfig;
 import org.tdar.utils.dropbox.DropboxItemWrapper;
 import org.tdar.utils.dropbox.ToPersistListener;
 
+import com.dropbox.core.v2.files.DownloadErrorException;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.BasicAccount;
 
@@ -205,7 +206,12 @@ public class ItemService {
                 if (ref != null && PersistableUtils.isNotNullOrTransient(ref.getTdarId())) {
                     msg.append(String.format(" - %s (%s)\n",file.getName(), ref.getTdarId()));
                 }
+            } catch (DownloadErrorException dee) {
+                if (dee.getMessage().contains("not_found")) {
+                    markUploaded(file.getDropboxId(), -1L, false);
+                }
             } catch (Exception e) {
+                file.setId(-1L);
                 logger.error("{}", e, e);
             }
         }
@@ -239,6 +245,7 @@ public class ItemService {
         boolean debug = false;
         if (!loggedIn && debug == false) {
             apiClient.apiLogin();
+            loggedIn = true;
         }
         File actualFile = new File(TdarConfiguration.getInstance().getTempDirectory(), file.getName());
         FileOutputStream fos = new FileOutputStream(actualFile);
