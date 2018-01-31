@@ -11,8 +11,6 @@ import java.nio.charset.Charset;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -135,11 +133,16 @@ public class PairtreeFilestore extends BaseFilestore {
     }
 
     @Override
-    public void logFilestoreWrite(File outFile) throws IOException {
+    public void logFilestoreWrite(File outFile) {
         File logFile = new File(baseStoreDirectory, FilestoreObjectType.LOG.getRootDir() + "/write.log");
-        String logLine = String.format("%s/%s/%s\t%s", outFile.getAbsolutePath(),Charset.defaultCharset());
+        
+        String logLine = String.format("%s\t%s\n", new Date(), outFile.getAbsolutePath(),Charset.defaultCharset());
         synchronized (logFile) {
-            FileUtils.writeStringToFile(logFile, logLine);
+            try {
+            FileUtils.writeStringToFile(logFile, logLine, Charset.defaultCharset(), true);
+            } catch (Throwable t) {
+                logger.error(t.getMessage(),t);
+            }
         }
     }
 

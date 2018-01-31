@@ -118,5 +118,5 @@ public interface Filestore {
 
     File getDirectory(FilestoreObjectType type, Long persistableId);
 
-    void logFilestoreWrite(File outFile) throws IOException;
+    void logFilestoreWrite(File outFile);
 }
