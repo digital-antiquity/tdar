@@ -1005,4 +1005,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean isListCollectionsEnabled() {
         return false;
     }
+
+    public String getStaffEmail() {
+        return assistant.getStringProperty("app.staff.email", "staff@digitalantiquity.org");
+    }
 }

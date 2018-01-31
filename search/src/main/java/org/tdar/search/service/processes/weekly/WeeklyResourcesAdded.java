@@ -79,7 +79,7 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             Email email = new Email();
             email.setDate(new Date());
             email.setFrom(config.getDefaultFromEmail());
-            email.setTo(config.getContactEmail());
+            email.setTo(config.getStaffEmail());
             email.setSubject(String.format("There are %s new resources in %s", resources.size(), config.getSiteAcronym()));
             email.setUserGenerated(false);
             Map<String, Object> dataModel = initDataModel();
