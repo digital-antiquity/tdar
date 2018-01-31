@@ -89,7 +89,7 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
             Email email = new Email();
             email.setDate(new Date());
             email.setFrom(config.getDefaultFromEmail());
-            email.setTo(config.getContactEmail());
+            email.setTo(config.getStaffEmail());
             email.setSubject(String.format("%s New User Report: %s new users", config.getSiteAcronym().toUpperCase(), people.size()));
             email.setUserGenerated(false);
             Map<String, Object> dataModel = initDataModel();
@@ -109,7 +109,7 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
             email.setUserGenerated(false);
             email.setDate(new Date());
             email.setFrom(config.getDefaultFromEmail());
-            email.setTo(config.getContactEmail());
+            email.setTo(config.getStaffEmail());
             email.setSubject(String.format("There are %s user emails to review ", emails.size()));
             emailService.queueWithFreemarkerTemplate("email_review_message.ftl", dataModel, email);
         }

@@ -29,6 +29,8 @@ public class UserNotificationSeleniumWebITCase extends AbstractEditorSeleniumWeb
         loginEditor();
         clearPageCache();
         logger.debug(getText());
+        // we were getting an alert, likely when the browser moved away from the page, prior to a "success" being returned
+        Thread.sleep(1000);
         assertFalse(getText().contains(RELEASE_ANNOUNCE));
     }
 

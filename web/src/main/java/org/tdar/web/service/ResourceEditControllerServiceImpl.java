@@ -190,10 +190,10 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
 
         logger.debug("loadEffective...");
         for (ResourceCollection rc : resource.getManagedResourceCollections()) {
+            authorizationService.applyTransientViewableFlag(rc, authenticatedUser);
             if (authorizationService.canRemoveFromCollection(authenticatedUser, rc)) {
                 shares.add(rc);
             } else {
-                authorizationService.applyTransientViewableFlag(rc, authenticatedUser);
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }
