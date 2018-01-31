@@ -15,11 +15,11 @@
 
     <br />
     <!-- The fileinput-button span is used to style the file input field as button -->
-    <span class="btn btn-success fileinput-button" :disabled="inputDisabled" > <i
+    <label class="btn btn-success fileinput-button" :disabled="inputDisabled" for="fileupload"> <i
         class="glyphicon glyphicon-plus"></i> <span>Select
             files...</span> <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
-    </span> <br> <br>
+    </label> <br> <br>
     <!-- The global progress bar -->
     <div id="progress" class="progress">
         <div class="progress-bar progress-bar-success"></div>
@@ -95,14 +95,14 @@ ${vueFilesFallback!'{{ files }}'}
     <td style="width: 10%">
     <!--  only show replace when we have an originalFileVersionId (which means we round-tripped to the server) -->
     <span v-if="file.originalFileVersionId != undefined ">
-    <span
-        class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" :disabled="inputDisabled"
+    <label
+        class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" :disabled="inputDisabled" :for="fileuploadId"
         :id="wrapperId" style="width: 6em; text-align: left"> <i
             class="icon-refresh icon-white"> </i> <span>Replace</span> 
             <input :disabled="inputDisabled"
             type="file" name="replaceFile" @change="replaceFileChange"
             :id="fileuploadId" class="replace-file">
-    </span>
+    </label>
         <button type="button" style="text-align: left" :disabled="inputDisabled"
             v-if="file.replaceFile != undefined" @click="undoReplace"
             class="btn btn-small btn-warning undo-replace-button btn-block"
