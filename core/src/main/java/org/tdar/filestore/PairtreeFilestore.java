@@ -7,9 +7,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -95,7 +98,7 @@ public class PairtreeFilestore extends BaseFilestore {
         }
         File outFile = new File(path);
         outFile = rotateFileIfNeeded(rotate, outFile);
-
+        logFilestoreWrite(outFile);
         logger.info("storing at: {}", outFile.getAbsolutePath());
         String errorMessage = MessageHelper.getMessage("pairtreeFilestore.cannot_write", Arrays.asList(outFile.getAbsolutePath()));
         DigestInputStream digestInputStream = appendMessageDigestStream(content);
@@ -128,6 +131,15 @@ public class PairtreeFilestore extends BaseFilestore {
             IOUtils.closeQuietly(content);
             IOUtils.closeQuietly(digestInputStream);
             IOUtils.closeQuietly(outputStream);
+        }
+    }
+
+    @Override
+    public void logFilestoreWrite(File outFile) throws IOException {
+        File logFile = new File(baseStoreDirectory, FilestoreObjectType.LOG.getRootDir() + "/write.log");
+        String logLine = String.format("%s/%s/%s\t%s", outFile.getAbsolutePath(),Charset.defaultCharset());
+        synchronized (logFile) {
+            FileUtils.writeStringToFile(logFile, logLine);
         }
     }
 
