@@ -659,10 +659,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         getLogger().debug("loadEffective...");
         for (SharedCollection rc : getResource().getSharedResourceCollections()) {
+            authorizationService.applyTransientViewableFlag(rc, getAuthenticatedUser());
             if (authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
                 getShares().add(rc);
             } else {
-                authorizationService.applyTransientViewableFlag(rc, getAuthenticatedUser());
                 retainedSharedCollections.add(rc);
                 getLogger().debug("adding: {} to retained collections", rc);
             }

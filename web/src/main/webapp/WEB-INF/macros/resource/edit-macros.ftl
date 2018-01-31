@@ -59,17 +59,18 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#local _hidden = true>
         <#if (effectiveShares?size > 0)>
             <#list effectiveShares as share>
-                <#if share.viewable>
+                <#if share.viewable == false>
                     <#local _hidden = false>
                 </#if>
             </#list>
         </#if> 
-        <#if _hidden >
-            <p id="effectiveCollectionsVisible"><i>The following collections cannot be modified because you do not have sufficient permissions:
+
+        <#if !_hidden >
+            <p id="effectiveCollectionsVisible"><i><b>The following collections cannot be modified because you do not have sufficient permissions:</b>
             <#assign comma =false>
             <#list effectiveShares as share>
-                <#if share.viewable>
-                    <#if comma>,</#if>${share.name}<#assign comma=true />
+                <#if share.viewable == false>
+                    <#if comma>,</#if>${share.name} <#assign comma=true />
                 </#if>
             </#list>
             </i></p>
