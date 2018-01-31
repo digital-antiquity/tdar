@@ -68,6 +68,7 @@ public class BillingAccountSelectionAction extends AbstractAuthenticatableAction
     private transient AuthorizationService authorizationService;
 
     private Invoice invoice;
+
     @Override
     public void prepare() {
         if (PersistableUtils.isNotNullOrTransient(invoiceId)) {

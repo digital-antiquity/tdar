@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.RevisionLogType;
@@ -50,13 +48,13 @@ public interface ResourceCollectionService {
      * 
      * @return
      */
-    <C extends ResourceCollection> List<C> findAllTopLevelCollections();
+    List<ResourceCollection> findAllTopLevelCollections();
 
     /**
      * Find all direct child @link ResourceCollection entries of a @link ResourceCollection
      * 
      */
-    <C extends HierarchicalCollection> List<C> findDirectChildCollections(Long id, Boolean hidden, Class<C> cls);
+    List<ResourceCollection> findDirectChildCollections(Long id, Boolean hidden);
 
     /**
      * Delete the @link ResourceCollection and it's @link AuthorizedUser entries.
@@ -83,7 +81,7 @@ public interface ResourceCollectionService {
      * @param person
      * @return
      */
-    <C extends HierarchicalCollection> List<C> findParentOwnerCollections(Person person, Class<C> cls);
+    List<ResourceCollection> findParentOwnerCollections(Person person);
 
     /**
      * Find all @link ResourceCollection entries that are potential parents of the specified @link ResourceCollection
@@ -92,10 +90,10 @@ public interface ResourceCollectionService {
      * @param collection
      * @return
      */
-    <C extends HierarchicalCollection> List<C> findPotentialParentCollections(Person person, C collection, Class<C> cls);
+    List<ResourceCollection> findPotentialParentCollections(Person person, ResourceCollection collection);
 
-    <C extends ResourceCollection> void saveResourceCollections(Resource resource, Collection<C> incoming, Set<C> current,
-            TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling, Class<C> cls);
+    void saveResourceCollections(Resource resource, Collection<ResourceCollection> incoming, Set<ResourceCollection> current,
+            TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling, CollectionResourceSection type);
 
     /**
      * Add a @Link ResourceCollection to a @link Resource, create as needed.
@@ -107,16 +105,16 @@ public interface ResourceCollectionService {
      * @param errorHandling
      * @param collection
      */
-    <C extends ResourceCollection> void addResourceCollectionToResource(Resource resource, Set<C> current, TdarUser authenticatedUser,
+    void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, TdarUser authenticatedUser,
             boolean shouldSave,
-            ErrorHandling errorHandling, C collection, Class<C> cls);
+            ErrorHandling errorHandling, ResourceCollection collection, CollectionResourceSection type);
 
     /**
      * Find all @link ResourceCollection entries (shared only)
      * 
      * @return
      */
-    List<SharedCollection> findAllResourceCollections();
+    List<ResourceCollection> findAllResourceCollections();
 
     /**
      * Recursively build the transient child collection fields of a specified resource collection, and return a list
@@ -134,7 +132,7 @@ public interface ResourceCollectionService {
      *         this method iteratively populates the transient children resource collection fields of the specified
      *         collection.
      */
-    <C extends HierarchicalCollection<C>> TreeSet<C> buildCollectionTreeForController(C collection, TdarUser authenticatedUser, Class<C> cls);
+    TreeSet<ResourceCollection> buildCollectionTreeForController(ResourceCollection collection, TdarUser authenticatedUser);
 
     /**
      * Recursively build the transient child collection fields of a specified resource collection, and return a list
@@ -146,7 +144,7 @@ public interface ResourceCollectionService {
      *            the type of collections to return (e.g. internal, shared, public)
      * @return a list containing the provided 'parent' collection and any descendant collections (if any).
      */
-    <E extends HierarchicalCollection<E>> List<E> findAllChildCollectionsOnly(E collection, Class<E> cls);
+    List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection);
 
     /**
      * Return a collection of all (shared) collections that convey permissions to the specified user that are equal
@@ -159,7 +157,7 @@ public interface ResourceCollectionService {
      * @param generalPermissions
      * @return
      */
-    <C extends HierarchicalCollection<?>> Set<C> findFlattenedCollections(Person user, GeneralPermissions generalPermissions, Class<C> cls);
+    Set<ResourceCollection> findFlattenedCollections(Person user, Permissions generalPermissions);
 
     /**
      * Return the root resource collection of the provided resource collection. This method also populates the
@@ -168,7 +166,7 @@ public interface ResourceCollectionService {
      * @param anyNode
      * @return
      */
-    SharedCollection getFullyInitializedRootResourceCollection(SharedCollection anyNode, TdarUser authenticatedUser);
+    ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode, TdarUser authenticatedUser);
 
     /**
      * Find all @link ResourceCollection entries that were both public and shared.
@@ -203,8 +201,7 @@ public interface ResourceCollectionService {
      * @param authenticatedUser
      * @param collectionIds
      */
-    <C extends HierarchicalCollection<C>> void reconcileCollectionTree(Collection<C> collection, TdarUser authenticatedUser, List<Long> collectionIds,
-            Class<C> cls);
+    void reconcileCollectionTree(Collection<ResourceCollection> collection, TdarUser authenticatedUser, List<Long> collectionIds);
 
     /**
      * Return a read-only list of sparse Resource objects that belong to a ResourceCollection with the specified ID
@@ -224,32 +221,46 @@ public interface ResourceCollectionService {
      */
     Long getCollectionViewCount(ResourceCollection persistable);
 
-    <C extends HierarchicalCollection<C>> void updateCollectionParentTo(TdarUser authorizedUser, C persistable, C parent, Class<C> cls);
+    void updateCollectionParentTo(TdarUser authorizedUser, ResourceCollection persistable, ResourceCollection parent);
 
-    <C extends HierarchicalCollection> void updateAlternateCollectionParentTo(TdarUser authorizedUser, C persistable,
-            HierarchicalCollection hierarchicalCollection, Class<C> cls);
+    void updateAlternateCollectionParentTo(TdarUser authorizedUser, ResourceCollection persistable,
+            ResourceCollection hierarchicalCollection);
 
-    <C extends HierarchicalCollection> List<C> getAllChildCollections(C persistable, Class<C> cls);
+    List<ResourceCollection> getAllChildCollections(ResourceCollection persistable);
 
-    void addUserToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, GeneralPermissions permission);
+    void addUserToInternalCollection(Resource resource, TdarUser authenticatedUser, TdarUser user, Permissions permission);
 
-    Set<SharedCollection> getEffectiveSharesForResource(Resource resource);
+    Set<ResourceCollection> getEffectiveSharesForResource(Resource resource);
 
-    Set<ListCollection> getEffectiveResourceCollectionsForResource(Resource resource);
+    Set<ResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource);
 
-    void reconcileIncomingResourcesForCollection(SharedCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
-            List<Resource> resourcesToRemove);
+    /**
+     * Given a resource and a user, find all of the collections that the resource has been added to
+     * and that the user has access to.
+     * 
+     * @param resource
+     * @param user
+     * @return
+     */
+    List<ResourceCollection> getCollectionsForResourceAndUser(Resource resource, TdarUser user);
 
-    void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser);
+    /**
+     * Creates a new collection for a user given a collection name.
+     * 
+     * @param collectionName
+     * @param collectionDescription
+     * @param user
+     * @return
+     */
+    ResourceCollection createNewResourceCollection(String collectionName, String collectionDescription, TdarUser user);
 
-    void reconcileIncomingResourcesForCollectionWithoutRights(ListCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
-            List<Resource> resourcesToRemove);
+    void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser, CollectionResourceSection type);
 
     void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser);
 
     DeleteIssue getDeletionIssues(TextProvider provider, ResourceCollection persistable);
 
-    <C extends HierarchicalCollection> void saveCollectionForController(CollectionSaveObject cso);
+    void saveCollectionForController(CollectionSaveObject cso);
 
     void makeResourcesInCollectionActive(ResourceCollection col, TdarUser person);
 
@@ -267,7 +278,7 @@ public interface ResourceCollectionService {
      *            name that the method will use when filtering by exact name
      * @return
      */
-    <C extends HierarchicalCollection> C findCollectionsWithName(TdarUser user, String name, Class<C> cls);
+    ResourceCollection findCollectionsWithName(TdarUser user, String name);
 
     /**
      * Convert a resource collection into a persisted white-label collection with all default values.
@@ -288,24 +299,26 @@ public interface ResourceCollectionService {
 
     void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser);
 
-    <C extends ResourceCollection> void moveResource(Resource resource, C fromCollection, C toCollection, TdarUser tdarUser);
+    void moveResource(Resource resource, ResourceCollection fromCollection, ResourceCollection toCollection, TdarUser tdarUser);
 
     String getSchemaOrgJsonLD(ResourceCollection resource) throws IOException;
 
-    <C extends ResourceCollection> void saveCollectionForRightsController(C c, TdarUser authenticatedUser,
-            List<UserRightsProxy> proxies,
-            Class<C> class1, Long startTime);
+    void saveCollectionForRightsController(ResourceCollection c, TdarUser authenticatedUser,
+            List<UserRightsProxy> proxies, Long startTime);
 
     List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user);
 
-    <C extends ResourceCollection> List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Class<C> cls);
+    List<ResourceCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user);
 
     List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser);
 
     void saveResourceRights(List<UserRightsProxy> proxies, TdarUser authenticatedUser, Resource resource);
 
-    <C extends HierarchicalCollection> List<C> findAlternateChildren(List<Long> ids, TdarUser authenticatedUser, Class<C> cls);
+    List<ResourceCollection> findAlternateChildren(List<Long> ids, TdarUser authenticatedUser);
 
     ResourceCollection find(long l);
+
+    void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
+            List<Resource> resourcesToRemove, CollectionResourceSection type);
 
 }

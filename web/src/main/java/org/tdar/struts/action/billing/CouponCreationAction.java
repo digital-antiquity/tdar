@@ -21,14 +21,12 @@ import org.tdar.utils.PersistableUtils;
 public class CouponCreationAction extends AbstractBillingAccountAction {
 
     private static final long serialVersionUID = -4931747979827504369L;
-    
+
     private Integer quantity = 1;
 
     private Long numberOfFiles = 0L;
     private Long numberOfMb = 0L;
     private Date expires = new DateTime().plusYears(1).toDate();
-
-
 
     @Action(value = "create-code",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
@@ -94,7 +92,6 @@ public class CouponCreationAction extends AbstractBillingAccountAction {
             getLogger().info("coupon appears to be valid");
         }
     }
-
 
     public Integer getQuantity() {
         return quantity;

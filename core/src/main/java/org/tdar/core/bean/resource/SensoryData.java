@@ -29,7 +29,7 @@ import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.bean.resource.sensory.SensoryDataScan;
 
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "sensory_data")
 @XmlRootElement(name = "sensoryData")
 /**
@@ -103,9 +103,7 @@ public class SensoryData extends Dataset {
     private String controlDataFilename;
 
     public enum RgbCapture {
-        NA("None"),
-        INTERNAL("Internal"),
-        EXTERNAL("External");
+        NA("None"), INTERNAL("Internal"), EXTERNAL("External");
         String label;
 
         RgbCapture(String label) {

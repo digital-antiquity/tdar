@@ -17,6 +17,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Format a general search query for a resource or collection
+ * 
  * @author abrin
  *
  */

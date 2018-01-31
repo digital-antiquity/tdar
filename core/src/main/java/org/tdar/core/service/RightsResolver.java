@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.exception.TdarAuthorizationException;
 
@@ -29,13 +29,13 @@ public class RightsResolver {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     // track the PermissionSeen and the date assigned
-    private Comparator<GeneralPermissions> comparator = new Comparator<GeneralPermissions>() {
+    private Comparator<Permissions> comparator = new Comparator<Permissions>() {
         @Override
-        public int compare(GeneralPermissions o1, GeneralPermissions o2) {
+        public int compare(Permissions o1, Permissions o2) {
             return ObjectUtils.compare(o1.getEffectivePermissions(), o2.getEffectivePermissions());
         }
     };
-    private TreeMap<GeneralPermissions, Date> lookup = new TreeMap<>(comparator);
+    private TreeMap<Permissions, Date> lookup = new TreeMap<>(comparator);
 
     public RightsResolver(List<AuthorizedUser> authorizedUsers) {
         this.setAuthorizedUsers(authorizedUsers);
@@ -43,7 +43,7 @@ public class RightsResolver {
         for (AuthorizedUser au : authorizedUsers) {
             Date expires = au.getDateExpires();
 
-            GeneralPermissions generalPermission = au.getGeneralPermission();
+            Permissions generalPermission = au.getGeneralPermission();
             Date existingDate = lookup.getOrDefault(generalPermission, NEVER);
             Date newDate = au.getDateExpires();
 
@@ -99,8 +99,8 @@ public class RightsResolver {
         }
 
         // keep the set with the least permissions to the greatest
-        TreeSet<GeneralPermissions> toEval = new TreeSet<>(comparator);
-        for (GeneralPermissions perm : lookup.keySet()) {
+        TreeSet<Permissions> toEval = new TreeSet<>(comparator);
+        for (Permissions perm : lookup.keySet()) {
             if (perm.ordinal() >= userToAdd.getGeneralPermission().ordinal()) {
                 toEval.add(perm);
             }
@@ -117,7 +117,7 @@ public class RightsResolver {
         }
 
         // in increasing level or permission... check that we have the rights to do XYZ
-        for (GeneralPermissions perm : toEval) {
+        for (Permissions perm : toEval) {
             Date date = lookup.get(perm);
             // if the date we have rights for is INFINITE, then we're fine
             if (date == INFINITE) {
@@ -154,8 +154,8 @@ public class RightsResolver {
     }
 
     public boolean canModifyUsersOn(HasAuthorizedUsers account) {
-        GeneralPermissions minPerm = GeneralPermissions.getEditPermissionFor(account);
-        
+        Permissions minPerm = Permissions.getEditPermissionFor(account);
+
         if (isAdmin()) {
             return true;
         }
@@ -164,7 +164,7 @@ public class RightsResolver {
             return false;
         }
 
-        for (GeneralPermissions perm : lookup.keySet()) {
+        for (Permissions perm : lookup.keySet()) {
             if (perm.ordinal() >= minPerm.ordinal()) {
                 return true;
             }

@@ -15,8 +15,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -41,8 +39,8 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Updatable;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
@@ -71,7 +69,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Length(max = FieldLength.FIELD_LENGTH_255, min=1)
+    @Length(max = FieldLength.FIELD_LENGTH_255, min = 1)
     @NotNull
     private String name;
 
@@ -83,12 +81,12 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     private Status status = Status.ACTIVE;
 
     @NotNull
-    @Column(name = "date_created", nullable=false)
+    @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
 
     @NotNull
-    @Column(name = "date_updated", nullable=false)
+    @Column(name = "date_updated", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModified = new Date();
 
@@ -356,7 +354,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         this.status = status;
     }
 
-
     public Long getFilesUsed() {
         return filesUsed;
     }
@@ -454,7 +451,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     public String availableString() {
         return String.format("f: %s s: %s", totalFiles - filesUsed, totalSpaceInBytes - spaceUsedInBytes);
     }
-
 
     @Override
     @Transient

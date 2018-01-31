@@ -83,7 +83,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.Creator")
 public abstract class Creator<T extends Creator<?>> implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
-        Obfuscatable, Validatable, Addressable, XmlLoggable, HasImage,Slugable, HasEmail,HasLabel {
+        Obfuscatable, Validatable, Addressable, XmlLoggable, HasImage, Slugable, HasEmail, HasLabel {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
@@ -129,7 +129,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
             }
             return null;
         }
-        
+
         public String getCode() {
             return this.code;
         }
@@ -173,7 +173,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonView(JsonLookupFilter.class)
-    @Column(name = "date_created", nullable=false)
+    @Column(name = "date_created", nullable = false)
     @NotNull
     private Date dateCreated;
 
@@ -182,12 +182,12 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @JsonView(JsonLookupFilter.class)
     private Status status = Status.ACTIVE;
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, targetEntity=Creator.class, orphanRemoval=true)
+    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, targetEntity = Creator.class,
+            orphanRemoval = true)
     @JoinColumn(name = "merge_creator_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<T> synonyms = new HashSet<>();
 
-    
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     private String description;
@@ -219,11 +219,10 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @JsonView(JsonLookupFilter.class)
     public abstract String getName();
 
-    
-    
     public String getLabel() {
         return getName();
     }
+
     @JsonView(JsonLookupFilter.class)
     public abstract String getProperName();
 
@@ -352,7 +351,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
         this.synonyms = synonyms;
     }
 
-
     @Override
     public void setStatus(Status status) {
         this.status = status;
@@ -452,7 +450,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
         return UrlUtils.slugify(getProperName());
     }
 
-
     @Override
     public Integer getMaxHeight() {
         return maxHeight;
@@ -482,7 +479,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     public void setMaxSize(VersionType maxSize) {
         this.maxSize = maxSize;
     }
-
 
     @Override
     @Transient

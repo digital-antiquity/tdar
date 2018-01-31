@@ -14,5 +14,4 @@ public class FilestoreLoggingException extends TdarRecoverableRuntimeException {
         super(message);
     }
 
-
 }

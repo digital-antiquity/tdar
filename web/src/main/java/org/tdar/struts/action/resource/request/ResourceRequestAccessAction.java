@@ -50,7 +50,7 @@ public class ResourceRequestAccessAction extends AbstractAuthenticatableAction
 
     @Autowired
     private transient ResourceService resourceService;
-    
+
     private AntiSpamHelper h = new AntiSpamHelper();
     private Set<EmailType> emailTypes = new HashSet<>(EmailType.valuesWithoutConfidentialFiles());
     private List<ResourceCreatorProxy> proxies = new ArrayList<>();
@@ -95,7 +95,7 @@ public class ResourceRequestAccessAction extends AbstractAuthenticatableAction
             }
         }
         // only add the SAA option if ...
-        custom  = resourceService.findCustom(resource);
+        custom = resourceService.findCustom(resource);
         if (custom != null) {
             emailTypes.add(EmailType.CUSTOM);
         }
@@ -115,7 +115,7 @@ public class ResourceRequestAccessAction extends AbstractAuthenticatableAction
         if (PersistableUtils.isNullOrTransient(getResource())) {
             return ERROR;
         }
-        
+
         // if we're logged out, go to request-access-unathenticated.ftl
         if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
             return SUCCESS_UNAUTH;

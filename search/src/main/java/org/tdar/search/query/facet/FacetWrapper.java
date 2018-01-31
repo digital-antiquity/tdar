@@ -10,8 +10,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-
-
 public class FacetWrapper implements Serializable {
 
     private static final long serialVersionUID = -151557113111620751L;
@@ -22,15 +20,15 @@ public class FacetWrapper implements Serializable {
     private String facetPivotJson = null;
     private boolean mapFacet = false;
     private Integer maxFacetLimit;
+
     public void facetBy(String facetField, Class<?> facetClass) {
         facetMap.put(facetField, facetClass);
     }
-    
+
     public <T> void facetBy(String facetField, Class<T> facetClass, ArrayList<T> selectedResourceTypes) {
         facetBy(facetField, facetClass);
         filters.put(facetField, StringUtils.join(selectedResourceTypes, " "));
     }
-
 
     public Map<String, Class<?>> getFacetMap() {
         return facetMap;
@@ -84,6 +82,5 @@ public class FacetWrapper implements Serializable {
     public void setMaxFacetLimit(Integer maxFacetLimit) {
         this.maxFacetLimit = maxFacetLimit;
     }
-
 
 }

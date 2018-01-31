@@ -21,18 +21,19 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT, location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
+        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT,
+                location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 })
 /**
  * Abstract class for backing unauthenticated requests (Login and Register)
+ * 
  * @author abrin
  *
  */
 public abstract class AbstractRequestAccessController<P extends Persistable> extends AbstractAuthenticatableAction implements Preparable {
-
 
     private static final long serialVersionUID = -3264106556246738465L;
 
@@ -50,12 +51,10 @@ public abstract class AbstractRequestAccessController<P extends Persistable> ext
 
     private AntiSpamHelper h = new AntiSpamHelper();
 
-
     public abstract String getTypeNamespace();
-    
+
     public abstract Class<P> getPersistableClass();
-    
-    
+
     @Override
     public void prepare() {
         // make sure the Reosurce ID is set

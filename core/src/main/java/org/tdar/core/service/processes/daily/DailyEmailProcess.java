@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,6 @@ import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 
@@ -79,7 +77,6 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
         // get user accounts updated since yesterday @ midnight
         LocalDateTime yesterday = LocalDate.now().minusDays(1).atStartOfDay();
 
-
         List<TdarUser> people = entityService.findAllRegisteredUsers(NEW_USER_MAX_RESULTS).stream()
                 // remove empty user objects
                 .filter(Objects::nonNull)
@@ -89,25 +86,23 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(people)) {
-        	
-        	Email message = emailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getContactEmail());
+        	Email message = emailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getStaffEmail());
         	message.setMap(initDataModel());
         	message.addData("users", people);
-        message.addData("totalUsers", people.size());
-        message.setUserGenerated(false);
+            message.addData("totalUsers", people.size());
+            message.setUserGenerated(false);
         	message.setDate(new Date());
-
         	emailService.updateEmailSubject(message);
         	emailService.renderAndUpdateEmailContent(message);
         	emailService.queue(message);
+
         }
     }
-
 
     private void sendQuarrantineEmail() {
         List<Email> emails = emailService.findEmailsWithStatus(Status.IN_REVIEW);
         if (CollectionUtils.isNotEmpty(emails)) {
-        	Email message = emailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getContactEmail());
+        	Email message = emailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getStaffEmail());
         	message.setMap(initDataModel());
         	message.addData("emails", emails);
         	message.addData("totalEmails",emails.size());

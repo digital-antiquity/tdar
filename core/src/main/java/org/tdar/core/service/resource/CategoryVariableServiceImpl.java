@@ -17,12 +17,14 @@ import org.tdar.core.service.ServiceInterface;
  * @version $Revision$
  */
 @Service
-public class CategoryVariableServiceImpl  extends ServiceInterface.TypedDaoBase<CategoryVariable, CategoryVariableDao> implements CategoryVariableService {
+public class CategoryVariableServiceImpl extends ServiceInterface.TypedDaoBase<CategoryVariable, CategoryVariableDao> implements CategoryVariableService {
 
     /*
      * Returns all category variables in unknown order
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.CategoryVariableService#findAllCategories()
      */
     @Override
@@ -34,7 +36,9 @@ public class CategoryVariableServiceImpl  extends ServiceInterface.TypedDaoBase<
     /*
      * Returns all category variables sorted by Id
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.resource.CategoryVariableService#findAllCategoriesSorted()
      */
     @Override

@@ -62,11 +62,9 @@ public interface TdarNamedQueries {
     String QUERY_EDITABLE_RESOURCES = "resource.editable";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse";
     String QUERY_SHARED_COLLECTION_BY_PARENT = "sharedcollection.parent";
-    String QUERY_LIST_COLLECTION_BY_PARENT = "listcollection.parent";
     String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
     String QUERY_SHARED_COLLECTION_BY_AUTH_OWNER = "sharedCollection.authOwnerId_name";
-    String QUERY_LIST_COLLECTION_BY_AUTH_OWNER = "listCollection.authOwnerId_name";
     String QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT = "collection.hiddenParent";
     String QUERY_EXTERNAL_ID_SYNC = "resource.externalId";
     String QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED = "adminStats.cultureKeywordControlled";
@@ -92,7 +90,6 @@ public interface TdarNamedQueries {
     String QUERY_RESOURCES_BY_DECADE = "resources.byDecade";
     String QUERY_SPARSE_RESOURCE_LOOKUP = "resource.sparseLookup";
     String QUERY_SPARSE_SHARED_COLLECTION_LOOKUP = "sharedCollection.sparseLookup";
-    String QUERY_SPARSE_LIST_COLLECTION_LOOKUP = "listCollection.sparseLookup";
     String SPACE_BY_PROJECT = "admin.size.project";
     String SPACE_BY_RESOURCE = "admin.size.resource";
     String SPACE_BY_COLLECTION = "admin.size.collection";
@@ -121,7 +118,6 @@ public interface TdarNamedQueries {
     String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
     String DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY = "irfv.delete";
     String SHARED_COLLECTION_LIST_WITH_AUTHUSER = "sharedcollection.idlest.with.authuser";
-    String LIST_COLLECTION_LIST_WITH_AUTHUSER = "listcollection.idlest.with.authuser";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted";
     String QUERY_SPARSE_COLLECTION_RESOURCES = "query.sparse.collection.resources";
@@ -129,7 +125,6 @@ public interface TdarNamedQueries {
     String CREATOR_VIEW = "creator.views";
     String QUERY_COLLECTION_CHILDREN = "resourceCollection.allChildren";
     String QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES = "sharedCollection.allChildrenResources";
-    String QUERY_LIST_COLLECTION_CHILDREN_RESOURCES = "listCollection.allChildrenResources";
     String QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT = "resourceCollection.allChildrenResources_count";
     String QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION = "versions.verify";
     String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";
@@ -170,20 +165,20 @@ public interface TdarNamedQueries {
     String FIND_RESOURCES_SHARED_WITH_USERS = "query.resources_shared_with_users";
     String FIND_COLLECTIONS_SHARED_WITH_USERS = "query.collections_shared_with_users";
     String AUTHORIZED_USERS_FOR_RESOURCE = "query.authusers_for_resource";
-    String  FIND_USERINVITES_BY_COLLECTION = "query.user_invites_by_collection";
-    String  FIND_USERINVITES_BY_USER = "query.user_invites_by_user";
-    String  FIND_USERINVITES_BY_RESOURCE = "query.find_user_invites_by_resource";
+    String FIND_USERINVITES_BY_COLLECTION = "query.user_invites_by_collection";
+    String FIND_USERINVITES_BY_USER = "query.user_invites_by_user";
+    String FIND_USERINVITES_BY_RESOURCE = "query.find_user_invites_by_resource";
     String FIND_ALTERNATE_CHILDRENS = "query.alternate_children";
     String FIND_ALTERNATE_CHILDRENS_TREE = "query.alternate_children_tree";
     String FIND_ALTERNATE_LIST_CHILDRENS_TREE = "query.alternate_list_children_tree";
-    String QUERY_INSTITUTION_PEOPLE="query.find_people_by_institution";
+    String QUERY_INSTITUTION_PEOPLE = "query.find_people_by_institution";
     String FIND_EXPIRING_AUTH_USERS_FOR_RESOURCE = "query.expiring_auth_users_resource";
     String FIND_EXPIRING_AUTH_USERS_FOR_COLLECTION = "query.expiring_auth_users_collection";
     String QUERY_RIGHTS_EXPIRY_RESOURCE = "query.expiry_authuser";
     String QUERY_RIGHTS_EXPIRY_COLLECTION = "query.expiry_authuser_collection";
     String QUERY_RIGHTS_EXPIRY_ACCOUNT = "query.expiry_account";
     String QUERY_RIGHTS_EXPIRY_WORKFLOW = "query.expiry_authuser_workflow";
-            // raw SQL/HQL queries
+    // raw SQL/HQL queries
 
     /**
      * Static HQL and SQL queries that cannot be represented as annotations because they are either pure SQL or use String replacement.
@@ -237,7 +232,7 @@ public interface TdarNamedQueries {
             + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND "
             +
             " ((exists "
-            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and rescol.status='ACTIVE' and "
+            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.managedResources as colres where colres.id = res.id and rescol.status='ACTIVE' and "
             +
             " (TRUE=:admin or exists ( "
             + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
@@ -247,7 +242,7 @@ public interface TdarNamedQueries {
     String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
             + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
             + " lower(ds.title) like :titleLookup and "
-            + "(:collectionId=-1L or ds.id in (select distinct r.id from SharedCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.status='ACTIVE' and (rc.id=:collectionId or parentId=:collectionId))) and "
+            + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.managedResources r where rc.status='ACTIVE' and (rc.id=:collectionId or parentId=:collectionId))) and "
             + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
             + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
             + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
@@ -285,8 +280,7 @@ public interface TdarNamedQueries {
             + "and restriction='PUBLIC' and r.status='ACTIVE'";
 
     String CONVERT_PERSON_TO_USER = "INSERT INTO tdar_user (id, username) VALUES(%s, '%s')";
-    
-   
+
     String DAILY_DOWNLOAD_UPDATE = "INSERT INTO file_download_day_agg (information_resource_file_id, year, month, date_accessed, count) select information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day',date_accessed), count(id) from information_resource_file_download_statistics where date_trunc('day',date_accessed)='%1$tF' group by information_resource_file_id, date_part('year', date_accessed), date_part('month', date_accessed), date_trunc('day', date_accessed)";
 
     String FIND_ACTIVE_PERSISTABLE_BY_ID = "select id from %s where status in ('ACTIVE')";
@@ -308,29 +302,32 @@ public interface TdarNamedQueries {
     String HOMEPAGE_GEOGRAPHIC = "select code, resource_type, sum(count), id from ( ( select code, count(*), r.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource r on r.id = rgk.resource_id left join information_resource ir on (ir.id = r.id and ir.inheriting_spatial_information = false) where (code !='') and r.status = 'ACTIVE' group by code, r.resource_type, gk.id ) union all select code, count(*), irr.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.keyword_id join resource p on p.id = rgk.resource_id join information_resource ir on (ir.project_id = p.id and ir.inheriting_spatial_information = true) join resource irr on (irr.id = ir.id) where (code !='') and irr.status = 'ACTIVE' group by code, irr.resource_type, gk.id ) as allrecs group by code, resource_type, id order by 1, 2";
 
     String DAILY_RESOURCE_STATS_CLEANUP = "delete from resource_access_statistics where date_trunc('day',date_accessed) < '%1$tY-%1$tm-%1$td' ";
-    
+
     String AGG_RESOURCE_INSERT_MONTH = "update resource_access_month_agg agg set d%1$s=valcount, total=coalesce(total,0) + coalesce(valcount,0) from (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
             + "where ras.date_accessed >= '%2$s' and ras.date_accessed < '%3$s' group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
     String AGG_RESOURCE_INSERT_MONTH_BOT = "update resource_access_month_agg agg set d%1$s_bot=valcount, total=coalesce(total,0) + coalesce(valcount,0), total_bot=coalesce(total_bot,0) + coalesce(valcount,0) from (select resource_id, count(ras.id) as valcount from resource_access_statistics ras "
             + "where ras.date_accessed >= '%2$s' and ras.date_accessed < '%3$s' and bot is true group by 1) ras where ras.resource_id= agg.resource_id and month=:month and year=:year";
     String AGG_RESOURCE_SETUP_MONTH = "insert into resource_access_month_agg(resource_id, year, month) select id, %s, %s from resource where date_created >=  :date";
     String WEEKLY_POPULAR = "select count(ras.id), resource_id  from resource_access_statistics ras, resource r where  r.id=ras.resource_id and r.status='ACTIVE' and date_accessed > '%s' and date_accessed < '%s' group by 2 order by 1 desc limit %s";
-    String ANNUAL_RESOURCE_UPDATE  = "insert into resource_access_year_agg (resource_id, year, total, total_bot) select resource_id, year, sum(total), sum(total_bot) from resource_access_month_agg where year=:year group by 1,2";
+    String ANNUAL_RESOURCE_UPDATE = "insert into resource_access_year_agg (resource_id, year, total, total_bot) select resource_id, year, sum(total), sum(total_bot) from resource_access_month_agg where year=:year group by 1,2";
     String ANNUAL_RESOURCE_CLEANUP = "delete from resource_access_year_agg where year=:year";
     String MONTHLY_USAGE_FOR_RESOURCE = "query.monthly_for_resource";
-    
-   String MOST_POPULAR_BY_BILLING_ACCOUNT = "SELECT count(ras.id), resource_id  FROM resource_access_statistics ras, resource r "
+   
+    String MOST_POPULAR_BY_BILLING_ACCOUNT = "SELECT count(ras.id), resource_id  FROM resource_access_statistics ras, resource r "
    		+ "WHERE  r.id=ras.resource_id AND r.status='ACTIVE' AND r.account_id = %s GROUP BY 2 ORDER BY 1 DESC LIMIT %s";
     
+
     /**
      * it's possible this is too generous and we need something closer to the following which unions to explicit joins:
-     * select au.user_id, au.resource_id, au.resource_collection_id from authorized_user au join resource r on au.resource_id=r.id and (r.status='ACTIVE' or r.status='DRAFT') 
-        join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:submitterId union
-        select au.user_id, au.resource_id, au.resource_collection_id from authorized_user au join collection c on au.resource_collection_id=c.id and c.status='ACTIVE'
-         left join authorized_user au3 on c.id=au3.resource_collection_id
-         left join collection_parents cp on c.id=cp.collection_id 
-         join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' 
-         join authorized_user au4 on c2.id=au4.resource_collection_id where (au3.user_id=:submitterId  or au4.user_id=:submitterId) order by 1;^C
+     * select au.user_id, au.resource_id, au.resource_collection_id from authorized_user au join resource r on au.resource_id=r.id and (r.status='ACTIVE' or
+     * r.status='DRAFT')
+     * join authorized_user au2 on r.id=au2.resource_id and au2.user_id=:submitterId union
+     * select au.user_id, au.resource_id, au.resource_collection_id from authorized_user au join collection c on au.resource_collection_id=c.id and
+     * c.status='ACTIVE'
+     * left join authorized_user au3 on c.id=au3.resource_collection_id
+     * left join collection_parents cp on c.id=cp.collection_id
+     * join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE'
+     * join authorized_user au4 on c2.id=au4.resource_collection_id where (au3.user_id=:submitterId or au4.user_id=:submitterId) order by 1;^C
      */
     String QUERY_USERS_SHARED_WITH = "select distinct user_id from authorized_user inner join collection on authorized_user.resource_collection_id=collection.id and exists ( "
             + "select resource_collection_id as collection_id from authorized_user where user_id=:userId and general_permission_int > 499 and resource_collection_id=collection.id union "

@@ -3,8 +3,9 @@ package org.tdar.search.query.part;
 import org.tdar.core.bean.Persistable;
 
 /**
- * For Persistables, we may send in a "skeleton" that just has an ID.  For those, we will need to hydrate them to be able to show a useful 
- * field description 
+ * For Persistables, we may send in a "skeleton" that just has an ID. For those, we will need to hydrate them to be able to show a useful
+ * field description
+ * 
  * @author abrin
  *
  * @param <C>

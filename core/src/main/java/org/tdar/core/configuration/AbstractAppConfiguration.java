@@ -69,21 +69,14 @@ public abstract class AbstractAppConfiguration implements Serializable {
          * * commons-logging and other logging options can also produce conflicts.
          */
         System.setProperty("org.jboss.logging.provider", "slf4j");
-        System.setProperty("pdfbox.fontcache",System.getProperty("java.io.tmpdir") + File.separatorChar);
-//        System.setProperty("java.awt.headless", "true");
-        System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
-        System.setProperty("glass.platform","Monocle");
-        System.setProperty("monocle.platform","Headless");
-        System.setProperty("prism.order", "sw");
-        System.setProperty("prism.text", "t2k");
-
+        System.setProperty("pdfbox.fontcache", System.getProperty("java.io.tmpdir") + File.separatorChar);
+        System.setProperty("java.awt.headless", "true");
         ImageIO.scanForPlugins();
     }
 
     @Autowired
     protected Environment env;
-//    private SessionFactory buildSessionFactory;
+    // private SessionFactory buildSessionFactory;
 
     @Bean(name = "tdarMetadataDataSource")
     public DataSource tdarMetadataDataSource() {
@@ -108,7 +101,7 @@ public abstract class AbstractAppConfiguration implements Serializable {
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
         builder.scanPackages(new String[] { getHibernatePackageScan() });
         builder.addProperties(properties);
-//        SessionBuilder sessionBuilder = builder.buildSessionFactory().withOptions().eventListeners(new FilestoreLoggingSessionEventListener());
+        // SessionBuilder sessionBuilder = builder.buildSessionFactory().withOptions().eventListeners(new FilestoreLoggingSessionEventListener());
         return builder.buildSessionFactory();
     }
 
@@ -119,15 +112,15 @@ public abstract class AbstractAppConfiguration implements Serializable {
     public boolean disableHibernateSearch() {
         return true;
     }
-    
-    @Bean(name="obfuscationEnabled")
+
+    @Bean(name = "obfuscationEnabled")
     public Boolean isObfuscationEnabled() {
         return !TdarConfiguration.getInstance().obfuscationInterceptorDisabled();
     }
 
     @Bean(name = "mailSender")
     public JavaMailSender getJavaMailSender() {
-        String hostname = env.getProperty("mail.smtp.host","localhost");
+        String hostname = env.getProperty("mail.smtp.host", "localhost");
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost(hostname);
         return sender;
@@ -200,7 +193,7 @@ public abstract class AbstractAppConfiguration implements Serializable {
         ds.setMaxStatements(env.getProperty(prefix + ".maxStatements", Integer.class, 100));
         ds.setTestConnectionOnCheckin(env.getProperty(prefix + ".testConnectionOnCheckin", Boolean.class, true));
         ds.setMaxPoolSize(getChainedOptionalProperty(prefix, ".maxConnections", 10));
-        ds.setMinPoolSize(getChainedOptionalProperty(prefix ,".minConnections", 1));
+        ds.setMinPoolSize(getChainedOptionalProperty(prefix, ".minConnections", 1));
         return ds;
     }
 
@@ -212,12 +205,12 @@ public abstract class AbstractAppConfiguration implements Serializable {
             prefix_ = appPrefix;
         }
         if (property.contains("?")) {
-            property += "&ApplicationName="+ prefix_;
+            property += "&ApplicationName=" + prefix_;
         } else {
-            property += "?ApplicationName="+ prefix_;
+            property += "?ApplicationName=" + prefix_;
         }
         ds.setJdbcUrl(property);
-        logger.debug(prefix_+ " JDBC Connection ("+prefix+"):"  + property);
+        logger.debug(prefix_ + " JDBC Connection (" + prefix + "):" + property);
     }
 
     private int getChainedOptionalProperty(String prefix, String key, Integer deflt) {
@@ -226,13 +219,13 @@ public abstract class AbstractAppConfiguration implements Serializable {
         if (StringUtils.isNotBlank(appPrefix)) {
             prefix_ = appPrefix + "." + prefix;
         }
-        
+
         Integer val = env.getProperty(prefix_ + key, Integer.class);
         if (val != null) {
             logger.debug(prefix_ + key + ": " + val);
             return val;
         }
-        
+
         return env.getProperty(prefix + key, Integer.class, deflt);
     }
 
@@ -248,7 +241,7 @@ public abstract class AbstractAppConfiguration implements Serializable {
         if (val == null) {
             val = env.getRequiredProperty("javax" + val_);
         } else {
-            logger.debug("{} --> {}" , prefix + val_, val );
+            logger.debug("{} --> {}", prefix + val_, val);
         }
         return val;
     }

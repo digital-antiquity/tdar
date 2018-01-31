@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.ScheduledProcessService;
@@ -58,7 +58,7 @@ public class RightsControllerInviteITCase extends AbstractControllerITCase {
         proxy.setEmail("atest@test234.com");
         proxy.setFirstName("a");
         proxy.setLastName("test");
-        proxy.setPermission(GeneralPermissions.MODIFY_RECORD);
+        proxy.setPermission(Permissions.MODIFY_RECORD);
         resourceRightsController.getProxies().add(proxy);
         resourceRightsController.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, resourceRightsController.save());

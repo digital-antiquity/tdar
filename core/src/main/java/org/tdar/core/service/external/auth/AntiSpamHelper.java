@@ -87,13 +87,11 @@ public class AntiSpamHelper implements Serializable {
             throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
         }
 
-
         if (StringUtils.isNotBlank(contributorReason) && requestingContributorAccess == false) {
             logger.debug(String.format("we think this user was a spammer, contributor was false, but  had contributor reason of: %s", contributorReason));
             throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
         }
 
-        
         if (!ignoreTimecheck) {
             logger.debug("timcheck:{}", getTimeCheck());
             if (getTimeCheck() == null) {
@@ -118,7 +116,7 @@ public class AntiSpamHelper implements Serializable {
         try {
             if (getPerson().getEmail().endsWith("\\r") ||
                     (Objects.equals(getPerson().getFirstName(), getPerson().getLastName())
-                    && Objects.equals(getPerson().getPhone(), "123456"))) {
+                            && Objects.equals(getPerson().getPhone(), "123456"))) {
                 logger.debug(String.format("we think this user was a spammer: %s  -- %s", getPerson().getEmail(), getComment()));
                 throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
             }

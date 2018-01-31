@@ -10,11 +10,12 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "video")
 @XmlRootElement(name = "video")
 /**
  * Represents a "video" resource.
+ * 
  * @author abrin
  *
  */

@@ -57,7 +57,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
                 }
                 // 0 == extension
                 // 1 == count
-                toReturn.put((String)objs[0], (Long)objs[1]);
+                toReturn.put((String) objs[0], (Long) objs[1]);
             } catch (Exception e) {
                 logger.debug("exception get admin file extension stats", e);
             }
@@ -68,7 +68,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
 
     public Number getDownloadCount(InformationResourceFile irFile) {
         String sql = String.format(TdarNamedQueries.DOWNLOAD_COUNT_SQL, irFile.getId(), new Date());
-        return (Number)getCurrentSession().createNativeQuery(sql).getSingleResult();
+        return (Number) getCurrentSession().createNativeQuery(sql).getSingleResult();
     }
 
     public void deleteTranslatedFiles(Dataset dataset) {

@@ -57,8 +57,8 @@ public class CartProcessRegistrationAction extends AbstractCartController {
 
     @WriteableSession
     @DoNotObfuscate(reason = "not needed")
-    @Action(value="process-registration",
-            interceptorRefs = { @InterceptorRef("registrationStack")} )
+    @Action(value = "process-registration",
+            interceptorRefs = { @InterceptorRef("registrationStack") })
     @PostOnly
     public String processRegistration() {
         getLogger().debug("processing registration for person {} {}", registrationInfo.getPerson(), registrationInfo.isRequestingContributorAccess());

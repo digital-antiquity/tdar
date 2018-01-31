@@ -14,7 +14,7 @@ public class SearchIndexException extends I18nException {
         super(message);
     }
 
-    public SearchIndexException(String message,Exception e) {
+    public SearchIndexException(String message, Exception e) {
         super(message, e);
     }
 

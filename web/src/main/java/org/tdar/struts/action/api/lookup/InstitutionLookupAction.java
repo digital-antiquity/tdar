@@ -36,7 +36,6 @@ public class InstitutionLookupAction extends AbstractLookupController<Institutio
     @Autowired
     private CreatorSearchService creatorSearchService;
 
-
     @Action(value = "institution", results = {
             @Result(name = SUCCESS, type = JSONRESULT)
     })
@@ -44,7 +43,6 @@ public class InstitutionLookupAction extends AbstractLookupController<Institutio
         setMode("institutionLookup");
         return findInstitution(getInstitution());
     }
-    
 
     @SuppressWarnings("unchecked")
     public String findInstitution(String institution) throws SolrServerException, IOException {
@@ -60,7 +58,6 @@ public class InstitutionLookupAction extends AbstractLookupController<Institutio
         jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
     }
-
 
     public String getInstitution() {
         return institution;

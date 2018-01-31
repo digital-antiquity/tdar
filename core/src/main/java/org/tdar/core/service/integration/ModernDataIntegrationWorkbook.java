@@ -270,12 +270,12 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             }
         }
 
-        if (rawIntegration.length() < workbookWriter.getMaxTextLengthPerCell()) { 
-            workbookWriter.addDataRow(summarySheet, currentRow + 4, 1,Arrays.asList("JSON:",rawIntegration));
+        if (rawIntegration.length() < workbookWriter.getMaxTextLengthPerCell()) {
+            workbookWriter.addDataRow(summarySheet, currentRow + 4, 1, Arrays.asList("JSON:", rawIntegration));
         }
         // auto-sizing columns
         for (int i = 0; i < max; i++) {
-            if (! (summarySheet instanceof SXSSFSheet)) {
+            if (!(summarySheet instanceof SXSSFSheet)) {
                 summarySheet.autoSizeColumn(i);
             }
         }
@@ -335,7 +335,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                 endRow, // last row (0-based)
                 startCol, // first column (0-based)
                 endCol // last column (0-based)
-                ));
+        ));
     }
 
     public static String formatTableName(DataTable table) {

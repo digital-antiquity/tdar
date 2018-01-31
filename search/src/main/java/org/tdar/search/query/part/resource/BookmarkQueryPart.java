@@ -11,6 +11,7 @@ import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Find resources that are bookmarked by a person
+ * 
  * @author abrin
  *
  */

@@ -23,13 +23,15 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT, location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
+        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT,
+                location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 })
 /**
  * Abstract class for backing unauthenticated requests (Login and Register)
+ * 
  * @author abrin
  *
  */
@@ -58,10 +60,9 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
         this.resource = resource;
     }
 
-
     @Override
     public void prepare() {
-    	// make sure the Reosurce ID is set
+        // make sure the Reosurce ID is set
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             setResource(getGenericService().find(Resource.class, getId()));
             // bad, but force onto session until better way found
@@ -76,13 +77,13 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
         }
     }
 
-	public List<UserAffiliation> getAffiliations() {
-		return affiliations;
-	}
+    public List<UserAffiliation> getAffiliations() {
+        return affiliations;
+    }
 
-	public void setAffiliations(List<UserAffiliation> affiliations) {
-		this.affiliations = affiliations;
-	}
+    public void setAffiliations(List<UserAffiliation> affiliations) {
+        this.affiliations = affiliations;
+    }
 
     public Long getId() {
         return id;
@@ -92,13 +93,13 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
         this.id = id;
     }
 
-	public AntiSpamHelper getH() {
-		return h;
-	}
+    public AntiSpamHelper getH() {
+        return h;
+    }
 
-	public void setH(AntiSpamHelper h) {
-		this.h = h;
-	}
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
+    }
 
     public EmailType getType() {
         return type;

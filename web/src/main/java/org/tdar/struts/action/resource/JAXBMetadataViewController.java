@@ -32,7 +32,8 @@ import edu.asu.lib.mods.ModsDocument;
 @Scope("prototype")
 @ParentPackage("default")
 @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "status", "400" })
-public class JAXBMetadataViewController extends AbstractAuthenticatableAction implements Preparable, ViewableAction<Resource>, PersistableLoadingAction<Resource> {
+public class JAXBMetadataViewController extends AbstractAuthenticatableAction
+        implements Preparable, ViewableAction<Resource>, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = -7297306518597493712L;
     public static final String DC = "dc/{id}";

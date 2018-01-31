@@ -206,9 +206,9 @@ public class MockNelnetController extends AbstractAuthenticatableAction implemen
 
     @Override
     public void prepare() throws Exception {
-        if (System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("false") && 
+        if (System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("false") &&
                 TdarConfiguration.getInstance().isProductionEnvironment()) {
-                throw new TdarRuntimeException("not in production environment");
+            throw new TdarRuntimeException("not in production environment");
         }
     }
 }

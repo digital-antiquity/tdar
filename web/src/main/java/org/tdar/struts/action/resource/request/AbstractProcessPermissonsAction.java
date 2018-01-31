@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.EmailType;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
@@ -31,11 +31,11 @@ public abstract class AbstractProcessPermissonsAction extends AbstractAuthentica
     private Long requestorId;
     private Long resourceId;
     private TdarUser requestor;
-    private GeneralPermissions permission;
+    private Permissions permission;
     private Resource resource;
     private EmailType type;
 
-    private List<GeneralPermissions> availablePermissions = GeneralPermissions.resourcePermissions();
+    private List<Permissions> availablePermissions = Permissions.resourcePermissions();
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
@@ -60,11 +60,11 @@ public abstract class AbstractProcessPermissonsAction extends AbstractAuthentica
         this.requestorId = requestorId;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 
@@ -80,7 +80,7 @@ public abstract class AbstractProcessPermissonsAction extends AbstractAuthentica
     public boolean authorize() throws TdarActionException {
         // make sure user has full permissions
         return authorizationService.canEditResource(getAuthenticatedUser(), getResource(),
-                GeneralPermissions.MODIFY_RECORD);
+                Permissions.MODIFY_RECORD);
     }
 
     @Override
@@ -114,11 +114,11 @@ public abstract class AbstractProcessPermissonsAction extends AbstractAuthentica
         this.resourceId = resourceId;
     }
 
-    public List<GeneralPermissions> getAvailablePermissions() {
+    public List<Permissions> getAvailablePermissions() {
         return availablePermissions;
     }
 
-    public void setAvailablePermissions(List<GeneralPermissions> availablePermissions) {
+    public void setAvailablePermissions(List<Permissions> availablePermissions) {
         this.availablePermissions = availablePermissions;
     }
 

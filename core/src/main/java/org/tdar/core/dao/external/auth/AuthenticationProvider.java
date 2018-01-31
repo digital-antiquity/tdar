@@ -22,6 +22,7 @@ public interface AuthenticationProvider extends Configurable {
     boolean deleteUser(TdarUser person);
 
     void requestPasswordReset(TdarUser person);
+
     /**
      * Resets a Person's password to a random password and emails the new password to them.
      * Handles the case where an administrator resets the password of a user, presumably if the admin thinks the account has been compromised.

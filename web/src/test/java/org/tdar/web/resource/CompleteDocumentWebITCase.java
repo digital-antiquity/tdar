@@ -23,7 +23,7 @@ import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.ResourceNoteType;
@@ -256,12 +256,12 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         Map<String,String> authMap = new HashMap<>();
         authMap.put("proxies[0].id", "121");
         authMap.put("proxies[1].id", "5349");
-        authMap.put("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
-        authMap.put("proxies[1].permission", GeneralPermissions.VIEW_ALL.name());
+        authMap.put("proxies[0].permission", Permissions.MODIFY_RECORD.name());
+        authMap.put("proxies[1].permission", Permissions.VIEW_ALL.name());
         authMap.put("proxies[0].displayName", "Michelle Elliott");
         authMap.put("proxies[1].displayName", "Joshua Watts");
-        alternateCodeLookup.add(GeneralPermissions.MODIFY_RECORD.name());
-        alternateCodeLookup.add(GeneralPermissions.VIEW_ALL.name());
+        alternateCodeLookup.add(Permissions.MODIFY_RECORD.name());
+        alternateCodeLookup.add(Permissions.VIEW_ALL.name());
 
         
         setInputs(authMap, new HashMap<>());

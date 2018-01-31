@@ -48,7 +48,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -148,7 +148,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setParameter("resourceTypes", Arrays.asList(ResourceType.values()));
         query.setParameter("statuses", Status.values());
         query.setParameter("allStatuses", true);
-        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
+        query.setParameter("effectivePermission", Permissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         query.setParameter("allResourceTypes", true);
         query.setParameter("admin", false);
         return query.getSingleResult().longValue();

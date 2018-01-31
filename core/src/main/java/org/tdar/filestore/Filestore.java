@@ -117,4 +117,6 @@ public interface Filestore {
     void markReadOnly(FilestoreObjectType type, List<FileStoreFileProxy> filesToProcess);
 
     File getDirectory(FilestoreObjectType type, Long persistableId);
+
+    void logFilestoreWrite(File outFile);
 }

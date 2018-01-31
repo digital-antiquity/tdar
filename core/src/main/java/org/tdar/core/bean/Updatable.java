@@ -37,7 +37,7 @@ public interface Updatable {
         if (getDateCreated() == null) {
             return false;
         }
-        
+
         if (DateTime.now().minusDays(7).isBefore(getDateCreated().getTime())) {
             return true;
         }

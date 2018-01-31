@@ -43,7 +43,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  */
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "coding_sheet", indexes = {
         @Index(name = "coding_catvar_id", columnList = "category_variable_id"),
         @Index(name = "coding_sheet_default_ontology_id_idx", columnList = "default_ontology_id")
@@ -83,7 +83,7 @@ public class CodingSheet extends InformationResource implements SupportsResource
         setDescription(description);
         setStatus(status);
     }
-    
+
     @XmlElementWrapper(name = "codingRules")
     @XmlElement(name = "codingRule")
     public Set<CodingRule> getCodingRules() {

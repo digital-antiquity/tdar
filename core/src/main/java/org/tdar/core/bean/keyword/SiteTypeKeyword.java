@@ -31,17 +31,18 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.SiteTypeKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "assertions",
-       joinColumns = @JoinColumn(name="site_type_keyword_id"))
- })
+        @AssociationOverride(name = "assertions",
+                joinColumns = @JoinColumn(name = "site_type_keyword_id"))
+})
 @XmlRootElement
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = 4043710177198125088L;
     private boolean approved;
 
-    public SiteTypeKeyword() {}
-    
+    public SiteTypeKeyword() {
+    }
+
     public SiteTypeKeyword(String string) {
         this.setLabel(string);
     }

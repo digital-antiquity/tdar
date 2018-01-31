@@ -56,7 +56,7 @@ public class ProjectDao extends ResourceDao<Project> {
 
     // TODO:maxResults ignored for now. You can have as many results as you'd like, so long as it's 5
     public List<Resource> findSparseRecentlyEditedResources(Person updater, int maxResults) {
-        Query<Resource> query = getNamedQuery(QUERY_SPARSE_RECENT_EDITS,Resource.class);
+        Query<Resource> query = getNamedQuery(QUERY_SPARSE_RECENT_EDITS, Resource.class);
         query.setParameter("personId", updater.getId());
         query.setMaxResults(maxResults);
         return query.getResultList();

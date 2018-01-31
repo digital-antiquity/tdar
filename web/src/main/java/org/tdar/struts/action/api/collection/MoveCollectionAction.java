@@ -8,7 +8,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -32,8 +32,8 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
 
     private Long collectionId;
     private Long toCollectionId;
-    private HierarchicalCollection collection;
-    private HierarchicalCollection toCollection;
+    private ResourceCollection collection;
+    private ResourceCollection toCollection;
 
     @Autowired
     protected transient SerializationService serializationService;
@@ -46,24 +46,24 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
 
     @Autowired
     private AuthorizationService authorizationService;
-    
+
     @Override
     public void validate() {
         super.validate();
         if (PersistableUtils.isNullOrTransient(collection) || !authorizationService.canEdit(getAuthenticatedUser(), collection)) {
-            addActionError("cannot edit collection");
+            addActionError("addResourceToCollectionAction.no_edit_permission");
         }
         if (PersistableUtils.isNullOrTransient(toCollection) || !authorizationService.canEdit(getAuthenticatedUser(), toCollection)) {
-            addActionError("cannot edit to colection");
+            addActionError("addResourceToCollectionAction.no_edit_permission");
         }
     }
-    
+
     @Override
     @PostOnly
     @WriteableSession
-    @Action(value="moveCollection")
+    @Action(value = "moveCollection")
     public String execute() throws Exception {
-        resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), collection, toCollection, HierarchicalCollection.class);
+        resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), collection, toCollection);
         searchIndexService.indexAllResourcesInCollectionSubTreeAsync(toCollection);
         setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
         return super.execute();
@@ -76,9 +76,9 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
 
     @Override
     public void prepare() throws Exception {
-        this.collection = getGenericService().find(HierarchicalCollection.class, collectionId);
-        this.toCollection = getGenericService().find(HierarchicalCollection.class, toCollectionId);
-        
+        this.collection = getGenericService().find(ResourceCollection.class, collectionId);
+        this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
+
     }
 
     public Long getCollectionId() {
@@ -96,5 +96,5 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
     public void setToCollectionId(Long toCollectionId) {
         this.toCollectionId = toCollectionId;
     }
-    
+
 }

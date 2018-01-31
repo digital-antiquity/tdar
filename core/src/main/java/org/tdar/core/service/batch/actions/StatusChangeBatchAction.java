@@ -13,7 +13,7 @@ public class StatusChangeBatchAction extends AbstractBatchAction<Status> {
     public Status getCurrentValue(Resource resource) {
         return resource.getStatus();
     }
-    
+
     @Override
     public void performAction(Resource resource, BatchActionType type) {
         switch (type) {

@@ -1,10 +1,8 @@
 package org.tdar.core.service.processes.charts;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -62,7 +60,7 @@ public class TdarPieChartTest {
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
         chart.getStyler().setPlotBorderVisible(false);
         chart.getStyler().setLegendBorderColor(Color.WHITE);
-        BitmapEncoder.saveBitmap(chart, "./Sample_Chart", BitmapFormat.PNG);
+        BitmapEncoder.saveBitmap(chart, "target/Sample_Chart", BitmapFormat.PNG);
 //        VectorGraphicsEncoder.saveVectorGraphic(chart, "./Sample_Chart", VectorGraphicsFormat.EPS);
 
     }
@@ -80,23 +78,15 @@ public class TdarPieChartTest {
 
         data.put("2001", r1);
         Map<String, Number> r2 = new HashMap<>();
-        r1.put("", 0);
-        r1.put("", 0);
-        r1.put("", 0);
-        r2.put("d", 150);
-        r2.put("e", 150);
-        r2.put("f", 350);
+        r2.put("a", 150);
+        r2.put("b", 150);
+        r2.put("c", 350);
 
         data.put("2002", r2);
         Map<String, Number> r3 = new HashMap<>();
-        r1.put("", 0);
-        r1.put("", 0);
-        r1.put("", 0);
-        r1.put("", 0);
-        r1.put("", 0);
-        r3.put("g", 75);
-        r3.put("h", 50);
-        r3.put("i", 20);
+        r3.put("a", 75);
+        r3.put("b", 50);
+        r3.put("c", 20);
 
         data.put("2003", r3);
 //        TdarBarChart sample = new TdarBarChart("test", "time", "more time", data, 1000, 1000, "testBar");
@@ -112,28 +102,11 @@ public class TdarPieChartTest {
         chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
         chart.getStyler().setHasAnnotations(true);
      
-        // Series					xx values										yy values
-        //chart.addSeries("test 1", Arrays.asList(new String[] { "A","B","C","D","E" }), Arrays.asList(new Integer[] { 4, 5, 9, 6, 5 }));
-        //chart.addSeries("test 2", Arrays.asList(new String[] { "A","B","C","D","E" }), Arrays.asList(new Integer[] { 4, 5, 9, 6, 5 }));
+        // Series
+        chart.addSeries("test 1", Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 }), Arrays.asList(new Integer[] { 4, 5, 9, 6, 5 }));
+        chart.addSeries("test 2", Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 }), Arrays.asList(new Integer[] { 4, 5, 9, 6, 5 }));
 
-        
-        for(String key : data.keySet()){
-        	Map<String, Number> row = data.get(key);
-        	
-        	List<String> xValues = new ArrayList<String>();
-        	List<Number> yValues = new ArrayList<Number>();
-        	
-        	for(String subkey : row.keySet()){
-        		xValues.add(subkey);
-        		yValues.add(row.get(subkey));
-        	}
-        	
-        	
-        	chart.addSeries(key, xValues, yValues);
-        	
-        }
-        
-        BitmapEncoder.saveBitmap(chart, "./Sample_Chart2", BitmapFormat.PNG);
+        BitmapEncoder.saveBitmap(chart, "target/Sample_Chart2", BitmapFormat.PNG);
 
 
     }

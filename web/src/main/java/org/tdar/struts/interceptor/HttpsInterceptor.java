@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionHelper;
-import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -82,11 +81,12 @@ public class HttpsInterceptor implements Interceptor {
         HttpServletResponse response = ServletActionContext.getResponse();
         response.setHeader("Frame-Options:", "DENY");
 
-        if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled() || StringUtils.startsWithIgnoreCase(request.getRequestURL().toString(), "https:")) {
+        if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled()
+                || StringUtils.startsWithIgnoreCase(request.getRequestURL().toString(), "https:")) {
             return invocation.invoke();
         }
         logger.trace(" :: url: {} : {}", request.getRequestURI(), request.getQueryString());
-        
+
         if (request.getMethod().equalsIgnoreCase("get") || request.getMethod().equalsIgnoreCase("head")) {
             // change redirect to be permanent
             response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);

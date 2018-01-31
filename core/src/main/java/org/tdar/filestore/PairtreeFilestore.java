@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -95,7 +96,7 @@ public class PairtreeFilestore extends BaseFilestore {
         }
         File outFile = new File(path);
         outFile = rotateFileIfNeeded(rotate, outFile);
-
+        logFilestoreWrite(outFile);
         logger.info("storing at: {}", outFile.getAbsolutePath());
         String errorMessage = MessageHelper.getMessage("pairtreeFilestore.cannot_write", Arrays.asList(outFile.getAbsolutePath()));
         DigestInputStream digestInputStream = appendMessageDigestStream(content);
@@ -128,6 +129,20 @@ public class PairtreeFilestore extends BaseFilestore {
             IOUtils.closeQuietly(content);
             IOUtils.closeQuietly(digestInputStream);
             IOUtils.closeQuietly(outputStream);
+        }
+    }
+
+    @Override
+    public void logFilestoreWrite(File outFile) {
+        File logFile = new File(baseStoreDirectory, FilestoreObjectType.LOG.getRootDir() + "/write.log");
+        
+        String logLine = String.format("%s\t%s\n", new Date(), outFile.getAbsolutePath(),Charset.defaultCharset());
+        synchronized (logFile) {
+            try {
+            FileUtils.writeStringToFile(logFile, logLine, Charset.defaultCharset(), true);
+            } catch (Throwable t) {
+                logger.error(t.getMessage(),t);
+            }
         }
     }
 
@@ -341,8 +356,10 @@ public class PairtreeFilestore extends BaseFilestore {
      * Recursively check to see if the parent directories are empty and, if so,
      * delete them.
      * 
-     * @param {@link File} representing the directory to clean.
-     * @throws {@link IOException}
+     * @param {@link
+     *            File} representing the directory to clean.
+     * @throws {@link
+     *             IOException}
      */
     private void cleanEmptyParents(File dir) throws IOException {
         if (dir == null) {

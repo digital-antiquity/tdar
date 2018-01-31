@@ -72,20 +72,20 @@ public class OwlApiHierarchyParser implements OntologyParser {
 
     private OWLClass resolveSynonyms(OWLClass owlClass, List<OWLClass> allClasses) {
         if (logger.isTraceEnabled()) {
-            logger.trace(" > {} ({})" , owlClass, allClasses);
+            logger.trace(" > {} ({})", owlClass, allClasses);
         }
         String ann = extractAnnotation(owlClass, OwlOntologyConverter.TDAR_NODE_ENTRY);
         // NULL if not there, blank if there (because of "starts-with" trim)
         if (ann != null) {
             return owlClass;
         }
-        //TDARNode
-        OWLClassExpression oc  = null;
+        // TDARNode
+        OWLClassExpression oc = null;
         try {
-            oc = EntitySearcher.getEquivalentClasses(owlClass, owlOntology).filter(eq -> 
-            (extractAnnotation(eq.asOWLClass(), OwlOntologyConverter.TDAR_NODE_ENTRY) != null))
-        .findFirst().get();
-        } catch (NoSuchElementException nse ) {
+            oc = EntitySearcher.getEquivalentClasses(owlClass, owlOntology)
+                    .filter(eq -> (extractAnnotation(eq.asOWLClass(), OwlOntologyConverter.TDAR_NODE_ENTRY) != null))
+                    .findFirst().get();
+        } catch (NoSuchElementException nse) {
             logger.error("node should never be null when trying to find synonyms: {}", owlClass);
             return owlClass;
         }
@@ -206,7 +206,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
         node.setIntervalStart(Integer.valueOf(index));
         String indexString = String.valueOf(index);
         Iterator<OWLClassExpression> iterator = EntitySearcher.getSuperClasses(owlClass, owlOntology).iterator();
-        
+
         while (iterator.hasNext()) {
             OWLClassExpression owlClassExpression = iterator.next();
             OWLClass parentClass = owlClassExpression.asOWLClass();
@@ -258,7 +258,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
         if (value instanceof OWLLiteral) {
             annTxt = ((OWLLiteral) value).getLiteral();
         }
-        
+
         annTxt = annTxt.replaceAll("^\"", "");
         txt = annTxt.replaceAll("\"$", "");
         return txt;

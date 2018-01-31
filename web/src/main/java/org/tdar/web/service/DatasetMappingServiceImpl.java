@@ -28,11 +28,13 @@ public class DatasetMappingServiceImpl implements DatasetMappingService {
         this.datasetDao = datasetDao;
         this.searchIndexService = searchIndexService;
     }
-    
+
     /*
      * convenience method, used for Asynchronous as opposed to the Synchronous version by the Controller
      */
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.DatasetMappingService#remapColumnsAsync(java.util.List, org.tdar.core.bean.resource.Project)
      */
     @Override
@@ -42,7 +44,9 @@ public class DatasetMappingServiceImpl implements DatasetMappingService {
         remapColumns(columns, project);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.DatasetMappingService#remapColumns(java.util.List, org.tdar.core.bean.resource.Project)
      */
     @Override
@@ -52,9 +56,9 @@ public class DatasetMappingServiceImpl implements DatasetMappingService {
         try {
             searchIndexService.indexProject(project);
         } catch (SearchIndexException | IOException e) {
-            logger.error("error in reindexing",e);
+            logger.error("error in reindexing", e);
         }
-        
+
     }
 
 }

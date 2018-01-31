@@ -210,7 +210,7 @@ public class UserRegistration extends UserAuthData {
         getLogger().trace("{} : {}", "contrib access", isRequestingContributorAccess());
         getLogger().trace("{} : {}", "contrib reason", getContributorReason());
         getLogger().trace("{} : {}", "       browser", header);
-        
+
     }
 
     public void setupFrom(Person person) {
@@ -220,6 +220,6 @@ public class UserRegistration extends UserAuthData {
         this.getPerson().setFirstName(person.getFirstName());
         this.getPerson().setLastName(person.getLastName());
         this.getPerson().setEmail(person.getEmail());
-        
+
     }
 }

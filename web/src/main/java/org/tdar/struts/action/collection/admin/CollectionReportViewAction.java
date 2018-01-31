@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -48,14 +48,14 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/collection/admin/report")
 @HttpsOnly
 public class CollectionReportViewAction extends AbstractAuthenticatableAction
-        implements FacetedResultHandler<Resource>, PersistableLoadingAction<SharedCollection>, Preparable {
+        implements FacetedResultHandler<Resource>, PersistableLoadingAction<ResourceCollection>, Preparable {
 
     private static final long serialVersionUID = 5515399574166871914L;
     @Autowired
     ResourceSearchService resourceSearchService;
 
     private FacetWrapper facetWrapper = new FacetWrapper();
-    private SharedCollection resourceCollection;
+    private ResourceCollection resourceCollection;
     private Long id;
     private List<Resource> results;
 
@@ -64,7 +64,7 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
     public String execute() throws Exception {
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         getAuthenticatedUser();
-        asqo.getReservedParams().getShares().add((SharedCollection)getResourceCollection());
+        asqo.getReservedParams().getShares().add((ResourceCollection) getResourceCollection());
         getFacetWrapper().facetBy("status", Status.class);
         getFacetWrapper().facetBy("resourceType", ResourceType.class);
         getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
@@ -96,8 +96,8 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
     }
 
     @Override
-    public Class<SharedCollection> getPersistableClass() {
-        return SharedCollection.class;
+    public Class<ResourceCollection> getPersistableClass() {
+        return ResourceCollection.class;
     }
 
     @Override
@@ -106,7 +106,7 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
     }
 
     @Override
-    public void setPersistable(SharedCollection persistable) {
+    public void setPersistable(ResourceCollection persistable) {
         this.setResourceCollection(persistable);
     }
 
@@ -247,11 +247,11 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
         this.id = id;
     }
 
-    public SharedCollection getResourceCollection() {
+    public ResourceCollection getResourceCollection() {
         return resourceCollection;
     }
 
-    public void setResourceCollection(SharedCollection resourceCollection) {
+    public void setResourceCollection(ResourceCollection resourceCollection) {
         this.resourceCollection = resourceCollection;
     }
 

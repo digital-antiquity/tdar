@@ -19,12 +19,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -72,7 +70,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     private static final long serialVersionUID = 896347341133309643L;
 
-
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -88,14 +85,13 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private ResourceService resourceService;
 
-    private List<SharedCollection> effectiveShares = new ArrayList<>();
-    private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<ResourceCollection> effectiveShares = new ArrayList<>();
+    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceCreatorProxy> authorshipProxies = new ArrayList<>();
     private List<ResourceCreatorProxy> creditProxies = new ArrayList<>();
     private List<ResourceCreatorProxy> contactProxies = new ArrayList<>();
     private ResourceCitationFormatter resourceCitation;
-
 
     private String schemaOrgJsonLD;
 
@@ -106,6 +102,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     ResourceViewControllerService viewService;
 
+    private List<ResourceCollection> visibleUnmanagedCollections;
+
     public String getOpenUrl() {
         return OpenUrlFormatter.toOpenURL(getResource());
     }
@@ -113,7 +111,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     public String getGoogleScholarTags() throws Exception {
         return resourceService.getGoogleScholarTags(getResource());
     }
-
 
     @Override
     public String loadViewMetadata() throws TdarActionException {
@@ -138,10 +135,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         setInvites(userRightsProxyService.findUserInvites(getPersistable()));
         return SUCCESS;
     }
-    
+
     protected void loadCustomViewMetadata() throws TdarActionException {
     }
-
 
     @Override
     public boolean authorize() throws TdarActionException {
@@ -170,14 +166,14 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         viewService.initializeResourceCreatorProxyLists(authWrapper, authorshipProxies, creditProxies, contactProxies);
         viewService.loadSharesCollectionsAuthUsers(authWrapper, getEffectiveShares(), getEffectiveResourceCollections(), getAuthorizedUsers());
         getLogger().trace("effective collections: {}", getEffectiveResourceCollections());
-        visibleCollections = viewService.getVisibleCollections(authWrapper);
+        visibleCollections = viewService.getVisibleManagedCollections(authWrapper);
+        visibleUnmanagedCollections = viewService.getVisibleUnmanagedCollections(authWrapper);
         if (getResource() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) getResource();
             setMappedData(resourceService.getMappedDataForInformationResource(informationResource, getTdarConfiguration().isProductionEnvironment()));
         }
 
     }
-
 
     public Resource getResource() {
         return getPersistable();
@@ -231,8 +227,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return creditProxies;
     }
 
-
     private List<ResourceCollection> visibleCollections = new ArrayList<>();
+
     /**
      * All shares and list collections
      * 
@@ -257,8 +253,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return isEditor() && authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_RPA_MEMBER);
     }
 
-
-
     private Boolean editable = null;
 
     public boolean isEditable() {
@@ -266,7 +260,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
             return false;
         }
         if (editable == null) {
-            editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
+            editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_METADATA);
         }
         return editable;
     }
@@ -324,11 +318,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return true;
     }
 
-    public List<SharedCollection> getEffectiveShares() {
+    public List<ResourceCollection> getEffectiveShares() {
         return effectiveShares;
     }
 
-    public void setEffectiveShares(List<SharedCollection> effectiveShares) {
+    public void setEffectiveShares(List<ResourceCollection> effectiveShares) {
         this.effectiveShares = effectiveShares;
     }
 
@@ -336,12 +330,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return accountService.listAvailableAccountsForUser(getAuthenticatedUser());
     }
 
-
-    public List<ListCollection> getEffectiveResourceCollections() {
+    public List<ResourceCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
     }
 
-    public void setEffectiveResourceCollections(List<ListCollection> effectiveResourceCollections) {
+    public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
     }
 
@@ -351,5 +344,13 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     public void setInvites(List<UserInvite> invites) {
         this.invites = invites;
+    }
+
+    public List<ResourceCollection> getVisibleUnmanagedCollections() {
+        return visibleUnmanagedCollections;
+    }
+
+    public void setVisibleUnmanagedCollections(List<ResourceCollection> visibleUnmanagedCollections) {
+        this.visibleUnmanagedCollections = visibleUnmanagedCollections;
     }
 }

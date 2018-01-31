@@ -83,7 +83,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
@@ -236,6 +236,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     @Before
     public void beforeTest() throws IOException {
+        System.setProperty("java.awt.headless", "true");
         if (quitBrowserBetweenTests) {
             initBrowser();
         }
@@ -402,8 +403,8 @@ public abstract class AbstractSeleniumWebITCase {
             ;
         } catch (UnhandledAlertException uae) {
             logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
-            logout();
             driver.switchTo().alert().accept();
+            logout();
             driver.get("about://");
             ;
         } catch (Throwable ex) {
@@ -1418,7 +1419,7 @@ public abstract class AbstractSeleniumWebITCase {
         return true;
     }
 
-    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
+    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, Permissions permissions) {
 
         WebElement blankField = find(By.name(nameField)).first();
         if (!selectAutocompleteValue(blankField, name, email, selector)) {

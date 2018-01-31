@@ -24,18 +24,18 @@ public class CollectionResourceActiveAction extends AbstractCollectionAdminActio
 
     @Autowired
     private ResourceCollectionService resourceCollectionService;
-    
+
     private static final long serialVersionUID = -926906661391091555L;
 
     @Override
     @PostOnly
     @WriteableSession
-    @Action(value = "{id}", results={
+    @Action(value = "{id}", results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() {
         try {
-        resourceCollectionService.makeResourcesInCollectionActive(getCollection(), getAuthenticatedUser());
+            resourceCollectionService.makeResourcesInCollectionActive(getCollection(), getAuthenticatedUser());
         } catch (Exception e) {
             addActionError(e.getMessage());
             return INPUT;

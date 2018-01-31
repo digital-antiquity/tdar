@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
-import org.tdar.struts_base.action.TdarActionException;
 
 /**
  * $Id$
@@ -29,7 +28,6 @@ import org.tdar.struts_base.action.TdarActionException;
 public class ImageController extends AbstractInformationResourceController<Image> {
 
     private static final long serialVersionUID = 8690371228267286260L;
-
 
     @Override
     public Set<String> getValidFileExtensions() {

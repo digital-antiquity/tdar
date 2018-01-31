@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.collection.CollectionResourceSection;
+import org.tdar.core.bean.entity.permissions.Permissions;
 
 public class CollectionSearchQueryObject implements Serializable {
 
@@ -14,12 +14,21 @@ public class CollectionSearchQueryObject implements Serializable {
 
     private Long id;
     private Operator operator = Operator.AND;
-    
+
+    private boolean includeHidden = true;
     private boolean limitToTopLevel = false;
     private List<String> allFields = new ArrayList<>();
-    private GeneralPermissions permission;
+    private Permissions permission;
     private List<String> titles = new ArrayList<>();
-    private CollectionType type;
+    private CollectionResourceSection type;
+
+    public boolean isIncludeHidden() {
+        return includeHidden;
+    }
+
+    public void setIncludeHidden(boolean includeHidden) {
+        this.includeHidden = includeHidden;
+    }
 
     public boolean isLimitToTopLevel() {
         return limitToTopLevel;
@@ -53,11 +62,11 @@ public class CollectionSearchQueryObject implements Serializable {
         this.operator = operator;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 
@@ -69,11 +78,11 @@ public class CollectionSearchQueryObject implements Serializable {
         this.titles = title;
     }
 
-    public CollectionType getType() {
+    public CollectionResourceSection getType() {
         return type;
     }
 
-    public void setType(CollectionType type) {
+    public void setType(CollectionResourceSection type) {
         this.type = type;
     }
 

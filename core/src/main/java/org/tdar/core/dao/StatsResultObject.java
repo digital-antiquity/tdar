@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +50,8 @@ public class StatsResultObject implements Serializable {
 
         int count = 0;
         for (int i = 0; i < two_thirds - 1; i = i + 2) {
-//            totalBots[count] = 0;
-//            totals[count] = 0;
+            // totalBots[count] = 0;
+            // totals[count] = 0;
 
             int j = i + 1;
             Number iNum = counts.get(i);
@@ -73,7 +71,7 @@ public class StatsResultObject implements Serializable {
         }
         count = 0;
         for (int i = two_thirds; i < counts.size(); i++) {
-//            totalDownloads[count] = 0;
+            // totalDownloads[count] = 0;
             Number dNum = counts.get(i);
             if (dNum != null) {
                 totalDownloads[count] += dNum.longValue();

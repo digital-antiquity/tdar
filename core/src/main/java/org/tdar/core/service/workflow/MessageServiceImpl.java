@@ -28,7 +28,7 @@ import org.tdar.filestore.WorkflowContext;
  * @version $Revision$
  */
 @Service
-public class MessageServiceImpl implements MessageService  {
+public class MessageServiceImpl implements MessageService {
     //
     // private Queue toProcess;
     // private Queue toPersist;
@@ -58,8 +58,11 @@ public class MessageServiceImpl implements MessageService  {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.core.service.workflow.MessageService#sendFileProcessingRequest(org.tdar.core.service.workflow.workflows.Workflow, org.tdar.core.bean.resource.file.InformationResourceFileVersion)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.workflow.MessageService#sendFileProcessingRequest(org.tdar.core.service.workflow.workflows.Workflow,
+     * org.tdar.core.bean.resource.file.InformationResourceFileVersion)
      */
     @Override
     public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion... informationResourceFileVersions) {
@@ -100,7 +103,9 @@ public class MessageServiceImpl implements MessageService  {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.workflow.MessageService#setWorkflowContextService(org.tdar.core.service.workflow.WorkflowContextService)
      */
     @Override

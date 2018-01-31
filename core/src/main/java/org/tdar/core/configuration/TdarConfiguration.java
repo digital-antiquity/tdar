@@ -1026,5 +1026,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 		//TODO populate this from tdar.properties.
         return assistant.getStringProperty("email.attachments.location", "/home/tdar/email-attachments");
 	}
+
+    public String getStaffEmail() {
+        return assistant.getStringProperty("app.staff.email", "staff@digitalantiquity.org");
+    }
+
 	
 }

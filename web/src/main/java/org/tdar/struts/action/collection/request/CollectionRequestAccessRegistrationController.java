@@ -12,6 +12,7 @@ import com.opensymphony.xwork2.Validateable;
 
 /**
  * Handle registration for new users and pass back to request-access-action
+ * 
  * @author abrin
  *
  */
@@ -19,7 +20,8 @@ import com.opensymphony.xwork2.Validateable;
 @Namespace("/collection/request")
 @Component
 @Scope("prototype")
-public class CollectionRequestAccessRegistrationController extends AbstractRequestAccessRegistrationAction<ResourceCollection> implements Validateable, Preparable {
+public class CollectionRequestAccessRegistrationController extends AbstractRequestAccessRegistrationAction<ResourceCollection>
+        implements Validateable, Preparable {
 
     private static final long serialVersionUID = 8033398514273270692L;
 
@@ -27,7 +29,7 @@ public class CollectionRequestAccessRegistrationController extends AbstractReque
     public String getTypeNamespace() {
         return "collection";
     }
-    
+
     public ResourceCollection getCollection() {
         return getPersistable();
     }
@@ -36,6 +38,5 @@ public class CollectionRequestAccessRegistrationController extends AbstractReque
     public Class<ResourceCollection> getPersistableClass() {
         return ResourceCollection.class;
     }
-
 
 }

@@ -834,3 +834,14 @@ tr .moremenu {
 tr:hover .moremenu {
     visibility: visible;
 }
+
+.modal-tall {
+	min-height:300px;
+}
+
+/**
+* Makes a text area be as wide as an input without making it wider than it.
+**/
+.wide-textarea {
+-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%;
+}

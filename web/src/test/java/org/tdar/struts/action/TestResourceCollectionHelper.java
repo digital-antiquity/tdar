@@ -14,20 +14,14 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.GenericService;
-import org.tdar.struts.action.collection.AbstractCollectionController;
-import org.tdar.struts.action.collection.AbstractCollectionRightsController;
-import org.tdar.struts.action.collection.ListCollectionController;
-import org.tdar.struts.action.collection.ListCollectionRightsController;
-import org.tdar.struts.action.collection.ShareCollectionController;
-import org.tdar.struts.action.collection.ShareCollectionRightsController;
+import org.tdar.struts.action.collection.ResourceCollectionController;
+import org.tdar.struts.action.collection.ResourceCollectionRightsController;
 import org.tdar.utils.PersistableUtils;
 
 import com.google.common.base.Objects;
@@ -38,7 +32,7 @@ public interface TestResourceCollectionHelper {
 
     Logger logger_ = LoggerFactory.getLogger(TestResourceCollectionHelper.class);
 
-    default SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
+    default ResourceCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             List<? extends Resource> resources, Long parentId)
             throws Exception {
         return generateResourceCollection(name, description, visible, users, getUser(), resources, parentId);
@@ -46,35 +40,30 @@ public interface TestResourceCollectionHelper {
 
     TdarUser getUser();
 
-    default SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
+    default ResourceCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
-        return generateResourceCollection(name, description, visible, users, owner, resources, parentId, ShareCollectionController.class,
-                SharedCollection.class);
+        return generateResourceCollection(name, description, visible, users, owner, resources, parentId, ResourceCollectionController.class,
+                ResourceCollection.class);
     }
 
     @SuppressWarnings("deprecation")
-    default <C extends HierarchicalCollection, D extends AbstractCollectionController> C generateResourceCollection(String name, String description,
+    default <C extends ResourceCollection, D extends ResourceCollectionController> C generateResourceCollection(String name, String description,
             boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId, Class<D> ctlClss, Class<C> cls) throws Exception {
-        D controller = generateNewInitializedController(ctlClss, owner);
+        ResourceCollectionController controller = generateNewInitializedController(ResourceCollectionController.class, owner);
         controller.setServletRequest(getServletPostRequest());
 
         // controller.setSessionData(getSessionData());
         logger_.info("{}", getUser());
         assertEquals(controller.getAuthenticatedUser(), owner);
-        C resourceCollection = (C) controller.getResourceCollection();
+        ResourceCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName(name);
 
         controller.setAsync(false);
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
         if (CollectionUtils.isNotEmpty(resources)) {
-            if (controller instanceof ShareCollectionController) {
-                ((ShareCollectionController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
-            }
-            if (controller instanceof ListCollectionController) {
-                ((ListCollectionController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
-            }
+            ((ResourceCollectionController) controller).getToAddManaged().addAll(PersistableUtils.extractIds(resources));
         }
 
         if (parentId != null) {
@@ -101,10 +90,7 @@ public interface TestResourceCollectionHelper {
         getGenericService().evictFromCache(resourceCollection);
 
         if (users != null) {
-            AbstractCollectionRightsController sc = generateNewInitializedController(ShareCollectionRightsController.class, owner);
-            if (controller instanceof ListCollectionController) {
-                sc = generateNewInitializedController(ListCollectionRightsController.class, owner);
-            }
+            ResourceCollectionRightsController sc = generateNewInitializedController(ResourceCollectionRightsController.class, owner);
             sc.setId(id);
             sc.prepare();
             sc.edit();
@@ -123,21 +109,18 @@ public interface TestResourceCollectionHelper {
         }
 
         resourceCollection = null;
-        resourceCollection = getGenericService().find(cls, id);
+        resourceCollection = getGenericService().find(ResourceCollection.class, id);
         logger_.debug("parentId: {}", parentId);
         logger_.debug("Resources: {}", resources);
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
             assertEquals(parentId, resourceCollection.getParent().getId());
         }
         if (CollectionUtils.isNotEmpty(resources)) {
-            if (resourceCollection instanceof SharedCollection) {
-                assertThat(((SharedCollection) resourceCollection).getResources(), containsInAnyOrder(resources.toArray()));
-            }
-            if (resourceCollection instanceof ListCollection) {
-                assertThat(((ListCollection) resourceCollection).getUnmanagedResources(), containsInAnyOrder(resources.toArray()));
+            if (resourceCollection instanceof ResourceCollection) {
+                assertThat(((ResourceCollection) resourceCollection).getManagedResources(), containsInAnyOrder(resources.toArray()));
             }
         }
-        return resourceCollection;
+        return (C) resourceCollection;
     }
 
     GenericService getGenericService();

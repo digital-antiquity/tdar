@@ -35,7 +35,6 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 
     private static final long serialVersionUID = 5134091457634096415L;
 
-
     private static final String TEMPLATE_WARNING = "embargo/expiration-warning.ftl";
     private static final String SUBJECT_WARNING = SITE_ACRONYM + ": Embargo about to expire";
     private static final String TEMPLATE_EXPIRED = "embargo/expiration.ftl";
@@ -69,7 +68,7 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
         logger.debug("expired: {} : {}", CollectionUtils.size(toExpire), toExpire);
 
         sendAdminEmail(expired, toExpire);
-        
+
         sendExpirationNotices(toExpire);
 
         if (CollectionUtils.isNotEmpty(expired)) {

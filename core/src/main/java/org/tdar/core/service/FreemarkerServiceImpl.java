@@ -19,18 +19,20 @@ import freemarker.template.Configuration;
  * 
  */
 @Service
-public class FreemarkerServiceImpl implements FreemarkerService  {
+public class FreemarkerServiceImpl implements FreemarkerService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private Configuration freemarkerConfiguration;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.FreemarkerService#render(java.lang.String, java.util.Map)
      */
     @Override
-    public String render(String templateName, Map<?,?> dataModel) throws IOException {
+    public String render(String templateName, Map<?, ?> dataModel) throws IOException {
         try {
             return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerConfiguration.getTemplate(templateName), dataModel);
         } catch (Exception e) {

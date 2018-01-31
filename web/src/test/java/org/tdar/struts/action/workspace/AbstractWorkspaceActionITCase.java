@@ -1,7 +1,7 @@
 package org.tdar.struts.action.workspace;
 
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.struts.action.AbstractControllerITCase;
 
@@ -9,7 +9,7 @@ public abstract class AbstractWorkspaceActionITCase extends AbstractControllerIT
 
     public DataIntegrationWorkflow setupHiddenWithAuthorizedUser() {
         DataIntegrationWorkflow workflow = setupHiddenWorkflow();
-        workflow.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getUser(), GeneralPermissions.EDIT_INTEGRATION));
+        workflow.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getUser(), Permissions.EDIT_INTEGRATION));
         genericService.saveOrUpdate(workflow);
         workflow.setJsonData("{}");
         return workflow;

@@ -13,7 +13,6 @@ public class TdarWebAppConfiguration extends TdarBaseWebAppConfiguration {
 
     private static final long serialVersionUID = 3444580855012578739L;
 
-
     @Override
     public boolean disableHibernateSearch() {
         return false;

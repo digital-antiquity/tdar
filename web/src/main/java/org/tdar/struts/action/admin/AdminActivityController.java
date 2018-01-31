@@ -65,7 +65,6 @@ public class AdminActivityController extends AbstractAuthenticatableAction {
     private HashMap<String, Integer> counters;
     private List<TdarUser> activePeople;
 
-
     @Action(value = "active-users", results = {
             @Result(name = SUCCESS, type = JSONRESULT)
     })
@@ -73,7 +72,7 @@ public class AdminActivityController extends AbstractAuthenticatableAction {
         setActivePeople(authenticationService.getCurrentlyActiveUsers());
         return SUCCESS;
     }
-    
+
     public Class<?> getJsonView() {
         return JsonLookupFilter.class;
     }
@@ -81,6 +80,7 @@ public class AdminActivityController extends AbstractAuthenticatableAction {
     public Object getResultObject() {
         return getActivePeople();
     }
+
     @Action(value = "activity")
     @Override
     public String execute() {

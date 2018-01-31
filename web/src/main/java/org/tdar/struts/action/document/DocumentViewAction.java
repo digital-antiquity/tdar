@@ -14,7 +14,7 @@ import org.tdar.struts.action.resource.AbstractResourceViewAction;
 public class DocumentViewAction extends AbstractResourceViewAction<Document> {
 
     private static final long serialVersionUID = 2384325295193047858L;
-    
+
     @Override
     public Class<Document> getPersistableClass() {
         return Document.class;

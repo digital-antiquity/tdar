@@ -13,6 +13,5 @@ public class TdarSearchIntegrationAppConfiguration extends IntegrationAppConfigu
     public boolean disableHibernateSearch() {
         return false;
     }
-    
 
 }

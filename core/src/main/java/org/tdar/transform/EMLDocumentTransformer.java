@@ -39,7 +39,7 @@ public abstract class EMLDocumentTransformer<R extends Resource> implements Tran
      * http://sbc.lternet.edu/external/InformationManagement/EML/docs/eml-2.1.0/#N10068
      * 
      */
-    
+
     @Override
     public EMLDocument transform(R source) {
         EMLDocument doc = new EMLDocument();
@@ -52,7 +52,7 @@ public abstract class EMLDocumentTransformer<R extends Resource> implements Tran
 
         citation.setAbstract(doc.createTextType(source.getDescription()));
         citation.getTitle().add(doc.createNonEmptyStringType(source.getTitle()));
-//        citation.setPubDate(source.getDate());
+        // citation.setPubDate(source.getDate());
         for (ResourceCreator rc : source.getPrimaryCreators()) {
             ObjectFactory partyFactory = new ObjectFactory();
             ResponsibleParty party = new ResponsibleParty();
@@ -68,20 +68,20 @@ public abstract class EMLDocumentTransformer<R extends Resource> implements Tran
                     inst = person.getInstitution();
                 }
             }
-//            party.getUserId().add(e);
-//            party.getId().add(e);
+            // party.getUserId().add(e);
+            // party.getId().add(e);
             if (creator instanceof Institution) {
                 inst = (Institution) creator;
             }
 
-           if (inst != null) {
-               party.getIndividualNameOrOrganizationNameOrPositionName().add(partyFactory.createResponsiblePartyOrganizationName(doc.createNonEmptyStringType(inst.getProperName())));
-               
-           }
-           citation.getCreator().add(party);
+            if (inst != null) {
+                party.getIndividualNameOrOrganizationNameOrPositionName()
+                        .add(partyFactory.createResponsiblePartyOrganizationName(doc.createNonEmptyStringType(inst.getProperName())));
+
+            }
+            citation.getCreator().add(party);
         }
     }
-    
 
     public static class DatasetTransformer extends InformationResourceTransformer<Dataset> {
         // marker class
@@ -131,7 +131,7 @@ public abstract class EMLDocumentTransformer<R extends Resource> implements Tran
             return dc;
         }
     }
-    
+
     public static class DocumentTransformer extends InformationResourceTransformer<Document> {
 
         @Override
@@ -141,8 +141,6 @@ public abstract class EMLDocumentTransformer<R extends Resource> implements Tran
         }
     }
 
-    
-    
     public static EMLDocument transformAny(Resource resource) {
         ResourceType resourceType = ResourceType.fromClass(resource.getClass());
         if (resourceType == null) {

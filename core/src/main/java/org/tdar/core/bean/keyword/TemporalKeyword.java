@@ -25,9 +25,9 @@ import org.hibernate.annotations.Check;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.TemporalKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "assertions",
-       joinColumns = @JoinColumn(name="temporal_keyword_id"))
- })
+        @AssociationOverride(name = "assertions",
+                joinColumns = @JoinColumn(name = "temporal_keyword_id"))
+})
 @XmlRootElement
 public class TemporalKeyword extends AbstractKeyword<TemporalKeyword> implements UncontrolledKeyword {
 
@@ -36,7 +36,7 @@ public class TemporalKeyword extends AbstractKeyword<TemporalKeyword> implements
     public TemporalKeyword(String string) {
         this.setLabel(string);
     }
-    
+
     public TemporalKeyword() {
     }
 

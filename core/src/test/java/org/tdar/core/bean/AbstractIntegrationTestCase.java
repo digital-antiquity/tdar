@@ -47,12 +47,10 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -249,7 +247,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    public Document generateDocumentWithFileAndUseDefaultUser() throws InstantiationException, IllegalAccessException, FileNotFoundException {
+    public Document createAndSaveDocumentWithFileAndUseDefaultUser() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, false);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
         File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
@@ -391,7 +389,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             if (resource instanceof InformationResource) {
                 ((InformationResource) resource).setDate(2012);
             }
-            resource.getAuthorizedUsers().add(new AuthorizedUser(persistentPerson, persistentPerson, GeneralPermissions.MODIFY_RECORD));
+            resource.getAuthorizedUsers().add(new AuthorizedUser(persistentPerson, persistentPerson, Permissions.MODIFY_RECORD));
             genericService.save(resource);
             genericService.save(resource.getAuthorizedUsers());
         } catch (Exception e) {
@@ -411,30 +409,20 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewResource(cls, persistentPerson, resourceTitle);
     }
 
-    // create new, public, collection with the getUser() as the owner and no resources
-    public <C extends ResourceCollection> C createAndSaveNewResourceCollection(String name, Class<C> class1) {
-        try {
-            return init(class1.newInstance(), name);
-        } catch (InstantiationException | IllegalAccessException e) {
-            logger.error("{}",e,e);
-        }
-        return null;
-    }
 
     // create new, public, collection with the getUser() as the owner and no resources
-    public SharedCollection createAndSaveNewResourceCollection(String name) {
-        return init(new SharedCollection(), name);
+    public ResourceCollection createAndSaveNewResourceCollection(String name) {
+        return init(new ResourceCollection(), name);
     }
 
-    public ListCollection createAndSaveNewWhiteLabelCollection(String name) {
-        ListCollection wlc = new ListCollection();
+    public ResourceCollection createAndSaveNewWhiteLabelCollection(String name) {
+        ResourceCollection wlc = new ResourceCollection();
         wlc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false,false));
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().setSubtitle("This is a fancy whitelabel collection");
         init(wlc, name);
         return wlc;
     }
-
     protected <C extends ResourceCollection> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
@@ -442,7 +430,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         resourceCollection.setHidden(false);
         resourceCollection.markUpdated(getUser());
         resourceCollection.setOwner(getUser());
-        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(getUser(), getUser(), GeneralPermissions.ADMINISTER_SHARE));
+        resourceCollection.getAuthorizedUsers().add(new AuthorizedUser(getUser(), getUser(), Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(resourceCollection);
         genericService.saveOrUpdate(resourceCollection.getAuthorizedUsers());
         return resourceCollection;
@@ -552,7 +540,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return TestConfiguration.getInstance().getEditorUserId();
     }
 
-    public void addAuthorizedUser(Resource resource, TdarUser person, GeneralPermissions permission) {
+    public void addAuthorizedUser(Resource resource, TdarUser person, Permissions permission) {
         AuthorizedUser authorizedUser = new AuthorizedUser(person, person, permission);
 //        InternalCollection internalResourceCollection = resource.getInternalResourceCollection();
 //        if (internalResourceCollection == null) {

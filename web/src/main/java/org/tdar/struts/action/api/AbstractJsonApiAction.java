@@ -29,6 +29,7 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
 
     private Class<? extends JacksonView> jsonView;
     private Object resultObject;
+
     /**
      * Convenience method for serializing the specified object and converting it to an inputStream.
      * 
@@ -50,10 +51,11 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
     public Class<? extends JacksonView> getJsonView() {
         return jsonView;
     }
-    
+
     public Object getResultObject() {
         return resultObject;
     }
+
     /**
      * Convenience method for serializing the specified object and converting it to an inputStream.
      * 
@@ -61,12 +63,17 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
      *            object to stringify
      * @throws IOException
      */
+    protected final void setResultObject(Object obj) throws IOException {
+        setJsonObject(obj, null);
+    }
+
     protected final void setJsonObject(Object obj) throws IOException {
         setJsonObject(obj, null);
     }
 
-    public void prepare() throws Exception {};
-    
+    public void prepare() throws Exception {
+    };
+
     public InputStream getJsonInputStream() {
         return jsonInputStream;
     }
@@ -74,6 +81,5 @@ public abstract class AbstractJsonApiAction extends AbstractAuthenticatableActio
     protected final void setJsonInputStream(InputStream jsonInputStream) {
         this.jsonInputStream = jsonInputStream;
     }
-
 
 }

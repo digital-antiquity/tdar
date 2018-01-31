@@ -20,7 +20,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
@@ -98,8 +98,8 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testAuthorizedUserInEquality() {
         // with the equals and hashCode of AuthorizedUser, this is now never going to be true
-        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.VIEW_ALL);
-        AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), getAdminUser(), GeneralPermissions.VIEW_ALL);
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.VIEW_ALL);
+        AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), getAdminUser(), Permissions.VIEW_ALL);
         assertNotEquals(authorizedUser, authorizedUser2);
     }
 

@@ -21,9 +21,9 @@ import org.tdar.utils.PersistableUtils;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
- * Permission searches are hard, this handles searching for resources that a user has rights to by managing the compelxity of the 
+ * Permission searches are hard, this handles searching for resources that a user has rights to by managing the compelxity of the
  * rights for the person as well as the status for a reosurce. Eg. User created a DRAFT, or User has been granted access to view a DRAFT
- *  
+ * 
  * @author abrin
  *
  */
@@ -58,7 +58,7 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
             if (CollectionUtils.isNotEmpty(getFieldValues()) && !getFieldValues().contains(Status.DRAFT)) {
                 draftSubgroup.clear();
             }
-            
+
         }
 
         // we remove DRAFT because it was handled above

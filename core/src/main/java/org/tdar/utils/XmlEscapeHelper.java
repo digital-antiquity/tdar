@@ -39,9 +39,9 @@ public class XmlEscapeHelper {
         if (in == null) {
             return null;
         }
-        
+
         if ("".equals(in)) {
-            return ""; 
+            return "";
         }
 
         for (int i = 0; i < in.length(); i++) {

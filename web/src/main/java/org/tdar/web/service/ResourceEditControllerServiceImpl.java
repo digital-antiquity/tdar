@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -60,8 +59,11 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
     @Autowired
     private BillingAccountService accountService;
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceEditControllerService#initializeResourceCreatorProxyLists(org.tdar.struts.data.AuthWrapper, java.util.List, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceEditControllerService#initializeResourceCreatorProxyLists(org.tdar.struts.data.AuthWrapper, java.util.List,
+     * java.util.List)
      */
     @Override
     @Transactional(readOnly = true)
@@ -89,8 +91,11 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceEditControllerService#getPotentialParents(org.tdar.core.bean.resource.InformationResource, org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Project, com.opensymphony.xwork2.TextProvider)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceEditControllerService#getPotentialParents(org.tdar.core.bean.resource.InformationResource,
+     * org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Project, com.opensymphony.xwork2.TextProvider)
      */
     @Override
     @Transactional(readOnly = true)
@@ -108,7 +113,9 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
         return potentialParents;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceEditControllerService#isAbleToUploadFiles(org.tdar.core.bean.entity.TdarUser, R, java.util.List)
      */
     @Override
@@ -135,7 +142,9 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceEditControllerService#determineActiveAccounts(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource)
      */
     @Override
@@ -164,28 +173,32 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
         return accounts;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.ResourceEditControllerService#updateSharesForEdit(org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.TdarUser, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.ResourceEditControllerService#updateSharesForEdit(org.tdar.core.bean.resource.Resource, org.tdar.core.bean.entity.TdarUser,
+     * java.util.List, java.util.List, java.util.List, java.util.List, java.util.List, java.util.List)
      */
     @Override
     @Transactional(readOnly = true)
-    public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<SharedCollection> effectiveShares,
-            List<SharedCollection> retainedSharedCollections,
-            List<ListCollection> effectiveResourceCollections, List<ListCollection> retainedListCollections, List<SharedCollection> shares,
-            List<ListCollection> resourceCollections) {
+    public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<ResourceCollection> effectiveShares,
+            List<ResourceCollection> retainedSharedCollections,
+            List<ResourceCollection> effectiveResourceCollections, List<ResourceCollection> retainedListCollections, List<ResourceCollection> shares,
+            List<ResourceCollection> resourceCollections) {
         effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(resource));
         effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(resource));
 
         logger.debug("loadEffective...");
-        for (SharedCollection rc : resource.getSharedResourceCollections()) {
-            if (authorizationService.canRemoveFromCollection( authenticatedUser, rc)) {
+        for (ResourceCollection rc : resource.getManagedResourceCollections()) {
+            authorizationService.applyTransientViewableFlag(rc, authenticatedUser);
+            if (authorizationService.canRemoveFromCollection(authenticatedUser, rc)) {
                 shares.add(rc);
             } else {
                 retainedSharedCollections.add(rc);
                 logger.debug("adding: {} to retained collections", rc);
             }
         }
-        for (ListCollection rc : resource.getUnmanagedResourceCollections()) {
+        for (ResourceCollection rc : resource.getUnmanagedResourceCollections()) {
             if (authorizationService.canRemoveFromCollection(authenticatedUser, rc)) {
                 resourceCollections.add(rc);
             } else {
@@ -199,7 +212,9 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.ResourceEditControllerService#loadFilesJson(org.tdar.core.bean.resource.InformationResource)
      */
     @Override

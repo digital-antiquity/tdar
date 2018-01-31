@@ -14,5 +14,4 @@ public class ConfigurationFileException extends TdarRecoverableRuntimeException 
         super(message);
     }
 
-
 }

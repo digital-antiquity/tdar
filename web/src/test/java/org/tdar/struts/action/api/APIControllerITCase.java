@@ -11,7 +11,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -26,12 +25,12 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -91,7 +90,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         FileProxy proxy = new FileProxy();
         String convertToXML = serializationService.convertToXML(proxy);
         logger.debug(convertToXML);
-        SharedCollection collection = new SharedCollection();
+        ResourceCollection collection = new ResourceCollection();
         collection.setHidden(true);
         String convertToXML4 = serializationService.convertToXML(collection);
         logger.debug(convertToXML4);
@@ -172,7 +171,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         assertTrue("field should be inherited", importedRecord.isInheritingNoteInformation());
         assertFalse("field should be inherited", importedRecord.isInheritingCollectionInformation());
         genericService.delete(importedRecord);
-        for (SharedCollection rc : importedRecord.getSharedResourceCollections()) {
+        for (ResourceCollection rc : importedRecord.getManagedResourceCollections()) {
             logger.debug("{} - {}", rc.getName(), rc.isHidden());
                 if (rc.getName().equals("hidden")) {
                     assertTrue(rc.isHidden());
@@ -184,7 +183,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
 
     @SuppressWarnings("deprecation")
     private void setupFakeRecord(Document fake) {
-        addAuthorizedUser(fake, getUser(), GeneralPermissions.MODIFY_RECORD);
+        addAuthorizedUser(fake, getUser(), Permissions.MODIFY_RECORD);
         // setup a fake record, with some new fields off the session
         genericService.saveOrUpdate(fake);
         genericService.synchronize();
@@ -198,16 +197,16 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         fake.setInheritingCulturalInformation(true);
         fake.setInheritingNoteInformation(true);
         fake.setInheritingMaterialInformation(true);
-        SharedCollection coll = new SharedCollection();
+        ResourceCollection coll = new ResourceCollection();
         coll.setHidden(true);
         coll.setName("hidden");
         coll.markUpdated(getAdminUser());
-        fake.getSharedCollections().add(coll);
-        SharedCollection coll2 = new SharedCollection();
+        fake.getManagedResourceCollections().add(coll);
+        ResourceCollection coll2 = new ResourceCollection();
         coll2.setHidden(false);
         coll2.setName("visible");
         coll2.markUpdated(getAdminUser());
-        fake.getSharedCollections().add(coll2);
+        fake.getManagedResourceCollections().add(coll2);
 
         fake.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000));
         // fake.getResourceCollections().clear();

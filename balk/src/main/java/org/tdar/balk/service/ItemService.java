@@ -1,12 +1,8 @@
 package org.tdar.balk.service;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxDirectory;
 import org.tdar.balk.bean.DropboxUserMapping;

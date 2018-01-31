@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
@@ -22,7 +23,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/api/notification")
 @Component
 @Scope("prototype")
-public class DismissUserNotificationAction extends AbstractAuthenticatableAction implements Preparable {
+public class DismissUserNotificationAction extends AbstractJsonApiAction implements Preparable {
 
     private static final long serialVersionUID = -1680185105953721985L;
 
@@ -34,17 +35,17 @@ public class DismissUserNotificationAction extends AbstractAuthenticatableAction
 
     private UserNotification notification;
 
-    @Action(value = "dismiss", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "resultObject" }),
-            @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "resultObject", "statusCode", "500" })
-    })
+    @Action(value = "dismiss")
     @WriteableSession
     @PostOnly
     public String dismiss() {
         try {
             userNotificationService.dismiss(getAuthenticatedUser(), getNotification());
             resultObject.put(SUCCESS, SUCCESS);
-        } catch (Exception e) {
+            setJsonObject(resultObject);
+            getLogger().debug("id: {} notification: {}, user: {}", getId(), getNotification(), getAuthenticatedUser());
+        } catch (Throwable e) {
+            getLogger().error(e.getMessage(),e);
             addActionError(e.getLocalizedMessage());
             return INPUT;
         }
@@ -61,7 +62,12 @@ public class DismissUserNotificationAction extends AbstractAuthenticatableAction
 
     @Override
     public void prepare() throws Exception {
+        try {
         setNotification(userNotificationService.find(id));
+        } catch (Throwable t) {
+            getLogger().error(t.getMessage(),t);
+            addActionErrorWithException(t.getMessage(), t);
+        }
     }
 
     public UserNotification getNotification() {
@@ -72,11 +78,4 @@ public class DismissUserNotificationAction extends AbstractAuthenticatableAction
         this.notification = notification;
     }
 
-    public Map<String, Object> getResultObject() {
-        return resultObject;
-    }
-
-    public void setResultObject(Map<String, Object> resultObject) {
-        this.resultObject = resultObject;
-    }
 }

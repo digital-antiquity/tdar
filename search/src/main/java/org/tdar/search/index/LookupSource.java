@@ -4,9 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Localizable;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
@@ -27,19 +25,13 @@ import org.tdar.search.service.CoreNames;
 import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
-public enum LookupSource implements HasLabel,Localizable {
-    PERSON("people", Person.class),
-    INSTITUTION("institutions", Institution.class),
-    KEYWORD("items",
+public enum LookupSource implements HasLabel, Localizable {
+    PERSON("people", Person.class), INSTITUTION("institutions", Institution.class), KEYWORD("items",
             CultureKeyword.class, GeographicKeyword.class, InvestigationType.class, MaterialKeyword.class,
             OtherKeyword.class, TemporalKeyword.class, SiteNameKeyword.class,
-            SiteTypeKeyword.class),
-    RESOURCE("resources", Resource.class),
-    COLLECTION("collections", SharedCollection.class, ListCollection.class),
-    INTEGRATION("integrations", DataIntegrationWorkflow.class),
-    RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class),
-    CONTENTS("content",InformationResourceFile.class),
-    DATA("data",DataTableRow.class);
+            SiteTypeKeyword.class), RESOURCE("resources", Resource.class), COLLECTION("collections", ResourceCollection.class), INTEGRATION("integrations",
+                    DataIntegrationWorkflow.class), RESOURCE_ANNOTATION_KEY("annotationKeys",
+                            ResourceAnnotationKey.class), CONTENTS("content", InformationResourceFile.class), DATA("data", DataTableRow.class);
 
     private String collectionName;
     private Class<? extends Indexable>[] classes;
@@ -126,6 +118,7 @@ public enum LookupSource implements HasLabel,Localizable {
 
     /**
      * because resource and collection share an index, the query isn't *:* but type:{}
+     * 
      * @return
      */
     public String getDeleteQuery() {
@@ -133,7 +126,7 @@ public enum LookupSource implements HasLabel,Localizable {
             case COLLECTION:
             case RESOURCE:
             case INTEGRATION:
-                return String.format("%s:%s", "type",this.name());
+                return String.format("%s:%s", "type", this.name());
             default:
                 return "*:*";
         }

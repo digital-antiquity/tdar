@@ -1,23 +1,22 @@
 package org.tdar.core.service;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 
-public class CollectionSaveObject<C extends HierarchicalCollection> implements Serializable {
+public class CollectionSaveObject implements Serializable {
 
     private static final long serialVersionUID = -8676785579332687294L;
 
-    private C collection;
+    private ResourceCollection collection;
     private Long parentId;
     private Long alternateParentId;
-    private C parent;
-    private C alternateParent;
+    private ResourceCollection parent;
+    private ResourceCollection alternateParent;
     private TdarUser user;
     private List<AuthorizedUser> users;
     private List<Long> toAdd;
@@ -27,20 +26,18 @@ public class CollectionSaveObject<C extends HierarchicalCollection> implements S
     private Long startTime;
     private List<Long> publicToAdd;
     private List<Long> publicToRemove;
-    private Class<C> persistableClass;
-    
-    public CollectionSaveObject(C persistable, TdarUser authenticatedUser, Long startTime2, Class<C> class1) {
+
+    public CollectionSaveObject(ResourceCollection persistable, TdarUser authenticatedUser, Long startTime2) {
         this.collection = persistable;
         this.user = authenticatedUser;
-        this.setPersistableClass(class1);
         this.startTime = startTime2;
     }
 
-    public C getCollection() {
+    public ResourceCollection getCollection() {
         return collection;
     }
 
-    public void setCollection(C collection) {
+    public void setCollection(ResourceCollection collection) {
         this.collection = collection;
     }
 
@@ -60,19 +57,19 @@ public class CollectionSaveObject<C extends HierarchicalCollection> implements S
         this.alternateParentId = alternateParentId;
     }
 
-    public C getParent() {
+    public ResourceCollection getParent() {
         return parent;
     }
 
-    public void setParent(C parent) {
+    public void setParent(ResourceCollection parent) {
         this.parent = parent;
     }
 
-    public C getAlternateParent() {
+    public ResourceCollection getAlternateParent() {
         return alternateParent;
     }
 
-    public void setAlternateParent(C alternateParent) {
+    public void setAlternateParent(ResourceCollection alternateParent) {
         this.alternateParent = alternateParent;
     }
 
@@ -147,14 +144,4 @@ public class CollectionSaveObject<C extends HierarchicalCollection> implements S
     public void setPublicToRemove(List<Long> publicToRemove) {
         this.publicToRemove = publicToRemove;
     }
-
-
-    public Class<C> getPersistableClass() {
-        return persistableClass;
-    }
-
-    public void setPersistableClass(Class<C> persistableClass) {
-        this.persistableClass = persistableClass;
-    }
-
 }

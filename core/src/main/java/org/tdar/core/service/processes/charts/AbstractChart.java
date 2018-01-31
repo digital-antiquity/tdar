@@ -14,9 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 
+
 @SuppressWarnings("restriction")
-public abstract class AbstractChart  {
-    
+public abstract class AbstractChart {
+
     private String outputDir = TdarConfiguration.getInstance().getTempDirectory().getAbsolutePath();
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -66,7 +67,6 @@ public abstract class AbstractChart  {
 //      VectorGraphicsEncoder.saveVectorGraphic(chart, "./Sample_Chart", VectorGraphicsFormat.EPS);
     }
 
-    
     public int getHeight() {
         return height;
     }

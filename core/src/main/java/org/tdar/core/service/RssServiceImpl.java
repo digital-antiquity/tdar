@@ -108,8 +108,9 @@ public class RssServiceImpl implements Serializable, RssService {
         return result;
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.RssService#evictRssCache()
      */
     @Override
@@ -118,7 +119,9 @@ public class RssServiceImpl implements Serializable, RssService {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.RssService#parseFeed(java.net.URL)
      */
     @Override
@@ -141,12 +144,15 @@ public class RssServiceImpl implements Serializable, RssService {
         return result;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.RssService#createRssFeedFromResourceList(org.tdar.search.query.SearchResultHandler, org.tdar.core.service.FeedSearchHelper)
      */
     @Override
     @SuppressWarnings("unused")
-    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, FeedSearchHelper helper) throws IOException, FeedException {
+    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, FeedSearchHelper helper)
+            throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType(ATOM_1_0);
 
@@ -322,7 +328,7 @@ public class RssServiceImpl implements Serializable, RssService {
         if (version == null) {
             return;
         }
-        if ((user != null) && authenticationAndAuthorizationService.canDownload(user,version)) {
+        if ((user != null) && authenticationAndAuthorizationService.canDownload(user, version)) {
             logger.trace("allowed: {}", version);
             SyndEnclosure enclosure = new SyndEnclosureImpl();
             enclosure.setLength(version.getFileLength());

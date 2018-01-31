@@ -40,93 +40,105 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     @Override
     public void reset() {
         reindex();
-        controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
-        controller.setRecordsPerPage(50);
     }
 
     @Test
     @Rollback(true)
     public void testForInheritedCulturalInformationFromProject1() {
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
+        controller.setRecordsPerPage(50);
         logger.info("{}", getUser());
         Long imgId = setupImage();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(getInheritingTypes());
+        setObjectTypes(controller,getInheritingTypes());
         List<String> approvedCultureKeywordIds = new ArrayList<String>();
         approvedCultureKeywordIds.add("9");
-        setStatuses(Status.DRAFT);
-        firstGroup().getApprovedCultureKeywordIdLists().add(approvedCultureKeywordIds);
-        doSearch("");
-        assertTrue("'Archaic' defined in parent project should be found in information resource", resultsContainId(imgId));
+        setStatuses(controller,Status.DRAFT);
+        firstGroup(controller).getApprovedCultureKeywordIdLists().add(approvedCultureKeywordIds);
+        doSearch(controller, "");
+        assertTrue("'Archaic' defined in parent project should be found in information resource", resultsContainId(controller,imgId));
         // fail("Um, actually this test doesn't do anything close to what it says it's doing");
     }
 
     @Test
     @Rollback(true)
     public void testDeletedMaterialsAreIndexed() {
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
+        controller.setRecordsPerPage(50);
         controller = generateNewInitializedController(AdvancedSearchController.class, getAdminUser());
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(allResourceTypes);
-        setStatuses(Status.DELETED);
-        doSearch("precambrian");
-        assertTrue(resultsContainId(datasetId));
+        setObjectTypes(controller,allResourceTypes);
+        setStatuses(controller,Status.DELETED);
+        doSearch(controller, "precambrian");
+        assertTrue(resultsContainId(controller,datasetId));
     }
 
     @Test
     @Rollback(true)
     public void testDeletedMaterialsAreNotVisible() {
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
+        controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(allResourceTypes);
-        setStatuses(Status.DELETED);
+        setObjectTypes(controller,allResourceTypes);
+        setStatuses(controller,Status.DELETED);
         setIgnoreActionErrors(true);
-        doSearch("precambrian", true);
-        assertFalse(resultsContainId(datasetId));
+        doSearch(controller, "precambrian", true);
+        assertFalse(resultsContainId(controller,datasetId));
         assertEquals(1, controller.getActionErrors().size());
     }
 
     @Test
     @Rollback(true)
     public void testDeletedMaterialsAreIndexedButYouCantSee() throws SearchIndexException, IOException {
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
+        controller.setRecordsPerPage(50);
         controller = generateNewInitializedController(AdvancedSearchController.class, getBasicUser());
         setIgnoreActionErrors(true);
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.index(genericService.find(Dataset.class, datasetId));
-        setObjectTypes(allResourceTypes);
-        setStatuses(Status.DELETED);
-        doSearch("precambrian", true);
+        setObjectTypes(controller,allResourceTypes);
+        setStatuses(controller,Status.DELETED);
+        doSearch(controller, "precambrian", true);
         assertTrue(controller.getActionErrors().size() > 0);
     }
 
     @Test
     @Rollback(true)
     public void testDraftMaterialsAreIndexed() {
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
+        controller.setRecordsPerPage(50);
         Long imgId = setupImage();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(allResourceTypes);
-        setStatuses(Status.DRAFT);
-        doSearch("description");
-        assertTrue(resultsContainId(imgId));
+        setObjectTypes(controller,allResourceTypes);
+        setStatuses(controller,Status.DRAFT);
+        doSearch(controller, "description");
+        assertTrue(resultsContainId(controller,imgId));
     }
 
     @Test
     @Rollback(true)
     public void testHierarchicalCultureKeywordsAreIndexed() {
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
+        controller.setRecordsPerPage(50);
         Long imgId = setupImage();
         logger.info("Created new image: " + imgId);
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(allResourceTypes);
-        setStatusAll();
-        doSearch("PaleoIndian");
-        assertTrue(resultsContainId(imgId));
+        setObjectTypes(controller,allResourceTypes);
+        setStatusAll(controller);
+        doSearch(controller, "PaleoIndian");
+        assertTrue(resultsContainId(controller,imgId));
     }
 
     @Test
     @Rollback(true)
     public void testFindAllSearchPhrase() throws ParseException, SolrServerException, IOException {
-        doSearch("");
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
+        controller.setRecordsPerPage(50);
+        doSearch( controller,"");
         logger.debug(controller.getSearchDescription());
         logger.debug(controller.getSearchPhrase());
         logger.debug(controller.getSearchSubtitle());
@@ -137,16 +149,19 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     @Rollback
     // searching for an specific tdar id should ignore all other filters
     public void testTdarIdSearchOverride() throws Exception {
+        AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
+        controller.setRecordsPerPage(50);
+
         Document document = createAndSaveNewInformationResource(Document.class);
         Long expectedId = document.getId();
         assertTrue(expectedId > 0);
         reindex();
 
         // specify some filters that would normally filter-out the document we just created.
-        firstGroup().getTitles().add("thistitleshouldprettymuchfilteroutanyandallresources");
-        firstGroup().setOperator(Operator.OR);
-        firstGroup().getResourceIds().add(expectedId);
-        doSearch("");
+        firstGroup(controller).getTitles().add("thistitleshouldprettymuchfilteroutanyandallresources");
+        firstGroup(controller).setOperator(Operator.OR);
+        firstGroup(controller).getResourceIds().add(expectedId);
+        doSearch(controller, "");
         assertEquals("expecting only one result", 1, controller.getResults().size());
         Indexable resource = controller.getResults().iterator().next();
         assertEquals(expectedId, resource.getId());

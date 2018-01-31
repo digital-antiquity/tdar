@@ -10,6 +10,11 @@ public class UserNotificationSeleniumWebITCase extends AbstractEditorSeleniumWeb
 
     private static final String RELEASE_ANNOUNCE = "lithic.announce";
 
+    @Override
+    public boolean testRequiresLucene() {
+        return false;
+    }
+    
     @Test
     public void testDismiss() throws InterruptedException {
         gotoPage("/dashboard");
@@ -17,11 +22,15 @@ public class UserNotificationSeleniumWebITCase extends AbstractEditorSeleniumWeb
         find(By.id("close_note_1")).click();
         clearPageCache();
         logger.debug(getText());
+        // we were getting an alert, likely when the browser moved away from the page, prior to a "success" being returned
+        Thread.sleep(1000);
         assertFalse(getText().contains(RELEASE_ANNOUNCE));
         logout();
         loginEditor();
         clearPageCache();
         logger.debug(getText());
+        // we were getting an alert, likely when the browser moved away from the page, prior to a "success" being returned
+        Thread.sleep(1000);
         assertFalse(getText().contains(RELEASE_ANNOUNCE));
     }
 

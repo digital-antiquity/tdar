@@ -53,15 +53,15 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
             onDevStartup(container);
         }
 
-      if (ImageUtilities.isMediaLibAvailable()) {
-              logger.info("JAI ImageIO available and configured");
-          } else {
-              logger.error("\n\n\t *** JAI-ImageIO is not properly installed with Native Libraries *** \n\t *** Instructions for Installation: http://docs.geoserver.org/latest/en/user/production/java.html *** \n\n");
-              if (configuration.isProductionEnvironment()) {
-                  throw new IllegalStateException("cannot start up in production without JAI");
-              }
-          }
-
+        if (ImageUtilities.isMediaLibAvailable()) {
+            logger.info("JAI ImageIO available and configured");
+        } else {
+            logger.error(
+                    "\n\n\t *** JAI-ImageIO is not properly installed with Native Libraries *** \n\t *** Instructions for Installation: http://docs.geoserver.org/latest/en/user/production/java.html *** \n\n");
+            if (configuration.isProductionEnvironment()) {
+                throw new IllegalStateException("cannot start up in production without JAI");
+            }
+        }
 
         setupContainer(container);
         container.addListener(StrutsListener.class);
@@ -75,9 +75,9 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 
         setupOpenSessionInViewFilter(container);
 
-//        if (configuration.tagEnabled()) {
-//            configureCxfForTag(container);
-//        }
+        // if (configuration.tagEnabled()) {
+        // configureCxfForTag(container);
+        // }
         configureFreemarker(container);
 
         configureStrutsAndSiteMeshFilters(container);
@@ -95,7 +95,7 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
         if (configuration.isProductionEnvironment()) {
             throw new IllegalStateException("dev startup tasks not allowed in production");
         }
-//        logServerInfo(container);
+        // logServerInfo(container);
     }
 
     private void configureFreemarker(ServletContext container) {
@@ -113,7 +113,6 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
         cxf.setLoadOnStartup(1);
         cxf.addMapping("/services/*");
     }
-
 
     private void configureUrlRewriteRule(ServletContext container) {
         Dynamic urlRewriteFilter = container.addFilter("URLRewriteFilter", UrlRewriteFilter.class);

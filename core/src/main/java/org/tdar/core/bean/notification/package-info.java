@@ -9,4 +9,3 @@ package org.tdar.core.bean.notification;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
-

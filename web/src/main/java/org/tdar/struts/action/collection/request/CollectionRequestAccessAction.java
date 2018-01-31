@@ -33,7 +33,8 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/collection/request")
 @Component
 @Scope("prototype")
-public class CollectionRequestAccessAction extends AbstractRequestAccessController<ResourceCollection> implements Preparable, PersistableLoadingAction<ResourceCollection> {
+public class CollectionRequestAccessAction extends AbstractRequestAccessController<ResourceCollection>
+        implements Preparable, PersistableLoadingAction<ResourceCollection> {
 
     private Set<EmailType> emailTypes = new HashSet<>(EmailType.valuesWithoutConfidentialFiles());
 
@@ -45,15 +46,13 @@ public class CollectionRequestAccessAction extends AbstractRequestAccessControll
     public void prepare() {
         getLogger().trace("id: {}, {}", getId(), getPersistableClass());
         try {
-        prepareAndLoad(this, RequestType.VIEW);
+            prepareAndLoad(this, RequestType.VIEW);
         } catch (Throwable t) {
-            getLogger().error("{}",t,t);
+            getLogger().error("{}", t, t);
         }
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return;
         }
-
-
 
     }
 
@@ -97,7 +96,7 @@ public class CollectionRequestAccessAction extends AbstractRequestAccessControll
     public void setEmailTypes(Set<EmailType> emailTypes) {
         this.emailTypes = emailTypes;
     }
-    
+
     public ResourceCollection getCollection() {
         return getPersistable();
     }

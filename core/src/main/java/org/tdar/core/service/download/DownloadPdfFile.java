@@ -29,7 +29,8 @@ public class DownloadPdfFile extends DownloadFile {
     private Document document;
     private File coverPageLogo;
 
-    public DownloadPdfFile(Document ir, InformationResourceFileVersion irFileVersion, PdfService pdfService, TdarUser person, TextProvider provider, File coverPageLogo) {
+    public DownloadPdfFile(Document ir, InformationResourceFileVersion irFileVersion, PdfService pdfService, TdarUser person, TextProvider provider,
+            File coverPageLogo) {
         super(irFileVersion.getTransientFile(), irFileVersion.getInformationResourceFile().getFilename(), irFileVersion);
         this.version = irFileVersion;
         this.pdfService = pdfService;

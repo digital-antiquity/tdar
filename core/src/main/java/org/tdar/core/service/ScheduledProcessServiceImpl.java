@@ -71,8 +71,7 @@ import com.google.common.collect.Sets;
  * @author Adam Brin
  */
 @Service("scheduledProcessService")
-public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, ApplicationContextAware, ScheduledProcessService {
-
+public class ScheduledProcessServiceImpl implements SchedulingConfigurer, ApplicationContextAware, ScheduledProcessService {
 
     TdarConfiguration config = TdarConfiguration.getInstance();
 
@@ -93,8 +92,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
     private ApplicationContext applicationContext;
     private ScheduledTaskRegistrar taskRegistrar;
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#cronCheckAuthService()
      */
     @Override
@@ -105,8 +105,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         }
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#cronClearPermissionsCache()
      */
     @Override
@@ -115,8 +116,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         authenticationService.clearPermissionsCache();
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#cronScheduledProcesses()
      */
     @Override
@@ -129,19 +131,22 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         runNextScheduledProcessesInQueue();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#runUpgradeTasks()
      */
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public List<String> runUpgradeTasks() {
         List<String> tasksRun = new ArrayList<>();
         if (manager != null && CollectionUtils.isNotEmpty(manager.getUpgradeTasks())) {
-            Iterator<ScheduledProcess> iterator = manager.getUpgradeTasks() .iterator();
+            Iterator<ScheduledProcess> iterator = manager.getUpgradeTasks().iterator();
             while (iterator.hasNext()) {
                 ScheduledProcess process = iterator.next();
                 boolean run = hasRun(process.getDisplayName());
-                logger.debug("{} -- enabled:{} startup: {} completed: {}, hasRun: {}", process.getDisplayName(), process.isEnabled(), process.shouldRunAtStartup(), process.isCompleted(), run);
+                logger.debug("{} -- enabled:{} startup: {} completed: {}, hasRun: {}", process.getDisplayName(), process.isEnabled(),
+                        process.shouldRunAtStartup(), process.isCompleted(), run);
                 if (process.isEnabled() && process.shouldRunAtStartup() && !process.isCompleted() && !run) {
                     if (process instanceof UpgradeTask && !((UpgradeTask) process).hasRun()) {
                         iterator.remove();
@@ -150,7 +155,7 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
                     String threadName = Thread.currentThread().getName();
                     try {
                         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-                        Thread.currentThread().setName(threadName + "-"+process.getClass().getSimpleName());
+                        Thread.currentThread().setName(threadName + "-" + process.getClass().getSimpleName());
                         process.execute();
                         tasksRun.add(process.getDisplayName());
                     } catch (Throwable e) {
@@ -179,7 +184,10 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
             iterator.remove();
         }
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#runNextScheduledProcessesInQueue()
      */
     @Override
@@ -229,7 +237,7 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         String threadName = Thread.currentThread().getName();
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-            Thread.currentThread().setName(threadName + "-"+process.getClass().getSimpleName());
+            Thread.currentThread().setName(threadName + "-" + process.getClass().getSimpleName());
             process.execute();
         } catch (Throwable e) {
             logger.error("an error ocurred when running {}", process.getDisplayName(), e);
@@ -247,7 +255,7 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
      * 
      * @param process
      */
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     private void completedSuccessfully(ScheduledProcess process) {
         UpgradeTask task = new UpgradeTask();
         task = genericService.markWritable(task);
@@ -258,11 +266,13 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         logger.info("completed " + task.getName());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#hasRun(java.lang.String)
      */
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public boolean hasRun(String name) {
         UpgradeTask upgradeTask = new UpgradeTask();
         upgradeTask.setName(name);
@@ -277,7 +287,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#queue(java.lang.Class)
      */
     @Override
@@ -285,7 +297,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         return getScheduledProcessQueue().add(cls);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#getScheduledProcessQueue()
      */
     @Override
@@ -293,7 +307,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         return scheduledProcessQueue;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#cronTrimActivityQueue()
      */
     @Override
@@ -304,7 +320,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         logger.trace("end trimming activity queue");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#onApplicationEvent(org.springframework.context.event.ContextRefreshedEvent)
      */
     @Override
@@ -314,7 +332,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         logger.debug("received app context event: " + event);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#getManager()
      */
     @Override
@@ -322,7 +342,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         return manager;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#setApplicationContext(org.springframework.context.ApplicationContext)
      */
     @Override
@@ -359,7 +381,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#getCronEntries()
      */
     @Override
@@ -370,7 +394,9 @@ public class ScheduledProcessServiceImpl  implements  SchedulingConfigurer, Appl
                 .collect(Collectors.toList());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.core.service.ScheduledProcessService#configureTasks(org.springframework.scheduling.config.ScheduledTaskRegistrar)
      */
     @Override

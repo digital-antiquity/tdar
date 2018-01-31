@@ -14,7 +14,7 @@ import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
@@ -70,7 +70,7 @@ public interface EmailService {
 	List<Email> findEmailsWithStatus(Status status);
 
 	void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment,
-			boolean reject, EmailType type, GeneralPermissions permission, Date expires);
+			boolean reject, EmailType type, Permissions permission, Date expires);
 
 	void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person);
 

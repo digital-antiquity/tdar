@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -50,7 +50,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     SerializationService serializationService;
 
     private String format(HasName item) {
-        return String.format("%s",item.getId());
+        return String.format("%s", item.getId());
     }
 
     @Override
@@ -58,7 +58,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         getExportProxy().setRequestor(getAuthenticatedUser());
         getExportProxy().setResources(getGenericService().findAll(Resource.class, ids));
         getExportProxy().setAccount(getGenericService().find(BillingAccount.class, accountId));
-        getExportProxy().setCollection(getGenericService().find(SharedCollection.class, collectionId));
+        getExportProxy().setCollection(getGenericService().find(ResourceCollection.class, collectionId));
     }
 
     @Override
@@ -68,19 +68,19 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         List<Resource> resources = getExportProxy().getResources();
         if (resources != null) {
             for (Resource r : resources) {
-                if (!authorizationService.canEditResource(getAuthenticatedUser(), r, GeneralPermissions.MODIFY_METADATA)) {
+                if (!authorizationService.canEditResource(getAuthenticatedUser(), r, Permissions.MODIFY_METADATA)) {
                     issues.add(format(r));
                 }
             }
         }
 
-        SharedCollection collection = getExportProxy().getCollection();
+        ResourceCollection collection = getExportProxy().getCollection();
         if (collection != null && !authorizationService.canEditCollection(getAuthenticatedUser(), collection)) {
             addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(collection))));
         }
 
         BillingAccount account = getExportProxy().getAccount();
-        if (account != null && !authorizationService.canEditAccount(getAuthenticatedUser(),account)) {
+        if (account != null && !authorizationService.canEditAccount(getAuthenticatedUser(), account)) {
             addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(account))));
         }
 

@@ -3,8 +3,6 @@ package org.tdar.struts.action.entity;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.junit.Assert;
 import org.junit.Before;
