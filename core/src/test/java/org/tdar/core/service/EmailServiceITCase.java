@@ -116,7 +116,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Test
 	@Rollback
 	public void testSendUserStats() throws MessagingException, IOException {
-		TdarUser user = new TdarUser("Test", "User", "test@tdar.org");
+		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
 		Long billingAccountId = 1L;
 		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
 

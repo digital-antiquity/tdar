@@ -35,19 +35,18 @@ public class EmailStatisticsHelper {
 		Set<Resource> resources = billingAccount.getResources();
 		Map<String, Number> map = new HashMap<String, Number>();
 		for (Resource r : resources) {
-			String mediaType = r.getResourceType().toDcmiTypeString();
+			String mediaType = MessageHelper.getInstance().getText(r.getResourceType().getPluralLocaleKey());
 			
 			//The pie graph generator requires a label for the axis
 			if(mediaType.equals("")){ 
 				mediaType = "(Unknown)";
 			}
-			if (!map.containsKey(mediaType)) {
-				map.put(mediaType, 1);
-			} else {
-				Integer count = (Integer) map.get(mediaType);
-				count++;
-				map.put(mediaType, count);
+
+			int count = 1;
+			if (map.containsKey(mediaType)) {
+				count = map.get(mediaType).intValue() + 1;
 			}
+			map.put(mediaType, count);
 		}
 		return map;
 	}
@@ -57,15 +56,6 @@ public class EmailStatisticsHelper {
 	}
 
 	public Map<String, Number> generateTotalViewsChartData(BillingAccount billingAccount, StatsResultObject stats) {
-		/*
-		 * Map<String, Map<String, Number>> map = new HashMap<String,
-		 * Map<String, Number>>(); //Gets the download information.
-		 * Collection<Map<String, Object>> data = stats.getObjectForJson();
-		 * 
-		 * for(Map<String, Object> row : data){ Map<String, Number> r = new
-		 * HashMap<String, Number>(); r.put((String) row.get("date"), (Number)
-		 * row.get("Views")); map.put((String) row.get("date"), r); }
-		 */
 		Map<String, Number> map = new LinkedHashMap<String, Number>();
 		Collection<Map<String, Object>> data = stats.getObjectForJson();
 		for (Map<String, Object> row : data) {
@@ -86,14 +76,6 @@ public class EmailStatisticsHelper {
 			Number value = (Number) row.get("Downloads");
 			map.put(date, value);
 		}
-
-		/*
-		 * Collection<Map<String, Object>> data = stats.getObjectForJson();
-		 * 
-		 * for(Map<String, Object> row : data){ Map<String, Number> r = new
-		 * HashMap<String, Number>(); r.put((String) row.get("date"), (Number)
-		 * row.get("Downloads")); map.put((String) row.get("date"), r); }
-		 */
 
 		logger.debug("Map is {}", map);
 		return map;
