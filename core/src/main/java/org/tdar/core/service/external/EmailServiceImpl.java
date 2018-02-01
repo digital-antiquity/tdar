@@ -60,6 +60,7 @@ import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.utils.EmailStatisticsHelper;
+import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.StatsChartGenerator;
 
@@ -570,7 +571,7 @@ public class EmailServiceImpl implements EmailService {
 		Email message = createMessage(EmailType.MONTHLY_USER_STATISTICS, user.getEmail());
 		message.addData("resources", emailStatsHelper.getTopResources(billingAccount));
 		message.addData("user", user);
-		message.addData("availableSpace", billingAccount.getAvailableSpaceInBytes());
+		message.addData("availableSpace", MathUtils.divideByRoundDown(billingAccount.getAvailableSpaceInBytes(), 1024*1024));
 		message.addData("availableFiles", billingAccount.getAvailableNumberOfFiles());
 		message.addInlineAttachment("resources.png", piechart);
 		message.addInlineAttachment("totalviews.png", barchart1);
