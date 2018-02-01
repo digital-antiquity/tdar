@@ -84,6 +84,8 @@
             background-color: #7a1501 !important;
             border-color: #7a1501 !important;
           }
+          .footer {clear: both; Margin-top: 10px; text-align: center; width: 100%;}
+          .footer , .footer a {  color:grey;font-size:12px; }
         }
         </style>
       </head>
@@ -119,16 +121,15 @@
                 </table>
     
                 <!-- START FOOTER -->
-                <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%; color:grey;font-size:12px;">
-                Visit <a href="https://www.tdar.org">tDAR</a> <span style="padding-left:30px;padding-right:30px;">|</span> 
-                Contact us at <a href="mailto:comments@tdar.org">comments@tdar.org</a>
-                <br />
-                <br />
-                tDAR (the Digital Archaeological Record) is the digital repository of the Center for Digital Antiquity, 
-                a collaborative organization and university Center at Arizona State University. 
+                <div class="footer">
+                <a href="https://www.tdar.org">tDAR</a> (the Digital Archaeological Record) is the digital repository of the <a href="http://www.digitalantiquity.org">Center for Digital Antiquity</a>, 
+                a collaborative organization and university Center at <a href="https://www.asu.edu">Arizona State University</a>. 
                 Digital Antiquity extends our knowledge of the human past and improves the management 
                 of our cultural heritage by permanently preserving digital archaeological 
-                data and supporting their discovery, access, and reuse.    
+                data and supporting their discovery, access, and reuse.  
+                <br />
+                <br />
+                Contact us at <a href="mailto:comments@tdar.org">comments@tdar.org</a>
 
                 </div>  
                 <!-- END FOOTER -->

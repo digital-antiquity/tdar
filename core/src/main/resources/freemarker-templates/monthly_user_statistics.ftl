@@ -25,16 +25,18 @@
        </tr>  
     </table>
     
+    <#list resources>
     <div>
         <span style="font-weight:bold;font-size:14px;text-decoration:underline">
             Your Most Popular Resources
         </span>
         <ul>
-        <#list resources as resource>
-            <li> ${resource.title}</li>
-        </#list>
+        <#items as resource>
+            <li> <a href="${resource.detailUrl}">${resource.title}</a></li>
+            </#items>
         </ul>
      </div>
+     </#list>
         
     <img src="cid:totalviews.png" />   
     <img src="cid:totaldownloads.png" />   
@@ -45,7 +47,7 @@
             Your Account Balance:
         </span>
         You currently have space for ${availableFiles} files or up to ${availableSpace} MB of space available in tDAR.  
-        <a href="https://www.tdar.org">Check your balance now</a> or, 
-        <a href="https://www.tdar.org">upload something now</a>.
+        <a href="http://core.tdar.org/dashboard/billing">Check your balance now</a> or, 
+        <a href="https://core.tdar.org/resource/add">upload something now</a>.
     </div>        
 </@mail.content>
