@@ -1254,7 +1254,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("fileupload")));
+        waitFor(ExpectedConditions.elementToBeClickable(By.id("fileuploadWrapper")));
         // TEMPORARY FIX
         try {
             Thread.sleep(500);
