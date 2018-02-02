@@ -60,7 +60,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                     </#if>
                 </div>
             </div>
-        </div>
         
         <#local _hidden = true>
         <#if (effectiveShares?size > 0)>
