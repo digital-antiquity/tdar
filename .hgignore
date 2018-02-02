@@ -1,0 +1,110 @@
+syntax:glob
+.project
+.checkstyle
+.classpath
+.checkstyle
+indexes
+target
+bin
+src/main/resources/*.properties
+src/main/resources/*-local-settings.xml
+src/main/resources/log4j.xml
+src/main/webapp/wro*
+googlemaps-api-key.js
+logs
+*.jpage
+*.class
+*~
+tags
+*.orig
+*.rej
+*.iml
+nb-configuration.xml
+nbactions*
+glassfish-web.xml
+.DS_Store
+libpeerconnection.log
+
+import.log
+
+# Note: IDE files are untracked by default for security reasons.  If you manually add them, ensure they
+#    adhere to team formatting standards and do not contain sensitive and/or machine-specific information.
+*.sublime-workspace
+*.sublime-project
+.vscode/*
+.idea/*
+.settings
+.externalToolBuilders\org.eclipse.wst.jsdt.core.javascriptValidator.launch
+
+
+node
+node_modules
+clover.snapshot
+log4j2.xml
+npm-debug.log
+Indexes
+.tern-project
+ANDPersistentIdentifierClient.log
+core/ANDPersistentIdentifierClient.log
+search/ANDPersistentIdentifierClient.log
+web/.tern-project
+web/phantomjsdriver.log
+.springBeans
+*.diff
+
+core/src/main/resources/rebel.xml
+web/src/main/resources/rebel.xml
+core/test-classes/*
+docker/docker
+docker/postgres
+core/test-classes/ands.doi.minimal.properties
+core/test-classes/ands.doi.test.properties
+core/test-classes/andspids.properties
+core/test-classes/crowd.properties
+core/test-classes/dataOne.properties
+core/test-classes/ezid.properties
+core/test-classes/hibernate-ehcache.xml
+core/test-classes/hibernate.properties
+core/test-classes/localhost.properties
+core/test-classes/log4j2-test.xml
+core/test-classes/nelnet.properties
+core/test-classes/spring-local-settings.xml
+core/test-classes/tdar.broken.kettle.properties
+core/test-classes/tdar.cc.properties
+core/test-classes/tdar.faims.properties
+core/test-classes/tdar.no_obfs.properties
+core/test-classes/tdar.nojai.properties
+core/test-classes/tdar.properties
+core/test-classes/tdar.small.batch.properties
+core/test-classes/tdar.tos.properties
+syntax: regexp
+^src/main/webapp/robots\.txt$
+webservice/([^\/]+)/build/.*
+syntax: regexp
+^src/main/db/log\.txt$
+
+syntax: regexp
+^src/main/resources/jetty-ssl\.keystore$
+syntax: regexp
+^src/test/resources/jetty-ssl\.keystore$
+syntax: regexp
+^src/main/resources/jetty/jetty-ssl\.keystore$
+syntax: regexp
+^src/test/resources/jetty/jetty-ssl\.keystore$
+
+syntax: regexp
+^src/main/resources/hibernate-ehcache\.xml$
+syntax: regexp
+^(.+)/src/main/db/log\.txt
+^(.+)/src/main/resources/jetty-ssl\.keystore
+^(.+)/src/main/resources/jetty/jetty-ssl\.keystore
+^(.+)/src/main/resources/hibernate-ehcache\.xml
+^(.+)/src/main/resources/(.+)\.properties
+^(.+)/src/main/resources/(.+)-local-settings.xml
+^(.+)/src/main/resources/log4j\.xml
+^(.+)/src/main/resources/log4j2\.xml
+^(.+)/src/main/webapp/bower_components
+^(.+)/(indexes|target|logs|bin|node_modules)
+^web/src/main/webapp/components/(.+)/(examples|examples_support|test|tests|unit_testing|demo|docs)/(.+)
+^web/src/main/webapp/components/(.+)\.sh
+^web/src/main/webapp/components/jquery-file-upload/server
