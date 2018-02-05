@@ -13,6 +13,7 @@ import org.tdar.core.bean.notification.aws.AdminReportNewUsersMessage;
 import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
 import org.tdar.core.bean.notification.aws.InviteMessage;
 import org.tdar.core.bean.notification.aws.MonthlyUserStatisticsMessage;
+import org.tdar.core.bean.notification.aws.NewUserWelcomeMessage;
 import org.tdar.core.bean.notification.aws.TestAwsMessage;
 import org.tdar.utils.MessageHelper;
 
@@ -20,7 +21,7 @@ public enum EmailType implements Localizable, HasLabel {
 	INVITE("invite/invite.ftl","test@tdar.org",InviteMessage.class),
 	INVITE_ACCEPTED("invite/invite-accepted.ftl","test@tdar.org",InviteAcceptedMessage.class),
 	NEW_USER_NOTIFY("email_new_users.ftl"),
-	NEW_USER_WELCOME("email-welcome.ftl"),
+	NEW_USER_WELCOME("email-welcome.ftl","test@tdar.org",NewUserWelcomeMessage.class),
 	TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl"),
 	
 	PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl","test@tdar.org",AccessRequestGrantedMessage.class),

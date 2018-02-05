@@ -73,7 +73,9 @@ public interface EmailService {
 			boolean reject, EmailType type, Permissions permission, Date expires);
 
 	void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person);
-
+	
+	Email sendWelcomeEmail(Person person);
+	
 	String getFromEmail();
 
 
@@ -126,4 +128,6 @@ public interface EmailService {
 	 * @throws IOException
 	 */
 	SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException;
+
+	void renderAndQueueMessage(Email email);
 }

@@ -1,5 +1,7 @@
 package org.tdar.struts.action.admin;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +23,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.utils.EmailRawMessageHelper;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -36,10 +39,37 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     private List<Email> emailsToReview = new ArrayList<>();
     private List<Long> ids = new ArrayList<>();
     private Status emailAction;
-
+    private Long emailId;
+    
+    private InputStream inputStream;
+    
     @Autowired
     private transient EmailService emailService;
 
+    @Autowired
+    private transient EmailRawMessageHelper rawMessageHelper;
+    
+    @Action(value = "emailContent/{emailId}",
+    		results = {
+    				@Result(name = SUCCESS, type = "stream", params = {
+    	                    "contentType", "text/html", 
+    	                    "inputName", "inputStream"
+    				}) 
+    		})
+    public String viewEmailContent(){
+    	Email email = getGenericService().find(Email.class, getEmailId());
+    	
+    	List<Email> list = new ArrayList<Email>();
+	    list.add(email);
+    	setEmails(list);
+    	
+    	emailService.dequeue(email);
+    	
+    	setInputStream(new ByteArrayInputStream(email.getMessage().getBytes()));
+		return SUCCESS;
+    	
+    }
+    
     @Action("email")
     public String execute() {
         setEmails(getGenericService().findAll(Email.class));
@@ -120,5 +150,21 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     public void setEmailsToReview(List<Email> emailsToReview) {
         this.emailsToReview = emailsToReview;
     }
+
+	public Long getEmailId() {
+		return emailId;
+	}
+
+	public void setEmailId(Long emailId) {
+		this.emailId = emailId;
+	}
+	
+	  public InputStream getInputStream() {
+	        return inputStream;
+	    }
+
+	    public void setInputStream(InputStream inputStream) {
+	        this.inputStream = inputStream;
+	    }
 
 }

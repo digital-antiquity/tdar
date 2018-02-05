@@ -83,6 +83,18 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		invite.setResource(project);
 		emailService.sendUserInviteEmail(invite, fromUser);
 	}
+	
+	@Test
+	public void testSendWelcomeEmail(){
+		TdarUser to = new TdarUser("To", "Person", "test@tdar.edu","testuser");
+
+		Email email = emailService.sendWelcomeEmail(to);
+		
+		logger.debug(email.getSubject());
+		assertTrue("email has 'Welcome' in the subject'",email.getSubject().contains("Welcome"));
+		assertTrue("email has content", email.getMessage().contains("Hello To,<br />"));
+	}
+	
 
 	@Test
 	@Rollback

@@ -12,11 +12,13 @@ import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.utils.EmailRawMessageHelper;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -46,6 +48,9 @@ public class AwsEmailSenderImpl implements AwsEmailSender {
 
 	private Regions awsRegion = Regions.US_WEST_2;
 
+	@Autowired
+	EmailRawMessageHelper rawMessageHelper;
+	
 	@Override
 	public SendEmailResult sendMessage(Email awsMessage) {
 		logger.debug("sendMessage() message={}", awsMessage);
@@ -91,51 +96,9 @@ public class AwsEmailSenderImpl implements AwsEmailSender {
 
 	@Override
 	public SendRawEmailResult sendMultiPartMessage(Email email) throws IOException, MessagingException {
-		MimeMessage mimeMessage = createMimeMessage(email);
-		RawMessage rawMessage = createRawMessage(mimeMessage);
+		MimeMessage mimeMessage = rawMessageHelper.createMimeMessage(email);
+		RawMessage rawMessage = rawMessageHelper.createRawMessage(mimeMessage);
 		return sendRawMessage(rawMessage);
-	}
-	
-	private MimeMessage createMimeMessage(Email message) throws MessagingException {
-		Session session = Session.getInstance(new Properties());
-		MimeMessage mimeMessage = new MimeMessage(session);
-
-		MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
-
-		messageHelper.setTo(message.getTo());
-		messageHelper.setFrom(message.getFrom());
-		messageHelper.setSubject(message.getSubject());
-		messageHelper.setText(message.getMessage(), true);
-
-		for (File file : message.getAttachments()) {
-			messageHelper.addAttachment(file.getName(), file);
-		}
-
-		for (String contentId : message.getInlineAttachments().keySet()) {
-			File file = message.getInlineAttachments().get(contentId);
-			messageHelper.addInline(contentId, file);
-		}
-
-		ClassPathResource logo = new ClassPathResource("tdar-logo.png");
-		messageHelper.addInline("logo", logo);
-
-		mimeMessage = messageHelper.getMimeMessage();
-		if(message.getMessageUuid()!=null && !message.getMessageUuid().equals("")){
-			mimeMessage.addHeader("x-tdar-message-id", message.getMessageUuid());
-		}
-		
-		return mimeMessage;
-	}
-	
-	private RawMessage createRawMessage(MimeMessage message) throws IOException, MessagingException {
-		byte[] byteArray = getByteArray(message);
-		return new RawMessage(ByteBuffer.wrap(byteArray));
-	}
-
-	private byte[] getByteArray(MimeMessage message) throws IOException, MessagingException {
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		message.writeTo(outputStream);
-		return outputStream.toByteArray();
 	}
 	
 	private SendRawEmailResult sendRawMessage(RawMessage message) throws IOException, MessagingException {

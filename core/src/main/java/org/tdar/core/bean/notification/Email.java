@@ -37,6 +37,7 @@ import org.tdar.core.bean.resource.Resource;
 @Table(name = "email_queue")
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "aws_message_type", length = FieldLength.FIELD_LENGTH_50, discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("GENERIC")
 public class Email extends AbstractPersistable {
 
     private static final String SEPARATOR_CHARS = ";";

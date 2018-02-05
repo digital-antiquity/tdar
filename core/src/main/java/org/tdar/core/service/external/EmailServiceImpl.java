@@ -224,6 +224,8 @@ public class EmailServiceImpl implements EmailService {
 		message.addData("to", invite.getUser());
 		message.setStatus(Status.QUEUED);
 		setupBasicComponents(message.getMap());
+		renderAndUpdateEmailContent(message);
+		updateEmailSubject(message);
 		queue(message);
 	}
 
@@ -487,10 +489,13 @@ public class EmailServiceImpl implements EmailService {
 
 		// email.setResource(resource);
 		message.setUserGenerated(false);
+		
+		updateEmailSubject(message);
+		renderAndUpdateEmailContent(message);
 		queue(message);
 
 		try {
-			renderAndSendMessage(message);
+			sendAwsHtmlMessage(message);
 		} catch (MessagingException | IOException e) {
 			logger.error("Couldn't send email: {}", e, e);
 		}
@@ -526,6 +531,21 @@ public class EmailServiceImpl implements EmailService {
 			}
 		}
 	}
+	
+	@Override
+	@Transactional(readOnly=false)
+	public Email sendWelcomeEmail(Person person) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("user", person);
+        result.put("config", CONFIG);
+        Email email = createMessage(EmailType.NEW_USER_WELCOME, person.getEmail());
+        email.setUserGenerated(false);
+        email.addData("user", person);
+        email.addData("config",CONFIG);
+        renderAndQueueMessage(email);
+		return email;
+    }
+	
 
 
 
@@ -652,6 +672,15 @@ public class EmailServiceImpl implements EmailService {
 		renderAndUpdateEmailContent(message);
 		return sendAwsHtmlMessage(message);
 	}
+	
+
+	@Override
+	public void renderAndQueueMessage(Email message) {
+		updateEmailSubject(message);
+		renderAndUpdateEmailContent(message);
+		queue(message);
+	}
+	
 
 	@Override
 	public SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException {
@@ -681,4 +710,6 @@ public class EmailServiceImpl implements EmailService {
 	public void setChartGenerator(StatsChartGenerator chartGenerator) {
 		this.chartGenerator = chartGenerator;
 	}
+
+
 }
