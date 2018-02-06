@@ -18,7 +18,11 @@ public class NewUserWelcomeMessage extends Email {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4517475490706454849L;
+	private static final long serialVersionUID = -5682400223003342499L;
+
+	/**
+	 * 
+	 */
 
 	@Override
 	public String createSubjectLine() {
