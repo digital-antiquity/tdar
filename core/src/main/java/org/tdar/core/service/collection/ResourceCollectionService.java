@@ -118,6 +118,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             for (AuthorizedUser user : comparator.getDeletions()) {
                 resource.getAuthorizedUsers().remove(user);
             }
+            
+            handleDifferences(resource, actor, comparator, rco);
 
             for (AuthorizedUser user : comparator.getAdditions()) {
                 rco.logDebug(actor, user);
@@ -130,8 +132,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 }
                 resource.getAuthorizedUsers().add(user);
             }
-
-            handleDifferences(resource, actor, comparator, rco);
+            
         }
         comparator = null;
 
@@ -150,22 +151,30 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             Map<Long, AuthorizedUser> idMap = PersistableUtils.createIdMap(resource.getAuthorizedUsers());
             for (AuthorizedUser user : comparator.getChanges()) {
                 AuthorizedUser actual = idMap.get(user.getId());
-                if (actual == null) {
+                logger.trace("actual is initially set to {}, user is {}",actual, user);
+                
+
+                if (actual==null) {
                     // it's possible that the authorizedUserId was not passed back from the client
                     // if so, build a secondary map using the TdarUser (authorizedUser.user) id.
                     if (idMap2 == null) {
+                    	logger.trace("Creating idMap2");
                         idMap2 = new HashMap<>();
+                        logger.trace("Adding authorized users to the new map");
                         for (AuthorizedUser au : resource.getAuthorizedUsers()) {
+                        	logger.trace("the user being added is {}",au);
                             idMap2.put(au.getUser().getId(), au);
                         }
                     }
 
                     actual = idMap2.get(user.getUser().getId());
-                    logger.debug("actual was null, now: {}", actual);
+                    logger.trace("actual was null, now: {}", actual);
                 }
+                
                 checkEscalation(actor, user, rco);
                 actual.setGeneralPermission(user.getGeneralPermission());
                 actual.setDateExpires(user.getDateExpires());
+                
             }
         }
     }

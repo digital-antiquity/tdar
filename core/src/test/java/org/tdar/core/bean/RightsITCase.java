@@ -194,4 +194,5 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         resourceCollectionService.saveResourceRights(proxies, ownerUser, genericService.find(Dataset.class, datasetId));
 
     }
+
 }

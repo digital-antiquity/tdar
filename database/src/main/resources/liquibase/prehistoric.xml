@@ -445,5 +445,8 @@
         <addColumn tableName="whitelabel_collection">
             <column name="hide_collection_sidebar" type='boolean' defaultValueBoolean="false" /></addColumn>
      </changeSet>
+     <changeSet id="prehistoric-stable-29" author="bcastel1">
+        <sql>UPDATE authorized_user SET GENERAL_PERMISSION = 'MODIFY_RECORD', GENERAL_PERMISSION_INT = 500 WHERE GENERAL_PERMISSION = 'ADMINISTER_SHARE' AND GENERAL_PERMISSION_INT = 5000 AND RESOURCE_ID IS NOT NULL</sql>
+     </changeSet>
 </databaseChangeLog>
 
