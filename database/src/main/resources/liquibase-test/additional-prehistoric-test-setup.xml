@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd" context="test" >
+
+	<changeSet id="unmanaged-collections2" author="abrin">
+        <sql>update collection set collection_type='SHARED' where collection_type='LIST' and id in (1000,1001,1002,1003)</sql>
+        <insert tableName="collection_resource">
+            <column name="collection_id" valueNumeric="1000"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="collection_resource">
+            <column name="collection_id" valueNumeric="1001"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="collection_resource">
+            <column name="collection_id" valueNumeric="1002"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="collection_resource">
+            <column name="collection_id" valueNumeric="1003"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+    </changeSet>
+    <changeSet id="login-setup" author="abrin">
+        <insert tableName="creator">
+            <column name="id" valueNumeric="12550" />
+            <column name="status" value="ACTIVE" />
+            <column name="date_created" valueComputed="now()" />
+            <column name="date_updated" valueComputed="now()" />
+        </insert>
+        <insert tableName="person">
+            <column name="id" valueNumeric="12550" />
+            <column name="first_name" value="beatrice" />
+            <column name="last_name" value="user" />
+            <column name="email" value="bea@tdar.net" />
+        </insert>
+        <insert tableName="tdar_user">
+            <column name="id" valueNumeric="12550" />
+            <column name="tos_version" valueNumeric="4" />
+            <column name="contributor_agreement_version" valueNumeric="0" />
+            <column name="contributor" valueBoolean="true" />
+            <column name="username" value="bea@tdar.net" />
+            
+        </insert>
+        <insert tableName="creator">
+            <column name="id" valueNumeric="12551" />
+            <column name="status" value="ACTIVE" />
+            <column name="date_created" valueComputed="now()" />
+            <column name="date_updated" valueComputed="now()" />
+        </insert>
+        <insert tableName="person">
+            <column name="id" valueNumeric="12551" />
+            <column name="first_name" value="margeret" />
+            <column name="last_name" value="user" />
+            <column name="email" value="mu@tdar.net" />
+        </insert>
+        <insert tableName="tdar_user">
+            <column name="id" valueNumeric="12551" />
+            <column name="tos_version" valueNumeric="0" />
+            <column name="contributor_agreement_version" valueNumeric="0" />
+            <column name="contributor" valueBoolean="true" />
+            <column name="username" value="mu@tdar.net" />
+            
+        </insert>
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="MODIFY_RECORD"/>
+            <column name="general_permission_int" valueNumeric="500"/>
+            <column name="user_id" valueNumeric="12551"/>
+            <column name="creator_id" valueNumeric="8093"/>
+            <column name="resource_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="MODIFY_RECORD"/>
+            <column name="general_permission_int" valueNumeric="500"/>
+            <column name="user_id" valueNumeric="12550"/>
+            <column name="creator_id" valueNumeric="8093"/>
+            <column name="resource_collection_id" valueNumeric="1002"/>
+        </insert>
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="ADMINISTER_SHARE"/>
+            <column name="general_permission_int" valueNumeric="500"/>
+            <column name="user_id" valueNumeric="8093"/>
+            <column name="creator_id" valueNumeric="8093"/>
+            <column name="resource_collection_id" valueNumeric="1002"/>
+        </insert>
+        <sql>
+        SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
+        SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
+        </sql>
+    </changeSet>
+</databaseChangeLog>
