@@ -49,10 +49,12 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     @Autowired
     private transient EmailRawMessageHelper rawMessageHelper;
     
+    private String contentType;
+    
     @Action(value = "emailContent/{emailId}",
     		results = {
     				@Result(name = SUCCESS, type = "stream", params = {
-    	                    "contentType", "text/html", 
+    	                    "contentType", "${contentType}", 
     	                    "inputName", "inputStream"
     				}) 
     		})
@@ -64,6 +66,14 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     	setEmails(list);
     	
     	emailService.dequeue(email);
+    	
+    	if(email.getClass().equals(Email.class)){
+    		setContentType("text/plain");
+    	}
+    	else {
+    		setContentType("text/html");
+    	}
+    	
     	
     	setInputStream(new ByteArrayInputStream(email.getMessage().getBytes()));
 		return SUCCESS;
@@ -166,5 +176,13 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
 	    public void setInputStream(InputStream inputStream) {
 	        this.inputStream = inputStream;
 	    }
+
+		public String getContentType() {
+			return contentType;
+		}
+
+		public void setContentType(String contentType) {
+			this.contentType = contentType;
+		}
 
 }

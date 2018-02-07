@@ -14,6 +14,25 @@
 </div>
 </div>
 
+
+<style>
+.email-container {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+    padding-bottom: 75%;
+}
+
+ 
+.email-container iframe {
+  position: absolute;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+</style>
+
 <h3>Emails to be Reviewed</h3>
 
 <table class="tableFormat table">
@@ -38,7 +57,9 @@
     </tr>
     <tr class="">
         <td colspan=6>
-        <pre>${email.message}</pre>
+            <div class="email-container intrinsic-container-4x3">
+            <iframe src="/admin/emailContent/${email.id?c}"></iframe>
+            </div>
         <hr/>
         </td>
     </tr>
@@ -72,7 +93,9 @@
     </tr>
     <tr id="email-${email.id?c}" class="<#if email.status=='SENT' || !email.userGenerated>hidden</#if>">
         <td colspan=7>
-        <pre>${email.message}</pre>
+            <div class="email-container">
+                <iframe src="/admin/emailContent/${email.id?c}"></iframe>
+            </div>
         <hr/>
         </td>
     </tr>
