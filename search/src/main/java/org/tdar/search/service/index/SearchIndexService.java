@@ -131,6 +131,12 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
             index(record);
             return;
         }
+        
+        
+        if (event.getType() == EventType.REINDEX_CHILDREN)  {
+            partialIndexAllResourcesInCollectionSubTree((HierarchicalCollection) event.getRecord());
+            return;
+        }
 
         Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
         SolrInputDocument doc = createDocument(record);

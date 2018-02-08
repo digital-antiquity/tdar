@@ -28,6 +28,7 @@ import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
@@ -54,6 +55,8 @@ import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+
+import com.vividsolutions.jtsexample.technique.SearchUsingPreparedGeometryIndex;
 
 @Service
 public class AuthenticationService {
@@ -90,7 +93,7 @@ public class AuthenticationService {
 
     @Autowired
     private InstitutionDao institutionDao;
-
+    
     private AuthenticationProvider provider;
 
     @Transactional(readOnly = true)
@@ -451,13 +454,13 @@ public class AuthenticationService {
             AuthorizedUser user = new AuthorizedUser(authorizer, person, invite.getPermissions());
             invite.setDateRedeemed(new Date());
             personDao.saveOrUpdate(invite);
-
             if (invite.getResourceCollection() != null) {
                 invite.getResourceCollection().getAuthorizedUsers().add(user);
                 personDao.saveOrUpdate(invite.getResourceCollection());
                 personDao.saveOrUpdate(user);
                 notices.get(authorizer).add((HasName)invite.getResourceCollection());
                 publisher.publishEvent(new TdarEvent(invite.getResourceCollection(), EventType.CREATE_OR_UPDATE));
+                publisher.publishEvent(new TdarEvent(invite.getResourceCollection(), EventType.REINDEX_CHILDREN));
             } 
 
             if (invite.getResource() != null) {
@@ -471,7 +474,6 @@ public class AuthenticationService {
             //FIXME: REMOVE if rights changes work
         }
         emailService.sendUserInviteGrantedEmail(notices, person);
-
     }
 
     public AuthenticationResult checkToken(String token, SessionData sessionData, HttpServletRequest request) {
