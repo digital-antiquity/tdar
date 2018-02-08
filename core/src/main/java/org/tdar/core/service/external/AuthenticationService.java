@@ -27,9 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -37,7 +34,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.UserNotificationDisplayType;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.InstitutionDao;
@@ -55,8 +51,6 @@ import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
-
-import com.vividsolutions.jtsexample.technique.SearchUsingPreparedGeometryIndex;
 
 @Service
 public class AuthenticationService {

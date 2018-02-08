@@ -132,9 +132,12 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
             return;
         }
         
-        
         if (event.getType() == EventType.REINDEX_CHILDREN)  {
-            partialIndexAllResourcesInCollectionSubTree((HierarchicalCollection) event.getRecord());
+            try {
+            partialIndexAllResourcesInCollectionSubTreeAsync((HierarchicalCollection) event.getRecord());
+            } catch (Throwable t) {
+                logger.error("{}",t,t);
+            }
             return;
         }
 
