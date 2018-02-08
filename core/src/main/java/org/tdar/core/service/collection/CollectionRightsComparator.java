@@ -213,6 +213,8 @@ public class CollectionRightsComparator {
             account.getAuthorizedUsers().remove(user);
         }
 
+        handleDifferences(account, authenticatedUser, rco);
+
         for (AuthorizedUser user : getAdditions()) {
             if (rco.hasPermissionsEscalation(user)) {
                 rco.logDebug(authenticatedUser, user);
@@ -224,7 +226,6 @@ public class CollectionRightsComparator {
             }
             account.getAuthorizedUsers().add(user);
         }
-        handleDifferences(account, authenticatedUser, rco);
     }
 
     public void handleDifferences(HasAuthorizedUsers resource, TdarUser actor, RightsResolver rco) {

@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -17,25 +19,33 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.OtherKeyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
@@ -46,18 +56,21 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.core.dao.base.GenericDao.FindOptions;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.bulk.BulkUploadController;
-import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
@@ -69,9 +82,6 @@ import org.tdar.transform.OpenUrlFormatter;
 import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.web.service.ResourceControllerProxy;
-import org.tdar.web.service.ResourceEditControllerService;
-import org.tdar.web.service.ResourceSaveControllerService;
 
 /**
  * $Id$
@@ -87,6 +97,7 @@ import org.tdar.web.service.ResourceSaveControllerService;
  */
 public abstract class AbstractResourceController<R extends Resource> extends AbstractPersistableController<R> {
 
+
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
 
     private static final long serialVersionUID = 8620875853247755760L;
@@ -99,13 +110,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
     private RevisionLogType revisionType = RevisionLogType.EDIT;
     private String submit;
-    protected ResourceControllerProxy<R> proxy = new ResourceControllerProxy<>(this);
-
+    
     @Autowired
     private SerializationService serializationService;
 
     @Autowired
     private transient AuthorizationService authorizationService;
+
+    @Autowired
+    private ObfuscationService obfuscationService;
 
     @Autowired
     private GenericKeywordService genericKeywordService;
@@ -124,13 +137,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
 
-    private List<ResourceCollection> resourceCollections = new ArrayList<>();
-    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<ListCollection> resourceCollections = new ArrayList<>();
+    private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
 
-    private List<ResourceCollection> shares = new ArrayList<>();
-    private List<ResourceCollection> effectiveShares = new ArrayList<>();
-    private List<ResourceCollection> retainedSharedCollections = new ArrayList<>();
-    private List<ResourceCollection> retainedListCollections = new ArrayList<>();
+    private List<SharedCollection> shares = new ArrayList<>();
+    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
+    private List<SharedCollection> retainedSharedCollections = new ArrayList<>();
+    private List<ListCollection> retainedListCollections = new ArrayList<>();
 
     private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
 
@@ -149,7 +162,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<String> otherKeywords;
 
-    private TdarUser submitter;
+    private Person submitter;
     private List<String> temporalKeywords;
     private List<String> geographicKeywords;
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes;
@@ -168,10 +181,33 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceAnnotation> resourceAnnotations;
 
-    @Autowired
-    private ResourceSaveControllerService saveService;
-    @Autowired
-    private ResourceEditControllerService editService;
+    private void initializeResourceCreatorProxyLists(boolean isViewPage) {
+        Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
+        if (isViewPage) {
+            resourceCreators = getPersistable().getActiveResourceCreators();
+        }
+        if (resourceCreators == null) {
+            return;
+        }
+        authorshipProxies = new ArrayList<>();
+        creditProxies = new ArrayList<>();
+
+        // this may be duplicative... check
+        for (ResourceCreator rc : resourceCreators) {
+            if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
+                if ((rc.getCreatorType() == CreatorType.PERSON) && !isAuthenticated()) {
+                    obfuscationService.obfuscate(rc.getCreator(), getAuthenticatedUser());
+                }
+            }
+
+            ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
+            if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {
+                authorshipProxies.add(proxy);
+            } else {
+                creditProxies.add(proxy);
+            }
+        }
+    }
 
     protected void loadCustomMetadata() throws TdarActionException {
     }
@@ -190,40 +226,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return sw.toString();
     }
 
-
-    @Override
-    public String save(Resource resource) {
-        getLogger().debug("calling save");
-        String toReturn = SUCCESS;
-        if (resource instanceof InformationResource) {
-            try { 
-                toReturn = saveInformationResource(getPersistable());
-            } catch (TdarActionException e) {
-                addActionErrorWithException(e.getMessage(), e);
-                return INPUT;
-            }
-            if (this instanceof BulkUploadController) {
-                resolvePostSaveAction(getPersistable());
-                return toReturn;
-            }
-        }
-
-        saveCustomMetadata();
-        saveBasicResourceMetadata();
-        resolvePostSaveAction(getPersistable());
-        return toReturn;
-    }
-    
-    public void saveCustomMetadata() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    public void resolvePostSaveAction(R persistable) {
-        // TODO Auto-generated method stub
-        
-    }
-
     @Override
     public String loadAddMetadata() {
         if (PersistableUtils.isNotNullOrTransient(getResource())) {
@@ -234,7 +236,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             accountService.updateTransientAccountInfo(getResource());
-            // setActiveAccounts(new ArrayList<>(editService.determineActiveAccounts(getAuthenticatedUser(), getResource())));
+            setActiveAccounts(new ArrayList<>(determineActiveAccounts()));
             if (PersistableUtils.isNotNullOrTransient(getResource()) && PersistableUtils.isNotNullOrTransient(getResource().getAccount())) {
                 setAccountId(getResource().getAccount().getId());
             }
@@ -245,13 +247,40 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return SUCCESS;
     }
 
+    // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
+    // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
+    // and maintain original billing account).
+    protected List<BillingAccount> determineActiveAccounts() {
+    	//Get all available active accounts for the user. If the resource is being edited, and its associated account is over-limit, this list will 
+    	//not contain that billing account.
+        List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
+
+        //If the resource has been created, e.g., not null, then check to see if the billing account needs to be added in. 
+        if (getResource() != null) {
+
+            accountService.updateTransientAccountInfo(getResource());
+        	
+            BillingAccount resourceAccount     = getResource().getAccount();
+            boolean resourceAccountIsNotNull   = resourceAccount !=null;
+            boolean resourceAccountNotInList   = !accounts.contains(resourceAccount);
+            boolean hasInheritedEditPermission = authorizationService.canEdit(getAuthenticatedUser(), getResource());
+            
+            //If the billing account is not in the list, but should be, then move it to the front of the list.
+            if (resourceAccountIsNotNull && resourceAccountNotInList &&
+            	(isEditor() || hasInheritedEditPermission)) {
+                accounts.add(0, resourceAccount);
+            }
+        }
+        return accounts;
+    }
+
     @Action(value = SAVE,
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE),
-                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT, location = "/resource/rights/${persistable.id}")
+                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT,  location = "/resource/rights/${persistable.id}")
             })
     @WriteableSession
     @PostOnly
@@ -267,25 +296,23 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         setSaveSuccessPath(getResource().getResourceType().getUrlNamespace());
         if (PersistableUtils.isNullOrTransient(getId())) {
             revisionType = RevisionLogType.CREATE;
-            getPersistable().getAuthorizedUsers().add(new AuthorizedUser(getAuthenticatedUser(), getAuthenticatedUser(), Permissions.ADMINISTER_COLLECTION));
+            getPersistable().getAuthorizedUsers().add(new AuthorizedUser(getAuthenticatedUser(), getAuthenticatedUser(), GeneralPermissions.MODIFY_RECORD));
         }
-
+    
         String save2 = super.save();
         try {
-            if (StringUtils.equals(save2, SUCCESS) && StringUtils.equalsIgnoreCase(getAlternateSubmitAction(), ASSIGN_RIGHTS)) {
-                return RIGHTS;
-            }
+            getLogger().debug(getAlternateSubmitAction());
+	        if (StringUtils.equals(save2, SUCCESS) && StringUtils.equalsIgnoreCase(getAlternateSubmitAction(), ASSIGN_RIGHTS)) {
+	            return RIGHTS;
+	        }
         } catch (Throwable t) {
-            getLogger().debug("{}", t, t);
+        	getLogger().debug("{}",t,t);
         }
-        getLogger().debug("success: {}", getSaveSuccessPath());
         return save2;
     }
 
-    public String saveInformationResource(R persistable) throws TdarActionException {
-        return SUCCESS;
-    }
-
+    
+    
     @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
@@ -354,7 +381,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected void setupAccountForSaving() {
-        List<BillingAccount> accounts = getActiveAccounts();
+        List<BillingAccount> accounts = determineActiveAccounts();
         if (accounts.size() == 1) {
             setAccountId(accounts.get(0).getId());
         }
@@ -371,6 +398,34 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 ResourceType.fromClass(getPersistableClass())));
     }
 
+    // return a persisted annotation based on incoming pojo
+    private void resolveAnnotations(Collection<ResourceAnnotation> incomingAnnotations) {
+        List<ResourceAnnotation> toAdd = new ArrayList<>();
+        for (ResourceAnnotation incomingAnnotation : incomingAnnotations) {
+            if (incomingAnnotation == null) {
+                continue;
+            }
+            ResourceAnnotationKey incomingKey = incomingAnnotation.getResourceAnnotationKey();
+            ResourceAnnotationKey resolvedKey = getGenericService().findByExample(ResourceAnnotationKey.class, incomingKey, FindOptions.FIND_FIRST_OR_CREATE)
+                    .get(0);
+            incomingAnnotation.setResourceAnnotationKey(resolvedKey);
+
+            if (incomingAnnotation.isTransient()) {
+                List<String> vals = new ArrayList<>();
+                vals.add(incomingAnnotation.getValue());
+                cleanupKeywords(vals);
+
+                if (vals.size() > 1) {
+                    incomingAnnotation.setValue(vals.get(0));
+                    for (int i = 1; i < vals.size(); i++) {
+                        toAdd.add(new ResourceAnnotation(resolvedKey, vals.get(i)));
+                    }
+                }
+            }
+        }
+        incomingAnnotations.addAll(toAdd);
+    }
+
     private Boolean editable = null;
 
     @Override
@@ -379,63 +434,194 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             return true;
         }
         if (editable == null) {
-            editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), Permissions.MODIFY_METADATA);
+            editable = authorizationService.canEditResource(getAuthenticatedUser(), getPersistable(), GeneralPermissions.MODIFY_METADATA);
         }
         return editable;
+    }
+
+    protected void saveKeywords() {
+        getLogger().debug("siteNameKeywords=" + siteNameKeywords);
+        getLogger().debug("materialKeywords=" + approvedMaterialKeywordIds);
+        getLogger().debug("otherKeywords=" + otherKeywords);
+        getLogger().debug("investigationTypes=" + investigationTypeIds);
+        Resource res = getPersistable();
+
+        cleanupKeywords(uncontrolledCultureKeywords);
+        cleanupKeywords(uncontrolledMaterialKeywords);
+        cleanupKeywords(uncontrolledSiteTypeKeywords);
+        cleanupKeywords(siteNameKeywords);
+        cleanupKeywords(otherKeywords);
+        cleanupKeywords(temporalKeywords);
+
+        Set<CultureKeyword> culKeys = genericKeywordService.findOrCreateByLabels(CultureKeyword.class, uncontrolledCultureKeywords);
+        culKeys.addAll(genericService.findAll(CultureKeyword.class, approvedCultureKeywordIds));
+        Set<MaterialKeyword> matKeys = genericKeywordService.findOrCreateByLabels(MaterialKeyword.class, uncontrolledMaterialKeywords);
+        matKeys.addAll(genericService.findAll(MaterialKeyword.class, approvedMaterialKeywordIds));
+
+        Set<SiteTypeKeyword> siteTypeKeys = genericKeywordService.findOrCreateByLabels(SiteTypeKeyword.class, uncontrolledSiteTypeKeywords);
+        siteTypeKeys.addAll(genericService.findAll(SiteTypeKeyword.class, approvedSiteTypeKeywordIds));
+
+        PersistableUtils.reconcileSet(res.getSiteNameKeywords(), genericKeywordService.findOrCreateByLabels(SiteNameKeyword.class, siteNameKeywords));
+        PersistableUtils.reconcileSet(res.getOtherKeywords(), genericKeywordService.findOrCreateByLabels(OtherKeyword.class, otherKeywords));
+        PersistableUtils.reconcileSet(res.getInvestigationTypes(), genericService.findAll(InvestigationType.class, investigationTypeIds));
+
+        PersistableUtils.reconcileSet(res.getCultureKeywords(), culKeys);
+        PersistableUtils.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
+        PersistableUtils.reconcileSet(res.getMaterialKeywords(), matKeys);
+    }
+
+    private void cleanupKeywords(List<String> kwds) {
+
+        if (CollectionUtils.isEmpty(kwds)) {
+            return;
+        }
+        String delim = "||";
+        Iterator<String> iter = kwds.iterator();
+        Set<String> toAdd = new HashSet<>();
+        while (iter.hasNext()) {
+            String keyword = iter.next();
+            if (StringUtils.isBlank(keyword)) {
+                continue;
+            }
+
+            if (keyword.contains(delim)) {
+                for (String sub : StringUtils.split(keyword, delim)) {
+                    sub = StringUtils.trim(sub);
+                    if (StringUtils.isNotBlank(sub)) {
+                        toAdd.add(sub);
+                    }
+                }
+                iter.remove();
+            }
+        }
+        kwds.addAll(toAdd);
+    }
+
+    protected void saveTemporalContext() {
+        // calendar and radiocarbon dates are null for Ontologies
+        resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, coverageDates,
+                getResource().getCoverageDates(), CoverageDate.class);
+        PersistableUtils.reconcileSet(getPersistable().getTemporalKeywords(),
+                genericKeywordService.findOrCreateByLabels(TemporalKeyword.class, temporalKeywords));
+    }
+
+    protected void saveSpatialContext() {
+        // it won't add a null or incomplete lat-long box.
+
+        resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, latitudeLongitudeBoxes,
+                getResource().getLatitudeLongitudeBoxes(), LatitudeLongitudeBox.class);
+
+        if (CollectionUtils.isEmpty(getPersistable().getActiveLatitudeLongitudeBoxes()) && !(this instanceof BulkUploadController)
+                && !(this instanceof AbstractSupportingInformationResourceController)) {
+            addActionMessage(getText("abstractResourceController.no_map", Arrays.asList(getResource().getResourceType().getLabel())));
+        }
+        PersistableUtils.reconcileSet(getPersistable().getGeographicKeywords(),
+                genericKeywordService.findOrCreateByLabels(GeographicKeyword.class, geographicKeywords));
+
+        resourceService.processManagedKeywords(getPersistable(), getPersistable().getLatitudeLongitudeBoxes());
+    }
+
+    protected void saveCitations() {
+        resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS,
+                relatedComparativeCollections,
+                getResource().getRelatedComparativeCollections(), RelatedComparativeCollection.class);
+        resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, sourceCollections,
+                getResource().getSourceCollections(), SourceCollection.class);
+
     }
 
     /**
      * Saves keywords, full / read user access, and confidentiality.
      */
     protected void saveBasicResourceMetadata() {
-        AuthWrapper<Resource> authWrapper = new AuthWrapper<Resource>(getPersistable(), isAuthenticated(), getAuthenticatedUser(), isEditor());
 
-        if (CollectionUtils.isEmpty(authWrapper.getItem().getActiveLatitudeLongitudeBoxes()) && !(this instanceof BulkUploadController)
-                && !(this instanceof AbstractSupportingInformationResourceController)) {
-            addActionMessage(getText("abstractResourceController.no_map", Arrays.asList(authWrapper.getItem().getResourceType().getLabel())));
+        if (shouldSaveResource()) {
+            genericService.saveOrUpdate(getPersistable());
         }
 
-        proxy.setResource(getPersistable());
-        proxy.setAccountId(accountId);
-        proxy.setIncomingAnnotations(resourceAnnotations);
-        proxy.setLatitudeLongitudeBoxes(latitudeLongitudeBoxes);
-        proxy.setGeographicKeywords(geographicKeywords);
-        proxy.setRelatedComparativeCollections(relatedComparativeCollections);
-        proxy.setSourceCollections(sourceCollections);
-        proxy.setSiteNameKeywords(siteNameKeywords);
-        proxy.setApprovedCultureKeywordIds(approvedCultureKeywordIds);
-        proxy.setApprovedSiteTypeKeywordIds(approvedSiteTypeKeywordIds);
-        proxy.setInvestigationTypeIds(investigationTypeIds);
-        proxy.setApprovedMaterialKeywordIds(approvedMaterialKeywordIds);
-        proxy.setOtherKeywords(otherKeywords);
-        proxy.setUncontrolledCultureKeywords(uncontrolledCultureKeywords);
-        proxy.setUncontrolledMaterialKeywords(uncontrolledMaterialKeywords);
-        proxy.setUncontrolledSiteTypeKeywords(uncontrolledSiteTypeKeywords);
-        proxy.setTemporalKeywords(temporalKeywords);
-        proxy.setSave(shouldSaveResource());
-        proxy.setCoverageDates(coverageDates);
-        proxy.setResourceNotes(resourceNotes);
-        proxy.setShares(shares);
-        proxy.setResourceCollections(resourceCollections);
-        proxy.setSubmitter(submitter);
-        proxy.setCreditProxies(creditProxies);
-        proxy.setAuthorshipProxies(authorshipProxies);
-        try {
-            ErrorTransferObject eto = saveService.save(authWrapper, proxy);
-            processErrorObject(eto);
-        } catch (Throwable t) {
-            addActionErrorWithException(getText("abstractResourceController.we_were_unable_to_process_the_uploaded_content"), t);
+        if (PersistableUtils.isNotNullOrTransient(getSubmitter())) {
+            TdarUser uploader = getGenericService().find(TdarUser.class, getSubmitter().getId());
+            getPersistable().setSubmitter(uploader);
         }
 
+
+        saveKeywords();
+        saveTemporalContext();
+        saveSpatialContext();
+        saveCitations();
+
+        prepSequence(resourceNotes);
+        resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, resourceNotes,
+                getResource().getResourceNotes(), ResourceNote.class);
+        saveResourceCreators();
+
+        resolveAnnotations(getResourceAnnotations());
+
+        resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getResourceAnnotations(),
+                getResource().getResourceAnnotations(), ResourceAnnotation.class);
+
+        loadEffectiveResourceCollectionsForSave();
+        getLogger().debug("retained collections:{}", retainedSharedCollections);
+        getLogger().debug("retained list collections:{}", retainedListCollections);
+        shares.addAll(retainedSharedCollections);
+        resourceCollections.addAll(retainedListCollections);
+        boolean notFlagged = true;
+        if (getTdarConfiguration().isPayPerIngestEnabled()) {
+            if (PersistableUtils.isNullOrTransient(accountId)) {
+                addActionError("accountService.account_is_null");
+                return;
+            }
+
+            BillingAccount a = accountService.find(accountId);
+            notFlagged = !a.isFlagged();
+        }
+        // if the user has the right to edit metadata AND the billing account is active (if the billing account is overdrawn then the UI has no collections list)
+        if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
+                GeneralPermissions.MODIFY_RECORD) && notFlagged) {
+            resourceCollectionService.saveResourceCollections(getResource(), shares, getResource().getSharedCollections(),
+                    getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
+
+            if (!authorizationService.canEdit(getAuthenticatedUser(), getResource())) {
+//                addActionError("abstractResourceController.cannot_remove_collection");
+                getLogger().error("user is trying to remove themselves from the collection that granted them rights");
+                addActionMessage("abstractResourceController.collection_rights_remove");
+            }
+        } else {
+            getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
+        }
+        resourceCollectionService.saveResourceCollections(getResource(), resourceCollections, getResource().getUnmanagedResourceCollections(),
+                getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, ListCollection.class);
+
+    }
+
+    public <T extends Sequenceable<T>> void prepSequence(List<T> list) {
+        if (list == null) {
+            return;
+        }
+        if (list.isEmpty()) {
+            return;
+        }
+        list.removeAll(Collections.singletonList(null));
+        AbstractSequenced.applySequence(list);
     }
 
     protected void logModification(String message, RevisionLogType type) {
         resourceService.logResourceModification(getPersistable(), getAuthenticatedUser(), message, null, type, getStartTime());
     }
 
+    protected void saveResourceCreators() {
+        List<ResourceCreatorProxy> allProxies = new ArrayList<>();
+        if (authorshipProxies != null) {
+            allProxies.addAll(authorshipProxies);
+        }
+        if (creditProxies != null) {
+            allProxies.addAll(creditProxies);
+        }
+        resourceService.saveResourceCreatorsFromProxies(allProxies, getPersistable(), shouldSaveResource());
+    }
+
     public void loadBasicMetadata() {
         // load all keywords
-        AuthWrapper<Resource> authWrapper = new AuthWrapper<Resource>(getPersistable(), isAuthenticated(), getAuthenticatedUser(), isEditor());
 
         setApprovedMaterialKeywordIds(toIdList(getResource().getMaterialKeywords()));
         setInvestigationTypeIds(toIdList(getResource().getInvestigationTypes()));
@@ -463,10 +649,51 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         Collections.sort(getResourceNotes());
         getSourceCollections().addAll(getResource().getSourceCollections());
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
-        editService.initializeResourceCreatorProxyLists(authWrapper, getAuthorshipProxies(), getCreditProxies());
+        initializeResourceCreatorProxyLists(false);
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
-        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), effectiveShares, retainedSharedCollections, effectiveResourceCollections,
-                retainedListCollections, shares, effectiveResourceCollections);
+        loadEffectiveResourceCollectionsForEdit();
+    }
+
+    private void loadEffectiveResourceCollectionsForEdit() {
+        getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
+
+        getLogger().debug("loadEffective...");
+        for (SharedCollection rc : getResource().getSharedResourceCollections()) {
+            authorizationService.applyTransientViewableFlag(rc, getAuthenticatedUser());
+            if (authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
+                getShares().add(rc);
+            } else {
+                retainedSharedCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
+            if (authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
+                getResourceCollections().add(rc);
+            } else {
+                retainedListCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
+    }
+
+    
+    private void loadEffectiveResourceCollectionsForSave() {
+        getLogger().debug("loadEffective...");
+        for (SharedCollection rc : getResource().getSharedCollections()) {
+            if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
+                retainedSharedCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        for (ListCollection rc : getResource().getUnmanagedResourceCollections()) {
+            if (!authorizationService.canRemoveFromCollection(rc, getAuthenticatedUser())) {
+                retainedListCollections.add(rc);
+                getLogger().debug("adding: {} to retained collections", rc);
+            }
+        }
+        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
     }
 
     public List<String> getSiteNameKeywords() {
@@ -774,12 +1001,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return new ResourceAnnotation(new ResourceAnnotationKey(), "");
     }
 
-    public ResourceCollection getBlankResourceCollection() {
-        return new ResourceCollection();
+    public ListCollection getBlankResourceCollection() {
+        return new ListCollection();
     }
 
-    public ResourceCollection getBlankShare() {
-        return new ResourceCollection();
+    public SharedCollection getBlankShare() {
+        return new SharedCollection();
     }
 
     public SourceCollection getBlankSourceCollection() {
@@ -802,21 +1029,21 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setShares(List<ResourceCollection> resourceCollections) {
+    public void setShares(List<SharedCollection> resourceCollections) {
         this.shares = resourceCollections;
     }
 
     /**
      * @return the resourceCollections
      */
-    public List<ResourceCollection> getShares() {
+    public List<SharedCollection> getShares() {
         return shares;
     }
 
     /**
      * @return the effectiveResourceCollections
      */
-    public List<ResourceCollection> getEffectiveShares() {
+    public List<RightsBasedResourceCollection> getEffectiveShares() {
         return effectiveShares;
     }
 
@@ -824,9 +1051,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @param effectiveResourceCollections
      *            the effectiveResourceCollections to set
      */
-    public void setEffectiveShares(List<ResourceCollection> effectiveResourceCollections) {
+    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveResourceCollections) {
         this.effectiveShares = effectiveResourceCollections;
     }
+
 
     public Long getAccountId() {
         return accountId;
@@ -838,7 +1066,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<BillingAccount> getActiveAccounts() {
         if (activeAccounts == null) {
-            activeAccounts = new ArrayList<>(editService.determineActiveAccounts(getAuthenticatedUser(), getResource()));
+            activeAccounts = new ArrayList<>(determineActiveAccounts());
         }
         return activeAccounts;
     }
@@ -851,11 +1079,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return false;
     }
 
-    public TdarUser getSubmitter() {
+    public Person getSubmitter() {
         return submitter;
     }
 
-    public void setSubmitter(TdarUser submitter) {
+    public void setSubmitter(Person submitter) {
         this.submitter = submitter;
     }
 
@@ -927,10 +1155,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public String getSubmitterProperName() {
-        if (getSubmitter() == null)
-            return null;
+        if(getSubmitter() == null) return null;
         return getSubmitter().getProperName();
     }
+
 
     public Boolean isSelect2Enabled() {
         return select2Enabled;
@@ -948,19 +1176,19 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.select2SingleEnabled = select2SingleEnabled;
     }
 
-    public List<ResourceCollection> getEffectiveResourceCollections() {
+    public List<ListCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
     }
 
-    public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
+    public void setEffectiveResourceCollections(List<ListCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
     }
 
-    public List<ResourceCollection> getResourceCollections() {
+    public List<ListCollection> getResourceCollections() {
         return resourceCollections;
     }
 
-    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
+    public void setResourceCollections(List<ListCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 
