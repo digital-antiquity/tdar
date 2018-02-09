@@ -216,7 +216,7 @@ public class EmailServiceImpl implements EmailService {
 	 */
 	@Override
 	@Transactional(readOnly = false)
-	public void sendUserInviteEmail(UserInvite invite, TdarUser from) {
+	public Email sendUserInviteEmail(UserInvite invite, TdarUser from) {
 		Email message = createMessage(EmailType.INVITE, invite.getUser().getEmail());
 		message.setUserGenerated(false);
 		message.addData("invite", invite);
@@ -227,6 +227,7 @@ public class EmailServiceImpl implements EmailService {
 		renderAndUpdateEmailContent(message);
 		updateEmailSubject(message);
 		queue(message);
+		return message;
 	}
 
 	/*
@@ -275,10 +276,19 @@ public class EmailServiceImpl implements EmailService {
 		}
 		enforceFromAndTo(email);
 		try {
-			awsEmailService.sendMessage(email);
+			//If the message is only of Email, then it isn't set up as an HTML email. Doing send will
+			//send it as a single part message without attachments. The logo won't be embedded into the message. 
+			if(email.getClass().equals(Email.class)){
+				awsEmailService.sendMessage(email);
+			}
+			else {
+				//For all other messages, attach the logo and send as multi-part.
+				awsEmailService.sendMultiPartMessage(email);
+			}
 			email.setStatus(Status.SENT);
 			email.setDateSent(new Date());
-		} catch (MailException me) {
+		} 
+		catch (MailException | IOException | MessagingException me) {
 			email.setNumberOfTries(email.getNumberOfTries() - 1);
 			email.setErrorMessage(me.getMessage());
 			logger.error("email error: {} {}", email, me);
@@ -339,7 +349,7 @@ public class EmailServiceImpl implements EmailService {
 	@Transactional(readOnly = false)
 	public Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody,
 			EmailType type, Map<String, String[]> params) {
-		Email email = new Email();
+		Email email = createMessage(type, to.getEmail());
 		genericDao.markWritable(email);
 		email.setFrom(CONFIG.getDefaultFromEmail());
 		String subjectPart = MessageHelper.getMessage(type.getLocaleKey());
@@ -349,13 +359,14 @@ public class EmailServiceImpl implements EmailService {
 			RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
 			logger.debug("{}", customRequest);
 			subjectPart = customRequest.getName();
-			map.put("descriptionRequest", customRequest.getDescriptionRequest());
-			map.put("customName", customRequest.getName());
-
+			email.addData("descriptionRequest", customRequest.getDescriptionRequest());
+			email.addData("customName", customRequest.getName());
 		}
+		
 		if (CONFIG.isSendEmailToTester()) {
 			email.setTo(from.getEmail());
 		}
+		
 		email.setTo(to.getEmail());
 		createResourceRevisionLogEntry(from, to, resource, subjectPart);
 
@@ -364,26 +375,36 @@ public class EmailServiceImpl implements EmailService {
 		if (StringUtils.isNotBlank(subjectSuffix)) {
 			subject += " - " + subjectSuffix;
 		}
+		
 		email.setSubject(subject);
 		email.setType(type);
 
 		if (resource != null) {
 			email.setResource(resource);
 		}
+		
 		email.setStatus(Status.IN_REVIEW);
-		map.put("from", from);
-		map.put("to", to);
-		setupBasicComponents(map);
+
+		email.addData("from", from);
+		email.addData("to", to);
+		
+		setupBasicComponents(email.getMap());
+		
 		if (MapUtils.isNotEmpty(params)) {
 			map.putAll(params);
 		}
+		
 		if (resource != null) {
-			map.put("resource", resource);
+			email.addData("resource", resource);
 		}
-		map.put("message", messageBody);
-		map.put("type", type);
-		email.setMessage(messageBody);
-		queueWithFreemarkerTemplate(type.getTemplateLocation(), map, email);
+		
+		email.addData("message", messageBody);
+		email.addData("type", type);
+		
+		renderAndUpdateEmailContent(email);
+		queue(email);
+		
+		//queueWithFreemarkerTemplate(type.getTemplateLocation(), map, email);
 		return email;
 
 	}
@@ -451,7 +472,7 @@ public class EmailServiceImpl implements EmailService {
 	 */
 	@Override
 	@Transactional(readOnly = false)
-	public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser,
+	public Email proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser,
 			String comment, boolean reject, EmailType type, Permissions permission, Date expires) {
 
 		EmailType emailType = null;
@@ -499,6 +520,7 @@ public class EmailServiceImpl implements EmailService {
 		} catch (MessagingException | IOException e) {
 			logger.error("Couldn't send email: {}", e, e);
 		}
+		return message;
 	}
 
 	private void setupBasicComponents(Map<String, Object> map) {
@@ -684,6 +706,7 @@ public class EmailServiceImpl implements EmailService {
 
 	@Override
 	public SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException {
+		logger.debug("Sending Multi-part email via AWS to {}",message.getTo());
 		return awsEmailService.sendMultiPartMessage(message);
 	}
 

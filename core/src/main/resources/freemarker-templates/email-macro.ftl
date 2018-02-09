@@ -85,7 +85,8 @@
             border-color: #7a1501 !important;
           }
           .footer {clear: both; Margin-top: 10px; text-align: center; width: 100%;}
-          .footer , .footer a {  color:#7a1501;font-size:12px; }
+          .footer {color:grey;font-size:12px; } 
+          .footer a {  color:#7a1501;font-size:12px; }
         }
         </style>
       </head>

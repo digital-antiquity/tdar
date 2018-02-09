@@ -80,7 +80,7 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
                 break;
             case QUEUED:
             		email = emailService.dequeue(email);
-                logger.debug("processing: {}", email);
+            		logger.debug("processing: {}", email);
 	    			try {
 	    				emailService.sendAwsHtmlMessage(email);
 	    			} catch (MessagingException | IOException e) {

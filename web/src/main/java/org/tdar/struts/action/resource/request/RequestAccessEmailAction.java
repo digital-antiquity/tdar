@@ -15,6 +15,7 @@ import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
@@ -71,6 +72,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
             RequestCollection custom = resourceService.findCustom(getResource());
             to = custom.getContact();
         }
+        
         emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
         addActionMessage("Message Sent");
 

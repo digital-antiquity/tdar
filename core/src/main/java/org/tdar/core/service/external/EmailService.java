@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.billing.BillingAccount;
@@ -29,7 +28,7 @@ public interface EmailService {
 	 */
 	void queueWithFreemarkerTemplate(String templateName, Map<String, ?> dataModel, Email email);
 
-	void sendUserInviteEmail(UserInvite invite, TdarUser from);
+	Email sendUserInviteEmail(UserInvite invite, TdarUser from);
 
 	/**
 	 * Sends an email message to the given recipients. If no recipients are passed in, defaults to TdarConfiguration.getSystemAdminEmail().
@@ -69,7 +68,7 @@ public interface EmailService {
 
 	List<Email> findEmailsWithStatus(Status status);
 
-	void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment,
+	Email proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment,
 			boolean reject, EmailType type, Permissions permission, Date expires);
 
 	void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person);
