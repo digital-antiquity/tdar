@@ -1,0 +1,35 @@
+
+footer {
+    margin-top: 60px;
+    background: url(../images/r4/bg-footer.png) repeat;
+    padding: 50px 0;
+}
+
+footer h4 {
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    margin: 0 0 15px 0;
+}
+
+.unstyled-list {
+    list-style: none;
+    margin-left: 0px;
+}
+
+footer ul, footer li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    clear: left;
+    font-size: 13px;
+    line-height: 22px;
+}
+
+footer a {
+    color: #fff;
+}
+
+footer a:hover {
+    color: #f1d9bf;
+}
