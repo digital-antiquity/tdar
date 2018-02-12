@@ -45,7 +45,7 @@ public class ResourceRightsControllerITCase extends AbstractControllerITCase {
         doc = genericService.find(Document.class, id);
         logger.debug("RC: {}", doc.getAuthorizedUsers());
         // change the submitter to the admin
-        saveUser(id, new AuthorizedUser(getAdminUser(),newUser, Permissions.ADMINISTER_COLLECTION));
+        saveUser(id, new AuthorizedUser(getAdminUser(),newUser, Permissions.MODIFY_RECORD));
         logger.debug("RC: {}", doc.getAuthorizedUsers());
 
         evictCache();

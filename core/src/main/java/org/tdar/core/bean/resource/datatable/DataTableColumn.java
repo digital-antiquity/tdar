@@ -336,10 +336,10 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         // }
 
         if (getColumnDataType().isNumeric()) {
-            if (column.getColumnEncodingType() != null) { // NOT NULLABLE FIELD
-                setColumnEncodingType(column.getColumnEncodingType());
-            }
             setMeasurementUnit(column.getMeasurementUnit());
+        }
+        if (column.getColumnEncodingType() != null) { // NOT NULLABLE FIELD
+            setColumnEncodingType(column.getColumnEncodingType());
         }
     }
 

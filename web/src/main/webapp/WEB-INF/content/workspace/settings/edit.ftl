@@ -22,12 +22,11 @@
 
         <div class="control-group">
         <label class="control-label">Allow anyone to view this Integration?</label>
-    
             <div class="controls">
-                <label for="rdoheaderTrue" class="radio inline"><input type="radio" id="rdoheaderTrue" name="collection.customHeaderEnabled"
-                                                                        value="true" <@commonr.checkedif persistable.hidden false /> />Yes</label>
-                <label for="rdoheaderFalse" class="radio inline"><input type="radio" id="rdoheaderFalse" name="collection.customHeaderEnabled"
-                                                                         value="false" <@commonr.checkedif persistable.hidden true /> />No</label>
+                <label for="rdoheaderTrue" class="radio inline"><input type="radio" id="rdoheaderTrue" name="persistable.hidden"
+                                                                        value="false" <@commonr.checkedif persistable.hidden false /> />Yes</label>
+                <label for="rdoheaderFalse" class="radio inline"><input type="radio" id="rdoheaderFalse" name="persistable.hidden"
+                                                                         value="true" <@commonr.checkedif persistable.hidden true /> />No</label>
             </div>
         </div>
         
