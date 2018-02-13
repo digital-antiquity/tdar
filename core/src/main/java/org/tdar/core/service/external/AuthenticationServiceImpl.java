@@ -81,7 +81,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     private InstitutionDao institutionDao;
-
+    
     private AuthenticationProvider provider;
 
     /*
@@ -525,14 +525,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             AuthorizedUser user = new AuthorizedUser(authorizer, person, invite.getPermissions());
             invite.setDateRedeemed(new Date());
             personDao.saveOrUpdate(invite);
-
             if (invite.getResourceCollection() != null) {
                 invite.getResourceCollection().getAuthorizedUsers().add(user);
                 personDao.saveOrUpdate(invite.getResourceCollection());
                 personDao.saveOrUpdate(user);
                 notices.get(authorizer).add((HasName) invite.getResourceCollection());
                 publisher.publishEvent(new TdarEvent(invite.getResourceCollection(), EventType.CREATE_OR_UPDATE));
-            }
+                publisher.publishEvent(new TdarEvent(invite.getResourceCollection(), EventType.REINDEX_CHILDREN));
+            } 
 
             if (invite.getResource() != null) {
                 invite.getResource().getAuthorizedUsers().add(user);
@@ -545,7 +545,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             // FIXME: REMOVE if rights changes work
         }
         emailService.sendUserInviteGrantedEmail(notices, person);
-
     }
 
     /*

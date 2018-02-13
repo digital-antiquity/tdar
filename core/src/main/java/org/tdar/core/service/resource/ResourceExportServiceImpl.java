@@ -7,8 +7,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -84,7 +86,7 @@ public class ResourceExportServiceImpl implements ResourceExportService {
     @Override
     @Transactional(readOnly = true)
     public File export(ResourceExportProxy rep, boolean forReImport) throws Exception {
-        List<Resource> resources = new ArrayList<>();
+        Set<Resource> resources = new HashSet<>();
         if (PersistableUtils.isNotNullOrTransient(rep.getAccount())) {
             resources.addAll(rep.getAccount().getResources());
         }
@@ -107,7 +109,7 @@ public class ResourceExportServiceImpl implements ResourceExportService {
      */
     @Override
     @Transactional(readOnly = true)
-    public File export(String filename, boolean forReImport, final List<Resource> resources) throws Exception {
+    public File export(String filename, boolean forReImport, final Set<Resource> resources) throws Exception {
         File dir = new File(FileUtils.getTempDirectory(), EXPORT);
         dir.mkdir();
         File zipFile = new File(dir, filename);

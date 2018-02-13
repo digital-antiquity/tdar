@@ -267,7 +267,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         setSaveSuccessPath(getResource().getResourceType().getUrlNamespace());
         if (PersistableUtils.isNullOrTransient(getId())) {
             revisionType = RevisionLogType.CREATE;
-            getPersistable().getAuthorizedUsers().add(new AuthorizedUser(getAuthenticatedUser(), getAuthenticatedUser(), Permissions.ADMINISTER_COLLECTION));
+            getPersistable().getAuthorizedUsers().add(new AuthorizedUser(getAuthenticatedUser(), getAuthenticatedUser(), Permissions.MODIFY_RECORD));
         }
 
         String save2 = super.save();

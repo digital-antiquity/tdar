@@ -143,6 +143,14 @@ public class SearchIndexServiceImpl implements SearchIndexService {
             return;
         }
 
+        if (event.getType() == EventType.REINDEX_CHILDREN)  {
+            try {
+            partialIndexAllResourcesInCollectionSubTreeAsync((ResourceCollection) event.getRecord());
+            } catch (Throwable t) {
+                logger.error("{}",t,t);
+            }
+            return;
+        }
         Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
         SolrInputDocument doc = createDocument(record);
         //

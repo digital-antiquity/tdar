@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -19,6 +20,7 @@ import org.tdar.core.ArchiveEvaluator;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 
 
@@ -36,7 +38,7 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testSingleExport() throws Exception {
         Document doc = generateDocumentWithFileAndUser();
-        File export = exportService.export(TEST123_ZIP, false, Arrays.asList(doc));
+        File export = exportService.export(TEST123_ZIP, false, new HashSet<Resource>( Arrays.asList(doc)));
         logger.debug("exported:{}", export);
         Map<String, Long> nameSize = ArchiveEvaluator.unzipArchive(export);
         String prefix = doc.getResourceType().name() + "/" + doc.getId() + "/";
@@ -69,7 +71,7 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
     public void testMultipleExport() throws Exception {
         Document doc = generateDocumentWithFileAndUser();
         Image img = generateAndStoreVersion(Image.class, TestConstants.TEST_IMAGE_NAME, TestConstants.getFile(TestConstants.TEST_IMAGE_DIR,TestConstants.TEST_IMAGE_NAME), TdarConfiguration.getInstance().getFilestore());
-        File export = exportService.export(TEST123_ZIP, false, Arrays.asList(doc,img));
+        File export = exportService.export(TEST123_ZIP, false, new HashSet<Resource>( Arrays.asList(doc,img)));
         logger.debug("exported:{}", export);
         Map<String, Long> nameSize = ArchiveEvaluator.unzipArchive(export);
         String prefix = doc.getResourceType().name() + "/" + doc.getId() + "/";
@@ -85,7 +87,7 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
     public void testSingleExportForReimport() throws Exception {
         Document doc = generateDocumentWithFileAndUser();
         Long id = doc.getId();
-        File export = exportService.export(TEST123_ZIP, true, Arrays.asList(doc));
+        File export = exportService.export(TEST123_ZIP, true,new HashSet<Resource>( Arrays.asList(doc)));
         logger.debug("exported:{}", export);
         ZipFile zipfile = new ZipFile(export);
         Map<String, Long> nameSize = ArchiveEvaluator.unzipArchive(export);

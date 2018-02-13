@@ -162,7 +162,10 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         List<UserInvite> invites = userRightsProxyService.findUserInvites(getPersistable());
         if (CollectionUtils.isNotEmpty(invites)) {
             invites.forEach(invite -> {
-                proxies.add(new UserRightsProxy(invite));
+                // only add unredemmed invites
+                if (invite.getDateRedeemed() == null && !(invite.getUser() instanceof TdarUser))  {
+                    proxies.add(new UserRightsProxy(invite));
+                }
             });
         }
         getLogger().debug("proxies:{}", proxies);

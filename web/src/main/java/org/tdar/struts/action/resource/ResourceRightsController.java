@@ -30,6 +30,7 @@ import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.web.service.ResourceEditControllerService;
 import org.tdar.web.service.ResourceSaveControllerService;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -121,6 +122,7 @@ public class ResourceRightsController extends AbstractRightsController implement
             @Result(name = INPUT, location = RIGHTS_FTL)
     })
     @PostOnly
+    @WriteableSession
     public String save() {
         try {
             getLogger().debug("save proxies:{}", getProxies());
