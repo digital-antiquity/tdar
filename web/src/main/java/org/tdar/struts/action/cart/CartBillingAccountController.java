@@ -64,7 +64,7 @@ public class CartBillingAccountController extends AbstractCartController {
             getLogger().debug("invoice had no owner, setting to authenticated user {}", owner);
         }
 
-        selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts());
+        selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts(), getAuthenticatedUser());
 
         getLogger().debug("selected account: {}", selectedAccount);
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());

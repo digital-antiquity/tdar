@@ -176,7 +176,7 @@ public interface BillingAccountService {
 
     void processBillingAccountChoice(BillingAccount acct, Invoice invoice, TdarUser authenticatedUser);
 
-    BillingAccount reconcileSelectedAccount(long id, Invoice invoice, BillingAccount account, List<BillingAccount> accounts);
+    BillingAccount reconcileSelectedAccount(long id, Invoice invoice, BillingAccount account, List<BillingAccount> accounts, TdarUser tdarUser);
 
     void updateQuotas(BillingAccount account, ResourceEvaluator re, List<Resource> resources);
 

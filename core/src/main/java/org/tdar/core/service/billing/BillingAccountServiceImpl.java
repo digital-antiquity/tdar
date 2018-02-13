@@ -475,7 +475,7 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
      */
     @Override
     @Transactional(readOnly = false)
-    public BillingAccount reconcileSelectedAccount(long id, Invoice invoice, BillingAccount account, List<BillingAccount> accounts) {
+    public BillingAccount reconcileSelectedAccount(long id, Invoice invoice, BillingAccount account, List<BillingAccount> accounts, TdarUser user) {
         BillingAccount selectedAccount = null;
         if (id == -1L) {
             if (account != null && StringUtils.isNotBlank(account.getName())) {
@@ -484,6 +484,11 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
             } else {
                 selectedAccount = processBillingAccountChoice(invoice, invoice.getOwner());
             }
+            
+            if (CollectionUtils.isEmpty(selectedAccount.getAuthorizedUsers())) {
+                selectedAccount.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.EDIT_ACCOUNT));
+            }
+            
         } else {
             selectedAccount = getDao().find(BillingAccount.class, id);
         }
