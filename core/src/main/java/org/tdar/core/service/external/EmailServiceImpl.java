@@ -1,40 +1,29 @@
 package org.tdar.core.service.external;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasName;
@@ -65,7 +54,6 @@ import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.StatsChartGenerator;
 
-import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 /**
@@ -706,7 +694,7 @@ public class EmailServiceImpl implements EmailService {
 
 	@Override
 	public SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException {
-		logger.debug("Sending Multi-part email via AWS to {}",message.getTo());
+		logger.debug("Sending Multi-part email via AWS",message.getTo());
 		return awsEmailService.sendMultiPartMessage(message);
 	}
 

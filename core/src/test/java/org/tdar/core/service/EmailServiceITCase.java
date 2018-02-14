@@ -38,6 +38,8 @@ import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.external.MockMailSender;
 
+import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
+
 public class EmailServiceITCase extends AbstractIntegrationTestCase { 
 
 	@Test
@@ -187,7 +189,8 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		message.addData("firstName", "Brian");
 		message.addData("lastName", "Castellanos");
 
-		emailService.renderAndSendMessage(message);
+		SendRawEmailResult response = emailService.renderAndSendMessage(message);
+		logger.debug("Response is {}",response);
 	}
 
 	@Test

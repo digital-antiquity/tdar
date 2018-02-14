@@ -1,7 +1,9 @@
 package org.tdar.core.service.email;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -31,13 +33,18 @@ public class AwsQueuePollerService {
 
 	@SuppressWarnings("finally")
 	public List<Message> getBouncedMessages() {
-		List<Message> allMessages = new ArrayList<Message>();
+		Map<String, Message> allMessages = new HashMap<String, Message>();
+		//List<Message> allMessages = new ArrayList<Message>();
 
 		try {
 			logger.debug("Starting getting messages");
 			AmazonSQS sqs = getSqsClient();
 			String queueName = config.getAwsQueueName();
-			ReceiveMessageRequest rmr = new ReceiveMessageRequest(queueName);
+			logger.debug("Queue name is {}",queueName);
+			logger.debug("Getting queue URL");
+			String queueUrl = sqs.getQueueUrl(queueName).getQueueUrl();
+			logger.debug("Queue URL is {}",queueUrl);
+			ReceiveMessageRequest rmr = new ReceiveMessageRequest(queueUrl);
 			logger.debug("Receiving messages from {}", queueName);
 			rmr.setMaxNumberOfMessages(10);
 			rmr.setWaitTimeSeconds(20);
@@ -49,19 +56,24 @@ public class AwsQueuePollerService {
 
 				if (messages.size() == 0) {
 					hasMessages = false;
-				} else {
+				} 
+				else {
 					for (Message message : messages) {
 						removeMessageFromQueue(message.getReceiptHandle());
-						allMessages.add(message);
+						allMessages.put(message.getMessageId(), message);
+						//allMessages.add(message);
 					}
 				}
 			}
-		} catch (AmazonServiceException ase) {
+		} 
+		catch (AmazonServiceException ase) {
 			ase.printStackTrace();
-		} catch (AmazonClientException ace) {
+		} 
+		catch (AmazonClientException ace) {
 			ace.printStackTrace();
-		} finally {
-			return allMessages;
+		} 
+		finally {
+			return new ArrayList<Message>(allMessages.values());
 		}
 	}
 
