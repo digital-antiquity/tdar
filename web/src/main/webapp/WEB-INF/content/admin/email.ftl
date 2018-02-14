@@ -15,24 +15,6 @@
 </div>
 
 
-<style>
-.email-container {
-  position: relative;
-  height: 0;
-  overflow: hidden;
-    padding-bottom: 75%;
-}
-
- 
-.email-container iframe {
-  position: absolute;
-  top:0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-</style>
-
 <h3>Emails to be Reviewed</h3>
 
 <table class="tableFormat table">
