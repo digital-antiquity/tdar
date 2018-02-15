@@ -547,9 +547,13 @@
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.FIND_ALTERNATE_LIST_CHILDRENS_TREE,
                 query = "from ResourceCollection rc where rc.alternateParent.id in :collectionIds or rc.parent.id in ( select id from ResourceCollection rc1 where rc1.alternateParent.id in :collectionIds )"),
-        @org.hibernate.annotations.NamedQuery(
+        @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.MONTHLY_USAGE_FOR_RESOURCE,
-                query = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId")
+                query = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId"),
+        @NamedQuery(
+        		name = org.tdar.core.dao.TdarNamedQueries.FIND_EMAIL_BY_GUID,
+        		query = "from Email email where email.messageUuid=:guid"
+        		)
 })
 package org.tdar.core.dao;
 

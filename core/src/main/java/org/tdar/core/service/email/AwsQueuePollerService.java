@@ -59,6 +59,8 @@ public class AwsQueuePollerService {
 				} 
 				else {
 					for (Message message : messages) {
+						logger.debug("{}",message);
+						
 						removeMessageFromQueue(message.getReceiptHandle());
 						allMessages.put(message.getMessageId(), message);
 						//allMessages.add(message);
@@ -117,17 +119,33 @@ public class AwsQueuePollerService {
 	
 	public JSONArray getMessageHeaders(Message message) {
 		JSONArray headers = null;
-		
+		JSONObject msg = getMessageJson(message);
+		JSONObject mail = (JSONObject) msg.get("mail");
+		headers = (JSONArray) mail.get("headers");
+		return headers;
+	}
+	
+	public String getNotificationType(Message message){
+		return (String) getMessageJson(message).get("notificationType");
+	}
+
+	public String getBounce(Message message){
+		return ((JSONObject) getMessageJson(message).get("bounce")).toJSONString();
+	}
+	
+	public JSONObject getMessageJson(Message message){
+		JSONObject msg = null;
 		try {
 			JSONObject json;
 			json = (JSONObject) new JSONParser().parse(message.getBody());
-			JSONObject msg = (JSONObject) new JSONParser().parse((String) json.get("Message"));
-			JSONObject mail = (JSONObject) msg.get("mail");
-			headers= (JSONArray) mail.get("headers");
+			msg = (JSONObject) new JSONParser().parse((String) json.get("Message"));
 		} catch (ParseException e) {
 			logger.debug("Couldn't parse the message headers: {} {}",e,e);
 		}
-		return headers;
+		return msg;
 	}
+	
+	
+	
 
 }

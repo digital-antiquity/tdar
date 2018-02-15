@@ -43,6 +43,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.EmailDao;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -92,6 +93,9 @@ public class EmailServiceImpl implements EmailService {
 
 	@Autowired
 	private StatsChartGenerator chartGenerator;
+
+	@Autowired
+	private EmailDao emailDao;
 
 	public static String ATTACHMENTS = "ATTACHMENTS";
 	public static String INLINE = "INLINE";
@@ -697,6 +701,25 @@ public class EmailServiceImpl implements EmailService {
 		logger.debug("Sending Multi-part email via AWS",message.getTo());
 		return awsEmailService.sendMultiPartMessage(message);
 	}
+	
+	@Override
+	public void markMessageAsBounced(String messageGuid, String errorMessage) {
+		List<Email> emails = emailDao.findEmailByGuid(messageGuid);
+		logger.debug("Found {} emails",emails.size());
+		if(CollectionUtils.isNotEmpty(emails)){
+			markMessageAsBounced(emails.get(0), errorMessage);
+		}
+	}
+
+
+	@Override
+	public void markMessageAsBounced(Email email, String errorMessage) {
+		logger.debug("Marking email {} as bounced", email);
+		email.setStatus(Status.BOUNCED);
+		email.setErrorMessage(errorMessage);
+		genericDao.saveOrUpdate(email);
+	}
+	
 
 	public AwsEmailSender getAwsEmailService() {
 		return awsEmailService;
@@ -721,6 +744,9 @@ public class EmailServiceImpl implements EmailService {
 	public void setChartGenerator(StatsChartGenerator chartGenerator) {
 		this.chartGenerator = chartGenerator;
 	}
+
+
+	
 
 
 }

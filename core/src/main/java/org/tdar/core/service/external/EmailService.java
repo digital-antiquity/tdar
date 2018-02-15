@@ -129,4 +129,9 @@ public interface EmailService {
 	SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException;
 
 	void renderAndQueueMessage(Email email);
+	
+	void markMessageAsBounced(String messageGuid, String errorMessage);
+	
+	void markMessageAsBounced(Email email, String errorMessage);
+	
 }

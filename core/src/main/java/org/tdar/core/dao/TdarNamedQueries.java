@@ -178,6 +178,9 @@ public interface TdarNamedQueries {
     String QUERY_RIGHTS_EXPIRY_COLLECTION = "query.expiry_authuser_collection";
     String QUERY_RIGHTS_EXPIRY_ACCOUNT = "query.expiry_account";
     String QUERY_RIGHTS_EXPIRY_WORKFLOW = "query.expiry_authuser_workflow";
+    String FIND_EMAIL_BY_GUID = "query.find_email_by_guid";
+    
+    
     // raw SQL/HQL queries
 
     /**
