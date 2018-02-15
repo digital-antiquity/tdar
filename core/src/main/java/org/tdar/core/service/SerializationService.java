@@ -52,7 +52,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.event.TdarEvent;
+import org.tdar.core.event.AbstractTdarEvent;
 import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.service.event.EventBusResourceHolder;
 import org.tdar.core.service.event.EventBusUtils;
@@ -120,7 +120,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
 
     @SuppressWarnings("unchecked")
     @EventListener
-    public void handleFilestoreEvent(TdarEvent event) {
+    public void handleFilestoreEvent(AbstractTdarEvent event) {
         if (!(event.getRecord() instanceof XmlLoggable)) {
             return;
         }

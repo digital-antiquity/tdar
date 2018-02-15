@@ -48,6 +48,8 @@ import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.event.AbstractTdarEvent;
+import org.tdar.core.event.AsyncTdarEvent;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.service.ActivityManager;
@@ -112,6 +114,35 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
     public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> toReindex, TdarUser person) {
         BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
         batch.indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
+    }
+    
+    @EventListener()
+    @Async
+    public void handleAsyncIndexingEvent(AsyncTdarEvent event) throws SearchIndexException, IOException {
+        if (!(event.getRecord() instanceof Indexable)) {
+            return;
+        }
+
+        Indexable record = (Indexable) event.getRecord();
+
+        if (PersistableUtils.isNullOrTransient(record)) {
+            return;
+        }
+
+        if (!isUseTransactionalEvents() || !CONFIG.useTransactionalEvents()) {
+            index(record);
+            return;
+        }
+        
+        if (event.getType() == EventType.REINDEX_CHILDREN)  {
+            try {
+            partialIndexAllResourcesInCollectionSubTreeAsync((HierarchicalCollection) event.getRecord());
+            } catch (Throwable t) {
+                logger.error("{}",t,t);
+            }
+            return;
+        }
+
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

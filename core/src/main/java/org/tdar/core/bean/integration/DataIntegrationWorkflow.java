@@ -28,6 +28,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.HasUsers;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
 
@@ -193,6 +194,15 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
     @Override
     public void setViewable(boolean viewable) {
         this.viewable = viewable;
+    }
+
+    public void copyFrom(DataIntegrationWorkflow workflow, TdarUser user) {
+        this.setDateCreated(new Date());
+        this.setDateUpdated(new Date());
+        this.setDescription(workflow.getDescription());
+        this.setTitle(workflow.getTitle() + " (Copy)");
+        this.setHidden(workflow.isHidden());
+        this.setJsonData(workflow.getJsonData());
     }
 
 }

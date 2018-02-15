@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.dao.integration.IntegrationWorkflowDao;
@@ -92,5 +93,14 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
     @Transactional(readOnly = false)
     public void deleteForController(TextProvider provider, DataIntegrationWorkflow persistable, TdarUser authenticatedUser) {
         getDao().delete(persistable);
+    }
+
+    @Transactional(readOnly=false)
+    public DataIntegrationWorkflow duplicateWorkflow(DataIntegrationWorkflow workflow, TdarUser user) {
+        DataIntegrationWorkflow copy = new DataIntegrationWorkflow();
+        copy.copyFrom(workflow, user);
+        copy.getAuthorizedMembers().add(user);
+        // TODO Auto-generated method stub
+        return null;
     }
 }
