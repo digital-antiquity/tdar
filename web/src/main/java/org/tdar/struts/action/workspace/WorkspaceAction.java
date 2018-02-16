@@ -41,16 +41,8 @@ public class WorkspaceAction extends AbstractAuthenticatableAction {
     private static final long serialVersionUID = 8232843043333817727L;
 
     @Autowired
-    private transient AuthorizationService authorizationService;
-
-    @Autowired
-    private transient BookmarkedResourceService bookmarkedResourceService;
-
-    @Autowired
     private transient IntegrationWorkflowService integrationWorkflowService;
 
-    private List<Resource> bookmarkedResources;
-    private Set<Ontology> sharedOntologies;
     private List<DataIntegrationWorkflow> workflows = new ArrayList<>();
 
     /**
@@ -60,47 +52,7 @@ public class WorkspaceAction extends AbstractAuthenticatableAction {
     @Action(value = "list", results = { @Result(name = SUCCESS, location = "workspace.ftl") })
     public String execute() {
         setWorkflows(integrationWorkflowService.getWorkflowsForUser(getAuthenticatedUser()));
-        // in the future we could use the Map to prompt the user with suggestions
         return SUCCESS;
-    }
-
-    public List<Resource> getBookmarkedResources() {
-        if (bookmarkedResources == null) {
-            bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
-                    Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        }
-
-        for (Resource res : bookmarkedResources) {
-            authorizationService.applyTransientViewableFlag(res, getAuthenticatedUser());
-        }
-        return bookmarkedResources;
-    }
-
-    public List<Dataset> getBookmarkedDatasets() {
-        List<Dataset> datasets = new ArrayList<Dataset>();
-        for (Resource resource : getBookmarkedResources()) {
-            if ((resource instanceof Dataset) && resource.isActive()) {
-                Dataset dataset = (Dataset) resource;
-                datasets.add(dataset);
-            }
-        }
-        return datasets;
-    }
-
-    public Set<DataTable> getBookmarkedDataTables() {
-        Set<DataTable> dataTables = new HashSet<DataTable>();
-        for (Dataset d : getBookmarkedDatasets()) {
-            dataTables.addAll(d.getDataTables());
-        }
-        return dataTables;
-    }
-
-    public Set<Ontology> getSharedOntologies() {
-        return sharedOntologies;
-    }
-
-    public void setSharedOntologies(Set<Ontology> sharedOntologies) {
-        this.sharedOntologies = sharedOntologies;
     }
 
     public List<DataIntegrationWorkflow> getWorkflows() {

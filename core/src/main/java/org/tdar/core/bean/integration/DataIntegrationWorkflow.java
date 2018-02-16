@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -74,6 +75,9 @@ public class DataIntegrationWorkflow extends AbstractPersistable
     @Column(nullable = false)
     private int version = 1;
 
+    @Transient
+    private transient boolean editable;
+    
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "user_id")
     @NotNull
@@ -200,8 +204,18 @@ public class DataIntegrationWorkflow extends AbstractPersistable
         this.setDateUpdated(new Date());
         this.setDescription(workflow.getDescription());
         this.setTitle(workflow.getTitle() + " (Copy)");
+        this.setSubmitter(user);
         this.setHidden(workflow.isHidden());
         this.setJsonData(workflow.getJsonData());
+    }
+
+    @Transient
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
 }
