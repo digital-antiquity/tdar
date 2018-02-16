@@ -135,4 +135,14 @@ public class IntegrationWorkflowServiceImpl extends ServiceInterface.TypedDaoBas
     public void deleteForController(TextProvider provider, DataIntegrationWorkflow persistable, TdarUser authenticatedUser) {
         getDao().delete(persistable);
     }
+
+    @Transactional(readOnly=false)
+    @Override
+    public DataIntegrationWorkflow duplicateWorkflow(DataIntegrationWorkflow workflow, TdarUser user) {
+        DataIntegrationWorkflow copy = new DataIntegrationWorkflow();
+        copy.copyFrom(workflow, user);
+        copy.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.EDIT_INTEGRATION));
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

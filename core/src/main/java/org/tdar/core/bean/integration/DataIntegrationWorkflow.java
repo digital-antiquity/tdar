@@ -195,4 +195,13 @@ public class DataIntegrationWorkflow extends AbstractPersistable
         this.authorizedUsers = authorizedUsers;
     }
 
+    public void copyFrom(DataIntegrationWorkflow workflow, TdarUser user) {
+        this.setDateCreated(new Date());
+        this.setDateUpdated(new Date());
+        this.setDescription(workflow.getDescription());
+        this.setTitle(workflow.getTitle() + " (Copy)");
+        this.setHidden(workflow.isHidden());
+        this.setJsonData(workflow.getJsonData());
+    }
+
 }
