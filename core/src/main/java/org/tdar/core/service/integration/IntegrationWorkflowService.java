@@ -87,7 +87,11 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
 
     @Transactional(readOnly = true)
     public List<DataIntegrationWorkflow> getWorkflowsForUser(TdarUser authorizedUser) {
-        return getDao().getWorkflowsForUser(authorizedUser, authorizationService.isEditor(authorizedUser));
+        List<DataIntegrationWorkflow> workflowsForUser = getDao().getWorkflowsForUser(authorizedUser, authorizationService.isEditor(authorizedUser));
+        for (DataIntegrationWorkflow workflow: workflowsForUser) {
+            workflow.setEditable(authorizationService.canEditWorkflow(authorizedUser, workflow));
+        }
+        return workflowsForUser;
     }
 
     @Transactional(readOnly = false)
@@ -100,7 +104,7 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
         DataIntegrationWorkflow copy = new DataIntegrationWorkflow();
         copy.copyFrom(workflow, user);
         copy.getAuthorizedMembers().add(user);
-        // TODO Auto-generated method stub
-        return null;
+        getDao().saveOrUpdate(copy);
+        return copy;
     }
 }

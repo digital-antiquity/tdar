@@ -1,9 +1,9 @@
 package org.tdar.struts.action.workspace;
 
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
-
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,6 +16,9 @@ import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -23,18 +26,21 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/workspace")
+@Result(name = "workspace", location = "/workspace/list", type = TdarActionSupport.REDIRECT)
 public class DuplicateIntegrationAction extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow> {
+
+    private static final String WORKSPACE = "workspace";
 
     private static final long serialVersionUID = 6921699138699176481L;
 
     private Long id;
-    
+
     @Autowired
     IntegrationWorkflowService integrationWorkflowService;
 
     @Autowired
     AuthorizationService authorizationService;
-    
+
     private DataIntegrationWorkflow workflow;
 
     @Override
@@ -42,12 +48,23 @@ public class DuplicateIntegrationAction extends AbstractAuthenticatableAction im
         prepareAndLoad(this, RequestType.SAVE);
     }
 
+    @Action(value = "duplicate-confirm", results = {
+            @Result(name = SUCCESS, location = "integrate-duplicate-confirm.ftl")
+    })
+    public String preview() {
+
+        return SUCCESS;
+    }
+
     @Override
+    @WriteableSession
+    @PostOnly
+    @Action(value = "duplicate")
     public String execute() throws Exception {
         DataIntegrationWorkflow dup = integrationWorkflowService.duplicateWorkflow(workflow, getAuthenticatedUser());
-        return super.execute();
+        return WORKSPACE;
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -62,7 +79,7 @@ public class DuplicateIntegrationAction extends AbstractAuthenticatableAction im
     }
 
     @Override
-    public Persistable getPersistable() {
+    public DataIntegrationWorkflow getPersistable() {
         return getWorkflow();
     }
 
@@ -73,7 +90,7 @@ public class DuplicateIntegrationAction extends AbstractAuthenticatableAction im
 
     @Override
     public void setPersistable(DataIntegrationWorkflow persistable) {
-        this.setWorkflow(workflow);
+        this.setWorkflow(persistable);
     }
 
     @Override
