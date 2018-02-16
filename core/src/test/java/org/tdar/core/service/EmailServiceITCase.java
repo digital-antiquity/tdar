@@ -50,7 +50,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	
 	
 	@Test
-	@Rollback
+	@Rollback(false)
 	public void testSendRequestAccessEmail(){
 		sendContactRequestEmail(EmailType.REQUEST_ACCESS);
 	}
@@ -297,6 +297,8 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
        
 		Email email = emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
 
+		email.setFrom("test@tdar.org");
+		
 		/**
 		 * Commented out because AWS is mocked, and it doesn't actually send message. 
 		 * The status is actually set to IN_REVIEW. 
@@ -312,6 +314,13 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		**/
 
 		assertNotNull("Expect the subject to be the same", email.getSubject());
+		
+		try {
+		emailService.sendAwsHtmlMessage(email);
+		}
+		catch (MessagingException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void processPermissionRequestEmail(EmailType emailType, String comment){
@@ -327,6 +336,10 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		assertTrue("The message is the same", email.getMessage().contains(comment));
 		assertEquals("The mesage is to the right person", requestor.getEmail(), email.getTo());
 		
-	
+		try {
+			emailService.sendAwsHtmlMessage(email);
+		} catch (MessagingException | IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

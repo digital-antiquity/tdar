@@ -31,7 +31,7 @@ public class AwsQueuePollerService {
 	private Regions awsRegion = Regions.US_WEST_2;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@SuppressWarnings("finally")
+	
 	public List<Message> getBouncedMessages() {
 		Map<String, Message> allMessages = new HashMap<String, Message>();
 		//List<Message> allMessages = new ArrayList<Message>();
@@ -63,7 +63,6 @@ public class AwsQueuePollerService {
 						
 						removeMessageFromQueue(message.getReceiptHandle());
 						allMessages.put(message.getMessageId(), message);
-						//allMessages.add(message);
 					}
 				}
 			}
@@ -74,9 +73,8 @@ public class AwsQueuePollerService {
 		catch (AmazonClientException ace) {
 			ace.printStackTrace();
 		} 
-		finally {
-			return new ArrayList<Message>(allMessages.values());
-		}
+		
+		return new ArrayList<Message>(allMessages.values());
 	}
 
 

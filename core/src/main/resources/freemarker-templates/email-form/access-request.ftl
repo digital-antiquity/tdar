@@ -4,7 +4,7 @@
 Dear ${to.properName},<br />
 <br />
 ${from.properName} has requested access to the following resource that you 
-have administrative rights to: ${resource.title} (${resource.id?c}).  You can view
+have administrative rights to: <a href="${baseUrl}${resource.detailUrl}"> ${resource.title} (${resource.id?c})</a>.  You can view
 ${from.properName}'s email address below if you need more information from them.<br />
 <p>
 ${siteAcronym} allows you to extend view and download privileges for confidential 

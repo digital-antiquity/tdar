@@ -52,6 +52,9 @@
             max-width: 100% !important;
             width: auto !important;
           }
+             .footer {clear: both; Margin-top: 10px; text-align: center; width: 100%;}
+          .footer {color:grey;font-size:12px; } 
+          .footer a {  color:#7a1501;font-size:12px; }
         }
     
         /* -------------------------------------
@@ -108,7 +111,7 @@
                       <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
                         <tr>
                           <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                            <div style="text-align:center"><img src="cid:logo" /></div>
+                            <div style="text-align:center"><a href="http://www.tdar.org" style="border:0"><img src="cid:logo" /></a></div>
                             <br />
                             <br />
                             <#nested />

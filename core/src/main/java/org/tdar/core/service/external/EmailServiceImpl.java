@@ -107,12 +107,11 @@ public class EmailServiceImpl implements EmailService {
 		return message;
 	}
 
-
 	/**
 	 * Takes the attachements that are on the message, and saves them on disk.
 	 */
 	public void saveAttachments(Email email) {
-		if(CollectionUtils.isEmpty(email.getAttachments()) && email.getInlineAttachments().size()==0){
+		if (CollectionUtils.isEmpty(email.getAttachments()) && email.getInlineAttachments().size() == 0) {
 			logger.debug("There are no attachments to save");
 			return;
 		} else {
@@ -120,26 +119,28 @@ public class EmailServiceImpl implements EmailService {
 			String _messageAttachmentDir = _attachmentDirectory + email.getId().toString();
 			String _inlineAttachmentDir = _messageAttachmentDir + File.separator + "inline";
 			String _mimeAttachmentDir = _messageAttachmentDir + File.separator + "mime";
-			logger.debug("Saving email attachments to "+_messageAttachmentDir);
-	
+			logger.debug("Saving email attachments to " + _messageAttachmentDir);
+
 			File msgAttachmentsDir = new File(_messageAttachmentDir);
 			File inlineAttachments = new File(_inlineAttachmentDir);
 			File mimeAttachments = new File(_mimeAttachmentDir);
-	
+
 			if (!msgAttachmentsDir.exists()) {
 				logger.debug("Creating attachment directories");
 				msgAttachmentsDir.mkdirs();
 				inlineAttachments.mkdirs();
 				mimeAttachments.mkdirs();
 			}
-	
+
 			email.getInlineAttachments().forEach((fileName, file) -> {
 				// Remember: the filename is needed so the inline image or file
-				// renders correctly. The freemarker template will attributes `src="cid:FILE.EXT"`. 
-				// This will generate a base64 encoded mime segment with for FILE.EXT. 
+				// renders correctly. The freemarker template will attributes
+				// `src="cid:FILE.EXT"`.
+				// This will generate a base64 encoded mime segment with for
+				// FILE.EXT.
 				file.renameTo(new File(_inlineAttachmentDir + File.separator + fileName));
 			});
-			
+
 			email.getAttachments().forEach(file -> {
 				// Save the file to the attachment.
 				file.renameTo(new File(_mimeAttachmentDir + File.separator + file.getName()));
@@ -268,19 +269,20 @@ public class EmailServiceImpl implements EmailService {
 		}
 		enforceFromAndTo(email);
 		try {
-			//If the message is only of Email, then it isn't set up as an HTML email. Doing send will
-			//send it as a single part message without attachments. The logo won't be embedded into the message. 
-			if(email.getClass().equals(Email.class)){
+			// If the message is only of Email, then it isn't set up as an HTML
+			// email. Doing send will
+			// send it as a single part message without attachments. The logo
+			// won't be embedded into the message.
+			if (email.getClass().equals(Email.class)) {
 				awsEmailService.sendMessage(email);
-			}
-			else {
-				//For all other messages, attach the logo and send as multi-part.
+			} else {
+				// For all other messages, attach the logo and send as
+				// multi-part.
 				awsEmailService.sendMultiPartMessage(email);
 			}
 			email.setStatus(Status.SENT);
 			email.setDateSent(new Date());
-		} 
-		catch (MailException | IOException | MessagingException me) {
+		} catch (MailException | IOException | MessagingException me) {
 			email.setNumberOfTries(email.getNumberOfTries() - 1);
 			email.setErrorMessage(me.getMessage());
 			logger.error("email error: {} {}", email, me);
@@ -354,11 +356,11 @@ public class EmailServiceImpl implements EmailService {
 			email.addData("descriptionRequest", customRequest.getDescriptionRequest());
 			email.addData("customName", customRequest.getName());
 		}
-		
+
 		if (CONFIG.isSendEmailToTester()) {
 			email.setTo(from.getEmail());
 		}
-		
+
 		email.setTo(to.getEmail());
 		createResourceRevisionLogEntry(from, to, resource, subjectPart);
 
@@ -367,36 +369,36 @@ public class EmailServiceImpl implements EmailService {
 		if (StringUtils.isNotBlank(subjectSuffix)) {
 			subject += " - " + subjectSuffix;
 		}
-		
+
 		email.setSubject(subject);
 		email.setType(type);
 
 		if (resource != null) {
 			email.setResource(resource);
 		}
-		
+
 		email.setStatus(Status.IN_REVIEW);
 
 		email.addData("from", from);
 		email.addData("to", to);
-		
+
 		setupBasicComponents(email.getMap());
-		
+
 		if (MapUtils.isNotEmpty(params)) {
 			map.putAll(params);
 		}
-		
+
 		if (resource != null) {
 			email.addData("resource", resource);
 		}
-		
+
 		email.addData("message", messageBody);
 		email.addData("type", type);
-		
+
 		renderAndUpdateEmailContent(email);
 		queue(email);
-		
-		//queueWithFreemarkerTemplate(type.getTemplateLocation(), map, email);
+
+		// queueWithFreemarkerTemplate(type.getTemplateLocation(), map, email);
 		return email;
 
 	}
@@ -502,7 +504,7 @@ public class EmailServiceImpl implements EmailService {
 
 		// email.setResource(resource);
 		message.setUserGenerated(false);
-		
+
 		updateEmailSubject(message);
 		renderAndUpdateEmailContent(message);
 		queue(message);
@@ -545,23 +547,20 @@ public class EmailServiceImpl implements EmailService {
 			}
 		}
 	}
-	
+
 	@Override
-	@Transactional(readOnly=false)
+	@Transactional(readOnly = false)
 	public Email sendWelcomeEmail(Person person) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("user", person);
-        result.put("config", CONFIG);
-        Email email = createMessage(EmailType.NEW_USER_WELCOME, person.getEmail());
-        email.setUserGenerated(false);
-        email.addData("user", person);
-        email.addData("config",CONFIG);
-        renderAndQueueMessage(email);
+		Map<String, Object> result = new HashMap<>();
+		result.put("user", person);
+		result.put("config", CONFIG);
+		Email email = createMessage(EmailType.NEW_USER_WELCOME, person.getEmail());
+		email.setUserGenerated(false);
+		email.addData("user", person);
+		email.addData("config", CONFIG);
+		renderAndQueueMessage(email);
 		return email;
-    }
-	
-
-
+	}
 
 	/**
 	 * Generates a summary of the user's resources by billing account and
@@ -611,7 +610,8 @@ public class EmailServiceImpl implements EmailService {
 		Email message = createMessage(EmailType.MONTHLY_USER_STATISTICS, user.getEmail());
 		message.addData("resources", emailStatsHelper.getTopResources(billingAccount));
 		message.addData("user", user);
-		message.addData("availableSpace", MathUtils.divideByRoundDown(billingAccount.getAvailableSpaceInBytes(), 1024*1024));
+		message.addData("availableSpace",
+				MathUtils.divideByRoundDown(billingAccount.getAvailableSpaceInBytes(), 1024 * 1024));
 		message.addData("availableFiles", billingAccount.getAvailableNumberOfFiles());
 		message.addInlineAttachment("resources.png", piechart);
 		message.addInlineAttachment("totalviews.png", barchart1);
@@ -675,7 +675,7 @@ public class EmailServiceImpl implements EmailService {
 		message.setSubject(message.createSubjectLine());
 	}
 
-	/**   
+	/**
 	 * Takes an AWS message, renders the Freemarker template to update the HTML
 	 * body, renders the subject line, then creates an MIME version and sends it
 	 * via AWS.
@@ -686,31 +686,29 @@ public class EmailServiceImpl implements EmailService {
 		renderAndUpdateEmailContent(message);
 		return sendAwsHtmlMessage(message);
 	}
-	
 
 	@Override
-	public void renderAndQueueMessage(Email message) {
+	public Email renderAndQueueMessage(Email message) {
 		updateEmailSubject(message);
 		renderAndUpdateEmailContent(message);
 		queue(message);
+		return message;
 	}
-	
 
 	@Override
 	public SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException {
-		logger.debug("Sending Multi-part email via AWS",message.getTo());
+		logger.debug("Sending Multi-part email via AWS", message.getTo());
 		return awsEmailService.sendMultiPartMessage(message);
 	}
-	
+
 	@Override
 	public void markMessageAsBounced(String messageGuid, String errorMessage) {
 		List<Email> emails = emailDao.findEmailByGuid(messageGuid);
-		logger.debug("Found {} emails",emails.size());
-		if(CollectionUtils.isNotEmpty(emails)){
+		logger.debug("Found {} emails", emails.size());
+		if (CollectionUtils.isNotEmpty(emails)) {
 			markMessageAsBounced(emails.get(0), errorMessage);
 		}
 	}
-
 
 	@Override
 	public void markMessageAsBounced(Email email, String errorMessage) {
@@ -719,7 +717,6 @@ public class EmailServiceImpl implements EmailService {
 		email.setErrorMessage(errorMessage);
 		genericDao.saveOrUpdate(email);
 	}
-	
 
 	public AwsEmailSender getAwsEmailService() {
 		return awsEmailService;
@@ -744,9 +741,5 @@ public class EmailServiceImpl implements EmailService {
 	public void setChartGenerator(StatsChartGenerator chartGenerator) {
 		this.chartGenerator = chartGenerator;
 	}
-
-
-	
-
 
 }
