@@ -42,6 +42,7 @@ import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.AuthenticationResultType;
+import org.tdar.core.event.AsyncTdarEvent;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarAuthorizationException;
@@ -531,7 +532,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 personDao.saveOrUpdate(user);
                 notices.get(authorizer).add((HasName) invite.getResourceCollection());
                 publisher.publishEvent(new TdarEvent(invite.getResourceCollection(), EventType.CREATE_OR_UPDATE));
-                publisher.publishEvent(new TdarEvent(invite.getResourceCollection(), EventType.REINDEX_CHILDREN));
+                publisher.publishEvent(new AsyncTdarEvent(invite.getResourceCollection(), EventType.REINDEX_CHILDREN));
             } 
 
             if (invite.getResource() != null) {

@@ -49,6 +49,7 @@ import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
+import org.tdar.core.event.AsyncTdarEvent;
 import org.tdar.core.service.AsynchronousProcessManager;
 import org.tdar.core.service.AsynchronousStatus;
 import org.tdar.core.service.event.EventBusResourceHolder;
@@ -125,6 +126,35 @@ public class SearchIndexServiceImpl implements SearchIndexService {
         return reciever;
     }
 
+    @EventListener()
+    @Async
+    public void handleAsyncIndexingEvent(AsyncTdarEvent event) throws SearchIndexException, IOException {
+        if (!(event.getRecord() instanceof Indexable)) {
+            return;
+        }
+
+        Indexable record = (Indexable) event.getRecord();
+
+        if (PersistableUtils.isNullOrTransient(record)) {
+            return;
+        }
+
+        if (!isUseTransactionalEvents() || !CONFIG.useTransactionalEvents()) {
+            index(record);
+            return;
+        }
+        
+        if (event.getType() == EventType.REINDEX_CHILDREN)  {
+            try {
+            partialIndexAllResourcesInCollectionSubTreeAsync((ResourceCollection) event.getRecord());
+            } catch (Throwable t) {
+                logger.error("{}",t,t);
+            }
+            return;
+        }
+
+    }
+    
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @EventListener
     public void handleIndexingEvent(TdarEvent event) throws Exception {

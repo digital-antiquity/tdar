@@ -27,4 +27,6 @@ public interface IntegrationWorkflowService {
 
     DataIntegrationWorkflow find(Long id);
 
+    DataIntegrationWorkflow duplicateWorkflow(DataIntegrationWorkflow workflow, TdarUser user);
+
 }

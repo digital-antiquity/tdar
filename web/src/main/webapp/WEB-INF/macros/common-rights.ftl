@@ -99,19 +99,17 @@
                             <div class="controls-row" >
                                 <div class="span6">
                                     <div id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
-                                    <#if proxy.inviteId?has_content>
-                                        <input type="hidden" name="proxies[${proxy_index}].inviteId" value="${(proxy.inviteId!-1)?c}">
-                                            <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" 
-                                            	value="${proxy.displayName!''} (invite)" disabled=true class="span6 ">
-                                   <#else>
+                                        <input type="hidden" name="proxies[${proxy_index}].inviteId" value="<#if proxy.inviteId?has_content>${(proxy.inviteId!-1)?c}</#if>">
+
                                         <input type="hidden" name="proxies[${proxy_index}].id" value="${(proxy.id!-1)?c}" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
-                                            <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''}" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
+                                        <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''} <#if proxy.inviteId?has_content> (invite) </#if>" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
                                                  class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input"
+                                                 <#if proxy.inviteId?has_content> disabled=true </#if>
+                                                 
                                                  autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p"
                                                  data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."
                                                  autocomplete="off" placeholder="Username or Email Address" autocompletename="properName"
                                                  autocompleteidelement="#authorizedUsersId__id_${proxy_index}_p">
-                                   </#if>
                                     </div>
                                 </div>
                                 <div class="span2">
