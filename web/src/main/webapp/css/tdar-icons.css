@@ -1,0 +1,87 @@
+
+.resource-nav li i, i.bookmark-icon {
+    background: url(../images/r4/resource-types-large.gif);
+    background-repeat: no-repeat;
+    width: 18px;
+    height: 14px;
+    display: inline-block;
+}
+
+.resource-nav li i.tdar-icon-edit {
+    background-position: -31px -2437px !important;
+}
+
+.resource-nav li i.tdar-icon-edit-active, .resource-nav li:hover i.tdar-icon-edit {
+    background-position: -31px -2490px !important;
+}
+
+.resource-nav li i.tdar-icon-add {
+    background-position: -228px -2437px !important;
+}
+
+.resource-nav li i.tdar-icon-add-active, .resource-nav li:hover i.tdar-icon-add {
+    background-position: -228px -2490px !important;
+}
+
+.resource-nav li i.tdar-icon-view {
+    background-position: -1px -2437px !important;
+}
+
+.resource-nav li i.tdar-icon-view-active, .resource-nav li:hover i.tdar-icon-view {
+    background-position: -1px -2490px !important;
+}
+
+.resource-nav li i.tdar-icon-delete {
+    background-position: -56px -2437px !important;
+}
+
+.resource-nav li i.tdar-icon-delete-active, .resource-nav li:hover i.tdar-icon-delete {
+    background-position: -56px -2490px !important;
+}
+
+.resource-nav li i.tdar-icon-columns {
+    background-position: -84px -2437px !important;
+}
+
+.resource-nav li i.tdar-icon-columns-active, .resource-nav li:hover i.tdar-icon-columns {
+    background-position: -84px -2490px !important;
+}
+
+.resource-nav li i.tdar-icon-mapping {
+    width: 25px;
+    background-position: -111px -2437px !important;
+}
+
+.resource-nav li i.tdar-icon-mapping-active, .resource-nav li:hover i.tdar-icon-mapping {
+    width: 25px;
+    background-position: -111px -2490px !important;
+}
+
+.resource-nav li i.tdar-icon-mapping-disabled {
+    width: 25px;
+    background-position: -111px -2437px !important;
+}
+
+i.tdar-icon-bookmark {
+    background-position: -148px -2437px !important;
+}
+
+i.tdar-icon-bookmark-active, a:hover i.tdar-icon-bookmark-active, .resource-nav li:hover i.tdar-icon-bookmark {
+    background-position: -148px -2490px !important;
+}
+
+i.tdar-icon-bookmarked {
+    background-position: -179px -2437px !important;
+}
+
+i.tdar-icon-bookmarked-active, a:hover i.tdar-icon-bookmarked, .resource-nav li:hover i.tdar-icon-bookmarked {
+    background-position: -179px -2490px !important;
+}
+
+/* i.tdar-icon-bookmark-disabled {
+	background-position: -210px -2437px !important;
+}
+ */
+i.tdar-icon-bookmark-disabled, a:hover i.tdar-icon-bookmark-disabled, .resource-nav li:hover i.tdar-icon-bookmark-disabled {
+    background-position: -208px -2437px !important;
+}

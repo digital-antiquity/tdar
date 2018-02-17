@@ -747,7 +747,7 @@ View freemarker macros
     <div class="item <#if count==0>active</#if>">
         <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${resource.detailUrl}"/></#local>
         <div class="row-fluid">
-            <div class="span8">
+            <div class="col-lg-8 col-md-8 col-sm-8">
                 <p class="title">
                     <a target="_top" href="${url}">${resource.title} </a><br>
                     <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
@@ -761,7 +761,7 @@ View freemarker macros
                     Resources</a>
                 </p>
                 </div>
-            <div class="span4">
+            <div class="col-lg-4 col-md-4 col-sm-4">
                 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
                     <img title="map" alt="map" class="" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, config.googleMapsApiKey)}"/>
                 <#else>
@@ -806,7 +806,7 @@ View freemarker macros
     </#macro>
 
 <#macro featured header="Featured Content" colspan="12" resourceList=featuredResources>
-<#local span = "span${colspan}">
+<#local span = "col-lg-${colspan} col-md-${colspan} col-sm-${colspan}">
 <div class="tdar-slider slider ${span}">
     <h3>${header}</h3>
 

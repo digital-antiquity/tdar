@@ -1,0 +1,205 @@
+
+
+/* subnav bar */
+.subnav {
+    position: relative;
+    height: 60px;
+}
+
+#sub .subnav {
+    margin-bottom: 20px;
+}
+
+.subnav ul, .subnav li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: inline;
+}
+
+.subnav ul.subnav-lft {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.subnav ul.subnav-lft li {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 60px;
+    height: 60px;
+    display: block;
+    float: left;
+    margin-right: 40px;
+}
+
+.subnav ul.subnav-lft li a {
+    color: #1b1a18;
+}
+
+.subnav ul.subnav-lft li a:hover, .subnav ul.subnav-lft li.current_page_item a {
+    color: #7a1501;
+}
+
+.subnav ul.subnav-lft li.current_page_item {
+    background: url(../images/r4/bg-subnav.png) bottom center;
+    background-repeat: no-repeat;
+}
+
+.subnav ul.subnav-rht {
+    position: absolute;
+    top: 0;
+    right: -11px;
+    padding: 12px 12px 12px 0;
+}
+
+.subnav ul.subnav-rht a, .subnav ul.subnav-rht form.form-unstyled input {
+    float: left;
+    margin-left: 12px;
+    width: 105px;
+}
+
+/* resource navigation toolbar */
+.resource-nav {
+    height: 40px;
+    margin: 40px 0px 40px 30px;
+    background: #f0eeeb;
+    float: left;
+}
+
+.lt-ie9 .resource-nav {
+    border-bottom: 40px solid #fff;
+}
+
+.resource-nav ul, .resource-nav li, .inline-menu li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: inline;
+}
+
+.resource-nav li a {
+    float: left;
+}
+
+.resource-nav li span.disabled {
+    display: inline-block;
+}
+
+.resource-nav li a, .resource-nav li span.disabled {
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 11px;
+    color: #7d7a77;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 16px 20px 9px 20px;
+    border-right: 1px solid #fff;
+}
+
+.resource-nav li span.disabled {
+    color: #ccc !important;
+}
+
+.lt-ie10 .resource-nav li a {
+    padding: 15px 20px 14px 40px !important;
+}
+
+.resource-nav li a:hover, .resource-nav li.active a {
+    color: #fff;
+    background: #7a1501;
+    text-decoration: none;
+}
+
+.resource-nav li.disabled a:hover {
+    background-color: inherit !important;
+    color: inherit !important;
+    text-decoration: none;
+}
+
+.resource-nav li.edit a {
+    background-position-y: -40px;
+}
+
+.resource-nav li.delete a {
+    background-position-y: -95px;
+}
+
+.resource-nav li.bookmark a {
+    background-position-y: -150px;
+}
+
+.resource-nav li.un-bookmark a {
+    background-position-y: -300px;
+}
+
+.resource-nav li.disabled.bookmark a {
+    background-position-y: -300px;
+}
+
+.resource-nav li.columns a {
+    background-position-y: -203px;
+}
+
+.resource-nav li.mapping a {
+    background-position: 12px -258px;
+}
+
+
+
+nav ul {
+    padding-right: 10px !important;
+}
+.subnavbar {
+    z-index: 10000;
+}
+
+.lt-ie9 #messages{
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* affix elements become fixed, so we need to specify new location (otherwise location after becoming fixed is undefined/browser-specific) */
+.subnavbar.affix {
+    top: 0;
+    left: 0;
+}
+
+#subnavbar2.affix {
+    width: 100% !important;
+    left: 0 !important;
+}
+
+/* TODO:// HACK: .affix navbar needs to be same width as ".container" for proper formatting, but to break out our navbar requires mucking w/ layout.dec */
+.subnavbar.affix-top.container {
+    /*shrink the navbar when it is not affixed (i.e. when it is .affix-top) */
+    width: auto
+}
+
+
+
+.resource-nav.navbar-static li a {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    background-image: none !important;
+}
+
+.navbar-static.affix {
+    width: 100% !important;
+    left: 0px !important;
+}
+
+.subnavbar.resource-nav {
+    margin: -3px 5px 25px 5px !important;
+}
+
+#fakeSubmitButton {
+    margin-top: 5px;
+}
+
+
+
+#toolbars i {
+    margin-top: -4px;
+    margin-bottom: -2px;
+}
