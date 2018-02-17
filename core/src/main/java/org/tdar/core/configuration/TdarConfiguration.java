@@ -154,7 +154,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     private TdarConfiguration(String configurationFile) {
-//        System.setProperty("java.awt.headless", "true");
+        System.setProperty("java.awt.headless", "true");
         setConfigurationFile(configurationFile);
     }
 

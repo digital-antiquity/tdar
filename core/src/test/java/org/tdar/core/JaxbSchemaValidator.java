@@ -94,8 +94,11 @@ public class JaxbSchemaValidator {
                 try {
                     File tmpFile = File.createTempFile(schemaFile.getName(), ".temp.xsd");
                     FileUtils.writeStringToFile(tmpFile, IOUtils.toString(new URI(url), Charset.defaultCharset()),Charset.defaultCharset());
-                    logger.debug(FileUtils.readFileToString(tmpFile,Charset.defaultCharset()));
-                    schema = tmpFile;
+                    String contents = FileUtils.readFileToString(tmpFile,Charset.defaultCharset());
+                    if (contents.contains("<xsd:schema>")) {
+                        logger.debug(contents);
+                        schema = tmpFile;
+                    }
                 } catch (Throwable e) {
                     logger.debug("could not validate against remote schema, attempting to use cached fallback:" + schemaFile,e);
                 }
@@ -111,10 +114,16 @@ public class JaxbSchemaValidator {
         }
         if (schema != null) {
             v.addSchemaSource(new StreamSource(schema));
+            boolean connectionIssue = false;
             for (Object err : v.getSchemaErrors()) {
                 logger.error("*=> schema error: {} ", err.toString());
+                if (err.toString().contains("Failed to read schema document")) {
+                    connectionIssue = true;
+                }
             }
-            assertTrue("Schema is invalid! Error count: " + v.getSchemaErrors().size(), v.isSchemaValid());
+            if (connectionIssue == false) {
+                assertTrue("Schema is invalid! Error count: " + v.getSchemaErrors().size(), v.isSchemaValid());
+            }
         }
     }
 
