@@ -22,8 +22,9 @@
     <!-- <import resource="spring-tag-ahad.xml" /> -->
     
     <bean name="mailSender" class="org.tdar.core.service.external.MockMailSender" />
-    <!-- 
+    <bean name="awsQueue" class="org.tdar.core.service.email.MockAwsQueuePollerServiceImpl" />
     <bean name="awsEmailService" class="org.tdar.core.service.email.MockAwsEmailSenderServiceImpl" /> 
+    <!-- 
      -->
     <!-- <bean name="chartGenerator" class="org.tdar.utils.MockStatsChartGenerator" /> -->
 </beans>
