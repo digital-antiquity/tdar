@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -40,7 +41,6 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
