@@ -1,5 +1,7 @@
 package org.tdar.core.configuration;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,6 +42,8 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 @EnableTransactionManagement()
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 
@@ -76,7 +80,12 @@ public abstract class AbstractAppConfiguration implements Serializable {
 
     @Autowired
     protected Environment env;
-    // private SessionFactory buildSessionFactory;
+
+//    @Autowired
+    public void setEnvironment(Environment env) {
+        logger.debug(" active profiles: {}", Arrays.asList(env.getActiveProfiles()));
+        logger.debug("default profiles: {}", Arrays.asList(env.getDefaultProfiles()));
+    }
 
     @Bean(name = "tdarMetadataDataSource")
     public DataSource tdarMetadataDataSource() {

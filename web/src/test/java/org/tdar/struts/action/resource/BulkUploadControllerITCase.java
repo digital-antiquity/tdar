@@ -103,7 +103,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         addComparitiveCollections(bulkUploadController);
 
         bulkUploadController.setFileProxies(proxyPair.getSecond());
-        bulkUploadController.setAsync(false);
+//        bulkUploadController.setAsync(false);
         // saving
         bulkUploadController.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
@@ -240,7 +240,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setProjectId(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID);
         // setup controller
         bulkUploadController.setFileProxies(proxyPair.getSecond());
-        bulkUploadController.setAsync(false);
+//        bulkUploadController.setAsync(false);
         // saving
         bulkUploadController.setServletRequest(getServletPostRequest());
         assertEquals(expectedResponse, bulkUploadController.save());
@@ -447,7 +447,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
         // setup controller
         bulkUploadController.setFileProxies(proxyPair.getSecond());
-        bulkUploadController.setAsync(false);
+//        bulkUploadController.setAsync(false);
         bulkUploadController.getResource().setTitle("test");
         bulkUploadController.getResource().setDescription("test");
         bulkUploadController.getResource().setDate(1234);

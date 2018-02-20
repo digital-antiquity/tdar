@@ -38,7 +38,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     private static final long serialVersionUID = 8551222659351457637L;
 
     private static final String RIGHTS = "{id}";
-    private boolean asyncSave = true;
     private static final String SUCCESS_INVITE = "invite";
     private static final String INVITE = "invite.ftl";
 
@@ -214,13 +213,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         this.owner = owner;
     }
 
-    public void setAsync(boolean async) {
-        this.asyncSave = async;
-    }
-
-    public boolean isAsync() {
-        return asyncSave;
-    }
 
     public List<UserRightsProxy> getInvites() {
         return invites;

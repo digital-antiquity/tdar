@@ -26,9 +26,7 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 
 @ImportResource(value = { "classpath:spring-local-settings.xml" })
 @Configuration()
-@EnableAsync
 @EnableCaching
-@EnableScheduling
 public class TdarBaseWebAppConfiguration extends TdarAppConfiguration implements SchedulingConfigurer, AsyncConfigurer {
 
     private static final long serialVersionUID = 2229498250188301893L;

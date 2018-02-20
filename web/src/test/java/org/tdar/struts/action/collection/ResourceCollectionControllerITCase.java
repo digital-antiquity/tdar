@@ -120,7 +120,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         sc.edit();
         sc.setServletRequest(getServletPostRequest());
         sc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
-        sc.setAsync(false);
+//        sc.setAsync(false);
         sc.save();
 
         // setVerifyTransactionCallback(new TransactionCallback<Resource>() {
@@ -182,7 +182,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         dcontroller.getDocument().setTitle("TEST 123");
         dcontroller.edit();
         dcontroller.setServletRequest(getServletPostRequest());
-        dcontroller.setAsync(false);
+//        dcontroller.setAsync(false);
         String save = dcontroller.save();
         assertEquals(Action.SUCCESS, save);
     }
@@ -922,7 +922,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         String result = controller.save();
         Assert.assertEquals(Action.SUCCESS, result);
         Long rcid = rc.getId();
@@ -995,7 +995,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         Project project2 = projectController.getPersistable();
         project2.setStatus(Status.ACTIVE);
         projectController.setServletRequest(getServletPostRequest());
-        projectController.setAsync(false);
+//        projectController.setAsync(false);
         projectController.save();
         evictCache();
 
@@ -1039,7 +1039,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         shareController.getPersistable().setDescription("description");
         shareController.getPersistable().setHidden(true);
         shareController.setServletRequest(getServletPostRequest());
-        shareController.setAsync(false);
+//        shareController.setAsync(false);
         String result = shareController.save();
         // searchIndexService.index(proxy);
 
@@ -1084,7 +1084,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         controller.prepare();
         controller.getToAddManaged().add(proxy.getId());
         controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         controller.save();
         
         // now make the user an authorizedUser
@@ -1095,7 +1095,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         List<UserRightsProxy> authList = new ArrayList<>(Arrays.asList(new UserRightsProxy( authUser)));
         scc.setProxies(authList);
         scc.setServletRequest(getServletPostRequest());
-        scc.setAsync(false);
+//        scc.setAsync(false);
         scc.save();
         evictCache();
         genericService.synchronize();

@@ -13,9 +13,6 @@ public interface WebSearchService {
     AsynchronousStatus saveSearchResultsForUserAsync(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId,
             boolean addAsManagedResource) throws SearchException, IOException;
 
-    AsynchronousStatus saveSearchResultsForUser(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId,
-            boolean addAsManagedResource) throws SearchException, IOException;
-
     /**
      * This is a unique identifier for the Async status object.
      * 

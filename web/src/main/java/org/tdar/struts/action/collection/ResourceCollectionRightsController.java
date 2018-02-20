@@ -81,18 +81,18 @@ public class ResourceCollectionRightsController extends AbstractRightsController
 
     }
 
-    public void indexPersistable() {
-        /*
-         * if we want to be really "aggressive" we only need to do this if
-         * (a) permissions change
-         * (b) visibility changes
-         */
-        if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
-        } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
-        }
-    }
+//    public void indexPersistable() {
+//        /*
+//         * if we want to be really "aggressive" we only need to do this if
+//         * (a) permissions change
+//         * (b) visibility changes
+//         */
+//        if (isAsync()) {
+//            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
+//        } else {
+//            searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
+//        }
+//    }
 
     public void setResourceCollection(ResourceCollection rc) {
         setPersistable(rc);
