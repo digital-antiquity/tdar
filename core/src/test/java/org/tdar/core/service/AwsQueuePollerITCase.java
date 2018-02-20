@@ -7,6 +7,7 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.notification.Email;
@@ -22,6 +23,7 @@ import com.amazonaws.services.sqs.model.Message;
 public class AwsQueuePollerITCase extends AbstractIntegrationTestCase {
 	
 	@Autowired
+	@Qualifier("awsQueueService")
 	AwsQueuePollerService awsQueueSerivce;
 	
 	@Autowired
