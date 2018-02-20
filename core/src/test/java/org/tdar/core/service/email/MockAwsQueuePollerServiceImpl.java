@@ -23,7 +23,6 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.Message;
 
-@Service
 public class MockAwsQueuePollerServiceImpl implements AwsQueuePollerService {
 	private static final TdarConfiguration config = TdarConfiguration.getInstance();
 	private Regions awsRegion = Regions.US_WEST_2;

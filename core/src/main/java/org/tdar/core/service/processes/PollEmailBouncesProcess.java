@@ -34,7 +34,7 @@ public class PollEmailBouncesProcess extends AbstractScheduledProcess {
 	private EmailService emailService;
 	
     @Autowired
-    private AwsQueuePollerService awsQueuePoller;
+    private AwsQueuePollerService awsQueueService;
 
     @Autowired
     @Qualifier("genericDao")
@@ -64,12 +64,12 @@ public class PollEmailBouncesProcess extends AbstractScheduledProcess {
 
 	@Override
 	public void execute() {
-		List<Message> messages = awsQueuePoller.getBouncedMessages();
+		List<Message> messages = awsQueueService.getBouncedMessages();
 		
 		for(Message message : messages){
-			JSONArray headers 	= awsQueuePoller.getMessageHeaders(message);
-			String messageId 	= awsQueuePoller.getTdarMessageId(headers);
-			String errorMessage = awsQueuePoller.getBounce(message);
+			JSONArray headers 	= awsQueueService.getMessageHeaders(message);
+			String messageId 	= awsQueueService.getTdarMessageId(headers);
+			String errorMessage = awsQueueService.getBounce(message);
 			emailService.markMessageAsBounced(messageId, errorMessage);
 		}
 	}
@@ -80,12 +80,12 @@ public class PollEmailBouncesProcess extends AbstractScheduledProcess {
 	}
 	
 	
-	public AwsQueuePollerService getAwsQueuePoller() {
-		return awsQueuePoller;
+	public AwsQueuePollerService getAwsQueueService() {
+		return awsQueueService;
 	}
 
-	public void setAwsQueuePoller(AwsQueuePollerService awsQueuePoller) {
-		this.awsQueuePoller = awsQueuePoller;
+	public void setAwsQueueService(AwsQueuePollerService awsQueuePoller) {
+		this.awsQueueService = awsQueuePoller;
 	}
 	
 	public EmailService getEmailService() {

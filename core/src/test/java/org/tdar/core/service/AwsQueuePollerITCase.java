@@ -22,7 +22,7 @@ import com.amazonaws.services.sqs.model.Message;
 public class AwsQueuePollerITCase extends AbstractIntegrationTestCase {
 	
 	@Autowired
-	AwsQueuePollerService awsQueue;
+	AwsQueuePollerService awsQueueSerivce;
 	
 	@Autowired
 	EmailDao emailDao;
@@ -30,7 +30,7 @@ public class AwsQueuePollerITCase extends AbstractIntegrationTestCase {
 	
 	@Test
 	public void testUsingMockObject(){
-		assertTrue("The mock object is being used", awsQueue instanceof MockAwsQueuePollerServiceImpl);
+		assertTrue("The mock object is being used", awsQueueSerivce instanceof MockAwsQueuePollerServiceImpl);
 		assertTrue("The email sending is being mocked", emailService.getAwsEmailService() instanceof MockAwsEmailSenderServiceImpl);
 	}
 	
@@ -48,13 +48,13 @@ public class AwsQueuePollerITCase extends AbstractIntegrationTestCase {
 		
 		sendEmailProcess.execute();
 		
-		List<Message> messages = awsQueue.getBouncedMessages();
+		List<Message> messages = awsQueueSerivce.getBouncedMessages();
 		getLogger().debug("There are : {} messages",messages.size());
 		
 		for(Message message : messages){
-			JSONArray headers = awsQueue.getMessageHeaders(message);
-			String messageId = awsQueue.getTdarMessageId(headers);
-			String errorMessage = awsQueue.getBounce(message);
+			JSONArray headers = awsQueueSerivce.getMessageHeaders(message);
+			String messageId = awsQueueSerivce.getTdarMessageId(headers);
+			String errorMessage = awsQueueSerivce.getBounce(message);
 			getLogger().debug("The header is {}", messageId);
 			getLogger().debug("The bounce is {}", errorMessage);
 			
@@ -80,5 +80,22 @@ public class AwsQueuePollerITCase extends AbstractIntegrationTestCase {
 		email.addData("lastName", "Castellanos");
 		return email;
 	}
+	
+	public AwsQueuePollerService getAwsQueueSerivce() {
+		return awsQueueSerivce;
+	}
+
+	public void setAwsQueueSerivce(AwsQueuePollerService awsQueueSerivce) {
+		this.awsQueueSerivce = awsQueueSerivce;
+	}
+
+	public EmailDao getEmailDao() {
+		return emailDao;
+	}
+
+	public void setEmailDao(EmailDao emailDao) {
+		this.emailDao = emailDao;
+	}
+
 	
 }

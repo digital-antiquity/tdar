@@ -22,7 +22,7 @@
     
     <bean name="mailSender" class="org.tdar.core.service.external.MockMailSender" />
     <bean name="awsEmailService" class="org.tdar.core.service.email.MockAwsEmailSenderServiceImpl" />
-    <bean name="awsQueue" class="org.tdar.core.service.email.MockAwsQueuePollerServiceImpl" />
+    <bean name="awsQueueService" class="org.tdar.core.service.email.MockAwsQueuePollerServiceImpl" />
 
     <!--   --> 
     <!--<bean name="chartGenerator" class="org.tdar.utils.MockStatsChartGenerator" />-->
