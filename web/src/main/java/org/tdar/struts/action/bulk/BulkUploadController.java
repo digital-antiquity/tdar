@@ -92,15 +92,14 @@ public class BulkUploadController extends AbstractInformationResourceController<
 //            getLogger().debug("resourceCreators:{} {}", rc, rc.getId());
 //        }
 
-        if (isAsync()) {
             getLogger().info("running asyncronously");
             bulkUploadService.saveAsync(getPersistable(), getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
             setPersistable(null);
-        } else {
-            getLogger().info("running inline");
-            bulkUploadService.save(getPersistable(), getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
-            setPersistable(null);
-        }
+//        } else {
+//            getLogger().info("running inline");
+//            bulkUploadService.save(getPersistable(), getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
+//            setPersistable(null);
+//        }
         // setPersistable(null);
         return SUCCESS_ASYNC;
     }

@@ -62,16 +62,6 @@ public class WebSearchServiceImpl implements WebSearchService {
     @Async
     public AsynchronousStatus saveSearchResultsForUserAsync(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId,
             boolean addAsManagedResource) throws SearchException, IOException {
-        return saveSearchResultsForUser(asqo, userId, resourceCollectionId, addAsManagedResource);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.WebSearchService#saveSearchResultsForUser(org.tdar.search.bean.AdvancedSearchQueryObject, java.lang.Long, java.lang.Long, boolean)
-     */
-    @Override
-    @Transactional(readOnly = false)
-    public AsynchronousStatus saveSearchResultsForUser(AdvancedSearchQueryObject asqo, Long userId, Long resourceCollectionId,
-            boolean addAsManagedResource) throws SearchException, IOException {
         logger.debug("called saveSearchResultsForUserAsync");
 
         AsynchronousStatus status = new AsynchronousStatus(constructKey(resourceCollectionId, userId));

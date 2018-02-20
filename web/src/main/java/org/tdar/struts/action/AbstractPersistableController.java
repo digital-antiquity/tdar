@@ -80,7 +80,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public final static String msg = "%s is %s %s (%s): %s";
     public final static String REDIRECT_HOME = "REDIRECT_HOME";
     public final static String REDIRECT_PROJECT_LIST = "PROJECT_LIST";
-    private boolean asyncSave = true;
 
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
@@ -426,14 +425,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
      */
     public boolean shouldSaveResource() {
         return true;
-    }
-
-    public void setAsync(boolean async) {
-        this.asyncSave = async;
-    }
-
-    public boolean isAsync() {
-        return asyncSave;
     }
 
     /**
