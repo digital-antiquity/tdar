@@ -1,7 +1,5 @@
 package org.tdar.core.configuration;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;

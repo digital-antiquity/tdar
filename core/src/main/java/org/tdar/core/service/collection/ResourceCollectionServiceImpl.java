@@ -1127,8 +1127,6 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         userRightsProxyService.handleInvites(authenticatedUser, invites, c);
         saveOrUpdate(c);
         publisher.publishEvent(new TdarEvent(c, EventType.CREATE_OR_UPDATE));
-        publisher.publishEvent(new AsyncTdarEvent(c, EventType.REINDEX_CHILDREN));
-
     }
 
     /*

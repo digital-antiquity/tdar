@@ -27,7 +27,7 @@ import org.tdar.core.service.processes.manager.ProcessManager;
 @ImportResource(value = { "classpath:spring-local-settings.xml" })
 @Configuration()
 @EnableCaching
-public class TdarBaseWebAppConfiguration extends TdarAppConfiguration implements SchedulingConfigurer, AsyncConfigurer {
+public class TdarBaseWebAppConfiguration extends TdarAppConfiguration implements SchedulingConfigurer {
 
     private static final long serialVersionUID = 2229498250188301893L;
 
@@ -76,28 +76,6 @@ public class TdarBaseWebAppConfiguration extends TdarAppConfiguration implements
     @Bean(name = "processManager")
     public ProcessManager processManager() {
         return new AutowiredProcessManager();
-    }
-
-    @Override
-    public Executor getAsyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(5);
-        executor.setQueueCapacity(50);
-        executor.setThreadNamePrefix("async-");
-        executor.initialize();
-        return executor;
-    }
-
-    @Override
-    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return new AsyncUncaughtExceptionHandler() {
-
-            @Override
-            public void handleUncaughtException(Throwable ex, Method method, Object... params) {
-                logger.error("exception in async: {} {} ", method, params, ex);
-            }
-        };
     }
 
     @Bean(destroyMethod = "shutdown")
