@@ -117,7 +117,6 @@
             <#sep>&nbsp;&nbsp;&bull;</#sep>
         </li>
     </#items>
-    </ul>
 </ul>
 </p>
 <hr>
