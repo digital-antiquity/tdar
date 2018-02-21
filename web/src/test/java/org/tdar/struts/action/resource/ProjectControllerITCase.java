@@ -107,7 +107,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         int expectedSize = personSet.size();
 
         ProjectController controller = generateNewInitializedController(ProjectController.class);
-        controller.setAsync(false);
+//        controller.setAsync(false);
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
 
@@ -122,7 +122,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         controller.setCreditProxies(creditProxies);
         controller.getProject().setTitle("test");
         controller.getProject().setDescription("test");
-        controller.setAsync(false);
+//        controller.setAsync(false);
         controller.save();
 
         Project project = controller.getProject();
@@ -276,7 +276,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
     private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) throws TdarActionException {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
         // controller.edit();
@@ -304,7 +304,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
     public void testAddProjectToAdHocCollection() throws Exception {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         controller.prepare();
 
         Project project = controller.getProject();

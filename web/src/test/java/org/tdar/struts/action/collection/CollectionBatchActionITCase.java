@@ -30,14 +30,7 @@ public class CollectionBatchActionITCase extends AbstractControllerITCase implem
     private GenericService genericService;
 
     @Autowired
-    private EntityService entityService;
-
-    @Autowired
     AuthorizedUserDao authorizedUserDao;
-
-    @Autowired
-    private ResourceCollectionService resourceCollectionService;
-
 
     static int indexCount = 0;
     

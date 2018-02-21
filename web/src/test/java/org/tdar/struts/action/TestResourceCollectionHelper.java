@@ -59,7 +59,7 @@ public interface TestResourceCollectionHelper {
         ResourceCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName(name);
 
-        controller.setAsync(false);
+//        controller.setAsync(false);
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
         if (CollectionUtils.isNotEmpty(resources)) {

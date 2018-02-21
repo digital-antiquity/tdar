@@ -255,11 +255,7 @@ public class ResourceCollectionController extends AbstractPersistableController<
          * (a) permissions change
          * (b) visibility changes
          */
-        if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
-        } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
-        }
+        searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
     }
 
     public List<SortOption> getSortOptions() {

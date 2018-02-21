@@ -27,7 +27,7 @@
 
 
     <#assign rtLabel = resource.resourceType.label />
-    <#if namespace == '/batch'>
+    <#if namespace == '/batch' || namespace == '/bulk'>
         <#assign rtLabel = '' />
     </#if>
 
