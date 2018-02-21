@@ -100,7 +100,7 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         cc.edit();
         cc.setServletRequest(getServletPostRequest());
         cc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
-        cc.setAsync(false);
+//        cc.setAsync(false);
         cc.save();
         cc = null;
         assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, normal, Permissions.MODIFY_METADATA));

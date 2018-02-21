@@ -569,7 +569,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.getPersistable().setName("test");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         String result = controller.save();
         assertEquals(Action.SUCCESS, result);
         controller = null;
@@ -581,7 +581,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         cc.edit();
         cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),registeredUser, Permissions.ADMINISTER_COLLECTION)));
         cc.setServletRequest(getServletPostRequest());
-        cc.setAsync(false);
+//        cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());
         
         // confirm resource is viewable by author of collection
@@ -592,7 +592,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         cc.getProxies().clear();
         cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getEditorUser(), Permissions.ADMINISTER_COLLECTION)));
         cc.setServletRequest(getServletPostRequest());
-        cc.setAsync(false);
+//        cc.setAsync(false);
         result = cc.save();
         genericService.evictFromCache(cc.getResourceCollection());
         cc = null;
@@ -635,7 +635,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.getPersistable().setName("test");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         String result = controller.save();
         assertEquals(Action.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
@@ -646,7 +646,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         cc.edit();
         cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),registeredUser, Permissions.ADMINISTER_COLLECTION)));
         cc.setServletRequest(getServletPostRequest());
-        cc.setAsync(false);
+//        cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());
 
         
@@ -662,7 +662,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.getPersistable().setName("test child");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         result = controller.save();
         assertEquals(Action.SUCCESS, result);
         Long rcid2 = controller.getPersistable().getId();
@@ -676,7 +676,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.setParentId(null);
         controller.setParentCollectionName("");
         controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         result = controller.save();
 
         genericService.synchronize();
@@ -708,7 +708,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.getPersistable().setName("test");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         String result = controller.save();
         assertEquals(Action.SUCCESS, result);
         Long rcid = controller.getPersistable().getId();
@@ -719,7 +719,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         cc.edit();
         cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),getUser(), Permissions.ADMINISTER_COLLECTION)));
         cc.setServletRequest(getServletPostRequest());
-        cc.setAsync(false);
+//        cc.setAsync(false);
         assertEquals(Action.SUCCESS, cc.save());
 
         controller = generateNewInitializedController(ResourceCollectionController.class, getUser());
@@ -731,7 +731,7 @@ public class ResourceCollectionRightsITCase extends AbstractControllerITCase imp
         controller.getPersistable().setName("test child");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
+//        controller.setAsync(false);
         result = controller.save();
         assertEquals(Action.SUCCESS, result);
         Long rcid2 = controller.getPersistable().getId();

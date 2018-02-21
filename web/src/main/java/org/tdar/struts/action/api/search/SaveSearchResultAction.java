@@ -42,7 +42,7 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
     private String key;
 
     private ResourceCollection resourceCollection;
-    private boolean async = true;
+//    private boolean async = true;
     private boolean addAsManaged = false;
     AsynchronousStatus saveSearchResultsForUserAsync = null;
 
@@ -108,11 +108,7 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
             
             prepareAdvancedSearchQueryObject();
             
-            if (isAsync()) {
-                saveSearchResultsForUserAsync = webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
-            } else {
-                saveSearchResultsForUserAsync = webSearchService.saveSearchResultsForUser(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
-            }
+            saveSearchResultsForUserAsync = webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
             // invoke the UI to update/notify that results have been completed. jsonifyResult(JsonLookupFilter.class);
         }
 
@@ -136,13 +132,13 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
         this.collectionId = collectionId;
     }
 
-    public boolean isAsync() {
-        return async;
-    }
-
-    public void setAsync(boolean async) {
-        this.async = async;
-    }
+//    public boolean isAsync() {
+//        return async;
+//    }
+//
+//    public void setAsync(boolean async) {
+//        this.async = async;
+//    }
 
     public boolean isAddAsManaged() {
         return addAsManaged;

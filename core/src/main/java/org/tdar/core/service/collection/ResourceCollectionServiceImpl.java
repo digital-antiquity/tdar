@@ -43,6 +43,7 @@ import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.event.AsyncTdarEvent;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarAuthorizationException;
@@ -1126,7 +1127,6 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         userRightsProxyService.handleInvites(authenticatedUser, invites, c);
         saveOrUpdate(c);
         publisher.publishEvent(new TdarEvent(c, EventType.CREATE_OR_UPDATE));
-
     }
 
     /*
