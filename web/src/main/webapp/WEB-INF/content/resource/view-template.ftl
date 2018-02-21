@@ -498,6 +498,26 @@
         <@local_.afterFileInfo />
     </#if>
 
+<#list visibleUnmanagedCollections>
+    <h3>This Resource is Part of the Following User Created Collections</h3>
+        <ul class="inline">
+    <#items as collection>
+    
+        <li>
+            <a class="sml moreInfo" data-type="collection" data-size="${((collection.managedResources![])?size!0 + (collection.unmanagedResources![])?size!0)?c}" data-hidden="${collection.hidden?c}" 
+            data-submitter="${collection.submitter.properName}"
+            data-description="<@common.truncate collection.description!'no description' />"
+            data-name="${collection.name!''}" 
+            
+            href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+            <#sep>&nbsp;&nbsp;&bull;</#sep>
+        </li>
+    </#items>
+    </ul>
+    </p>
+    <hr>
+</#list>
+
     <@view.accessRights>
     <div>
         <#if resource.embargoedFiles?? && !resource.embargoedFiles>
@@ -507,6 +527,11 @@
     </div>
     </@view.accessRights>
 
+
+
+   <div class="modal hide fade" id="modal">
+                <#include 'vue-collection-widget.html' />
+    </div>
 
 <div id="sidebar-right" parse="true">
     <div class="beige white-border-bottom">
@@ -541,13 +566,11 @@
             </li>
         <#if (authenticatedUser.id)?has_content && editable>
             <@list.bookmarkMediaLink resource />
-            <#-- 
             <li class="media "><i class="icon-folder-open pull-left"></i>
                 <div class="media-body">
                     <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
                 </div>
             </li>
-             -->
         </#if>
 
             <@nav.shareSection />
@@ -621,13 +644,16 @@
 
         if ($("#dataTable")){
                 TDAR.datatable.initDataTableBrowser();
-}
+        }
         if(window._localJavaScript) {
             _localJavaScript();
         }
 
-//        TDAR.internalEmailForm.init();    
-    });
+        //TDAR.internalEmailForm.init();
+        <#if authenticated>
+        TDAR.vuejs.collectionwidget.init("#add-resource-form");
+        </#if>
+})
 </script>
 
 <#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
