@@ -17,13 +17,17 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings({ "static-method" })
 public class LatitudeLongitudeBoxTest {
 
+    private static final double _36 = 36.08765565625065;
+    private static final double _36_small = _36  + 0.01;
+    private static final double _neg_107 = -107.78792202517137;
+    private static final double _neg_107_small = _neg_107 + 0.01;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testValidity() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
-        llb.setEast(-107.78792202517137);
-        llb.setWest(-107.78792202517137);
+        llb.setEast(_neg_107);
+        llb.setWest(_neg_107);
         llb.setNorth(36.08765565625065);
         llb.setSouth(36.08765565625065);
         assertTrue("valid north: {}", llb.isValidLatitude(llb.getNorth()));
@@ -36,6 +40,38 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(llb.isValid());
     }
     
+    @Test
+    public void testRandomPoint() {
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
+        llb.setEast(_neg_107);
+        llb.setWest(_neg_107);
+        llb.setNorth(_36);
+        llb.setSouth(_36);
+        logger.debug("before: {}",llb);
+        llb.obfuscate();
+        logger.debug(" after: {}",llb);
+        assertNotEquals(_neg_107, llb.getObfuscatedEast());
+        assertNotEquals(_neg_107, llb.getObfuscatedWest());
+        assertNotEquals(_36, llb.getObfuscatedNorth());
+        assertNotEquals(_36, llb.getObfuscatedSouth());
+    }
+
+    @Test
+    public void testRandomSmall() {
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
+        llb.setEast(_neg_107_small);
+        llb.setWest(_neg_107);
+        llb.setNorth(_36_small);
+        llb.setSouth(_36);
+        logger.debug("before: {}",llb);
+        llb.obfuscate();
+        logger.debug(" after: {}",llb);
+        assertNotEquals(_neg_107_small, llb.getObfuscatedEast());
+        assertNotEquals(_neg_107, llb.getObfuscatedWest());
+        assertNotEquals(_36_small, llb.getObfuscatedNorth());
+        assertNotEquals(_36, llb.getObfuscatedSouth());
+    }
+
     /**
      * Should always be true.
      */
