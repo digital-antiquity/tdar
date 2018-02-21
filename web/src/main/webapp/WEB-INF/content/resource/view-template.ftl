@@ -118,12 +118,10 @@
         </li>
     </#items>
     </ul>
-</#list>
 </ul>
 </p>
 <hr>
 </#list>
-
 
 <@view.resourceCitationSection resource />
 
