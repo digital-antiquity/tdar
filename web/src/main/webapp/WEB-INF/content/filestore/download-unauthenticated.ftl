@@ -15,6 +15,7 @@
 <html>
 <head>
     <title>Download: ${title} (Login Required)</title>
+    <meta name="robots" content="noindex">
 </head>
 <body>
         <h1>Download: ${title}</h1>
