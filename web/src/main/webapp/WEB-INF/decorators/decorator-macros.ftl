@@ -67,16 +67,48 @@
 </#macro>
 
 <#macro homepageHeader>
+<div id="jumbo">
+    <div class="container">
     <div class="row">
-        <div class="hero">
-            <#include "/${config.themeDir}/homepage-banner.dec" />
-        <@auth.loginMenu true/>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="jumbotron">
+            <ul class="pull-right hidden-phone hidden-tablet nav">
+                <li>
+                <form class="form-unstyled seleniumIgnoreForm logoutForm" id="frmLogout" name="logoutForm" method="post" action="/logout">
+                        <input type="submit" class="tdar-button" name="logout" value="Logout" id="logout-button">
+                </form>
+                </li>
+            </ul>
+                
+    <h2>What can you dig up?</h2>
+
+    <p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br>for archaeological information.</p>
+
+    <form name="searchheader" action="/search/results" class="searchheader">
+        <div class="row">
+            <div class="col-lg-8 col-md-8 col-sm-10">
+                <div class="input-group jumbo-search">
+            <input type="text" name="query" placeholder="Find archaeological data..." accesskey="s" class="form-control">
+        
+            <input type="hidden" name="_tdar.searchType" value="simple">
+
+                <span class="input-group-btn">
+                  <button class="btn btn-default no-left-border" type="button"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </div>
+              </div><!-- /input-group -->
+
+            <div class="col-lg-4 col-md-4 col-sm-2">
+                <a href="/search">advanced</a>
+            </div>
         </div>
-        <ul class="inline-menu hidden-desktop"><@auth.loginMenu false/></ul>
+    </form>
+
+            </div>
+        </div>
+        </div>
     </div>
-
-
-    <#include "/${config.themeDir}/homepage-column-one.dec" />
+    </div>
 
 </#macro>
 

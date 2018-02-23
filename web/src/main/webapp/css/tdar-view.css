@@ -1,0 +1,39 @@
+
+.view-deleted-file {
+    background-color: #edd87b;
+    text-decoration: line-through;
+    display: none;
+}
+
+.view-hidden-extra-files {
+    display: none;
+}
+
+/* contextual help styling - based off of 'downloads' box on view page */
+#notice {
+    font-family: 'ff-tisa-web-pro', serif;
+    background-color: #f0eeeb;
+}
+
+#notice h2 {
+    font-size: 15px;
+}
+
+#notice > h2 {
+    background-color: #dedede;
+    padding: 10px;
+    line-height: inherit;
+    border-bottom: 1px solid #eee;
+}
+
+#noticecontent {
+    color: #7d7a77;
+    padding: 0 10px 5px 10px;
+}
+
+/* undoing .cols p */
+#noticecontent p {
+    font-size: inherit;
+    font-weight: normal;
+}
+
