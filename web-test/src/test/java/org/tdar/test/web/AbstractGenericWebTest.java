@@ -449,10 +449,6 @@ public abstract class AbstractGenericWebTest {
      * @throws FileNotFoundException 
      */
     public void testValidXMLResponse(InputStream code, String schemaLocation, JaxbSchemaValidator v) throws ConfigurationException, SAXException, FileNotFoundException {
-        
-        if (schemaLocation != null) {
-            v.addSchemaSource(new StreamSource(schemaLocation));
-        }
         InputStream rereadableStream = null;
         try {
             rereadableStream = new ByteArrayInputStream(IOUtils.toByteArray(code));
@@ -485,101 +481,6 @@ public abstract class AbstractGenericWebTest {
         }
     }
 
-    private static Map<String, File> schemaMap = new HashMap<String, File>();
-
-    private void addSchemaToValidatorWithLocalFallback(Validator v, String url, File schemaFile) {
-        File schema = null;
-
-        if (schemaFile.exists()) {
-            schema = schemaFile;
-            schemaMap.put(url, schemaFile);
-            logger.trace("found schema, using: {}", schemaFile);
-        }
-
-        if (schemaMap.containsKey(url)) {
-            schema = schemaMap.get(url);
-            logger.debug("using cache of: {}", url);
-        } else {
-            logger.debug("attempting to add schema to validation list: " + url);
-            try {
-                File tmpFile = File.createTempFile(schemaFile.getName(), ".temp.xsd");
-                FileUtils.writeStringToFile(tmpFile, IOUtils.toString(new URI(url)));
-                schema = tmpFile;
-                schemaMap.put(url, schema);
-            } catch (Throwable e) {
-                logger.debug("could not validate against remote schema, attempting to use cached fallback:" + schemaFile);
-            }
-        }
-
-        if (schema != null) {
-            v.addSchemaSource(new StreamSource(schema));
-            for (Object err : v.getSchemaErrors()) {
-                logger.error("*=> schema error: {} ", err.toString());
-            }
-            assertTrue("Schema (" + schema + ") is invalid! Error count: " + v.getSchemaErrors().size(), v.isSchemaValid());
-        }
-    }
-
-    private static Validator v;
-
-    private Validator setupValidator(boolean extra) {
-        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        if (v != null) {
-            return v;
-        }
-        v = new Validator(factory);
-        // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
-        // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
-        // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd",
-                new File(TestConstants.TEST_SCHEMA_DIR, "xlink.xsd"));
-
-        // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd",
-                new File(TestConstants.TEST_SCHEMA_DIR, "oaipmh.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
-                new File(TestConstants.TEST_XML_DIR, "oaidc.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd",
-                new File(TestConstants.TEST_SCHEMA_DIR, "mods3.3.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd",
-                new File(TestConstants.TEST_SCHEMA_DIR, "oai-identifier.xsd"));
-
-        try {
-            final File schema = File.createTempFile(SerializationService.TDAR_SCHEMA, SerializationService.XSD);
-            JAXBContext jc = JAXBContext.newInstance(SerializationService.rootClasses);
-
-            // WRITE OUT SCHEMA
-            jc.generateSchema(new SchemaOutputResolver() {
-
-                @Override
-                public Result createOutput(String namespaceUri, String suggestedFileName) throws IOException {
-                    return new StreamResult(schema);
-                }
-            });
-
-            logger.debug("{}", schema);
-            addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", schema);
-        } catch (Exception e) {
-            logger.error("an error occured creating the schema", e);
-            assertTrue(false);
-        }
-        return v;
-    }
-
-    /**
-     * Validate that a response is a valid XML schema
-     * 
-     * @throws ConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     */
-    public void testValidXMLSchemaResponse(String code) throws ConfigurationException, SAXException, IOException {
-        Validator setupValidator = setupValidator(false);
-        // cleanup -- this is lazy
-        File tempFile = File.createTempFile("test-schema", "xsd");
-        FileUtils.writeStringToFile(tempFile, code);
-        addSchemaToValidatorWithLocalFallback(setupValidator, null, tempFile);
-    }
 
     public void assertTextPresentInPage(String text) {
         assertTextPresentInPage(text, true);

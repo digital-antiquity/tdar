@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- METS XLink Schema, v. 2, Nov. 15, 2004 -->
-<xs:schema targetNamespace="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" elementFormDefault="qualified">
+<xs:schema targetNamespace="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"  elementFormDefault="qualified">
   <!--  global attributes  --> 
   <xs:attribute name="href"  type="anyURI"/>
   <xs:attribute name="role" type="string"/>
