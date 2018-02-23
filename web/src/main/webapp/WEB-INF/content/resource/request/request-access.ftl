@@ -1,6 +1,9 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/common-auth.ftl" as common>
 
+<head>
+<meta name="robots" content="noindex">
+</head>
 
 <h1>Send a Message</h1>
 <h3>Resource: <span class="red"><a href="${resource.detailUrl}">${resource.title}</a> (${resource.id?c})</span></h3>

@@ -8,6 +8,7 @@
 
 <head>
     <title>Confirm Selection: Login Required</title>
+    <meta name="robots" content="noindex">
 </head>
 
 <body>
