@@ -31,6 +31,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.core.util.SpatialObfuscationUtil;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -235,71 +236,71 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         }
         return getObfuscatedCenterLongitude();
     }
-
-    /**
-     * This randomize function is used when displaying lat/longs on a map. It is
-     * passed the max and the min lat or long and then uses a salt to randomize.
-     * The salt here is approx 1 miles. If the distance between num1 and num2 is
-     * less than 1 miles, then this should expand the box by 1 miles + some random
-     * 1 mile quantity.
-     * 
-     * If larger than the "salt" then don't do anything for that "side"
-     * 
-     * NOTE: the box should always be bigger than the original.
-     * 
-     * http://www.movable-type.co.uk/scripts/html
-     */
-    protected static Double randomizeIfNeedBe(final Double num1, final Double num2, int type, boolean isMin) {
-        if ((num1 == null) && (num2 == null)) {
-            return null;
-        }
-
-        Random r = new Random();
-        double salt = ONE_MILE_IN_DEGREE_MINUTES;
-        double add = 0;
-
-        Double numOne = ObjectUtils.firstNonNull(num1, num2);
-
-        if (num1 == null) {
-            throw new TdarRecoverableRuntimeException("latLong.one_null");
-        }
-        // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
-        Double numTwo = ObjectUtils.firstNonNull(num2, numOne + salt / 2d);
-        if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) <= salt) {
-            add += salt / 2d;
-        } else {
-            return numOne;
-        }
-
-        if (numOne < numTwo) { // -5 < -3
-            add *= -1d;
-            salt *= -1d;
-        } else {
-            // If two points are the same, we want to always scoot the maximum long/lat higher, and the minimum long/lat lower, such that the minimum distance
-            // exceeds the salt distance.
-            if (numOne.equals(numTwo) && isMin) {
-                add *= -1d;
-                salt *= -1d;
-            }
-        }
-        // -5 - .05 - .02
-        double ret = numOne.doubleValue() + add + salt * r.nextDouble();
-        if (type == LONGITUDE) {
-            if (ret > MAX_LONGITUDE)
-                ret -= 360d;
-            if (ret < MIN_LONGITUDE)
-                ret += 360d;
-        }
-
-        // NOTE: Ideally, this should do something different, but in reality, how
-        // many archaeological sites are really going to be in this area???
-        if (type == LATITUDE) {
-            if (Math.abs(ret) > MAX_LATITUDE)
-                ret = MAX_LATITUDE;
-        }
-
-        return new Double(ret);
-    }
+//
+//    /**
+//     * This randomize function is used when displaying lat/longs on a map. It is
+//     * passed the max and the min lat or long and then uses a salt to randomize.
+//     * The salt here is approx 1 miles. If the distance between num1 and num2 is
+//     * less than 1 miles, then this should expand the box by 1 miles + some random
+//     * 1 mile quantity.
+//     * 
+//     * If larger than the "salt" then don't do anything for that "side"
+//     * 
+//     * NOTE: the box should always be bigger than the original.
+//     * 
+//     * http://www.movable-type.co.uk/scripts/html
+//     */
+//    protected static Double randomizeIfNeedBe(final Double num1, final Double num2, int type, boolean isMin) {
+//        if ((num1 == null) && (num2 == null)) {
+//            return null;
+//        }
+//
+//        Random r = new Random();
+//        double salt = ONE_MILE_IN_DEGREE_MINUTES;
+//        double add = 0;
+//
+//        Double numOne = ObjectUtils.firstNonNull(num1, num2);
+//
+//        if (num1 == null) {
+//            throw new TdarRecoverableRuntimeException("latLong.one_null");
+//        }
+//        // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
+//        Double numTwo = ObjectUtils.firstNonNull(num2, numOne + salt / 2d);
+//        if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) <= salt) {
+//            add += salt / 2d;
+//        } else {
+//            return numOne;
+//        }
+//
+//        if (numOne < numTwo) { // -5 < -3
+//            add *= -1d;
+//            salt *= -1d;
+//        } else {
+//            // If two points are the same, we want to always scoot the maximum long/lat higher, and the minimum long/lat lower, such that the minimum distance
+//            // exceeds the salt distance.
+//            if (numOne.equals(numTwo) && isMin) {
+//                add *= -1d;
+//                salt *= -1d;
+//            }
+//        }
+//        // -5 - .05 - .02
+//        double ret = numOne.doubleValue() + add + salt * r.nextDouble();
+//        if (type == LONGITUDE) {
+//            if (ret > MAX_LONGITUDE)
+//                ret -= 360d;
+//            if (ret < MIN_LONGITUDE)
+//                ret += 360d;
+//        }
+//
+//        // NOTE: Ideally, this should do something different, but in reality, how
+//        // many archaeological sites are really going to be in this area???
+//        if (type == LATITUDE) {
+//            if (Math.abs(ret) > MAX_LATITUDE)
+//                ret = MAX_LATITUDE;
+//        }
+//
+//        return new Double(ret);
+//    }
 
     /**
      * Puts all the logic around the returning of obfuscated values vs actual values into one place.
@@ -397,11 +398,11 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
                     obfuscatedSouth = south;
                     return;
                 }
-
-                obfuscatedWest = randomizeIfNeedBe(west, east, LONGITUDE, true);
-                obfuscatedNorth = randomizeIfNeedBe(north, south, LATITUDE, false);
-                obfuscatedEast = randomizeIfNeedBe(east, west, LONGITUDE, false);
-                obfuscatedSouth = randomizeIfNeedBe(south, north, LATITUDE, true);
+                SpatialObfuscationUtil.obfuscate(this);
+//                obfuscatedWest = randomizeIfNeedBe(west, east, LONGITUDE, true);
+//                obfuscatedNorth = randomizeIfNeedBe(north, south, LATITUDE, false);
+//                obfuscatedEast = randomizeIfNeedBe(east, west, LONGITUDE, false);
+//                obfuscatedSouth = randomizeIfNeedBe(south, north, LATITUDE, true);
             }
         }
     }
