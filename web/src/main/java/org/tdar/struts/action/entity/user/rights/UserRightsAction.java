@@ -1,6 +1,7 @@
 package org.tdar.struts.action.entity.user.rights;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -63,6 +64,17 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), user));
         getLogger().debug("find accounts");
         integrations.addAll(integrationService.getWorkflowsForUser(user));
+        Iterator<DataIntegrationWorkflow> iterator = integrations.iterator();
+        // limit to only the integrations that the user has explicit rights to
+        while (iterator.hasNext()) {
+            DataIntegrationWorkflow next = iterator.next();
+            for (TdarUser user : next.getAuthorizedMembers()) {
+                if (getAuthenticatedUser().equals(user)) {
+                    continue;
+                }
+            }
+            iterator.remove();
+        }
         getAccounts().addAll(accountService.listAvailableAccountsForUser(user, Status.ACTIVE));
         getLogger().debug("done");
     }
