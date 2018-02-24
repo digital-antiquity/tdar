@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.Resource;
@@ -68,8 +69,8 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         // limit to only the integrations that the user has explicit rights to
         while (iterator.hasNext()) {
             DataIntegrationWorkflow next = iterator.next();
-            for (TdarUser user : next.getAuthorizedMembers()) {
-                if (getAuthenticatedUser().equals(user)) {
+            for (AuthorizedUser user : next.getAuthorizedUsers()) {
+                if (getAuthenticatedUser().equals(user.getUser())) {
                     continue;
                 }
             }
