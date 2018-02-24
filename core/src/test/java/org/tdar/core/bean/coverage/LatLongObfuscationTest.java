@@ -18,25 +18,19 @@ public class LatLongObfuscationTest {
 
     @Test
     public void testNegLatLongWithSaltedResult() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallNeg, smallNeg, smallNeg2, smallNeg2);
-        llb.obfuscate();
-        double result = llb.getObfuscatedSouth();
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallNeg2, LatitudeLongitudeBox.LONGITUDE, true);
         assertTrue("result:" + result + " < " + smallNeg, result < smallNeg);
     }
 
     @Test
     public void testPosLatLongWithSaltedResult() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallPos, smallPos, smallPos2, smallPos2);
-        llb.obfuscate();
-        double result = llb.getObfuscatedSouth();
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallPos, smallPos2, LatitudeLongitudeBox.LONGITUDE, true);
         assertTrue("result:" + result + " < " + smallPos, result < smallPos);
     }
 
     @Test
     public void testNegLatLongWithSaltedResult2() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallNeg2, smallNeg2, smallNeg, smallNeg);
-        llb.obfuscate();
-        double result = llb.getObfuscatedNorth();
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg2, smallNeg, LatitudeLongitudeBox.LONGITUDE, true);
         assertTrue("result:" + result + " < " + smallNeg2, result > smallNeg2);
     }
 
@@ -58,29 +52,19 @@ public class LatLongObfuscationTest {
 
     @Test
     public void testPosLatLongWithSaltedResult2() {
-//        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallPos2, smallPos, LatitudeLongitudeBox.LONGITUDE, true);
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallPos2, smallPos2, smallPos, smallPos);
-        llb.obfuscate();
-        double result = llb.getObfuscatedEast();
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallPos2, smallPos, LatitudeLongitudeBox.LONGITUDE, true);
         assertTrue("result:" + result + " < " + smallPos2, result > smallPos2);
     }
 
     @Test
     public void testLatLongWithoutSaltedResult() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallNeg, smallPos, smallNeg, smallPos);
-        llb.obfuscate();
-        double result = llb.getObfuscatedSouth();
-//        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallPos, LatitudeLongitudeBox.LONGITUDE, true);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallPos, LatitudeLongitudeBox.LONGITUDE, true);
         assertTrue("result:" + result + " = " + smallNeg, result == smallNeg);
-
     }
 
     @Test
     public void testLatLongWithoutSaltedResult2() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallPos, smallPos, smallNeg, smallNeg);
-        llb.obfuscate();
-        double result = llb.getObfuscatedEast();
-//        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallPos, smallNeg, LatitudeLongitudeBox.LONGITUDE, true);
+        double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallPos, smallNeg, LatitudeLongitudeBox.LONGITUDE, true);
         assertTrue("result:" + result + " = " + smallPos, result == smallPos);
     }
 
