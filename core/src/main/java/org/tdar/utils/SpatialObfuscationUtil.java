@@ -1,4 +1,4 @@
-package org.tdar.core.util;
+package org.tdar.utils;
 
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 
@@ -10,9 +10,9 @@ public class SpatialObfuscationUtil {
         if (absoluteLatLength < LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES) {
             Double centerLatitude = latitudeLongitudeBox.getCenterLatitude();
             // x y random1 random2 random3 random4 distance
-            double north1 = centerLatitude - 1d * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
+            double south1 = centerLatitude - 1d * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
                     + Math.random() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES; // -1*$G2+C2*$G2
-            double south1 = north1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
+            double north1 = south1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
             latitudeLongitudeBox.setObfuscatedNorth(correctForMeridiansAndPoles(north1, true));
             latitudeLongitudeBox.setObfuscatedSouth(correctForMeridiansAndPoles(south1, true));
         } else {
@@ -22,9 +22,9 @@ public class SpatialObfuscationUtil {
 
         if (absoluteLongLength < LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES) {
             Double centerLongitude = latitudeLongitudeBox.getCenterLongitude();
-            double east1 = centerLongitude - 1d * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
+            double west1 = centerLongitude - 1d * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
                     + Math.random() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES; // -1*$G2+C2*$G2
-            double west1 = east1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
+            double east1 = west1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
 
             latitudeLongitudeBox.setObfuscatedEast(correctForMeridiansAndPoles(east1, false));
             latitudeLongitudeBox.setObfuscatedWest(correctForMeridiansAndPoles(west1, false));
