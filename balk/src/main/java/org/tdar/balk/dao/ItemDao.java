@@ -49,7 +49,7 @@ public class ItemDao {
         logger.trace("in: {} out: {}", fullPath, path);
         try {
             // FIXME: FIgure out deleted paths/directories
-            Query query2 = getCurrentSession().createNamedQuery("item.findbyparent");
+            Query query2 = getCurrentSession().createQuery("from DropboxDirectory where dropboxId not like 'deleted%' and  lower(path)=lower(:path) and archived is false order by id desc");
             query2.setParameter("path", path);
             query2.setFirstResult(0);
             query2.setMaxResults(1);
@@ -77,7 +77,7 @@ public class ItemDao {
 
     @SuppressWarnings("unchecked")
     public List<DropboxFile> findToUpload() {
-        Query query2 = getCurrentSession().createNamedQuery("item.findtoupload");
+        Query query2 = getCurrentSession().createQuery("from DropboxFile df where lower(path) like lower('%/Upload to tDAR/%') and not exists (select tr from TdarReference tr where df.dropboxId=tr.dropboxId and df.dropboxId not like 'deleted%')");
         return query2.list();
     }
 
@@ -111,7 +111,7 @@ public class ItemDao {
     }
 
     public Set<String> findTopLevelPaths(String path) {
-        Query query = getCurrentSession().createQuery("select name from DropboxDirectory where parentId in (select dropboxId from DropboxDirectory where lower(name)=lower(:path) ) and dropboxId not like 'deleted%' and archived is false");
+        Query query = getCurrentSession().createQuery("select name from DropboxDirectory where parentId in (select dropboxId from DropboxDirectory where lower(name)=lower(:path) and archived is false) and dropboxId not like 'deleted%' and archived is false");
         query.setParameter("path", path);
         Set<String> toReturn = new HashSet<>(query.list());
         toReturn.remove(CONFIG.getCreatePdfaPath());
