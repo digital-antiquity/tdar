@@ -28,15 +28,8 @@ public abstract class AbstractChart {
     private boolean showLegend;
 
     // Customize Chart
-    Color[] sliceColors = new Color[] { new Color(235,215,144),
-    new Color(214,184,75),
-    new Color(195,170,114),
-    new Color(160,157,91),
-    new Color(144,157,91),
-    new Color(220,118,18),
-    new Color(189,50,0),
-    new Color(102,0,0)};
-    
+    Color[] sliceColors = TdarConfiguration.getInstance().getBarColors().stream().map(key-> Color.decode(key)).toArray(Color[]::new);
+    		
     File renderAndExport(Chart bc) throws IOException {
         render(bc);
         File file  = exportChart(bc, Paths.get(getOutputDir() + getFilename()));
