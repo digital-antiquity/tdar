@@ -1,6 +1,7 @@
 package org.tdar.struts.action.entity.user.rights;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.Resource;
@@ -63,6 +65,17 @@ public class UserRightsAction extends AbstractAuthenticatableAction implements P
         setFindResourcesSharedWith(resourceCollectionService.findResourcesSharedWith(getAuthenticatedUser(), user));
         getLogger().debug("find accounts");
         integrations.addAll(integrationService.getWorkflowsForUser(user));
+        Iterator<DataIntegrationWorkflow> iterator = integrations.iterator();
+        // limit to only the integrations that the user has explicit rights to
+        while (iterator.hasNext()) {
+            DataIntegrationWorkflow next = iterator.next();
+            for (AuthorizedUser user : next.getAuthorizedUsers()) {
+                if (getAuthenticatedUser().equals(user.getUser())) {
+                    continue;
+                }
+            }
+            iterator.remove();
+        }
         getAccounts().addAll(accountService.listAvailableAccountsForUser(user, Status.ACTIVE));
         getLogger().debug("done");
     }

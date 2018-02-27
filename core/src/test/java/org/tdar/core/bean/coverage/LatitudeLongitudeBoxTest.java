@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.utils.SpatialObfuscationUtil;
 
 @SuppressWarnings({ "static-method" })
 public class LatitudeLongitudeBoxTest {
@@ -23,6 +24,20 @@ public class LatitudeLongitudeBoxTest {
     private static final double _neg_107_small = _neg_107 + 0.01;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Test
+    public void testNewObfuscation() {
+        double half = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 3;
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(half,half,half,half);
+        logger.debug("before: {}",llb);
+        SpatialObfuscationUtil.obfuscate(llb);
+        assertTrue(half > llb.getObfuscatedWest());
+        assertTrue(half < llb.getObfuscatedEast());
+        assertTrue(half > llb.getObfuscatedSouth());
+        assertTrue(half < llb.getObfuscatedNorth());
+        logger.debug(" after: {}",String.format("Latitude [%s to %s], Longitude [%s to %s]", llb.getObfuscatedSouth(), llb.getObfuscatedNorth(), llb.getObfuscatedWest(), llb.getObfuscatedEast()));
+    }
+    
+    
     @Test
     public void testValidity() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
