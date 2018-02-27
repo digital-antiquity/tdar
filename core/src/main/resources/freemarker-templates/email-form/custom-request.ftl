@@ -1,28 +1,37 @@
+<#import "../email-macro.ftl" as mail /> 
+<@mail.content>
 Dear ${to.properName},
-
+<p>
 ${from.properName} has requested access to the following resource as part of the
-${customName}: ${resource.title} (${resource.id?c}).  You can view
+${customName}: <a href="${baseUrl}${resource.detailUrl}">${resource.title} (${resource.id?c})</a>. You can view
 ${from.properName}'s email address below if you need more information from them.
-
-<#if descriptionRequest?has_content>${descriptionRequest}
+</p>
+<p>
+<#if descriptionRequest?has_content>
+    ${descriptionRequest}
 </#if>
-${baseUrl}/resource/request/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}&type=CUSTOM
+</p>
+<p>
+<a href="${baseUrl}/resource/request/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}&type=CUSTOM">
+    Click here to grant access to this resource
+</a>
+</p>
+<p>
+    Below is the detailed request from the User. To view the record in ${siteAcronym} visit:
+    <a href="${baseUrl}${resource.detailUrl}">${resource.title} (${resource.id?c})</a>
+</p>
 
-Below is the detailed request from the User. To view the record in ${siteAcronym} visit:
-${baseUrl}/${resource.urlNamespace}/${resource.id?c}
-
-Kind regards,
-
-Staff at ${serviceProvider}
-
+Kind regards,<br />
+<br />
+Staff at ${serviceProvider}<br />
+<br />
+<p>
 ---------
-From: ${from.email}
-
+From: ${from.email}<br />
+<br />
 ${message}
 
-
-
-
-
 ---------
+</p>
 Note: please do not reply to this automated email
+</@mail.content>

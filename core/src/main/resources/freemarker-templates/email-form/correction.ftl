@@ -2,10 +2,11 @@
 
 <@mail.content>
 Dear ${to.properName},
+
 <p>
-${from.properName} wants to suggest an edit or correction to the resource:
- ${resource.title} (${resource.id?c}) that you have administrative rights 
- to in tDAR.
+    ${from.properName} wants to suggest an edit or correction to the resource:
+     <a href="${baseUrl}${resource.detailUrl}">${resource.title} (${resource.id?c})</a> that you have administrative rights 
+     to in tDAR.
 </p>
 ---
 <p>
