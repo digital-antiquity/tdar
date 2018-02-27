@@ -19,6 +19,8 @@ import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.PairtreeFilestore;
 
+import com.amazonaws.regions.Regions;
+
 /**
  * $Id$
  * 
@@ -1022,6 +1024,16 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 		return assistant.getStringProperty("aws.queuename");
 	}
 	
+	public Regions getAwsRegion(){
+		try {
+			String key = assistant.getStringProperty("aws.region");
+			return Regions.valueOf(key);
+		}
+		catch(NullPointerException | IllegalArgumentException e){
+			return Regions.US_WEST_2;
+		}
+	}
+	
 	public String getEmailAttachmentsDirectory(){
 		//TODO populate this from tdar.properties.
         return assistant.getStringProperty("email.attachments.location", "/home/tdar/email-attachments/");
@@ -1031,5 +1043,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getStringProperty("app.staff.email", "staff@digitalantiquity.org");
     }
 
+	public String getDeveloperTestEmail() {
+		return assistant.getStringProperty("email.developer.test", "test@tdar.org");
+	}
 	
 }

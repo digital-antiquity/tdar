@@ -39,15 +39,14 @@ public class AwsEmailSenderImpl implements AwsEmailSender {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private static final TdarConfiguration config = TdarConfiguration.getInstance();
 
-	//FIXME: use tdarconfiguration
-	private Regions awsRegion = Regions.US_WEST_2;
+	private Regions awsRegion = config.getAwsRegion();
 
 	@Autowired
 	EmailRawMessageHelper rawMessageHelper;
 	
 	@Override
 	public SendEmailResult sendMessage(Email awsMessage) {
-		logger.debug("sendMessage() message={}", awsMessage);
+		logger.debug("Sending single part message to {}", awsMessage.getTo());
 
 		Destination toEmail = new Destination().withToAddresses(awsMessage.getTo());
 		String fromEmail = awsMessage.getFrom();
@@ -90,6 +89,7 @@ public class AwsEmailSenderImpl implements AwsEmailSender {
 
 	@Override
 	public SendRawEmailResult sendMultiPartMessage(Email email) throws IOException, MessagingException {
+		logger.debug("Sending multi-part message to {}",email.getTo());
 		MimeMessage mimeMessage = rawMessageHelper.createMimeMessage(email);
 		RawMessage rawMessage = rawMessageHelper.createRawMessage(mimeMessage);
 		return sendRawMessage(rawMessage);
