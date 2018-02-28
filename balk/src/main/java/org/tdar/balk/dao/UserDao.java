@@ -2,18 +2,18 @@ package org.tdar.balk.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
+import javax.persistence.Query;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.core.bean.entity.TdarUser;
 
 import com.dropbox.core.v2.users.BasicAccount;
-
-import org.tdar.balk.bean.DropboxUserMapping;
 
 @Component
 public class UserDao {
@@ -33,7 +33,7 @@ public class UserDao {
         query2.setParameter("username", user.getUsername());
         query2.setFirstResult(0);
         query2.setMaxResults(1);
-        List list = query2.list();
+        List list = query2.getResultList();
         if (list.size() == 0) {
             return null;
         }
@@ -51,7 +51,7 @@ public class UserDao {
         query2.setParameter("email", account.getEmail());
         query2.setFirstResult(0);
         query2.setMaxResults(1);
-        List list = query2.list();
+        List list = query2.getResultList();
         if (list.size() == 0) {
             return null;
         }

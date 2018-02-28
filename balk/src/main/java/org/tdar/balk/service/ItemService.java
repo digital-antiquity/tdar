@@ -95,8 +95,8 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public DropboxDirectory findParentByPath(String fullPath, boolean isDir) {
-        return itemDao.findByParentPath(fullPath, isDir);
+    public DropboxDirectory findParentByPath(String fullPath, boolean isDir, boolean archived) {
+        return itemDao.findByParentPath(fullPath, isDir, archived);
     }
 
     @Transactional(readOnly = true)
@@ -125,7 +125,7 @@ public class ItemService {
         if (dropboxItemWrapper == null || dropboxItemWrapper.getId() == null) {
             // when something is deleted, the first step is that an event for the file with  a .tag:deleted is passed
             logger.warn("id is null for path: {} (deleted: {})", dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDeleted());
-            DropboxFile file = itemDao.findByPath(dropboxItemWrapper.getFullPath());
+            DropboxFile file = itemDao.findByPath(dropboxItemWrapper.getFullPath(), false);
             if (file != null && dropboxItemWrapper.isDeleted()) {
                 file.setDropboxId(DELETED + file.getDropboxId());
                 genericDao.saveOrUpdate(file);
@@ -169,7 +169,7 @@ public class ItemService {
     private void updatePathInfo(DropboxItemWrapper dropboxItemWrapper, AbstractDropboxItem item) {
         item.setPath(dropboxItemWrapper.getFullPath());
         item.setName(dropboxItemWrapper.getName());
-        DropboxDirectory parent = findParentByPath(dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDir());
+        DropboxDirectory parent = findParentByPath(dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDir(),false);
         if (parent != null) {
             item.setParentId(parent.getDropboxId());
         }
@@ -358,9 +358,9 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public int itemStatusReport(String path, int page, int size, TreeMap<String, WorkflowStatusReport> map, boolean managed) {
+    public int itemStatusReport(String path, int page, int size, TreeMap<String, WorkflowStatusReport> map, boolean managed, boolean archived) {
         List<DropboxFile> findAll = new ArrayList<>();
-        int total = itemDao.findAllWithPath(path, findAll, page, size, managed);
+        int total = itemDao.findAllWithPath(path, findAll, page, size, managed, archived);
         for (DropboxFile file : findAll) {
             String key = Phases.createKey(file);
             logger.trace("{} --> {}", file.getPath(), key);
@@ -409,18 +409,23 @@ public class ItemService {
     }
 
     @Transactional(readOnly = false)
-    public Set<String> listChildPaths(String path) {
-        return itemDao.findTopLevelPaths(path);
+    public Set<String> listChildPaths(String path, boolean archived) {
+        return itemDao.findTopLevelPaths(path,archived);
     }
 
     @Transactional(readOnly = true)
-    public Set<String> listTopLevelPaths() {
-        return itemDao.findTopLevelPaths(config.getBaseDropboxPath().replace("/", ""));
+    public Set<String> listTopLevelPaths(boolean archived) {
+        return itemDao.findTopLevelPaths(config.getBaseDropboxPath().replace("/", ""), archived);
     }
 
     @Transactional(readOnly = true)
-    public Set<String> listTopLevelManagedPaths() {
-        return itemDao.findTopLevelManagedPaths();
+    public Set<String> listTopLevelManagedPaths(boolean archived) {
+        return itemDao.findTopLevelManagedPaths(archived);
+    }
+
+    @Transactional(readOnly=false)
+    public void archive(AbstractDropboxItem item, TdarUser authenticatedUser) {
+        itemDao.archive(item);
     }
 
 }
