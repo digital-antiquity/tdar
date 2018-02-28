@@ -69,7 +69,6 @@
     <#else>
         <script src="${staticHost}/includes/jquery-${jquery_version}.min.js"></script>
     </#if>
-    <script src="https://unpkg.com/vue"></script>
     
     <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}.custom/jquery-ui.min.js"></script>
     <script type="text/javascript" src="//www.google.com/jsapi"></script>

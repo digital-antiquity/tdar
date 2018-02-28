@@ -132,31 +132,12 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	
 	@Test
 	@Rollback
-	public void testInviteAcceptedEmail(){
-		Person to = new Person("To", "Person", getTestUserEmail());
-		Person from = new Person("From", "Somone", "test@tdar.net");
-		TdarUser fromUser = new TdarUser(from, "from");
-		UserInvite invite = new UserInvite();
-		invite.setPerson(to);
-
-		Resource project = createAndSaveNewProject("Test Project");
-		assertEquals(project.getTitle(), "Test Project");
-
-		invite.setResource(project);
-		
-		Email email = emailService.sendUserInviteEmail(invite, fromUser);
-		emailService.send(email);
-	}
-	
-	@Test
-	@Rollback
 	public void testSendWelcomeEmail(){
 		TdarUser to = new TdarUser("To", "Person", getTestUserEmail(),"testuser");
 		Email email = emailService.sendWelcomeEmail(to);
 		assertTrue("email has 'Welcome' in the subject'",email.getSubject().contains("Welcome"));
 		assertTrue("email has content", email.getMessage().contains("Hello To,<br />"));
 	}
-	
 
 	@Test
 	@Rollback
@@ -343,5 +324,4 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	public String getTestUserEmail(){
 		return getTdarConfiguration().getDeveloperTestEmail();
 	}
-	
 }
