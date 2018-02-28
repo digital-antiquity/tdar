@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxDirectory;
 import org.tdar.balk.bean.DropboxFile;
+import org.tdar.balk.bean.ItemType;
 import org.tdar.balk.service.Phases;
 import org.tdar.utils.dropbox.DropboxConfig;
 
@@ -149,15 +150,22 @@ public class ItemDao {
     }
 
     public void archive(AbstractDropboxItem item) {
-        String intialQuery = "update AbstractDropboxItem set archived=true where dropboxId=:dropboxId";
-        Query query = getCurrentSession().createQuery(intialQuery);
-        query.setParameter("dropboxId", item.getDropboxId());
-        query.executeUpdate();
+        if (item.getType() == ItemType.DIR) {
+            String intialQuery = "update DropboxDirectory set archived=true where dropboxId=:dropboxId";
+            Query query = getCurrentSession().createQuery(intialQuery);
+            query.setParameter("dropboxId", item.getDropboxId());
+            query.executeUpdate();
+        } else {
+            String intialQuery = "update DropboxFile set archived=true where dropboxId=:dropboxId";
+            Query query = getCurrentSession().createQuery(intialQuery);
+            query.setParameter("dropboxId", item.getDropboxId());
+            query.executeUpdate();
+        }
         int numResults = 1;
         int count = 10;
         while (numResults > 0) {
-            String repeat = "update AbstractDropboxItem set archived=true where parentId in (select dropboxId from AbstractDropboxItem where archived is true)";
-            Query query2 = getCurrentSession().createQuery(repeat);
+            String repeat = "update dropbox_items set archived=true where parent_id in (select dropbox_id from dropbox_item where archived is true)";
+            Query query2 = getCurrentSession().createNativeQuery(repeat);
             numResults = query2.executeUpdate();
             count--;
             if (count == 0) {

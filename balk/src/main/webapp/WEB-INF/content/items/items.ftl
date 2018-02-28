@@ -50,12 +50,14 @@
 <tr>
     <th colspan=50 style="background:#efefef">${_parentPath}
     <#assign _path = path?keep_before_last("/") />
+    <#if row.first?? && (row.first.parentId)?has_content>
     	<@s.form action="/archive/?" method="POST">
-		<@s.hidden name="id" value="${item.parentId}"/>
+		<@s.hidden name="id" value="${row.first.parentId}"/>
 		<@s.hidden name="path" value="${_path}"/>
 		<@s.submit name="approve" value="Archive" />
-    </th>
 	</@s.form>
+	</#if>
+    </th>
 
 </#if>
 <tr>
@@ -85,12 +87,13 @@
 	<@_printrow itemStatusReport row "UPLOAD_TDAR"/>
     <td>
         <#if (row.toUpload.tdarReference.tdarId)?has_content><a href="http://core.tdar.org/resource/${row.toUpload.tdarReference.tdarId?c}">${row.toUpload.tdarReference.tdarId?c}</a></#if>
+    <#if row.first?? && (row.first.parentId)?has_content>
 	<@s.form action="/archive/?" method="POST">
-		<@s.hidden name="id" value="${item.dropboxId}"/>
+		<@s.hidden name="id" value="${row.first.dropboxId}"/>
 		<@s.hidden name="path" value="${_path}"/>
 		<@s.submit name="approve" value="Archive" />
 	</@s.form>
-
+    </#if>
     </td>
 </tr>
 </#list>

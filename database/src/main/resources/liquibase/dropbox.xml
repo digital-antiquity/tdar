@@ -81,7 +81,7 @@
         <column name="item_type"/>
      </createIndex>
      </changeSet>
-         <changeSet id="prehistoric-dropbox-1" author="abrin" >
+         <changeSet id="prehistoric-dropbox-2" author="abrin" >
          <addColumn tableName="dropbox_items">
          <column name="archived" type="boolean" defaultValueBoolean="false"/>
          </addColumn>
