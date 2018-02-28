@@ -164,7 +164,7 @@ public class ItemDao {
         int numResults = 1;
         int count = 10;
         while (numResults > 0) {
-            String repeat = "update dropbox_items set archived=true where parent_id in (select dropbox_id from dropbox_item where archived is true)";
+            String repeat = "update dropbox_items set archived=true where parent_id in (select dropbox_id from dropbox_items where archived is true)";
             Query query2 = getCurrentSession().createNativeQuery(repeat);
             numResults = query2.executeUpdate();
             count--;
