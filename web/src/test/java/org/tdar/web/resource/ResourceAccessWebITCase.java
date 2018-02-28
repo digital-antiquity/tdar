@@ -48,7 +48,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         submitForm("submit");
         logger.info(getCurrentUrlPath());
         logger.info(getPageText());
-        String hasBeenGrantedString = "granted until " + untilString;
+        String hasBeenGrantedString = " until " + untilString;
         String text = getPageText();
         text = text.replaceAll("[\r\n]", " ");
         text = text.replaceAll("\\s+", " ");

@@ -1,5 +1,8 @@
 package org.tdar.core.bean.notification.aws;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -10,7 +13,7 @@ import org.tdar.core.service.external.EmailService;
 @Entity
 @DiscriminatorValue("ACCESS_GRANTED")
 public class AccessRequestGrantedMessage extends Email {
-
+	 private static final String DATE_FORMAT = "yyyy-MM-dd";
 	/**
 	 * 
 	 */
@@ -19,7 +22,14 @@ public class AccessRequestGrantedMessage extends Email {
 	@Override
 	public String createSubjectLine() {
 		Resource resource =  (Resource) getMap().get(EmailService.RESOURCE2);
-		return TdarConfiguration.getInstance().getSiteAcronym() + ": " + resource.getTitle();
+		Date expires = (Date) getMap().get(EmailService.EXPIRES2);
+		String until = "";
+		
+		if(expires !=null){
+			until = " until "+new SimpleDateFormat(DATE_FORMAT).format(expires);
+		}
+		
+		return TdarConfiguration.getInstance().getSiteAcronym() + ": Access Granted to " + resource.getTitle()+until;
 	}
 
 }

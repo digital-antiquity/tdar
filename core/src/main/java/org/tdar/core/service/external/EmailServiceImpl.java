@@ -481,10 +481,13 @@ public class EmailServiceImpl implements EmailService {
 			}
 		}
 
+		logger.debug("email type is {}",emailType);
+		
 		Email message = createMessage(emailType, requestor.getEmail());
 		message.addData(REQUESTOR2, requestor);
 		message.addData(RESOURCE2, resource);
 		message.addData(EXPIRES2, expires);
+		
 		message.addData(AUTHORIZED_USER, authenticatedUser);
 		if (type == EmailType.CUSTOM) {
 			RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
@@ -507,6 +510,7 @@ public class EmailServiceImpl implements EmailService {
 		message.setUserGenerated(false);
 
 		updateEmailSubject(message);
+		logger.debug("email subject is {}",message.getSubject());
 		renderAndUpdateEmailContent(message);
 		queue(message);
 
