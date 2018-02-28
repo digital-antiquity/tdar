@@ -41,9 +41,6 @@ public class AwsEmailSenderImpl implements AwsEmailSender {
 
 	private Regions awsRegion = config.getAwsRegion();
 
-	@Autowired
-	EmailRawMessageHelper rawMessageHelper;
-	
 	@Override
 	public SendEmailResult sendMessage(Email awsMessage) {
 		logger.debug("Sending single part message to {}", awsMessage.getTo());
@@ -90,6 +87,7 @@ public class AwsEmailSenderImpl implements AwsEmailSender {
 	@Override
 	public SendRawEmailResult sendMultiPartMessage(Email email) throws IOException, MessagingException {
 		logger.debug("Sending multi-part message to {}",email.getTo());
+		EmailRawMessageHelper rawMessageHelper = new EmailRawMessageHelper();
 		MimeMessage mimeMessage = rawMessageHelper.createMimeMessage(email);
 		RawMessage rawMessage = rawMessageHelper.createRawMessage(mimeMessage);
 		return sendRawMessage(rawMessage);

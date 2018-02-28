@@ -1,7 +1,7 @@
-package org.tdar.core.bean.notification.aws;
+package org.tdar.core.bean.notification.emails;
 
-import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.external.EmailService;
 @Entity
 @DiscriminatorValue("ACCESS_GRANTED")
 public class AccessRequestGrantedMessage extends Email {
@@ -21,8 +20,8 @@ public class AccessRequestGrantedMessage extends Email {
 
 	@Override
 	public String createSubjectLine() {
-		Resource resource =  (Resource) getMap().get(EmailService.RESOURCE2);
-		Date expires = (Date) getMap().get(EmailService.EXPIRES2);
+		Resource resource =  (Resource) getMap().get(EmailKeys.RESOURCE);
+		Date expires = (Date) getMap().get(EmailKeys.EXPIRES);
 		String until = "";
 		
 		if(expires !=null){

@@ -20,7 +20,7 @@ ${baseUrl}/resource/request/grant?resourceId=${resource.id?c}&requestorId=${from
 
 <p>
 Below is the detailed request from the User. To view the record in ${siteAcronym} visit:
-${baseUrl}/${resource.urlNamespace}/${resource.id?c}
+<a href="${baseUrl}/${resource.urlNamespace}/${resource.id?c}">${baseUrl}/${resource.urlNamespace}/${resource.id?c}</a>
 </p>
 
 Kind regards,<br />

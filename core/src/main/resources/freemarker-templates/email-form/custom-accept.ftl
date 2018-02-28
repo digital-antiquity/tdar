@@ -22,6 +22,6 @@ Staff at ${serviceProvider}<br />
 ${message}
 </#if>
 <br />
----------
+<hr/>
 Note: please do not reply to this automated email
 </@mail.content>

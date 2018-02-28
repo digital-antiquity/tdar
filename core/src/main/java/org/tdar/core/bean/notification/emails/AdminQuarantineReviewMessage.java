@@ -1,4 +1,4 @@
-package org.tdar.core.bean.notification.aws;
+package org.tdar.core.bean.notification.emails;
 
 import java.util.Arrays;
 

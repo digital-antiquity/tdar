@@ -46,9 +46,6 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     @Autowired
     private transient EmailService emailService;
 
-    @Autowired
-    private transient EmailRawMessageHelper rawMessageHelper;
-    
     private String contentType;
     
     @Action(value = "emailContent/{emailId}",

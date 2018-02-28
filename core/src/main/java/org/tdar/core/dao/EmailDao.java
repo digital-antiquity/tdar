@@ -24,12 +24,5 @@ public class EmailDao extends HibernateBase<Email>{
 		query.setParameter("guid", guid);
 		return query.getResultList();
 	}
-    
-    //FIXME: ???
-    public List<Email> getTestBounceBackEmails(){
-    	Query query = getCurrentSession().createQuery("SELECT e from Email e WHERE e.to='bounce@simulator.amazonses.com' AND e.status<>'Bounced'");
-    	return query.getResultList();
-    }
-    
-	
+    	
 }

@@ -5,16 +5,16 @@ import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
-import org.tdar.core.bean.notification.aws.AccessRequestCustomMessage;
-import org.tdar.core.bean.notification.aws.AccessRequestGrantedMessage;
-import org.tdar.core.bean.notification.aws.AccessRequestRejectedMessage;
-import org.tdar.core.bean.notification.aws.AdminQuarantineReviewMessage;
-import org.tdar.core.bean.notification.aws.AdminReportNewUsersMessage;
-import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
-import org.tdar.core.bean.notification.aws.InviteMessage;
-import org.tdar.core.bean.notification.aws.MonthlyUserStatisticsMessage;
-import org.tdar.core.bean.notification.aws.NewUserWelcomeMessage;
-import org.tdar.core.bean.notification.aws.TestAwsMessage;
+import org.tdar.core.bean.notification.emails.AccessRequestCustomMessage;
+import org.tdar.core.bean.notification.emails.AccessRequestGrantedMessage;
+import org.tdar.core.bean.notification.emails.AccessRequestRejectedMessage;
+import org.tdar.core.bean.notification.emails.AdminQuarantineReviewMessage;
+import org.tdar.core.bean.notification.emails.AdminReportNewUsersMessage;
+import org.tdar.core.bean.notification.emails.InviteAcceptedMessage;
+import org.tdar.core.bean.notification.emails.InviteMessage;
+import org.tdar.core.bean.notification.emails.MonthlyUserStatisticsMessage;
+import org.tdar.core.bean.notification.emails.NewUserWelcomeMessage;
+import org.tdar.core.bean.notification.emails.TestAwsMessage;
 import org.tdar.utils.MessageHelper;
 
 public enum EmailType implements Localizable, HasLabel {

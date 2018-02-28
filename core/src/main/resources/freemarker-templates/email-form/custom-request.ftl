@@ -26,12 +26,12 @@ Kind regards,<br />
 Staff at ${serviceProvider}<br />
 <br />
 <p>
----------
+<hr/>
 From: ${from.email}<br />
 <br />
 ${message}
 
----------
+<hr/>
 </p>
 Note: please do not reply to this automated email
 </@mail.content>

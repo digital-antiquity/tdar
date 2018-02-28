@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.EmailDao;
 import org.tdar.utils.EmailRawMessageHelper;
@@ -37,8 +38,11 @@ public class MockAwsQueuePollerServiceImpl implements AwsQueuePollerService {
 	public List<Message> getBouncedMessages() {
 		logger.debug("Mocking getting messages");
 		List<Message> messages =  new ArrayList<Message>();
-		for(Email email : emailDao.getTestBounceBackEmails()){
-			messages.add(getMessage(email));
+		
+		for(Email email : emailDao.findAll()){
+		    if (email.getStatus() != Status.BOUNCED && email.getTo().equals("bounce@simulator.amazonses.com")) {
+		        messages.add(getMessage(email));
+		    }
 		}
 		return messages;
 	}

@@ -1,4 +1,4 @@
-package org.tdar.core.bean.notification.aws;
+package org.tdar.core.bean.notification.emails;
 
 import java.util.Arrays;
 
@@ -9,7 +9,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.MessageHelper;
 
 @Entity
@@ -23,7 +22,7 @@ public class InviteMessage extends Email {
 
 	@Override
 	public String createSubjectLine() {
-		String properName = ((TdarUser) getMap().get(EmailService.FROM2)).getProperName();
+		String properName = ((TdarUser) getMap().get(EmailKeys.FROM)).getProperName();
 		String tdar = TdarConfiguration.getInstance().getSiteAcronym();
 		return MessageHelper.getMessage(EmailType.INVITE.getLocaleKey(),Arrays.asList(properName,tdar));
 	}

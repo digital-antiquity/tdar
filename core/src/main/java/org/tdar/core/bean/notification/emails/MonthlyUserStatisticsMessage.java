@@ -1,4 +1,4 @@
-package org.tdar.core.bean.notification.aws;
+package org.tdar.core.bean.notification.emails;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;

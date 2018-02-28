@@ -29,7 +29,8 @@ To view the record in ${siteAcronym} visit:
 <p>
 Staff at ${serviceProvider}<br />
 <br />
----------<br />
+<hr/>
+<br />
 Note: please do not reply to this automated email
 </p>
 

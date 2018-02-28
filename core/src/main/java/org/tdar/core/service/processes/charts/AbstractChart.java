@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 
 
-@SuppressWarnings("restriction")
 public abstract class AbstractChart {
 
     private String outputDir = TdarConfiguration.getInstance().getTempDirectory().getAbsolutePath();
@@ -30,7 +29,7 @@ public abstract class AbstractChart {
     // Customize Chart
     Color[] sliceColors = TdarConfiguration.getInstance().getBarColors().stream().map(key-> Color.decode(key)).toArray(Color[]::new);
     		
-    File renderAndExport(Chart bc) throws IOException {
+    File renderAndExport(Chart<?,?> bc) throws IOException {
         render(bc);
         File file  = exportChart(bc, Paths.get(getOutputDir() + getFilename()));
         return file;
@@ -38,7 +37,7 @@ public abstract class AbstractChart {
 
     public abstract File createChart() throws IOException;
 
-    public void render(Chart chart) {
+    public void render(Chart<?,?> chart) {
         chart.setTitle(title);
         chart.getStyler().setSeriesColors(sliceColors);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -48,7 +47,7 @@ public abstract class AbstractChart {
         chart.getStyler().setLegendVisible(showLegend);
     }
 
-    public File exportChart(Chart chart, Path path_) throws IOException {
+    public File exportChart(Chart<?,?> chart, Path path_) throws IOException {
         Path path = path_.normalize();
         String filename = path.toAbsolutePath().toString()+".png";
         logger.debug("exporting: {}", path.toAbsolutePath());
@@ -56,8 +55,6 @@ public abstract class AbstractChart {
         BitmapEncoder.saveBitmap(chart, new FileOutputStream(outputFile), BitmapFormat.PNG);
        
         return outputFile;
-        
-//      VectorGraphicsEncoder.saveVectorGraphic(chart, "./Sample_Chart", VectorGraphicsFormat.EPS);
     }
 
     public int getHeight() {
