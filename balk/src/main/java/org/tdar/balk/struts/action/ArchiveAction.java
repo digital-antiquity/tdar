@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.balk.bean.AbstractDropboxItem;
-import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.service.ItemService;
 import org.tdar.balk.service.Phases;
 import org.tdar.balk.service.UserService;
@@ -30,20 +29,19 @@ public class ArchiveAction extends AbstractAuthenticatedAction implements Prepar
 
     @Autowired
     private ItemService itemService;
-    @Autowired
-    private UserService userService;
 
     private String id;
 
     private AbstractDropboxItem item;
     private Phases phase;
     private String path;
-    private DropboxUserMapping userMapping;
     
     @Override
     public void prepare() throws Exception {
         setItem(itemService.findByDropboxId(id, false));
-        userMapping = userService.findUser(getAuthenticatedUser());
+        if (item == null) {
+            setItem(itemService.findByDropboxId(id, true));
+        }
     }
 
     @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/${contextPath}/items/list?path=${path}")})
