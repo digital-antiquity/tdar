@@ -50,7 +50,7 @@ public class ArchiveAction extends AbstractAuthenticatedAction implements Prepar
     @Override
     public String execute() throws Exception {
         try {
-            itemService.move(item, phase, userMapping, getAuthenticatedUser());
+            itemService.archive(item, getAuthenticatedUser());
         } catch (Exception e) {
             getLogger().error("{}", e, e);
             addActionError(e.getMessage() + " " + ExceptionUtils.getFullStackTrace(e));
