@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -72,6 +73,8 @@ public class ItemDao {
             Query query2 = getCurrentSession().createQuery(query);
             query2.setParameter("id", id);
             return (AbstractDropboxItem) query2.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         } catch (Exception e) {
             logger.error("{} ({}) -- {}", query, id, e, e);
             return null;
