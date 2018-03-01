@@ -48,6 +48,7 @@ public class ArchiveAction extends AbstractAuthenticatedAction implements Prepar
     @Override
     public String execute() throws Exception {
         try {
+            getLogger().debug("archving:{} ({}/{})", item, item.getPath(),item.getName());
             itemService.archive(item, getAuthenticatedUser());
         } catch (Exception e) {
             getLogger().error("{}", e, e);
