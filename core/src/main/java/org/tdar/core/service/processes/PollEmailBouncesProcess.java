@@ -29,7 +29,9 @@ public class PollEmailBouncesProcess extends AbstractScheduledProcess {
 	private static final long serialVersionUID = 686514606029804834L;
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
+	private static final String BOUNCE = "Bounce";
+	
 	@Autowired
 	private EmailService emailService;
 	
@@ -70,6 +72,8 @@ public class PollEmailBouncesProcess extends AbstractScheduledProcess {
 			JSONArray headers 	= awsQueueService.getMessageHeaders(message);
 			String messageId 	= awsQueueService.getTdarMessageId(headers);
 			String errorMessage = awsQueueService.getBounce(message);
+			
+			if(awsQueueService.getNotificationType(message).equals(BOUNCE))
 			emailService.markMessageAsBounced(messageId, errorMessage);
 		}
 	}
