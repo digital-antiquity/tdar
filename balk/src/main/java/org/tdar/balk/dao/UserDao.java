@@ -2,7 +2,8 @@ package org.tdar.balk.dao;
 
 import java.util.List;
 
-import org.hibernate.Query;
+import javax.persistence.Query;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class UserDao {
         query2.setParameter("username", user.getUsername());
         query2.setFirstResult(0);
         query2.setMaxResults(1);
-        List list = query2.list();
+        List list = query2.getResultList();
         if (list.size() == 0) {
             return null;
         }
@@ -50,7 +51,7 @@ public class UserDao {
         query2.setParameter("email", account.getEmail());
         query2.setFirstResult(0);
         query2.setMaxResults(1);
-        List list = query2.list();
+        List list = query2.getResultList();
         if (list.size() == 0) {
             return null;
         }
