@@ -1,6 +1,7 @@
 package org.tdar.balk.dao;
 
-import org.hibernate.Query;
+import javax.persistence.Query;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.annotations.NamedQuery;
@@ -16,8 +17,6 @@ import org.tdar.core.dao.base.GenericDao;
         )
 public class CursorDao {
 
-    @Autowired
-    private GenericDao genericDao;
 
     @Autowired
     private transient SessionFactory sessionFactory;
@@ -28,7 +27,7 @@ public class CursorDao {
         query2.setParameter("type", type);
         query2.setFirstResult(0);
         query2.setMaxResults(1);
-        return (String) query2.uniqueResult();
+        return (String) query2.getSingleResult();
     }
 
     protected Session getCurrentSession() {

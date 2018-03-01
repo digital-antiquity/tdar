@@ -48,8 +48,17 @@
 
 <#if (_parentPath != _path) >
 <tr>
-    <th colspan=50 style="background:#efefef">${_parentPath}</th>
+    <th colspan=50 style="background:#efefef">${_parentPath}
     <#assign _path = path?keep_before_last("/") />
+    <#if row.first?? && (row.first.parentId)?has_content>
+    	<@s.form action="/archive/?" method="POST">
+		<@s.hidden name="id" value="${row.first.parentId}"/>
+		<@s.hidden name="path" value="${_path}"/>
+		<@s.submit name="approve" value="Archive" />
+	</@s.form>
+	</#if>
+    </th>
+
 </#if>
 <tr>
 <td style="padding:1em;text-align:center"><span class="label label-default label-sm">${row.first.extension}</span></td>
@@ -78,6 +87,13 @@
 	<@_printrow itemStatusReport row "UPLOAD_TDAR"/>
     <td>
         <#if (row.toUpload.tdarReference.tdarId)?has_content><a href="http://core.tdar.org/resource/${row.toUpload.tdarReference.tdarId?c}">${row.toUpload.tdarReference.tdarId?c}</a></#if>
+    <#if row.first?? && (row.first.parentId)?has_content>
+	<@s.form action="/archive/?" method="POST">
+		<@s.hidden name="id" value="${row.first.dropboxId}"/>
+		<@s.hidden name="path" value="${_path}"/>
+		<@s.submit name="approve" value="Archive" />
+	</@s.form>
+    </#if>
     </td>
 </tr>
 </#list>
@@ -113,6 +129,7 @@
 		<@s.submit name="approve" value="Approve" />
 	</@s.form>
 </#if>
+
 </td>
 </#macro>
 
