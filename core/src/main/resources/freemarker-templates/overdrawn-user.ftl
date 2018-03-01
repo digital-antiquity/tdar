@@ -1,7 +1,7 @@
 <#import "email-macro.ftl" as mail /> 
 <@mail.content>
 Dear ${account.owner.properName},<br />
-Your ${acronym} account is overdrawn.  Until additional funds have been added to your account, resources within this account may not be available. 
+Your ${siteAcronym} account is overdrawn.  Until additional funds have been added to your account, resources within this account may not be available. 
 <br />
 <p>
 Account Details:

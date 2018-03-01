@@ -235,6 +235,7 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	@Transactional(readOnly = false)
 	public void queue(Email email) {
+		logger.debug("Queuing message for delivery: {} ", email);
 		enforceFromAndTo(email);
 		genericDao.save(email);
 		logger.debug("Queuing email {}", email);
