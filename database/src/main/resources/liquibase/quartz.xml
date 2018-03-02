@@ -67,6 +67,14 @@
     <changeSet id="emailTracking-2" author="bcastel1">
         <sql>UPDATE EMAIL_QUEUE SET AWS_MESSAGE_TYPE='GENERIC' WHERE AWS_MESSAGE_TYPE IS NULL</sql>
     </changeSet>
+    <changeSet id="quartz-default-1" author="abrin">
+        <insert tableName="user_notification">
+            <column name="message_type" value="SYSTEM_BROADCAST"/>
+            <column name="message_key" value="quartz"/>
+            <column name="display_type" value="FREEMARKER"/>
+            <column name="date_created" valueComputed="now()" />
+        </insert>
+    </changeSet>
     
 </databaseChangeLog>
 
