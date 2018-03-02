@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <include file="reset-sequences.xml" relativeToChangelogFile="true"/>
+    <!-- load the production updates -->
+    <include file="../liquibase/lithic.xml" relativeToChangelogFile="true"/> 
+    <include file="../liquibase/munsell.xml"  relativeToChangelogFile="true"/> 
+    <include file="additional-munsell-test-setup.xml" relativeToChangelogFile="true"/>
+    <include file="../liquibase/neolithic.xml"  relativeToChangelogFile="true"/> 
+    <include file="../liquibase/obsidian.xml"  relativeToChangelogFile="true"/> 
+    <!-- make sure similar changes get pushed to liquibase-test/changelog-integration.xml -->
+    <include file="../liquibase/prehistoric.xml"  relativeToChangelogFile="true"/> 
+    <include file="additional-obsidian-test-setup.xml" relativeToChangelogFile="true"/>
+    <include file="additional-prehistoric-test-setup.xml" relativeToChangelogFile="true"/>
+    <include file="../liquibase/quartz.xml"  relativeToChangelogFile="true"/> 
+    <include file="additional-quartz-test-setup.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>
