@@ -10,7 +10,7 @@ import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.email.AwsEmailSender;
 
-public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
+public class AmazonEmailServiceTestCase extends AbstractIntegrationTestCase {
 
     @Autowired 
     protected AwsEmailSender awsEmailService;
@@ -30,32 +30,4 @@ public class AmazonEmailServiceITCase extends AbstractIntegrationTestCase {
     public void testTestAwsEmail(){
     	assertEquals(EmailType.TEST_EMAIL.getFromAddress(), "test@tdar.org");
     }
-    
-    
-    /*@Test 
-    public void testBounceMessage(){
-    	try {
-	    	AwsMessage message = awsEmailService.createMessage(EmailType.TEST_EMAIL,"bounce@simulator.amazonses.com");
-	    	message.getEmail().setMessage("This is a bounce message");
-	    	awsEmailService.updateEmailSubject(message);
-	    	
-    		MimeMessage mimeMessage = awsEmailService.createMimeMessage(message);
-    		
-    		ByteArrayOutputStream os = new ByteArrayOutputStream();
-    		mimeMessage.writeTo(os);
-    		byte[] mimeContents = os.toByteArray();
-    		
-    		OutputStream out = System.out;
-    		
-    		mimeMessage.writeTo(out);
-    		assertNotEquals(mimeContents,"");
-    		
-    		awsEmailService.sendMultiPartMessage(mimeMessage);
-    	}
-    	catch(MessagingException | IOException e ){
-    		fail(e.getMessage());
-    	}
-    }*/
-   
-
 }

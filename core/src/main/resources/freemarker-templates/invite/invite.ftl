@@ -1,6 +1,4 @@
 <#import "../email-macro.ftl" as mail /> 
-
-
 <@mail.content>
 Dear ${to.properName},<br />
 <p>
@@ -11,7 +9,7 @@ ${invite.resource.title}</#if></a> with you on The Digital Archaeological Record
 <#if invite.note?has_content>
   <br />
   <p>
-  -----------------------------------------------
+  <hr />
   ${invite.note} 
   </p> 
 </#if>
