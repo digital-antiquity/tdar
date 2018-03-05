@@ -25,8 +25,8 @@
 
     var _initRegister = function (timeout) {
         setTimeout(function () {
-            alert("Your session has timed out, click ok to refresh the page.");
-            location.reload(true);
+            alert("Your session has timed out, please reload the page.");
+//            location.reload(true);
         }, timeout);
         $('#contributor-id').click(function () {
             _switchContributorReasonDisplay($(this).is(':checked'));
