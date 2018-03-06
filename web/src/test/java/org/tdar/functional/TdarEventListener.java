@@ -214,5 +214,15 @@ public class TdarEventListener extends WebDriverEventAdapter {
             logger.trace("beforeAlertDismiss");
         }
 
+        @Override
+        public void afterSwitchToWindow(String arg0, WebDriver arg1) {
+            logger.trace("afterSwitchToWindow");            
+        }
+
+        @Override
+        public void beforeSwitchToWindow(String arg0, WebDriver arg1) {
+            logger.trace("beforeSwitchToWindow");            
+        }
+
 
 }

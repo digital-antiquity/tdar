@@ -54,20 +54,21 @@ public class AwsQueuePollerITCase extends AbstractIntegrationTestCase {
 		getLogger().debug("There are : {} messages",messages.size());
 		
 		for(Message message : messages){
-			JSONArray headers = awsQueueSerivce.getMessageHeaders(message);
-			String messageId = awsQueueSerivce.getTdarMessageId(headers);
-			String errorMessage = awsQueueSerivce.getBounce(message);
-			getLogger().debug("The header is {}", messageId);
-			getLogger().debug("The bounce is {}", errorMessage);
-			
-			emailService.markMessageAsBounced(messageId, errorMessage);
-			
-			genericService.synchronize();
-			Email find = null;
-			find = emailDao.findEmailByGuid(messageId).get(0);
-			
-			assertEquals(Status.BOUNCED,find.getStatus());
-			assertEquals(errorMessage, find.getErrorMessage());
+			if(awsQueueSerivce.getNotificationType(message).equals("Bounce")){
+				JSONArray headers = awsQueueSerivce.getMessageHeaders(message);
+				String messageId = awsQueueSerivce.getTdarMessageId(headers);
+				String errorMessage = awsQueueSerivce.getBounce(message);
+				getLogger().debug("The header is {}", messageId);
+				getLogger().debug("The bounce is {}", errorMessage);
+				
+				emailService.markMessageAsBounced(messageId, errorMessage);
+				
+				genericService.synchronize();
+				Email find = null;
+				find = emailDao.findEmailByGuid(messageId).get(0);
+				assertEquals(Status.BOUNCED,find.getStatus());
+				assertEquals(errorMessage, find.getErrorMessage());
+			}
 		}
 	}
 	

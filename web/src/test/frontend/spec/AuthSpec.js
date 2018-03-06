@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 describe("AuthSpec.js: tests for TDAR.auth methods", function() {
     beforeEach(function() {
-        spyOn(window.location, 'reload');
+//        spyOn(window.location, 'reload');
         spyOn(window, 'setTimeout');
         spyOn(window, 'alert');
     });

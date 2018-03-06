@@ -1,5 +1,4 @@
 <#import "email-macro.ftl" as mail /> 
-
 <@mail.content>
 Hello ${user.firstName},<br />
 <br />
@@ -8,22 +7,25 @@ You have successfully signed up to use ${config.siteAcronym}<br />
 We are very happy to have you join our community.<br />
 <br/>
 Your user name is: ${user.username}<br/>
-The sites URL is: ${config.baseUrl}<br/>
+The sites URL is: <a href="${config.baseUrl}">${config.baseUrl}</a><br/>
+
 <br/>
 <br/>
 You can:
 <ul>
-<li> Read the documentation at: ${config.documentationUrl}</li>
-<li> Use the RSS feed: ${config.newsRssFeed}</li>
-<li> And report defects at: ${config.bugReportUrl}</li>
+    <li> <a href="${config.documentationUrl}">Read the documentation</a></li>
+    <li> <a href="${config.newsRssFeed}">Use the RSS feed</a></li>
+    <li> <a href="${config.bugReportUrl}">Report defects </a></li>
 </ul>
+
 <br/>
+
 If you need more help, there are dedicated sections on
 <ul>
-<li>Cultural terms: ${config.culturalTermsHelpURL}</li>
-<li>Investigation types: ${config.investigationTypesHelpURL}</li>
-<li>Material types: ${config.materialTypesHelpURL}</li>
-<li>And site types: ${config.siteTypesHelpURL}</li>
+    <li><a href="${config.culturalTermsHelpURL}">Cultural terms</a> </li>
+    <li><a href="${config.investigationTypesHelpURL}">Investigation types</a></li>
+    <li><a href="${config.materialTypesHelpURL}">Material types</a></li>
+    <li><a href="${config.siteTypesHelpURL}">And site types</a></li>
 </ul>
 
 If you'd like to contact us, simple send an email message to: ${config.contactEmail}<br/>
