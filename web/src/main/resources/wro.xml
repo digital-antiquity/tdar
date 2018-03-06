@@ -112,6 +112,7 @@
         <css>/components/selectize/dist/css/selectize.css</css>
 
 
+        <js>/components/vue/dist/vue.js</js>
         <js>/js/vue/vue-selectize.js</js>
         <js>/js/vue/view-collection-widget.js</js>
         <js>/js/vue/vue-edit-file-upload-component.js</js>

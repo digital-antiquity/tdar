@@ -15,13 +15,13 @@ import org.tdar.core.bean.collection.RequestCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -51,7 +51,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     private HasEmail to;
     private String subject;
     private String messageBody;
-    private EmailMessageType type;
+    private EmailType type;
 
     @Autowired
     private transient EmailService emailService;
@@ -67,10 +67,11 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     @PostOnly
     public String execute() {
         // if we're in the SAA process, then override the "to" with the specified ID
-        if (type == EmailMessageType.CUSTOM) {
+        if (type == EmailType.CUSTOM) {
             RequestCollection custom = resourceService.findCustom(getResource());
             to = custom.getContact();
         }
+        
         emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
         addActionMessage("Message Sent");
 
@@ -117,11 +118,11 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
         this.messageBody = messageBody;
     }
 
-    public EmailMessageType getType() {
+    public EmailType getType() {
         return type;
     }
 
-    public void setType(EmailMessageType type) {
+    public void setType(EmailType type) {
         this.type = type;
     }
 

@@ -13,11 +13,8 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Keys;
 import org.tdar.functional.util.WebElementSelection;
-
-import com.sun.xml.internal.xsom.impl.util.DraconianErrorHandler;
 
 /**
  * Created by jimdevos on 3/12/14.

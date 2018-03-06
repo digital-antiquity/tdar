@@ -178,6 +178,9 @@ public interface TdarNamedQueries {
     String QUERY_RIGHTS_EXPIRY_COLLECTION = "query.expiry_authuser_collection";
     String QUERY_RIGHTS_EXPIRY_ACCOUNT = "query.expiry_account";
     String QUERY_RIGHTS_EXPIRY_WORKFLOW = "query.expiry_authuser_workflow";
+    String FIND_EMAIL_BY_GUID = "query.find_email_by_guid";
+    
+    
     // raw SQL/HQL queries
 
     /**
@@ -312,6 +315,10 @@ public interface TdarNamedQueries {
     String ANNUAL_RESOURCE_UPDATE = "insert into resource_access_year_agg (resource_id, year, total, total_bot) select resource_id, year, sum(total), sum(total_bot) from resource_access_month_agg where year=:year group by 1,2";
     String ANNUAL_RESOURCE_CLEANUP = "delete from resource_access_year_agg where year=:year";
     String MONTHLY_USAGE_FOR_RESOURCE = "query.monthly_for_resource";
+   
+    String MOST_POPULAR_BY_BILLING_ACCOUNT = "SELECT count(ras.id), resource_id  FROM resource_access_statistics ras, resource r "
+   		+ "WHERE  r.id=ras.resource_id AND r.status='ACTIVE' AND r.account_id = %s GROUP BY 2 ORDER BY 1 DESC LIMIT %s";
+    
 
     /**
      * it's possible this is too generous and we need something closer to the following which unions to explicit joins:

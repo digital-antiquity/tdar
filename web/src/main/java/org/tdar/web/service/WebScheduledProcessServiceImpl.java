@@ -13,6 +13,7 @@ import org.tdar.core.service.RssService;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
+import org.tdar.core.service.processes.PollEmailBouncesProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.DailyStatisticsUpdate;
@@ -64,6 +65,17 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
     @Scheduled(fixedDelay = ScheduledProcessService.FIVE_MIN_MS)
     public void cronQueueEmail() {
         scheduledProcessService.queue(SendEmailProcess.class);
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.WebScheduledProcessService#cronQueueEmail()
+     */
+    @Override
+    @Scheduled(fixedDelay = ScheduledProcessService.FIVE_MIN_MS)
+    public void cronProcessEmailErrors() {
+    	scheduledProcessService.queue(PollEmailBouncesProcess.class);
     }
 
     /*

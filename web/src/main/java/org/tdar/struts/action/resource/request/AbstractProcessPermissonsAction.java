@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
@@ -13,7 +14,6 @@ import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.utils.EmailMessageType;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -33,7 +33,7 @@ public abstract class AbstractProcessPermissonsAction extends AbstractAuthentica
     private TdarUser requestor;
     private Permissions permission;
     private Resource resource;
-    private EmailMessageType type;
+    private EmailType type;
 
     private List<Permissions> availablePermissions = Permissions.resourcePermissions();
     @Autowired
@@ -132,11 +132,11 @@ public abstract class AbstractProcessPermissonsAction extends AbstractAuthentica
         return InternalTdarRights.EDIT_ANYTHING;
     }
 
-    public EmailMessageType getType() {
+    public EmailType getType() {
         return type;
     }
 
-    public void setType(EmailMessageType type) {
+    public void setType(EmailType type) {
         this.type = type;
     }
 }

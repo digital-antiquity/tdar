@@ -1,5 +1,6 @@
 package org.tdar.core.configuration;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -22,6 +23,11 @@ public class ConfigurationAssistantTestCase {
         Properties properties = new Properties();
         properties.put(key, value);
         return new ConfigurationAssistant(properties);
+    }
+
+    @Test
+    public void testBaseUrl() {
+        assertEquals("should not have trailing slash", "http://localhost:8180", TdarConfiguration.getInstance().getBaseUrl());
     }
 
     @Test

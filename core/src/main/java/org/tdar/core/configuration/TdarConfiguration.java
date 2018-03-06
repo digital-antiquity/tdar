@@ -19,6 +19,8 @@ import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.PairtreeFilestore;
 
+import com.amazonaws.regions.Regions;
+
 /**
  * $Id$
  * 
@@ -32,10 +34,11 @@ import org.tdar.filestore.PairtreeFilestore;
 public class TdarConfiguration extends AbstractConfigurationFile {
 
     public static final List<String> STOP_WORDS = Arrays.asList("the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
-            "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not", "like");
+            "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not","like");
     private static final String JIRA_LINK = "issues.tdar.org/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
     private static final String SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY = "Security Exception: could not create personal filestore home directory";
     public static final String COULDN_T_CREATE_TEMPORARY_DIRECTORY_AT = "Couldn't create temporary directory at : ";
+
 
     public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 50;
     public static final int DEFAULT_AUTHORITY_MANAGEMENT_MAX_AFFECTED_RECORDS = 1000;
@@ -51,12 +54,11 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     private List<String> couponCodes = new ArrayList<>();
 
     private String configurationFile;
-
+    
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
     public static final String PRODUCTION = "production";
     private static final int USE_DEFAULT_EXCEL_ROWS = -1;
-    private static final String[] defaultColors = new String[] { "#2C4D56", "#EBD790", "#4B514D", "#C3AA72", "#DC7612", "#BD3200", "#A09D5B", "#F6D86B",
-            "#660000", "#909D5B" };
+    private static final String[] defaultColors = new String[] {"#2C4D56", "#EBD790","#4B514D","#C3AA72","#DC7612","#BD3200","#A09D5B","#F6D86B", "#660000", "#909D5B"};
 
     private TdarConfiguration() {
         this("/tdar.properties");
@@ -83,11 +85,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     /**
      * Write the current properties to a the supplied outputstream.
-     * 
-     * @param outs
-     *            stream to receive properties
-     * @param comments
-     *            Comment line to include at beginning of output
+     * @param outs  stream to receive properties
+     * @param comments Comment line to include at beginning of output
      */
     public void store(OutputStream outs, String comments) throws IOException {
         assistant.getProperties().store(outs, comments);
@@ -95,15 +94,15 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     /**
      * Write current properties to stdout.
-     * 
      * @throws IOException
      */
     public void store() throws IOException {
-        // FIXME: this is kinda worthless because we don't include default properties.
+        //FIXME: this is kinda worthless because we don't include default properties.
         store(System.out, "Current tDAR Configuration");
     }
 
-    public static void main(String[] args) {
+
+    public static void main (String [] args) {
         try {
             getInstance().store();
         } catch (IOException e) {
@@ -111,6 +110,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
             System.exit(1);
         }
     }
+
 
     /*
      * Do not use this except for via the @MultipleTdarConfigurationRunner
@@ -138,6 +138,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         initializeStopWords();
         intializeCouponCodes();
 
+
         if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
             throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
         }
@@ -161,7 +162,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     private void initializeStopWords() {
         try {
-            stopWords.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("lucene.stop.words.file")), Charset.defaultCharset()));
+            stopWords.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("lucene.stop.words.file")),Charset.defaultCharset()));
         } catch (Exception e) {
             stopWords.addAll(STOP_WORDS);
         }
@@ -169,7 +170,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     private void intializeCouponCodes() {
         try {
-            couponCodes.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("coupon.codes.file")), Charset.defaultCharset()));
+            couponCodes.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("coupon.codes.file")),Charset.defaultCharset()));
         } catch (Exception e) {
             couponCodes.addAll(Arrays.asList("acheulean", "acropolis", "agora", "alidade", "alloy", "alluvial", "amphora", "anthropology", "antiquarian",
                     "archaeoastronomy", "archaeology", "archaeozoology", "archaic", "aristocracy", "artifact", "assemblage", "association", "balk",
@@ -315,10 +316,11 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         }
         return base;
     }
-
+    
     public String getContextPath() {
         return "";
     }
+    
 
     public String getStaticContentBaseUrl() {
         String base = "http://" + getStaticContentHost();
@@ -498,11 +500,12 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getStringProperty("recaptcha.publicKey");
     }
 
+
     // TODO: remove feature toggle when feature complete
     public boolean getLeftJoinDataIntegrationFeatureEnabled() {
         return assistant.getBooleanProperty("featureEnabled.leftJoinDataIntegration", false);
     }
-
+    
     public int getScheduledProcessStartId() {
         return assistant.getIntProperty("scheduled.startId", -1);
     }
@@ -572,6 +575,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getStringProperty("help.resourceCreatorRole", getDocRoot() + "Resource+Creator+Roles");
     }
 
+    
     public String getIntegrationDocumentationUrl() {
         return assistant.getStringProperty("help.integrationUrl", getDocRoot() + "Documentation+Home");
     }
@@ -871,7 +875,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public int getDownloadBufferSize() {
-        return assistant.getIntProperty("download.buffer_size", 2048);
+        return assistant.getIntProperty("download.buffer_size",2048);
     }
 
     @Deprecated
@@ -882,7 +886,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         filestore = loadFilestore();
         initPersonalFilestorePath();
     }
-
+    
     @Override
     protected ConfigurationAssistant getAssistant() {
         return assistant;
@@ -897,7 +901,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public boolean shouldLogToFilestore() {
-        return assistant.getBooleanProperty("log.to.filestore", true);
+        return assistant.getBooleanProperty("log.to.filestore",true);
     }
 
     public Long getAdminUserId() {
@@ -928,21 +932,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public boolean useTransactionalEvents() {
-        return assistant.getBooleanProperty("transactional.events", true);
+        return assistant.getBooleanProperty("transactional.events",true);
     }
-
-    // public List<Long> getSaaCollectionIds() {
-    // String ids = assistant.getStringProperty("saa.conferences", "29442,29441");
-    // List<Long> toReturn = new ArrayList<>();
-    // for (String id_ : ids.split(",")) {
-    // try {
-    // toReturn.add(Long.parseLong(id_));
-    // } catch (Exception e) {
-    // logger.warn("{}",e,e);
-    // }
-    // }
-    // return toReturn;
-    // }
 
     public Long getSAAContactId() {
         return assistant.getLongProperty("saa.contact_id", getAdminUserId());
@@ -1003,8 +994,44 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean isListCollectionsEnabled() {
         return false;
     }
+    
+    public String getAwsAccessKey(){
+    	return assistant.getStringProperty("aws.accesskey.id");
+    }
+    
+    public String getAwsSecretKey(){
+    	return assistant.getStringProperty("aws.accesskey.secret");
+    }
+
+	public String getCharacterSet() {
+		return assistant.getStringProperty("aws.characterset");
+	}
+	
+	public String getAwsQueueName(){
+		return assistant.getStringProperty("aws.queuename");
+	}
+	
+	public Regions getAwsRegion(){
+		try {
+			String key = assistant.getStringProperty("aws.region");
+			return Regions.valueOf(key);
+		}
+		catch(NullPointerException | IllegalArgumentException e){
+			return Regions.US_WEST_2;
+		}
+	}
+	
+	public String getEmailAttachmentsDirectory(){
+		//TODO populate this from tdar.properties.
+        return assistant.getStringProperty("email.attachments.location", "/home/tdar/email-attachments/");
+	}
 
     public String getStaffEmail() {
         return assistant.getStringProperty("app.staff.email", "staff@digitalantiquity.org");
     }
+
+	public String getDeveloperTestEmail() {
+		return assistant.getStringProperty("email.developer.test", "test@tdar.org");
+	}
+	
 }

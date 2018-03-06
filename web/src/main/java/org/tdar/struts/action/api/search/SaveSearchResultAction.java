@@ -1,7 +1,5 @@
 package org.tdar.struts.action.api.search;
 
-import java.util.Map;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Namespaces;
@@ -15,8 +13,6 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.AsynchronousProcessManager;
 import org.tdar.core.service.AsynchronousStatus;
-import org.tdar.core.service.GeoRssMode;
-import org.tdar.core.service.SerializationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.struts.action.AbstractAdvancedSearchController;

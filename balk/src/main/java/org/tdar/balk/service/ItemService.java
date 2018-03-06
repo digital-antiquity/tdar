@@ -15,7 +15,7 @@ public interface ItemService {
 
     void store(ToPersistListener listener);
 
-    DropboxDirectory findParentByPath(String fullPath, boolean isDir);
+    DropboxDirectory findParentByPath(String fullPath, boolean isDir, boolean archived);
 
     boolean hasUploaded(String id, boolean dir);
 
@@ -25,7 +25,7 @@ public interface ItemService {
 
     void handleUploads();
 
-    int itemStatusReport(String path, int page, int size, TreeMap<String, WorkflowStatusReport> map, boolean managed);
+    int itemStatusReport(String path, int page, int size, TreeMap<String, WorkflowStatusReport> map, boolean managed, boolean archived);
 
     AbstractDropboxItem findByDropboxId(String id, boolean dir);
 
@@ -35,10 +35,12 @@ public interface ItemService {
     void copy(AbstractDropboxItem item, String newPath, DropboxUserMapping userMapping, TdarUser tdarUser)
             throws Exception;
 
-    Set<String> listChildPaths(String path);
+    Set<String> listChildPaths(String path, boolean archived);
 
-    Set<String> listTopLevelPaths();
+    Set<String> listTopLevelPaths(boolean archived);
 
-    Set<String> listTopLevelManagedPaths();
+    Set<String> listTopLevelManagedPaths(boolean archived);
+
+    void archive(AbstractDropboxItem item, TdarUser authenticatedUser);
 
 }

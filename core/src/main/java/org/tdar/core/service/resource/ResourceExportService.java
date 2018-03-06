@@ -2,7 +2,6 @@ package org.tdar.core.service.resource;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.List;
 import java.util.Set;
 
 import org.tdar.core.bean.Persistable;

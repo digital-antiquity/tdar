@@ -92,4 +92,19 @@ standalone solr:
 —————————————————
  - full-reindex for collection unification
  - adjust cart page and SAA/SHA pages on tdar website for /api/ changes
+—————————————————
+::Quartz:
+—————————————————
 
+ - for solr (7.2), change the field-types.xml's  spatialContextFactory entry to:
+     spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"
+     - install notes: https://cwiki.apache.org/confluence/display/solr/Taking+Solr+to+Production
+
+ - Added properties for AWS integration to tdar.properties
+	The access Key from AWS should be regenerated on a regular basis for security purposes using the AWS Console.  
+	aws.accesskey.id  
+	aws.accesskey.secret
+	aws.characterset
+	aws.queuename
+	email.attachments.location
+ - Created TXT record for verifying the domain with AWS

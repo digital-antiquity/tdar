@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -25,7 +24,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -37,6 +35,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -44,7 +43,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
@@ -135,7 +134,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         logger.debug("//");
         scheduledProcessService.runNextScheduledProcessesInQueue();
 
-        SimpleMailMessage message = checkMailAndGetLatest("The following users registered with");
+        Email message = checkMailAndGetLatest("The following users registered with");
         assertThat(message, is( not( nullValue())));
 //        assertTrue(dailyEmailProcess.isCompleted());
     }
@@ -157,13 +156,13 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
             scheduledProcessService.runNextScheduledProcessesInQueue();
             count++;
         };
-        SimpleMailMessage received = checkMailAndGetLatest("reporting on files with issues");
+        Email received = checkMailAndGetLatest("reporting on files with issues");
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
-        assertTrue(received.getText().contains("not found"));
-        assertTrue("should find " + totalFiles.intValue(), received.getText().contains("Total Files: "+totalFiles.intValue()));
-        assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
+        assertTrue(received.getMessage().contains("not found"));
+        assertTrue("should find " + totalFiles.intValue(), received.getMessage().contains("Total Files: "+totalFiles.intValue()));
+        assertFalse(received.getMessage().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
-        assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
+        assertEquals(received.getTo(), getTdarConfiguration().getSystemAdminEmail());
     }
 
     @Autowired
@@ -226,12 +225,13 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         scheduledProcessService.runNextScheduledProcessesInQueue();
         scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-        ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
-        SimpleMailMessage received = messages.get(0);
+        List<Email> messages = ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages();
+        logger.debug("Messages are {}", messages);
+        Email received = messages.get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
-        assertTrue(received.getText().contains("Flagged Items"));
+        assertTrue(received.getMessage().contains("Flagged Items"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
-        assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
+        assertEquals(received.getTo(), getTdarConfiguration().getSystemAdminEmail());
         assertNotNull(messages.get(1));
     }
 

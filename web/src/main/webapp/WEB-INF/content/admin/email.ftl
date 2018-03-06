@@ -4,6 +4,26 @@
 <title>Admin Pages - emails </title>
 <@admin.header />
 
+<head>
+    <style>
+    </style>
+
+</head>
+
+<script type="text/javascript">
+function showMessage(id){
+    if($("#email-"+id+" iframe").length==0){
+        console.log("there's no iframe for "+id);
+        var container = $("#email-"+id+" .email-container");
+        console.log(container);
+        container.html("<iframe src='/admin/emailContent/"+id+"' seamless='seamless' frameborder='0'></iframe>"); 
+    }
+    
+    $("#email-"+id).toggleClass('hidden');
+
+}
+</script>
+
 <@s.form name="emailReviewForm" action="changeEmailStatus" cssClass="form-inline">
 <div class="row">
 <div class="span2">
@@ -13,6 +33,7 @@
 <@s.submit name="submit" />
 </div>
 </div>
+
 
 <h3>Emails to be Reviewed</h3>
 
@@ -37,15 +58,17 @@
         <td>${email.subject!'no subject'}</td>
     </tr>
     <tr class="">
-        <td colspan=6>
-        <pre>${email.message}</pre>
-        <hr/>
+        <td colspan=6  style="background-color:white;border:1px solid #eee;">
+            <div class="email-container intrinsic-container-4x3">
+            <iframe id="iframe_rev_${email.id}" src="/admin/emailContent/${email.id?c}" seamless='seamless' frameborder='0'></iframe>
+            </div>
         </td>
     </tr>
 </#list>
 </table>
 
 </@s.form>
+
 
 <h3>All Emails</h3>
 <table class="tableFormat table">
@@ -68,12 +91,12 @@
         <td>${email.date?string.short}</td>
         <td>${email.status}</td>
         <td>${email.subject!'no subject'}</td>
-        <td><button class="button btn small" onClick="$('#email-${email.id?c}').toggleClass('hidden');return false;">show/hide</button></td>
+        <td><button class="button btn small" onClick="showMessage(${email.id?c})">show/hide</button></td>
     </tr>
-    <tr id="email-${email.id?c}" class="<#if email.status=='SENT' || !email.userGenerated>hidden</#if>">
-        <td colspan=7>
-        <pre>${email.message}</pre>
-        <hr/>
+    <tr id="email-${email.id?c}" class="hidden">
+        <td colspan=7  style="background-color:white;border:1px solid #eee;">
+            <div class="email-container">
+            </div>
         </td>
     </tr>
 </#list>

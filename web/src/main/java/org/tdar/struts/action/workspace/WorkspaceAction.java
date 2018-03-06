@@ -1,10 +1,7 @@
 package org.tdar.struts.action.workspace;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -14,13 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
-import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 

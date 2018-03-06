@@ -31,6 +31,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -302,17 +303,14 @@ public class ResourceExportServiceImpl implements ResourceExportService {
 
     @Transactional(readOnly = false)
     public void sendEmail(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
-        Email email = new Email();
-        email.setTo(authenticatedUser.getEmail());
+    	String url = String.format("%s/export/download?filename=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
+        Email email = emailService.createMessage(EmailType.RESOURCE_EXPORT, authenticatedUser.getEmail());
         email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
-        email.setSubject(MessageHelper.getMessage("resourceExportService.email_subject"));
-        Map<String, Object> dataModel = new HashMap<>();
-        dataModel.put("resources", resourceExportProxy);
-        dataModel.put("file", resourceExportProxy.getFilename());
-        String url = String.format("%s/export/download?filename=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
-        dataModel.put("url", url);
-        dataModel.put("authenticatedUser", authenticatedUser);
-        emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);
+        email.addData("resources", resourceExportProxy);
+        email.addData("file", resourceExportProxy.getFilename());
+        email.addData("url", url);
+        email.addData("authenticatedUser", authenticatedUser);
+        emailService.renderAndQueueMessage(email);
     }
 
     /*
@@ -333,7 +331,5 @@ public class ResourceExportServiceImpl implements ResourceExportService {
         }
         return zipFile;
         // TODO Auto-generated method stub
-
     }
-
 }

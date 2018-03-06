@@ -26,7 +26,6 @@ import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.opensymphony.xwork2.Preparable;

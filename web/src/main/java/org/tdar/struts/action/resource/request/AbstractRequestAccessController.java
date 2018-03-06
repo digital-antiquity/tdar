@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.UserAffiliation;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -48,7 +48,7 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
     private Long id;
     private Resource resource;
     private String messageBody;
-    private EmailMessageType type;
+    private EmailType type;
 
     private AntiSpamHelper h = new AntiSpamHelper();
 
@@ -101,11 +101,11 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
         this.h = h;
     }
 
-    public EmailMessageType getType() {
+    public EmailType getType() {
         return type;
     }
 
-    public void setType(EmailMessageType type) {
+    public void setType(EmailType type) {
         this.type = type;
     }
 

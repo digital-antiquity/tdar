@@ -26,14 +26,16 @@ public class IndexAction extends AbstractAuthenticatedAction {
     private Set<String> topLevelPaths;
 
     private Set<String> topLevelManagedPaths;
+    
+    private boolean archived;
 
     
     @Override
     @Action(value="" , results={@Result(name=SUCCESS, type=FREEMARKER, location="index.ftl")})
     public String execute() throws Exception {
-        topLevelPaths = itemService.listTopLevelPaths();
+        topLevelPaths = itemService.listTopLevelPaths(archived);
         getLogger().debug("topLevelPaths:{}", topLevelPaths);
-        topLevelManagedPaths = itemService.listTopLevelManagedPaths();
+        topLevelManagedPaths = itemService.listTopLevelManagedPaths(archived);
         getLogger().debug("topLevelManagedPaths:{}", topLevelManagedPaths);
         return super.execute();
     }
@@ -56,6 +58,16 @@ public class IndexAction extends AbstractAuthenticatedAction {
 
     public void setTopLevelManagedPaths(Set<String> topLevelManagedPaths) {
         this.topLevelManagedPaths = topLevelManagedPaths;
+    }
+
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
     
     

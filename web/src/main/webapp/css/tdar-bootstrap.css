@@ -861,3 +861,20 @@ tr:hover .moremenu {
 }
 
  */
+
+
+.email-container {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+    padding-bottom: 75%;
+}
+
+ 
+.email-container iframe {
+  position: absolute;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

@@ -10,14 +10,14 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DoiProcess;
 import org.tdar.core.service.resource.ResourceService;
@@ -103,9 +103,9 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         assertTrue(updated_.size() > 0);
         assertTrue(deleted_.size() > 0);
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
+        Email received = ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages().get(0);
         assertTrue(received.getSubject().contains(DoiProcess.SUBJECT));
-        assertTrue(received.getText().contains("DOI Daily"));
+        assertTrue(received.getMessage().contains("DOI Daily"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
 
     }

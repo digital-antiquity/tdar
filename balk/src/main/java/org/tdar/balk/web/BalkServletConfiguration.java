@@ -8,7 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.cxf.transport.servlet.CXFServlet;
 import org.apache.struts2.dispatcher.filter.StrutsExecuteFilter;
 import org.apache.struts2.dispatcher.filter.StrutsPrepareFilter;
 import org.apache.struts2.dispatcher.listener.StrutsListener;
@@ -79,14 +78,6 @@ public class BalkServletConfiguration extends AbstractServletConfiguration
         freemarker.setLoadOnStartup(1);
         freemarker.addMapping("*.dec");
     }
-
-    @SuppressWarnings("unused")
-    private void configureCxfForTag(ServletContext container) {
-        ServletRegistration.Dynamic cxf = container.addServlet("cxf", CXFServlet.class);
-        cxf.setLoadOnStartup(1);
-        cxf.addMapping("/services/*");
-    }
-
 
     private void configureUrlRewriteRule(ServletContext container) {
         Dynamic urlRewriteFilter = container.addFilter("URLRewriteFilter", UrlRewriteFilter.class);

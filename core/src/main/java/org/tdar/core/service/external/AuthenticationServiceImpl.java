@@ -32,7 +32,6 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -480,7 +479,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         updatePersonWithInvites(person);
         logger.debug("Trying to add user to auth service...");
 
-        sendWelcomeEmail(person);
+        emailService.sendWelcomeEmail(person);
+       
         userNotificationService.info(person, reg.getWelcomeNewUserMessageKey(), UserNotificationDisplayType.FREEMARKER);
         logger.info("Added user to auth service successfully.");
         // } else {
@@ -563,22 +563,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return result;
     }
 
-    private void sendWelcomeEmail(Person person) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("user", person);
-        result.put("config", CONFIG);
-        try {
-            String subject = MessageHelper.getMessage("userAccountController.welcome", Arrays.asList(CONFIG.getSiteAcronym()));
-            Email email = new Email();
-            email.setSubject(subject);
-            email.addToAddress(person.getEmail());
-            email.setUserGenerated(false);
-            emailService.queueWithFreemarkerTemplate(EMAIL_WELCOME_TEMPLATE, result, email);
-        } catch (Exception e) {
-            // we don't want to ruin the new user's experience with a nasty error message...
-            logger.error("Suppressed error that occurred when trying to send welcome email", e);
-        }
-    }
 
     private TdarUser reconcilePersonWithTransient(TdarUser incoming, TdarUser resultOfLookup, String error) {
         if ((resultOfLookup != null) && PersistableUtils.isNullOrTransient(incoming)) {

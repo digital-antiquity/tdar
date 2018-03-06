@@ -4,15 +4,12 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -24,10 +21,7 @@ import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.web.service.FileSaveWrapper;
 import org.tdar.web.service.ResourceSaveControllerService;
-
-import com.opensymphony.xwork2.TextProvider;
 
 /**
  * $Id$

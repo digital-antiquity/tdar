@@ -34,6 +34,7 @@ public abstract class AbstractServletConfiguration {
 
     public AbstractServletConfiguration(String msg) {
         logger.debug(msg);
+        System.setProperty("java.awt.headless", "true");
         try {
             TdarConfiguration.getInstance().initialize();
         } catch (Throwable t) {

@@ -7,10 +7,10 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.ScheduledProcessService;
@@ -65,8 +65,8 @@ public class RightsControllerInviteITCase extends AbstractControllerITCase {
 
         evictCache();
         scheduledProcessService.queue(DailyEmailProcess.class);
-        SimpleMailMessage message = checkMailAndGetLatest("like to share");
-        assertTrue("has text", StringUtils.contains(message.getText(), string));
+        Email message = checkMailAndGetLatest("like to share");
+        assertTrue("has text", StringUtils.contains(message.getMessage(), string));
 
     }
 }

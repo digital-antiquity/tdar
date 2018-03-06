@@ -14,9 +14,9 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.bean.statistics.AggregateDayViewStatistic;
 import org.tdar.core.bean.statistics.AggregateDownloadStatistic;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.utils.PersistableUtils;
 
@@ -369,5 +369,29 @@ public class AggregateStatisticsDao extends GenericDao {
         query.setParameterList("fileIds", Arrays.asList(irFileIds));
         return query.list();
     }
+
+    /**
+     * Gets the most popular resources for a given billing account
+     * @param billingAccount
+     * @param limit
+     * @return
+     */
+	public List<Resource> getMostPopularResourcesForBillingAccount(BillingAccount billingAccount, int limit) {
+		List<Resource> resources = new ArrayList<>();
+        String sql = String.format(TdarNamedQueries.MOST_POPULAR_BY_BILLING_ACCOUNT, billingAccount.getId(), limit);
+ 
+        getLogger().trace(sql);
+        Query query = getCurrentSession().createSQLQuery(sql);
+        List list = query.list();
+        getLogger().trace("{}", list);
+        for (Object o : list) {
+            Object[] obj = (Object[])o;
+            Resource resource = find(Resource.class, ((Number) obj[1]).longValue());
+            if (PersistableUtils.isNotNullOrTransient(resource)) {
+                resources.add(resource);
+            }
+        }
+        return resources;
+	}
 
 }

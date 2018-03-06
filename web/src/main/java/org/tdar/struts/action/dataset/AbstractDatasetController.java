@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;

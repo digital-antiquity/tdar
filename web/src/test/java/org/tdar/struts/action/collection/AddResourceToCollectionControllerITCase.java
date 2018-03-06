@@ -3,14 +3,12 @@ package org.tdar.struts.action.collection;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.api.collection.AddResourceToCollectionAction;

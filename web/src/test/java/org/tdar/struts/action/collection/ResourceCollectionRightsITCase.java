@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -34,7 +33,6 @@ import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TestResourceCollectionHelper;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.resource.ResourceRightsController;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Action;

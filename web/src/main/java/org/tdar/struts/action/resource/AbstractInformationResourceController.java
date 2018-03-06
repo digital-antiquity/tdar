@@ -16,6 +16,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Language;
@@ -36,7 +37,6 @@ import org.tdar.struts.action.geospatial.GeospatialController;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
@@ -580,14 +580,13 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     @Override
-    public List<EmailMessageType> getEmailTypes() {
-        List<EmailMessageType> types = new ArrayList<>(super.getEmailTypes());
+    public List<EmailType> getEmailTypes() {
+        List<EmailType> types = new ArrayList<>(super.getEmailTypes());
         if (getPersistable().hasConfidentialFiles()) {
-            types.add(EmailMessageType.REQUEST_ACCESS);
+            types.add(EmailType.REQUEST_ACCESS);
         }
         return types;
     }
-
 
 
     public String getFileInputMethod() {

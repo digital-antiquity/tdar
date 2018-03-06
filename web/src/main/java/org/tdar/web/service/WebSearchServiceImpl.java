@@ -1,7 +1,6 @@
 package org.tdar.web.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -16,8 +15,6 @@ import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.event.EventType;
-import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.service.AsynchronousProcessManager;
 import org.tdar.core.service.AsynchronousStatus;

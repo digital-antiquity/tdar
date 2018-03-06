@@ -1,25 +1,16 @@
 package org.tdar.core.bean;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.FileNotFoundException;
 
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.service.collection.ResourceCollectionService;
-import org.tdar.core.service.resource.ErrorHandling;
 
 @Ignore
 public class ManagedResourceCollectionITCase extends AbstractIntegrationTestCase {

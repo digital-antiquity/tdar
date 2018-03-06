@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -77,10 +76,10 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.EmailService;
-import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.external.EmailServiceImpl;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.processes.SendEmailProcess;
@@ -91,8 +90,10 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.utils.EmailStatisticsHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.StatsChartGenerator;
 import org.tdar.utils.TestConfiguration;
 // 
 @ContextConfiguration(classes = TdarAppConfiguration.class)
@@ -148,7 +149,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public SendEmailProcess sendEmailProcess;
 
     @Autowired
-    protected EmailService emailService;
+    protected EmailServiceImpl emailService;
+    
+    @Autowired
+    protected EmailStatisticsHelper emailStatsHelper;
+    
+    @Autowired
+	protected StatsChartGenerator chartGenerator;
+    
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private SessionData sessionData;
@@ -168,8 +176,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         protected void failed(Throwable e, Description description) {
             AbstractIntegrationTestCase.this.onFail(e, description);
         }
-
     };
+    
+    
 
     @Before
     public void announceTestStarting() {
@@ -177,8 +186,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         genericService.delete(genericService.findAll(Email.class));
         sendEmailProcess.setAllIds(null);
-        if (emailService.getMailSender() instanceof MockMailSender) {
-            ((MockMailSender) emailService.getMailSender()).getMessages().clear();
+        if (emailService.getAwsEmailService() instanceof MockAwsEmailSenderServiceImpl) {
+            ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages().clear();
         }
         if (TdarConfiguration.getInstance().shouldLogToFilestore()) {
             serializationService.setUseTransactionalEvents(false);
@@ -654,15 +663,15 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         assertTrue(message, CollectionUtils.isEmpty(results));
     }
 
-    public SimpleMailMessage checkMailAndGetLatest(String text) {
+    public Email checkMailAndGetLatest(String text) {
         sendEmailProcess.execute();
         sendEmailProcess.cleanup();
-        ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
+        List<Email> messages = ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages();
         logger.debug("{} messages ", messages.size());
-        SimpleMailMessage toReturn = null;
-        for (SimpleMailMessage msg : messages) {
+        Email toReturn = null;
+        for (Email msg : messages) {
             logger.debug("{} from:{} to:{}", msg.getSubject(), msg.getFrom(), msg.getTo());
-            if (msg.getText().contains(text)) {
+            if (msg.getMessage().contains(text)) {
                 toReturn = msg;
             }
         }
@@ -706,4 +715,12 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public EntityService getEntityService() {
         return entityService;
     }
+
+	public StatsChartGenerator getChartGenerator() {
+		return chartGenerator;
+	}
+
+	public void setChartGenerator(StatsChartGenerator chartGenerator) {
+		this.chartGenerator = chartGenerator;
+	}
 }

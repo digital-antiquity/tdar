@@ -38,6 +38,7 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -337,21 +338,15 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         }
 
         // now send a summary email
-        String subject = MessageHelper.getMessage("authorityManagementService.email_subject",
-                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(),
-                        MessageHelper.getMessage("authorityManagementService.service_name"),
-                        logData.getUserDisplayName(), numUpdated, className, logData.getAuthority().toString()));
-        Email email = new Email();
-        email.setSubject(subject);
+        Email email = emailService.createMessage(EmailType.ADMIN_NOTIFICATION,TdarConfiguration.getInstance().getSystemAdminEmail());
         email.setUserGenerated(false);
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("log", logData);
-        map.put("className", className);
-        map.put("numUpdated", numUpdated);
-
-        map.put("referrers", logData.getUpdatedReferrers().entrySet());
+        email.addData("log", logData);
+        email.addData("className", className);
+        email.addData("numUpdated", numUpdated);
+        email.addData("referrers", logData.getUpdatedReferrers().entrySet());
+        
         try {
-            emailService.queueWithFreemarkerTemplate("auth-report.ftl", map, email);
+            emailService.renderAndQueueMessage(email);
         } catch (Exception e) {
             logger.warn("could not send email: {} ", e);
         }

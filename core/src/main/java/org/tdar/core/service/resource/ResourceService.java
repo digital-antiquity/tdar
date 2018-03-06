@@ -291,4 +291,6 @@ public interface ResourceService {
 
     RequestCollection findCustom(Resource resource);
 
+	List<Resource> getMostPopularResourcesForBillingAccount(BillingAccount billingAccount, int limit);
+
 }

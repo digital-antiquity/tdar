@@ -2,8 +2,6 @@ package org.tdar.web.service;
 
 import java.io.IOException;
 
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.service.AsynchronousStatus;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.exception.SearchException;

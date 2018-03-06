@@ -28,9 +28,9 @@ import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.web.service.ResourceEditControllerService;
 import org.tdar.web.service.ResourceSaveControllerService;
-import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 

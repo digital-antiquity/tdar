@@ -47,7 +47,8 @@
         </form>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges">Cancel</button>
-    <a href="#" class="btn btn-primary"  v-on:click="saveAddToCollectionChanges">Save changes</a>
+    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges" v-if="changesMade">Cancel</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges" v-if="changesMade == false">Close</button>
+    <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" v-on:click="saveAddToCollectionChanges" :disabled="!changesMade">Save Changes</button>
   </div>
 </div>  

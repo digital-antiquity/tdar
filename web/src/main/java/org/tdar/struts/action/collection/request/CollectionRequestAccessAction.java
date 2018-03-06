@@ -11,6 +11,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AbstractRequestAccessController;
@@ -18,7 +19,6 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -36,11 +36,11 @@ import com.opensymphony.xwork2.Preparable;
 public class CollectionRequestAccessAction extends AbstractRequestAccessController<ResourceCollection>
         implements Preparable, PersistableLoadingAction<ResourceCollection> {
 
-    private Set<EmailMessageType> emailTypes = new HashSet<>(EmailMessageType.valuesWithoutConfidentialFiles());
+    private Set<EmailType> emailTypes = new HashSet<>(EmailType.valuesWithoutConfidentialFiles());
 
     private static final String SUCCESS_UNAUTH = "success-unauth";
     private static final long serialVersionUID = -6110216327414755768L;
-    private EmailMessageType type = EmailMessageType.CONTACT;
+    private EmailType type = EmailType.CONTACT;
 
     @Override
     public void prepare() {
@@ -89,11 +89,11 @@ public class CollectionRequestAccessAction extends AbstractRequestAccessControll
         return "collection";
     }
 
-    public Set<EmailMessageType> getEmailTypes() {
+    public Set<EmailType> getEmailTypes() {
         return emailTypes;
     }
 
-    public void setEmailTypes(Set<EmailMessageType> emailTypes) {
+    public void setEmailTypes(Set<EmailType> emailTypes) {
         this.emailTypes = emailTypes;
     }
 

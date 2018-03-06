@@ -15,10 +15,8 @@ import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.events.WebDriverEventListener;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.functional.util.WebDriverEventAdapter;
 import org.tdar.web.AbstractWebTestCase;
 
@@ -214,6 +212,16 @@ public class TdarEventListener extends WebDriverEventAdapter {
         @Override
         public void beforeAlertDismiss(WebDriver arg0) {
             logger.trace("beforeAlertDismiss");
+        }
+
+        @Override
+        public void afterSwitchToWindow(String arg0, WebDriver arg1) {
+            logger.trace("afterSwitchToWindow");            
+        }
+
+        @Override
+        public void beforeSwitchToWindow(String arg0, WebDriver arg1) {
+            logger.trace("beforeSwitchToWindow");            
         }
 
 

@@ -7,6 +7,8 @@ public interface WebScheduledProcessService {
     void evictCaches();
 
     void cronQueueEmail();
+    
+    void cronProcessEmailErrors();
 
     /**
      * Send emails at midnight

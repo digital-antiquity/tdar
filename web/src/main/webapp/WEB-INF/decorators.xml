@@ -18,6 +18,7 @@ vim:sts=2:sw=2:
         <pattern>/featuredCollection</pattern>
         <pattern>/config-browser/*</pattern>
         <pattern>/services/*</pattern>
+        <pattern>/admin/emailContent/*</pattern>
     </excludes>
     <decorator name="main" page="layout-bootstrap.dec">
         <pattern>/*</pattern>

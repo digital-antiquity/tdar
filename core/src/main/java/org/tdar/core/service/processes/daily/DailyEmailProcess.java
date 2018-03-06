@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -17,6 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
@@ -86,34 +86,35 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(people)) {
-            Email email = new Email();
-            email.setDate(new Date());
-            email.setFrom(config.getDefaultFromEmail());
-            email.setTo(config.getStaffEmail());
-            email.setSubject(String.format("%s New User Report: %s new users", config.getSiteAcronym().toUpperCase(), people.size()));
-            email.setUserGenerated(false);
-            Map<String, Object> dataModel = initDataModel();
-            dataModel.put("users", people);
-            dataModel.put("totalUsers", people.size());
-            emailService.queueWithFreemarkerTemplate("email_new_users.ftl", dataModel, email);
+        	Email message = emailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getStaffEmail());
+        	message.setMap(initDataModel());
+        	message.addData("users", people);
+            message.addData("totalUsers", people.size());
+            message.setUserGenerated(false);
+        	message.setDate(new Date());
+        	emailService.updateEmailSubject(message);
+        	emailService.renderAndUpdateEmailContent(message);
+        	emailService.queue(message);
+
         }
     }
 
     private void sendQuarrantineEmail() {
         List<Email> emails = emailService.findEmailsWithStatus(Status.IN_REVIEW);
         if (CollectionUtils.isNotEmpty(emails)) {
-            Map<String, Object> dataModel = initDataModel();
-            dataModel.put("emails", emails);
-            dataModel.put("totalEmails", emails.size());
-            Email email = new Email();
-            email.setUserGenerated(false);
-            email.setDate(new Date());
-            email.setFrom(config.getDefaultFromEmail());
-            email.setTo(config.getStaffEmail());
-            email.setSubject(String.format("There are %s user emails to review ", emails.size()));
-            emailService.queueWithFreemarkerTemplate("email_review_message.ftl", dataModel, email);
+        	Email message = emailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getStaffEmail());
+        	message.setMap(initDataModel());
+        	message.addData("emails", emails);
+        	message.addData("totalEmails",emails.size());
+        	message.setUserGenerated(false);
+        	message.setDate(new Date());
+        	emailService.updateEmailSubject(message);
+        	emailService.renderAndUpdateEmailContent(message);
+        	emailService.queue(message);
         }
     }
+    
+    
 
     /**
      * This ScheduledProcess is finished to completion after execute().

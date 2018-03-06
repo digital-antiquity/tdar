@@ -56,26 +56,6 @@ core/src/main/resources/rebel.xml
 web/src/main/resources/rebel.xml
 docker/docker
 docker/postgres
-core/test-classes/ands.doi.minimal.properties
-core/test-classes/ands.doi.test.properties
-core/test-classes/andspids.properties
-core/test-classes/crowd.properties
-core/test-classes/dataOne.properties
-core/test-classes/ezid.properties
-core/test-classes/hibernate-ehcache.xml
-core/test-classes/hibernate.properties
-core/test-classes/localhost.properties
-core/test-classes/log4j2-test.xml
-core/test-classes/nelnet.properties
-core/test-classes/spring-local-settings.xml
-core/test-classes/tdar.broken.kettle.properties
-core/test-classes/tdar.cc.properties
-core/test-classes/tdar.faims.properties
-core/test-classes/tdar.no_obfs.properties
-core/test-classes/tdar.nojai.properties
-core/test-classes/tdar.properties
-core/test-classes/tdar.small.batch.properties
-core/test-classes/tdar.tos.properties
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 webservice/([^\/]+)/build/.*
