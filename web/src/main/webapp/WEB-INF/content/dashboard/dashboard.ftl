@@ -1,12 +1,12 @@
 <#escape _untrusted as _untrusted?html>
-    <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
-    <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-    <#import "/WEB-INF/macros/search-macros.ftl" as search>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
-    <#import "/WEB-INF/macros/common.ftl" as common>
-    <#import "common-dashboard.ftl" as dash >
-    <#import "/${config.themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
+<#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+<#import "/WEB-INF/macros/common.ftl" as common>
+<#import "common-dashboard.ftl" as dash >
+<#import "/${config.themeDir}/settings.ftl" as settings>
 
 <head>
     <title>${authenticatedUser.properName}'s Dashboard</title>
@@ -16,88 +16,92 @@
 
 <div id="titlebar" parse="true">
         <h1>Dashboard &raquo; <span class="red">My Resources</span></h1>
-
         <@dash.headerNotifications />
 </div>
 
-
 <div class="row">
-<div class="span2">
-<@dash.sidebar current="dashboard" />
-</div>
-<div class="span10">
-    <div class="row">
-        <div class="span10">
-            Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!
+    <div class="span2">
+        <@dash.sidebar current="dashboard" />
+    </div>
+
+    <div class="span10">
+        <div class="row">
+            <div class="span10">
+                Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!
+                
+                <#if contributor>
+                    The resources you can access are listed below. To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or
+                    <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on the "upload" button
+                    above.
+                <hr/>
+                </#if>
+            </div>
+        </div>
+    
+        <#if (activeResourceCount > 0 )>
+            <div class="row">
+                <div class="span8">
+                    <div class="row">
+                    <h4 style="text-align:center">At a glance</h4>
+                    </div>
+                    <div class="row">
+                        <div class="span4">
+                
+                            <div class="pieChart" id="statusChart" data-columns="#statusTypeData" style="height:200px" data-click="dashboardStatusPieChartClick"  data-legend-position="right">
+                            </div>
+                            
+                            <#noescape>
+                            <script id='statusTypeData'>
+                            ${statusData}
+                            </script>
+                            </#noescape>
+                
+                        </div>
+                        <div class="span4">
+                            <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="height:200px" data-click="dashboardResourcePieChartClick" data-legend-position="right">
+                            </div>
+                            
+                            <#noescape>
+                            <script id='resourceTypeData'>
+                            ${resourceTypeData}
+                            </script>
+                            </#noescape>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </#if>
+    
+    
+        <div class="row">
+            <div class="span10">
+                <hr/>
+            </div>
+        </div>
+
+        <div class="">
             <#if contributor>
-                The resources you can access are listed below. To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or
-                <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on the "upload" button
-                above.
-            <hr/>
+                <#if (activeResourceCount == 0)>
+                    <@gettingStarted />
+                    <hr/>
+                <#else>
+                    <@recentlyUpdatedSection />
+                </#if>
+
+                <@emptyProjectsSection />
+                <@browseResourceSection />
+            
+            <#else>
+                <@searchSection />
+                <#if featuredResources?has_content  >
+                    <hr/>
+                    <div class="row">
+                        <@view.featured colspan="9" header="Featured and Recent Content"/>
+                    </div>
+                </#if>
             </#if>
         </div>
     </div>
-    <#if (activeResourceCount > 0 )>
-    <div class="row">
-        <div class="span8">
-            <div class="row">
-            <h4 style="text-align:center">At a glance</h4>
-            </div>
-            <div class="row">
-                <div class="span4">
-        
-                    <div class="pieChart" id="statusChart" data-columns="#statusTypeData" style="height:200px" data-click="dashboardStatusPieChartClick"  data-legend-position="right">
-                    </div>
-                    
-                    <#noescape>
-                    <script id='statusTypeData'>
-                    ${statusData}
-                    </script>
-                    </#noescape>
-        
-                </div>
-                <div class="span4">
-                    <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="height:200px" data-click="dashboardResourcePieChartClick" data-legend-position="right">
-                    </div>
-                    
-                    <#noescape>
-                    <script id='resourceTypeData'>
-                    ${resourceTypeData}
-                    </script>
-                    </#noescape>
-                </div>
-            </div>
-        </div>
-    </div>
-    </#if>
-    <div class="row">
-    <div class="span10">
-        <hr/>
-        </div>
-    </div>
-<div class="">
-    <#if contributor>
-        <#if (activeResourceCount == 0)>
-            <@gettingStarted />
-        <hr/>
-        <#else>
-            <@recentlyUpdatedSection />
-        </#if>
-
-        <@emptyProjectsSection />
-        <@browseResourceSection />
-    <#else>
-    <@searchSection />
-    <#if featuredResources?has_content  >
-    <hr/>
-    <div class="row">
-        <@view.featured colspan="9" header="Featured and Recent Content"/>
-    </div>
-    </#if>
-    </#if>
-
-</div>
-</div>
 </div>
 
 
@@ -185,13 +189,10 @@
             </form>
         </div>    
     </div>
-
 </#macro>
 
 
-
-
-    <#macro gettingStarted>
+<#macro gettingStarted>
     <div class="row">
         <div class="span10">
             <h2>Getting Started</h2>
@@ -201,91 +202,86 @@
             </ol>
         </div>
     </div>
-    </#macro>
+</#macro>
 
-    <#macro resourcePieChart>
+<#macro resourcePieChart>
     <div>
-            <h2>At a glance</h2>
+        <h2>At a glance</h2>
     </div>
+</#macro>
 
-    </#macro>
-
-    <#macro recentlyUpdatedSection>
-
+<#macro recentlyUpdatedSection>
     <div class="row">
         <div class="span10">
             <h2><@s.text name="dashboard.recently_updated"/></h2>
             <ol id='recentlyEditedResources'>
-
                 <#list recentlyEditedResources as res>
                     <li id="li-recent-resource-${res.id?c}">
-                   <span class="fixed">
-                       <@commonr.cartouche res true>
-                           <div class="btn-group pull-right recent-nav">
-                        <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
-                        <a class="btn btn-mini" href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
-                    </div><small>[ID: ${res.id?c}]</small> <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
-                       </@commonr.cartouche>
-                   </span>
+                        <span class="fixed">
+                            <@commonr.cartouche res true>
+                                <div class="btn-group pull-right recent-nav">
+                                    <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
+                                    <a class="btn btn-mini" href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
+                                </div>
+                                <small>[ID: ${res.id?c}]</small> 
+                                <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
+                            </@commonr.cartouche>
+                        </span>
                     </li>
                 </#list>
             </ol>
         </div>
     </div>
+</#macro>
 
-
-    </#macro>
-
-    <#macro emptyProjectsSection>
-        <#if (emptyProjects?? && !emptyProjects.empty )>
+<#macro emptyProjectsSection>
+    <#if (emptyProjects?? && !emptyProjects.empty )>
         <div class="row">
             <div class="span10" id="divEmptyProjects">
                 <h2>Empty Projects</h2>
                 <ol id="emptyProjects">
                     <#list emptyProjects as res>
                         <li id="li-empty-project-${res.id?c}">
+                            
                             <a href="<@s.url value="${res.detailUrl}"/>">
                                 <@common.truncate res.title 60 />
                             </a>
+                            
                             <small>(ID: ${res.id?c})</small>
-                   <span class=" pull-right">
-
-                            <div class="btn-group inline recent-nav">
-                                <a class="btn btn-mini" href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>"
-                                   title="add a resource">add resource</a>
-                                <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a>
-                                <a class="btn btn-mini"  href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
-                            </div>
-                            </span>
+                   
+                                <div class="btn-group inline recent-nav pull-right">
+                                    <a class="btn btn-mini" href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>"
+                                       title="add a resource">add resource</a>
+                                    <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a>
+                                    <a class="btn btn-mini"  href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
+                                </div>
                         </li>
                     </#list>
                 </ol>
             </div>
         </div>
         <hr/>
-        </#if>
-    </#macro>
+    </#if>
+</#macro>
 
 
-    <#macro browseResourceSection>
-        <@search.reindexingNote />
+<#macro browseResourceSection>
+    <@search.reindexingNote />
     <div class="row" id="project-list">
-    <div class="span10">
-        <h2>Browse Resources</h2>
-
-        <div>
-            <@edit.resourceDataTable span="span10" />
+        <div class="span10">
+            <h2>Browse Resources</h2>
+            <div>   
+                <@edit.resourceDataTable span="span10" />
+            </div>
         </div>
     </div>
-    </div>
-    </#macro>
+</#macro>
 
-    <#macro repeat num val>
-        <#if (num > 0)>
-            <@repeat (num-1) val /><#noescape>${val}</#noescape>
-        </#if>
-    </#macro>
-
+<#macro repeat num val>
+    <#if (num > 0)>
+        <@repeat (num-1) val /><#noescape>${val}</#noescape>
+    </#if>
+</#macro>
 
 <script>
     $(document).ready(function () {
@@ -294,7 +290,4 @@
         $("#myCarousel").carousel('cycle');
     });
 </script>
-
-
-
 </#escape>
