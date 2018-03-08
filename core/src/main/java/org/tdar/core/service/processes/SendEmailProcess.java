@@ -1,6 +1,7 @@
 package org.tdar.core.service.processes;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import javax.mail.MessagingException;
 
@@ -15,6 +16,7 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.external.EmailService;
+
 
 /**
  * $Id$
@@ -80,11 +82,7 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
             case QUEUED:
             		email = emailService.dequeue(email);
             		logger.debug("processing: {}", email);
-	    			try {
-	    				emailService.sendAwsHtmlMessage(email);
-	    			} catch (MessagingException | IOException e) {
-	    				logger.error("Couldn't send AWS message: {} ",e);
-	    			}
+    				emailService.send(email);
             	break;
             default:
                 break;
