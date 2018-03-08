@@ -20,18 +20,24 @@ function showMessage(id){
     }
     
     $("#email-"+id).toggleClass('hidden');
-
 }
+
+
+function sendMessage(id){
+    $("#emailId").val(id);
+    $("#resendMessageForm").submit();
+}
+
 </script>
 
 <@s.form name="emailReviewForm" action="changeEmailStatus" cssClass="form-inline">
 <div class="row">
-<div class="span2">
-<@s.select name="emailAction" list=emailActions listValue=name label="Change Status To"/>
-</div>
-<div class="span2">
-<@s.submit name="submit" />
-</div>
+    <div class="span2">
+        <@s.select name="emailAction" list=emailActions listValue=name label="Change Status To"/>
+    </div>
+    <div class="span2">
+        <@s.submit name="submit" />
+    </div>
 </div>
 
 
@@ -69,37 +75,44 @@ function showMessage(id){
 
 </@s.form>
 
+<@s.form name="resendMessageForm" id="resendMessageForm" action="/admin/resendEmail" method="post" cssClass="form-inline">
+    <input type="text" name="emailId" id="emailId" />
+</@s.form>
 
-<h3>All Emails</h3>
-<table class="tableFormat table">
-<thead>
-<tr>
-    <th>Id</th>
-    <th>To</th>
-    <th>From</th>
-    <th>Date</th>
-    <th>Status</th>
-    <th>Subject</th>
-    <th></th>
-</tr>
-</thead>
-<#list emails as email>
+    <h3>All Emails</h3>
+    <table class="tableFormat table">
+    <thead>
     <tr>
-        <td>${email.id?c} </td>
-        <td>${email.to!''}</td>
-        <td>${email.from!''}</td>
-        <td>${email.date?string.short}</td>
-        <td>${email.status}</td>
-        <td>${email.subject!'no subject'}</td>
-        <td><button class="button btn small" onClick="showMessage(${email.id?c})">show/hide</button></td>
+        <th>Id</th>
+        <th>To</th>
+        <th>From</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Subject</th>
+        <th></th>
     </tr>
-    <tr id="email-${email.id?c}" class="hidden">
-        <td colspan=7  style="background-color:white;border:1px solid #eee;">
-            <div class="email-container">
-            </div>
-        </td>
-    </tr>
-</#list>
-</table>
-
+    </thead>
+    <#list emails as email>
+        <tr>
+            <td>${email.id?c} </td>
+            <td>${email.to!''}</td>
+            <td>${email.from!''}</td>
+            <td>${email.date?string.short}</td>
+            <td>${email.status}</td>
+            <td>${email.subject!'no subject'}</td>
+            <td>
+                <div class="btn-group small">
+                <button class="button btn small" onClick="showMessage(${email.id?c})">Show/Hide</button>
+                <button class="button btn small" onClick="sendMessage(${email.id?c})">Resend Email</button>
+                </div>
+            </td>
+        </tr>
+        <tr id="email-${email.id?c}" class="hidden">
+            <td colspan=7  style="background-color:white;border:1px solid #eee;">
+                <div class="email-container">
+                </div>
+            </td>
+        </tr>
+    </#list>
+    </table>
 </#escape>
