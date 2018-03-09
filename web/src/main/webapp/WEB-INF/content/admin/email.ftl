@@ -54,28 +54,28 @@ function sendMessage(id){
     <th>Subject</th>
 </tr>
 </thead>
-<#list emailsToReview as email>
-    <tr>
-        <td><label for="cb${email.id?c}">${email.id?c}&nbsp; <input type="checkbox" name="ids" value="${email.id?c}"  id="cb${email.id?c}" /></label> </td>
-        <td>${email.to!''}</td>
-        <td>${email.from!''}</td>
-        <td>${email.date?string.short}</td>
-        <td>${email.status}</td>
-        <td>${email.subject!'no subject'}</td>
-    </tr>
-    <tr class="">
-        <td colspan=6  style="background-color:white;border:1px solid #eee;">
-            <div class="email-container intrinsic-container-4x3">
-            <iframe id="iframe_rev_${email.id}" src="/admin/emailContent/${email.id?c}" seamless='seamless' frameborder='0'></iframe>
-            </div>
-        </td>
-    </tr>
-</#list>
+    <#list emailsToReview as email>
+        <tr>
+            <td><label for="cb${email.id?c}">${email.id?c}&nbsp; <input type="checkbox" name="ids" value="${email.id?c}"  id="cb${email.id?c}" /></label> </td>
+            <td>${email.to!''}</td>
+            <td>${email.from!''}</td>
+            <td>${email.date?string.short}</td>
+            <td>${email.status}</td>
+            <td>${email.subject!'no subject'}</td>
+        </tr>
+        <tr class="">
+            <td colspan=6  style="background-color:white;border:1px solid #eee;">
+                <div class="email-container intrinsic-container-4x3">
+                <iframe id="iframe_rev_${email.id}" src="/admin/emailContent/${email.id?c}" seamless='seamless' frameborder='0'></iframe>
+                </div>
+            </td>
+        </tr>
+    </#list>
 </table>
 
 </@s.form>
 
-<@s.form name="resendMessageForm" id="resendMessageForm" action="/admin/resendEmail" method="post" cssClass="form-inline">
+<@s.form name="resendMessageForm" id="resendMessageForm" action="/admin/confirmResendEmail" method="post" cssClass="form-inline">
     <input type="text" name="emailId" id="emailId" />
 </@s.form>
 
@@ -103,7 +103,7 @@ function sendMessage(id){
             <td>
                 <div class="btn-group small">
                 <button class="button btn small" onClick="showMessage(${email.id?c})">Show/Hide</button>
-                <button class="button btn small" onClick="sendMessage(${email.id?c})">Resend Email</button>
+                <button class="button btn small" onClick="sendMessage(${email.id?c})">Resend Email</a>
                 </div>
             </td>
         </tr>
