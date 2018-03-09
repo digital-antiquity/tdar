@@ -29,6 +29,11 @@
 
 </head>
 <body>
+    <div id="divSearchContext" parse="true">
+        <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
+        <label for="cbctxid">Search within this collection</label>
+    </div>
+
     <@commonCollection.header />
     <#if !searchHeaderEnabled><h1>${resourceCollection.name!"untitled collection"}</h1></#if>
 
