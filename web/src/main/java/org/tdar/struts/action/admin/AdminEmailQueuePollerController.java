@@ -17,6 +17,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.service.email.AwsQueuePollerService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.Pair;
@@ -51,8 +52,9 @@ public class AdminEmailQueuePollerController extends AbstractAuthenticatableActi
 	private List<Pair<String, String>> allMessages;
 	private List<Pair<String, String>> bouncedMessages;
 	
+	@WriteableSession
 	@Action(value = "pollMessageQueue", results = {@Result(name=SUCCESS, location="queuePollResult.ftl")})
-    @WriteableSession
+	@PostOnly
 	public String execute(){
 		bouncedMessages = new ArrayList<Pair<String, String>>();
 		allMessages	    = new ArrayList<Pair<String, String>>();

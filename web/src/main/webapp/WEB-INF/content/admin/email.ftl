@@ -30,7 +30,15 @@ function sendMessage(id){
 
 </script>
 
+<h3>Check for Bounced E-Mails</h3>
+Manually poll the BouncedEmailQueue for bounced message notifications and mark messages as bounced. 
+<@s.form name="pollMessageQueueForm" id="pollMessageQueueForm" action="/admin/pollMessageQueue" method="post" cssClass="form-inline">
+    <input type="submit" value="Poll AQS Queue" class="btn" />
+</@s.form>
+<hr />
+
 <@s.form name="emailReviewForm" action="changeEmailStatus" cssClass="form-inline">
+
 <h3>Emails to be Reviewed</h3>
 
 <div class="row">
@@ -70,12 +78,15 @@ function sendMessage(id){
     </#list>
 </table>
 
-
 </@s.form>
 
 <@s.form name="resendMessageForm" id="resendMessageForm" action="/admin/confirmResendEmail" method="post" cssClass="form-inline">
     <input type="hidden" name="emailId" id="emailId" />
 </@s.form>
+
+
+<hr />
+
 
     <h3>All Emails</h3>
     <table class="tableFormat table">

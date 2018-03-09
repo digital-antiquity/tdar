@@ -37,13 +37,9 @@
             <#if editor >
                 <li><a href="<@s.url value="/admin/email"/>">Email</a></li>
             </#if>
-            <#if editor >
-                <li><a href="<@s.url value="/admin/pollMessageQueue"/>">Message Queue</a></li>
-            </#if>
         </ul>
     </div>
     </#macro>
-
 
 
     <#macro statsTable statsObj header="HEADER" cssid="CSS_ID" valueFormat="number">

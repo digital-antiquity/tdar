@@ -12,19 +12,43 @@
 
 <h3>AWS Queue Messages</h3>
 
-<table class="tableFormat table">
-<thead>
-<tr>
-    <th>Status</th>
-    <th>Message</th>
-</tr>
-</thead>
 
+
+<#if bouncedMessages?hasContent>
+    There are ${allMessages?size} bounced messages<br />
+</#if>
 <#if allMessages?hasContent>
-    There are ${allMessages?size} messages
+    There are ${allMessages?size} total messages<br />
 </#if>
 
 
+<#if bouncedMessages?hasContent && (bouncedMessages?size > 0)>
+    <h4>Bounced Messages</h4>
+    <table class="tableFormat table">
+    <thead>
+        <tr>
+            <th>Status</th>
+            <th>Message</th>
+        </tr>
+    </thead>
+    <#list bouncedMessages as pair>
+        <tr>
+            <td>${pair.first}</td>
+            <td>${pair.second}</td>
+        </tr>
+    </#list>
+    </table>
+</#if>
+
+
+<h4>All Messages</h4>
+<table class="tableFormat table">
+<thead>
+    <tr>
+        <th>Status</th>
+        <th>Message</th>
+    </tr>
+</thead>
 <#if allMessages?hasContent && (allMessages?size > 0)>
 <#list allMessages as pair>
     <tr>
