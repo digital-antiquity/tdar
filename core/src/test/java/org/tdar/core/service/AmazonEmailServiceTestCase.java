@@ -4,23 +4,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.email.AwsEmailSender;
 
-public class AmazonEmailServiceTestCase extends AbstractIntegrationTestCase {
+public class AmazonEmailServiceTestCase {
 
-    @Autowired 
-    protected AwsEmailSender awsEmailService;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+//    @Autowired 
+//    protected AwsEmailSender awsEmailService;
     
     @Test
     public void testAwsCredentials(){
     	String accessKey = TdarConfiguration.getInstance().getAwsAccessKey();
     	String secretKey = TdarConfiguration.getInstance().getAwsSecretKey(); 
     	
-    	getLogger().debug("Key: {} Pass:{}",accessKey,secretKey);
+    	logger.debug("Key: {} Pass:{}",accessKey,secretKey);
     	
     	assertNotNull(accessKey);
     	assertNotNull(secretKey);
