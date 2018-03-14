@@ -29,8 +29,6 @@ import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
-import org.tdar.utils.EmailRawMessageHelper;
-
 import com.opensymphony.xwork2.Preparable;
 
 @Component
@@ -81,29 +79,7 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
 		return SUCCESS;
     }
     
-    @WriteableSession
-    @PostOnly
-    @Action(value="resendEmail",
-    results = {
-            @Result(name = SUCCESS, type = REDIRECT, location = "/admin/email"),
-            @Result(name = INPUT, location = "email.ftl") })
-    public String resendEmail(){
-    	Email email = getGenericService().find(Email.class, emailId);
-    	try {
-    		email = emailService.dequeue(email);
-			emailService.sendAwsHtmlMessage(email);
-			email.setStatus(Status.SENT);
-			email.setDateSent(new Date());
-			getGenericService().saveOrUpdate(email);
-		} catch (MailException | IOException | MessagingException me) {
-			email.setStatus(Status.ERROR);
-			email.setErrorMessage(me.getMessage());
-			getLogger().error("email error: {} {}", email, me);
-		}
-    	addActionMessage("Resent message "+emailId+" to "+email.getTo());
-    	
-    	return SUCCESS;
-    }
+    
     
     
     @Action("email")
