@@ -1,0 +1,69 @@
+/** Why tdar template **/
+
+.why article h2, .why article p, .why article ul {
+    width: 350px;
+    margin: 0;
+}
+
+.why article h2 {
+    font-size: 30px;
+    line-height: 30px;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.why article p {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 21px;
+    margin-bottom: 15px;
+}
+
+.why article ul {
+    margin: 0 0 20px 0;
+    padding: 0 0 0 20px;
+}
+
+.why article li {
+    font-size: 14px;
+    line-height: 20px;
+    color: #7d7a77;
+    margin: 0;
+    padding: 0;
+}
+
+.why li span {
+    color: #1b1a18;
+}
+
+.why article.find {
+    background: url(../images/r4/bg-find.png) top right;
+    background-repeat: no-repeat;
+    padding-bottom: 35px;
+}
+
+.why article.find h2, .why article.find p, .why article.find ul {
+    margin-left: 100px;
+}
+
+.why article.preserve {
+    padding: 43px 0 35px 0;
+    background: url(../images/r4/bg-preserve.png) 120px 30px;
+    background-repeat: no-repeat;
+    border-top: 1px solid #dadada;
+    border-bottom: 1px solid #dadada;
+}
+
+.why article.preserve h2, .why article.preserve p, .why article.preserve ul {
+    margin-left: 520px;
+}
+
+.why article.extend {
+    padding-top: 40px;
+    background: url(../images/r4/bg-extend.png) 520px 55px;
+    background-repeat: no-repeat;
+}
+
+.why article.extend h2, .why article.extend p, .why article.extend ul {
+    margin-left: 100px;
+}
