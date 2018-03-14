@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>17.0.0-QUARTZ-SNAPSHOT</version>
+        <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
 

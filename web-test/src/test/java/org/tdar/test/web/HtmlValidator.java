@@ -30,7 +30,7 @@ public class HtmlValidator {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<selectize>", "</selectize>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
-            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
+            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute", "<template>", "</template>",
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
             "missing </a> before <div>",
@@ -43,11 +43,29 @@ public class HtmlValidator {
             "missing </form> before </div",
             "discarding unexpected </a>",
             "missing </div> before link",
+            "missing </div> before <tr",
+            "Warning: missing <td",
+            "Warning: <noscript> isn't allowed in <table> elements",
+            "Warning: </noscript> isn't allowed in <table> elements",
+            "Warning: discarding unexpected </noscript>",
+            "Warning: missing </fieldset> before </div",
+            "Warning: missing </form> before </div",
+            "Warning: discarding unexpected </form",
+            "Warning: input isn't allowed in <table> elements",
+            "Error: assign is not recognized",
+            "Warning: discarding unexpected assign",
+            "Warning: discarding unexpected </fieldset",
             "discarding unexpected </span>", "missing </span> before ",
             "meta isn't allowed in", "missing </div> before meta", /* meta tags for search info, ok */
             "input repeated attribute" /* radiobutton duplicate css */,
             "inserting implicit <br>",
             "replacing element</p>",
+            "inserting implicit <table>",
+            " <div> isn't allowed in <table>",
+            "missing <tr",
+            "plain text isn't allowed in <table> elements",
+            "missing </table> before </div",
+            "discarding unexpected <table",
             "discarding unexpected hr"
     };
     
