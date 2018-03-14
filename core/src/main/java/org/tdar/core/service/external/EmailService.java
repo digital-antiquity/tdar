@@ -61,7 +61,6 @@ public interface EmailService {
      * @param recipients
      *            set of String varargs
      */
-    @Deprecated
     void send(Email email);
 
     /**
