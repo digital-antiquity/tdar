@@ -38,7 +38,8 @@ import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
-import org.tdar.core.bean.notification.aws.BasicAwsMessage;
+import org.tdar.core.bean.notification.emails.BasicAwsMessage;
+import org.tdar.core.bean.notification.emails.EmailKeys;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.RevisionLogType;
@@ -213,9 +214,9 @@ public class EmailServiceImpl implements EmailService {
 	public Email sendUserInviteEmail(UserInvite invite, TdarUser from) {
 		Email message = createMessage(EmailType.INVITE, invite.getUser().getEmail());
 		message.setUserGenerated(false);
-		message.addData(INVITE2, invite);
-		message.addData(FROM2, from);
-		message.addData(TO, invite.getUser());
+		message.addData(EmailKeys.INVITE, invite);
+		message.addData(EmailKeys.FROM, from);
+		message.addData(EmailKeys.TO, invite.getUser());
 		message.setStatus(Status.QUEUED);
 		setupBasicComponents(message.getMap());
 		renderAndUpdateEmailContent(message);
@@ -234,6 +235,7 @@ public class EmailServiceImpl implements EmailService {
 	@Override
 	@Transactional(readOnly = false)
 	public void queue(Email email) {
+		logger.debug("Queuing message for delivery: {} ", email);
 		enforceFromAndTo(email);
 		genericDao.save(email);
 		logger.debug("Queuing email {}", email);
@@ -380,8 +382,8 @@ public class EmailServiceImpl implements EmailService {
 
 		email.setStatus(Status.IN_REVIEW);
 
-		email.addData(FROM2, from);
-		email.addData(TO, to);
+		email.addData(EmailKeys.FROM, from);
+		email.addData(EmailKeys.TO, to);
 
 		setupBasicComponents(email.getMap());
 
@@ -390,11 +392,11 @@ public class EmailServiceImpl implements EmailService {
 		}
 
 		if (resource != null) {
-			email.addData(RESOURCE2, resource);
+			email.addData(EmailKeys.RESOURCE, resource);
 		}
 
-		email.addData(MESSAGE, messageBody);
-		email.addData(TYPE2, type);
+		email.addData(EmailKeys.MESSAGE, messageBody);
+		email.addData(EmailKeys.TYPE, type);
 
 		renderAndUpdateEmailContent(email);
 		queue(email);
@@ -481,18 +483,21 @@ public class EmailServiceImpl implements EmailService {
 			}
 		}
 
+		logger.debug("email type is {}",emailType);
+		
 		Email message = createMessage(emailType, requestor.getEmail());
-		message.addData(REQUESTOR2, requestor);
-		message.addData(RESOURCE2, resource);
-		message.addData(EXPIRES2, expires);
-		message.addData(AUTHORIZED_USER, authenticatedUser);
+		message.addData(EmailKeys.REQUESTOR, requestor);
+		message.addData(EmailKeys.RESOURCE, resource);
+		message.addData(EmailKeys.EXPIRES, expires);
+		
+		message.addData(EmailKeys.AUTHORIZED_USER, authenticatedUser);
 		if (type == EmailType.CUSTOM) {
 			RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
 			message.addData(CUSTOM_NAME, customRequest.getName());
-			message.addData(DESCRIPTION_RESPONSE, customRequest.getDescriptionResponse());
+			message.addData(EmailKeys.DESCRIPTION_RESPONSE, customRequest.getDescriptionResponse());
 		}
 		if (StringUtils.isNotBlank(comment)) {
-			message.addData(MESSAGE, comment);
+			message.addData(EmailKeys.MESSAGE, comment);
 		}
 
 		setupBasicComponents(message.getMap());
@@ -507,6 +512,7 @@ public class EmailServiceImpl implements EmailService {
 		message.setUserGenerated(false);
 
 		updateEmailSubject(message);
+		logger.debug("email subject is {}",message.getSubject());
 		renderAndUpdateEmailContent(message);
 		queue(message);
 
@@ -519,9 +525,9 @@ public class EmailServiceImpl implements EmailService {
 	}
 
 	private void setupBasicComponents(Map<String, Object> map) {
-		map.put(BASE_URL, CONFIG.getBaseUrl());
-		map.put(SITE_ACRONYM, CONFIG.getSiteAcronym());
-		map.put(SERVICE_PROVIDER, CONFIG.getServiceProvider());
+		map.put(EmailKeys.BASE_URL, CONFIG.getBaseUrl());
+		map.put(EmailKeys.SITE_ACRONYM, CONFIG.getSiteAcronym());
+		map.put(EmailKeys.SERVICE_PROVIDER, CONFIG.getServiceProvider());
 	}
 
 	/*
@@ -536,9 +542,9 @@ public class EmailServiceImpl implements EmailService {
 	public void sendUserInviteGrantedEmail(Map<TdarUser, List<HasName>> notices, TdarUser person) {
 		for (Entry<TdarUser, List<HasName>> entry : notices.entrySet()) {
 			Email message = createMessage(EmailType.INVITE_ACCEPTED, entry.getKey().getEmail());
-			message.addData(OWNER, entry.getKey());
-			message.addData(ITEMS, entry.getValue());
-			message.addData(USER, person);
+			message.addData(EmailKeys.OWNER, entry.getKey());
+			message.addData(EmailKeys.ITEMS, entry.getValue());
+			message.addData(EmailKeys.USER, person);
 			setupBasicComponents(message.getMap());
 			// queueemail(message);
 			try {
@@ -553,12 +559,12 @@ public class EmailServiceImpl implements EmailService {
 	@Transactional(readOnly = false)
 	public Email sendWelcomeEmail(Person person) {
 		Map<String, Object> result = new HashMap<>();
-		result.put(USER, person);
-		result.put(CONFIG2, CONFIG);
+		result.put(EmailKeys.USER, person);
+		result.put(EmailKeys.CONFIG, CONFIG);
 		Email email = createMessage(EmailType.NEW_USER_WELCOME, person.getEmail());
 		email.setUserGenerated(false);
-		email.addData(USER, person);
-		email.addData(CONFIG2, CONFIG);
+		email.addData(EmailKeys.USER, person);
+		email.addData(EmailKeys.CONFIG, CONFIG);
 		renderAndQueueMessage(email);
 		return email;
 	}
@@ -610,7 +616,7 @@ public class EmailServiceImpl implements EmailService {
 		// Construct the message and attach the graphs.
 		Email message = createMessage(EmailType.MONTHLY_USER_STATISTICS, user.getEmail());
 		message.addData(RESOURCES, emailStatsHelper.getTopResources(billingAccount));
-		message.addData(USER, user);
+		message.addData(EmailKeys.USER, user);
 		message.addData(AVAILABLE_SPACE,
 				MathUtils.divideByRoundDown(billingAccount.getAvailableSpaceInBytes(), 1024 * 1024));
 		message.addData("availableFiles", billingAccount.getAvailableNumberOfFiles());
@@ -652,7 +658,7 @@ public class EmailServiceImpl implements EmailService {
 
 		email.setSubject("");
 		email.setTo(to);
-
+		setupBasicComponents(email.getMap());
 		return email;
 	}
 

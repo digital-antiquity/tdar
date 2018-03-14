@@ -43,7 +43,6 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		assertTrue("The object is an AWS mock", emailService.getAwsEmailService() instanceof MockAwsEmailSenderServiceImpl);
 	}
 	
-	
 	@Test
 	@Rollback(false)
 	public void testSendRequestAccessEmail(){
@@ -91,7 +90,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Test
 	@Rollback
 	public void testMockMailSender() {
-		Person to = new Person(null, null, "toguy@tdar.net");
+		Person to = new Person(null, null, getTestUserEmail());
 		String mailBody = "this is a message body";
 		String subject = "this is a subject";
 		Email email = new Email();
@@ -116,7 +115,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Test
 	@Rollback
 	public void testSendInviteEmail() {
-		Person to = new Person("To", "Person", "bcastel1@asu.edu");
+		Person to = new Person("To", "Person", getTestUserEmail());
 		Person from = new Person("From", "Somone", "toguy@tdar.net");
 		TdarUser fromUser = new TdarUser(from, "from");
 		UserInvite invite = new UserInvite();
@@ -128,36 +127,17 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		invite.setResource(project);
 		Email email = emailService.sendUserInviteEmail(invite, fromUser);
 		
-		emailService.send(email);
-	}
-	
-	@Test
-	@Rollback
-	public void testInviteAcceptedEmail(){
-		Person to = new Person("To", "Person", "bcastel1@asu.edu");
-		Person from = new Person("From", "Somone", "toguy@tdar.net");
-		TdarUser fromUser = new TdarUser(from, "from");
-		UserInvite invite = new UserInvite();
-		invite.setPerson(to);
-
-		Resource project = createAndSaveNewProject("Test Project");
-		assertEquals(project.getTitle(), "Test Project");
-
-		invite.setResource(project);
-		
-		Email email = emailService.sendUserInviteEmail(invite, fromUser);
 		emailService.send(email);
 	}
 	
 	@Test
 	@Rollback
 	public void testSendWelcomeEmail(){
-		TdarUser to = new TdarUser("To", "Person", "test@tdar.edu","testuser");
+		TdarUser to = new TdarUser("To", "Person", getTestUserEmail(),"testuser");
 		Email email = emailService.sendWelcomeEmail(to);
 		assertTrue("email has 'Welcome' in the subject'",email.getSubject().contains("Welcome"));
 		assertTrue("email has content", email.getMessage().contains("Hello To,<br />"));
 	}
-	
 
 	@Test
 	@Rollback
@@ -166,7 +146,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		map.put("foo", "Hieronymous");
 		map.put("bar", "Basho");
 		Email email = new Email();
-		email.addToAddress("toguy@tdar.net");
+		email.addToAddress(getTestUserEmail());
 		email.setSubject("test");
 		emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
 		sendEmailProcess.execute();
@@ -181,8 +161,8 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		message.setMessage("This is a test message");
 		message.addData("foo", "foo");
 		message.addData("bar", "bar");
-		message.addData("firstName", "Brian");
-		message.addData("lastName", "Castellanos");
+		message.addData("firstName", "First");
+		message.addData("lastName", "Last");
 
 		SendRawEmailResult response = emailService.renderAndSendMessage(message);
 		logger.debug("Response is {}",response);
@@ -191,7 +171,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Test
 	@Rollback
 	public void testSendUserStats() throws MessagingException, IOException {
-		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
+		TdarUser user = new TdarUser("Test", "User", getTestUserEmail());
 		Long billingAccountId = 1L;
 		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
 
@@ -202,7 +182,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Test
 	@Rollback(false)
 	public void testDequeuingUserStatsEmail(){
-		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
+		TdarUser user = new TdarUser("Test", "User", getTestUserEmail());
 		Long billingAccountId = 1L;
 		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
 		Email email = emailService.generateUserStatisticsEmail(user, billingAccount);
@@ -211,7 +191,6 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		emailService.queue(email);
 		Long emailId = email.getId();
 		email = null;
-	
 		
 		Email message = genericService.find(Email.class, emailId);
 		assertTrue("email id is not -1", emailId!=-1);
@@ -236,7 +215,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	@Test
 	@Rollback
 	public void testCreateImages() {
-		TdarUser user = new TdarUser("Test", "User", "bcastel1@asu.edu");
+		TdarUser user = new TdarUser("Test", "User", getTestUserEmail());
 		Long billingAccountId = 1L;
 		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
 
@@ -262,6 +241,10 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		// Generate the total views graph
 		Map<String, Number> totalViewsData = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
 		File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
+		
+		assertTrue("The piechart exists",   piechart.exists());
+		assertTrue("The barchart 1 exists", barchart1.exists());
+		assertTrue("The barchart 2 exists", barchart2.exists());
 	}
 
 	@Test
@@ -284,7 +267,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	
 	public void sendContactRequestEmail(EmailType type){
 		TdarUser from = new TdarUser("Test","User","test@tdar.org","tdartest",getAdminUserId());
-		TdarUser to = new TdarUser("Test","User","bcastel1@asu.edu","tdartest",getUserId());
+		TdarUser to = new TdarUser("Test","User",getTestUserEmail(),"tdartest",getUserId());
 		Resource resource = createAndSaveNewDataset();
 		String subject = "";
 		String messageBody = "This is a test message";
@@ -320,7 +303,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 	
 	public void processPermissionRequestEmail(EmailType emailType, String comment){
 		TdarUser authenticatedUser = getAdminUser();
-		TdarUser requestor = new TdarUser("Test","User","bcastel1@asu.edu","tdartest",getUserId());
+		TdarUser requestor = new TdarUser("Test","User",getTestUserEmail(),"tdartest",getUserId());
 		Resource resource = createAndSaveNewDataset();
 		boolean reject = emailType == EmailType.PERMISSION_REQUEST_REJECTED;
 		Date expires = null;
@@ -336,5 +319,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 		} catch (MessagingException | IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public String getTestUserEmail(){
+		return getTdarConfiguration().getDeveloperTestEmail();
 	}
 }

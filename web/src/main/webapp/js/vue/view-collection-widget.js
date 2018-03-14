@@ -42,25 +42,25 @@ var _getSelectizeOpts = function() {
 
 var _init = function(appId) {
 
-    Vue.component('collection', 
-    { 
-    props: ["id","name"],
-    template: "<option :id='id' class='extra'>{{name}}</option>",
-        computed: {
-            ellipseName: function(){
-            name
-                // this needs to have the TDAR libs in so that the name will
-				// compute.
-               // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
-            }
-        }
-    });
-
-     Vue.component('resource-collection', 
-    { 
-    props: ["id","name"],
-    template: "<li :id='id' class='extra'>{{name}}</li>",
-    });  
+//    Vue.component('collection', 
+//    { 
+//    props: ["id","name"],
+//    template: "<option :id='id' class='extra'>{{name}}</option>",
+//        computed: {
+//            ellipseName: function(){
+//            name
+//                // this needs to have the TDAR libs in so that the name will
+//				// compute.
+//               // TDAR.common.htmlEncode(TDAR.ellipsify(name, 80));
+//            }
+//        }
+//    });
+//
+//     Vue.component('resource-collection', 
+//    { 
+//    props: ["id","name"],
+//    template: "<li :id='id' class='extra'>{{name}}</li>",
+//    });  
 
     $("#addToExisting").popover({placement:'right', delay:{hide:2000}});
         
@@ -79,7 +79,7 @@ var _init = function(appId) {
         newCollectionDescription:"",
         managedCollectionsToRemove: [],
         unmanagedCollectionsToRemove: [],
-        
+        changesMade: false,
         showPermission:false,
         managedResource: true,
         resourceId: -1,
@@ -91,25 +91,32 @@ var _init = function(appId) {
         progressStatus:0,
         lastSavedCollectionId:0
     },
-    
+    watch: {
+        newCollectionName: function (value) {
+            Vue.set(this,"changesMade",true);
+        },
+        selectedCollection: function (value) {
+            Vue.set(this,"changesMade",true);
+        }
+    },
     mounted: function() {
         var $e = $(this.$el);
         console.log("Calling mounting functions");
         if($e.data('resourceId')!=null){
-        	console.log("Mounted");
-        	Vue.set(this, 'administrator',$e.data('administrator'));
-        	console.log("Administrator is ",this.administrator);
-	        Vue.set(this, 'canEdit',$e.data('canEdit'));
-	        Vue.set(this, 'unmanagedEnabled',$e.data('unmanagedEnabled'));
-	        console.log("unmanagedEnabled",this.unmanagedEnabled);
-	        
-	        if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
-	        	console.log("Forcing resource to be managed");
-	            Vue.set(this,"managedResource",true);
-	        }
-	        
-		    Vue.set(this, 'resourceId',$e.data('resourceId'));
-		    this._getCollectionsForResource();
+            	console.log("Mounted");
+            	Vue.set(this, 'administrator',$e.data('administrator'));
+            	console.log("Administrator is ",this.administrator);
+            Vue.set(this, 'canEdit',$e.data('canEdit'));
+            Vue.set(this, 'unmanagedEnabled',$e.data('unmanagedEnabled'));
+            console.log("unmanagedEnabled",this.unmanagedEnabled);
+            
+            if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
+            	console.log("Forcing resource to be managed");
+                Vue.set(this,"managedResource",true);
+            }
+            
+        	    Vue.set(this, 'resourceId',$e.data('resourceId'));
+        	    this._getCollectionsForResource();
         }
     },
     
@@ -131,8 +138,9 @@ var _init = function(appId) {
          //"Add to Collection" functions. 
         _resetForm: function(){
         	console.log("Resetting the 'Add to Collection' form");
-            this.selectedCollection='',
-            this.pick="existing",
+            this.selectedCollection='';
+            this.pick="existing";
+            Vue.set(this,"changesMade",false);
             this.newCollectionName="";
             this.newCollectionDescription="";
             this.managedResource = false;
@@ -155,6 +163,7 @@ var _init = function(appId) {
             }
             axios.get("/api/lookup/collection?permission=" + permission).then(function(res) {
                     self.items = res.data;
+                    Vue.set(this,'changesMade',true);
             });
         },
         
@@ -205,6 +214,7 @@ var _init = function(appId) {
         
         _removeResourceFromCollection: function(collectionId,section){
         	console.log("removing collection id"+collectionId);
+        	Vue.set(this,"changesMade",true);
         		var data =  {
                     resourceId:this.resourceId,
                     collectionId:collectionId,
@@ -293,15 +303,16 @@ var _init = function(appId) {
          * Exposed methods
          */ 
         removeResourceFromCollection: function(collection,section){
-        	console.log("Pending collection removal from "+collection.id+" - "+section);
-        	if(section=='MANAGED'){
-        		this.managedCollectionsToRemove.push(collection.id);
-        		this._arrayRemove(this.collections.managed, collection);
-        	}
-        	else {
-        		this.unmanagedCollectionsToRemove.push(collection.id);
-           		this._arrayRemove(this.collections.unmanaged, collection);
-        	}
+            Vue.set(this,"changesMade",true);
+            	console.log("Pending collection removal from "+collection.id+" - "+section);
+            	if(section=='MANAGED'){
+            		this.managedCollectionsToRemove.push(collection.id);
+            		this._arrayRemove(this.collections.managed, collection);
+            	}
+            	else {
+            		this.unmanagedCollectionsToRemove.push(collection.id);
+               		this._arrayRemove(this.collections.unmanaged, collection);
+            	}
         },
         
         addToCollection:function(){

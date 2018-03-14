@@ -17,7 +17,6 @@ import org.tdar.core.bean.notification.Email;
 
 import com.amazonaws.services.simpleemail.model.RawMessage;
 
-@Component
 public class EmailRawMessageHelper {
 	
 	public static final String LOGO2 = "logo";

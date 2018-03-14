@@ -23,6 +23,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -149,43 +150,33 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
     }
 
     protected void sendNotifications() {
-
         Set<String> adminNotes = new HashSet<>();
         for (TdarUser owner : ownerNotes.keySet()) {
-            Email email = new Email();
-            email.setUserGenerated(false);
-            email.setTo(owner.getEmail());
-            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User(s)");
-            Map<String, Object> map = new HashMap<>();
-            map.put("user", owner);
-            List<String> notes = ownerNotes.getOrDefault(owner, new ArrayList<>());
-            map.put("notes", notes);
-            emailService.queueWithFreemarkerTemplate("expire/expire_owner.ftl", map, email);
+        	Email email = emailService.createMessage(EmailType.ACCESS_EXPIRE_OWNER_NOTIFICATION, owner.getEmail());
+        	List<String> notes = ownerNotes.getOrDefault(owner, new ArrayList<>());
+        	email.setUserGenerated(false);
+        	email.addData("user", owner);
+        	email.addData("notes", notes);
             logger.debug("user notes: {}", notes);
+            emailService.renderAndQueueMessage(email);
             adminNotes.addAll(notes);
         }
 
         for (TdarUser owner : userNotes.keySet()) {
-            Email email = new Email();
+            Email email = emailService.createMessage(EmailType.ACCESS_EXPIRE_USER_NOTIFICATION, owner.getEmail());
             email.setUserGenerated(false);
-            email.setTo(owner.getEmail());
-            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired Access");
-            Map<String, Object> map = new HashMap<>();
-            map.put("user", owner);
-            map.put("notes", ownerNotes.getOrDefault(owner, new ArrayList<>()));
+            email.addData("user", owner);
+            email.addData("notes", ownerNotes.getOrDefault(owner, new ArrayList<>()));
             logger.debug("owner notes: {}", ownerNotes);
-            emailService.queueWithFreemarkerTemplate("expire/expire_user.ftl", map, email);
+            emailService.renderAndQueueMessage(email);
         }
 
         if (CollectionUtils.isNotEmpty(adminNotes)) {
-            Email email = new Email();
-            email.setTo(TdarConfiguration.getInstance().getSystemAdminEmail());
+            Email email = emailService.createMessage(EmailType.ACCESS_EXPIRE_ADMIN_NOTIFICATION, TdarConfiguration.getInstance().getSystemAdminEmail());
             email.setUserGenerated(false);
-            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User Access (admin)");
-            Map<String, Object> map = new HashMap<>();
-            map.put("notes", adminNotes);
+            email.addData("notes", adminNotes);
             logger.debug("admin notes: {}", adminNotes);
-            emailService.queueWithFreemarkerTemplate("expire/expire_admin.ftl", map, email);
+            emailService.renderAndQueueMessage(email);
         }
     }
 

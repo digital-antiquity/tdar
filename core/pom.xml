@@ -10,22 +10,21 @@
 
     <properties>
         <skipTestLiquibase>false</skipTestLiquibase>
-        <aws.java.version>1.11.165</aws.java.version>
         <testChangeLog>changelog-integration.xml</testChangeLog>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>16.1.0-PREHISTORIC-SNAPSHOT</version>
+        <version>17.0.0-QUARTZ-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
-	        <dependencies>
-	            <dependency>
-	            <groupId>com.amazonaws</groupId>
-	            <artifactId>aws-java-sdk</artifactId>
-	            <version></version>
-	        </dependency>
+            <dependencies>
+                <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-java-sdk</artifactId>
+                <version>${aws.java.version}</version>
+            </dependency>
 
 <!--             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -87,10 +86,10 @@
             <!-- LICENSE: BSD -->
         </dependency>
         <dependency>
-		    <groupId>net.postgis</groupId>
-		    <artifactId>postgis-jdbc</artifactId>
-		    <version>2.2.1</version>
-			<!-- LICENSE: LGPL 2 -->
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2.2.1</version>
+            <!-- LICENSE: LGPL 2 -->
             <exclusions>
                 <exclusion>
                     <artifactId>postgresql</artifactId>
@@ -179,11 +178,11 @@
             <artifactId>commons-codec</artifactId>
             <version>${commons-codec.version}</version>
         </dependency>
-		<dependency>
-		    <groupId>commons-validator</groupId>
-		    <artifactId>commons-validator</artifactId>
-		    <version>1.6</version>
-		</dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.6</version>
+        </dependency>
         <dependency>
             <groupId>org.atteo</groupId>
             <artifactId>evo-inflector</artifactId>
@@ -475,9 +474,9 @@
                     <artifactId>asm-commons</artifactId>
                 </exclusion>
                 <exclusion>
-			  		  <groupId>org.freemarker</groupId>
-			  		  <artifactId>freemarker</artifactId>
-			    </exclusion>
+                        <groupId>org.freemarker</groupId>
+                        <artifactId>freemarker</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -497,12 +496,12 @@
         </dependency>
 
         <!-- freemarker -->
-		<dependency>
-		  <groupId>org.freemarker</groupId>
-		  <artifactId>freemarker</artifactId>
-		  <version>2.3.27-incubating</version>
+        <dependency>
+          <groupId>org.freemarker</groupId>
+          <artifactId>freemarker</artifactId>
+          <version>2.3.27-incubating</version>
           <!-- LICENSE: BSD -->
-		</dependency>
+        </dependency>
 <!--         <dependency>
             <groupId>org.owasp.antisamy</groupId>
             <artifactId>antisamy</artifactId>

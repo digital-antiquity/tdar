@@ -31,9 +31,8 @@ public class AwsQueuePollerServiceImpl implements AwsQueuePollerService {
 	private static final String NAME = "name";
     private static final String VALUE = "value";
     private static final TdarConfiguration config = TdarConfiguration.getInstance();
-	private Regions awsRegion = Regions.US_WEST_2;
+	private Regions awsRegion = config.getAwsRegion();
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	
 	/* (non-Javadoc)
 	 * @see org.tdar.core.service.email.AwsQueuePollerService#getBouncedMessages()

@@ -1,12 +1,16 @@
 package org.tdar.struts.action.admin;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -15,6 +19,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.notification.Email;
@@ -23,8 +28,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.utils.EmailRawMessageHelper;
-
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import com.opensymphony.xwork2.Preparable;
 
 @Component
@@ -46,9 +50,6 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     @Autowired
     private transient EmailService emailService;
 
-    @Autowired
-    private transient EmailRawMessageHelper rawMessageHelper;
-    
     private String contentType;
     
     @Action(value = "emailContent/{emailId}",
@@ -74,15 +75,16 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     		setContentType("text/html");
     	}
     	
-    	
     	setInputStream(new ByteArrayInputStream(email.getMessage().getBytes()));
 		return SUCCESS;
-    	
     }
+    
+    
+    
     
     @Action("email")
     public String execute() {
-        setEmails(getGenericService().findAll(Email.class));
+        setEmails(getGenericService().findAllSorted(Email.class));
         Collections.sort(emails, new Comparator<Email>() {
 
             @Override
@@ -107,7 +109,8 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     @Action(value = "changeEmailStatus",
             results = {
                     @Result(name = SUCCESS, type = REDIRECT, location = "/admin/email"),
-                    @Result(name = INPUT, location = "email.ftl") })
+                    @Result(name = INPUT, location = "email.ftl") 
+                    })
     @PostOnly
     public String changeEmailStatus() {
         emailService.changeEmailStatus(getEmailAction(), emails);
@@ -169,20 +172,19 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
 		this.emailId = emailId;
 	}
 	
-	  public InputStream getInputStream() {
-	        return inputStream;
-	    }
+	public InputStream getInputStream() {
+        return inputStream;
+    }
 
-	    public void setInputStream(InputStream inputStream) {
-	        this.inputStream = inputStream;
-	    }
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
-		public String getContentType() {
-			return contentType;
-		}
+	public String getContentType() {
+		return contentType;
+	}
 
-		public void setContentType(String contentType) {
-			this.contentType = contentType;
-		}
-
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
 }

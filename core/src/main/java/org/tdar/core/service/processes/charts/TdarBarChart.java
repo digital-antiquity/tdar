@@ -9,7 +9,6 @@ import java.util.Map;
 import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
 
-@SuppressWarnings("restriction")
 public class TdarBarChart extends AbstractChart {
 
     private Map<String, Number> data;
@@ -29,7 +28,6 @@ public class TdarBarChart extends AbstractChart {
         setShowLegend(false);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public File createChart() throws IOException {
         CategoryChart chart = new CategoryChartBuilder().width(getWidth()).height(getHeight()).title(getTitle())
                 .xAxisTitle(xAxisLabel).yAxisTitle(yAxisLabel).build();

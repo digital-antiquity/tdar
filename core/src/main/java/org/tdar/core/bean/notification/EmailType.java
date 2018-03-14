@@ -5,16 +5,24 @@ import java.util.List;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
-import org.tdar.core.bean.notification.aws.AccessRequestCustomMessage;
-import org.tdar.core.bean.notification.aws.AccessRequestGrantedMessage;
-import org.tdar.core.bean.notification.aws.AccessRequestRejectedMessage;
-import org.tdar.core.bean.notification.aws.AdminQuarantineReviewMessage;
-import org.tdar.core.bean.notification.aws.AdminReportNewUsersMessage;
-import org.tdar.core.bean.notification.aws.InviteAcceptedMessage;
-import org.tdar.core.bean.notification.aws.InviteMessage;
-import org.tdar.core.bean.notification.aws.MonthlyUserStatisticsMessage;
-import org.tdar.core.bean.notification.aws.NewUserWelcomeMessage;
-import org.tdar.core.bean.notification.aws.TestAwsMessage;
+import org.tdar.core.bean.notification.emails.AccessRequestCustomMessage;
+import org.tdar.core.bean.notification.emails.AccessRequestGrantedMessage;
+import org.tdar.core.bean.notification.emails.AccessRequestRejectedMessage;
+import org.tdar.core.bean.notification.emails.AdminNotificationMessage;
+import org.tdar.core.bean.notification.emails.AdminOverdrawnNotification;
+import org.tdar.core.bean.notification.emails.AdminQuarantineReviewMessage;
+import org.tdar.core.bean.notification.emails.AdminReportNewUsersMessage;
+import org.tdar.core.bean.notification.emails.AccessExpirationAdminNotification;
+import org.tdar.core.bean.notification.emails.EmbargoExpirationNotification;
+import org.tdar.core.bean.notification.emails.AccessExpirationOwnerNotification;
+import org.tdar.core.bean.notification.emails.AccessExpirationUserNotification;
+import org.tdar.core.bean.notification.emails.EmbargoExpirationWarningNotification;
+import org.tdar.core.bean.notification.emails.InviteAcceptedMessage;
+import org.tdar.core.bean.notification.emails.InviteMessage;
+import org.tdar.core.bean.notification.emails.MonthlyUserStatisticsMessage;
+import org.tdar.core.bean.notification.emails.NewUserWelcomeMessage;
+import org.tdar.core.bean.notification.emails.OverdrawnNotification;
+import org.tdar.core.bean.notification.emails.TestAwsMessage;
 import org.tdar.utils.MessageHelper;
 
 public enum EmailType implements Localizable, HasLabel {
@@ -28,19 +36,25 @@ public enum EmailType implements Localizable, HasLabel {
 	PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl","test@tdar.org",AccessRequestRejectedMessage.class),
 	PERMISSION_REQUEST_CUSTOM("email-form/custom-accept.ftl","test@tdar.org",AccessRequestCustomMessage.class),
 	
-	OVERDRAWN_NOTIFICATION("overdrawn-user.ftl"),
+	OVERDRAWN_NOTIFICATION("overdrawn-user.ftl",null,OverdrawnNotification.class),
 	RESOURCE_EXPORT("resource-export-email.ftl"),
 	
-	ADMIN_NOTIFICATION("auth-report.ftl"),
+	ADMIN_NOTIFICATION("auth-report.ftl",null,AdminNotificationMessage.class),
+	ADMIN_OVERDRAWN_NOTIFICATION("overdrawn-admin.ftl",null,AdminOverdrawnNotification.class),
 	ADMIN_NEW_USER_REPORT("email_new_users.ftl",null,AdminReportNewUsersMessage.class),
 	ADMIN_QUARANTINE_REVIEW("email_review_message.ftl",null,AdminQuarantineReviewMessage.class),
-	ADMIN_EMBARGO_EXPIRE("embargo/expiration-admin.ftl"),
-	ADMIN_OVERDRAWN_NOTIFICATION("overdrawn-admin.ftl"),
+
+	EMBARGO_EXPIRATION_ADMIN_NOTIFICATION("embargo/expiration-admin.ftl",null,AccessExpirationAdminNotification.class),
+	EMBARGO_EXPIRATION_WARNING_NOTIFICATION("embargo/expiration-warning.ftl",null,EmbargoExpirationWarningNotification.class),
+	EMBARGO_EXPIRATION_NOTIFICATION("embargo/expiration.ftl",null,EmbargoExpirationNotification.class),
+	
+	ACCESS_EXPIRE_ADMIN_NOTIFICATION("expire/expire_admin.ftl",null,AccessExpirationAdminNotification.class),
+	ACCESS_EXPIRE_OWNER_NOTIFICATION("expire/expire_owner.ftl",null,AccessExpirationOwnerNotification.class),
+	ACCESS_EXPIRE_USER_NOTIFICATION("expire/expire_owner.ftl",null,AccessExpirationUserNotification.class),
 	
 	MONTHLY_USER_STATISTICS("monthly_user_statistics.ftl","test@tdar.org",MonthlyUserStatisticsMessage.class),
 	TEST_EMAIL("test-email.ftl", "test@tdar.org", TestAwsMessage.class),
 
-	
 	//Refactored from EmailMessageType.
     CONTACT("email-form/contact.ftl"),
     REQUEST_ACCESS("email-form/access-request.ftl"),

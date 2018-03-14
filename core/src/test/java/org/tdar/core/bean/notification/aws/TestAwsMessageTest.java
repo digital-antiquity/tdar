@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.notification.EmailType;
+import org.tdar.core.bean.notification.emails.TestAwsMessage;
 import org.tdar.utils.MessageHelper;
 
 

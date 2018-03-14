@@ -3,20 +3,24 @@
 <@mail.content>
 Dear ${to.properName},<br />
 <br />
+
 ${from.properName} has requested access to the following resource that you 
 have administrative rights to: <a href="${baseUrl}${resource.detailUrl}"> ${resource.title} (${resource.id?c})</a>.  You can view
 ${from.properName}'s email address below if you need more information from them.<br />
+
 <p>
 ${siteAcronym} allows you to extend view and download privileges for confidential 
 records to registered ${siteAcronym} users.  If you decide to share this resource
 with ${from.properName}, you may log in to ${siteAcronym}, and visit:
 </p>
+
 <a href="${baseUrl}/resource/request/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}">
 ${baseUrl}/resource/request/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}
 </a>
+
 <p>
 Below is the detailed request from the User. To view the record in ${siteAcronym} visit:
-${baseUrl}/${resource.urlNamespace}/${resource.id?c}
+<a href="${baseUrl}/${resource.urlNamespace}/${resource.id?c}">${baseUrl}/${resource.urlNamespace}/${resource.id?c}</a>
 </p>
 
 Kind regards,<br />

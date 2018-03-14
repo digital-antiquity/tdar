@@ -21,8 +21,8 @@
                 table[class=body] ul,
                 table[class=body] ol,
                 table[class=body] td,
-                table[class=body] span,
-                table[class=body] a {
+                table[class=body] span
+           {
             font-size: 16px !important;
           }
           table[class=body] .wrapper,
@@ -46,6 +46,9 @@
           }
           table[class=body] .btn a {
             width: 100% !important;
+          }
+          table[class=body] a {
+            color: #7a1501 !important;
           }
           table[class=body] .img-responsive {
             height: auto !important;
@@ -72,8 +75,11 @@
                 .ExternalClass div {
             line-height: 100%;
           }
+          table[class=body] a {
+            color: #7a1501 !important;
+          }
           .apple-link a {
-            color: inherit !important;
+            color: #7a1501 !important;
             font-family: inherit !important;
             font-size: inherit !important;
             font-weight: inherit !important;

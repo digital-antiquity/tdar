@@ -42,7 +42,6 @@
     </#macro>
 
 
-
     <#macro statsTable statsObj header="HEADER" cssid="CSS_ID" valueFormat="number">
         <#assign height=225/>
     <div class="glide">

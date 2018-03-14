@@ -39,6 +39,7 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
     private int page = 0;
     private int size = 100;
     private int total = 0;
+    private boolean archived = false;
     private boolean managed = false;
 
     private Set<String> children;
@@ -50,12 +51,12 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
 
     @Action(value = "list", results = { @Result(name = SUCCESS, type = FREEMARKER, location = "items.ftl") })
     public String execute() throws Exception {
-        setTotal(itemService.itemStatusReport(path, page, size, itemStatusReport, isManaged()));
+        setTotal(itemService.itemStatusReport(path, page, size, itemStatusReport, isManaged(), archived));
         String path_ = StringUtils.stripEnd(path, "/");
         if (path_.contains("/")) {
             path_ = StringUtils.substringAfterLast(path_, "/");
         }
-        setChildren(itemService.listChildPaths(path_));
+        setChildren(itemService.listChildPaths(path_, archived));
         return super.execute();
     }
 
@@ -121,5 +122,13 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
 
     public void setChildren(Set<String> children) {
         this.children = children;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }

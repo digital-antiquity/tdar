@@ -226,6 +226,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         List<Email> messages = ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages();
+        logger.debug("Messages are {}", messages);
         Email received = messages.get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
         assertTrue(received.getMessage().contains("Flagged Items"));

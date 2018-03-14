@@ -23,6 +23,8 @@ import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 public interface EmailService {
 
+    String MIME = "mime";
+    String INLINE2 = "inline";
     String TOTALDOWNLOADS_PNG = "totaldownloads.png";
     String TOTALVIEWS_PNG = "totalviews.png";
     String RESOURCES_PNG = "resources.png";
@@ -31,27 +33,8 @@ public interface EmailService {
     String _VIEWS_BARCHART_PNG = "_views-barchart.png";
     String _DOWNLOADS_BARCHART_PNG = "_downloads-barchart.png";
     String _RESOURCE_PIECHART_PNG = "_resource-piechart.png";
-    String CONFIG2 = "config";
-    String USER = "user";
-    String ITEMS = "items";
-    String OWNER = "owner";
-    String SERVICE_PROVIDER = "serviceProvider";
-    String SITE_ACRONYM = "siteAcronym";
-    String BASE_URL = "baseUrl";
-    String DESCRIPTION_RESPONSE = "descriptionResponse";
-    String AUTHORIZED_USER = "authorizedUser";
-    String EXPIRES2 = "expires";
-    String REQUESTOR2 = "requestor";
-    String TYPE2 = "type";
-    String RESOURCE2 = "resource";
-    String MESSAGE = "message";
     String CUSTOM_NAME = "customName";
     String DESCRIPTION_REQUEST = "descriptionRequest";
-    String TO = "to";
-    String FROM2 = "from";
-    String INVITE2 = "invite";
-    String MIME = "mime";
-    String INLINE2 = "inline";
 
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
@@ -78,7 +61,6 @@ public interface EmailService {
      * @param recipients
      *            set of String varargs
      */
-    @Deprecated
     void send(Email email);
 
     /**

@@ -48,6 +48,9 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateAdded;
 
+    @Column(name="archived", nullable=false)
+    private boolean archived = false;
+    
     @Column(name = "date_modified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateModified;
