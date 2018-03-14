@@ -234,7 +234,7 @@ public class ResourceSearchService extends AbstractSearchService {
             try {
                 searchService.updateResourceCreators(group, 20);
             } catch (SearchException e) {
-                logger.error("issue hydrating creators",e);
+                logger.warn("issue hydrating creators",e);
             }
             topLevelQueryPart.append(group.toQueryPartGroup(provider));
         }
