@@ -58,10 +58,12 @@
                    <td>${((collection.managedResources![])+(collection.unmanagedResources![]))?size}</td>
                    <td>${(collection.authorizedUsers![])?size}</td>
                 <td>
+                <#if collection.editable>
                     <div class="btn-group inline">
                       <a class="btn btn-mini" href="/collection/${collection.id?c}/edit">edit</a>
                       <a class="btn btn-mini" href="/collection/delete?id=${collection.id?c}">delete</a>
                     </div>
+                </#if>
                  </td>
                 </tr>
             </#list>

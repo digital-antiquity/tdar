@@ -759,7 +759,7 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", true,
                 authList, null, null);
         collection.setOwner(getAdminUser());
-        List<ResourceCollection> findAccessibleResourceCollections = entityService.findAccessibleResourceCollections(testPerson);
+        List<ResourceCollection> findAccessibleResourceCollections = entityService.findAccessibleResourceCollections(testPerson, null);
         assertTrue(findAccessibleResourceCollections.contains(collection));
     }
 

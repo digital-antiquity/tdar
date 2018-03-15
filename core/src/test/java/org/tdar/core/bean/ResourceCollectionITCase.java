@@ -267,7 +267,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         assertTrue("should contain normal child", parentCollections.contains(child1));
         assertTrue("should contain visbile child ofhidden parent", parentCollections.contains(child22));
         getLogger().trace("accessible collections");
-        List<ResourceCollection> accessibleResourceCollections = entityService.findAccessibleResourceCollections(getBasicUser());
+        List<ResourceCollection> accessibleResourceCollections = entityService.findAccessibleResourceCollections(getBasicUser(), null);
         logger.debug("accessible:{}", accessibleResourceCollections);
         assertTrue("should contain accesible collection", accessibleResourceCollections.contains(access));
 
