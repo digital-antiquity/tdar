@@ -1,0 +1,120 @@
+{
+    "title": "relaxed integration test",
+    "description": "",
+    "columns": [
+        {
+            "name": "Fauna+Taxon+Ontology+",
+            "type": "INTEGRATION",
+            "dataTableColumns": [
+                null,
+                {
+                    "id": 31710,
+                    "name": "species_common_name"
+                }
+            ],
+            "ontology": {
+                "id": 42940,
+                "title": "Fauna+Taxon+Ontology+"
+            },
+            "nodeSelection": [
+                {
+                    "id": 56930,
+                    "iri": "Anura"
+                },
+                {
+                    "id": 60350,
+                    "iri": "Buteo_sp"
+                },
+                {
+                    "id": 61710,
+                    "iri": "Chen_sp"
+                },
+                {
+                    "id": 61540,
+                    "iri": "Larus_argentatus"
+                },
+                {
+                    "id": 63050,
+                    "iri": "Meleagridinae"
+                },
+                {
+                    "id": 64970,
+                    "iri": "Gallus_gallus"
+                },
+                {
+                    "id": 63400,
+                    "iri": "Corvus_sp"
+                },
+                {
+                    "id": 64330,
+                    "iri": "Butorides_virescens"
+                },
+                {
+                    "id": 58400,
+                    "iri": "large_aves"
+                },
+                {
+                    "id": 64430,
+                    "iri": "Mollusca"
+                },
+                {
+                    "id": 65150,
+                    "iri": "Notemigonus_crysoleucas"
+                },
+                {
+                    "id": 56490,
+                    "iri": "coding_error"
+                },
+                {
+                    "id": 57850,
+                    "iri": "cattle___relatives"
+                },
+                {
+                    "id": 58040,
+                    "iri": "sheep_goat"
+                },
+                {
+                    "id": 60880,
+                    "iri": "domestic_goat"
+                },
+                {
+                    "id": 62580,
+                    "iri": "sheep"
+                },
+                {
+                    "id": 57060,
+                    "iri": "domestic_pig"
+                },
+                {
+                    "id": 57350,
+                    "iri": "deer"
+                },
+                {
+                    "id": 63000,
+                    "iri": "rabbit___hare"
+                }
+            ]
+        }
+    ],
+    "datasets": [],
+    "dataTables": [
+        {
+            "id": 3104,
+            "displayName": "qryBone"
+        },
+        {
+            "id": 3091,
+            "displayName": "Main+table"
+        }
+    ],
+    "ontologies": [
+        {
+            "id": 42940,
+            "title": "Fauna+Taxon+Ontology+"
+        },
+        {
+            "id": 42950,
+            "title": "Fauna+Element+Ontology"
+        }
+    ]
+}
