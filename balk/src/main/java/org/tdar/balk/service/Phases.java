@@ -43,19 +43,19 @@ public enum Phases {
         switch (this) {
             case TO_PDFA:
                 if (StringUtils.containsIgnoreCase(file.getPath(), DropboxConstants.CREATE_PDFA)) {
-                    logger.debug("setting status for {} to {}",file.getPath(), this);
+                    logger.trace("setting status for {} to {}",file.getPath(), this);
                     status.setToPdf(file);
                 }
                 break;
             case DONE_PDFA:
                 if (StringUtils.containsIgnoreCase(file.getPath(), DropboxConstants.DONE_OCR)) {
-                    logger.debug("setting status for {} to {}",file.getPath(), this);
+                    logger.trace("setting status for {} to {}",file.getPath(), this);
                     status.setDoneOcr(file);
                 }
                 break;
             case UPLOAD_TDAR:
                 if (StringUtils.containsIgnoreCase(file.getPath(), DropboxConstants.UPLOAD_TO_TDAR)) {
-                    logger.debug("setting status for {} to {}",file.getPath(), this);
+                    logger.trace("setting status for {} to {}",file.getPath(), this);
                     status.setToUpload(file);
                 }
                 break;

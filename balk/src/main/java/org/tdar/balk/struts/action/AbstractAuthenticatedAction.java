@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.StatusCode;
@@ -23,6 +24,15 @@ public abstract class AbstractAuthenticatedAction extends TdarActionSupport impl
     @Autowired
     private transient AuthorizationService authorizationService;
 
+    protected String cleanupPath(String pathFormat, String path) {
+        String format = String.format(pathFormat, getContextPath(), path);
+        format = StringUtils.replace(format, "/balk/balk/", "/balk/");
+        format = StringUtils.replace(format, "/balk//balk/", "/balk/");
+        getLogger().debug("redirectPath: {}", format);
+        return format;
+
+    }
+    
     @Override
     @DoNotObfuscate(reason = "never obfuscate the session user")
     public TdarUser getAuthenticatedUser() {
