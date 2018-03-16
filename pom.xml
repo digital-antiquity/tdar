@@ -64,7 +64,7 @@
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
-        <asm.version>5.2</asm.version>
+        <asm.version>6.1</asm.version>
         <maven-jar-version>2.6</maven-jar-version>
         <maven-war-version>3.0.0</maven-war-version>
         <ehcache.version>2.10.4.4.8</ehcache.version>
@@ -303,11 +303,11 @@
                 <artifactId>asm</artifactId>
                 <version>${asm.version}</version>
             </dependency>
-            <dependency>
+            <!-- <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm-debug-all</artifactId>
                 <version>${asm.version}</version>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
