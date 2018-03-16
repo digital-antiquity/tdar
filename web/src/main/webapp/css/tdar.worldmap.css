@@ -83,3 +83,7 @@ div.mapcontainer img {
     border:none;
     background-color:#fff;
 }
+
+.mini .leaflet-interactive {
+    cursor: default;
+}

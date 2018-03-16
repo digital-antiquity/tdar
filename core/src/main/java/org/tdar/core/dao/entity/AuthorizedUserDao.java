@@ -263,10 +263,10 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
      * @param user
      * @return
      */
-    public List<ResourceCollection> findAccessibleResourceCollections(TdarUser user) {
+    public List<ResourceCollection> findAccessibleResourceCollections(TdarUser user, Permissions perm) {
         Query<ResourceCollection> query = getCurrentSession().createNamedQuery(QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, ResourceCollection.class);// QUERY_PROJECT_EDITABLE
         query.setParameter("userId", user.getId());
-        query.setParameter("perm", null);
+        query.setParameter("perm", perm);
         return (List<ResourceCollection>) query.getResultList();
     }
 

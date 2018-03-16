@@ -35,6 +35,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
+import org.tdar.core.cache.ThreadPermissionsCache;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.UserRightsProxyService;
@@ -81,6 +82,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
 
     public static final String SUCCESS_WHITELABEL = "success_whitelabel";
 
+    private ThreadPermissionsCache permissionsCache;
     private List<UserInvite> invites;
     /**
      * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
@@ -469,6 +471,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
+        setPermissionsCache(new ThreadPermissionsCache(isEditor()));
         if (!isRedirectBadSlug() && PersistableUtils.isNotTransient(getPersistable())) {
 
             try {
@@ -494,10 +497,26 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
                 } else {
                     throw e;
                 }
-
+            }
+            for (Resource r: getResults()) {
+                if (isManaged(r)) {
+                    getPermissionsCache().getManagedResources().add(r.getId());
+                }
             }
         }
 
+    }
+
+    public boolean isManaged(Resource r) {
+        for (ResourceCollection rc : r.getManagedResourceCollections()) {
+            if (rc.equals(getResourceCollection())) {
+                return true;
+            }
+            if (rc.getParentIds().contains(getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -610,6 +629,14 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
 
     public void setInvites(List<UserInvite> invites) {
         this.invites = invites;
+    }
+
+    public ThreadPermissionsCache getPermissionsCache() {
+        return permissionsCache;
+    }
+
+    public void setPermissionsCache(ThreadPermissionsCache permissionsCache) {
+        this.permissionsCache = permissionsCache;
     }
 
 }

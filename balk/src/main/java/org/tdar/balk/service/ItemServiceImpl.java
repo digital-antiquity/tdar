@@ -216,6 +216,7 @@ public class ItemServiceImpl implements ItemService {
     public void handleUploads() {
         List<DropboxFile> files = itemDao.findToUpload();
         StringBuilder msg = new StringBuilder();
+        logout();
 
         for (DropboxFile file : files) {
             if (file.getDropboxId().startsWith("deleted")) {
@@ -232,11 +233,21 @@ public class ItemServiceImpl implements ItemService {
                 logger.error("{}", e, e);
             }
         }
+        logout();
         if (CollectionUtils.isNotEmpty(files) && StringUtils.isNotBlank(msg.toString())) {
             msg.insert(0, "the following files were uploaded to tDAR:\n");
             sendEmail("balk@tdar.org", config.getEmailAddresses(), "Uploaded files to tDAR", msg.toString());
         }
 
+    }
+
+    
+    private void logout() {
+        try {
+            apiClient.apiLogout();
+        } catch (IOException e1) {
+            logger.error("{}",e1,e1);
+        }
     }
 
     private void upload(DropboxFile file) throws IllegalStateException, Exception {

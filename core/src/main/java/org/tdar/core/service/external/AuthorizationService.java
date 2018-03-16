@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.tdar.core.bean.Editable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
@@ -248,5 +249,7 @@ public interface AuthorizationService {
     boolean canRemoveFromCollection(TdarUser user, ResourceCollection collection);
 
     RightsResolver getRightsResolverFor(HasAuthorizedUsers resource, TdarUser actor, InternalTdarRights rights);
+
+    void applyTransientEditableFlag(Editable rc, TdarUser authenticatedUser);
 
 }

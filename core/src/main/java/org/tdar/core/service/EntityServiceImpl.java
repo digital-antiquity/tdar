@@ -23,6 +23,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -382,8 +383,8 @@ public class EntityServiceImpl  extends ServiceInterface.TypedDaoBase<Person, Pe
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ResourceCollection> findAccessibleResourceCollections(TdarUser user) {
-        return authorizedUserDao.findAccessibleResourceCollections(user);
+    public List<ResourceCollection> findAccessibleResourceCollections(TdarUser user, Permissions perm) {
+        return authorizedUserDao.findAccessibleResourceCollections(user, perm);
     }
 
     /* (non-Javadoc)

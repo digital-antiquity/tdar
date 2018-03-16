@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.service.ItemService;
 import org.tdar.balk.service.Phases;
-import org.tdar.balk.service.UserService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
@@ -25,6 +24,8 @@ import com.opensymphony.xwork2.Preparable;
 @PostOnly
 public class ArchiveAction extends AbstractAuthenticatedAction implements Preparable {
 
+    private static final String PATH = "/%s/items/list?path=%s";
+
     private static final long serialVersionUID = -6850649205111686901L;
 
     @Autowired
@@ -35,6 +36,7 @@ public class ArchiveAction extends AbstractAuthenticatedAction implements Prepar
     private AbstractDropboxItem item;
     private Phases phase;
     private String path;
+    private String redirectPath;
     
     @Override
     public void prepare() throws Exception {
@@ -42,9 +44,10 @@ public class ArchiveAction extends AbstractAuthenticatedAction implements Prepar
         if (item == null) {
             setItem(itemService.findByDropboxId(id, true));
         }
+        setRedirectPath(cleanupPath(PATH, getPath()));
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/${contextPath}/items/list?path=${path}")})
+    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location=PATH)})
     @Override
     public String execute() throws Exception {
         try {
@@ -88,6 +91,14 @@ public class ArchiveAction extends AbstractAuthenticatedAction implements Prepar
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getRedirectPath() {
+        return redirectPath;
+    }
+
+    public void setRedirectPath(String redirectPath) {
+        this.redirectPath = redirectPath;
     }
 
 }

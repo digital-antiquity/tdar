@@ -43,4 +43,15 @@ public enum Status implements HasLabel, Localizable {
     public boolean isDraft() {
         return this == DRAFT;
     }
+
+    public boolean isViewableByNonAdmin() {
+        switch (this) {
+            case ACTIVE:
+            case DRAFT:
+            case FLAGGED_ACCOUNT_BALANCE:
+                return true;
+            default:
+                return false;
+        }
+    }
 }

@@ -105,9 +105,9 @@ public class DropboxClient {
 
             result = client.files().listFolderContinue(result.getCursor());
         }
-        logger.debug("old cursor:{}", cursor);
+        logger.trace("old cursor:{}", cursor);
         String cursor2 = result.getCursor();
-        logger.debug("new cursor:{}", cursor2);
+        logger.trace("new cursor:{}", cursor2);
         setCurrentCursor(cursor2);
     }
 
