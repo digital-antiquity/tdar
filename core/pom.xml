@@ -51,13 +51,13 @@
         <dependency>
             <groupId>org.knowm.xchart</groupId>
             <artifactId>xchart</artifactId>
-            <version>3.5.0</version>
+            <version>${xchart.version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.knowm.xchart</groupId>
             <artifactId>xchart</artifactId>
-            <version>3.5.0</version>
+            <version>${xchart.version}</version>
         </dependency>
         
         <dependency>
@@ -655,7 +655,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
-            <version>2.1.1</version>
+            <version>${dbcp.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
