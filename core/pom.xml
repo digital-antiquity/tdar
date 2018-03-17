@@ -489,11 +489,11 @@
             <artifactId>asm</artifactId>
             <version>${asm.version}</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-debug-all</artifactId>
             <version>${asm.version}</version>
-        </dependency>
+        </dependency> -->
 
         <!-- freemarker -->
         <dependency>
