@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.Editable;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
@@ -611,6 +612,34 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             item.setViewable(viewable);
         }
     }
+    
+    @Override
+    @Transactional(readOnly=true)
+    public void applyTransientEditableFlag(Editable p, TdarUser authenticatedUser) {
+        // FIXME: it'd be nice if this took an array and could handle multiple lookups at once
+        logger.trace("applying transient editable flag to : {}", p);
+        if (p instanceof Editable) {
+            logger.trace("item is a 'editable': {}", p);
+            Editable item = (Editable) p;
+            boolean editable = setupEditable(authenticatedUser, item);
+
+            if (item instanceof InformationResource) {
+                logger.trace("item is information resource (download): {}", p);
+                setTransientViewableStatus((InformationResource) item, authenticatedUser);
+            }
+
+            if (!editable && canEdit(authenticatedUser, p)) {
+                logger.trace("user can edit: {}", p);
+                editable = true;
+            }
+
+            if (editable && item instanceof Resource && item instanceof ConfidentialViewable) {
+                ((ConfidentialViewable) item).setConfidentialViewable(canViewConfidentialInformation(authenticatedUser, (Resource) item));
+            }
+
+            item.setEditable(editable);
+        }
+    }
 
     private boolean setupViewable(TdarUser authenticatedUser, Viewable item) {
         boolean viewable = false;
@@ -628,6 +657,24 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             }
         }
         return viewable;
+    }
+
+    private boolean setupEditable(TdarUser authenticatedUser, Editable item) {
+        boolean editable = false;
+        if (item instanceof HasStatus) { // if we have status, then work off that
+            // logger.trace("item 'has status': {}", item);
+            HasStatus status = ((HasStatus) item);
+            if (!status.getStatus().isViewableByNonAdmin()) { // if not active, check other permissions
+                // logger.trace("item 'is not active': {}", item);
+                if (can(InternalTdarRights.EDIT_ANYTHING, authenticatedUser)) {
+                    logger.trace("\tuser is special': {}", item);
+                    editable = true;
+                }
+            } else {
+                editable = true;
+            }
+        }
+        return editable;
     }
 
     /*

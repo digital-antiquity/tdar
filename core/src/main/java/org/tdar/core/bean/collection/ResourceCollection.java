@@ -67,6 +67,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.Editable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
@@ -136,9 +137,13 @@ import com.fasterxml.jackson.annotation.JsonView;
 @SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
 public class ResourceCollection extends AbstractPersistable
         implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus, HasAuthorizedUsers, Sortable,
-        OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Hideable, Comparable<ResourceCollection> {
+        OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Editable, Hideable, Comparable<ResourceCollection> {
 
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
+    
+    @Transient
+    private transient boolean editable = false;
+
 
     public ResourceCollection(String title, String description, boolean hidden, SortOption sortOption, DisplayOrientation displayOrientation,
             TdarUser creator) {
@@ -877,5 +882,16 @@ public class ResourceCollection extends AbstractPersistable
 
     public void setVerified(Boolean verified) {
         this.verified = verified;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 }

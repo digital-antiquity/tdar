@@ -78,11 +78,13 @@ public class RightsAction extends AbstractAuthenticatableAction implements Prepa
         for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
             if (rc.isTopLevel()) {
                 getAllResourceCollections().add(rc);
+                getAuthorizationService().applyTransientEditableFlag(rc, getAuthenticatedUser());
             }
         }
         getLogger().trace("accessible collections");
-        for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
+        for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser(), null)) {
             getAllResourceCollections().add(rc);
+            getAuthorizationService().applyTransientEditableFlag(rc, getAuthenticatedUser());
         }
         getLogger().trace("done ");
     }

@@ -1,6 +1,7 @@
 package org.tdar.balk.struts.action;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -26,6 +27,8 @@ import com.opensymphony.xwork2.Preparable;
 @PostOnly
 public class ApproveAction extends AbstractAuthenticatedAction implements Preparable {
 
+    private static final String PATH = "/%s/items/list?path=%s";
+
     private static final long serialVersionUID = -6850649205111686901L;
 
     @Autowired
@@ -38,15 +41,17 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
     private AbstractDropboxItem item;
     private Phases phase;
     private String path;
+    private String redirectPath;
     private DropboxUserMapping userMapping;
     
     @Override
     public void prepare() throws Exception {
         setItem(itemService.findByDropboxId(id, false));
         userMapping = userService.findUser(getAuthenticatedUser());
+        setRedirectPath(cleanupPath(PATH, getPath()));
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/${contextPath}/items/list?path=${path}")})
+    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="${redirectPath}")})
     @Override
     public String execute() throws Exception {
         try {
@@ -89,6 +94,14 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getRedirectPath() {
+        return redirectPath;
+    }
+
+    public void setRedirectPath(String redirectPath) {
+        this.redirectPath = redirectPath;
     }
 
 }

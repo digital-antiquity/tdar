@@ -41,7 +41,7 @@
         <servlet.api.version>3.1.0</servlet.api.version>
         <aws.java.version>1.11.286</aws.java.version>
         <wro4j.version>1.8.0</wro4j.version>
-        <liquibase.version>3.5.3</liquibase.version>
+        <liquibase.version>3.5.5</liquibase.version>
         <junit.version>4.12</junit.version>
         <maven.compiler.version>3.7.0</maven.compiler.version>
         <java.version>1.8</java.version>
@@ -53,6 +53,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <slf4j.version>1.7.24</slf4j.version>
         <nu.validator.version>17.2.1</nu.validator.version>
+        <xchart.version>3.5.1</xchart.version>
     
         <skipTestLiquibase>true</skipTestLiquibase>
         <exec-maven-version>1.4.0</exec-maven-version>
@@ -64,7 +65,7 @@
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
-        <asm.version>5.2</asm.version>
+        <asm.version>6.1</asm.version>
         <maven-jar-version>2.6</maven-jar-version>
         <maven-war-version>3.0.0</maven-war-version>
         <ehcache.version>2.10.4.4.8</ehcache.version>
@@ -83,8 +84,8 @@
         <jackson.version>2.8.10</jackson.version>
         <pdfbox.version>2.0.7</pdfbox.version>
         <bouncycastle.version>1.58</bouncycastle.version>        
-        <http-components.version>4.4.8</http-components.version>
-        <http-client.version>4.5.4</http-client.version>
+        <http-components.version>4.4.9</http-components.version>
+        <http-client.version>4.5.5</http-client.version>
         <jackcess.version>2.1.10</jackcess.version>
         <guava.version>23.6-jre</guava.version>
         <jt-utils.version>1.4.0</jt-utils.version>
@@ -101,12 +102,12 @@
         <commons-cli.version>1.3</commons-cli.version>
         <hamcrest.version>1.3</hamcrest.version>
         <jetty.version>9.4.5.v20170502</jetty.version>
-        <struts2.version>2.5.14</struts2.version>
+        <struts2.version>2.5.16</struts2.version>
         <jersey.version>2.25.1</jersey.version>
         <icu4j.version>58.2</icu4j.version>
         <htmlunit.version>2.29</htmlunit.version>
         <selenium.version>3.10.0</selenium.version>
-
+        <dbcp.version>2.2.0</dbcp.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         
         <!-- Following points to the profile directory to use for filtering 
@@ -303,11 +304,11 @@
                 <artifactId>asm</artifactId>
                 <version>${asm.version}</version>
             </dependency>
-            <dependency>
+            <!-- <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm-debug-all</artifactId>
                 <version>${asm.version}</version>
-            </dependency>
+            </dependency> -->
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -644,7 +645,7 @@
         <dependency>
             <groupId>org.knowm.xchart</groupId>
             <artifactId>xchart</artifactId>
-            <version>3.5.0</version>
+            <version>${xchart.version}</version>
         </dependency>
         
         <dependency>
@@ -810,7 +811,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
-            <version>2.1.1</version>
+            <version>${dbcp.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <!-- hibernate and JPA persistence -->

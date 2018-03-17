@@ -66,6 +66,7 @@ import org.joda.time.Days;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.DeHydratable;
+import org.tdar.core.bean.Editable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
@@ -154,7 +155,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class Resource implements Persistable,
         Comparable<Resource>, HasName, Updatable, Indexable, Validatable,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, ConfidentialViewable, Addressable,
-        DeHydratable, XmlLoggable, Slugable, HasAuthorizedUsers {
+        DeHydratable, XmlLoggable, Slugable, Editable, HasAuthorizedUsers {
 
     public static final String RESOURCE_COLLECTIONS = "resourceCollections";
 
@@ -173,6 +174,9 @@ public class Resource implements Persistable,
 
     @Transient
     private transient boolean viewable;
+    @Transient
+    private transient boolean editable;
+    
     @Transient
     private transient boolean viewConfidential;
     @Transient
@@ -1721,6 +1725,17 @@ public class Resource implements Persistable,
 
     public void setAuthorizedUsers(Set<AuthorizedUser> authorizedUsers) {
         this.authorizedUsers = authorizedUsers;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
 }
