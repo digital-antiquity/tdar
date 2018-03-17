@@ -286,7 +286,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         if (CollectionUtils.isEmpty(proxies)) {
             return null;
         }
-        logger.debug("handling uploaded files for {}", item);
+        logger.debug("handling uploaded files for {} {}", ticketId,  item);
         validateFileExtensions(proxies, validFileNames, provider);
         logger.debug("Final proxy set: {}", proxies);
         if (CollectionUtils.isEmpty(proxies)) {
