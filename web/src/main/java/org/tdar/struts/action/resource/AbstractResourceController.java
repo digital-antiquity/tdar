@@ -401,9 +401,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     	
     	if(!isNewBoxesEmpty){
     		LatitudeLongitudeBox l  = newBoxes.get(0);
-    		
     		//If there's no boundaries, the fields will all be null.
-    		isNewBoxesEmpty = (l.getNorth()==null && l.getSouth()==null && l.getEast()==null && l.getWest()==null);
+    		isNewBoxesEmpty =  !l.isInitializedAndValid();
     	}
     	
  

@@ -642,22 +642,23 @@
 
 
 <script type="text/javascript">
-    $(function () {
-        'use strict';
-        TDAR.common.initializeView();
+$(function(){
+    'use strict';
+    TDAR.common.initializeView();
 
-        if ($("#dataTable")){
-                TDAR.datatable.initDataTableBrowser();
-        }
-        if(window._localJavaScript) {
-            _localJavaScript();
-        }
+    if ($("#dataTable")){
+            TDAR.datatable.initDataTableBrowser();
+    }
+    
+    if(window._localJavaScript) {
+        _localJavaScript();
+    }
 
-        //TDAR.internalEmailForm.init();
-        <#if authenticated>
+    //TDAR.internalEmailForm.init();
+    <#if authenticated>
         TDAR.vuejs.collectionwidget.init("#add-resource-form");
-        </#if>
-})
+    </#if>
+});
 </script>
 
 <#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
@@ -674,19 +675,21 @@
         </#list>
     </#macro>
 
-                <div class="modal hide fade" id="modal">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3>Add to a Collection</h3>
-                  </div>
-                  <div class="modal-body">
-                  <ul class="collection-list unstyled">
-                  </ul>
-                  </div>
-                  <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                    <a href="#" class="btn btn-primary">Save changes</a>
-                  </div>
-                </div>
+   
+<div class="modal hide fade" id="modal">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Add to a Collection</h3>
+  </div>
+  
+  <div class="modal-body">
+      <ul class="collection-list unstyled">
+      </ul>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <a href="#" class="btn btn-primary">Save changes</a>
+  </div>
+</div>
 
 </#escape>
