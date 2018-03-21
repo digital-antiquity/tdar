@@ -677,6 +677,7 @@ TDAR.common = function (TDAR, fileupload) {
      * @param container element/selector. Context for .typeToggle search.
      */
     var _switchType = function (radio, container) {
+    	console.debug("Called _switchType");
         var val = $(radio).val();
         var type = (typeof val !== 'undefined') ? val.toLowerCase() : "SWITCHTYPEDEFAULT";
         type = "." + type;
@@ -705,7 +706,28 @@ TDAR.common = function (TDAR, fileupload) {
 
         _switchLabel($("#publisher-hints"), doctype);
         _switchLabel($("#publisherLocation-hints"), doctype);
+        
+        _clearHiddenFields();
     }
+    
+    
+    /**
+     * When the document type is changed, the hidden fields backing it need to clear, otherwise they get saved. 
+     * 
+     */
+    var _clearHiddenFields = function(){
+    	$(".doctypeToggle:hidden input").each(function(){
+    		var el = $(this);
+    		if($(this).attr("type")=="radio"){
+    			$(this).attr("checked",false);
+    		}
+    		else{
+    			$(this).val("");
+    		}
+		}
+    	);
+    }
+    
 
     /**
      * specific setup for initializing "supporting resoure" edit forms.
