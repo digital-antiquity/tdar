@@ -297,6 +297,7 @@ TDAR.common = function (TDAR, fileupload) {
         });
 
         $('#sharesTable').on("focus", ".collectionAutoComplete", function () {
+        	console.debug("Applying collection autocomplete to ",$(this));
             TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_SHARE"});
         });
 
@@ -455,6 +456,17 @@ TDAR.common = function (TDAR, fileupload) {
             });
         }
     };
+    
+    /**
+     * For the permissions view, it attaches the collections auto completes. 
+     */
+    var _initRightsPage = function(){
+        $('#sharesTable').on("focus", ".collectionAutoComplete", function () {
+        	console.debug("Applying collection autocomplete to ",$(this));
+            TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_SHARE"});
+        });
+    }
+    
 
     /**
      * Custom  ajax filter (enable by calling $.ajaxPrefilter(_customAjaxPrefilter). JQuery executes this prefilter
@@ -955,6 +967,7 @@ TDAR.common = function (TDAR, fileupload) {
 
     $.extend(self, {
         "initEditPage": _initEditPage,
+        "initRightsPage" : _initRightsPage,
         "applyTreeviews": _applyTreeviews,
         "initializeView": _initializeView,
         "determineResponsiveClass": _determineResponsiveClass,
