@@ -71,7 +71,6 @@ public enum SortOption {
         options.remove(SortOption.RESOURCE_TYPE);
         options.remove(SortOption.RESOURCE_TYPE_REVERSE);
         options.add(0, SortOption.RESOURCE_TYPE);
-        options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
         return options;
     }
 
