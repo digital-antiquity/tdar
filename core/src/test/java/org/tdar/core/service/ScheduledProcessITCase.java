@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -109,15 +110,35 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
     @Test
     @Rollback
     public void testDailyEmailProcess() {
-        TdarUser user = new TdarUser();
-        user.setEmail("a@badfdsf.com");
-        user.setUsername(user.getEmail());
-        user.setFirstName("first");
-        user.setLastName("last");
-        user.setDateUpdated(new Date());
-        user.setAffiliation(UserAffiliation.GENERAL_PUBLIC);
-        user.setContributorReason("I really like contributing things.  What is that a crime or something?");
-        genericService.saveOrUpdate(user);
+        TdarUser user1 = new TdarUser();
+        user1.setEmail("a@badfdsf.com");
+        user1.setUsername(user1.getEmail());
+        user1.setFirstName("first");
+        user1.setLastName("last");
+        user1.setDateUpdated(new Date());
+        user1.setAffiliation(UserAffiliation.GENERAL_PUBLIC);
+        user1.setContributorReason("I really like contributing things.  What is that a crime or something?");
+        genericService.saveOrUpdate(user1);
+
+        TdarUser user2 = new TdarUser();
+        user2.setEmail("2@testuser.com");
+        user2.setUsername(user2.getEmail());
+        user2.setFirstName("first");
+        user2.setLastName("last");
+        user2.setDateUpdated(new Date());
+        user2.setAffiliation(UserAffiliation.GENERAL_PUBLIC);
+        user2.setContributorReason(" ");
+        genericService.saveOrUpdate(user2);
+        
+        TdarUser user3 = new TdarUser();
+        user3.setEmail("3@testuser.com");
+        user3.setUsername(user3.getEmail());
+        user3.setFirstName("first");
+        user3.setLastName("last");
+        user3.setDateUpdated(new Date());
+        user3.setAffiliation(UserAffiliation.GENERAL_PUBLIC);
+        user3.setContributorReason(null);
+        genericService.saveOrUpdate(user3);
 
         // fixme: I'm not sure why this works like it works (w/ seemingly duplicated calls), but it's required for checkMailAndGetLatest() to work
         scheduledProcessService.queue(DailyEmailProcess.class);
@@ -136,6 +157,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
 
         Email message = checkMailAndGetLatest("The following users registered with");
         assertThat(message, is( not( nullValue())));
+        assertTrue(message.getMessage().contains("contributor reason: None"));
 //        assertTrue(dailyEmailProcess.isCompleted());
     }
         
