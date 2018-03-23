@@ -333,13 +333,27 @@ describe("CommonSpec.js: edit page tests", function () {
                     '<input type="radio" class="" name="dts" value="type2" checked="checked">')
                 .append($container);
             $container
-                .append('<div class="doctypeToggle type1">type1</div>')
+                .append('<div class="doctypeToggle type1">type1<input type="hidden" value="THISTEXTWILLBEBLANK" /><input type="radio" value="CHECKED" checked="CHECKED" /></div>')
                 .append('<div class="doctypeToggle type2">type2</div>');
             setFixtures($form);
     
             TDAR.common.setupDocumentEditForm();
             expect($('.doctypeToggle:visible')).toHaveLength(1);
             expect($('.doctypeToggle:visible')).toHaveText('type2');
+            
+            //Verify the hidden inputs clear.
+            $(".doctypeToggle:hidden input").each(function(){
+        		var el = $(this);
+        		if($(this).attr("type")=="radio"){
+        			expect($(this).attr("checked")).toBeFalsy();
+        		}
+        		else{
+        			expect($(this).val()).toBe("");
+        		}
+    		}
+        	);
+            
+            
         });
     
     
