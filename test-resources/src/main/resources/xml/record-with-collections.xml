@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tdar:project status="ACTIVE" submitterRef="TdarUser:8344" updaterRef="TdarUser:8344" uploaderRef="TdarUser:8344" xsi:schemaLocation="http://localhost:8080/schema/current schema.xsd" xmlns:tdar="http://www.tdar.org/namespace" xmlns:ns3="http://archaeologydataservice.ac.uk/tag/schema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <tdar:coverageDates/>
+    <tdar:cultureKeywords/>
+    <tdar:dateCreated>2015-10-21T16:47:17.429-07:00</tdar:dateCreated>
+    <tdar:description>asdfasdf</tdar:description>
+    <tdar:filesUsed>0</tdar:filesUsed>
+    <tdar:geographicKeywords/>
+    <tdar:investigationTypes/>
+    <tdar:latitudeLongitudeBoxes/>
+    <tdar:managedGeographicKeywords/>
+    <tdar:resourceCollections>
+        <tdar:resourceCollection hidden="false">
+            <tdar:description>description</tdar:description>
+            <tdar:name>1234</tdar:name>
+            <tdar:resources>
+                <tdar:resourceId>4232</tdar:resourceId>
+            </tdar:resources>
+            <tdar:sortBy>TITLE</tdar:sortBy>
+        </tdar:resourceCollection>
+        <tdar:resourceCollection hidden="true"  parentIdRef="NULL_REF">
+            <tdar:description>description</tdar:description>
+            <tdar:name>abcd</tdar:name>
+            <tdar:orientation>LIST</tdar:orientation>
+            <tdar:sortBy>TITLE</tdar:sortBy>
+        </tdar:resourceCollection>
+    </tdar:resourceCollections>
+    <tdar:materialKeywords/>
+    <tdar:orientation>LIST</tdar:orientation>
+    <tdar:otherKeywords/>
+    <tdar:previousFilesUsed>0</tdar:previousFilesUsed>
+    <tdar:previousSpaceInBytesUsed>0</tdar:previousSpaceInBytesUsed>
+    <tdar:previousStatus>ACTIVE</tdar:previousStatus>
+    <tdar:relatedComparativeCollections/>
+    <tdar:resourceAnnotations/>
+    <tdar:resourceCreators/>
+    <tdar:resourceNotes/>
+    <tdar:resourceType>PROJECT</tdar:resourceType>
+    <tdar:siteNameKeywords/>
+    <tdar:siteTypeKeywords/>
+    <tdar:sortBy>RESOURCE_TYPE</tdar:sortBy>
+    <tdar:sourceCollections/>
+    <tdar:spaceInBytesUsed>0</tdar:spaceInBytesUsed>
+    <tdar:statusChanged>false</tdar:statusChanged>
+    <tdar:temporalKeywords/>
+    <tdar:title>abcd</tdar:title>
+    <tdar:unmanagedResourceCollections>
+            <tdar:resourceCollection hidden="false">
+                <tdar:name>54321</tdar:name>
+                <tdar:orientation>LIST</tdar:orientation>
+    		    <tdar:properties>
+    		        <tdar:customDocumentLogoEnabled>false</tdar:customDocumentLogoEnabled>
+    		        <tdar:customHeaderEnabled>false</tdar:customHeaderEnabled>
+    		        <tdar:featuredResourcesEnabled>false</tdar:featuredResourcesEnabled>
+    		        <tdar:searchEnabled>false</tdar:searchEnabled>
+    		        <tdar:subCollectionsEnabled>false</tdar:subCollectionsEnabled>
+    		        <tdar:whitelabel>false</tdar:whitelabel>
+    		    </tdar:properties>
+                <tdar:resources/>
+                <tdar:sortBy>TITLE</tdar:sortBy>
+                <tdar:unmanagedResources>
+                    <tdar:unmanagedResourceId>4232</tdar:unmanagedResourceId>
+                </tdar:unmanagedResources>
+            </tdar:resourceCollection>
+        </tdar:unmanagedResourceCollections>
+    <tdar:url></tdar:url>
+</tdar:project>
