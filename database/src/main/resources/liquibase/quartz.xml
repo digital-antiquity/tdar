@@ -75,6 +75,12 @@
             <column name="date_created" valueComputed="now()" />
         </insert>
     </changeSet>
+    <changeSet id="quartz-sort-order-refactor" author="briancastellanos">
+         <sql>UPDATE collection set sort_order = 'RESOURCE_TYPE' WHERE sort_order = 'RESOURCE_TYPE_REVERSE'</sql>
+         <sql>UPDATE collection set secondary_sort_order = 'RESOURCE_TYPE' WHERE secondary_sort_order = 'RESOURCE_TYPE_REVERSE'</sql>
+         <sql>UPDATE project SET sort_order = 'RESOURCE_TYPE' WHERE sort_order = 'RESOURCE_TYPE_REVERSE'</sql>
+         <sql>UPDATE project SET secondary_sort_order = 'RESOURCE_TYPE' WHERE secondary_sort_order = 'RESOURCE_TYPE_REVERSE'</sql>
+    </changeSet>
     
 </databaseChangeLog>
 
