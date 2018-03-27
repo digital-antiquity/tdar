@@ -155,14 +155,6 @@ public class ResourceCollectionControllerITCase extends AbstractControllerITCase
         genericService.delete(vc.getResourceCollection().getAuthorizedUsers());
     }
 
-    @Test
-    @Rollback
-    public void testNoResourceReverseSortOption(){
-        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class, getAdminUser());
-        assertTrue("Theres no reverse sort option",!vc.getSortOptions().contains(SortOption.RESOURCE_TYPE_REVERSE));
-    }
-    
-    
     @SuppressWarnings("unused")
     @Test
     @Rollback(true)

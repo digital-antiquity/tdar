@@ -363,6 +363,12 @@ var _init = function(appId) {
 	           }
 	        },
 	        
+	        cancelSaveSearchChanges: function(){
+	        	console.log("Cancelling Save Search.");
+	        	var vapp = this;
+	        	vapp._resetForm();
+	        },
+	        
 	        cancelAddToCollectionChanges: function(){
 	        	console.log("Cancelling Add To Collection.");
 	        	var vapp = this;

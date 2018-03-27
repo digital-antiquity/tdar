@@ -29,7 +29,6 @@ public enum SortOption {
     DATE_UPDATED(Resource.class, "Date Updated", false), 
     DATE_UPDATED_REVERSE(Resource.class,"Date Updated (Most Recent)", true), 
     RESOURCE_TYPE(Resource.class, "Resource Type"), 
-    RESOURCE_TYPE_REVERSE(Resource.class,"Resource Type (Z-A)",true), 
     LABEL(Keyword.class, "Label"), 
     LABEL_REVERSE(Keyword.class, "Label", true), CREATOR_NAME(Creator.class,"Name"), 
     CREATOR_NAME_REVERSE(Creator.class, "Name", true), FIRST_NAME(Person.class,"First Name"), 
@@ -69,7 +68,6 @@ public enum SortOption {
     public static List<SortOption> getOptionsForResourceCollectionPage() {
         List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
         options.remove(SortOption.RESOURCE_TYPE);
-        options.remove(SortOption.RESOURCE_TYPE_REVERSE);
         options.add(0, SortOption.RESOURCE_TYPE);
         return options;
     }

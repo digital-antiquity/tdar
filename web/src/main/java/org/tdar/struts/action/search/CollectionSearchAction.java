@@ -87,7 +87,6 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
 
     public List<SortOption> getSortOptions() {
         sortOptions.remove(SortOption.RESOURCE_TYPE);
-        sortOptions.remove(SortOption.RESOURCE_TYPE_REVERSE);
         return sortOptions;
     }
 

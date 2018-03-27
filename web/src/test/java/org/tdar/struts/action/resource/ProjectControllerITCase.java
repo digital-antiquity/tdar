@@ -84,16 +84,6 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
     }
     
     
-    @Test
-    @Rollback
-    public void testNoResourceTypeReverseSortOption() throws TdarActionException{
-        ProjectController controller = generateNewInitializedController(ProjectController.class, getAdminUser());
-        controller.setId(3805L);
-        controller.prepare();
-        assertTrue("Resource reverse sort is not an option", !controller.getSortOptions().contains(SortOption.RESOURCE_TYPE_REVERSE));
-
-    }
-
     @SuppressWarnings("unused")
     @Test
     @Rollback

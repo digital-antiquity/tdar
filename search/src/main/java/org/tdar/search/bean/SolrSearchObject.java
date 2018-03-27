@@ -207,7 +207,6 @@ public class SolrSearchObject<I extends Indexable> {
             case RELEVANCE:
                 return "score";
             case RESOURCE_TYPE:
-            case RESOURCE_TYPE_REVERSE:
                 return QueryFieldNames.RESOURCE_TYPE_SORT;
             default:
                 break;

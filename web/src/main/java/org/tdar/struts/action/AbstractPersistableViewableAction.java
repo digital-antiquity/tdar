@@ -337,15 +337,10 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     protected void reSortFacets(ResourceFacetedAction handler, Sortable persistable) {
         // sort facets A-Z unless sortOption explicitly otherwise
         if (PersistableUtils.isNotNullOrTransient(getPersistable()) && CollectionUtils.isNotEmpty(handler.getResourceTypeFacets())) {
-            final boolean reversed = persistable.getSortBy() == SortOption.RESOURCE_TYPE_REVERSE;
             Collections.sort(handler.getResourceTypeFacets(), new Comparator<Facet>() {
                 @Override
                 public int compare(Facet o1, Facet o2) {
-                    if (reversed) {
-                        return o2.getRaw().compareTo(o1.getRaw());
-                    } else {
-                        return o1.getRaw().compareTo(o2.getRaw());
-                    }
+                    return o1.getRaw().compareTo(o2.getRaw());
                 }
             });
         }
