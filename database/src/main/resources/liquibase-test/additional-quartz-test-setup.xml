@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd" context="test" >
+    <changeSet id="integration-setup-auth" author="abrin">
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="EDIT_INTEGRATION"/>
+            <column name="general_permission_int" valueNumeric="2000"/>
+            <column name="user_id" valueNumeric="8092"/>
+            <column name="creator_id" valueNumeric="8092"/>
+            <column name="integration_id" valueNumeric="1000"/>
+        </insert>
+        <insert tableName="authorized_user">
+            <column name="general_permission" value="EDIT_ACCOUNT"/>
+            <column name="general_permission_int" valueNumeric="10000"/>
+            <column name="user_id" valueNumeric="8094"/>
+            <column name="creator_id" valueNumeric="8094"/>
+            <column name="account_id" valueNumeric="1"/>
+        </insert>
+        <sql>
+        SELECT setval('creator_id_seq', (SELECT MAX(id) FROM creator)+1);
+        SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
+        </sql>
+    </changeSet>
+    <changeSet id="quartz-collections-1" author="abrin">
+        <sql>update authorized_user set general_permission_int=5000, general_permission='ADMINISTER_SHARE' where general_permission='ADMINISTER_GROUP'</sql>
+        <sql>update collection set collection_type='SHARED' where collection_type='LIST'</sql>
+    </changeSet>
+    
+    <changeSet id="quartz-collections-2" author="bcastel1">
+        <sql>INSERT INTO resource (id,date_created,date_updated,description,external_id,total_files,previous_status,resource_type,total_space_in_bytes,status,title,url,submitter_id,updater_id,uploader_id,account_id,description_formatted) VALUES (5000,'2013-07-01 17:21:35','2013-07-01 17:21:35.881','sample image',NULL,0,'ACTIVE','IMAGE',0,'ACTIVE','Test resource 2','',8092,8092,8092,NULL, NULL)</sql>
+        <sql>INSERT INTO UNMANAGED_COLLECTION_RESOURCE (RESOURCE_ID,COLLECTION_ID) VALUES (5000, 1000);</sql>
+        <sql>INSERT INTO AUTHORIZED_USER (admin_permission,general_permission_int,general_permission,user_id,resource_collection_id,"date_expires","creator_id","date_created","resource_id","integration_id","account_id") VALUES
+(NULL,500,'MODIFY_RECORD',8092,NULL,NULL,8092,'2017-12-04 19:22:46.099094',5000,NULL,NULL)</sql>
+    </changeSet>
+    
+    <changeSet id="quartz-collections-3" author="bcastel1">
+        <sql>INSERT INTO INFORMATION_RESOURCE
+		("copy_location","date_created","date_created_normalized","external_doi","external_reference","inheriting_collection_information","inheriting_cultural_information","inheriting_identifier_information","inheriting_individual_institutional_credit","inheriting_investigation_information","inheriting_material_information","inheriting_note_information","inheriting_other_information","inheriting_site_information","inheriting_spatial_information","inheriting_temporal_information","last_uploaded","license_text","license_type","mappeddatakeyvalue","metadata_language","publisher_location","resource_language","id","copyright_holder_id","mappeddatakeycolumn_id","project_id","publisher_id","provider_institution_id")
+		VALUES (NULL,2012,2010,NULL,false,false,false,false,false,false,false,false,false,false,false,false,NULL,NULL,NULL,NULL,NULL,NULL,NULL,5000,NULL,NULL,NULL,NULL,NULL);
+		</sql>
+		
+		<sql>
+        INSERT INTO image (id) VALUES (5000);
+		</sql>
+    
+    </changeSet>
+    
+    
+</databaseChangeLog>
