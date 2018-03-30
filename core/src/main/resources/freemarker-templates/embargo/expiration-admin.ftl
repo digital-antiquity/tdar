@@ -2,16 +2,24 @@
 <@mail.content>
 Dear tDAR Admin:<br />
 <#list toExpire![]>
-The following files will be un-embargoed tomorrow:
+
+<p><b>The following files will be un-embargoed tomorrow:</b></p>
+<ul>
 <#items as file>
- - ${file.filename} (${file.id?c}):  ${file.informationResource.title} (${file.informationResource.id?c})
-   ${baseUrl}${file.informationResource.detailUrl} (${file.informationResource.submitter.properName})
-</#items></#list>
+ <li><a href="${baseUrl}${file.informationResource.detailUrl}">${file.filename} (${file.id?c}):  ${file.informationResource.title} (${file.informationResource.id?c})</a>
+    (${file.informationResource.submitter.properName})</li>
+</#items>
+</ul>
+
+</#list>
 
 <#list expired![]>
-The following files have been unembargoed:
+<p><b>The following files have been unembargoed:</b></p>
+<ul>
 <#items as file>
- - ${file.filename} (${file.id?c}):  ${file.informationResource.title} (${file.informationResource.id?c})
-   ${baseUrl}${file.informationResource.detailUrl} (${file.informationResource.submitter.properName})
-</#items></#list>
+ <li><a href="${baseUrl}${file.informationResource.detailUrl}"> ${file.filename} (${file.id?c}):  ${file.informationResource.title} (${file.informationResource.id?c})
+    (${file.informationResource.submitter.properName})</a></li>
+</#items>
+</ul>
+</#list>
 </@mail.content>

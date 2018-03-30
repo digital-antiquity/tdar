@@ -14,7 +14,7 @@ The following accounts are overdrawn:<br />
         Flagged Items:
         <ul>
         <#list account.flaggedResources as resource>
-          <a href="${baseUrl}${resource.detailUrl}">${resource.id} ${resource.resourceType} ${resource.title}</a>
+          <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id})
         </#list>
         </ul>
     </p>

@@ -3,7 +3,7 @@
 <@mail.content>
 Dear ${to.properName},
 <p>
-${from.properName} discovered <a href="${baseUrl}${resource.detailUrl}">${resource.title} (${resource.id?c})</a>  in ${siteAcronym}, 
+${from.properName} discovered <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id?c})  in ${siteAcronym}, 
 and is interested in getting in touch with you.  They have sent the following 
 message:
 </p>
@@ -18,8 +18,8 @@ message:
 
 <p>
 To view the record in ${siteAcronym} visit: 
-<a href="${baseUrl}/${resource.urlNamespace}/${resource.id?c}">
-    ${baseUrl}/${resource.urlNamespace}/${resource.id?c}</a>
+<a href="${baseUrl}${resource.detailUrl}">
+    ${baseUrl}${resource.detailUrl}</a>
 </p>
 
 <p>

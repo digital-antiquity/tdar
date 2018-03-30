@@ -16,7 +16,7 @@ Flagged Items:
 <ul>
 <#list account.flaggedResources as resource>
   <li>
-  <a href="${baseUrl}${resource.detailUrl}">${resource.id} ${resource.resourceType} ${resource.title}</a>
+  <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id})
   </li>
 </#list>
 <ul>

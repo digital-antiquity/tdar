@@ -27,14 +27,14 @@ import org.tdar.utils.MessageHelper;
 
 public enum EmailType implements Localizable, HasLabel {
 	INVITE("invite/invite.ftl","test@tdar.org",InviteMessage.class),
-	INVITE_ACCEPTED("invite/invite-accepted.ftl","test@tdar.org",InviteAcceptedMessage.class),
+	INVITE_ACCEPTED("invite/invite-accepted.ftl","no-reply@tdar.org",InviteAcceptedMessage.class),
 	NEW_USER_NOTIFY("email_new_users.ftl"),
-	NEW_USER_WELCOME("email-welcome.ftl","test@tdar.org",NewUserWelcomeMessage.class),
+	NEW_USER_WELCOME("email-welcome.ftl","no-reply@tdar.org",NewUserWelcomeMessage.class),
 	TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl"),
 	
-	PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl","test@tdar.org",AccessRequestGrantedMessage.class),
-	PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl","test@tdar.org",AccessRequestRejectedMessage.class),
-	PERMISSION_REQUEST_CUSTOM("email-form/custom-accept.ftl","test@tdar.org",AccessRequestCustomMessage.class),
+	PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl","no-reply@tdar.org",AccessRequestGrantedMessage.class),
+	PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl","no-reply@tdar.org",AccessRequestRejectedMessage.class),
+	PERMISSION_REQUEST_CUSTOM("email-form/custom-accept.ftl","no-reply@tdar.org",AccessRequestCustomMessage.class),
 	
 	OVERDRAWN_NOTIFICATION("overdrawn-user.ftl",null,OverdrawnNotification.class),
 	RESOURCE_EXPORT("resource-export-email.ftl"),
@@ -52,8 +52,8 @@ public enum EmailType implements Localizable, HasLabel {
 	ACCESS_EXPIRE_OWNER_NOTIFICATION("expire/expire_owner.ftl",null,AccessExpirationOwnerNotification.class),
 	ACCESS_EXPIRE_USER_NOTIFICATION("expire/expire_owner.ftl",null,AccessExpirationUserNotification.class),
 	
-	MONTHLY_USER_STATISTICS("monthly_user_statistics.ftl","test@tdar.org",MonthlyUserStatisticsMessage.class),
-	TEST_EMAIL("test-email.ftl", "test@tdar.org", TestAwsMessage.class),
+	MONTHLY_USER_STATISTICS("monthly_user_statistics.ftl","no-reply@tdar.org",MonthlyUserStatisticsMessage.class),
+	TEST_EMAIL("test-email.ftl", "no-reply@tdar.org", TestAwsMessage.class),
 
 	//Refactored from EmailMessageType.
     CONTACT("email-form/contact.ftl"),

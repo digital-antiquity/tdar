@@ -3,7 +3,7 @@
 
 <@mail.content>
 Dear ${requestor.properName},<br />
-Your request for access to <a href="${baseUrl}${resource.detailUrl}">${resource.title} (${resource.id?c})</a> has been declined by ${authorizedUser.properName}<br />
+Your request for access to <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id?c}) has been declined by ${authorizedUser.properName}<br />
 
 <br />
 

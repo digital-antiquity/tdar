@@ -3,7 +3,7 @@
 
 <@mail.content>
 
-The following ${totalEmails} user-generated emails need to be reviewed before they are sent.  Review online ( ${siteUrl}/admin/email ) here to review and change status in ${siteAcronym}.<br />
+The following ${totalEmails} user-generated emails need to be reviewed before they are sent.  <a href="${siteUrl}/admin/email">Review online</a> to review and change status in ${siteAcronym}.<br />
 <br />
 <ul>
     <#list emails as email>

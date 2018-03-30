@@ -1,6 +1,12 @@
+<#import "email-macro.ftl" as mail /> 
+
+<@mail.content>
 Dear TDAR Admin,
 
-The following users' access has expired: 
+The following users' access has expired:
+<ul> 
 <#list notes as note>
- - ${note}
+ <li>${note}</li>
 </#list>
+</ul>
+</@mail.content>
