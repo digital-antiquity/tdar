@@ -68,8 +68,8 @@ public class CollectionDataExtractor {
 
         // This is a set of TdarUsers who have the ability to write changes.
         HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(resource.getSubmitter());
-        writable.add(resource.getUpdatedBy());
+//        writable.add(resource.getSubmitter());
+//        writable.add(resource.getUpdatedBy());
         for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
@@ -108,8 +108,8 @@ public class CollectionDataExtractor {
     public List<Long> getUsersWhoCanView() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(resource.getSubmitter());
-        writable.add(resource.getUpdatedBy());
+//        writable.add(resource.getSubmitter());
+//        writable.add(resource.getUpdatedBy());
         for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection,
                     Permissions.VIEW_ALL, true));
