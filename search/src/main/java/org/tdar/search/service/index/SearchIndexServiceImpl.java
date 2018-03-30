@@ -585,7 +585,7 @@ public class SearchIndexServiceImpl implements SearchIndexService {
         if (o.getEventType() == EventType.DELETE) {
             purge(core, id);
         } else {
-            logger.trace("indexing {}, {}, {}", core, id, doc);
+            logger.trace("event indexing {}, {}, {}", core, id, doc);
             index(core, id, doc);
         }
         commit(core);

@@ -43,7 +43,7 @@ public class MessageBusResourceSynchronization<T extends ObjectContainer>
     public void afterCompletion(int status) {
         logger.trace("completion: {}", status);
         if (status == TransactionSynchronization.STATUS_COMMITTED) {
-            logger.trace("COMMITTING EVENTS {}", holder.getPendingMessages().size());
+            logger.trace("COMMITTING EVENTS {}\n\t{}", holder.getPendingMessages().size(), holder.getPendingMessages());
             for (Object o : holder.getPendingMessages()) {
                 try {
                     messageBus.post((ObjectContainer) o);

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
@@ -78,6 +79,12 @@ public class CollectionDataExtractor {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection,
                     Permissions.MODIFY_METADATA, true));
         }
+        
+        for (AuthorizedUser user : resource.getAuthorizedUsers()) {
+            if (user.getEffectiveGeneralPermission() >= Permissions.MODIFY_METADATA.getEffectivePermissions()) {
+                writable.add(user.getUser());
+            }
+        }
 
         // Iterate through the users and get the ids.
         for (TdarUser p : writable) {
@@ -107,6 +114,13 @@ public class CollectionDataExtractor {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection,
                     Permissions.VIEW_ALL, true));
         }
+        
+        for (AuthorizedUser user : resource.getAuthorizedUsers()) {
+            if (user.getEffectiveGeneralPermission() >= Permissions.VIEW_ALL.getEffectivePermissions()) {
+                writable.add(user.getUser());
+            }
+        }
+
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
                 continue;
