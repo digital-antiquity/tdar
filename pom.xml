@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>17.0.0-QUARTZ-SNAPSHOT</version>
+    <version>17.0.0-QUARTZ</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
