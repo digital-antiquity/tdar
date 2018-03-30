@@ -142,13 +142,6 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
                 isAbleToUploadFiles = false;
             }
         }
-        else {
-            //A billing account is required to allow uploads.
-            if(persistable.getAccount()==null){
-                return false;
-            }
-        }
-        
         
         return isAbleToUploadFiles;
     }
