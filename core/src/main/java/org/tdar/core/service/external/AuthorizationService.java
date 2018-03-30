@@ -252,4 +252,6 @@ public interface AuthorizationService {
 
     void applyTransientEditableFlag(Editable rc, TdarUser authenticatedUser);
 
+    boolean canModifyPermissions(TdarUser authenticatedUser, Resource persistable);
+
 }

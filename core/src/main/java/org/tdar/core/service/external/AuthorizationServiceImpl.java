@@ -437,6 +437,18 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, Permissions.MODIFY_RECORD);
     }
 
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canModifyPermissions(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.resource.Resource)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public boolean canModifyPermissions(TdarUser person, Resource resource) {
+        return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, Permissions.MODIFY_RECORD);
+    }
+
     /*
      * (non-Javadoc)
      * 

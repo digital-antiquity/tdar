@@ -29,6 +29,6 @@ public class AmazonEmailServiceTestCase {
     
     @Test
     public void testTestAwsEmail(){
-    	assertEquals(EmailType.TEST_EMAIL.getFromAddress(), "test@tdar.org");
+    	assertEquals(EmailType.TEST_EMAIL.getFromAddress(), "no-reply@tdar.org");
     }
 }
