@@ -100,10 +100,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = null;
 
-    private Boolean isAbleToUploadFiles = null;
+    private Boolean ableToUploadFiles = null;
 
-    private Boolean isAbleToAdjustPermissions = null;
-    // private List<PersonalFilestoreFile> pendingFiles;
+    private Boolean ableToAdjustPermissions = null;
 
     private Long ticketId;
 
@@ -130,7 +129,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public String saveInformationResource(InformationResource document) throws TdarActionException {
         // save basic metadata
-//        saveBasicResourceMetadata();
         
         // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();
@@ -503,20 +501,20 @@ public abstract class AbstractInformationResourceController<R extends Informatio
      * @return boolean
      */
     public boolean isAbleToUploadFiles() {
-        if (isAbleToUploadFiles == null) {
-            isAbleToUploadFiles = resourceEditControllerService.isAbleToUploadFiles(getAuthenticatedUser(), getPersistable(), getActiveAccounts());
+        if (ableToUploadFiles == null) {
+            ableToUploadFiles = resourceEditControllerService.isAbleToUploadFiles(getAuthenticatedUser(), getPersistable(), getActiveAccounts());
         }
-        getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", isAbleToUploadFiles, getPersistable().getAccount());
+        getLogger().debug("isAbleToUploadFiles: {} , getAccount:{}", ableToUploadFiles, getPersistable().getAccount());
 
-        return isAbleToUploadFiles;
+        return ableToUploadFiles;
     }
     
     public boolean isAbleToAdjustPermissions(){
-    	if(isAbleToAdjustPermissions == null){
-    		isAbleToAdjustPermissions = resourceEditControllerService.isAbleToAdjustPermissions(getAuthenticatedUser(), getPersistable());
+    	if(ableToAdjustPermissions == null){
+    		ableToAdjustPermissions = resourceEditControllerService.isAbleToAdjustPermissions(getAuthenticatedUser(), getPersistable());
     	}
     	
-    	return isAbleToAdjustPermissions;
+    	return ableToAdjustPermissions;
     }
     
     
