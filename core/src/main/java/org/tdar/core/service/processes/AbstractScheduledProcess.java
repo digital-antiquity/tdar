@@ -16,7 +16,7 @@ public abstract class AbstractScheduledProcess implements ScheduledProcess {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected TdarConfiguration config = TdarConfiguration.getInstance();
-    
+
     private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
 
     /**
@@ -44,7 +44,6 @@ public abstract class AbstractScheduledProcess implements ScheduledProcess {
     public boolean shouldRunAtStartup() {
         return false;
     }
-
 
     protected Map<String, Object> initDataModel() {
         Map<String, Object> dataModel = new HashMap<>();

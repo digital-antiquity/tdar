@@ -1,18 +1,11 @@
 package org.tdar.core.service;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Address;
@@ -23,49 +16,14 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.SimpleFileProcessingDao;
-import org.tdar.core.dao.base.GenericDao.FindOptions;
-import org.tdar.core.dao.entity.AuthorizedUserDao;
-import org.tdar.core.dao.entity.InstitutionDao;
-import org.tdar.core.dao.entity.PersonDao;
-import org.tdar.core.dao.resource.BookmarkedResourceDao;
-import org.tdar.core.event.EventType;
-import org.tdar.core.event.TdarEvent;
-import org.tdar.transform.jsonld.SchemaOrgCreatorTransformer;
-import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
-/**
- * $Id$
- * <p>
- * Handles requests for all entities, including Persons, Institutions, etc.
- * </p>
- * 
- * @author <a href='Allen.Lee@asu.edu'>Allen Lee</a>
- * @version $Revision$
- */
-@Transactional(readOnly = true)
-@Service
-public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonDao> {
-
-    @Autowired
-    private transient InstitutionDao institutionDao;
-    @Autowired
-    private transient AuthorizedUserDao authorizedUserDao;
-    @Autowired
-    private transient SerializationService serializationService;
-    @Autowired
-    private transient SimpleFileProcessingDao simpleFileProcessingDao;
-    @Autowired
-    private ApplicationEventPublisher publisher;
-
-    @Autowired
-    private transient BookmarkedResourceDao bookmarkedResourceDao;
+public interface EntityService {
 
     /**
      * Find a @link Person by ID
@@ -73,10 +31,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param id
      * @return
      */
-    @Transactional(readOnly = true)
-    public Person findPerson(Long id) {
-        return find(id);
-    }
+    Person findPerson(Long id);
 
     /**
      * Find all registered users (limited by most recent x)
@@ -84,30 +39,21 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param maxResults
      * @return
      */
-    @Transactional(readOnly = true)
-    public List<TdarUser> findAllRegisteredUsers(int maxResults) {
-        return getDao().findAllRegisteredUsers(maxResults);
-    }
+    List<TdarUser> findAllRegisteredUsers(int maxResults);
 
     /**
      * Find all registered users
      * 
      * @return
      */
-    @Transactional(readOnly = true)
-    public List<TdarUser> findAllRegisteredUsers() {
-        return getDao().findAllRegisteredUsers(null);
-    }
+    List<TdarUser> findAllRegisteredUsers();
 
     /**
      * Find all @link Institution entities.
      * 
      * @return
      */
-    @Transactional(readOnly = true)
-    public List<Institution> findAllInstitutions() {
-        return institutionDao.findAll();
-    }
+    List<Institution> findAllInstitutions();
 
     /**
      * Find an @link Institution by exact name
@@ -115,31 +61,15 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param name
      * @return
      */
-    @Transactional(readOnly = true)
-    public Institution findInstitutionByName(String name) {
-        if (StringUtils.isBlank(name)) {
-            return null;
-        }
-        return institutionDao.findByName(name.trim());
-    }
-    
+    Institution findInstitutionByName(String name);
+
     /**
      * Find an @link Institution by exact name
      * 
      * @param institution
      * @return
      */
-    @Transactional(readOnly = true)
-    public List<Person> findPersonsByInstitution(Institution institution) {
-        if (PersistableUtils.isNullOrTransient(institution)) {
-            return null;
-        }
-        return getDao().findPeopleByInstituion(institution);
-    }
-    
-    
-    
-    
+    List<Person> findPersonsByInstitution(Institution institution);
 
     /**
      * Find a @link Institution by ID
@@ -147,10 +77,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param id
      * @return
      */
-    @Transactional(readOnly = true)
-    public Institution findInstitution(long id) {
-        return institutionDao.find(id);
-    }
+    Institution findInstitution(long id);
 
     /**
      * Find an @link Institution based on name bounded by wildcards %name%
@@ -158,10 +85,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param name
      * @return
      */
-    @Transactional(readOnly = true)
-    public List<Institution> findInstitutionLike(String name) {
-        return institutionDao.withNameLike(name);
-    }  
+    List<Institution> findInstitutionLike(String name);
 
     /**
      * Find a @link Person by their email
@@ -169,21 +93,9 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param email
      * @return
      */
-    @Transactional(readOnly = true)
-    public Person findByEmail(String email) {
-        if (StringUtils.isBlank(email)) {
-            return null;
-        }
-        return getDao().findByEmail(email.trim());
-    }
+    Person findByEmail(String email);
 
-    @Transactional(readOnly = true)
-    public TdarUser findUserByEmail(String email) {
-        if ((email == null) || email.isEmpty()) {
-            return null;
-        }
-        return getDao().findUserByEmail(email);
-    }
+    TdarUser findUserByEmail(String email);
 
     /**
      * Find a @link Person by their Username
@@ -191,13 +103,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param username
      * @return
      */
-    @Transactional(readOnly = true)
-    public TdarUser findByUsername(String username) {
-        if (StringUtils.isBlank(username)) {
-            return null;
-        }
-        return getDao().findByUsername(username.trim());
-    }
+    TdarUser findByUsername(String username);
 
     /**
      * Find people with a similar name (for suggesting we merge)
@@ -205,20 +111,15 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param person
      * @return
      */
-    @Transactional(readOnly=true)
-    public List<Person> findSimilarPeople(TdarUser person) {
-        return getDao().findSimilarPeople(person);
-    }
-    
+    List<Person> findSimilarPeople(TdarUser person);
+
     /**
      * Find a Person by their full name (guessing about how to split the name into parts)
      * 
      * @param fullName
      * @return
      */
-    public Set<Person> findByFullName(String fullName) {
-        return getDao().findByFullName(fullName);
-    }
+    Set<Person> findByFullName(String fullName);
 
     /**
      * Find all resources to which the given user/Person has full access.
@@ -226,9 +127,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param person
      * @return
      */
-    public Set<Resource> findFullUserResources(TdarUser person, boolean isAdmin) {
-        return authorizedUserDao.findSparseEditableResources(person, isAdmin);
-    }
+    Set<Resource> findFullUserResources(TdarUser person, boolean isAdmin);
 
     /**
      * Find or saveCreator based on type
@@ -239,49 +138,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param transientCreator
      * @return
      */
-    @SuppressWarnings("unchecked")
-    @Transactional(readOnly = false)
-    public <C extends Creator<?>> C findOrSaveCreator(C transientCreator) {
-        C creatorToReturn = null;
-
-        if (transientCreator instanceof Person) {
-            creatorToReturn = (C) findOrSavePerson((Person) transientCreator);
-        }
-        if (transientCreator instanceof Institution) {
-            creatorToReturn = (C) findOrSaveInstitution((Institution) transientCreator);
-        }
-        if ((creatorToReturn != null) && creatorToReturn.isDeleted()) {
-            creatorToReturn.setStatus(Status.ACTIVE);
-        }
-
-        return creatorToReturn;
-    }
-
-    /**
-     * Find a @link Person by id, email or save a new one if one is not found
-     * 
-     * @param transientPerson
-     * @return
-     */
-    @Transactional(readOnly = false)
-    private Person findOrSavePerson(Person transientPerson) {
-        Person blessedPerson = findPerson(transientPerson);
-        // still didn't find anything? Fair enough, let's save it
-        if (blessedPerson == null) {
-            if (transientPerson.getInstitution() != null) {
-                Institution findOrSaveInstitution = findOrSaveInstitution(transientPerson.getInstitution());
-                transientPerson.setInstitution(findOrSaveInstitution);;
-            }
-            if (transientPerson instanceof TdarUser && ((TdarUser) transientPerson).getProxyInstitution() != null) {
-                TdarUser transientUser = ((TdarUser) transientPerson);
-                Institution findOrSaveInstitution = findOrSaveInstitution(transientUser.getProxyInstitution());
-                transientUser.setProxyInstitution(findOrSaveInstitution);
-            }
-            getDao().save(transientPerson);
-            blessedPerson = transientPerson;
-        }
-        return blessedPerson;
-    }
+    <C extends Creator<?>> C findOrSaveCreator(C transientCreator);
 
     /**
      * Find a @link Person by id, email
@@ -289,121 +146,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param transientPerson
      * @return
      */
-    @Transactional(readOnly = true)
-    public Person findPerson(Person transientPerson) {
-        // now find or save the person (if the person was found the institution field is ignored
-        // entirely and replaced with the persisted person's institution
-        if ((transientPerson == null) || transientPerson.hasNoPersistableValues()) {
-            return null;
-        }
-
-        if (PersistableUtils.isNotNullOrTransient(transientPerson.getId())) {
-            if (getDao().sessionContains(transientPerson)) {
-                return transientPerson;
-            }
-            return find(transientPerson.getId());
-        }
-
-        Person blessedPerson = null;
-        if (transientPerson instanceof TdarUser) {
-            String username = StringUtils.trim(((TdarUser) transientPerson).getUsername());
-            
-            if (StringUtils.isNotBlank(username)) {
-                blessedPerson = findByUsername(username);
-            }
-            logger.debug("find by username: {}, {}", username, blessedPerson);
-        }
-        
-        String email = StringUtils.trim(transientPerson.getEmail());
-        if (StringUtils.isNotBlank(email)  && blessedPerson == null) {
-            blessedPerson = findByEmail(email);
-        } else {
-            transientPerson.setEmail(null);// make sure it's null and not just blank or empty
-        }
-
-
-        // didn't find by email? cast the net a little wider...
-        if (blessedPerson == null) {
-            Institution transientInstitution = transientPerson.getInstitution();
-            if (transientInstitution != null) {
-                Institution foundInstitution = findInstitution(transientInstitution);
-                if (foundInstitution != null) {
-                    transientPerson.setInstitution(foundInstitution);
-                }
-            }
-            // make sure we're trimmng
-            transientPerson.setEmail(StringUtils.trim(transientPerson.getEmail()));
-            transientPerson.setFirstName(StringUtils.trim(transientPerson.getFirstName()));
-            transientPerson.setLastName(StringUtils.trim(transientPerson.getLastName()));
-            Set<Person> people = getDao().findByPerson(transientPerson);
-            /*
-             * Perhaps this should match only if FirstName and LastName are not empty, but I can see cases
-             * where LastName may not be empty but firstName is...
-             */
-            if (!people.isEmpty()) {
-                blessedPerson = people.iterator().next();
-            }
-        }
-        transientPerson.setEmail(email);
-        return blessedPerson;
-    }
-
-    /**
-     * Find the @link Institution by name
-     * 
-     * @param transientInstitution
-     * @return
-     */
-    @Transactional(readOnly = true)
-    private Institution findInstitution(Institution transientInstitution) {
-        if ((transientInstitution == null) || StringUtils.isBlank(transientInstitution.getName())) {
-            return null;
-        }
-
-        if (PersistableUtils.isNotNullOrTransient(transientInstitution.getId())) {
-            return getDao().find(Institution.class, transientInstitution.getId());
-        }
-
-        List<Institution> examples = getDao().findByExample(Institution.class, transientInstitution,
-                Arrays.asList(Institution.getIgnorePropertiesForUniqueness()), FindOptions.FIND_FIRST);
-        if (CollectionUtils.isNotEmpty(examples)) {
-            return examples.get(0);
-        }
-        return null;
-
-    }
-
-    /**
-     * Find the @link Institution by name, or save a new one if it does not exist.
-     * 
-     * @param transientInstitution
-     * @return
-     */
-    @Transactional(readOnly = false)
-    private Institution findOrSaveInstitution(Institution transientInstitution) {
-        transientInstitution.setName(StringUtils.trim(transientInstitution.getName()));
-        Institution blessedInstitution = findInstitution(transientInstitution);
-        if (blessedInstitution == null) {
-            if ((transientInstitution == null) || transientInstitution.hasNoPersistableValues()) {
-                return null;
-            }
-            institutionDao.save(transientInstitution);
-            blessedInstitution = transientInstitution;
-        } else if (!blessedInstitution.isDeleted()) {
-            blessedInstitution.setStatus(Status.ACTIVE);
-        }
-        return blessedInstitution;
-    }
+    Person findPerson(Person transientPerson);
 
     /**
      * Finds the matching @link ResourceCreator (based on name, id, unique value) or save a new one.
      * 
      * @param resourceCreator
      */
-    @Transactional(readOnly = false)
-    public void findOrSaveResourceCreator(ResourceCreator resourceCreator) {
-        resourceCreator.setCreator(findOrSaveCreator(resourceCreator.getCreator()));
-    }
+    void findOrSaveResourceCreator(ResourceCreator resourceCreator);
 
     /**
      * List @link ResourceCollection entries that a @link Person (user) has access to
@@ -411,40 +161,28 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param user
      * @return
      */
-    @Transactional(readOnly = true)
-    public List<ResourceCollection> findAccessibleResourceCollections(TdarUser user) {
-        return authorizedUserDao.findAccessibleResourceCollections(user);
-    }
+    List<ResourceCollection> findAccessibleResourceCollections(TdarUser user, Permissions perm);
 
     /**
      * List recent logins to the system
      * 
      * @return
      */
-    @Transactional(readOnly = true)
-    public List<TdarUser> showRecentLogins() {
-        return getDao().findRecentLogins();
-    }
+    List<TdarUser> showRecentLogins();
 
     /**
      * Increment the login counter for a given user
      * 
      * @param authenticatedUser
      */
-    @Transactional(readOnly = false)
-    public void registerLogin(TdarUser authenticatedUser, String userAgent) {
-        getDao().registerLogin(authenticatedUser, userAgent);
-    }
+    void registerLogin(TdarUser authenticatedUser, String userAgent);
 
     /**
      * Find the number of actual contributors to tDAR based on resource.submitter
      * 
      * @return
      */
-    @Transactional(readOnly = true)
-    public Long findNumberOfActualContributors() {
-        return getDao().findNumberOfActualContributors();
-    }
+    Long findNumberOfActualContributors();
 
     /**
      * Given a @link Creator with a @link Status of Duplicate, return the Authority.
@@ -452,36 +190,20 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param dup
      * @return
      */
-    @Transactional(readOnly = true)
-    public Creator<?> findAuthorityFromDuplicate(Creator<?> dup) {
-        if (PersistableUtils.isNullOrTransient(dup) || !dup.isDuplicate()) {
-            return null;
-        }
-        if (dup instanceof Person) {
-            return getDao().findAuthorityFromDuplicate((Person) dup);
-        } else {
-            return institutionDao.findAuthorityFromDuplicate((Institution) dup);
-        }
-    }
+    Creator<?> findAuthorityFromDuplicate(Creator<?> dup);
 
     /**
      * Find all Ids of (actual) contributors within the system based on "submitter" id
      * 
      * @return
      */
-    @Transactional(readOnly = true)
-    public Set<Long> findAllContributorIds() {
-        return getDao().findAllContributorIds();
-    }
+    Set<Long> findAllContributorIds();
 
     /**
      * Update the Person occurrance count for each Person -- effectively how often they're used or referenced in the Database. This can be used for relevancy
      * ranking and visualization
      */
-    @Transactional
-    public void updatePersonOcurrances() {
-        getDao().updateOccuranceValues();
-    }
+    void updatePersonOcurrances();
 
     /**
      * get aggregate view counts for creators
@@ -489,132 +211,38 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param creator
      * @return
      */
-    @Transactional(readOnly = true)
-    public Long getCreatorViewCount(Creator<?> creator) {
-        if (PersistableUtils.isNullOrTransient(creator)) {
-            return 0L;
-        }
-        return getDao().getCreatorViewCount(creator);
-    }
+    Long getCreatorViewCount(Creator<?> creator);
 
-    @Transactional(readOnly = true)
-    public void findResourceCreator(ResourceCreator creator) {
-        Creator<?> incomingCreator = creator.getCreator();
-        if (incomingCreator instanceof Person) {
-            incomingCreator = findPerson((Person) incomingCreator);
-        }
-        if (incomingCreator instanceof Institution) {
-            incomingCreator = findInstitution((Institution) incomingCreator);
-        }
-        if ((incomingCreator != null) && incomingCreator.isDeleted()) {
-            incomingCreator.setStatus(Status.ACTIVE);
-        }
-        if (incomingCreator != null) {
-            creator.setCreator(incomingCreator);
-        }
-    }
+    void findResourceCreator(ResourceCreator creator);
 
-    @Transactional(readOnly = false)
-    public void deleteForController(Creator<?> creator, String deletionReason, TdarUser authenticatedUser) {
-        creator.setStatus(Status.DELETED);
-        getDao().saveOrUpdate(creator);
-        publisher.publishEvent(new TdarEvent(creator, EventType.CREATE_OR_UPDATE));
-    }
+    void deleteForController(Creator<?> creator, String deletionReason, TdarUser authenticatedUser);
 
-    @Transactional(readOnly = true)
-    public DeleteIssue getDeletionIssues(TextProvider textProvider, Creator<?> persistable) {
-        return null;
-    }
+    DeleteIssue getDeletionIssues(TextProvider textProvider, Creator<?> persistable);
 
-    @Transactional(readOnly = false)
-    public void saveInstitutionForController(Institution persistable, String name, String email, FileProxy fileProxy) {
-        // name has a unique key; so we need to be careful with it
-        persistable.setName(name);
-        persistable.setEmail(email);
-        getDao().saveOrUpdate(persistable);
-        if (fileProxy != null) {
-            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
-        }
-    }
+    void saveInstitutionForController(Institution persistable, String name, String email, FileProxy fileProxy);
 
-    @Transactional(readOnly = false)
-    public void savePersonforController(Person person, String email, String institutionName, FileProxy fileProxy) {
-        if (!StringUtils.equals(email, person.getEmail())) {
-            person.setEmail(email);
-        }
-        getLogger().debug("saving person: {} with institution {} ", person, institutionName);
-        if (StringUtils.isBlank(institutionName)) {
-            person.setInstitution(null);
-        }
-        else {
-            // if the user changed the person's institution, find or create it
-            Institution persistentInstitution = findOrSaveCreator(new Institution(institutionName));
-            getLogger().debug("setting institution to persistent: " + persistentInstitution);
-            person.setInstitution(persistentInstitution);
-        }
+    void savePersonforController(Person person, String email, String institutionName, FileProxy fileProxy);
 
-        saveOrUpdate(person);
-        if (fileProxy != null) {
-            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(person, fileProxy);
-        }
-    }
+    List<BookmarkedResource> getBookmarkedResourcesForUser(TdarUser user);
 
-    @Transactional(readOnly = true)
-    public List<BookmarkedResource> getBookmarkedResourcesForUser(TdarUser user) {
-        return bookmarkedResourceDao.findBookmarksResourcesByPerson(user);
-    }
+    Map<AgreementTypes, Long> getAgreementCounts();
 
-    @Transactional(readOnly = true)
-    public Map<AgreementTypes, Long> getAgreementCounts() {
-        return getDao().getAgreementCounts();
-    }
+    Map<UserAffiliation, Long> getAffiliationCounts();
 
-    @Transactional(readOnly = true)
-    public Map<UserAffiliation, Long> getAffiliationCounts() {
-        return getDao().getAffiliationCounts(false);
-    }
+    Map<UserAffiliation, Long> getAffiliationCounts(boolean b);
 
-    @Transactional(readOnly=true)
-    public Map<UserAffiliation, Long> getAffiliationCounts(boolean b) {
-        return getDao().getAffiliationCounts(true);
-    }
+    String getSchemaOrgJson(Creator<?> creator, String logoUrl) throws IOException;
 
-    @Transactional(readOnly=true)
-    public String getSchemaOrgJson(Creator<?> creator, String logoUrl) throws IOException {
-        SchemaOrgCreatorTransformer transformer = new SchemaOrgCreatorTransformer();
-        return transformer.convert(serializationService, creator, logoUrl);
-    }
+    void saveAddress(Address address2, Creator<?> creator);
 
-    @Transactional(readOnly=false)
-    public void saveAddress(Address address2, Creator<?> creator) {
-        creator.getAddresses().add(address2);
-        getDao().saveOrUpdate(creator);
-    }
+    void deleteAddressForCreator(Address address, Creator<?> creator);
 
-    @Transactional(readOnly=false)
-    public void deleteAddressForCreator(Address address, Creator<?> creator) {
-        Address toDelete = address;
-        getLogger().info("to delete: {} ", toDelete);
-        boolean remove = creator.getAddresses().remove(toDelete);
-        getLogger().info("did it work: {} ", remove);
-        // this is likely superflouous, but I'm tired
-        getDao().delete(toDelete);
-        getDao().saveOrUpdate(creator);
-        
-    }
+    List<ResourceRevisionLog> findChangesForUser(TdarUser user, Date date);
 
-    @Transactional(readOnly=true)
-    public List<ResourceRevisionLog> findChangesForUser(TdarUser user, Date date) {
-        return getDao().findChangesForUser(user, date);
-    }
+    TdarUser findUser(TdarUser user);
 
-    @Transactional(readOnly=true)
-    public TdarUser findUser(TdarUser user) {
-        TdarUser found = (TdarUser) findPerson(user);
-        if (PersistableUtils.isNotNullOrTransient(found)) {
-            return found;
-        }
-        return null;
-    }
+    Person find(Long dupe1Id);
+
+    void delete(Person findByEmail);
 
 }

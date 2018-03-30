@@ -7,7 +7,7 @@ import java.util.List;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
@@ -33,9 +33,9 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
 
     @Autowired
     private DoiDao doiDao;
-    
+
     public InformationResourceFile findFileByFilename(InformationResource resource, String filename) {
-        Query<InformationResourceFile> query = getCurrentSession().createNamedQuery(QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME,InformationResourceFile.class);
+        Query<InformationResourceFile> query = getCurrentSession().createNamedQuery(QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME, InformationResourceFile.class);
         query.setParameter("filename", filename).setParameter("resource", resource);
         return (InformationResourceFile) query.getSingleResult();
     }
@@ -48,17 +48,17 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
         return findRandomFeaturedResource(restrictToFiles, null, project, maxResults);
     }
 
-    public <E> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, List<VisibleCollection> collections, int maxResults) {
+    public <E> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, List<ResourceCollection> collections, int maxResults) {
         return findRandomFeaturedResource(restrictToFiles, collections, null, maxResults);
     }
 
-    public List<BrowseDecadeCountCache> findResourcesByDecade(Status ... statuses) {
-        Query<BrowseDecadeCountCache> query = getCurrentSession().createNamedQuery(QUERY_RESOURCES_BY_DECADE,BrowseDecadeCountCache.class);
+    public List<BrowseDecadeCountCache> findResourcesByDecade(Status... statuses) {
+        Query<BrowseDecadeCountCache> query = getCurrentSession().createNamedQuery(QUERY_RESOURCES_BY_DECADE, BrowseDecadeCountCache.class);
         query.setParameter("statuses", Arrays.asList(statuses));
         return query.getResultList();
     }
 
-    public List<BrowseYearCountCache> findResourcesByYear(Status ... statuses) {
+    public List<BrowseYearCountCache> findResourcesByYear(Status... statuses) {
         Query query = getCurrentSession().createNativeQuery(QUERY_SQL_RESOURCES_BY_YEAR);
         List<BrowseYearCountCache> result = new ArrayList<BrowseYearCountCache>();
         for (Object obj : query.getResultList()) {

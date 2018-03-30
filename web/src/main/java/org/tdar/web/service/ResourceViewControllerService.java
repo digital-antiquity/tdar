@@ -1,58 +1,35 @@
 package org.tdar.web.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.bean.entity.Creator.CreatorType;
-import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.struts.data.AuthWrapper;
 
-@Service
-public class ResourceViewControllerService {
+public interface ResourceViewControllerService {
 
-    @Autowired
-    private ObfuscationService obfuscationService;
+    void initializeResourceCreatorProxyLists(AuthWrapper<Resource> auth, List<ResourceCreatorProxy> authorshipProxies,
+            List<ResourceCreatorProxy> creditProxies, List<ResourceCreatorProxy> contactProxies);
 
-    public void initializeResourceCreatorProxyLists(AuthWrapper<Resource> auth, List<ResourceCreatorProxy> authorshipProxies,
-            List<ResourceCreatorProxy> creditProxies, List<ResourceCreatorProxy> contactProxies) {
+    void updateResourceInfo(AuthWrapper<Resource> auth, boolean isBot);
 
-        Set<ResourceCreator> resourceCreators = auth.getItem().getResourceCreators();
-        resourceCreators = auth.getItem().getActiveResourceCreators();
-        if (resourceCreators == null) {
-            return;
-        }
+    void updateInfoReadOnly(AuthWrapper<Resource> auth);
 
-        // this may be duplicative... check
-        for (ResourceCreator rc : resourceCreators) {
-            if (TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
-                if ((rc.getCreatorType() == CreatorType.PERSON) && !auth.isAuthenticated()) {
-                    obfuscationService.obfuscate(rc.getCreator(), auth.getAuthenticatedUser());
-                }
-            }
+    /*
+     * Creating a simple transient boolean to handle visibility here instead of freemarker
+     */
+    boolean setTransientViewableStatus(InformationResource ir, TdarUser p);
 
-            ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
-            if (ResourceCreatorRole.getAuthorshipRoles().contains(rc.getRole())) {
-                authorshipProxies.add(proxy);
-            } else {
-                creditProxies.add(proxy);
-            }
+    void loadSharesCollectionsAuthUsers(AuthWrapper<Resource> auth, List<ResourceCollection> effectiveShares,
+            List<ResourceCollection> effectiveResourceCollections,
+            List<AuthorizedUser> authorizedUsers);
 
-            if (proxy.isValidEmailContact()) {
-                contactProxies.add(proxy);
-            }
-        }
-        Collections.sort(authorshipProxies);
-        Collections.sort(creditProxies);
-    }
+    List<ResourceCollection> getVisibleUnmanagedCollections(AuthWrapper<Resource> auth);
+
+    List<ResourceCollection> getVisibleManagedCollections(AuthWrapper<Resource> auth);
 
 }

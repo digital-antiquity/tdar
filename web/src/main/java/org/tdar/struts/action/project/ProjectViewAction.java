@@ -49,7 +49,6 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     @Autowired
     private transient ResourceSearchService resourceSearchService;
 
-
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;
     private FacetWrapper facetWrapper = new FacetWrapper();
@@ -76,7 +75,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         if (project.getSecondarySortBy() != null) {
             setSecondarySortField(project.getSecondarySortBy());
         }
-        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE,  ResourceType.class, selectedResourceTypes);
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class, selectedResourceTypes);
 
         try {
             resourceSearchService.buildResourceContainedInSearch(project, null, getAuthenticatedUser(), this, this);
@@ -203,9 +202,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     public List<SortOption> getSortOptions() {
         List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
         options.remove(SortOption.RESOURCE_TYPE);
-        options.remove(SortOption.RESOURCE_TYPE_REVERSE);
         options.add(0, SortOption.RESOURCE_TYPE);
-        options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
         return options;
     }
 
@@ -245,9 +242,8 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     @Override
     public void setSearchTitle(String description) {
         // TODO Auto-generated method stub
-        
-    }
 
+    }
 
     public FacetWrapper getFacetWrapper() {
         return facetWrapper;

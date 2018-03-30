@@ -34,7 +34,7 @@ public class DataTableBrowseController extends AbstractAuthenticatableAction {
     private String callback;
     private int totalRecords;
     private ResultMetadataWrapper resultsWrapper = new ResultMetadataWrapper();
-    private Object jsonResult = new HashMap<String, Object>();
+    private Object resultObject = new HashMap<String, Object>();
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -44,8 +44,8 @@ public class DataTableBrowseController extends AbstractAuthenticatableAction {
 
     @Action(value = "browse",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") }, results = {
-                    @Result(name = ERROR, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
-                    @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" })
+                    @Result(name = ERROR, type = JSONRESULT, params = { "jsonObject", "resultObject" }),
+                    @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "resultObject" })
             })
     @HttpForbiddenErrorResponseOnly
     public String getDataResults() {
@@ -68,7 +68,7 @@ public class DataTableBrowseController extends AbstractAuthenticatableAction {
             setResultsWrapper(selectAllFromDataTable);
             // getLogger().debug("results: {} ", getResultsWrapper().getResults());
         }
-        setJsonResult(getResultsWrapper());
+        setResultObject(getResultsWrapper());
         return SUCCESS;
     }
 
@@ -120,12 +120,12 @@ public class DataTableBrowseController extends AbstractAuthenticatableAction {
         this.totalRecords = totalRecords;
     }
 
-    public Object getJsonResult() {
-        return jsonResult;
+    public Object getResultObject() {
+        return resultObject;
     }
 
-    public void setJsonResult(Object jsonResult) {
-        this.jsonResult = jsonResult;
+    public void setResultObject(Object resultObject) {
+        this.resultObject = resultObject;
     }
 
 }

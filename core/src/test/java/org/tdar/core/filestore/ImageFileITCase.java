@@ -133,7 +133,7 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
 
     private InformationResourceFile testFileProcessing(String filename, boolean successful) throws InstantiationException, IllegalAccessException, IOException,
             Exception {
-        File f = new File(TestConstants.TEST_IMAGE_DIR + "/sample_image_formats/", filename);
+        File f = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR + "/sample_image_formats/", filename);
         return testFileProcessing(f, successful);
     }
 }

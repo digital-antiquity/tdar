@@ -38,7 +38,7 @@ public class PersonControllerSavingITCase extends AbstractAdminControllerITCase 
         person.setEmail(PERSON_EMAIL);
         person.setFirstName(PERSON_FIRST_NAME_EXPECTED);
         person.setLastName("Jones");
-        entityService.save(person);
+        genericService.save(person);
         personId = person.getId();
 
         // skipping the edit request - just trying to spoof a save
@@ -71,7 +71,7 @@ public class PersonControllerSavingITCase extends AbstractAdminControllerITCase 
         person.setEmail(PERSON_EMAIL);
         person.setFirstName(PERSON_FIRST_NAME_EXPECTED);
         person.setLastName("Jones");
-        entityService.save(person);
+        genericService.save(person);
         personId = person.getId();
 
         // skipping the edit request - just trying to spoof a save

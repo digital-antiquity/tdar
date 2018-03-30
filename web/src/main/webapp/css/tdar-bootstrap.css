@@ -834,3 +834,33 @@ tr .moremenu {
 tr:hover .moremenu {
     visibility: visible;
 }
+
+.modal-tall {
+	min-height:300px;
+}
+
+/**
+* Makes a text area be as wide as an input without making it wider than it.
+**/
+.wide-textarea {
+-webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; width: 100%;
+}
+
+.email-container {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+    padding-bottom: 75%;
+}
+
+ 
+.email-container iframe {
+  position: absolute;
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/**Internet explorer adds a "X" to clear inputs. this hides it.*/
+input[type=text]::-ms-clear { display: none; }

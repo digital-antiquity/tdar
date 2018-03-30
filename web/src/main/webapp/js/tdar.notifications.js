@@ -13,7 +13,7 @@
     }
     
     function _dismiss(id) {
-            var url = TDAR.uri( "/notification/dismiss"); // the script where you handle the form input.
+            var url = TDAR.uri( "/api/notification/dismiss"); // the script where you handle the form input.
             $.ajax({
                 type : "POST",
                 url : url,
@@ -23,6 +23,8 @@
                 },
                 error : function(data) {
                     var json = data.responseJSON;
+                    $("body").append(JSON.stringify(data));
+                    console.log(JSON.stringify(data))
                     alert(json);
                }
             });

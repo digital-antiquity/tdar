@@ -10,6 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -78,7 +79,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
     @SuppressWarnings("unused")
     @Test
-    public void testCreateDatasetEditSavehasResource() {
+    public void testCreateDatasetEditSavehasResource() throws FileNotFoundException {
         gotoPage("/dataset/add");
         WebElement form = find("#metadataForm").first();
         prepIndexedFields();
@@ -95,7 +96,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         }
 
         FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
-        File uploadFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "too_many_columns.tab");
+        File uploadFile = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, "too_many_columns.tab");
 
         uploadFileAsync(restriction, uploadFile);
 
@@ -109,7 +110,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         // find(By.partialLinkText("EDIT")).click();
 
         WebElementSelection sel = find(".replace-file");
-        File replaceFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "tab_mapping_dataset.tab");
+        File replaceFile = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, "tab_mapping_dataset.tab");
         sel.sendKeys(replaceFile.getAbsolutePath());
         waitFor(".undo-replace-button");
 

@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,12 +14,12 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.external.AuthenticationService;
@@ -37,7 +38,7 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testRedmption() {
         Dataset dataset = createAndSaveNewDataset();
-        dataset.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        dataset.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), Permissions.MODIFY_RECORD));
         Person person = new Person("Penelope", "Davies", "pd@janson.abc");
         genericService.save(dataset);
         genericService.save(person);
@@ -47,7 +48,7 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         invite.setNote("test");
         invite.setResource(dataset);
         invite.setPerson(person);
-        invite.setPermissions(GeneralPermissions.VIEW_ALL);
+        invite.setPermissions(Permissions.VIEW_ALL);
         genericService.saveOrUpdate(invite);
         UserRegistration reg = new UserRegistration(new AntiSpamHelper());
         reg.setAcceptTermsOfUse(true);
@@ -75,44 +76,50 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         final TdarUser testPerson = createAndSaveNewPerson(email, "1234");
         String name = "test collection";
         String description = "test description";
-        SharedCollection collection = new SharedCollection(name, description, getBasicUser());
+        
+        // create a collection
+        ResourceCollection collection = new ResourceCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection);
         Long id = collection.getId();
         genericService.synchronize();
-        CollectionSaveObject<SharedCollection> cso = new CollectionSaveObject<SharedCollection>(collection, getBasicUser(), -1L, SharedCollection.class);
+        CollectionSaveObject cso = new CollectionSaveObject(collection, getBasicUser(), -1L);
         resourceCollectionService.saveCollectionForController(cso);
         genericService.synchronize();
 
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+        ResourceCollection myCollection = genericService.find(ResourceCollection.class, id);
+
+        // grant basic user and admin user rights on the collection
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD)));
                 
-        SharedCollection myCollection = genericService.find(SharedCollection.class, id);
         List<UserRightsProxy> aus = new ArrayList<>();
-        UserInvite invite = new UserInvite();
-        invite.setPerson(testPerson);
-        invite.setPermissions(GeneralPermissions.VIEW_ALL);
-        aus.add(new UserRightsProxy(invite));
         for (AuthorizedUser user : users) {
             aus.add(new UserRightsProxy(user));
         }
-                
 
-        resourceCollectionService.saveCollectionForRightsController(myCollection, getBasicUser(), aus, SharedCollection.class, -1L);
+        // invite our test person too
+        UserInvite invite = new UserInvite();
+        invite.setPerson(testPerson);
+        invite.setPermissions(Permissions.VIEW_ALL);
+        aus.add(new UserRightsProxy(invite));
+
+        resourceCollectionService.saveCollectionForRightsController(myCollection, getBasicUser(), aus, -1L);
+        myCollection = null;
         genericService.synchronize();
-        myCollection = genericService.find(SharedCollection.class, id);
+        myCollection = genericService.find(ResourceCollection.class, id);
         logger.debug("au: {}", myCollection.getAuthorizedUsers());
         AuthorizedUser user = null;
         logger.debug("{}", testPerson);
         for (AuthorizedUser au : myCollection.getAuthorizedUsers()) {
-            logger.debug(" {} - {}", au, au.getUser().getId());
+            logger.debug("  : {} - {}", au, au.getUser().getId());
             if (Objects.equal(au.getUser().getId(), testPerson.getId())) {
                     user = au;
             }
         }
         assertNotNull(user);
-        assertEquals(GeneralPermissions.VIEW_ALL, user.getGeneralPermission());
+        assertEquals(Permissions.VIEW_ALL, user.getGeneralPermission());
 
     }
     

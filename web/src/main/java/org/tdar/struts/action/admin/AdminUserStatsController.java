@@ -18,7 +18,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.StatisticsService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
@@ -41,7 +41,7 @@ public class AdminUserStatsController extends AbstractAuthenticatableAction {
     private static final long serialVersionUID = 757363810823550815L;
 
     @Autowired
-    private transient StatisticService statisticService;
+    private transient StatisticsService StatisticsService;
 
     @Autowired
     private transient EntityService entityService;
@@ -59,9 +59,9 @@ public class AdminUserStatsController extends AbstractAuthenticatableAction {
     @Action("user")
     public String userInfo() {
         try {
-            setHistoricalUserStats(statisticService.getUserStatistics());
+            setHistoricalUserStats(StatisticsService.getUserStatistics());
             setRecentUsers(entityService.findAllRegisteredUsers(10));
-            setUserLoginStats(statisticService.getUserLoginStats());
+            setUserLoginStats(StatisticsService.getUserLoginStats());
             setAffiliationCounts(entityService.getAffiliationCounts());
             setContributorAffiliationCounts(entityService.getAffiliationCounts(true));
             setContributorIds(entityService.findAllContributorIds());

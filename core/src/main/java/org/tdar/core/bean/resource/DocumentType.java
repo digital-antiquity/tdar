@@ -15,12 +15,9 @@ import org.tdar.utils.MessageHelper;
  */
 public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
 
-    BOOK("book", "book", "Book"),
-    BOOK_SECTION("chapter", "bookitem", "Book"),
-    JOURNAL_ARTICLE("article", "article", "Article"),
-    THESIS("thesis", "thesis", "Institution", "Department", "Book"),
-    CONFERENCE_PRESENTATION("conference", "conference", "Conference", "Conference Location", "Book"),
-    OTHER("other", "unknown", "Book");
+    BOOK("book", "book", "Book"), BOOK_SECTION("chapter", "bookitem", "Book"), JOURNAL_ARTICLE("article", "article", "Article"), THESIS("thesis", "thesis",
+            "Institution", "Department", "Book"), CONFERENCE_PRESENTATION("conference", "conference", "Conference", "Conference Location",
+                    "Book"), REPORT("report", "unknown", "Book"), OTHER("other", "unknown", "Book");
 
     private final String label;
     private final String openUrlGenre;

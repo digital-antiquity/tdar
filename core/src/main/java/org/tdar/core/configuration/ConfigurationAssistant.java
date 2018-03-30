@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class ConfigurationAssistant implements Serializable {
 
     private static final long serialVersionUID = -9093022080387404606L;
-//    public static final String DEFAULT_CONFIG_PATH = "TDAR_CONFIG_PATH";
+    // public static final String DEFAULT_CONFIG_PATH = "TDAR_CONFIG_PATH";
 
     private final Properties properties;
     private final transient static Logger logger = LoggerFactory.getLogger(ConfigurationAssistant.class);
@@ -73,6 +73,7 @@ public class ConfigurationAssistant implements Serializable {
             logger.warn("Unable to load properties normally, trying loadFromXML", e);
         }
     }
+
     @SuppressWarnings("resource")
     public static InputStream toInputStream(String resource) {
         // first try to read it as a file
@@ -82,8 +83,7 @@ public class ConfigurationAssistant implements Serializable {
             File file = new File(resource);
             if (file.isFile()) {
                 stream = new FileInputStream(file);
-            }
-            else {
+            } else {
                 stream = getResourceAsStream(resource);
             }
         } catch (AccessControlException e) {
@@ -107,7 +107,7 @@ public class ConfigurationAssistant implements Serializable {
         }
         return stream;
     }
-    
+
     public String getProperty(String key) {
         return getStringProperty(key, "");
     }

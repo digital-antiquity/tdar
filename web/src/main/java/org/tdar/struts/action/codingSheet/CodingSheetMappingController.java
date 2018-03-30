@@ -3,7 +3,6 @@ package org.tdar.struts.action.codingSheet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
@@ -23,7 +22,6 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CodingSheetService;
@@ -39,7 +37,6 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
-
 
 /**
  * $Id$
@@ -69,7 +66,7 @@ public class CodingSheetMappingController extends AbstractAuthenticatableAction 
     private transient CodingSheetService codingSheetService;
     @Autowired
     private transient DataTableService dataTableService;
-    
+
     private CodingSheet codingSheet;
     private List<OntologyNode> ontologyNodes;
     private List<CodingRule> codingRules;
@@ -100,50 +97,12 @@ public class CodingSheetMappingController extends AbstractAuthenticatableAction 
         getLogger().debug("{}", getOntologyNodes());
         setCodingRules(new ArrayList<CodingRule>(getCodingSheet().getSortedCodingRules()));
         // generate suggestions for all distinct column values or only those columns that aren't already mapped?
-        addSpecialCodingRules();
+        setSpecialRules(codingSheetService.addSpecialCodingRules(getCodingSheet(), getCodingRules()));
         OntologyNodeSuggestionGenerator generator = new OntologyNodeSuggestionGenerator();
         suggestions = generator.applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
         // load existing ontology mappings
 
         return SUCCESS;
-    }
-
-    /**
-     * We have a few special rules:
-     * NULL , MISSING, and UNMAPPED
-     * 
-     * for these rules, we want to group them separately for the user
-     */
-    private void addSpecialCodingRules() {
-        if (!TdarConfiguration.getInstance().includeSpecialCodingRules()) {
-            return;
-        }
-        Map<String, CodingRule> codeToRuleMap = getCodingSheet().getCodeToRuleMap();
-        CodingRule _null = codeToRuleMap.get(CodingRule.NULL.getCode());
-        if (_null != null) {
-            getCodingRules().remove(_null);
-            getSpecialRules().add(_null);
-        } else {
-            getSpecialRules().add(CodingRule.NULL);
-        }
-
-        CodingRule _missing = codeToRuleMap.get(CodingRule.MISSING.getCode());
-        if (_missing != null) {
-            getCodingRules().remove(_missing);
-            getSpecialRules().add(_missing);
-        } else {
-            getSpecialRules().add(CodingRule.MISSING);
-        }
-
-        CodingRule _unmapped = codeToRuleMap.get(CodingRule.UNMAPPED.getCode());
-        if (_unmapped != null) {
-            getCodingRules().remove(_unmapped);
-            getSpecialRules().add(_unmapped);
-
-        } else {
-            getSpecialRules().add(CodingRule.UNMAPPED);
-        }
-
     }
 
     @WriteableSession

@@ -39,7 +39,7 @@ navigation freemarker macros
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>
 			        </#if>
-			        <#if ((billingAccounts![])?size > 0)>
+			        <#if ((billingAccounts![])?size > 0 || config.payPerIngestEnabled == false)>
 					   <@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
 					</#if>
 			        <#if editable>
@@ -61,13 +61,15 @@ navigation freemarker macros
             <ul>
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
-                    <@makeLink resourceCollection.type.urlNamespace "edit" "edit" "edit" current />
+                    <@makeLink resourceCollection.urlNamespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
                     <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true false />
-                    <@makeLink "resource" "compare?collectionId=${persistable.id?c}" "review" "review" "" false />
-                    <@makeLink "export" "request?collectionId=${persistable.id}" "export" "export" current true _deleteable />
-
+                    <#if editor && ((resourceCollection.managedResources![])?size > 0) >
+	
+	                    <@makeLink "resource" "compare?collectionId=${persistable.id?c}" "review" "review" "" false />
+	                    <@makeLink "export" "request?collectionId=${persistable.id}" "export" "export" current true _deleteable />
+					</#if>
              <#if administrator && whiteLabelCollection>
                         <@makeLink namespace "admin/whitelabel/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
              </#if>

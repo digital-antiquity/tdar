@@ -16,7 +16,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.query.CreatorSearchInterface;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
@@ -35,7 +35,7 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
     private String query;
 
     @Autowired
-    private CreatorSearchInterface<Institution> creatorSearchService;
+    private CreatorSearchService<Institution> creatorSearchService;
 
     @Action(value = "institutions", results = {
             @Result(name = SUCCESS, location = "institutions.ftl"),
@@ -46,7 +46,7 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
         setLookupSource(LookupSource.INSTITUTION);
         setMode("INSTITUTION");
         try {
-            creatorSearchService.searchInstitution(getQuery(),this,this);
+            creatorSearchService.searchInstitution(getQuery(), this, this);
         } catch (TdarRecoverableRuntimeException | SearchException trex) {
             addActionError(trex.getMessage());
             return INPUT;
@@ -56,7 +56,6 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
 
     public List<SortOption> getSortOptions() {
         sortOptions.remove(SortOption.RESOURCE_TYPE);
-        sortOptions.remove(SortOption.RESOURCE_TYPE_REVERSE);
         return sortOptions;
     }
 

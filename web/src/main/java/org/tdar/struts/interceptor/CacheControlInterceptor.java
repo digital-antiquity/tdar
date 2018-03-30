@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.ReflectionHelper;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -28,7 +28,7 @@ public class CacheControlInterceptor implements Interceptor {
     public String intercept(ActionInvocation invocation) throws Exception {
 
         HttpServletResponse response = ServletActionContext.getResponse();
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, CacheControl.class)) {
+        if (ReflectionHelper.methodOrActionContainsAnnotation(invocation, CacheControl.class)) {
             response.setHeader("Cache-Control", "no-store,no-Cache");
             response.setHeader("Pragma", "no-cache");
             response.setDateHeader("Expires", 0);

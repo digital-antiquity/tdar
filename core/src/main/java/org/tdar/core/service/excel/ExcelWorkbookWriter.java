@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
@@ -15,7 +16,9 @@ import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
 import org.apache.poi.ss.SpreadsheetVersion;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -41,7 +44,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.CellFormat.Style;
 import org.tdar.utils.DataUtil;
 
-
 /**
  * This is a service specific to trying to centralize all of the specific issues with writing
  * excel files. It could handle helper functions for reading in the future too.
@@ -61,14 +63,13 @@ public class ExcelWorkbookWriter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-
     public static final int FIRST_ROW = 0;
     public static final int FIRST_COLUMN = 0;
     public static final SpreadsheetVersion DEFAULT_EXCEL_VERSION = SpreadsheetVersion.EXCEL97;
     public static final int MAX_ROWS_PER_WORKBOOK = DEFAULT_EXCEL_VERSION.getMaxRows() * MAX_SHEETS_PER_WORKBOOK;
     private SpreadsheetVersion version = DEFAULT_EXCEL_VERSION;
 
-    String[] schemes = {"http","https"}; // DEFAULT schemes = "http", "https", "ftp"
+    String[] schemes = { "http", "https" }; // DEFAULT schemes = "http", "https", "ftp"
     UrlValidator urlValidator = new UrlValidator(schemes);
 
     /**
@@ -236,7 +237,7 @@ public class ExcelWorkbookWriter {
     public CellStyle createSummaryStyle(Workbook workbook) {
         CellStyle summaryStyle = workbook.createCellStyle();
         Font summaryFont = workbook.createFont();
-        summaryFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        summaryFont.setBold(true);
         summaryStyle.setFont(summaryFont);
         summaryStyle.setWrapText(true);
         return summaryStyle;
@@ -336,7 +337,7 @@ public class ExcelWorkbookWriter {
     public String getCellValue(DataFormatter formatter, FormulaEvaluator evaluator, Row columnNamesRow, int columnIndex) {
         return formatter.formatCellValue(columnNamesRow.getCell(columnIndex), evaluator);
     }
-    
+
     /**
      * Create a cell and be smart about it. If there's a link, make it a link, if numeric, set the type
      * to say, numeric.
@@ -352,13 +353,13 @@ public class ExcelWorkbookWriter {
 
         if (!StringUtils.isEmpty(value)) {
             try {
-                if (value.startsWith("http") && urlValidator.isValid(value) ) {
+                if (value.startsWith("http") && urlValidator.isValid(value)) {
 
-                Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(org.apache.poi.common.usermodel.Hyperlink.LINK_URL);
-                hyperlink.setAddress(value);
-                hyperlink.setLabel(value);
-                cell.setHyperlink(hyperlink);
-            }
+                    Hyperlink hyperlink = row.getSheet().getWorkbook().getCreationHelper().createHyperlink(HyperlinkType.URL);
+                    hyperlink.setAddress(value);
+                    hyperlink.setLabel(value);
+                    cell.setHyperlink(hyperlink);
+                }
             } catch (Throwable t) {
                 logger.warn("cannot create url: {}", value, t);
             }
@@ -497,8 +498,8 @@ public class ExcelWorkbookWriter {
      */
     public CellStyle createDefaultHeaderStyle(Workbook workbook) {
         return CellFormat.build(Style.BOLD)
-                .setColor(new HSSFColor.GREY_25_PERCENT())
-                .setBorderBottom(CellStyle.BORDER_THIN)
+                .setColor(HSSFColorPredefined.GREY_25_PERCENT.getColor())
+                .setBorderBottom(BorderStyle.THIN)
                 .setWrapping(true)
                 .createStyle(workbook);
     }
@@ -570,7 +571,7 @@ public class ExcelWorkbookWriter {
         if (proxy.getNoteRow() != null) {
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(proxy.getNoteRow()));
         }
-        int maxRows = version.getMaxRows() -1;
+        int maxRows = version.getMaxRows() - 1;
         if (TdarConfiguration.getInstance().getMaxSpreadSheetRows() > 1) {
             maxRows = TdarConfiguration.getInstance().getMaxSpreadSheetRows();
         }
@@ -600,15 +601,15 @@ public class ExcelWorkbookWriter {
             }
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
         }
-        
+
         if (proxy.hasFreezeRow()) {
-            sheet.createFreezePane(0, proxy.getStartRow()+1, 0, proxy.getFreezeRow()+1);
+            sheet.createFreezePane(0, proxy.getStartRow() + 1, 0, proxy.getFreezeRow() + 1);
         }
-        
+
         if (proxy.isAutosizeCols()) {
             autoSizeColumnsOnSheet(sheet);
         }
-        
+
         proxy.postProcess();
     }
 
@@ -623,7 +624,7 @@ public class ExcelWorkbookWriter {
         if (sheet == null || sheet.getRow(0) == null) {
             return;
         }
-        
+
         if (sheet instanceof SXSSFSheet) {
             logger.debug("can't auto-size a SXSSF sheet");
             return;
@@ -649,7 +650,8 @@ public class ExcelWorkbookWriter {
     public void addPairedHeaderRow(Sheet sheet, int rowNum, int i, List<String> asList) {
         addRow(sheet, rowNum, i, asList, CellFormat.build(Style.NORMAL).createStyle(sheet.getWorkbook()));
         sheet.getRow(rowNum).getCell(i)
-                .setCellStyle(CellFormat.build(Style.BOLD).setColor(new HSSFColor.GREY_25_PERCENT()).setWrapping(true).createStyle(sheet.getWorkbook()));
+                .setCellStyle(CellFormat.build(Style.BOLD).setColor(HSSFColorPredefined.GREY_25_PERCENT.getColor()).setWrapping(true)
+                        .createStyle(sheet.getWorkbook()));
     }
 
     /**

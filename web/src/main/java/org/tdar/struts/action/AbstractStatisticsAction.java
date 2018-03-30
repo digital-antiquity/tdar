@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.StatisticService;
+import org.tdar.core.service.StatisticsService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -34,13 +34,12 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
     protected SerializationService serializationService;
 
     @Autowired
-    protected StatisticService statisticsService;
-    
+    protected StatisticsService statisticsService;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String json;
 
-    
     protected void setupJson() {
         if (getStatsForAccount() == null || getStatsForAccount().empty()) {
             addActionError("abstractStatisticsAction.no_data");
@@ -54,7 +53,7 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
             logger.error("error setting json", e);
         }
     }
-    
+
     @Action(value = "{id}", results = { @Result(name = SUCCESS, location = "../stats.ftl") })
     @Override
     public String execute() throws Exception {
@@ -85,7 +84,6 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
     public void setGranularity(DateGranularity granularity) {
         this.granularity = granularity;
     }
-
 
     public String getJson() {
         return json;

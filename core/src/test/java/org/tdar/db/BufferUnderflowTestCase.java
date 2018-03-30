@@ -1,6 +1,5 @@
 package org.tdar.db;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ public class BufferUnderflowTestCase {
 
     @Before
     public void prepare() throws IOException {
-        database = DatabaseBuilder.open(new File(TEST_FOLDER, TEST_FILE));
+        database = DatabaseBuilder.open(TestConstants.getFile(TEST_FOLDER, TEST_FILE));
     }
 
     @Test

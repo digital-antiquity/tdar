@@ -10,7 +10,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
@@ -23,7 +23,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("default")
 @HttpForbiddenErrorResponseOnly
-public class CollectionLinkedOpenDataAction extends AbstractJsonApiAction implements Preparable  {
+public class CollectionLinkedOpenDataAction extends AbstractJsonApiAction implements Preparable {
 
     private static final long serialVersionUID = 9142456920026569857L;
     private Long id;
@@ -31,12 +31,12 @@ public class CollectionLinkedOpenDataAction extends AbstractJsonApiAction implem
     private GenericService genericService;
     @Autowired
     private ResourceCollectionService collectionService;
-    private Map<String,String> error = new HashMap<>();
-    
+    private Map<String, String> error = new HashMap<>();
+
     @Override
     public void prepare() throws Exception {
         error.put("status", getText("error.object_does_not_exist"));
-        VisibleCollection resource = genericService.find(VisibleCollection.class, id); 
+        ResourceCollection resource = genericService.find(ResourceCollection.class, id);
         if (resource == null) {
             addActionError("error.object_does_not_exist");
             setJsonObject(error);
@@ -45,8 +45,8 @@ public class CollectionLinkedOpenDataAction extends AbstractJsonApiAction implem
         String message = collectionService.getSchemaOrgJsonLD(resource);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }
-    
-    @Action(value="{id}")
+
+    @Action(value = "{id}")
     @Override
     public String execute() throws Exception {
         return super.execute();
@@ -55,6 +55,7 @@ public class CollectionLinkedOpenDataAction extends AbstractJsonApiAction implem
     public Long getId() {
         return id;
     }
+
     public void setId(Long id) {
         this.id = id;
     }

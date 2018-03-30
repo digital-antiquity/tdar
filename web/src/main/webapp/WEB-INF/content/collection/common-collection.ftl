@@ -42,7 +42,7 @@
 		    </div>
         </#if>
         <#if collections?has_content && !collections.empty  && !(resourceCollection.properties.hideCollectionSidebar)!false> 
-            <h3>Child <#if resourceCollection.type == 'LIST'>Collections<#else>Collections</#if></h3>
+            <h3>ChildCollections</h3>
             <@commonr.listCollections collections=collections showOnlyVisible=true />
         </#if>
 		<@list.displayWidget />
@@ -77,7 +77,7 @@
 
 <#macro header>
     <#if editable>
-    <#local path="${resourceCollection.type.urlNamespace}"/>
+    <#local path="${resourceCollection.urlNamespace}"/>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
             namespace="${path}"
@@ -99,7 +99,7 @@
                 disabled=disabled
             extraClass=""/>
 
-        <#if editor && ((resourceCollection.unmanagedResources![])?size > 0 || (resourceCollection.resources![])?size > 0) >
+        <#if editor && ((resourceCollection.managedResources![])?size > 0) >
             <@nav.makeLink
             namespace="${path}/admin/batch"
             action="${id?c}"
@@ -111,6 +111,12 @@
         </#if>
         </@nav.collectionToolbar>
     </#if>
+
+    <div id="divSearchContext" parse="true">
+        <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
+        <label for="cbctxid">Search within this collection</label>
+    </div>
+    
 
     <@view.pageStatusCallout />
 
@@ -239,7 +245,12 @@
 
         <div class="row">
             <div class="span4">
-                <@view.kvp key="Collection Type" val="${resourceCollection.type.label} ${type} ${resourceCollection.systemManaged!false?string(' (System)','')}" />
+                <#local _type="Collection"/>
+                <#if resourceCollection.properties.whitelabel>
+                   <#local _type="Whitelabel"/>
+                </#if>
+
+                <@view.kvp key="Collection Type" val="${type} ${resourceCollection.systemManaged!false?string(' (System)', _type)}" />
             </div>
             <div class="span4">
                 <@view.kvp key="Hidden" val=resourceCollection.hidden?string />

@@ -24,7 +24,6 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 
-
 @Component
 @Scope("prototype")
 @ParentPackage("default")
@@ -43,6 +42,7 @@ public class OntologyViewController extends AbstractOntologyViewAction {
 
     @Autowired
     private OntologyService ontologyService;
+
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
@@ -80,7 +80,7 @@ public class OntologyViewController extends AbstractOntologyViewAction {
     private String json = "";
 
     private void buildJson() {
-        OntologyNodeWrapper root = ontologyService.prepareOntologyJson(getOntology()); 
+        OntologyNodeWrapper root = ontologyService.prepareOntologyJson(getOntology());
         try {
             setJson(serializationService.convertToJson(root));
         } catch (IOException e) {
@@ -111,7 +111,7 @@ public class OntologyViewController extends AbstractOntologyViewAction {
             // otherwise, try to see if the slug is an IRI
             String normalizeIri = OntologyNode.normalizeIri(getSlug());
             getLogger().trace("iri:{} --> {}", getIri(), normalizeIri);
-            OntologyNode  node_ = getOntology().getNodeBySlug(getSlug());
+            OntologyNode node_ = getOntology().getNodeBySlug(getSlug());
             // handle struts differences /\\'\\,\\./ ...
             if (node_ == null) {
                 node_ = getOntology().getNodeByIri(normalizeIri);
@@ -120,7 +120,6 @@ public class OntologyViewController extends AbstractOntologyViewAction {
             if (node_ == null) {
                 node_ = fallbackCheckForIri(normalizeIri);
             }
-            
 
             // redirect if we have an actual node match to the new home
             if (node_ != null) {

@@ -13,10 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -71,7 +69,6 @@ public class SearchParameters {
         setOperator(operator);
     }
 
-    
     private List<String> filters = new ArrayList<>();
     private boolean explore = false;
     // user specified status that they do not have permissions to search for. probably because they are not logged in.
@@ -110,8 +107,7 @@ public class SearchParameters {
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
     private List<Resource> sparseProjects = new ArrayList<Resource>();
-    private List<ListCollection> collections = new ArrayList<>();
-    private List<SharedCollection> shares = new ArrayList<>();
+    private List<ResourceCollection> collections = new ArrayList<>();
 
     private List<Long> resourceIds = new ArrayList<Long>();
 
@@ -132,7 +128,7 @@ public class SearchParameters {
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes = new ArrayList<LatitudeLongitudeBox>();
     private List<ResourceType> resourceTypes = new ArrayList<>();
     private List<ObjectType> objectTypes = new ArrayList<>();
-    private List<CollectionType> collectionTypes = new ArrayList<CollectionType>();
+    private List<CollectionResourceSection> collectionTypes = new ArrayList<CollectionResourceSection>();
     private List<LookupSource> types = new ArrayList<>();
     private List<IntegratableOptions> integratableOptions = new ArrayList<IntegratableOptions>();
     private List<DocumentType> documentTypes = new ArrayList<DocumentType>();
@@ -206,7 +202,7 @@ public class SearchParameters {
     public void setResourceTypes(List<ResourceType> resourceTypes) {
         this.resourceTypes = resourceTypes;
     }
-    
+
     public List<ResourceType> getResourceTypes() {
         return resourceTypes;
     }
@@ -316,6 +312,7 @@ public class SearchParameters {
     }
 
     TextProvider support = MessageHelper.getInstance();
+    private List<String> actionMessages = new ArrayList<>();
 
     // FIXME: where appropriate need to make sure we pass along the operator to any sub queryPart groups
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -326,17 +323,21 @@ public class SearchParameters {
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, support.getText("searchParameter.id"), Operator.OR, getResourceIds()));
         if (CollectionUtils.isNotEmpty(getTypes())) {
-            queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.GENERAL_TYPE,support_.getText("searchParameter.general_type"), Operator.OR, getTypes()));
+            queryPartGroup.append(
+                    new FieldQueryPart<LookupSource>(QueryFieldNames.GENERAL_TYPE, support_.getText("searchParameter.general_type"), Operator.OR, getTypes()));
         }
         if (CollectionUtils.isNotEmpty(getCollectionTypes())) {
-            queryPartGroup.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
+            queryPartGroup.append(new FieldQueryPart<CollectionResourceSection>(QueryFieldNames.COLLECTION_TYPE,
+                    support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
         }
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, support.getText("searchParameters.description"), getOperator(), this.getDescriptions()));
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, support.getText("searchParameters.description"), getOperator(),
+                this.getDescriptions()));
 
-        queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(),contents));
-        FieldQueryPart<String> filenamePart = new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"), getOperator(), filenames);
+        queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(), contents));
+        FieldQueryPart<String> filenamePart = new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"), getOperator(),
+                filenames);
         filenamePart.setPhraseFormatters(Arrays.asList(PhraseFormatter.ESCAPE_QUOTED));
         queryPartGroup.append(filenamePart);
 
@@ -407,24 +408,24 @@ public class SearchParameters {
                 getUpdatedDates()));
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, support.getText("searchParameter.date"), getOperator(), getCreatedDates()));
 
-        queryPartGroup.append(new AnnotationQueryPart(QueryFieldNames.RESOURCE_ANNOTATION, support.getText("searchParameter.annotation"), getOperator(), getAnnotations()));
+        queryPartGroup.append(
+                new AnnotationQueryPart(QueryFieldNames.RESOURCE_ANNOTATION, support.getText("searchParameter.annotation"), getOperator(), getAnnotations()));
 
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
         SpatialQueryPart spatialQueryPart = new SpatialQueryPart(getLatitudeLongitudeBoxes());
         if (!latScaleUsed) {
             spatialQueryPart.ignoreScale(true);
         }
-//        getFilters().add(spatialQueryPart.getFilter());
+        // getFilters().add(spatialQueryPart.getFilter());
         queryPartGroup.append(spatialQueryPart);
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS,
-                support.getText("searchParameter.list_collection"), "listCollections.",
-                ListCollection.class, getOperator(), getCollections()));
-        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_MANAGED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                SharedCollection.class, getOperator(), getShares()));
-        queryPartGroup.append(new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
+                ResourceCollection.class, getOperator(), getCollections()));
+        CreatorQueryPart cqp = new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies);
+        getActionMessages().addAll(cqp.getActionMessages());
+        queryPartGroup.append(cqp);
 
         // explore: decade
         queryPartGroup.append(new FieldQueryPart<>(QueryFieldNames.DATE_CREATED_DECADE, Operator.OR, getCreationDecades()));
@@ -443,9 +444,12 @@ public class SearchParameters {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private <P extends Persistable> SkeletonPersistableQueryPart constructSkeletonQueryPart(String fieldName, String label, String prefix, Class<P> cls,
             Operator operator, List<P> values) {
+        if (CollectionUtils.isEmpty(values)) {
+            return null;
+        }
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);
-        logger.trace("{} {} {} ", cls, prefix, values);
-        if ((HasName.class.isAssignableFrom(cls) || VisibleCollection.class.isAssignableFrom(cls)) && StringUtils.isNotBlank(prefix)) {
+        logger.debug("{} {} {} ", cls, prefix, values);
+        if ((HasName.class.isAssignableFrom(cls) || ResourceCollection.class.isAssignableFrom(cls)) && StringUtils.isNotBlank(prefix)) {
             TitleQueryPart tqp = new TitleQueryPart();
             tqp.setPrefix(prefix);
             for (Persistable p : values) {
@@ -571,20 +575,16 @@ public class SearchParameters {
         sparseProjects = projects;
     }
 
-    public List<ListCollection> getCollections() {
+    public List<ResourceCollection> getCollections() {
         return collections;
     }
 
-    public void setCollections(List<ListCollection> resourceCollections) {
+    public void setCollections(List<ResourceCollection> resourceCollections) {
         collections = resourceCollections;
     }
 
-    public List<SharedCollection> getShares() {
-        return shares;
-    }
-
-    public void setShares(List<SharedCollection> resourceCollections) {
-        shares = resourceCollections;
+    public List<ResourceCollection> getShares() {
+        return collections;
     }
 
     public List<String> getContents() {
@@ -682,11 +682,11 @@ public class SearchParameters {
         this.types = types;
     }
 
-    public List<CollectionType> getCollectionTypes() {
+    public List<CollectionResourceSection> getCollectionTypes() {
         return collectionTypes;
     }
 
-    public void setCollectionTypes(List<CollectionType> collectionTypes) {
+    public void setCollectionTypes(List<CollectionResourceSection> collectionTypes) {
         this.collectionTypes = collectionTypes;
     }
 
@@ -712,6 +712,14 @@ public class SearchParameters {
 
     public void setAnnotations(List<StringPair> annotations) {
         this.annotations = annotations;
+    }
+
+    public List<String> getActionMessages() {
+        return actionMessages;
+    }
+
+    public void setActionMessages(List<String> actionMessages) {
+        this.actionMessages = actionMessages;
     }
 
 }

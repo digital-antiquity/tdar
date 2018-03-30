@@ -55,7 +55,6 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
         this(boxes.toArray(new LatitudeLongitudeBox[0]));
     }
 
-
     @Override
     public String generateQueryString() {
         StringBuilder q = new StringBuilder();
@@ -71,31 +70,30 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
             logger.trace("crosses primeMeridian: {}, crosses antiMeridian: {}", box.crossesPrimeMeridian(), box.crossesDateline());
             // If the search bounds cross the antimeridian, we need to split up the spatial limit into two separate
             // boxes because the degrees change from positive to negative.
-            
-            
-            //*** NOTE *** ENVELOPE uses following pattern minX, maxX, maxy, minY *** // 
+
+            // *** NOTE *** ENVELOPE uses following pattern minX, maxX, maxy, minY *** //
             Double minLong = box.getObfuscatedWest();
             Double maxLat = box.getObfuscatedNorth();
             Double minLat = box.getObfuscatedSouth();
             Double maxLong = box.getObfuscatedEast();
             if (box.crossesDateline() && !box.crossesPrimeMeridian()) {
-                q.append (String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" OR"
+                q.append(String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" OR"
                         + "  %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
-                minLong, -180d, maxLat,minLat,
-                 QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
-                180d, minLong, maxLat,minLat));
+                        minLong, -180d, maxLat, minLat,
+                        QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
+                        180d, minLong, maxLat, minLat));
 
-            } else  if (box.crossesPrimeMeridian()) {
-                q.append (String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
-                minLong, maxLong,  maxLat,minLat));
+            } else if (box.crossesPrimeMeridian()) {
+                q.append(String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
+                        minLong, maxLong, maxLat, minLat));
             } else {
                 if (minLat > maxLat) {
                     Double t = maxLat;
                     maxLat = minLat;
                     minLat = t;
                 }
-                q.append (String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
-                        minLong, maxLong,  maxLat,minLat));
+                q.append(String.format(" %s:\"Intersects(ENVELOPE(%.9f,%.9f,%.9f,%.9f)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
+                        minLong, maxLong, maxLat, minLat));
             }
 
             if (!ignoreScale) {
@@ -107,7 +105,6 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
         return q.toString();
     }
 
-    
     @Override
     public String getDescription(TextProvider provider) {
         if (getFieldValues().isEmpty()) {
@@ -141,7 +138,7 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
 
     public void ignoreScale(boolean b) {
         this.ignoreScale = b;
-        
+
     }
 
 }

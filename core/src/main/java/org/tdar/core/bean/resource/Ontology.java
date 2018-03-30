@@ -40,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @version $Revision $
  */
 @Entity
-//@Indexed
+// @Indexed
 @Table(name = "ontology", indexes = { @Index(name = "ontology_catvar_id", columnList = "category_variable_id") })
 @XmlRootElement(name = "ontology")
 public class Ontology extends InformationResource implements SupportsResource {
@@ -49,7 +49,7 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
-    //@IndexedEmbedded(depth = 1)
+    // @IndexedEmbedded(depth = 1)
     private CategoryVariable categoryVariable;
 
     @OneToMany(mappedBy = "ontology", cascade = CascadeType.ALL)
@@ -161,7 +161,7 @@ public class Ontology extends InformationResource implements SupportsResource {
         idMap.clear();
         slugMap.clear();
     }
-    
+
     @Transient
     public OntologyNode getNodeByNameIgnoreCase(String name) {
         for (OntologyNode node : getOntologyNodes()) {

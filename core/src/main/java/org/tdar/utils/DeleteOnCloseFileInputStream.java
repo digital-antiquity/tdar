@@ -35,7 +35,8 @@ public class DeleteOnCloseFileInputStream extends FileInputStream {
             super.close();
         } finally {
             if (file != null) {
-                if (!FilenameUtils.normalize(file.getAbsolutePath()).contains(FilenameUtils.normalize(TdarConfiguration.getInstance().getFileStoreLocation()))) {
+                if (!FilenameUtils.normalize(file.getAbsolutePath())
+                        .contains(FilenameUtils.normalize(TdarConfiguration.getInstance().getFileStoreLocation()))) {
                     logger.debug("deleting temp file: {}", file);
                     file.delete();
                     file = null;

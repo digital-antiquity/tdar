@@ -27,7 +27,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.UserAffiliation;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
@@ -35,7 +35,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.junit.WebTestCase;
-import org.tdar.test.web.AbstractGeneicWebTest;
+import org.tdar.test.web.AbstractGenericWebTest;
 import org.tdar.utils.TestConfiguration;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -69,7 +69,7 @@ import net.sf.json.JSONObject;
  * 
  */
 //@ContextConfiguration(classes = TdarAppConfiguration.class)
-public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implements WebTestCase {
+public abstract class AbstractWebTestCase extends AbstractGenericWebTest implements WebTestCase {
 
     private static final String CART_REVIEW = "/cart/review";
 
@@ -850,6 +850,7 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
             setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
         }
         submitForm();
+        
         assertAccountPageCorrect(users, userIds, accountName);
         clickLinkOnPage("edit");
         String id = getInput("id").getAttribute("value");
@@ -897,6 +898,7 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
     }
 
     public void logout() {
+        logger.debug("~~~~~~~ LOGOUT ~~~~~~~");
         webClient.getOptions().setJavaScriptEnabled(false);
         if (internalPage instanceof HtmlPage && 
                 getHtmlPage().getElementById("logout-button") != null) {
@@ -910,6 +912,7 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
             }
         }
         webClient.getCookieManager().clearCookies();
+        assertTextPresentIgnoreCase("log in");
     }
 
 
@@ -1022,7 +1025,7 @@ public abstract class AbstractWebTestCase extends AbstractGeneicWebTest implemen
         }
     }
 
-    public void createUserWithPermissions(int i, Person user, GeneralPermissions viewAll) {
+    public void createUserWithPermissions(int i, Person user, Permissions viewAll) {
         logger.info("setiting user [{}] to {} {}", i, user, viewAll);
         createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), user.getId());
         createInput("text", String.format(FMT_AUTHUSERS_NAME, i), user.getFirstName() + " " + user.getLastName());

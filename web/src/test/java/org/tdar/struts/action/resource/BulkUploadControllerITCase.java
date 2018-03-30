@@ -26,10 +26,8 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.citation.Citation;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -79,7 +77,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.prepare();
 
         // setup images to upload
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
@@ -105,19 +103,19 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         addComparitiveCollections(bulkUploadController);
 
         bulkUploadController.setFileProxies(proxyPair.getSecond());
-        bulkUploadController.setAsync(false);
+//        bulkUploadController.setAsync(false);
         // saving
         bulkUploadController.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
         BulkUpdateStatusAction basa = checkStatus(ticketId);
-        assertEquals(new Float(100), basa.getPercentDone());
+        assertTrue(100f == basa.getStatus().getPercentComplete());
         evictCache();
-        List<Pair<Long, String>> details = basa.getDetails();
+        List<Pair<Long, String>> details = basa.getStatus().getDetails();
         boolean manifest_gc = false;
         boolean manifest_book = false;
         logger.info("{}", details);
-        logger.info(basa.getAsyncErrors());
-        assertTrue(StringUtils.isEmpty(basa.getAsyncErrors()));
+        logger.info("{}",basa.getStatus().getAsyncErrors());
+        assertTrue(StringUtils.isEmpty(basa.getStatus().getAsyncErrors()));
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
             logger.info("{}", resource);
@@ -198,17 +196,17 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     // @Ignore
     public void testDatasetBulkUpload() throws Exception {
         List<File> files = new ArrayList<>();
-        File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
+        File file = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
         files.add(file);
         assertTrue(file.exists());
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest( TdarActionSupport.SUCCESS_ASYNC, files);
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
-        assertEquals(new Float(100), basa.getPercentDone());
+        assertTrue(100f == basa.getStatus().getPercentComplete());
 
-        List<Pair<Long, String>> details = basa.getDetails();
+        List<Pair<Long, String>> details = basa.getStatus().getDetails();
         logger.info("{}", details);
-        logger.debug(basa.getAsyncErrors());
-        assertTrue(StringUtils.isEmpty(basa.getAsyncErrors()));
+        logger.debug("{}", basa.getStatus().getAsyncErrors());
+        assertTrue(StringUtils.isEmpty(basa.getStatus().getAsyncErrors()));
     }
 
     @Test
@@ -217,12 +215,12 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         BulkUploadController bulkUploadController = setupBasicBulkUploadTest(TdarActionSupport.SUCCESS_ASYNC);
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
 
-        assertEquals(new Float(100), basa.getPercentDone());
+        assertTrue(100f == basa.getStatus().getPercentComplete());
         // testing that an Float that is effectively an int 120.00 is ok in an int field
-        List<Pair<Long, String>> details = basa.getDetails();
+        List<Pair<Long, String>> details = basa.getStatus().getDetails();
         logger.info("{}", details);
-        logger.debug(basa.getAsyncErrors());
-        assertTrue(StringUtils.isEmpty(basa.getAsyncErrors()));
+        logger.debug("{}",basa.getStatus().getAsyncErrors());
+        assertTrue(StringUtils.isEmpty(basa.getStatus().getAsyncErrors()));
         Resource find1 = resourceService.find(details.get(0).getFirst());
         assertEquals(Status.ACTIVE, find1.getStatus());
         assertTrue(resourceService.find(details.get(1).getFirst()).isActive());
@@ -242,7 +240,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setProjectId(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID);
         // setup controller
         bulkUploadController.setFileProxies(proxyPair.getSecond());
-        bulkUploadController.setAsync(false);
+//        bulkUploadController.setAsync(false);
         // saving
         bulkUploadController.setServletRequest(getServletPostRequest());
         assertEquals(expectedResponse, bulkUploadController.save());
@@ -260,7 +258,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
 
     private BulkUploadController setupBasicBulkUploadTest( String successAsync) throws Exception {
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
@@ -429,14 +427,14 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     public void testAddingAdHocCollectionToBulkUpload() throws Exception {
         // start by getting the original count of public/private collections
         // int origInternalCount = getCollectionCount(CollectionType.INTERNAL);
-        int origSharedCount = getCollectionCount(CollectionType.SHARED, SharedCollection.class);
+        int origSharedCount = getCollectionCount(CollectionResourceSection.MANAGED);
         int origImageCount = genericService.findAll(Image.class).size();
 
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
         bulkUploadController.prepare();
 
         // setup images to upload
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
         uploadFiles.addAll(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false));
@@ -449,13 +447,13 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
         // setup controller
         bulkUploadController.setFileProxies(proxyPair.getSecond());
-        bulkUploadController.setAsync(false);
+//        bulkUploadController.setAsync(false);
         bulkUploadController.getResource().setTitle("test");
         bulkUploadController.getResource().setDescription("test");
         bulkUploadController.getResource().setDate(1234);
 
         // specify an adhoc collection
-        SharedCollection adHocCollection = new SharedCollection();
+        ResourceCollection adHocCollection = new ResourceCollection();
         // NEED TO SET THE TYPE OF THE ADHOC COLLECTION
         adHocCollection.setName("collection of bulk-uploaded resource collections");
         bulkUploadController.getShares().add(adHocCollection);
@@ -465,27 +463,28 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
         basa.checkStatus();
-        assertEquals(new Float(100), basa.getPercentDone());
+        assertTrue(100f == basa.getStatus().getPercentComplete());
+
 
         // int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
-        int newSharedCount = getCollectionCount(CollectionType.SHARED, SharedCollection.class);
+        int newSharedCount = getCollectionCount(CollectionResourceSection.MANAGED);
         int newImageCount = genericService.findAll(Image.class).size();
         Assert.assertNotSame(origImageCount, newImageCount);
         assertTrue((newImageCount - origImageCount) > 0);
         // ensure one shared collection created
         // evictCache();
 
-        List<Pair<Long, String>> details = basa.getDetails();
+        List<Pair<Long, String>> details = basa.getStatus().getDetails();
         logger.info("{}", details);
-        Set<RightsBasedResourceCollection> collections = new HashSet<>();
+        Set<ResourceCollection> collections = new HashSet<>();
         evictCache();
         logger.debug("inspecting collections created:");
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
             genericService.refresh(resource);
-            Set<RightsBasedResourceCollection> resourceCollections = resource.getRightsBasedResourceCollections();
+            Set<ResourceCollection> resourceCollections = resource.getManagedResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
-            for (RightsBasedResourceCollection rc : resourceCollections) {
+            for (ResourceCollection rc : resourceCollections) {
                 logger.debug("\t\t {}", rc);
             }
 
@@ -493,13 +492,13 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         }
         assertEquals("we should have a total of 3 collections (0 internal +2 shared)", 2, collections.size());
 //        int internalCount = 0;
-        for (RightsBasedResourceCollection col : collections) {
-            logger.debug("{} : {}", col, col.getResources());
+        for (ResourceCollection col : collections) {
+            logger.debug("{} : {}", col, col.getManagedResources());
 //            if (col instanceof InternalCollection) {
 //                assertEquals(1, col.getResources().size());
 //                internalCount++;
 //            } else {
-                assertEquals(2, col.getResources().size());
+                assertEquals(2, col.getManagedResources().size());
 //            }
         }
         assertEquals("we should have one new adhoc collection", 2, newSharedCount - origSharedCount);
@@ -509,8 +508,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // assertEquals(msg, uploadFiles.size(), newInternalCount - origInternalCount );
     }
 
-    private <C extends HierarchicalCollection> int getCollectionCount(CollectionType type, Class<C> cls) {
-        List<C> col = resourceCollectionDao.findCollectionsOfParent(null, null, cls);
+    private int getCollectionCount(CollectionResourceSection type) {
+        List<ResourceCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null);
         return col.size();
     }
 

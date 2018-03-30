@@ -7,6 +7,7 @@
 package org.tdar.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +87,7 @@ public class BagitTest {
     }
 
     @Test
-    public void test() {
+    public void test() throws FileNotFoundException {
 
         DefaultCompleter completer = new DefaultCompleter(bagFactory);
         completer.setGenerateBagInfoTxt(true);
@@ -99,9 +100,9 @@ public class BagitTest {
         completer.setNonDefaultManifestSeparator("\t");
 
         List<File> filesToAdd = new ArrayList<File>();
-        filesToAdd.add(new File(PATH + "images/handbook_of_archaeology.jpg"));
-        filesToAdd.add(new File(PATH + "data_integration_tests/evmpp-fauna.xls"));
-        filesToAdd.add(new File(PATH + "xml/documentImport.xml"));
+        filesToAdd.add(TestConstants.getFile(PATH , "images/handbook_of_archaeology.jpg"));
+        filesToAdd.add(TestConstants.getFile(PATH , "data_integration_tests/evmpp-fauna.xls"));
+        filesToAdd.add(TestConstants.getFile(PATH , "xml/documentImport.xml"));
 
         Bag bag = this.getBag(bagHome);
         for (File fileToAdd : filesToAdd) {

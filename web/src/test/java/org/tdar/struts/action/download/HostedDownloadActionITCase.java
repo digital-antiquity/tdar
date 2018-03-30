@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpHeaders.REFERER;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.DownloadAuthorization;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
@@ -132,7 +133,7 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     @IgnoreActionErrors
-    public void testMissingApiKeyHostedDownloadReferrer() throws InstantiationException, IllegalAccessException {
+    public void testMissingApiKeyHostedDownloadReferrer() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Long setup = setup();
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
@@ -147,15 +148,15 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
         assertThat(controller.getActionErrors(), is( not( empty())));
     }
 
-    public Long setup() throws InstantiationException, IllegalAccessException {
-        doc = generateDocumentWithFileAndUseDefaultUser();
-        SharedCollection collection = new SharedCollection();
+    public Long setup() throws InstantiationException, IllegalAccessException, FileNotFoundException {
+        doc = createAndSaveDocumentWithFileAndUseDefaultUser();
+        ResourceCollection collection = new ResourceCollection();
         collection.setName("authorized collection");
         collection.setDescription(collection.getName());
         collection.markUpdated(getAdminUser());
-        collection.getResources().add(doc);
+        collection.getManagedResources().add(doc);
         genericService.saveOrUpdate(collection);
-        doc.getSharedCollections().add(collection);
+        doc.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(doc);
         DownloadAuthorization downloadAuthorization = new DownloadAuthorization();
         downloadAuthorization.setApiKey("test");

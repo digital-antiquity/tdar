@@ -108,13 +108,55 @@ public interface Filestore {
      */
     void purge(FilestoreObjectType type, FileStoreFileProxy object) throws IOException;
 
+    /**
+     * Get the current filestore location
+     * @return
+     */
     String getFilestoreLocation();
 
+    /**
+     * create a MD5
+     * @param f
+     * @return
+     */
     MessageDigest createDigest(File f);
 
+    /**
+     * verify a file in the filestore
+     * @param type
+     * @param object
+     * @return
+     * @throws FileNotFoundException
+     * @throws TaintedFileException
+     */
     boolean verifyFile(FilestoreObjectType type, FileStoreFileProxy object) throws FileNotFoundException, TaintedFileException;
 
+    /**
+     * Mark a file as read only
+     * @param type
+     * @param filesToProcess
+     */
     void markReadOnly(FilestoreObjectType type, List<FileStoreFileProxy> filesToProcess);
 
+    /**
+     * Returns the directory for a persistable (to list log files)
+     * 
+     * @param type
+     * @param persistableId
+     * @return
+     */
     File getDirectory(FilestoreObjectType type, Long persistableId);
+
+    /**
+     * logs the write to the filestore
+     * @param outFile
+     */
+    void logFilestoreWrite(File outFile);
+
+    /**
+     * logs the deletion of a file
+     * 
+     * @param file
+     */
+    void logFilestoreDelete(File file);
 }

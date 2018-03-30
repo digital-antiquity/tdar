@@ -33,12 +33,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -52,6 +53,7 @@ import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -77,8 +79,6 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
     private static final String EXCEL_FILE_NAME = "periods-modified-sm-01182011.xlsx";
     private static final String EXCEL_FILE_NAME2 = "periods-modified-sm-01182011-2.xlsx";
     private static final String EXCEL_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME;
-    private static final File PERIOD_1 = new File(TestConstants.TEST_CODING_SHEET_DIR + "period.csv");
-    private static final File PERIOD_2 = new File(TestConstants.TEST_CODING_SHEET_DIR + "period2.csv");
     private static final String EXCEL_FILE_PATH2 = TestConstants.TEST_DATA_INTEGRATION_DIR + EXCEL_FILE_NAME2;
     private String codingSheetFileName = TestConstants.TEST_ROOT_DIR + "/coding sheet/csvCodingSheetText.csv";
 
@@ -90,6 +90,9 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
 
     private static final String PATH = TestConstants.TEST_CODING_SHEET_DIR;
 
+    @Autowired
+    private DatasetDao datasetDao;
+    
     @Test
     @Rollback
     /**
@@ -172,7 +175,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         column.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
         column.setDefaultCodingSheet(codingSheet);
         genericService.save(column);
-        datasetService.translate(column, codingSheet);
+        datasetDao.translate(column, codingSheet);
 
         ResultMetadataWrapper resultsWrapper = datasetService.selectAllFromDataTable(firstTable, 0, 100, true, false);
         List<List<String>> selectAllFromDataTable = resultsWrapper.getResults();
@@ -405,13 +408,13 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
     public void testCodingSheetMappingRights() throws Exception {
         Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);        
         CodingSheet codingSheet = setupCodingSheet(EXCEL_FILE_NAME, EXCEL_FILE_PATH, ontology, null);
-        SharedCollection sharedCollection = createAndSaveNewResourceCollection("test");
+        ResourceCollection sharedCollection = createAndSaveNewResourceCollection("test");
         TdarUser person = createAndSaveNewPerson("aas23@.com", "asdasff");
-        sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, GeneralPermissions.ADMINISTER_SHARE));
-        sharedCollection.getResources().add(codingSheet);
+        sharedCollection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), person, Permissions.ADMINISTER_COLLECTION));
+        sharedCollection.getManagedResources().add(codingSheet);
         genericService.saveOrUpdate(sharedCollection);
         genericService.saveOrUpdate(sharedCollection.getAuthorizedUsers());
-        codingSheet.getSharedCollections().add(sharedCollection);
+        codingSheet.getManagedResourceCollections().add(sharedCollection);
         codingSheet.getAuthorizedUsers().clear();
         genericService.saveOrUpdate(codingSheet);
         
@@ -441,6 +444,8 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testCodingSheetMappingReplace2() throws Exception {
+        File PERIOD_1 = TestConstants.getFile(TestConstants.TEST_CODING_SHEET_DIR , "period.csv");
+        File PERIOD_2 = TestConstants.getFile(TestConstants.TEST_CODING_SHEET_DIR , "period2.csv");
         CodingSheet codingSheet = setupCodingSheet(null, null, null, PERIOD_1);
         Long codingId = codingSheet.getId();
         Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
@@ -506,7 +511,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
             rules.add(createRule("3", "three", codingSheet));
             genericService.save(codingSheet);
 
-            // File bigFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
+            // File bigFile = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx");
 
             Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx", Dataset.class);
             Long datasetId = dataset.getId();

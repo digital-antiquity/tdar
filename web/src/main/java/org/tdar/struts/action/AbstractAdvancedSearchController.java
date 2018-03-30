@@ -1,7 +1,6 @@
 package org.tdar.struts.action;
 
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,16 +15,10 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.Keyword;
-import org.tdar.core.bean.keyword.MaterialKeyword;
-import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -64,7 +57,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     private DisplayOrientation orientation;
-    
+
     // error message of last resort. User entered something we did not
     // anticipate, and we ultimately translated it into query that lucene can't
     // parse
@@ -102,13 +95,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     private AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
 
-    // FIXME: "explore" results belong in a separate controller.
-    public String exploreSearch() throws TdarActionException, SolrServerException, IOException {
-        processExploreRequest();
-        advancedSearch();
-        return SUCCESS;
-    }
-
     /**
      * There are certain types of requests that require special processing
      * before we execute our search. For example: results?id=5
@@ -134,7 +120,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             getObjectTypes().add(ObjectType.from(rt));
         }
         getResourceTypes().clear();
-        
+
         // legacy search by id?
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             getLogger().trace("legacy api:  tdar id");
@@ -203,22 +189,14 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     }
 
     private String advancedSearch() throws TdarActionException, SolrServerException, IOException {
-        determineSearchTitle();
-        setMode("SEARCH");
-        // beforeSearch();
-
-        processCollectionProjectLimit();
+        prepareAdvancedSearchQueryObject();
 
         try {
-            getAsqo().setExplore(explore);
-            getAsqo().setAllGeneralQueryFields(getAllGeneralQueryFields());
-            getAsqo().setQuery(query);
-            getAsqo().getSearchParameters().addAll(groups);
-            getAsqo().setReservedParams(getReservedSearchParameters());
             resourceSearchService.buildAdvancedSearch(getAsqo(), getAuthenticatedUser(), this, this);
+            addActionMessages();
             updateDisplayOrientationBasedOnSearchResults();
         } catch (SearchPaginationException spe) {
-            getLogger().debug("pagination issue: {}", spe.getMessage() );
+            getLogger().debug("pagination issue: {}", spe.getMessage());
             throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,
                     TdarActionSupport.NOT_FOUND);
         } catch (TdarRecoverableRuntimeException | SearchException tdre) {
@@ -232,73 +210,75 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         } else {
             return INPUT;
         }
+    }
 
+    protected void prepareAdvancedSearchQueryObject() {
+        determineSearchTitle();
+        setMode("SEARCH");
+        // beforeSearch();
+
+        processCollectionProjectLimit();
+        getAsqo().setExplore(explore);
+        getAsqo().setAllGeneralQueryFields(getAllGeneralQueryFields());
+        getAsqo().setQuery(query);
+        getAsqo().getSearchParameters().addAll(groups);
+        getAsqo().setReservedParams(getReservedSearchParameters());
+    }
+
+    private void addActionMessages() {
+        for (SearchParameters sp : groups) {
+            for (String msg : sp.getActionMessages()) {
+                getLogger().debug("adding actionMessage:{}", msg);
+                addActionMessage(msg);
+            }
+        }
+        for (String msg : getReservedSearchParameters().getActionMessages()) {
+            getLogger().debug("adding actionMessage:{}", msg);
+            addActionMessage(msg);
+        }
     }
 
     protected void updateDisplayOrientationBasedOnSearchResults() {
     }
 
-    // this is a no-op if basic search not detected
-    protected void processBasicSearchParameters() {
-        SearchParameters terms = new SearchParameters();
-        boolean valid = false;
-        if (StringUtils.isNotBlank(query)) {
-            terms.setOperator(Operator.AND);
-            terms.getAllFields().add(query);
-            terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
-            valid = true;
-        }
-        processCollectionProjectLimit();
-
-        if (valid) {
-            groups.add(terms);
-        }
-    }
-
     private boolean processedLimits = false;
 
     public void processCollectionProjectLimit() {
-        SearchParameters terms = new SearchParameters();
+        if (StringUtils.isNotBlank(query) && !resetSearch) {
+            SearchParameters terms = new SearchParameters();
+            terms.setOperator(Operator.AND);
+            terms.getAllFields().add(query);
+            terms.getFieldTypes().add(SearchFieldType.ALL_FIELDS);
+            groups.add(terms);
+        }
+
         if (processedLimits) {
             return;
         }
 
         processedLimits = true;
-        boolean valid = false;
 
         // contextual search: resource collection
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
+            SearchParameters terms_ = new SearchParameters();
             getLogger().debug("contextual search: collection {}", collectionId);
             ResourceCollection rc = getGenericService().find(ResourceCollection.class, collectionId);
-            terms.getFieldTypes().add(0, SearchFieldType.COLLECTION);
-            if (rc instanceof ListCollection) {
-                terms.getCollections().add((ListCollection)rc);
-            } else {
-                terms.getShares().add((SharedCollection)rc);
-            }
-            terms.getAllFields().add(0, null);
-            valid = true;
+            terms_.getFieldTypes().add(0, SearchFieldType.COLLECTION);
+            terms_.getCollections().add((ResourceCollection) rc);
+            terms_.getAllFields().add(0, null);
+            groups.add(terms_);
 
             // contextual search: project
         } else if (PersistableUtils.isNotNullOrTransient(projectId)) {
+            SearchParameters terms_ = new SearchParameters();
             getLogger().debug("contextual search: project {}", projectId);
             Project project = getGenericService().find(Project.class, projectId);
-            terms.getFieldTypes().add(0, SearchFieldType.PROJECT);
-            terms.getProjects().add(project);
-            terms.getAllFields().add(0, null);
-            valid = true;
+            terms_.getFieldTypes().add(0, SearchFieldType.PROJECT);
+            terms_.getProjects().add(project);
+            terms_.getAllFields().add(0, null);
+            groups.add(terms_);
         }
 
-        if (valid) {
-            groups.add(terms);
-        }
-    }
-
-    private String basicSearch() throws TdarActionException, SolrServerException, IOException {
-        // translate basic search field(s) so that they can be processed by
-        // advancedSearch()
-        processBasicSearchParameters();
-        return advancedSearch();
     }
 
     @DoNotObfuscate(reason = "user submitted map")
@@ -330,6 +310,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     }
 
     private Keyword exploreKeyword;
+
+    private boolean resetSearch = false;
 
     public List<SearchParameters> getGroups() {
         return groups;
@@ -474,13 +456,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setSearchTitle(getText("advancedSearchController.title_by_tdar_id")); // accurate
         } else if (StringUtils.isNotBlank(getQuery())) {
             setSearchTitle(getQuery());
-        } else if (isExplore()) {
-            // FIXME -- Why can't we delegate this to the searchParameter
-            // object?
-            if (getExploreKeyword() != null) {
-                setSearchTitle(getText("advancedSearchController.title_filtered_by_keyword",
-                        Arrays.asList(getExploreKeyword().getLabel())));
-            } else if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
+        } else if (groups.size() > 0) {
+            if (StringUtils.isNotBlank(getFirstGroup().getStartingLetter())) {
                 setSearchTitle(getText("advancedSearchController.title_beginning_with_s",
                         Arrays.asList(getFirstGroup().getStartingLetter())));
                 // FIXME: only supports 1
@@ -532,55 +509,11 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         this.letter = letter;
     }
 
-    // 'explore' is a more tailored/guided search experience. for example if
-    // searching by keyword then we want to look up the definition of a keyword
-    // and
-    // display it on the search results page.
-    private void processExploreRequest() {
-        if (groups.isEmpty()) {
-            return;
-        }
-        SearchParameters firstGroup = getFirstGroup();
-
-        // was it a keyword lookup? if so show the definition of the keyword
-        if (CollectionUtils.isNotEmpty(firstGroup.getInvestigationTypeIdLists())) {
-            setExploreKeyword(InvestigationType.class, firstGroup.getInvestigationTypeIdLists());
-        } else if (CollectionUtils.isNotEmpty(firstGroup.getApprovedSiteTypeIdLists())) {
-            setExploreKeyword(SiteTypeKeyword.class, firstGroup.getApprovedSiteTypeIdLists());
-        } else if (CollectionUtils.isNotEmpty(firstGroup.getApprovedCultureKeywordIdLists())) {
-            setExploreKeyword(CultureKeyword.class, firstGroup.getApprovedCultureKeywordIdLists());
-        } else if (CollectionUtils.isNotEmpty(firstGroup.getMaterialKeywordIdLists())) {
-            setExploreKeyword(MaterialKeyword.class, firstGroup.getMaterialKeywordIdLists());
-        }
-
-    }
-
-    private SearchParameters getFirstGroup() {
+    protected SearchParameters getFirstGroup() {
         if (groups.size() > 0) {
             return groups.get(0);
         }
-        throw new TdarRecoverableRuntimeException(getText("advancedSearchController.try_again"));
-    }
-
-    private <K extends Keyword> void setExploreKeyword(Class<K> type, List<List<String>> listOfLists) {
-        final String id = listOfLists.get(0).get(0);
-        try {
-            exploreKeyword = getGenericService().find(type, NumberFormat.getInstance().parse(id).longValue());
-        } catch (java.text.ParseException e) {
-            throw new TdarRecoverableRuntimeException(getText("advancedSearchController.bad_id", id), e);
-        }
-    }
-
-    public boolean isExplore() {
-        return explore;
-    }
-
-    public void setExplore(boolean explore) {
-        this.explore = explore;
-    }
-
-    public Keyword getExploreKeyword() {
-        return exploreKeyword;
+        return null;
     }
 
     @Override
@@ -639,7 +572,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         return collectionSearchBoxVisible;
     }
 
-
     public String performResourceSearch() throws TdarActionException, SolrServerException, IOException {
         setLookupSource(LookupSource.RESOURCE);
         // we need this for tests to be able to change the projection model so
@@ -648,17 +580,9 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             setProjectionModel(ProjectionModel.LUCENE);
         }
 
-        if (explore) {
-            return exploreSearch();
-        }
-        boolean resetSearch = processLegacySearchParameters();
+        resetSearch = processLegacySearchParameters();
 
-        if (StringUtils.isNotBlank(query) && !resetSearch) {
-            getLogger().trace("running basic search");
-            return basicSearch();
-        } else {
-            return advancedSearch();
-        }
+        return advancedSearch();
 
     }
 
@@ -691,13 +615,12 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     public void setObjectTypes(List<ObjectType> objectTypes) {
         getReservedSearchParameters().setObjectTypes(objectTypes);
     }
-    
+
     public List<ObjectType> getAllObjectTypes() {
         List<ObjectType> types = new ArrayList<>(Arrays.asList(ObjectType.values()));
         types.remove(ObjectType.ARCHIVE);
         types.remove(ObjectType.AUDIO);
         types.remove(ObjectType.VIDEO);
-        types.remove(ObjectType.LIST_COLLECTION);
         return types;
     }
 

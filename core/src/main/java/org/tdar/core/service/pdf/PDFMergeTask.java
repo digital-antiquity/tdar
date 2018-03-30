@@ -24,6 +24,7 @@ public class PDFMergeTask implements Runnable {
     private PDFMergeWrapper wrapper;
     private PipedOutputStream pipedOutputStream;
     private long start = System.currentTimeMillis();
+
     public PDFMergeTask(PDFMergeWrapper wrapper, PipedOutputStream pipedOutputStream) {
         this.wrapper = wrapper;
         this.pipedOutputStream = pipedOutputStream;
@@ -31,10 +32,10 @@ public class PDFMergeTask implements Runnable {
 
     @Override
     protected void finalize() throws Throwable {
-        logger.debug("download for {} took: {}", wrapper.getDocument().getName(), System.currentTimeMillis() -  start);
+        logger.debug("download for {} took: {}", wrapper.getDocument().getName(), System.currentTimeMillis() - start);
         super.finalize();
     }
-    
+
     @Override
     public void run() {
         try {
@@ -42,7 +43,7 @@ public class PDFMergeTask implements Runnable {
             wrapper.setSuccessful(true);
         } catch (IOException ioe) {
             // downgrade broken pipe exceptions
-            logger.debug("{}|{}",ioe.getMessage(),ioe.getLocalizedMessage());
+            logger.debug("{}|{}", ioe.getMessage(), ioe.getLocalizedMessage());
             if (isBrokenPipeException(ioe)) {
                 logger.warn("broken pipe", ioe);
             } else {
@@ -80,7 +81,6 @@ public class PDFMergeTask implements Runnable {
         return false;
     }
 
-    
     private void attemptTransferWithoutMerge(File document, OutputStream os) {
         try {
             logger.warn("attempting to send pdf without cover page: {}", document);

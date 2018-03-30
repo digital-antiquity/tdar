@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 
@@ -163,7 +162,7 @@ public class ExcelParserTestCase {
     }
 
     private FileInputStream getDataIntegrationResource(String filename) throws Exception {
-        return new FileInputStream(new File(TestConstants.TEST_DATA_INTEGRATION_DIR, filename));
+        return new FileInputStream(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, filename));
     }
 
 }

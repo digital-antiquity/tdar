@@ -6,9 +6,6 @@
  */
 package org.tdar.struts.action;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,13 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -32,16 +26,11 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.ReservedSearchParameters;
-import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
-import org.tdar.search.service.SearchUtils;
-import org.tdar.search.service.query.CreatorSearchInterface;
 import org.tdar.utils.PaginationHelper;
-import org.tdar.utils.json.JsonAdminLookupFilter;
-import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * @author Adam Brin
@@ -51,23 +40,23 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
 
     private static final long serialVersionUID = 2357805482356017885L;
 
+    // Input parameters
     private String callback;
     private ProjectionModel projectionModel;
     private int minLookupLength = 3;
     private int recordsPerPage = getDefaultRecordsPerPage();
     private int startRecord = DEFAULT_START;
-    private List<I> results = Collections.emptyList();
     private int totalRecords;
     private SortOption sortField;
     private SortOption defaultSort = SortOption.getDefaultSortOption();
     private SortOption secondarySortField = SortOption.TITLE;
     private boolean debug = false;
     private ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-    private InputStream jsonInputStream;
     private Long id = null;
     private String mode;
     private String searchTitle;
     private String searchDescription;
+
     private FacetWrapper facetWrapper = new FacetWrapper();
     // execute a query even if query is empty
 
@@ -78,12 +67,15 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     @Autowired
     private transient ResourceService resourceService;
 
-    @SuppressWarnings("rawtypes")
-    @Autowired
-    private CreatorSearchInterface creatorSearchService;
-
     @Autowired
     ObfuscationService obfuscationService;
+
+    @Autowired
+    SerializationService serializationService;
+
+    private Map<String, Object> result = new HashMap<>();
+    private Class filter;
+    private List<I> results = Collections.emptyList();
 
     public String getCallback() {
         return callback;
@@ -96,7 +88,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     public int getMinLookupLength() {
         return minLookupLength;
     }
-
 
     public void setMinLookupLength(int minLookupLength) {
         this.minLookupLength = minLookupLength;
@@ -179,14 +170,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         return results;
     }
 
-    /*
-     * 
-     */
-    @SuppressWarnings("unchecked")
-    public List<Creator<?>> getCreatorResults() {
-        return (List<Creator<?>>) results;
-    }
-
     /**
      * @return the debug
      */
@@ -261,7 +244,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
      * @param mode
      *            the mode to set
      */
-    // TODO: method needs better name... this is just metadata used to describe the caller of handleSearch()
     @Override
     public void setMode(String mode) {
         this.mode = mode;
@@ -334,40 +316,25 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     }
 
     protected void cleanupResourceTypes() {
-            setResourceTypes(cleanupFacetOptions(getResourceTypes()));
+        setResourceTypes(cleanupFacetOptions(getResourceTypes()));
     }
+
     // REQUIRED IF YOU WANT FACETING TO ACTUALLY WORK
     public void setResourceTypes(List<ResourceType> resourceTypes) {
         getReservedSearchParameters().setResourceTypes(resourceTypes);
     }
 
-    @SuppressWarnings("unchecked")
-    public String findPerson(String term, Person person, boolean registered) throws SolrServerException, IOException {
-        this.setLookupSource(LookupSource.PERSON);
-        // TODO Auto-generated method stub
-            try {
-                creatorSearchService.findPerson(person, term, registered, this, this, getMinLookupLength());
-                // sanitize results if the user is not logged in
-            } catch (SearchException e) {
-                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
-                return ERROR;
-            }
-            if (isEditor()) {
-                jsonifyResult(JsonAdminLookupFilter.class);
-            } else {
-                jsonifyResult(JsonLookupFilter.class);
-            }
-        return SUCCESS;
-    }
-
-    @Autowired
-    SerializationService serializationService;
-
-    private Map<String, Object> result = new HashMap<>();
-
     public void jsonifyResult(Class<?> filter) {
         prepareResult();
-        jsonInputStream = new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(getResult(), filter, callback).getBytes());
+        this.setFilter(filter);
+    }
+
+    public Object getResultObject() {
+        return getResult();
+    }
+
+    public Class getJsonView() {
+        return getFilter();
     }
 
     protected void prepareResult() {
@@ -392,25 +359,15 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         return getLookupSource().getCollectionName();
     }
 
-    @SuppressWarnings("unchecked")
-    public String findInstitution(String institution) throws SolrServerException, IOException {
-        this.setLookupSource(LookupSource.INSTITUTION);
-        if (SearchUtils.checkMinString(institution, getMinLookupLength())) {
-            try {
-                creatorSearchService.findInstitution(institution, this, this, getMinLookupLength());
-            } catch (SearchException e) {
-                addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
-                return ERROR;
-            }
-        }
-        jsonifyResult(JsonLookupFilter.class);
-        return SUCCESS;
-    }
-
     public LookupSource getLookupSource() {
         return lookupSource;
     }
 
+    /**
+     * Specify the type of object that is being looked up
+     * 
+     * @param lookupSource
+     */
     public void setLookupSource(LookupSource lookupSource) {
         this.lookupSource = lookupSource;
     }
@@ -448,14 +405,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         this.projectionModel = projectionModel;
     }
 
-    public InputStream getJsonInputStream() {
-        return jsonInputStream;
-    }
-
-    public void setJsonInputStream(InputStream jsonInputStream) {
-        this.jsonInputStream = jsonInputStream;
-    }
-
     public Map<String, Object> getResult() {
         return result;
     }
@@ -477,10 +426,17 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         this.facetWrapper = facetWrapper;
     }
 
-
     @Override
     public DisplayOrientation getOrientation() {
         return null;
+    }
+
+    public Class getFilter() {
+        return filter;
+    }
+
+    public void setFilter(Class filter) {
+        this.filter = filter;
     }
 
 }

@@ -11,6 +11,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
+import org.tdar.core.service.ReflectionHelper;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
@@ -66,7 +67,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
 
         HttpServletResponse response = ServletActionContext.getResponse();
         SessionType mark = SessionType.READ_ONLY;
-        if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
+        if (ReflectionHelper.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
             mark = SessionType.WRITEABLE;
         } else {
@@ -100,7 +101,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
 
     private void registerObfuscationListener(ActionInvocation invocation, SessionType mark) throws NoSuchMethodException {
         if (obfuscationService.obfuscationInterceptorEnabled()) {
-            if (SessionType.READ_ONLY.equals(mark) || !ReflectionService.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
+            if (SessionType.READ_ONLY.equals(mark) || !ReflectionHelper.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
                 TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
                 invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, user));
             }

@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.UserAffiliation;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -21,18 +21,19 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT, location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
+        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT,
+                location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 })
 /**
  * Abstract class for backing unauthenticated requests (Login and Register)
+ * 
  * @author abrin
  *
  */
 public abstract class AbstractRequestAccessController<P extends Persistable> extends AbstractAuthenticatableAction implements Preparable {
-
 
     private static final long serialVersionUID = -3264106556246738465L;
 
@@ -46,16 +47,14 @@ public abstract class AbstractRequestAccessController<P extends Persistable> ext
     private Long id;
     private P persistable;
     private String messageBody;
-    private EmailMessageType type;
+    private EmailType type;
 
     private AntiSpamHelper h = new AntiSpamHelper();
 
-
     public abstract String getTypeNamespace();
-    
+
     public abstract Class<P> getPersistableClass();
-    
-    
+
     @Override
     public void prepare() {
         // make sure the Reosurce ID is set
@@ -97,11 +96,11 @@ public abstract class AbstractRequestAccessController<P extends Persistable> ext
         this.h = h;
     }
 
-    public EmailMessageType getType() {
+    public EmailType getType() {
         return type;
     }
 
-    public void setType(EmailMessageType type) {
+    public void setType(EmailType type) {
         this.type = type;
     }
 

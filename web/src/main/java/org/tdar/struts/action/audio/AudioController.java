@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
-import org.tdar.struts_base.action.TdarActionException;
 
 /**
  * Manages audio files
@@ -24,13 +23,6 @@ public class AudioController extends AbstractInformationResourceController<Audio
 
     private static final long serialVersionUID = -6026630423934668323L;
 
-    @Override
-    protected String save(Audio persistable) throws TdarActionException {
-        saveBasicResourceMetadata();
-        saveInformationResourceProperties();
-        handleUploadedFiles();
-        return SUCCESS;
-    }
 
     @Override
     public Class<Audio> getPersistableClass() {

@@ -63,7 +63,7 @@ public class DataSetBrowseITCase extends AbstractAdminControllerITCase {
         assertEquals(new Integer(0), resultsWrapper.getStartRecord());
         assertFalse(resultsWrapper.getResults().isEmpty());
         assertFalse(resultsWrapper.getFields().isEmpty());
-        logger.debug("{}", controller.getJsonResult());
+        logger.debug("{}", controller.getResultObject());
 
         // PAGED CASE -- START @ 5
         controller = generateNewInitializedController(DataTableBrowseController.class);
@@ -78,7 +78,7 @@ public class DataSetBrowseITCase extends AbstractAdminControllerITCase {
         assertFalse(resultsWrapper.getResults().isEmpty());
         assertFalse(resultsWrapper.getFields().isEmpty());
 
-        logger.debug("{}", controller.getJsonResult());
+        logger.debug("{}", controller.getResultObject());
 
         // OVER-EXTENDED CASE -- START @ 500
         controller = generateNewInitializedController(DataTableBrowseController.class);
@@ -93,7 +93,7 @@ public class DataSetBrowseITCase extends AbstractAdminControllerITCase {
         assertTrue(resultsWrapper.getResults().isEmpty());
         assertFalse(resultsWrapper.getFields().isEmpty());
 
-        logger.debug("{}", controller.getJsonResult());
+        logger.debug("{}", controller.getResultObject());
     }
 
     @Test

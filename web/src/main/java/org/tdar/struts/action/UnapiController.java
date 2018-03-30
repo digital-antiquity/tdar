@@ -60,8 +60,7 @@ public class UnapiController extends TdarBaseActionSupport {
                             params = { "contentType", "application/xml", "status", "300" }),
                     @Result(name = ASFORMAT, location = "${formatUrl}", type = TDAR_REDIRECT),
                     @Result(name = NOFORMAT, type = HTTPHEADER, params = { "status", "406" })
-            }
-            )
+            })
     })
     public String execute() {
         if (StringUtils.isNotBlank(format) && (id != null)) {

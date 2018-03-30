@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 
@@ -68,7 +67,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
         }
         info.setToken("abc123");
         logger.debug("mock logout: {} ({})", user.getUsername().toLowerCase(), token);
-//        info.setToken(null);
+        // info.setToken(null);
         for (Cookie cookie : request.getCookies()) {
             if (cookie.getName().equals(TdarConfiguration.getInstance().getRequestTokenName())) {
                 cookie.setMaxAge(0);
@@ -92,7 +91,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     public void requestPasswordReset(TdarUser person) {
         return;
     }
-       
+
     @Override
     public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name, String password) {
 
@@ -209,27 +208,27 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
         for (TdarUser user : registeredUsers) {
             addUser(user, user.getUsername(), TdarGroup.TDAR_USERS, TdarGroup.JIRA_USERS, TdarGroup.CONFLUENCE_USERS);
             MockAuthenticationInfo info = users.get(user.getUsername().toLowerCase());
-            
+
             switch (user.getUsername()) {
                 case ADMIN_USERNAME:
-                info.getMemberships().add(TdarGroup.TDAR_ADMIN);
-                info.getMemberships().add(TdarGroup.TDAR_BILLING_MANAGER);
-                info.getMemberships().add(TdarGroup.TDAR_API_USER);
-                info.setPassword("admin");
-                break;
+                    info.getMemberships().add(TdarGroup.TDAR_ADMIN);
+                    info.getMemberships().add(TdarGroup.TDAR_BILLING_MANAGER);
+                    info.getMemberships().add(TdarGroup.TDAR_API_USER);
+                    info.setPassword("admin");
+                    break;
 
                 case EDITOR_USERNAME:
-                info.getMemberships().add(TdarGroup.TDAR_EDITOR);
-                info.setPassword(EDITOR_PASSWORD);
-                break;
+                    info.getMemberships().add(TdarGroup.TDAR_EDITOR);
+                    info.setPassword(EDITOR_PASSWORD);
+                    break;
 
                 case BILLING_USERNAME:
-                info.getMemberships().add(TdarGroup.TDAR_BILLING_MANAGER);
-                info.setPassword(BILLING_PASSWORD);
-                break;
-                
+                    info.getMemberships().add(TdarGroup.TDAR_BILLING_MANAGER);
+                    info.setPassword(BILLING_PASSWORD);
+                    break;
+
                 default:
-                info.setPassword(PASSWORD);
+                    info.setPassword(PASSWORD);
             }
 
             if (localValues.containsKey(user.getUsername())) {
@@ -272,7 +271,10 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
 
     @Override
     public boolean updateBasicUserInformation(TdarUser user) {
-        //our mock service doesn't store email, firstname, or lastname so a no-op is sufficient here
+        MockAuthenticationInfo authenticationInfo = users.get(user.getUsername());
+        if (!user.isActive()) {
+            users.remove(user.getUsername());
+        }
         return true;
     }
 

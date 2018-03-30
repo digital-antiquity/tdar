@@ -26,10 +26,12 @@ import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
+import org.tdar.search.query.builder.HasCreator;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * This is a wrapper around the SOLRJ request
@@ -81,7 +83,8 @@ public class SolrSearchObject<I extends Indexable> {
     private Map<String, List<Long>> searchByMap = new HashMap<>();
     private StringBuilder facetText = new StringBuilder();
     private ProjectionModel projection;
-    private List<String> boosts = new ArrayList<>();
+    private String boost = "";
+
     public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
         this.builder = queryBuilder;
         this.coreName = queryBuilder.getCoreName();
@@ -96,18 +99,26 @@ public class SolrSearchObject<I extends Indexable> {
         if (handler.getSecondarySortField() != null) {
             addSortField(handler.getSecondarySortField(), sort);
         }
+
+        String _boost = "";
         if (queryBuilder instanceof ResourceQueryBuilder && handler.getSortField() == SortOption.RELEVANCE) {
             ResourceQueryBuilder qb = (ResourceQueryBuilder) queryBuilder;
-//            if (qb.getBoostType() != null) {
-//                boosts.add(String.format("{!boost b=\"if(exists(query({!v='resourceType:(%s)'})),10,1)\"}", StringUtils.join(qb.getBoostType(), " ")));
-//            }
+            // if (qb.getBoostType() != null) {
+            // boosts.add(String.format("{!boost b=\"if(exists(query({!v='resourceType:(%s)'})),10,1)\"}", StringUtils.join(qb.getBoostType(), " ")));
+            // }
             if (qb.isDeemphasizeSupporting()) {
-                boosts.add("{!boost b=\"if(exists(query({!v='resourceType:(ONTOLOGY CODING_SHEET)'})),-10,1)\"} ");
+                _boost += " b=\"if(exists(query({!v='resourceType:(ONTOLOGY CODING_SHEET)'})),-10,1)\" ";
             }
-            
+
+        }
+        if (queryBuilder instanceof HasCreator && PersistableUtils.isNotNullOrTransient(handler.getAuthenticatedUser())) {
+            _boost += String.format(" b=\"if(exists(query({!v='%s:%s'})),4,1)\" ", QueryFieldNames.SUBMITTER_ID, handler.getAuthenticatedUser().getId());
         }
         if (CollectionUtils.isNotEmpty(sort)) {
             setSortParam(StringUtils.join(sort, ","));
+        }
+        if (StringUtils.isNotBlank(_boost)) {
+            boost = String.format("{!boost %s }", _boost);
         }
         handleFacets(handler);
     }
@@ -196,7 +207,6 @@ public class SolrSearchObject<I extends Indexable> {
             case RELEVANCE:
                 return "score";
             case RESOURCE_TYPE:
-            case RESOURCE_TYPE_REVERSE:
                 return QueryFieldNames.RESOURCE_TYPE_SORT;
             default:
                 break;
@@ -214,7 +224,7 @@ public class SolrSearchObject<I extends Indexable> {
 
     public SolrParams getSolrParams() {
         SolrQuery solrQuery = new SolrQuery();
-        setQueryString(StringUtils.join(boosts,"") + builder.generateQueryString());
+        setQueryString(boost + builder.generateQueryString());
         solrQuery.setParam("q", getQueryString());
         solrQuery.setParam("start", Integer.toString(startRecord));
         solrQuery.setParam("rows", Integer.toString(resultSize));
@@ -225,10 +235,9 @@ public class SolrSearchObject<I extends Indexable> {
 
         if (!CollectionUtils.isEmpty(pivotFields)) {
             solrQuery.setParam("stats", true);
-            solrQuery.setParam("facet.pivot", StringUtils.join(pivotFields,","));
+            solrQuery.setParam("facet.pivot", StringUtils.join(pivotFields, ","));
         }
 
-        
         String tag = String.format("p:%s u:%s", MDC.get(LoggingConstants.TAG_PATH), MDC.get(LoggingConstants.TAG_AGENT));
         solrQuery.setParam("_logtag", tag);
         if (facetText.length() > 0 || !CollectionUtils.isEmpty(pivotFields)) {
@@ -428,5 +437,4 @@ public class SolrSearchObject<I extends Indexable> {
         this.facetLimit = facetLimit;
     }
 
-    
 }

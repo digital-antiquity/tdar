@@ -2,41 +2,12 @@ package org.tdar.core.service;
 
 import java.util.Collection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.dao.base.GenericDao;
-import org.tdar.core.dao.base.ObfuscationDao;
 import org.tdar.core.service.external.AuthorizationService;
 
-/**
- * A service to help with the obfuscation of @link Persistable Beans supporting @link Obfuscatable
- * 
- * @author abrin
- * 
- */
-@Service
-@Transactional(readOnly = true)
-public class ObfuscationService {
-
-    protected static final transient Logger logger = LoggerFactory.getLogger(ObfuscationService.class);
-
-    @Autowired
-    private GenericDao genericDao;
-
-    @Autowired
-    private AuthorizationService authService;
-
-    @Autowired
-    private ObfuscationDao obfuscationDao;
-    
-    private Boolean enabled = true;
+public interface ObfuscationService {
 
     /**
      * Obfuscates a collection of objects based on the specified user.
@@ -46,12 +17,7 @@ public class ObfuscationService {
      * @param targets
      * @param user
      */
-    @Transactional(readOnly = true)
-    public void obfuscate(Collection<? extends Obfuscatable> targets, TdarUser user) {
-        for (Obfuscatable target : targets) {
-            obfuscate(target, user);
-        }
-    }
+    void obfuscate(Collection<? extends Obfuscatable> targets, TdarUser user);
 
     /**
      * Due to Autowiring complexity, we expose the @link AuthenticationAndAuthorizationService here so we don't have autowiring issues in services like
@@ -60,9 +26,7 @@ public class ObfuscationService {
      * 
      * @return
      */
-    public AuthorizationService getAuthenticationAndAuthorizationService() {
-        return authService;
-    }
+    AuthorizationService getAuthenticationAndAuthorizationService();
 
     /**
      * we're going to manipulate the record, so, we detach the items from the session before
@@ -76,30 +40,14 @@ public class ObfuscationService {
      * @param target
      * @param user
      */
-    @Transactional(readOnly = true)
-    public void obfuscate(Obfuscatable target, TdarUser user) {
-        obfuscationDao.obfuscate(target,user, authService);
-    }
+    void obfuscate(Obfuscatable target, TdarUser user);
 
-    public void obfuscateObject(Object obj, TdarUser user) {
-        obfuscationDao.obfuscateObject(obj,user, authService);
-    }
-    
-    public boolean isWritableSession() {
-        return genericDao.isSessionWritable();
-    }
+    void obfuscateObject(Object obj, TdarUser user);
 
-    @Autowired(required=false)
-    @Qualifier("obfuscationEnabled")
-    public void setObfuscationEnabled(Boolean enabled) {
-        this.enabled = enabled;
-        logger.trace("set enabled: {} ", enabled);
-    }
+    boolean isWritableSession();
 
-    
-    public boolean obfuscationInterceptorEnabled() {
-        logger.trace("get enabled: {} ", enabled);
-        return enabled;
-    }
+    void setObfuscationEnabled(Boolean enabled);
+
+    boolean obfuscationInterceptorEnabled();
 
 }

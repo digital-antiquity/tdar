@@ -19,9 +19,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 public class PricingOption implements Serializable {
 
     public enum PricingType implements HasLabel, Localizable {
-        SIZED_BY_MB("Priced by MB"),
-        SIZED_BY_FILE_ONLY("Priced by File"),
-        SIZED_BY_FILE_ABOVE_TIER("Priced by File rounded up");
+        SIZED_BY_MB("Priced by MB"), SIZED_BY_FILE_ONLY("Priced by File"), SIZED_BY_FILE_ABOVE_TIER("Priced by File rounded up");
 
         private String label;
 

@@ -15,7 +15,9 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.billing.BillingAccountController;
@@ -98,6 +100,7 @@ public interface TestBillingControllerHelper {
         BillingAccount account = new BillingAccount("my account");
         account.setDescription("this is an account for : " + owner.getProperName());
         account.setOwner(owner);
+        account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, Permissions.EDIT_ACCOUNT));
         account.markUpdated(owner);
         getGenericService().saveOrUpdate(account);
         return account;

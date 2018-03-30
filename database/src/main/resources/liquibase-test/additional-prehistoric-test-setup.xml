@@ -90,4 +90,5 @@
         SELECT setval('authorized_user_id_seq', (SELECT MAX(id) FROM authorized_user)+1);
         </sql>
     </changeSet>
+
 </databaseChangeLog>

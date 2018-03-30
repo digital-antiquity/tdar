@@ -15,23 +15,22 @@ public interface BatchProcess {
 
     void setProcessEndId(int processEndId);
 
-
     default boolean shouldRunAll() {
-            if (CONFIG.getScheduledProcessStartId() != -1) {
-                setProcessStartId(CONFIG.getScheduledProcessStartId());
-            }
-            if (CONFIG.getScheduledProcessEndId() != -1) {
-                setProcessEndId(CONFIG.getScheduledProcessEndId());
-            }
+        if (CONFIG.getScheduledProcessStartId() != -1) {
+            setProcessStartId(CONFIG.getScheduledProcessStartId());
+        }
+        if (CONFIG.getScheduledProcessEndId() != -1) {
+            setProcessEndId(CONFIG.getScheduledProcessEndId());
+        }
 
-            if (getProcessStartId() == -1 && getProcessEndId() == -1) {
-                return true;
-            } else {
-                if (getProcessEndId() == -1) {
-                    setProcessEndId(DEFAULT_PROCESS_END_ID);
-                }
-                return false;
+        if (getProcessStartId() == -1 && getProcessEndId() == -1) {
+            return true;
+        } else {
+            if (getProcessEndId() == -1) {
+                setProcessEndId(DEFAULT_PROCESS_END_ID);
             }
+            return false;
+        }
     }
-    
+
 }

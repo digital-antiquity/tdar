@@ -40,7 +40,8 @@ import org.tdar.filestore.FilestoreObjectType;
         @UniqueConstraint(columnNames = { "information_resource_file_id", "file_version", "internal_type" })
 })
 /**
- * Representation a specific file or derivative version of an InformationResourceFile. Each InformationResouceFile may have multiple versions, eg. web sized imzges (small/med/large) or indexable data, as well as the original file version.
+ * Representation a specific file or derivative version of an InformationResourceFile. Each InformationResouceFile may have multiple versions, eg. web sized
+ * imzges (small/med/large) or indexable data, as well as the original file version.
  * 
  * @author abrin
  *

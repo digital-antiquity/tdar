@@ -90,7 +90,6 @@ public class BillingAction extends AbstractAuthenticatableAction implements Prep
         this.overdrawnAccounts = overdrawnAccounts;
     }
 
-
     public List<UserNotification> getCurrentNotifications() {
         return currentNotifications;
     }

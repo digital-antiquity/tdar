@@ -133,7 +133,7 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
         for (int i = 0; i < BATCH_SIZE; i++) {
             if (!proxies.isEmpty()) {
                 ret.add(proxies.remove());
-            } 
+            }
         }
         return ret;
     }

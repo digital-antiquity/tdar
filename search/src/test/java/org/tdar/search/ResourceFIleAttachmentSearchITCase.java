@@ -3,7 +3,6 @@ package org.tdar.search;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class ResourceFIleAttachmentSearchITCase extends AbstractResourceSearchIT
     @Rollback(true)
     public void testAttachedFileSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), _33_CU_314);
-        addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"));
+        addFileToResource(document, TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , "test-file.rtf"));
         searchIndexService.index(document);
         SearchParameters params = new SearchParameters();
         params.getContents().add("fun'");
@@ -57,7 +56,7 @@ public class ResourceFIleAttachmentSearchITCase extends AbstractResourceSearchIT
     public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
         String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
-        addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"), FileAccessRestriction.CONFIDENTIAL);
+        addFileToResource(document, TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"), FileAccessRestriction.CONFIDENTIAL);
         searchIndexService.index(document);
         SearchParameters params = new SearchParameters();
         params.getContents().add("fun");
@@ -76,7 +75,7 @@ public class ResourceFIleAttachmentSearchITCase extends AbstractResourceSearchIT
     @Test
     @Rollback(true)
     public void testFilenameFound() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
-        Document doc = generateDocumentWithFileAndUseDefaultUser();
+        Document doc = createAndSaveDocumentWithFileAndUseDefaultUser();
         searchIndexService.index(doc);
         SearchParameters sp = new SearchParameters();
         sp.getFilenames().add(TestConstants.TEST_DOCUMENT_NAME);

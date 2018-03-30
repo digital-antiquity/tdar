@@ -28,19 +28,19 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.MaterialKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "assertions",
-       joinColumns = @JoinColumn(name="material_keyword_id"))
- })
+        @AssociationOverride(name = "assertions",
+                joinColumns = @JoinColumn(name = "material_keyword_id"))
+})
 @XmlRootElement
 public class MaterialKeyword extends AbstractKeyword<MaterialKeyword> implements ControlledKeyword, SuggestedKeyword {
 
     private static final long serialVersionUID = -8439705822874264175L;
 
-
     private boolean approved;
 
-    public MaterialKeyword() {}
-    
+    public MaterialKeyword() {
+    }
+
     public MaterialKeyword(String string) {
         this.setLabel(string);
     }

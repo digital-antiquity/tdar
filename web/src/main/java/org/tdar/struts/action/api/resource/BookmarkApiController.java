@@ -37,7 +37,6 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 public class BookmarkApiController extends AbstractAuthenticatableAction implements Preparable {
 
-
     /**
      * 
      */

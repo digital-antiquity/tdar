@@ -27,9 +27,7 @@ public class ScholarController extends AbstractLookupController<Resource> {
     private static final long serialVersionUID = -4680630242612817779L;
     private int year;
     private PaginationHelper paginationHelper;
-    
-    
-    
+
     @Autowired
     private transient ResourceSearchService resourceSearchService;
 
@@ -47,7 +45,7 @@ public class ScholarController extends AbstractLookupController<Resource> {
     })
     public String execute() throws SearchException, IOException {
         setRecordsPerPage(250);
-        setResults(resourceSearchService.findByTdarYear(year,this, this).getResults());
+        setResults(resourceSearchService.findByTdarYear(year, this, this).getResults());
         return SUCCESS;
     }
 

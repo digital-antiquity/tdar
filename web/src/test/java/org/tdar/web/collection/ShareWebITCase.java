@@ -10,10 +10,10 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -29,7 +29,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String url = url_;
         url = url.substring(0, url.lastIndexOf("/"));
         String id = org.apache.commons.lang3.StringUtils.substringAfterLast(url, "/");
-        gotoPage("/share/"+ id +"/edit");
+        gotoPage("/collection/"+ id +"/edit");
     }
 
     
@@ -52,7 +52,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInPage(RETAIN_COLLECTION);
         clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         setInput("proxies[0].id", TEST.getUserId());
-        setInput("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
+        setInput("proxies[0].permission", Permissions.MODIFY_RECORD.name());
         setInput("proxies[0].displayName", "test user");
         logger.debug(getPageText());
         submitForm();
@@ -70,11 +70,10 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String beforeAccessPermissions = StringUtils.substringBefore(getPageText(), "Access Permissions");
         assertFalse(beforeAccessPermissions.contains(RETAIN_COLLECTION));
         clickLinkWithText("edit");
-//        assertTextNotPresent(RETAIN_COLLECTION);
+
         // the collection should be blank, but we should have a warning about the collection not being visible
         assertEquals("", getInput("shares[0].name").getAttribute("value"));
 //        assertTextPresentInCode("effectiveCollectionsVisible");
-
         submitForm();
         beforeAccessPermissions = StringUtils.substringBefore(getPageText(), "Access Permissions");
         assertFalse(beforeAccessPermissions.contains(RETAIN_COLLECTION));
@@ -107,7 +106,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         setInput(String.format(FMT_AUTHUSERS_ID, 0), TEST.getUserId()); // leave the id blank
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.MODIFY_RECORD.name());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), Permissions.MODIFY_RECORD.name());
         submitForm();
         assertTextPresentInPage("true");
         logout();
@@ -116,11 +115,11 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInCode("test user:MODIFY_RECORD");
         assertTextPresent(RETAIN_COLLECTION_2);
         clickLinkWithText("edit");
-        //        assertTextNotPresent(RETAIN_COLLECTION_2);
+
         // the collection should be blank, but we should have a warning about the collection not being visible
         assertEquals("", getInput("shares[0].name").getAttribute("value"));
 //        assertTextPresentInCode("effectiveCollectionsVisible");
-
+        
         submitForm();
         assertTextPresent(RETAIN_COLLECTION_2);
         assertTextNotPresent("the resource you requested is");
@@ -139,7 +138,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         someResources.add(createDocument());
         someResources.add(createDocument());
         someResources.add(createDocument());
-        createTestCollection(CollectionType.SHARED, name, desc, someResources);
+        createTestCollection(CollectionResourceSection.MANAGED, name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());
@@ -161,7 +160,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Assert.assertTrue("this test needs at least 2 resources in the test DB", someResources.size() > removeCount);
         List<Resource> removedResources = new ArrayList<Resource>();
         for (int i = 0; i < removeCount; i++) {
-            createInput("hidden", "toRemove[" + i + "]", someResources.get(i).getId());
+            createInput("hidden", "toRemoveManaged[" + i + "]", someResources.get(i).getId());
             // htmlPage.getElementById("hrid" + someResources.get(i).getId()).remove();
             removedResources.add(someResources.remove(i));
         }
@@ -174,7 +173,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (StringUtils.containsIgnoreCase(user.getProperName(), "user")) {
                 continue;
             }
-            createUserWithPermissions(i, user, GeneralPermissions.VIEW_ALL);
+            createUserWithPermissions(i, user, Permissions.VIEW_ALL);
             i++;
         }
         submitForm();
@@ -224,7 +223,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String name = "my fancy collection: " + System.currentTimeMillis();
         String desc = "description goes here: " + System.currentTimeMillis();
         List<? extends Resource> someResources = getSomeResources();
-        createTestCollection(CollectionType.SHARED, name, desc, someResources);
+        createTestCollection(CollectionResourceSection.MANAGED, name, desc, someResources);
         assertTextPresent(name);
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());
@@ -278,7 +277,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testAssignNonUserToCollection() {
         // try to create a collection and assign it to a person that is not a registered user.
-        gotoPage("/share/add");
+        gotoPage("/collection/add");
 
         // first lets start populating the person fields with a person that does not yet exist. tDAR should not create the person record on the fly, and
         // should not assign to the collection.
@@ -300,7 +299,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Person user = new Person("joe", "blow", "testAssignNonUserToCollection@tdar.net");
         submitForm();
         clickLinkWithText(CollectionWebITCase.PERMISSIONS);
-        createUserFields(1, user, GeneralPermissions.VIEW_ALL, null);
+        createUserFields(1, user, Permissions.VIEW_ALL, null);
         submitFormWithoutErrorCheck();
 
         // assertTrue("we should  be on the INPUT page. current page: " + getCurrentUrlPath(), getCurrentUrlPath().contains("/collection/save.action"));
@@ -311,7 +310,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testAssignNonUserToCollection2() {
-        gotoPage("/share/add");
+        gotoPage("/collection/add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
@@ -335,7 +334,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             if (StringUtils.containsIgnoreCase(person.getProperName(), "user")) {
                 continue;
             }
-            createUserFields(i, person, GeneralPermissions.VIEW_ALL, person.getId());
+            createUserFields(i, person, Permissions.VIEW_ALL, person.getId());
             i++;
         }
 
@@ -352,7 +351,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testCollectionRightsRevoke() {
         //create test collection with basic user having adminGroup rights
-        gotoPage("/share/add");
+        gotoPage("/collection/add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
@@ -362,9 +361,9 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         String url = getCurrentUrlPath();
         Long id = extractTdarIdFromCurrentURL();
-        gotoPage("/share/" + id + "/rights");
+        gotoPage("/collection/" + id + "/rights");
         setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_SHARE.toString());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), Permissions.ADMINISTER_COLLECTION.toString());
         submitForm();
         logout();
         

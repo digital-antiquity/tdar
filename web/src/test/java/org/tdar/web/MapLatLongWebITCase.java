@@ -1,13 +1,14 @@
 package org.tdar.web;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -28,7 +29,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     // FIXME:Break into two tests
     @Test
-    public void testAddingInformationResourceToProject() {
+    public void testAddingInformationResourceToProject() throws FileNotFoundException {
         TestConfiguration config = TestConfiguration.getInstance();
         String collectionUrl = null;
         if (TdarConfiguration.getInstance().isListCollectionsEnabled()) {
@@ -40,7 +41,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             submitForm();
             clickLinkWithText("Rights");
             setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
-            setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+            setInput("authorizedUsers[0].generalPermission", Permissions.MODIFY_RECORD.name());
             submitForm();
             collectionUrl = getCurrentUrlPath();
         }
@@ -55,7 +56,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         }
         clickLinkWithText(CollectionWebITCase.PERMISSIONS);
         setInput("proxies[0].id", CONFIG.getUserId());
-        setInput("proxies[0].permission", GeneralPermissions.MODIFY_RECORD.name());
+        setInput("proxies[0].permission", Permissions.MODIFY_RECORD.name());
         submitForm();
         String shareUrl = getCurrentUrlPath() + "?type=1&orientation=" + DisplayOrientation.MAP.name();
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
@@ -68,7 +69,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         detailedLatLong.setSouth(40.2115886265213);
         detailedLatLong.setEast(-106.38383388519287);
         detailedLatLong.setWest(-106.38091564178467);
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
         Long confidentialFile = setupDocumentWithProject(RESOURCE_WITH_NORMAL_LAT_LONG_AND_CONFIDENTIAL_FILE, latLong, Status.ACTIVE, file,
                 FileAccessRestriction.CONFIDENTIAL);
         Long obfuscatedMap = setupDocumentWithProject(RESOURCE_WITH_OBFUSCATED_LAT_LONG, detailedLatLong, Status.ACTIVE, null, null);

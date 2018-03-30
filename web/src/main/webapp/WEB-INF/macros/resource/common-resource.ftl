@@ -68,7 +68,7 @@ Common macros used in multiple contexts
     <span class="cartouche">
     <#if persistable.resourceType?has_content>
         <#local type>svg-icons_icon-${persistable.resourceType?lower_case}</#local>
-    <#elseif persistable.type?has_content><#t>
+    <#elseif persistable.topLevel?has_content><#t>
         <#local type>svg-icons_collection</#local>
     <#else><#t>
         <#local type>svg-icons_integration</#local>
@@ -88,9 +88,8 @@ Common macros used in multiple contexts
     <#macro upperPersistableTypeLabel persistable>
         <#if persistable.resourceType?has_content><#t>
         ${persistable.resourceType?replace("_", " ")?upper_case} <#t>
-        <#elseif persistable.type?has_content><#t>
-        COLLECTION <#if persistable.type == "LIST">(User-generated)</#if><#t>
-        <#else> <#t>
+        <#elseif persistable.topLevel?has_content><#t>
+        COLLECTION <#else> <#t>
         INTEGRATION<#t>
         </#if>
     </#macro>

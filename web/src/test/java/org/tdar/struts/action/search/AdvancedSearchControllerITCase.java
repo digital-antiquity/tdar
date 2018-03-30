@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -252,19 +249,19 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     public void testResourceCaseSensitivity() throws SearchIndexException, IOException {
         Document doc = createAndSaveNewResource(Document.class);
-        SharedCollection titleCase = new SharedCollection(USAF_TITLE_CASE, "test",  getAdminUser());
+        ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE, "test",  getAdminUser());
         titleCase.markUpdated(getAdminUser());
-        SharedCollection lowerCase = new SharedCollection(USAF_LOWER_CASE, "test",  getAdminUser());
+        ResourceCollection lowerCase = new ResourceCollection(USAF_LOWER_CASE, "test",  getAdminUser());
         lowerCase.markUpdated(getAdminUser());
-        SharedCollection upperCase = new SharedCollection("USAF", "test",  getAdminUser());
+        ResourceCollection upperCase = new ResourceCollection("USAF", "test",  getAdminUser());
         upperCase.markUpdated(getAdminUser());
-        SharedCollection usafLowerCase = new SharedCollection("usaf", "test", getAdminUser());
+        ResourceCollection usafLowerCase = new ResourceCollection("usaf", "test", getAdminUser());
         usafLowerCase.markUpdated(getAdminUser());
         doc.setTitle("USAF");
-        usafLowerCase.getResources().add(doc);
-        titleCase.getResources().add(doc);
-        lowerCase.getResources().add(doc);
-        upperCase.getResources().add(doc);
+        usafLowerCase.getManagedResources().add(doc);
+        titleCase.getManagedResources().add(doc);
+        lowerCase.getManagedResources().add(doc);
+        upperCase.getManagedResources().add(doc);
         genericService.saveOrUpdate(usafLowerCase, titleCase, lowerCase, upperCase);
         reindex();
 
@@ -334,7 +331,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testWhitelabelAdvancedSearch() {
         String collectionTitle = "The History Channel Presents: Ancient Ceramic Bowls That Resemble Elvis";
-        ListCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
+        ResourceCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
 
         getLogger().debug("collection saved. Id:{}  obj:{}", rc.getId(), rc);
         controller.setCollectionId(rc.getId());
@@ -343,7 +340,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         // We should now have two terms: within-collection, and all-fields
         assertThat(firstGroup().getFieldTypes(), contains(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
-        assertThat(((VisibleCollection)firstGroup().getCollections().get(0)).getTitle(), is(collectionTitle));
+        assertThat((firstGroup().getCollections().get(0)).getTitle(), is(collectionTitle));
     }
 
     private void updateAndIndex(Indexable doc) throws SearchIndexException, IOException {

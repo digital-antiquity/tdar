@@ -101,12 +101,12 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         public Long getId() {
             return -1L;
         }
-        
+
         @Override
-        public Integer getImportOrder(){
+        public Integer getImportOrder() {
             return -1;
         }
-        
+
         @Override
         public boolean isStatic() {
             return true;
@@ -119,10 +119,10 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     public boolean isStatic() {
         return false;
     }
-    
+
     @ManyToOne(optional = false)
     // , cascade = { CascadeType.PERSIST })
-    @JoinColumn(name = "data_table_id",nullable=false)
+    @JoinColumn(name = "data_table_id", nullable = false)
     private DataTable dataTable;
 
     @Column(nullable = false)
@@ -176,7 +176,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @Transient
     private Map<Long, List<String>> ontologyNodeIdToValuesMap;
 
-    @Column(name="import_order")
+    @Column(name = "import_order")
     private Integer importOrder;
 
     @Transient
@@ -488,7 +488,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         }
         return null;
     }
-    
+
     @Deprecated
     public void setMappedOntology(Ontology ont) {
         logger.warn("setting mappedOntology does nothing...");
@@ -521,7 +521,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @XmlTransient
     @JsonIgnore
     public String getPrettyDisplayName() {
-        String displayName = getDisplayName().replaceAll(" (?i)Ontology","");
+        String displayName = getDisplayName().replaceAll(" (?i)Ontology", "");
         displayName = StringUtils.replace(displayName, "  ", " ");
         return displayName;
     }

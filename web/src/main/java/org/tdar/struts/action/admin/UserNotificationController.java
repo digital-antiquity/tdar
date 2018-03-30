@@ -34,8 +34,8 @@ import com.opensymphony.xwork2.Preparable;
  * 
  * FIXME: refactor to use Object / Map for json. E.g.,
  * 
- * @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "jsonResult" }),
- * @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "jsonResult", "statusCode", "500" }
+ * @Result(name = SUCCESS, type = JSONRESULT, params = { "jsonObject", "resultObject" }),
+ * @Result(name = INPUT, type = JSONRESULT, params = { "jsonObject", "resultObject", "statusCode", "500" }
  */
 @Component
 @Scope("prototype")

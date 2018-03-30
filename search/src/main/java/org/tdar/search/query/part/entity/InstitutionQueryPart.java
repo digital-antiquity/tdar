@@ -17,6 +17,7 @@ import org.tdar.search.query.part.QueryPartGroup;
 
 /**
  * Search for an Institution, but don't left-match everything as you would with an autocomplete
+ * 
  * @author abrin
  *
  */
@@ -61,7 +62,7 @@ public class InstitutionQueryPart extends FieldQueryPart<Institution> {
         allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
 
         if (cleanedQueryString.contains(" ")) {
-//            titlePart = new FieldQueryPart<String>(QueryFieldNames.NAME_PHRASE, cleanedQueryString);
+            // titlePart = new FieldQueryPart<String>(QueryFieldNames.NAME_PHRASE, cleanedQueryString);
             // FIXME: magic words
             if (useProximity) {
                 titlePart.setProximity(3);

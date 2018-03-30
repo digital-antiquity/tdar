@@ -122,7 +122,7 @@ public abstract class BaseFilestore implements Filestore {
             version.setChecksum(formatDigest(digest));
             if (version.getVersionType().isArchival() || version.getVersionType().isUploaded()) {
                 File checksum = new File(file.getParentFile(), String.format("%s.%s", file.getName(), digest.getAlgorithm()));
-                FileUtils.write(checksum, version.getChecksum(),Charset.defaultCharset());
+                FileUtils.write(checksum, version.getChecksum(), Charset.defaultCharset());
             }
         }
         if (version.getDateCreated() == null) {
@@ -147,8 +147,9 @@ public abstract class BaseFilestore implements Filestore {
             logdir.mkdirs();
         }
         File logFile = new File(logdir, filename);
+        logFilestoreWrite(logFile);
         try {
-            FileUtils.writeStringToFile(logFile, message,Charset.defaultCharset());
+            FileUtils.writeStringToFile(logFile, message, Charset.defaultCharset());
         } catch (IOException e) {
             logger.error("Unable to write logfile", e);
         }
@@ -196,7 +197,7 @@ public abstract class BaseFilestore implements Filestore {
         logger.trace("\told: {} new: {}", object.getChecksum(), hex);
         return hex.trim().equalsIgnoreCase(object.getChecksum().trim());
     }
-
+    
     public DigestInputStream appendMessageDigestStream(InputStream content) {
         DigestInputStream digestInputStream = null;
         MessageDigest messageDigest = null;
@@ -273,6 +274,7 @@ public abstract class BaseFilestore implements Filestore {
             if (parentFile.exists()) {
                 try {
                     FileUtils.copyFile(parentFile, targetFile);
+                    logFilestoreWrite(targetFile);
                 } catch (IOException e) {
                     logger.warn("something happened when saving file", e);
                 }

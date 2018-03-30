@@ -9,6 +9,22 @@
     <tdar:investigationTypes/>
     <tdar:latitudeLongitudeBoxes/>
     <tdar:managedGeographicKeywords/>
+    <tdar:resourceCollections>
+        <tdar:resourceCollection hidden="false">
+            <tdar:description>description</tdar:description>
+            <tdar:name>1234</tdar:name>
+            <tdar:resources>
+                <tdar:resourceId>4232</tdar:resourceId>
+            </tdar:resources>
+            <tdar:sortBy>TITLE</tdar:sortBy>
+        </tdar:resourceCollection>
+        <tdar:resourceCollection hidden="true"  parentIdRef="NULL_REF">
+            <tdar:description>description</tdar:description>
+            <tdar:name>abcd</tdar:name>
+            <tdar:orientation>LIST</tdar:orientation>
+            <tdar:sortBy>TITLE</tdar:sortBy>
+        </tdar:resourceCollection>
+    </tdar:resourceCollections>
     <tdar:materialKeywords/>
     <tdar:orientation>LIST</tdar:orientation>
     <tdar:otherKeywords/>
@@ -20,19 +36,6 @@
     <tdar:resourceCreators/>
     <tdar:resourceNotes/>
     <tdar:resourceType>PROJECT</tdar:resourceType>
-    <tdar:resourceCollections>
-        <tdar:resourceCollection hidden="false">
-            <tdar:resources>
-                <tdar:resourceId>4232</tdar:resourceId>
-            </tdar:resources>
-            <tdar:name>1234</tdar:name>
-        </tdar:resourceCollection>
-        <tdar:resourceCollection hidden="true"  parentIdRef="NULL_REF">
-            <tdar:description>description</tdar:description>
-            <tdar:name>abcd</tdar:name>
-        </tdar:resourceCollection>
-    </tdar:resourceCollections>
-    
     <tdar:siteNameKeywords/>
     <tdar:siteTypeKeywords/>
     <tdar:sortBy>RESOURCE_TYPE</tdar:sortBy>
@@ -41,23 +44,24 @@
     <tdar:statusChanged>false</tdar:statusChanged>
     <tdar:temporalKeywords/>
     <tdar:title>abcd</tdar:title>
-<!--    <tdar:listCollections>
-        <tdar:listCollection hidden="false">
-            <tdar:resources>
-                <tdar:resourceId>4232</tdar:resourceId>
-            </tdar:resources>
-            <tdar:name>54321</tdar:name>
-            <tdar:orientation>LIST</tdar:orientation>
-		    <tdar:properties>
-		        <tdar:customDocumentLogoEnabled>false</tdar:customDocumentLogoEnabled>
-		        <tdar:customHeaderEnabled>false</tdar:customHeaderEnabled>
-		        <tdar:featuredResourcesEnabled>false</tdar:featuredResourcesEnabled>
-		        <tdar:searchEnabled>false</tdar:searchEnabled>
-		        <tdar:subCollectionsEnabled>false</tdar:subCollectionsEnabled>
-		        <tdar:whitelabel>false</tdar:whitelabel>
-		    </tdar:properties>
-            <tdar:sortBy>TITLE</tdar:sortBy>
-        </tdar:listCollection>
-    </tdar:listCollections>-->
+    <tdar:unmanagedResourceCollections>
+            <tdar:resourceCollection hidden="false">
+                <tdar:name>54321</tdar:name>
+                <tdar:orientation>LIST</tdar:orientation>
+    		    <tdar:properties>
+    		        <tdar:customDocumentLogoEnabled>false</tdar:customDocumentLogoEnabled>
+    		        <tdar:customHeaderEnabled>false</tdar:customHeaderEnabled>
+    		        <tdar:featuredResourcesEnabled>false</tdar:featuredResourcesEnabled>
+    		        <tdar:searchEnabled>false</tdar:searchEnabled>
+    		        <tdar:subCollectionsEnabled>false</tdar:subCollectionsEnabled>
+    		        <tdar:whitelabel>false</tdar:whitelabel>
+    		    </tdar:properties>
+                <tdar:resources/>
+                <tdar:sortBy>TITLE</tdar:sortBy>
+                <tdar:unmanagedResources>
+                    <tdar:unmanagedResourceId>4232</tdar:unmanagedResourceId>
+                </tdar:unmanagedResources>
+            </tdar:resourceCollection>
+        </tdar:unmanagedResourceCollections>
     <tdar:url></tdar:url>
 </tdar:project>

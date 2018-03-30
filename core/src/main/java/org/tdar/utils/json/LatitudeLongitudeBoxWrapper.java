@@ -5,7 +5,7 @@ import java.io.Serializable;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.FeedSearchHelper;
-import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.core.service.GeoRssMode;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
@@ -20,7 +20,7 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
     private double east;
     private double centerLatitude;
     private double centerLongitude;
-    private GeoRssMode mode = GeoRssMode.ENVELOPE; 
+    private GeoRssMode mode = GeoRssMode.ENVELOPE;
     private Resource resource;
 
     private Class<?> jsonView = null;
@@ -45,7 +45,7 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
                     this.north = llb.getObfuscatedNorth();
                     this.east = llb.getObfuscatedEast();
                 }
-                
+
                 if (helper.isOverrideAndObfuscate() == false && resource.isConfidentialViewable()) {
                     setSpatial(true);
                     this.south = llb.getSouth();
@@ -54,7 +54,7 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
                     this.east = llb.getEast();
                     this.centerLatitude = llb.getCenterLatitude();
                     this.centerLongitude = llb.getCenterLongitude();
-                    
+
                 }
             }
         }
@@ -139,5 +139,5 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
     public void setJsonView(Class<?> jsonView) {
         this.jsonView = jsonView;
     }
-    
+
 }

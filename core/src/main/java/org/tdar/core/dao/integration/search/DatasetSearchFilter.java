@@ -15,9 +15,9 @@ public class DatasetSearchFilter extends AbstractIntegrationSearchFilter {
 
     @SuppressWarnings("unused")
     @Deprecated()
-    //"ignore, required for hibernate"
+    // "ignore, required for hibernate"
     private void setPaddedOntologyIds(List<Long> n) {
-        
+
     }
 
     public List<Long> getPaddedOntologyIds() {
@@ -45,8 +45,8 @@ public class DatasetSearchFilter extends AbstractIntegrationSearchFilter {
 
     @SuppressWarnings("unused")
     @Deprecated
-    //"ignore, required for hibernate"
+    // "ignore, required for hibernate"
     private void setHasOntologies(boolean b) {
-        
+
     }
 }

@@ -22,8 +22,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.persistence.Table;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.dbutils.ResultSetIterator;
 import org.apache.commons.io.FilenameUtils;
@@ -50,7 +48,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -98,7 +96,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     Pattern originalColumnPattern = Pattern.compile("^(.+)_original_(\\d+)$");
-
 
     public DatasetDao() {
         super(Dataset.class);
@@ -151,10 +148,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setParameter("resourceTypes", Arrays.asList(ResourceType.values()));
         query.setParameter("statuses", Status.values());
         query.setParameter("allStatuses", true);
-        query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
+        query.setParameter("effectivePermission", Permissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         query.setParameter("allResourceTypes", true);
         query.setParameter("admin", false);
-        return  query.getSingleResult().longValue();
+        return query.getSingleResult().longValue();
     }
 
     /**
@@ -183,7 +180,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setParameter("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
         return query.getResultList();
     }
-    
+
     public void resetColumnMappings(Project project) {
         String sql = String.format("update information_resource set mappeddatakeyvalue=null,mappeddatakeycolumn_id=null where project_id=%s", project.getId());
         getCurrentSession().createNativeQuery(sql).executeUpdate();
@@ -275,8 +272,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
         Query query = getCurrentSession().createNamedQuery(QUERY_INFORMATIONRESOURCES_WITH_FILES);
         return query.getResultList();
     }
-    
-    
 
     @SuppressWarnings("unchecked")
     public List<Resource> findAllSparseActiveResources() {
@@ -313,7 +308,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         logger.trace("convert proxy to resource");
         for (ResourceProxy prox : results) {
             try {
-                resultMap.put(prox.getId(), (I)prox.generateResource());
+                resultMap.put(prox.getId(), (I) prox.generateResource());
             } catch (Exception e) {
                 logger.error("{}", e);
             }
@@ -356,15 +351,16 @@ public class DatasetDao extends ResourceDao<Dataset> {
             ResourceType resourceType = ResourceType.valueOf((String) scroll.get(3));
             String fileDescription = (String) scroll.get(4);
             Number imageId = (Number) scroll.get(5);
-            @SuppressWarnings("deprecation")
-            Resource res = new Resource(id.longValue(), title, resourceType);
-            markReadOnly(res);
-            String resourceUrl = UrlService.absoluteUrl(res);
-            String imageUrl = UrlService.thumbnailUrl(imageId.longValue());
-            if (StringUtils.isNotBlank(fileDescription)) {
-                description = fileDescription;
-            }
             try {
+                Resource res = resourceType.getResourceClass().newInstance();
+                res.setTitle(title);
+                res.setId(id.longValue());
+                markReadOnly(res);
+                String resourceUrl = UrlService.absoluteUrl(res);
+                String imageUrl = UrlService.thumbnailUrl(imageId.longValue());
+                if (StringUtils.isNotBlank(fileDescription)) {
+                    description = fileDescription;
+                }
                 ImageTag tag = new GoogleImageSitemapUrl.ImageTag(new URL(imageUrl)).title(cleanupXml(title)).caption(cleanupXml(description));
                 GoogleImageSitemapUrl iurl = new GoogleImageSitemapUrl.Options(new URL(resourceUrl)).addImage(tag).build();
                 gisg.addUrl(iurl);
@@ -437,7 +433,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (CollectionUtils.isNotEmpty(tablesToRemove)) {
             dataset.getDataTables().removeAll(tablesToRemove);
         }
-        
+
     }
 
     public ScrollableResults findMappedResources(Project p) {
@@ -452,10 +448,11 @@ public class DatasetDao extends ResourceDao<Dataset> {
         ScrollableResults scroll = query.scroll(ScrollMode.FORWARD_ONLY);
         return scroll;
     }
-    
+
     public ScrollableResults findAllResourceWithProjectsScrollable() {
         Query query = getCurrentSession().createQuery("from InformationResource ir where ir.project is not null");
-        query.scroll(ScrollMode.FORWARD_ONLY);;
+        query.scroll(ScrollMode.FORWARD_ONLY);
+        ;
         return query.scroll(ScrollMode.FORWARD_ONLY);
     }
 
@@ -478,10 +475,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column,false));
+                mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column, false));
             }
         }
-        
+
     }
 
     public boolean translate(DataTableColumn column, CodingSheet codingSheet) {
@@ -506,7 +503,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     public void untranslate(DataTableColumn column) {
-        tdarDataImportDatabase.untranslate(column);        
+        tdarDataImportDatabase.untranslate(column);
     }
 
     public void translate(Set<DataTableColumn> columns, CodingSheet codingSheet) {
@@ -534,20 +531,13 @@ public class DatasetDao extends ResourceDao<Dataset> {
             return null;
         }
         informationResourceFileDao.deleteTranslatedFiles(dataset);
-        // FIXME: remove synchronize once Hibernate learns more about unique constraints
-        // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
 
-        // getDao().synchronize();
-
-//        if (file.getLatestUploadedOrArchivalVersion().getUncompressedSizeOnDisk() > TdarConfiguration.getInstance().getMaxTranslatedFileSize()) {
-//            return null;
-//        }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {
             File tempFile = File.createTempFile("translated", ".xlsx", TdarConfiguration.getInstance().getTempDirectory());
             translatedFileOutputStream = new FileOutputStream(tempFile);
-            
+
             SheetProxy sheetProxy = toExcel(dataset, translatedFileOutputStream);
             String filename = FilenameUtils.getBaseName(file.getLatestUploadedVersion().getFilename()) + "_translated." + sheetProxy.getExtension();
             FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
@@ -556,10 +546,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
             FileProxyWrapper wrapper = new FileProxyWrapper(dataset, analyzer, this, Arrays.asList(fileProxy));
             wrapper.processMetadataForFileProxies();
             irFile = fileProxy.getInformationResourceFile();
-//            InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.TRANSLATED, filename, irFile);
-//            irFile.getInformationResourceFileVersions().add(version);
-//            TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, tempFile, version);
-//            informationResourceFileDao.saveOrUpdate(version);
+            // InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.TRANSLATED, filename, irFile);
+            // irFile.getInformationResourceFileVersions().add(version);
+            // TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, tempFile, version);
+            // informationResourceFileDao.saveOrUpdate(version);
         } catch (IOException ioe) {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, ioe);
         } finally {
@@ -574,7 +564,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     private SheetProxy toExcel(Dataset dataset, OutputStream outputStream) throws IOException {
         Set<DataTable> dataTables = dataset.getDataTables();
         ExcelWorkbookWriter workbookWriter = new ExcelWorkbookWriter();
-        
+
         if ((dataTables == null) || dataTables.isEmpty()) {
             return null;
         }
@@ -583,7 +573,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         for (final DataTable dataTable : dataTables) {
             // each table becomes a sheet.
             String tableName = dataTable.getDisplayName();
-            getLogger().debug("{} ({})",dataTable.getName(), dataTable.getId());
+            getLogger().debug("{} ({})", dataTable.getName(), dataTable.getId());
             tableName = getUniqueTableName(tableNames, tableName);
             proxy.setName(tableName);
             tableNames.add(tableName);
@@ -595,7 +585,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                     proxy.setData(new ResultSetIterator(resultSet));
                     getLogger().debug("column names: " + headerLabels);
                     workbookWriter.addSheets(proxy);
-                    
+
                     return true;
                 }
             };
@@ -608,7 +598,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         proxy.getWorkbook().write(stream);
         proxy.getWorkbook().close();
         IOUtils.closeQuietly(stream);
-        
+
         return proxy;
     }
 
@@ -618,7 +608,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             String tablename_ = tableName;
             int count = 1;
             while (tableNames.contains(tablename_)) {
-                tablename_ = String.format("%s (%s)", tableName, count); 
+                tablename_ = String.format("%s (%s)", tableName, count);
                 count++;
             }
             tableName = tablename_;
@@ -662,7 +652,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     public Collection<? extends AuthorizedUser> findAllAuthorizedUsersForResource(Long id) {
         Query query = getCurrentSession().createNamedQuery(AUTHORIZED_USERS_FOR_RESOURCE);
-            query.setParameter("id", id);
+        query.setParameter("id", id);
         return query.list();
     }
 }

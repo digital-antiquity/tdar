@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -11,7 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.resource.HasAuthorizedUsers;
+import org.tdar.core.exception.TdarAuthorizationException;
 
 /**
  * Helper class to take a list of AuthorizedUsers and get the Maximum permissions allotted based on the rights available to the user
@@ -26,13 +29,13 @@ public class RightsResolver {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     // track the PermissionSeen and the date assigned
-    private Comparator<GeneralPermissions> comparator = new Comparator<GeneralPermissions>() {
+    private Comparator<Permissions> comparator = new Comparator<Permissions>() {
         @Override
-        public int compare(GeneralPermissions o1, GeneralPermissions o2) {
+        public int compare(Permissions o1, Permissions o2) {
             return ObjectUtils.compare(o1.getEffectivePermissions(), o2.getEffectivePermissions());
         }
     };
-    private TreeMap<GeneralPermissions, Date> lookup = new TreeMap<>(comparator);
+    private TreeMap<Permissions, Date> lookup = new TreeMap<>(comparator);
 
     public RightsResolver(List<AuthorizedUser> authorizedUsers) {
         this.setAuthorizedUsers(authorizedUsers);
@@ -40,7 +43,7 @@ public class RightsResolver {
         for (AuthorizedUser au : authorizedUsers) {
             Date expires = au.getDateExpires();
 
-            GeneralPermissions generalPermission = au.getGeneralPermission();
+            Permissions generalPermission = au.getGeneralPermission();
             Date existingDate = lookup.getOrDefault(generalPermission, NEVER);
             Date newDate = au.getDateExpires();
 
@@ -79,51 +82,6 @@ public class RightsResolver {
     }
 
     /**
-     * Do we have MODIFY_RECORD or greater
-     * 
-     * @return
-     */
-    public boolean canModifyUsersOnResource() {
-
-        if (isAdmin()) {
-            return true;
-        }
-
-        if (lookup.isEmpty()) {
-            return false;
-        }
-
-        for (GeneralPermissions perm : lookup.keySet()) {
-            if (perm.ordinal() >= GeneralPermissions.MODIFY_RECORD.ordinal()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Do we have ADMINISTER_SHARE or greater
-     * 
-     * @return
-     */
-    public boolean canModifyUsersOnShare() {
-        if (isAdmin()) {
-            return true;
-        }
-
-        if (lookup.isEmpty()) {
-            return false;
-        }
-
-        for (GeneralPermissions perm : lookup.keySet()) {
-            if (perm.ordinal() >= GeneralPermissions.ADMINISTER_SHARE.ordinal()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * For the authorized user, do we have GREATER or EQUAL permissions AND
      * Greater or Equal date of expiration for those permissions
      * 
@@ -141,8 +99,8 @@ public class RightsResolver {
         }
 
         // keep the set with the least permissions to the greatest
-        TreeSet<GeneralPermissions> toEval = new TreeSet<>(comparator);
-        for (GeneralPermissions perm : lookup.keySet()) {
+        TreeSet<Permissions> toEval = new TreeSet<>(comparator);
+        for (Permissions perm : lookup.keySet()) {
             if (perm.ordinal() >= userToAdd.getGeneralPermission().ordinal()) {
                 toEval.add(perm);
             }
@@ -159,16 +117,16 @@ public class RightsResolver {
         }
 
         // in increasing level or permission... check that we have the rights to do XYZ
-        for (GeneralPermissions perm : toEval) {
+        for (Permissions perm : toEval) {
             Date date = lookup.get(perm);
-            // if the date we have rights for is INFINITE, then we're fine 
+            // if the date we have rights for is INFINITE, then we're fine
             if (date == INFINITE) {
                 return false;
             }
             if (logger.isTraceEnabled()) {
                 logger.trace("{} <--> {} ({})", date, expiry, date.compareTo(expiry));
             }
-            // if the AU's date is <= date then we're ok too 
+            // if the AU's date is <= date then we're ok too
             if (date.compareTo(expiry) >= 0) {
                 return false;
             }
@@ -183,6 +141,35 @@ public class RightsResolver {
         logger.debug("  map: {}", lookup);
         logger.debug("  all:{}", getAuthorizedUsers());
         logger.debug(" user:{}", userToAdd);
+    }
+
+    public void checkEscalation(TdarUser actor, AuthorizedUser userToAdd) {
+        // check escalation of permissions
+        if (hasPermissionsEscalation(userToAdd)) {
+            logDebug(actor, userToAdd);
+            throw new TdarAuthorizationException("resourceCollectionService.could_not_add_user", Arrays.asList(userToAdd,
+                    userToAdd.getGeneralPermission()));
+        }
+
+    }
+
+    public boolean canModifyUsersOn(HasAuthorizedUsers account) {
+        Permissions minPerm = Permissions.getEditPermissionFor(account);
+
+        if (isAdmin()) {
+            return true;
+        }
+
+        if (lookup.isEmpty()) {
+            return false;
+        }
+
+        for (Permissions perm : lookup.keySet()) {
+            if (perm.ordinal() >= minPerm.ordinal()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

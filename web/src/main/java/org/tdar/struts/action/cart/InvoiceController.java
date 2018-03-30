@@ -22,7 +22,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.billing.PricingOption.PricingType;
@@ -56,7 +55,6 @@ public class InvoiceController extends AbstractCartController {
 
     private PricingType pricingType = null;
     private Long accountId;
-
 
     @Autowired
     private transient InvoiceService invoiceService;
@@ -274,6 +272,5 @@ public class InvoiceController extends AbstractCartController {
     public void setAffiliations(List<UserAffiliation> affiliations) {
         this.affiliations = affiliations;
     }
-
 
 }

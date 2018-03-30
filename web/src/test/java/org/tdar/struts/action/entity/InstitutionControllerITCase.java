@@ -3,8 +3,6 @@ package org.tdar.struts.action.entity;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -121,7 +119,7 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
         controller.prepare();
         controller.setName("test institution 123");
         controller.getInstitution().setDescription("my test description");
-        controller.setFile(new File(TestConstants.TEST_IMAGE));
+        controller.setFile(TestConstants.getFile(TestConstants.TEST_IMAGE));
         controller.setFileFileName(TestConstants.TEST_IMAGE_NAME);
         controller.setServletRequest(getServletPostRequest());
         controller.save();

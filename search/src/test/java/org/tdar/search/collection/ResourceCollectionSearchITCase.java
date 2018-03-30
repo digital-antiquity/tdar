@@ -3,7 +3,6 @@ package org.tdar.search.collection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -12,13 +11,10 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchIndexException;
@@ -34,7 +30,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
     public void init() {
         boolean first = true;
         for (String name : collectionNames) {
-            SharedCollection collection = new SharedCollection(name, name,  getAdminUser());
+            ResourceCollection collection = new ResourceCollection(name, name,  getAdminUser());
             collection.setDescription(name);
             collection.markUpdated(collection.getOwner());
             genericService.saveOrUpdate(collection);
@@ -42,14 +38,14 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
                 collection.setOwner(getAdminUser());
                 collection.setHidden(true);
                 collection.markUpdated(collection.getOwner());
-                collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
+                collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.ADMINISTER_COLLECTION));
                 genericService.saveOrUpdate(collection.getAuthorizedUsers());
                 genericService.saveOrUpdate(collection);
             }
             first = false;
             logger.debug("{} {} {}", collection.getId(), collection.getTitle(), collection.isHidden());
         }
-        SharedCollection find = genericService.find(SharedCollection.class, 1003L);
+        ResourceCollection find = genericService.find(ResourceCollection.class, 1003L);
         find.setHidden(false);
         genericService.saveOrUpdate(find);
         reindex();
@@ -62,10 +58,10 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.getAllFields().add("Australia");
         SearchResult<ResourceCollection> result = new SearchResult<>();
-        collectionSearchService.buildResourceCollectionQuery(getEditorUser(), csqo,  result, MessageHelper.getInstance());
+        collectionSearchService.buildResourceCollectionQuery(getEditorUser(), csqo, result, MessageHelper.getInstance());
         logger.debug("{}", result.getResults());
         assertNotEmpty("should have results", result.getResults());
-        assertEquals("should have one result",  1, result.getResults().size());
+        assertEquals("should have one result", 1, result.getResults().size());
     }
 
     @Test
@@ -79,15 +75,13 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
             logger.debug("{} {}", c.getId(), c);
         }
     }
-    
-    
 
     @Test
     @Rollback
     public void testAddPermission() throws SearchException, SearchIndexException, IOException {
-        SharedCollection collection = createAndSaveNewResourceCollection("testRemove");
+        ResourceCollection collection = createAndSaveNewResourceCollection("testRemove");
         collection.getAuthorizedUsers().clear();
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), GeneralPermissions.REMOVE_FROM_SHARE));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), Permissions.REMOVE_FROM_COLLECTION));
         genericService.saveOrUpdate(collection);
         searchIndexService.index(collection);
         // create collection
@@ -95,18 +89,20 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         // search for collection
         // remove permission
         // search for collection
-        assertCollectionMatch(collection, GeneralPermissions.ADD_TO_SHARE, true);
-        assertCollectionMatch(collection, GeneralPermissions.REMOVE_FROM_SHARE, true);
-        assertCollectionMatch(collection, GeneralPermissions.ADMINISTER_SHARE, false);
-        collection.getAuthorizedUsers().forEach(au -> {au.setGeneralPermission(GeneralPermissions.MODIFY_METADATA);} );
+        assertCollectionMatch(collection, Permissions.ADD_TO_COLLECTION, true);
+        assertCollectionMatch(collection, Permissions.REMOVE_FROM_COLLECTION, true);
+        assertCollectionMatch(collection, Permissions.ADMINISTER_COLLECTION, false);
+        collection.getAuthorizedUsers().forEach(au -> {
+            au.setGeneralPermission(Permissions.MODIFY_METADATA);
+        });
         genericService.saveOrUpdate(collection);
         searchIndexService.index(collection);
-        assertCollectionMatch(collection, GeneralPermissions.ADD_TO_SHARE, false);
-        assertCollectionMatch(collection, GeneralPermissions.REMOVE_FROM_SHARE, false);
-        assertCollectionMatch(collection, GeneralPermissions.ADMINISTER_SHARE, false);
+        assertCollectionMatch(collection, Permissions.ADD_TO_COLLECTION, false);
+        assertCollectionMatch(collection, Permissions.REMOVE_FROM_COLLECTION, false);
+        assertCollectionMatch(collection, Permissions.ADMINISTER_COLLECTION, false);
     }
 
-    private void assertCollectionMatch(SharedCollection collection, GeneralPermissions addToShare, boolean bool)
+    private void assertCollectionMatch(ResourceCollection collection, Permissions addToShare, boolean bool)
             throws SearchException, SearchIndexException, IOException {
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         logger.debug(" {} ~~ {} {}", bool, collection, addToShare);
@@ -114,9 +110,9 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         csqo.setPermission(addToShare);
         SearchResult<ResourceCollection> result = runQuery(getBasicUser(), csqo);
         if (bool) {
-        assertNotEmpty("should have results", result.getResults());
+            assertNotEmpty("should have results", result.getResults());
         } else {
-            assertEmpty("should not have results", result.getResults());            
+            assertEmpty("should not have results", result.getResults());
         }
         for (ResourceCollection c : result.getResults()) {
             logger.debug("{} {}", c.getId(), c);
@@ -126,7 +122,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
             assertTrue(result.getResults().contains(collection));
         } else {
             assertFalse(result.getResults().contains(collection));
-            
+
         }
     }
 
@@ -154,10 +150,9 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         seen = false;
         for (ResourceCollection c : result.getResults()) {
             logger.debug("{} {}", c.getId(), c);
-            if (c.getId().equals(1002L) && c instanceof ListCollection) {
-                ListCollection shared = (ListCollection)c;
-                logger.debug("parent: {}", shared.getParent());
-                logger.debug("parent: {}", shared.isTopLevel());
+            if (c.getId().equals(1002L)) {
+                logger.debug("parent: {}", c.getParent());
+                logger.debug("parent: {}", c.isTopLevel());
                 seen = true;
             }
         }
@@ -174,25 +169,16 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         SearchResult<ResourceCollection> result = runQuery(user, csqo);
         assertNotEmpty("should have results", result.getResults());
         for (ResourceCollection c : result.getResults()) {
-            if (c instanceof VisibleCollection) {
-                logger.debug("{} {} {}", c.getId(), c, ((VisibleCollection) c).isHidden());
-                assertFalse("should not be hidden", ((VisibleCollection) c).isHidden());
-            } else {
-                fail("should not be indexing InternalCollections");
-            }
+            logger.debug("{} {} {}", c.getId(), c, c.isHidden());
+            assertFalse("should not be hidden", c.isHidden());
         }
-        
+
         // test admin user
         csqo = new CollectionSearchQueryObject();
         result = runQuery(getBasicUser(), csqo);
         assertNotEmpty("should have results", result.getResults());
         for (ResourceCollection c : result.getResults()) {
-            if (c instanceof VisibleCollection) {
-                logger.debug("{} {} {}", c.getId(), c, ((VisibleCollection) c).isHidden());
-        //        assertFalse("should not be hidden", ((VisibleCollection) c).isHidden());
-            } else {
-                fail("should not be indexing InternalCollections");
-            }
+            logger.debug("{} {} {}", c.getId(), c, c.isHidden());
         }
 
     }
@@ -210,12 +196,13 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
         result = runQuery(null, csqo);
         for (ResourceCollection c : result.getResults()) {
-            logger.debug("{} {}", c.getId(), ((VisibleCollection) c).getTitle());
-            assertTrue("title contains kbp or kintigh", ((VisibleCollection) c).getTitle().contains("KBP") || ((VisibleCollection) c).getTitle().contains("Kintigh"));
+            logger.debug("{} {}", c.getId(), c.getTitle());
+            assertTrue("title contains kbp or kintigh", c.getTitle().contains("KBP") || c.getTitle().contains("Kintigh"));
         }
     }
 
-    private SearchResult<ResourceCollection> runQuery(TdarUser user, CollectionSearchQueryObject csqo) throws SearchException, SearchIndexException, IOException {
+    private SearchResult<ResourceCollection> runQuery(TdarUser user, CollectionSearchQueryObject csqo)
+            throws SearchException, SearchIndexException, IOException {
         SearchResult<ResourceCollection> result = new SearchResult<>();
         result.setRecordsPerPage(100);
         collectionSearchService.buildResourceCollectionQuery(user, csqo, result, MessageHelper.getInstance());

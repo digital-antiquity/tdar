@@ -10,13 +10,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.DedupeableType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
@@ -101,12 +101,12 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         evictCache();
         sendEmailProcess.setEmailService(emailService);
         sendEmailProcess.execute();
-        SimpleMailMessage received = checkMailAndGetLatest("Records Merged");
+        Email received = checkMailAndGetLatest("Records Merged");
 
         assertTrue(received.getSubject().contains(MessageHelper.getMessage("authorityManagementService.service_name")));
-        assertTrue(received.getText().contains("Records Merged"));
+        assertTrue(received.getMessage().contains("Records Merged"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
-        assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
+        assertEquals(received.getTo(), getTdarConfiguration().getSystemAdminEmail());
     }
 
     @Test

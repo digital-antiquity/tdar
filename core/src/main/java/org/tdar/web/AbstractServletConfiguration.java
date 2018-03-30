@@ -34,13 +34,14 @@ public abstract class AbstractServletConfiguration {
 
     public AbstractServletConfiguration(String msg) {
         logger.debug(msg);
+        System.setProperty("java.awt.headless", "true");
         try {
             TdarConfiguration.getInstance().initialize();
         } catch (Throwable t) {
             setFailureMessage(t.getMessage() + " (see initial exception for details)");
             logger.error("\r\n\r\n" + BAR + "\r\n" + t.getMessage() + "\r\n" + BAR + "\r\n", t);
         }
-        
+
         if (getAppPropertyPrefix() != null) {
             System.setProperty("appPrefix", getAppPropertyPrefix());
         }

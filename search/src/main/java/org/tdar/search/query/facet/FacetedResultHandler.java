@@ -5,8 +5,6 @@ import org.tdar.search.query.LuceneSearchResultHandler;
 
 public interface FacetedResultHandler<I extends Indexable> extends LuceneSearchResultHandler<I> {
 
-    
     FacetWrapper getFacetWrapper();
 
-    
 }

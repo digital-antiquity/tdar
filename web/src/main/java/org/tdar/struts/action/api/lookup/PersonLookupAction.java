@@ -8,12 +8,18 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.index.LookupSource;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.json.JsonAdminLookupFilter;
+import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * $Id$
@@ -37,8 +43,11 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
     private String registered;
     private String term;
 
+    @Autowired
+    private CreatorSearchService<Person> creatorSearchService;
+
     @Action(value = "person", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String lookupPerson() throws SolrServerException, IOException {
         setMode("personLookup");
@@ -47,13 +56,31 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
         if (PersistableUtils.isNotNullOrTransient(getAuthenticatedUser())) {
             email_ = email;
         }
-        Person person = new Person(firstName, lastName,email_);
+        Person person = new Person(firstName, lastName, email_);
         if (StringUtils.isNotBlank(institution)) {
             Institution inst = new Institution(institution);
             person.setInstitution(inst);
         }
-        
+
         return findPerson(term, person, Boolean.parseBoolean(registered));
+    }
+
+    public String findPerson(String term, Person person, boolean registered) throws SolrServerException, IOException {
+        this.setLookupSource(LookupSource.PERSON);
+        // TODO Auto-generated method stub
+        try {
+            creatorSearchService.findPerson(person, term, registered, this, this, getMinLookupLength());
+            // sanitize results if the user is not logged in
+        } catch (SearchException e) {
+            addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
+            return ERROR;
+        }
+        if (isEditor()) {
+            jsonifyResult(JsonAdminLookupFilter.class);
+        } else {
+            jsonifyResult(JsonLookupFilter.class);
+        }
+        return SUCCESS;
     }
 
     public String getFirstName() {

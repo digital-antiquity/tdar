@@ -13,7 +13,6 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
-import org.tdar.struts_base.action.TdarActionException;
 
 /**
  * $Id$
@@ -43,19 +42,6 @@ public class DocumentController extends AbstractInformationResourceController<Do
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return true;
-    }
-
-    @Override
-    protected String save(Document document) throws TdarActionException {
-        // save basic metadata
-        super.saveBasicResourceMetadata();
-        super.saveInformationResourceProperties();
-        // getGenericService().saveOrUpdate(document);
-        handleUploadedFiles();
-        // handleLinkedInformationResource();
-        // getGenericService().saveOrUpdate(document);
-        return SUCCESS;
-
     }
 
     public DocumentType getDocumentType() {

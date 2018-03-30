@@ -21,10 +21,13 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -74,43 +77,29 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         }
         return authorizationService.canEditAccount(getAuthenticatedUser(), getPersistable());
     }
-    
+
     public Invoice getInvoice() {
         return getGenericService().find(Invoice.class, invoiceId);
     }
 
     @Override
     protected String save(BillingAccount persistable) {
-        getLogger().info("invoiceId {}", getInvoiceId());
-        setSaveSuccessPath("billing");
-        setupOwnerField();
-        // if we're coming from "choose" and we want a "new account"
-        if (PersistableUtils.isTransient(getAccount()) && StringUtils.isNotBlank(getName())) {
-            getAccount().setName(getName());
-            getAccount().setDescription(getDescription());
-        }
-
-        if (PersistableUtils.isNotNullOrTransient(getOwner())) {
-            TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
-            getPersistable().setOwner(uploader);
-        }
-
-        if (PersistableUtils.isNotNullOrTransient(invoiceId)) {
-            Invoice invoice = getInvoice();
-            getLogger().info("attaching invoice: {} ", invoice);
-            // if we have rights
-            if (PersistableUtils.isTransient(getAccount())) {
-                getAccount().setOwner(invoice.getOwner());
+        try {
+            getLogger().info("invoiceId {}", getInvoiceId());
+            setSaveSuccessPath("billing");
+            setupOwnerField();
+            List<UserRightsProxy> proxies = new ArrayList<>();
+            for (TdarUser user : authorizedMembers) {
+                proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, Permissions.EDIT_ACCOUNT)));
             }
-            accountService.checkThatInvoiceBeAssigned(invoice, getAccount()); // throw exception if you cannot
-            // make sure you add back all of the valid account holders
-            getAccount().getInvoices().add(invoice);
-            getGenericService().saveOrUpdate(invoice);
-            getGenericService().saveOrUpdate(getAccount());
-            updateQuotas();
+            // saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser
+            // authenticatedUser)
+            accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), proxies);
+        } catch (Exception e) {
+            getLogger().debug("{}", e, e);
+            addActionErrorWithException("cannot save", e);
+            ;
         }
-        List<TdarUser> members = getGenericService().loadFromSparseEntities(getAuthorizedMembers(), TdarUser.class);
-        authorizationService.updateAuthorizedMembers(getAccount(),members);
         return SUCCESS;
     }
 
@@ -138,7 +127,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         accountService.resetAccountTotalsToHaveOneFileLeft(getAccount(), getAuthenticatedUser());
         return SUCCESS;
     }
-
 
     // This is temporary until we break out CreateCouponCodeAction
     public List<Invoice> getInvoices() {
@@ -258,9 +246,10 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        for (TdarUser user : getAccount().getAuthorizedMembers()) {
-            getAuthorizedUsersFullNames().add(user.getProperName());
-        }
+        getAccount().getAuthorizedUsers().forEach(au -> {
+            getAuthorizedMembers().add(au.getUser());
+            getAuthorizedUsersFullNames().add(au.getUser().getProperName());
+        });
     }
 
     public List<Status> getStatuses() {
@@ -299,7 +288,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     public void setExpires(Date expires) {
         this.expires = expires;
     }
-
 
     public List<String> getAuthorizedUsersFullNames() {
         return authorizedUsersFullNames;

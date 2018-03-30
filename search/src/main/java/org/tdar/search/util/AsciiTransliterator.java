@@ -26,19 +26,14 @@ public class AsciiTransliterator {
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    public String process(String line)
-    {
-        if (line != null)
-        {
-            try
-            {
+    public String process(String line) {
+        if (line != null) {
+            try {
                 keywordTokenizer.reset();
-                if (asciiFoldingFilter.incrementToken())
-                {
+                if (asciiFoldingFilter.incrementToken()) {
                     return new String(termAttribute.buffer());
                 }
-            } catch (IOException e)
-            {
+            } catch (IOException e) {
                 logger.warn("Failed to parse: " + line, e);
             }
         }

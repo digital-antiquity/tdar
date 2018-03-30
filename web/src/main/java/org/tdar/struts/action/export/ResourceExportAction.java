@@ -26,5 +26,5 @@ public class ResourceExportAction extends AbstractResourceExportAction {
         resourceExportService.exportAsync(getExportProxy(), false, getAuthenticatedUser());
         return SUCCESS;
     }
-    
+
 }

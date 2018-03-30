@@ -16,12 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -89,7 +86,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     private transient GenericKeywordService genericKeywordService;
     @Autowired
     private transient GenericService genericService;
-    
+
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -97,7 +94,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     private List<SearchFieldType> allSearchFieldTypes = SearchFieldType.getSearchFieldTypesByGroup();
 
     private boolean showLeftSidebar = true;
-    
+
     private List<PersonSearchOption> personSearchOptions = Arrays.asList(PersonSearchOption.values());
 
     @Override
@@ -108,15 +105,14 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     @Action(value = "results", results = {
             @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = ADVANCED_FTL)
-            })
+    })
     public String search() throws TdarActionException {
         String result = SUCCESS;
         // FIME: for whatever reason this is not being processed by the SessionSecurityInterceptor and thus
         // needs manual care, but, when the TdarActionException is processed, it returns a blank page instead of
         // not_found
 
-
-        //FIXME jtd: This is a workaround for a (possible) bug in Struts that inserts null into lists if a request querystring has parameter name w/o a value.
+        // FIXME jtd: This is a workaround for a (possible) bug in Struts that inserts null into lists if a request querystring has parameter name w/o a value.
         // Normally we would expect struts to set such properties to be empty lists, so we make sure this is the case by stripping null entries.
         // Note that sometimes null entries are important placeholders, so don't do this *everywhere*, just in lists where nulls are never expected.
         stripNulls(getIntegratableOptions(), getDocumentTypeFacets(), getResourceTypeFacets(), getObjectTypeFacets(), getObjectTypes(), getResourceTypes());
@@ -126,7 +122,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         getAsqo().setMultiCore(true);
         try {
             getFacetWrapper().facetBy(QueryFieldNames.OBJECT_TYPE, ObjectType.class);
-            getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionType.class);
+            // getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionResourceSection.class);
             getFacetWrapper().facetBy(QueryFieldNames.GENERAL_TYPE, LookupSource.class);
             getFacetWrapper().facetBy(QueryFieldNames.INTEGRATABLE, IntegratableOptions.class);
             getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_ACCESS_TYPE, ResourceAccessType.class);
@@ -166,8 +162,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         getReservedSearchParameters().getLatitudeLongitudeBoxes().clear();
         getReservedSearchParameters().getLatitudeLongitudeBoxes().add(box);
     }
-    
-    
+
     @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl") })
     @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String map() {
@@ -186,13 +181,12 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         searchBoxVisible = false;
         return SUCCESS;
     }
-  
+
     @Action(value = "advanced")
     public String advanced() {
         getLogger().trace("greetings from advanced search");
         // process query paramter or legacy parameters, if present.
-        processBasicSearchParameters();
-        processLegacySearchParameters();
+        processCollectionProjectLimit();
         processWhitelabelSearch();
 
         // if refining a search, make sure we inflate any deflated terms
@@ -225,12 +219,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         }
         getGroups().add(sp);
         sp.getFieldTypes().addAll(Arrays.asList(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
-        if (rc instanceof SharedCollection) {
-            sp.getShares().addAll(Arrays.asList((SharedCollection)rc, null));
-        } else {
-            sp.getCollections().addAll(Arrays.asList((ListCollection)rc, null));
-            
-        }
+        sp.getCollections().addAll(Arrays.asList((ResourceCollection) rc, null));
         sp.getAllFields().addAll(Arrays.asList(null, ""));
     }
 
@@ -260,7 +249,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         if (creatorType == CreatorType.INSTITUTION) {
             return Arrays.asList(ResourceCreatorRole.RESOURCE_PROVIDER);
         } else if (creatorType == CreatorType.PERSON) {
-            return Arrays.asList(ResourceCreatorRole.SUBMITTER, ResourceCreatorRole.UPDATER); //, ResourceCreatorRole.UPLOADER (add after reindex)
+            return Arrays.asList(ResourceCreatorRole.SUBMITTER, ResourceCreatorRole.UPDATER); // , ResourceCreatorRole.UPLOADER (add after reindex)
         }
         return Collections.emptyList();
     }
@@ -347,11 +336,11 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         getReservedSearchParameters().setTypes(types);
     }
 
-    public List<CollectionType> getCollectionTypes() {
+    public List<CollectionResourceSection> getCollectionTypes() {
         return getReservedSearchParameters().getCollectionTypes();
     }
 
-    public void setCollectionTypes(List<CollectionType> types) {
+    public void setCollectionTypes(List<CollectionResourceSection> types) {
         getReservedSearchParameters().setCollectionTypes(types);
     }
 
@@ -376,7 +365,6 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     public void setHideFacetsAndSort(boolean hideFacetsAndSort) {
         this.hideFacetsAndSort = hideFacetsAndSort;
     }
-
 
     @Override
     protected void updateDisplayOrientationBasedOnSearchResults() {
@@ -440,7 +428,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         if (keys.size() == 2) {
             return DisplayOrientation.getCommonOrientations();
         }
-        
+
         return new ArrayList<>();
     }
 
@@ -455,16 +443,16 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     public List<SearchFieldType> getAllSearchFieldTypes() {
         return allSearchFieldTypes;
     }
-    
+
     public Keyword getExploreKeyword() {
         return exploreKeyword;
     }
-    
-    public List<PersonSearchOption> getPersonSearchOptions(){
-    	return this.personSearchOptions;
+
+    public List<PersonSearchOption> getPersonSearchOptions() {
+        return this.personSearchOptions;
     }
-    
-    public void setPersonSearchOptions(List<PersonSearchOption> options){
-    	this.personSearchOptions = options;
+
+    public void setPersonSearchOptions(List<PersonSearchOption> options) {
+        this.personSearchOptions = options;
     }
 }

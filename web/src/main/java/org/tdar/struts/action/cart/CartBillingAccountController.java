@@ -64,7 +64,7 @@ public class CartBillingAccountController extends AbstractCartController {
             getLogger().debug("invoice had no owner, setting to authenticated user {}", owner);
         }
 
-        selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts());
+        selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts(), getAuthenticatedUser());
 
         getLogger().debug("selected account: {}", selectedAccount);
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
@@ -79,7 +79,7 @@ public class CartBillingAccountController extends AbstractCartController {
         if (getInvoice() == null) {
             addActionError(getText("cartController.missing_invoice"));
         }
-        
+
         // rule: payment method required
         if (getInvoice().getPaymentMethod() == null) {
             addActionError(getText("cartController.valid_payment_method_is_required"));

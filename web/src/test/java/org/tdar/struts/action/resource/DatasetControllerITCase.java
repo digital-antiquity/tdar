@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -21,7 +21,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.struts2.convention.annotation.Action;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -106,7 +105,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         dataset.setAccount(account);
         accountService.updateQuota(account, p, dataset);
         TdarUser createAndSaveNewPerson = createAndSaveNewPerson("a@bcasdasd.com", "aa");
-        dataset.getAuthorizedUsers().add(new AuthorizedUser(p, createAndSaveNewPerson, GeneralPermissions.MODIFY_RECORD));
+        dataset.getAuthorizedUsers().add(new AuthorizedUser(p, createAndSaveNewPerson, Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
         
@@ -339,7 +338,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
-        controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_EXCEL_FILENAME)));
+        controller.setUploadedFiles(Arrays.asList(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR + ALEXANDRIA_EXCEL_FILENAME)));
         controller.setUploadedFilesFileName(Arrays.asList(ALEXANDRIA_EXCEL_FILENAME));
         controller.setServletRequest(getServletPostRequest());
         assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
@@ -359,14 +358,14 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentExcel() throws TdarActionException {
+    public void testDatasetReplaceDifferentExcel() throws TdarActionException, FileNotFoundException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
         String filename = "evmpp-fauna.xls";
-        controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
+        controller.setUploadedFiles(Arrays.asList(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());
         assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
@@ -387,14 +386,14 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentMdb() throws TdarActionException {
+    public void testDatasetReplaceDifferentMdb() throws TdarActionException, FileNotFoundException {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
         controller.prepare();
         controller.edit();
         String filename = TestConstants.SPITAL_DB_NAME;
-        controller.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_DATA_INTEGRATION_DIR + filename)));
+        controller.setUploadedFiles(Arrays.asList(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR , filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());
         assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());

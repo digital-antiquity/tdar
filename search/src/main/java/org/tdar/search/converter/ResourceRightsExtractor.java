@@ -8,11 +8,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.PersistableUtils;
 
@@ -23,7 +20,7 @@ import org.tdar.utils.PersistableUtils;
  *
  */
 public class ResourceRightsExtractor {
-    
+
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Resource resource;
 
@@ -38,8 +35,6 @@ public class ResourceRightsExtractor {
     private HashSet<String> collectionNames = new HashSet<>();;
     private Set<String> directCollectionNames = new HashSet<>();
 
-    
-
     /*
      * this function should introduce into the index all of the people who can
      * modify a record which is useful for limiting things on the project page
@@ -47,8 +42,8 @@ public class ResourceRightsExtractor {
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
-        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, GeneralPermissions.MODIFY_METADATA, true));
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, Permissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
@@ -72,8 +67,8 @@ public class ResourceRightsExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, GeneralPermissions.VIEW_ALL, true));
+        for (ResourceCollection collection : resource.getManagedResourceCollections()) {
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection, Permissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
@@ -89,19 +84,17 @@ public class ResourceRightsExtractor {
     }
 
     public void extractCollectionHierarchy() {
-        Set<RightsBasedResourceCollection> collections = new HashSet<>(resource.getRightsBasedResourceCollections());
-//        collections.addAll(resource.getUnmanagedResourceCollections());
-        for (RightsBasedResourceCollection collection : collections) {
-            if (collection instanceof SharedCollection) {
-                if (collection instanceof VisibleCollection) {
-                    directCollectionNames.add(((VisibleCollection) collection).getName());
-                }
-                if (collection instanceof SharedCollection) {
-                SharedCollection shared = (SharedCollection)collection;
-                collectionNames.addAll(shared.getParentNameList());
-                collectionIds.addAll(shared.getAlternateParentIds());
-                collectionNames.addAll(shared.getAlternateParentNameList());
-                collectionIds.addAll(shared.getParentIds());
+        Set<ResourceCollection> collections = new HashSet<>(resource.getManagedResourceCollections());
+        // collections.addAll(resource.getUnmanagedResourceCollections());
+        for (ResourceCollection collection : collections) {
+            if (collection instanceof ResourceCollection) {
+                directCollectionNames.add(((ResourceCollection) collection).getName());
+                if (collection instanceof ResourceCollection) {
+                    ResourceCollection shared = (ResourceCollection) collection;
+                    collectionNames.addAll(shared.getParentNameList());
+                    collectionIds.addAll(shared.getAlternateParentIds());
+                    collectionNames.addAll(shared.getAlternateParentNameList());
+                    collectionIds.addAll(shared.getParentIds());
                 }
             }
         }
@@ -148,5 +141,5 @@ public class ResourceRightsExtractor {
     public void setDirectCollectionNames(Set<String> directCollectionNames) {
         this.directCollectionNames = directCollectionNames;
     }
-    
+
 }

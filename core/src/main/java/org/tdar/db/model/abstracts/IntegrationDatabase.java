@@ -16,7 +16,6 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public interface IntegrationDatabase extends Database, TargetDatabase {
 
-
     @Transactional(value = "tdarDataTx", readOnly = false)
     ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, String rawIntegration, TextProvider provider);
 

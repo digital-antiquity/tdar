@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
@@ -87,12 +88,13 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.SELECT2 })
+    @Ignore
     public void testCreateImageEditSavehasResource()  {
         gotoPage("/image/add");
         WebElement form = find("#metadataForm").first();
         expandAllTreeviews();
         prepIndexedFields();
-        //uploadFileAsync(FileAccessRestriction.PUBLIC, new File(TestConstants.TEST_IMAGE));
+        //uploadFileAsync(FileAccessRestriction.PUBLIC, TestConstants.getFile(TestConstants.TEST_IMAGE));
         // fill in various text fields
         for (Map.Entry<String, String> entry : docValMap.entrySet()) {
             find(By.name(entry.getKey())).val(entry.getValue());

@@ -11,7 +11,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
+import org.tdar.core.service.external.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -21,8 +21,10 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
+
 /**
  * Handle login for new users and pass back to request-access-action
+ * 
  * @author abrin
  *
  */
@@ -30,7 +32,6 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 public abstract class AbstractRequestAccessLoginAction<P extends Persistable> extends AbstractRequestAccessController<P> implements Validateable, Preparable {
-
 
     private static final long serialVersionUID = 5135435765017651014L;
 
@@ -74,7 +75,6 @@ public abstract class AbstractRequestAccessLoginAction<P extends Persistable> ex
         }
         return SUCCESS;
     }
-
 
     @Override
     public void validate() {

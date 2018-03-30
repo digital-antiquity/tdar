@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
-import net.tanesha.recaptcha.ReCaptcha;
-
 public class AntiSpamHelper implements Serializable {
 
     private static final long serialVersionUID = -3878843838917632249L;
@@ -23,12 +21,7 @@ public class AntiSpamHelper implements Serializable {
     private Long timeCheck = System.currentTimeMillis();
     private String comment; // for simple spam protection
 
-    private String recaptcha_challenge_field;
-    private String recaptcha_response_field;
-
-    private ReCaptcha recaptcha;
     private Person person;
-    private String reCaptchaText;
 
     public Long getTimeCheck() {
         return timeCheck;
@@ -46,37 +39,6 @@ public class AntiSpamHelper implements Serializable {
         this.comment = comment;
     }
 
-    public String getRecaptcha_challenge_field() {
-        return recaptcha_challenge_field;
-    }
-
-    public void setRecaptcha_challenge_field(String recaptcha_challenge_field) {
-        this.recaptcha_challenge_field = recaptcha_challenge_field;
-    }
-
-    public String getRecaptcha_response_field() {
-        return recaptcha_response_field;
-    }
-
-    public void setRecaptcha_response_field(String recaptcha_response_field) {
-        this.recaptcha_response_field = recaptcha_response_field;
-    }
-
-    public ReCaptcha getRecaptcha() {
-        return recaptcha;
-    }
-
-    public void setRecaptcha(ReCaptcha recaptcha) {
-        this.recaptcha = recaptcha;
-    }
-
-    public String getReCaptchaText() {
-        return reCaptchaText;
-    }
-
-    public void setReCaptchaText(String reCaptchaText) {
-        this.reCaptchaText = reCaptchaText;
-    }
 
     public boolean checkForSpammers(boolean ignoreTimecheck, String remoteHost, String contributorReason, boolean requestingContributorAccess) {
         long now = System.currentTimeMillis();
@@ -87,13 +49,11 @@ public class AntiSpamHelper implements Serializable {
             throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
         }
 
-
         if (StringUtils.isNotBlank(contributorReason) && requestingContributorAccess == false) {
             logger.debug(String.format("we think this user was a spammer, contributor was false, but  had contributor reason of: %s", contributorReason));
             throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
         }
 
-        
         if (!ignoreTimecheck) {
             logger.debug("timcheck:{}", getTimeCheck());
             if (getTimeCheck() == null) {
@@ -118,7 +78,7 @@ public class AntiSpamHelper implements Serializable {
         try {
             if (getPerson().getEmail().endsWith("\\r") ||
                     (Objects.equals(getPerson().getFirstName(), getPerson().getLastName())
-                    && Objects.equals(getPerson().getPhone(), "123456"))) {
+                            && Objects.equals(getPerson().getPhone(), "123456"))) {
                 logger.debug(String.format("we think this user was a spammer: %s  -- %s", getPerson().getEmail(), getComment()));
                 throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
             }

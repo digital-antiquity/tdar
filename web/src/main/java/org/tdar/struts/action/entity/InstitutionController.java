@@ -29,7 +29,6 @@ public class InstitutionController extends AbstractCreatorController<Institution
     private String name;
     private String email;
 
-
     @Override
     protected String save(Institution persistable) {
         if (hasActionErrors()) {
@@ -42,7 +41,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
     @Override
     public void validate() {
 
-        //if name changed, make sure it's not already taken
+        // if name changed, make sure it's not already taken
         if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
             Institution findInstitutionByName = entityService.findInstitutionByName(name);
             if (findInstitutionByName != null) {

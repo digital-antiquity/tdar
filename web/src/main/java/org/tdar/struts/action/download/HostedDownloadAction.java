@@ -20,7 +20,6 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
-
 /**
  * Created by jimdevos on 9/23/14. This action is designed to facilitate un-authenticated downloads if resources are part of a given collection and the host
  * name matches one in the allowed downloads, as well as the resource being public and the valid API-key being passed.

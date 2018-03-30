@@ -185,8 +185,6 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
             }
         };
         assertSortOrder(SortOption.RESOURCE_TYPE, resourceTypeComparator);
-        assertSortOrder(SortOption.RESOURCE_TYPE_REVERSE, resourceTypeComparator);
-
     }
 
     @Test

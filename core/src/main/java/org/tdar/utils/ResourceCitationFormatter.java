@@ -25,7 +25,6 @@ public class ResourceCitationFormatter implements Serializable {
     private Resource resource;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    
     public ResourceCitationFormatter(Resource resource) {
         this.resource = resource;
     }
@@ -49,7 +48,7 @@ public class ResourceCitationFormatter implements Serializable {
         }
         return sb.toString();
     }
-    
+
     public String getFormattedTitleInfo() {
         StringBuilder sb = new StringBuilder();
         appendIfNotBlank(sb, resource.getTitle(), "", "");
@@ -111,6 +110,7 @@ public class ResourceCitationFormatter implements Serializable {
                     appendIfNotBlank(sb, getPageRange(doc), ":", "");
                     break;
                 case OTHER:
+                case REPORT:
                     break;
                 case THESIS:
                     String degreetext = "";
@@ -127,7 +127,7 @@ public class ResourceCitationFormatter implements Serializable {
             InformationResource ir = (InformationResource) resource;
             appendIfNotBlank(sb, ir.getPublisherLocation(), ".", "");
             appendIfNotBlank(sb, ir.getPublisherName(), ":", "");
-            appendDate(sb,ir);
+            appendDate(sb, ir);
             appendIfNotBlank(sb, ir.getCopyLocation(), ".", "");
         }
         return sb.toString();
@@ -137,7 +137,7 @@ public class ResourceCitationFormatter implements Serializable {
         StringBuilder sb = sb_;
         if ((doc.getDate() != null) && (doc.getDate() != -1)) {
             if (sb.length() > 0 && sb.substring(sb.length() - 1).equals(".")) {
-                sb = new StringBuilder(sb.substring(0, sb.length() -1));
+                sb = new StringBuilder(sb.substring(0, sb.length() - 1));
             }
             appendIfNotBlank(sb, doc.getDate().toString(), ".", "");
         }

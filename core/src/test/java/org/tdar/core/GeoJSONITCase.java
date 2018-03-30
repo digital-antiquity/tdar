@@ -4,10 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,10 +56,12 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
         Resource[] setupDocs = setupDocs();
         genericService.synchronize();
         FeedSearchHelper feedHelper = setupTest(null, setupDocs);
-        String result = serializationService.createGeoJsonFromResourceList(feedHelper);
-        logger.info(result);
+        Map<String, Object> result_ = serializationService.createGeoJsonFromResourceList(feedHelper);
+        String result = serializationService.convertFilteredJsonForStream(result_, null, null);
+        logger.info("{}", result);
         feedHelper.setOverrideAndObfuscate(true);
-        String result2 = serializationService.createGeoJsonFromResourceList(feedHelper);
+        Map<String, Object> result2_ = serializationService.createGeoJsonFromResourceList(feedHelper);
+        String result2 = serializationService.convertFilteredJsonForStream(result_, null, null);
         logger.info(result2);
         String r1 = getCoordinatesBlock(result);
         String r2 = getCoordinatesBlock(result2);
@@ -88,9 +92,9 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
     }
 
     @SuppressWarnings("deprecation")
-    private Resource[] setupDocs() throws InstantiationException, IllegalAccessException {
+    private Resource[] setupDocs() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Resource[] resources = new Resource[2];
-        Document document = generateDocumentWithFileAndUseDefaultUser();
+        Document document = createAndSaveDocumentWithFileAndUseDefaultUser();
 //        document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
         document.setInheritingCulturalInformation(true);
         // PROJECT LAT/LONG should be obfuscated
@@ -112,7 +116,9 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
         Resource[] setupDocs = setupDocs();
         FeedSearchHelper feedHelper = setupTest(getAdminUser(), setupDocs);
         feedHelper.setOverrideAndObfuscate(false);
-        String result = serializationService.createGeoJsonFromResourceList(feedHelper);
+        Map<String, Object> result_ = serializationService.createGeoJsonFromResourceList(feedHelper);
+        String result = serializationService.convertFilteredJsonForStream(result_, null, null);
+
         logger.info(result);
         String r1 = getCoordinatesBlock(result);
 

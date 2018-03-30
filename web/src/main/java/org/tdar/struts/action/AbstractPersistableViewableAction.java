@@ -21,7 +21,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
@@ -83,7 +83,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient FileSystemResourceService fileSystemResourceService;
-    
+
     private boolean redirectBadSlug;
     private String slug;
     private String slugSuffix;
@@ -227,8 +227,8 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
         return user;
     }
 
-    public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
+    public List<Permissions> getAvailablePermissions() {
+        List<Permissions> permissions = Permissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
 
@@ -337,15 +337,10 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     protected void reSortFacets(ResourceFacetedAction handler, Sortable persistable) {
         // sort facets A-Z unless sortOption explicitly otherwise
         if (PersistableUtils.isNotNullOrTransient(getPersistable()) && CollectionUtils.isNotEmpty(handler.getResourceTypeFacets())) {
-            final boolean reversed = persistable.getSortBy() == SortOption.RESOURCE_TYPE_REVERSE;
             Collections.sort(handler.getResourceTypeFacets(), new Comparator<Facet>() {
                 @Override
                 public int compare(Facet o1, Facet o2) {
-                    if (reversed) {
-                        return o2.getRaw().compareTo(o1.getRaw());
-                    } else {
-                        return o1.getRaw().compareTo(o2.getRaw());
-                    }
+                    return o1.getRaw().compareTo(o2.getRaw());
                 }
             });
         }

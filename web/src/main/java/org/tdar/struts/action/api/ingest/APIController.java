@@ -38,6 +38,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.api.AbstractApiController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -82,8 +83,8 @@ public class APIController extends AbstractApiController {
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
-                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
     // @WriteableSession
@@ -100,7 +101,7 @@ public class APIController extends AbstractApiController {
             Resource incoming = (Resource) serializationService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
 
-            getXmlResultObject().setRecordId(incoming.getId());
+            getResultObject().setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             List<FileProxy> fileProxies = new ArrayList<FileProxy>();
             if (incoming instanceof InformationResource) {
@@ -122,8 +123,8 @@ public class APIController extends AbstractApiController {
             if (loadedRecord.isCreated()) {
                 setStatusMessage(StatusCode.CREATED, "created:" + loadedRecord.getId());
                 type = RevisionLogType.CREATE;
-                getXmlResultObject().setRecordId(loadedRecord.getId());
-                getXmlResultObject().setId(loadedRecord.getId());
+                getResultObject().setRecordId(loadedRecord.getId());
+                getResultObject().setId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             } else {
                 reconcileAccountId(loadedRecord);
@@ -136,10 +137,10 @@ public class APIController extends AbstractApiController {
                 coupon.getResourceIds().add(loadedRecord.getId());
                 getGenericService().saveOrUpdate(coupon);
             }
-            getXmlResultObject().setStatusCode(statuscode);
-            getXmlResultObject().setStatus(getStatus().toString());
+            getResultObject().setStatusCode(statuscode);
+            getResultObject().setStatus(getStatus().toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, getErrorMessage() + " " + loadedRecord.getTitle(), type);
-            getXmlResultObject().setMessage(getErrorMessage());
+            getResultObject().setMessage(getErrorMessage());
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
@@ -204,8 +205,8 @@ public class APIController extends AbstractApiController {
     @Action(value = "updateFiles",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
-                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
     @WriteableSession
@@ -225,8 +226,8 @@ public class APIController extends AbstractApiController {
             }
             // I don't know that this is "right"
             incoming = getGenericService().markWritableOnExistingSession(incoming);
-            getXmlResultObject().setRecordId(getId());
-            getXmlResultObject().setId(getId());
+            getResultObject().setRecordId(getId());
+            getResultObject().setId(getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             FileProxies fileProxies = (FileProxies) serializationService.parseXml(FileProxies.class, new StringReader(getRecord()));
             List<FileProxy> incomingList = fileProxies.getFileProxies();
@@ -245,10 +246,10 @@ public class APIController extends AbstractApiController {
 
             logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
-            getXmlResultObject().setStatusCode(statuscode);
-            getXmlResultObject().setStatus(getStatus().toString());
+            getResultObject().setStatusCode(statuscode);
+            getResultObject().setStatus(getStatus().toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, getErrorMessage() + " " + loadedRecord.getTitle(), RevisionLogType.EDIT);
-            getXmlResultObject().setMessage(getErrorMessage());
+            getResultObject().setMessage(getErrorMessage());
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
@@ -318,7 +319,6 @@ public class APIController extends AbstractApiController {
     public void setProcessedFileNames(List<String> processedFileNames) {
         this.processedFileNames = processedFileNames;
     }
-
 
     /**
      * @param importedRecord

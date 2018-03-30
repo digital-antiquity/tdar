@@ -6,7 +6,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 
-public class PersonDocumentConverter extends AbstractSolrDocumentConverter{
+public class PersonDocumentConverter extends AbstractSolrDocumentConverter {
 
     /*
      * See solr/configsets/default/conf/people-schema.xml

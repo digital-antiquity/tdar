@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.UserAffiliation;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -23,13 +23,15 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT, location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
+        @Result(name = TdarActionSupport.SUCCESS, type = AbstractRequestAccessController.REDIRECT,
+                location = AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS),
         @Result(name = TdarActionSupport.ERROR, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 })
 /**
  * Abstract class for backing unauthenticated requests (Login and Register)
+ * 
  * @author abrin
  *
  */
@@ -46,7 +48,7 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
     private Long id;
     private Resource resource;
     private String messageBody;
-    private EmailMessageType type;
+    private EmailType type;
 
     private AntiSpamHelper h = new AntiSpamHelper();
 
@@ -58,10 +60,9 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
         this.resource = resource;
     }
 
-
     @Override
     public void prepare() {
-    	// make sure the Reosurce ID is set
+        // make sure the Reosurce ID is set
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             setResource(getGenericService().find(Resource.class, getId()));
             // bad, but force onto session until better way found
@@ -76,13 +77,13 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
         }
     }
 
-	public List<UserAffiliation> getAffiliations() {
-		return affiliations;
-	}
+    public List<UserAffiliation> getAffiliations() {
+        return affiliations;
+    }
 
-	public void setAffiliations(List<UserAffiliation> affiliations) {
-		this.affiliations = affiliations;
-	}
+    public void setAffiliations(List<UserAffiliation> affiliations) {
+        this.affiliations = affiliations;
+    }
 
     public Long getId() {
         return id;
@@ -92,19 +93,19 @@ public class AbstractRequestAccessController extends AbstractAuthenticatableActi
         this.id = id;
     }
 
-	public AntiSpamHelper getH() {
-		return h;
-	}
+    public AntiSpamHelper getH() {
+        return h;
+    }
 
-	public void setH(AntiSpamHelper h) {
-		this.h = h;
-	}
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
+    }
 
-    public EmailMessageType getType() {
+    public EmailType getType() {
         return type;
     }
 
-    public void setType(EmailMessageType type) {
+    public void setType(EmailType type) {
         this.type = type;
     }
 

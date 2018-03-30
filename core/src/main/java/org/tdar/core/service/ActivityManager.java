@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.utils.activity.Activity;
 
-
 /**
  * $Id$
  * 
@@ -91,8 +90,8 @@ public class ActivityManager {
         if (CollectionUtils.isEmpty(found)) {
             return null;
         }
-        
-        logger.debug("{}",found);
+
+        logger.debug("{}", found);
         return found.get(0);
     }
 
@@ -137,7 +136,6 @@ public class ActivityManager {
         }
         return latest;
     }
-
 
     public synchronized void clearIndexingActivities() {
         Iterator<Activity> iter = activityQueue.iterator();

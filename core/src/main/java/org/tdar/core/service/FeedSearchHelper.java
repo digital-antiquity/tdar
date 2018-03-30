@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.search.query.SearchResultHandler;
 
 import com.opensymphony.xwork2.TextProvider;

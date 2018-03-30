@@ -29,13 +29,18 @@ import nu.validator.xml.SystemErrErrorHandler;
 public class HtmlValidator {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
+    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<selectize>", "</selectize>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
             "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
             "missing </a> before <div>",
             "missing </a> before <h3>",
             "discarding unexpected </div",
+            "missing </fieldset> before </div>" , 
+            "missing </form> before </div>\n" , 
+            "discarding unexpected </fieldset",
+            "discarding unexpected </form",
+            "missing </form> before </div",
             "discarding unexpected </a>",
             "missing </div> before link",
             "discarding unexpected </span>", "missing </span> before ",
@@ -311,11 +316,13 @@ public class HtmlValidator {
                     int lineNum = Integer.parseInt(part.trim().replace(",", ""));
                     String lineText = lines[lineNum - 1];
                     logger.debug("{}: {}", lineNum, lineText);
-                    if (lineText.toLowerCase().contains("http") || lineText.toLowerCase().contains("href")) {
+                    if (lineText.toLowerCase().contains("http") || lineText.toLowerCase().contains("href") || lineText.toLowerCase().contains("data-")) {
                         // NOTE: we may need to make this more strict in the future
                         // String substring = lineText.substring(lineText.toLowerCase().indexOf("http"));
                         skip = true;
                         logger.debug("skipping encoding in URL");
+                    } else {
+                        logger.error("encoding issue with link {}", lineText);
                     }
                 }
                 // FIXME: add regex to get line number from error: line 291 column 180 - Warning: unescaped & or unknown entity "&amount"
@@ -339,4 +346,10 @@ public class HtmlValidator {
         } // run tidy, providing an input and output stream
     }
 
+    
+    
+    
+    
+    
+    
 }

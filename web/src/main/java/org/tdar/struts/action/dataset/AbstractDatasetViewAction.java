@@ -103,7 +103,6 @@ public abstract class AbstractDatasetViewAction<D extends Dataset> extends Abstr
         this.dataTableColumnJson = dataTableColumnJson;
     }
 
-    
     public boolean isMappingFeatureEnabled() {
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return false;
@@ -112,7 +111,7 @@ public abstract class AbstractDatasetViewAction<D extends Dataset> extends Abstr
         if (getPersistable().getProject() == Project.NULL) {
             return false;
         }
-        
+
         for (DataTable dt : getPersistable().getDataTables()) {
             if (!CollectionUtils.isEmpty(dt.getFilenameColumns())) {
                 return true;

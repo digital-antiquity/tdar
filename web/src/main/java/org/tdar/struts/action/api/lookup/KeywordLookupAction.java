@@ -36,12 +36,12 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
 
     private String keywordType;
     private String term;
-    
+
     @Autowired
     KeywordSearchService<Keyword> keywordSearchService;
 
     @Action(value = "keyword", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String lookupKeyword() throws SolrServerException, IOException {
         // only return results if query length has enough characters

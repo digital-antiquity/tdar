@@ -12,7 +12,6 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 
-
 public class AccountEvaluationHelper {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -141,13 +140,13 @@ public class AccountEvaluationHelper {
     public boolean requireFullEvaluationOfFlaggedAccount() {
         boolean fullEvaluate = false;
         for (Resource r : getNewItems()) {
-            if (r.getStatus() == Status.DRAFT || r.getStatus() == Status.ACTIVE ) {
+            if (r.getStatus() == Status.DRAFT || r.getStatus() == Status.ACTIVE) {
                 fullEvaluate = true;
                 break;
             }
         }
         for (Resource r : getUpdatedItems()) {
-            if (r.getStatus() == Status.DRAFT || r.getStatus() == Status.ACTIVE ) {
+            if (r.getStatus() == Status.DRAFT || r.getStatus() == Status.ACTIVE) {
                 fullEvaluate = true;
                 break;
             }

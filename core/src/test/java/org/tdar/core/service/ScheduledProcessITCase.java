@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -24,18 +25,18 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -43,7 +44,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.service.external.MockMailSender;
+import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
@@ -109,15 +110,35 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
     @Test
     @Rollback
     public void testDailyEmailProcess() {
-        TdarUser user = new TdarUser();
-        user.setEmail("a@badfdsf.com");
-        user.setUsername(user.getEmail());
-        user.setFirstName("first");
-        user.setLastName("last");
-        user.setDateUpdated(new Date());
-        user.setAffiliation(UserAffiliation.GENERAL_PUBLIC);
-        user.setContributorReason("I really like contributing things.  What is that a crime or something?");
-        genericService.saveOrUpdate(user);
+        TdarUser user1 = new TdarUser();
+        user1.setEmail("a@badfdsf.com");
+        user1.setUsername(user1.getEmail());
+        user1.setFirstName("first");
+        user1.setLastName("last");
+        user1.setDateUpdated(new Date());
+        user1.setAffiliation(UserAffiliation.GENERAL_PUBLIC);
+        user1.setContributorReason("I really like contributing things.  What is that a crime or something?");
+        genericService.saveOrUpdate(user1);
+
+        TdarUser user2 = new TdarUser();
+        user2.setEmail("2@testuser.com");
+        user2.setUsername(user2.getEmail());
+        user2.setFirstName("first");
+        user2.setLastName("last");
+        user2.setDateUpdated(new Date());
+        user2.setAffiliation(UserAffiliation.GENERAL_PUBLIC);
+        user2.setContributorReason(" ");
+        genericService.saveOrUpdate(user2);
+        
+        TdarUser user3 = new TdarUser();
+        user3.setEmail("3@testuser.com");
+        user3.setUsername(user3.getEmail());
+        user3.setFirstName("first");
+        user3.setLastName("last");
+        user3.setDateUpdated(new Date());
+        user3.setAffiliation(UserAffiliation.GENERAL_PUBLIC);
+        user3.setContributorReason(null);
+        genericService.saveOrUpdate(user3);
 
         // fixme: I'm not sure why this works like it works (w/ seemingly duplicated calls), but it's required for checkMailAndGetLatest() to work
         scheduledProcessService.queue(DailyEmailProcess.class);
@@ -134,8 +155,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         logger.debug("//");
         scheduledProcessService.runNextScheduledProcessesInQueue();
 
-        SimpleMailMessage message = checkMailAndGetLatest("The following users registered with");
+        Email message = checkMailAndGetLatest("The following users registered with");
         assertThat(message, is( not( nullValue())));
+        assertTrue(message.getMessage().contains("contributor reason: None"));
 //        assertTrue(dailyEmailProcess.isCompleted());
     }
         
@@ -144,8 +166,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
 
     @Test
     @Rollback
-    public void testVerifyProcess() throws InstantiationException, IllegalAccessException {
-        Document document = generateDocumentWithFileAndUseDefaultUser();
+    public void testVerifyProcess() throws InstantiationException, IllegalAccessException, FileNotFoundException {
+        Document document = createAndSaveDocumentWithFileAndUseDefaultUser();
         scheduledProcessService.queue(WeeklyFilestoreLoggingProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         Number totalFiles = genericService.count(InformationResourceFileVersion.class);
@@ -156,13 +178,13 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
             scheduledProcessService.runNextScheduledProcessesInQueue();
             count++;
         };
-        SimpleMailMessage received = checkMailAndGetLatest("reporting on files with issues");
+        Email received = checkMailAndGetLatest("reporting on files with issues");
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
-        assertTrue(received.getText().contains("not found"));
-        assertTrue("should find " + totalFiles.intValue(), received.getText().contains("Total Files: "+totalFiles.intValue()));
-        assertFalse(received.getText().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
+        assertTrue(received.getMessage().contains("not found"));
+        assertTrue("should find " + totalFiles.intValue(), received.getMessage().contains("Total Files: "+totalFiles.intValue()));
+        assertFalse(received.getMessage().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
-        assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
+        assertEquals(received.getTo(), getTdarConfiguration().getSystemAdminEmail());
     }
 
     @Autowired
@@ -170,7 +192,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
     
     @Test
     @Rollback
-    public void testEmbargo() throws InstantiationException, IllegalAccessException {
+    public void testEmbargo() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         // queue the embargo task
         Document doc = generateDocumentWithFileAndUser();
         long id = doc.getId();
@@ -225,12 +247,13 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         scheduledProcessService.runNextScheduledProcessesInQueue();
         scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-        ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
-        SimpleMailMessage received = messages.get(0);
+        List<Email> messages = ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages();
+        logger.debug("Messages are {}", messages);
+        Email received = messages.get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
-        assertTrue(received.getText().contains("Flagged Items"));
+        assertTrue(received.getMessage().contains("Flagged Items"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
-        assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
+        assertEquals(received.getTo(), getTdarConfiguration().getSystemAdminEmail());
         assertNotNull(messages.get(1));
     }
 
@@ -291,10 +314,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
     @Rollback(false)
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
-        SharedCollection collection = createSharedCollection(DateTime.now().plusDays(1).toDate(),dataset);
+        ResourceCollection collection = createSharedCollection(DateTime.now().plusDays(1).toDate(),dataset);
         final Long cid = collection.getId();
         Date expires = DateTime.now().minusDays(2).toDate();
-        SharedCollection expired = createSharedCollection(expires, dataset);
+        ResourceCollection expired = createSharedCollection(expires, dataset);
         final Long eid = expired.getId();
 //        genericService.saveOrUpdate(e)
 //        dataset.getResourceCollections().add(collection);
@@ -309,12 +332,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
                 scheduledProcessService.runNextScheduledProcessesInQueue();
 //                dtarp.execute();
 //                dtarp.cleanup();
-                SharedCollection rcn = genericService.find(SharedCollection.class, cid);
+                ResourceCollection rcn = genericService.find(ResourceCollection.class, cid);
                 logger.debug("{}",rcn);
                 logger.debug("au: {}",rcn.getAuthorizedUsers());
                 assertEquals(aus, rcn.getAuthorizedUsers().size());
 
-                SharedCollection rce = genericService.find(SharedCollection.class, eid);
+                ResourceCollection rce = genericService.find(ResourceCollection.class, eid);
                 logger.debug("{}",rce);
                 logger.debug("au: {}",rce.getAuthorizedUsers());
                 assertEquals(aus -1 , rce.getAuthorizedUsers().size());
@@ -327,19 +350,19 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         });
     }
 
-    private SharedCollection createSharedCollection(Date date, Dataset dataset) {
-        SharedCollection collection = new SharedCollection();
-        collection.getResources().add(dataset);
-        dataset.getSharedCollections().add(collection);
+    private ResourceCollection createSharedCollection(Date date, Dataset dataset) {
+        ResourceCollection collection = new ResourceCollection();
+        collection.getManagedResources().add(dataset);
+        dataset.getManagedResourceCollections().add(collection);
         collection.markUpdated(getAdminUser());
         collection.setName("test " + date);
         collection.setDescription("test");
         collection.markUpdated(getAdminUser());
-        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.VIEW_ALL);
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.VIEW_ALL);
         
         authorizedUser.setDateExpires(date);
         collection.getAuthorizedUsers().add( authorizedUser);
-        collection.getResources().add(dataset);
+        collection.getManagedResources().add(dataset);
 //        dataset.getSharedCollections().add(collection);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(authorizedUser);

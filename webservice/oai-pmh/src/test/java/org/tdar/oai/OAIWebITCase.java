@@ -2,6 +2,7 @@ package org.tdar.oai;
 
 import static org.junit.Assert.fail;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -26,17 +27,19 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.JaxbSchemaValidator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.SerializationServiceImpl;
 import org.tdar.oai.bean.OAIMetadataFormat;
 import org.tdar.oai.service.OaiPmhConfiguration;
-import org.tdar.test.web.AbstractGeneicWebTest;
+import org.tdar.test.web.AbstractGenericWebTest;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class OAIWebITCase extends AbstractGeneicWebTest {
+public class OAIWebITCase extends AbstractGenericWebTest {
 
     private static final OaiPmhConfiguration CONFIG = OaiPmhConfiguration.getInstance();
 
@@ -48,12 +51,13 @@ public class OAIWebITCase extends AbstractGeneicWebTest {
     private String firstPersonIdentifier;
     private String firstInstitutionIdentifier;
     private String firstResourceIdentifier;
-
+    static JaxbSchemaValidator v;
     static boolean indexed = false;
 
     @Before
-    public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException {
+    public void prepareOai() throws SAXException, IOException, ParserConfigurationException, XpathException, ClassNotFoundException {
         // establish namespace bindings for the XPath tests
+        v = new JaxbSchemaValidator(new SerializationServiceImpl());
         HashMap<String, String> namespaceBindings = new HashMap<>();
         namespaceBindings.put("oai", "http://www.openarchives.org/OAI/2.0/");
         namespaceBindings.put("oai_dc", "http://www.openarchives.org/OAI/2.0/oai_dc/");
@@ -177,12 +181,12 @@ public class OAIWebITCase extends AbstractGeneicWebTest {
 
     // http://xmlunit.sourceforge.net/userguide/html/
 
-    private void testValidOAIResponse() throws ConfigurationException, SAXException {
-        testValidXMLResponse(new StringInputStream(getPageCode(), "utf8"), "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd");
+    private void testValidOAIResponse() throws ConfigurationException, SAXException, FileNotFoundException, ClassNotFoundException {
+        testValidXMLResponse(new StringInputStream(getPageCode(), "utf8"), "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd",v);
     }
 
     @Test
-    public void testIdentify() throws ConfigurationException, SAXException {
+    public void testIdentify() throws ConfigurationException, SAXException, FileNotFoundException, ClassNotFoundException {
         gotoPage(getBase() + "Identify");
         logger.debug(getPageCode());
         testValidOAIResponse();
@@ -194,7 +198,7 @@ public class OAIWebITCase extends AbstractGeneicWebTest {
     }
 
     @Test
-    public void testListMetadataFormats() throws ConfigurationException, SAXException {
+    public void testListMetadataFormats() throws ConfigurationException, SAXException, FileNotFoundException, ClassNotFoundException {
         gotoPage(getBase() + "ListMetadataFormats");
         testValidOAIResponse();
 
@@ -206,14 +210,14 @@ public class OAIWebITCase extends AbstractGeneicWebTest {
     }
 
     @Test
-    public void testListSets() throws ConfigurationException, SAXException, XpathException, IOException {
+    public void testListSets() throws ConfigurationException, SAXException, XpathException, IOException, FileNotFoundException, ClassNotFoundException {
         gotoPage(getBase() + "ListSets");
         testValidOAIResponse();
         // assertXpathExists("oai:OAI-PMH/oai:error[@code='noSetHierarchy']");
     }
 
     @Test
-    public void testGetRecord() throws ConfigurationException, SAXException, XpathException, IOException, ParserConfigurationException {
+    public void testGetRecord() throws ConfigurationException, SAXException, XpathException, IOException, ParserConfigurationException, ClassNotFoundException {
         // test for well-formed but invalid identifier
         getRecord("tdar", repositoryNamespaceIdentifier + ":Resource:0");
         assertXpathExists("oai:OAI-PMH/oai:error[@code='idDoesNotExist']");
@@ -266,7 +270,7 @@ public class OAIWebITCase extends AbstractGeneicWebTest {
 
     }
 
-    private void getRecord(String metadataPrefix, String identifier) throws ConfigurationException, SAXException {
+    private void getRecord(String metadataPrefix, String identifier) throws ConfigurationException, SAXException, FileNotFoundException, ClassNotFoundException {
         gotoPage(getBase() + "GetRecord&metadataPrefix=" + metadataPrefix + "&identifier=" + identifier);
         testValidOAIResponse();
     }

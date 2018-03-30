@@ -347,6 +347,7 @@ public abstract class ModsTransformer<R extends Resource> implements
                     }
                     break;
                 case OTHER:
+                case REPORT:
                     addExtent(mods, source.getNumberOfPages(), source.getStartPage(), source.getEndPage());
                     addPhysicalLocation(mods, source.getCopyLocation());
                     break;

@@ -8,13 +8,13 @@ import java.util.logging.Level;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.events.WebDriverEventListener;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.functional.util.WebDriverEventAdapter;
@@ -24,6 +24,7 @@ public class TdarEventListener extends WebDriverEventAdapter {
     
     protected  Logger logger = LoggerFactory.getLogger(AbstractSeleniumWebITCase.class);
     private AbstractSeleniumWebITCase test;
+    private int alertCount = 0;
 
     public TdarEventListener(AbstractSeleniumWebITCase test) {
         this.test = test;
@@ -67,6 +68,14 @@ public class TdarEventListener extends WebDriverEventAdapter {
         public void onError(Throwable throwable, WebDriver driver) {
             logger.error("--------------------------------------------------------");
             logger.error("hey there was an error {}", throwable, throwable);
+            if (throwable instanceof UnhandledAlertException) {
+                alertCount++;
+                logger.error("alert modal present when trying to close driver: {}", ((UnhandledAlertException) throwable).getAlertText());
+                if (alertCount > 5) {
+                    driver.switchTo().alert().accept();
+                    alertCount = 0;
+                }
+            }
             getBrowserConsoleLogEntries(driver);
             if (!throwable.getMessage().contains("n is null")) {
                 logger.error("hey there was an error", throwable, throwable);
@@ -203,6 +212,16 @@ public class TdarEventListener extends WebDriverEventAdapter {
         @Override
         public void beforeAlertDismiss(WebDriver arg0) {
             logger.trace("beforeAlertDismiss");
+        }
+
+        @Override
+        public void afterSwitchToWindow(String arg0, WebDriver arg1) {
+            logger.trace("afterSwitchToWindow");            
+        }
+
+        @Override
+        public void beforeSwitchToWindow(String arg0, WebDriver arg1) {
+            logger.trace("beforeSwitchToWindow");            
         }
 
 

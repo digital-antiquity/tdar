@@ -9,10 +9,14 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -22,7 +26,7 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/workspace/settings")
-@Result(name="workspace", location="/workspace/list",type=TdarActionSupport.REDIRECT)
+@Result(name = "workspace", location = "/workspace/list", type = TdarActionSupport.REDIRECT)
 public class IntegrationSettingsController extends AbstractPersistableController<DataIntegrationWorkflow> {
 
     private static final long serialVersionUID = -2663378965534285107L;
@@ -30,23 +34,27 @@ public class IntegrationSettingsController extends AbstractPersistableController
     private List<TdarUser> authorizedMembers = new ArrayList<>();
     private List<String> authorizedUsersFullNames = new ArrayList<String>();
 
-    
-    
     @Autowired
     private transient AuthorizationService authorizationService;
+
+    @Autowired
+    private transient DataIntegrationService integrationService;
 
     @Override
     public boolean authorize() {
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return true;
         }
-        return authorizationService.canEditWorkflow( getAuthenticatedUser(),getPersistable());
+        return authorizationService.canEditWorkflow(getAuthenticatedUser(), getPersistable());
     }
 
     @Override
     protected String save(DataIntegrationWorkflow persistable) throws TdarActionException {
-        List<TdarUser> members = getGenericService().loadFromSparseEntities(getAuthorizedMembers(), TdarUser.class);
-        authorizationService.updateAuthorizedMembers(getPersistable(), members);
+        List<UserRightsProxy> proxies = new ArrayList<>();
+        for (TdarUser user : authorizedMembers) {
+            proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, Permissions.EDIT_INTEGRATION)));
+        }
+        integrationService.saveSettingsForController(persistable, getAuthenticatedUser(), proxies);
         return SUCCESS_WORKSPACE;
     }
 
@@ -72,9 +80,10 @@ public class IntegrationSettingsController extends AbstractPersistableController
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        for (TdarUser user : getPersistable().getAuthorizedMembers()) {
-            getAuthorizedUsersFullNames().add(user.getProperName());
-        }
+        getPersistable().getAuthorizedUsers().forEach(au -> {
+            getAuthorizedMembers().add(au.getUser());
+            getAuthorizedUsersFullNames().add(au.getUser().getProperName());
+        });
 
     }
 

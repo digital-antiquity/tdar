@@ -16,7 +16,6 @@ public class MultiCoreQueryBuilder extends ResourceQueryBuilder {
         setTypeLimit(null);
 
     }
-    
 
     @Override
     public String getCoreName() {

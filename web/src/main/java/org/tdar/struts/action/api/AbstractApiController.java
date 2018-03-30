@@ -17,7 +17,7 @@ public abstract class AbstractApiController extends AbstractAuthenticatableActio
     public final static String msg_ = "%s is %s %s (%s): %s";
     private Long id;
     private InputStream inputStream;
-    private JaxbResultContainer xmlResultObject = new JaxbResultContainer();
+    private JaxbResultContainer resultObject = new JaxbResultContainer();
 
     public String getRecord() {
         return record;
@@ -67,21 +67,21 @@ public abstract class AbstractApiController extends AbstractAuthenticatableActio
         this.inputStream = inputStream;
     }
 
-    public JaxbResultContainer getXmlResultObject() {
-        return xmlResultObject;
+    public JaxbResultContainer getResultObject() {
+        return resultObject;
     }
 
-    public void setXmlResultObject(JaxbResultContainer xmlResultObject) {
-        this.xmlResultObject = xmlResultObject;
+    public void setResultObject(JaxbResultContainer resultObject) {
+        this.resultObject = resultObject;
     }
 
     protected String errorResponse(StatusCode statusCode, List<String> errors, String message2, List<String> stackTraces) {
         status = statusCode;
-        xmlResultObject.setStatus(statusCode.toString());
-        xmlResultObject.setStatusCode(statusCode.getHttpStatusCode());
-        xmlResultObject.setMessage(errorMessage);
-        xmlResultObject.setStackTraces(stackTraces);
-        xmlResultObject.setErrors(errors);
+        resultObject.setStatus(statusCode.toString());
+        resultObject.setStatusCode(statusCode.getHttpStatusCode());
+        resultObject.setMessage(errorMessage);
+        resultObject.setStackTraces(stackTraces);
+        resultObject.setErrors(errors);
         return ERROR;
     }
 

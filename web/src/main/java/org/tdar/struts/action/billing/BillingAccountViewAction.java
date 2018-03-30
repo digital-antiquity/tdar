@@ -2,7 +2,6 @@ package org.tdar.struts.action.billing;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Namespace;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
@@ -36,22 +34,15 @@ import org.tdar.utils.PersistableUtils;
 public class BillingAccountViewAction extends AbstractPersistableViewableAction<BillingAccount> {
 
     private static final long serialVersionUID = 3896385613294762404L;
-    public static final String UPDATE_QUOTAS = "updateQuotas";
-    public static final String FIX_FOR_DELETE_ISSUE = "fix";
-    public static final String CHOOSE = "choose";
-    public static final String VIEW_ID = "view?id=${id}";
-    public static final String NEW_ACCOUNT = "new_account";
+
     private Long invoiceId;
     private List<BillingAccount> accounts = new ArrayList<>();
     private List<Invoice> invoices = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
     private List<Coupon> coupons = new ArrayList<>();
-    private BillingAccountGroup accountGroup;
+    // private BillingAccountGroup accountGroup;
     private List<TdarUser> authorizedMembers = new ArrayList<>();
-    private Long accountGroupId;
-    private String name;
     private Integer quantity = 1;
-    private String description;
 
     private Long numberOfFiles = 0L;
     private Long numberOfMb = 0L;
@@ -80,7 +71,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     public Class<BillingAccount> getPersistableClass() {
         return BillingAccount.class;
     }
-    
+
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
@@ -89,33 +80,19 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
             return;
         }
         setAccounts(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
-        setAccountGroup(accountService.getAccountGroup(getAccount()));
-        getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
+        // setAccountGroup(accountService.getAccountGroup(getAccount()));
+        getAccount().getAuthorizedUsers().forEach(au -> {
+            getAuthorizedMembers().add(au.getUser());
+        });
         getResources().addAll(getAccount().getResources());
         PersistableUtils.sortByUpdatedDate(getResources());
-        setInvoices(new ArrayList<>(getAccount().getInvoices()));
+        setInvoices(accountService.getInvoicesForAccount(getAccount()));
+        setCoupons(new ArrayList<>(getAccount().getCoupons()));
         PersistableUtils.sortByCreatedDate(getInvoices());
     }
 
     @Override
     public String loadViewMetadata() {
-        Iterator<Invoice> iter = getInvoices().iterator();
-        setCoupons(new ArrayList<>(getAccount().getCoupons()));
-        while (iter.hasNext()) {
-            Invoice inv = iter.next();
-            if (inv.isModifiable()) {
-                iter.remove();
-            }
-        }
-        
-        for (TdarUser au : getAuthorizedMembers()) {
-            String name = null;
-            if (au != null) {
-                name = au.getProperName();
-            }
-            getAuthorizedUsersFullNames().add(name);
-        }
-
         return SUCCESS;
     }
 
@@ -143,22 +120,6 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         this.accounts = accounts;
     }
 
-    public BillingAccountGroup getAccountGroup() {
-        return accountGroup;
-    }
-
-    public void setAccountGroup(BillingAccountGroup accountGroup) {
-        this.accountGroup = accountGroup;
-    }
-
-    public Long getAccountGroupId() {
-        return accountGroupId;
-    }
-
-    public void setAccountGroupId(Long accountGroupId) {
-        this.accountGroupId = accountGroupId;
-    }
-
     public Person getBlankPerson() {
         return new Person();
     }
@@ -178,22 +139,6 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
 
     public BillingActivityModel getBillingActivityModel() {
         return accountService.getLatestActivityModel();
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public List<Resource> getResources() {

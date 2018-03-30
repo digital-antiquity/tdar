@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
+import org.tdar.core.dao.external.auth.AuthenticationResultType;
 
 /**
  * This is a rewrite of org.tdar.web.LoginWebITCase.

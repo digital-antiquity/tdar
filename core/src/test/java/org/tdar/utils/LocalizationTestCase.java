@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.exception.LocalizableException;
-import org.tdar.core.service.ReflectionService;
+import org.tdar.core.service.ReflectionHelper;
 
 public class LocalizationTestCase {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -48,7 +48,7 @@ public class LocalizationTestCase {
 
     @Test
     public void testLocalization() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        Set<Class<? extends Localizable>> findClassesThatImplement = ReflectionService.findClassesThatImplement(Localizable.class);
+        Set<Class<? extends Localizable>> findClassesThatImplement = ReflectionHelper.findClassesThatImplement(Localizable.class);
         Set<String> badKeys = new HashSet<>();
         for (Class<? extends Localizable> cls: findClassesThatImplement) {
             logger.debug("{} {}", cls, cls.getEnumConstants());
@@ -70,7 +70,7 @@ public class LocalizationTestCase {
 
     @Test
     public void testJavaLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
-        Set<Class<? extends LocalizableException>> findClassesThatImplement = ReflectionService.findClassesThatImplement(LocalizableException.class);
+        Set<Class<? extends LocalizableException>> findClassesThatImplement = ReflectionHelper.findClassesThatImplement(LocalizableException.class);
         for (Class<? extends LocalizableException> cls : findClassesThatImplement) {
             if (exceptionRegex.length() > 0) {
                 exceptionRegex += "|";

@@ -1,7 +1,10 @@
 package org.tdar.core.bean.resource;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +21,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.utils.MessageHelper;
 
 public class EmbargoITCase extends AbstractIntegrationTestCase {
@@ -28,9 +30,9 @@ public class EmbargoITCase extends AbstractIntegrationTestCase {
     
     @Test
     @Rollback
-    public void testEmbargoWarning() throws InstantiationException, IllegalAccessException {
+    public void testEmbargoWarning() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document doc = generateDocumentWithFileAndUser();
-        Document doc2 = generateDocumentWithFileAndUseDefaultUser();
+        Document doc2 = createAndSaveDocumentWithFileAndUseDefaultUser();
         long id = doc.getId();
 
         InformationResourceFile irf = doc.getFirstInformationResourceFile();
@@ -74,7 +76,7 @@ public class EmbargoITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testChangedEmbargoExpiry() throws InstantiationException, IllegalAccessException, IOException {
-        Document document = generateDocumentWithFileAndUseDefaultUser();
+        Document document = createAndSaveDocumentWithFileAndUseDefaultUser();
         InformationResourceFile file = document.getFirstInformationResourceFile();
         file.setRestriction(FileAccessRestriction.EMBARGOED_FIVE_YEARS);
         DateTime now = DateTime.now();

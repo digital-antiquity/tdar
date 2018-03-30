@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.struts.action.dataset.AbstractDatasetController;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 
 /**
@@ -34,17 +33,6 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
     private static final long serialVersionUID = 6576781526708737335L;
 
-    @Override
-    protected String save(Geospatial persistable) throws TdarActionException {
-        super.saveBasicResourceMetadata();
-
-        super.saveInformationResourceProperties();
-
-        handleUploadedFiles();
-
-        resolvePostSaveAction(getPersistable());
-        return SUCCESS;
-    }
 
     @Override
     public Class<Geospatial> getPersistableClass() {
@@ -65,7 +53,7 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
         // FIXME: these should come from the analyzer
         // Note: aux.xml and shp.xml omitted because we know view layer logic will accept any .xml (so will server, for that matter)
         String[] geoexts = { "shp", "shx", "dbf", "sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "xml", "cpg", "jpw", "jgw", "tfw",
-                "aux", "aux", "ovr", "rrd", "mxd", "lyr" }; //"adf",
+                "aux", "aux", "ovr", "rrd", "mxd", "lyr" }; // "adf",
         Collections.addAll(extensionsForTypes, geoexts);
 
         return extensionsForTypes;

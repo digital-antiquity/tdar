@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +16,16 @@ import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts_base.action.TdarActionException;
-import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts_base.action.TdarActionSupport;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
@@ -35,9 +35,9 @@ public class ResourceControllerITCase extends AbstractControllerITCase implement
     
     @Test
     @Rollback
-    public <R extends Resource> void testFindProject() {
+    public void testFindProject() {
         @SuppressWarnings("unchecked")
-        R r = (R) projectService.find(1L);
+        Project r = projectService.find(1L);
         logger.info("Resource: {} ", r);
         assertNotNull(r);
         r = resourceService.find(1L);
@@ -50,11 +50,12 @@ public class ResourceControllerITCase extends AbstractControllerITCase implement
      * @throws InstantiationException
      * @throws IllegalAccessException
      * @throws TdarActionException 
+     * @throws FileNotFoundException 
      */ 
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     @Rollback
-    public void testAvailableSpaceForBillingAccount() throws InstantiationException, IllegalAccessException, TdarActionException{
+    public void testAvailableSpaceForBillingAccount() throws InstantiationException, IllegalAccessException, TdarActionException, FileNotFoundException{
     	//Create a new billing account. 
         BillingActivityModel model = new BillingActivityModel();
         updateModel(model, false, false, true);
@@ -63,7 +64,7 @@ public class ResourceControllerITCase extends AbstractControllerITCase implement
         model.setVersion(100); // forcing the model to be the "latest"
         genericService.saveOrUpdate(model);
         
-        Document resource = generateDocumentWithFileAndUseDefaultUser();
+        Document resource = createAndSaveDocumentWithFileAndUseDefaultUser();
         Long resourceId = resource.getId();
         Long accountId  = account.getId();
         getLogger().debug("Available space is {} MB",account.getAvailableSpaceInMb());

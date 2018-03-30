@@ -18,7 +18,7 @@ import org.tdar.URLConstants;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
+import org.tdar.core.service.external.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
@@ -52,6 +52,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
 
     private String url;
     private String returnUrl;
+
     public String getReturnUrl() {
         return returnUrl;
     }
@@ -76,7 +77,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
         if (isAuthenticated()) {
             return TdarActionSupport.AUTHENTICATED;
         }
-        getLogger().debug("{} - {}", returnUrl, url );
+        getLogger().debug("{} - {}", returnUrl, url);
         return SUCCESS;
 
     }
@@ -102,8 +103,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
         return SUCCESS;
     }
 
-    @Actions(
-    {
+    @Actions({
             @Action(value = "login/process",
                     interceptorRefs = { @InterceptorRef("registrationStack") },
                     results = {
@@ -160,7 +160,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
         }
         parsedUrl = normalizedUrl;
 
-//        getLogger().info("url {} ", parsedUrl);
+        // getLogger().info("url {} ", parsedUrl);
         if (parsedUrl.contains("filestore/")) {
             getLogger().info("download redirect");
             if (parsedUrl.contains("/get?") || parsedUrl.contains("/get/") || parsedUrl.endsWith("/get")) {
@@ -168,9 +168,8 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
             } else if (parsedUrl.matches("^(.+)filestore/(\\d+)$")) {
                 parsedUrl = parsedUrl + "/confirm";
             }
-//            getLogger().info(parsedUrl);
+            // getLogger().info(parsedUrl);
         }
-
 
         getLogger().debug("Redirecting to return url: " + parsedUrl);
         return parsedUrl;

@@ -1,6 +1,7 @@
 package org.tdar.struts_base.result;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
@@ -30,7 +32,7 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
     public static final String UTF_8 = "UTF-8";
     public static final String CONTENT_TYPE = "application/json";
     public static final String DEFAULT_STREAM_PARAM = "jsonInputStream";
-    public static final String DEFAULT_OBJECT_PARAM = "jsonResult";
+    public static final String DEFAULT_OBJECT_PARAM = "resultObject";
     public static final String CALLBACK_PARAM = "callback";
     public static final String JSON_VIEW_PARAM = "jsonView";
 
@@ -69,45 +71,63 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
         this.invocation = invocation;
         InputStream inputStream = getInputStream();
         Object jsonObject_ = getJsonObjectValue();
-
-        if (inputStream == null && jsonObject_ == null) {
+        Map<String,Object> errorResult = constructErrorObject(invocation);
+        
+        if (inputStream == null && jsonObject_ == null && MapUtils.isEmpty(errorResult)) {
             String msg = MessageHelper.getMessage("jsonDocumentResult.document_not_found", invocation.getInvocationContext().getLocale(),
                     Arrays.asList(stream).toArray());
             logger.error(msg);
             throw new IllegalArgumentException(msg);
         }
 
-        if (jsonObject_ != null) {
-            if (jsonObject_ instanceof Map && invocation.getAction() instanceof TdarActionSupport) {
-                TdarActionSupport tas = (TdarActionSupport) invocation.getAction();
-                Map<String, Object> result = (Map<String, Object>) jsonObject_;
-                Map<String, Object> errors = (Map<String, Object>) result.get(ERRORS_KEY);
-                if (errors == null) {
-                    errors = new HashMap<>();
-                    result.put(ERRORS_KEY, errors);
-                }
-
-                if (tas.hasActionErrors()) {
-                    List<String> actionErrors = new ArrayList<>();
-                    for (String actionError : tas.getActionErrors()) {
-                        actionErrors.add(tas.getText(actionError));
-                    }
-                    errors.put(ACTION_ERRORS, actionErrors);
-                }
-                if (tas.hasFieldErrors()) {
-                    errors.put(FIELD_ERRORS, tas.getFieldErrors());
-                }
+        if (!MapUtils.isEmpty(errorResult)) {
+            if (jsonObject_ == null) {
+                jsonObject_ = new HashMap<>();
             }
-
+            ((Map<String,Object>)jsonObject_).put(ERRORS_KEY, errorResult);
+            String jsonForStream = serializationService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
+            inputStream = new ByteArrayInputStream(jsonForStream.getBytes());
+            encodeAndRespond(inputStream);
+            return;
+        }
+        
+        if (jsonObject_ != null && inputStream == null) {
             String jsonForStream = serializationService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
             inputStream = new ByteArrayInputStream(jsonForStream.getBytes());
         }
 
+        encodeAndRespond(inputStream);
+    }
+
+    private void encodeAndRespond(InputStream inputStream) throws IOException {
         HttpServletResponse resp = ServletActionContext.getResponse();
         resp.setCharacterEncoding(UTF_8);
         resp.setStatus(getStatusCode());
         resp.setContentType(CONTENT_TYPE);
         IOUtils.copy(inputStream, resp.getOutputStream());
+    }
+
+    private HashMap<String, Object> constructErrorObject(ActionInvocation invocation) {
+        if (invocation.getAction() instanceof TdarActionSupport) {
+            TdarActionSupport tas = (TdarActionSupport) invocation.getAction();
+            HashMap<String, Object> errors = new HashMap<>();
+
+            if (tas.hasActionErrors()) {
+                List<String> actionErrors = new ArrayList<>();
+                for (String actionError : tas.getActionErrors()) {
+                    actionErrors.add(tas.getText(actionError));
+                }
+                errors.put(ACTION_ERRORS, actionErrors);
+            }
+            if (tas.hasFieldErrors()) {
+                errors.put(FIELD_ERRORS, tas.getFieldErrors());
+            }
+            if( MapUtils.isNotEmpty(errors)) {
+                logger.debug("errors: {}", errors);
+            }
+            return errors;
+        }
+        return null;
     }
 
     private String getCallbackValue() {

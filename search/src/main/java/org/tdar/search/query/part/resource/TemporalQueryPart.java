@@ -18,7 +18,7 @@ import com.opensymphony.xwork2.TextProvider;
 /**
  * 
  * $Id$
- * Search for a date range.  E.g. a matching Coverage Date
+ * Search for a date range. E.g. a matching Coverage Date
  * 
  * @author <a href="mailto:matt.cordial@asu.edu">Matt Cordial</a>
  * @version $Rev$

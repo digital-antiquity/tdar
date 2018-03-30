@@ -27,7 +27,7 @@
 
 
     <#assign rtLabel = resource.resourceType.label />
-    <#if namespace == '/batch'>
+    <#if namespace == '/batch' || namespace == '/bulk'>
         <#assign rtLabel = '' />
     </#if>
 
@@ -421,8 +421,25 @@
     <#if local_.footer?? && local_.footer?is_macro>
         <@local_.footer />
     </#if>
-
-
+<#if test>
+<!--
+Auth Info
+<ul>
+<#list persistable.authorizedUsers as user>
+  <li> ${user.user.id?c} | ${user.user.properName} | ${user.generalPermission}</li>
+</#list>
+<#list persistable.managedResourceCollections as share>
+    <li>${share.id?c} - ${share.name}
+    <ul>
+        <#list share.authorizedUsers as user>
+          <li> ${user.user.id?c} | ${user.user.properName} | ${user.generalPermission}</li>
+        </#list>
+    </ul>
+    </li>
+</#list>
+</ul>
+-->
+</#if>
 
 
 <script type='text/javascript'>

@@ -15,6 +15,10 @@ import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.HasAuthorizedUsers;
+import org.tdar.core.exception.TdarAuthorizationException;
+import org.tdar.core.service.RightsResolver;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -26,24 +30,22 @@ import org.tdar.utils.PersistableUtils;
 public class CollectionRightsComparator {
 
     private static final Logger logger = LoggerFactory.getLogger(CollectionRightsComparator.class);
-    private Set<AuthorizedUser> currentUsers;
-    private Set<AuthorizedUser> incomingUsers;
+    private Set<AuthorizedUser> currentUsers = new HashSet<>();
+    private Set<AuthorizedUser> incomingUsers = new HashSet<>();
 
     private List<AuthorizedUser> additions = new ArrayList<>();
     private List<AuthorizedUser> deletions = new ArrayList<>();
     private List<AuthorizedUser> changes = new ArrayList<>();
 
     public CollectionRightsComparator(Set<AuthorizedUser> currentUsers, Collection<AuthorizedUser> incomingUsers) {
-        this.currentUsers = new HashSet<>();
-        this.incomingUsers = new HashSet<>();
         if (CollectionUtils.isNotEmpty(currentUsers)) {
+            logger.debug("current users {}", currentUsers);
             this.currentUsers.addAll(currentUsers);
         }
         if (CollectionUtils.isNotEmpty(incomingUsers)) {
             this.incomingUsers.addAll(normalizeAuthorizedUsers(incomingUsers));
         }
     }
-
 
     /**
      * Remove entries from provided list of AuthorizedUsers that contain duplicate User values. Retained
@@ -81,6 +83,7 @@ public class CollectionRightsComparator {
         logger.debug("outgoing" + authorizedUsers);
         return authorizedUsers;
     }
+
     public boolean rightsDifferent() {
         Map<Long, String> userIdMap = new HashMap<>();
         // iterate through current users, add them to the map
@@ -100,7 +103,7 @@ public class CollectionRightsComparator {
             addRemoveMap(userIdMap, user, true);
         }
 
-        //iterate through the incoming list
+        // iterate through the incoming list
         for (AuthorizedUser user : incomingUsers) {
             if (user == null || PersistableUtils.isNullOrTransient(user.getUser())) {
                 continue;
@@ -126,7 +129,7 @@ public class CollectionRightsComparator {
                     continue;
                 }
 
-                if (Objects.equals(user.getUser().getId(),id)) {
+                if (Objects.equals(user.getUser().getId(), id)) {
                     getDeletions().add(user);
                 }
             }
@@ -150,7 +153,7 @@ public class CollectionRightsComparator {
         Long id = user.getUser().getId();
         String compareKey = getCompareKey(user);
         if (add) {
-            //if we're adding, insert into the map
+            // if we're adding, insert into the map
             map.put(id, compareKey);
         } else {
             // try and get the permissions from the map
@@ -197,6 +200,59 @@ public class CollectionRightsComparator {
 
     public void setChanges(List<AuthorizedUser> changes) {
         this.changes = changes;
+    }
+
+    public void makeChanges(RightsResolver rco, HasAuthorizedUsers account, TdarUser authenticatedUser) {
+
+        if (!rco.canModifyUsersOn(account)) {
+            rco.logDebug(authenticatedUser, null);
+            throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
+        }
+
+        for (AuthorizedUser user : getDeletions()) {
+            account.getAuthorizedUsers().remove(user);
+        }
+
+        handleDifferences(account, authenticatedUser, rco);
+
+        for (AuthorizedUser user : getAdditions()) {
+            if (rco.hasPermissionsEscalation(user)) {
+                rco.logDebug(authenticatedUser, user);
+                throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
+            }
+
+            if (PersistableUtils.isNullOrTransient(user.getCreatedBy())) {
+                user.setCreatedBy(authenticatedUser);
+            }
+            account.getAuthorizedUsers().add(user);
+        }
+    }
+
+    public void handleDifferences(HasAuthorizedUsers resource, TdarUser actor, RightsResolver rco) {
+        if (CollectionUtils.isNotEmpty(getChanges())) {
+            Map<Long, AuthorizedUser> idMap2 = null;
+
+            Map<Long, AuthorizedUser> idMap = PersistableUtils.createIdMap(resource.getAuthorizedUsers());
+            for (AuthorizedUser user : getChanges()) {
+                AuthorizedUser actual = idMap.get(user.getId());
+                if (actual == null) {
+                    // it's possible that the authorizedUserId was not passed back from the client
+                    // if so, build a secondary map using the TdarUser (authorizedUser.user) id.
+                    if (idMap2 == null) {
+                        idMap2 = new HashMap<>();
+                        for (AuthorizedUser au : resource.getAuthorizedUsers()) {
+                            idMap2.put(au.getUser().getId(), au);
+                        }
+                    }
+
+                    actual = idMap2.get(user.getUser().getId());
+                    logger.debug("actual was null, now: {}", actual);
+                }
+                rco.checkEscalation(actor, user);
+                actual.setGeneralPermission(user.getGeneralPermission());
+                actual.setDateExpires(user.getDateExpires());
+            }
+        }
     }
 
 }

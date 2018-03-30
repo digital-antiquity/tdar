@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.openqa.selenium.firefox.FirefoxOptions.FIREFOX_OPTIONS;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -71,7 +70,6 @@ import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -83,7 +81,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
@@ -236,6 +234,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     @Before
     public void beforeTest() throws IOException {
+        System.setProperty("java.awt.headless", "true");
         if (quitBrowserBetweenTests) {
             initBrowser();
         }
@@ -317,6 +316,7 @@ public abstract class AbstractSeleniumWebITCase {
                 options.addCapabilities(caps);
                 // profile.setPreference("browser.download.dir","c:\\downloads");
                 rawDriver = new FirefoxDriver(options);
+
 
                 break;
             case CHROME:
@@ -401,8 +401,8 @@ public abstract class AbstractSeleniumWebITCase {
             ;
         } catch (UnhandledAlertException uae) {
             logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
-            logout();
             driver.switchTo().alert().accept();
+            logout();
             driver.get("about://");
             ;
         } catch (Throwable ex) {
@@ -1417,7 +1417,7 @@ public abstract class AbstractSeleniumWebITCase {
         return true;
     }
 
-    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, GeneralPermissions permissions) {
+    public void addAuthuser(String nameField, String selectField, String name, String email, String selector, Permissions permissions) {
 
         WebElement blankField = find(By.name(nameField)).first();
         if (!selectAutocompleteValue(blankField, name, email, selector)) {
@@ -1471,7 +1471,6 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public String switchToWindow(String url) {
-        // for 10 seconds see if the window size is > 1, then try and find the associated window
         for (int i=0; i < 10; i++) {
             waitFor(1);
             if (getDriver().getWindowHandles().size() > 1) {

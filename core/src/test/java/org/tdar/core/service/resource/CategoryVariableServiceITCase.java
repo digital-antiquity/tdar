@@ -77,7 +77,7 @@ public class CategoryVariableServiceITCase extends AbstractIntegrationTestCase {
         allCats.get(0).getSynonyms().add("test");
         allCats.get(0).getSynonyms().add("other");
         allCats.get(0).getSynonyms().add("another");
-        categoryVariableService.saveOrUpdate(allCats.get(0));
+        genericService.saveOrUpdate(allCats.get(0));
         List<String> synonyms = new ArrayList<String>();
         allCats = categoryVariableService.findAll();
         logger.info("{}", allCats);

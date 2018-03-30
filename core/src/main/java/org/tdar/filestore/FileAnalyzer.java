@@ -146,7 +146,6 @@ public class FileAnalyzer {
 
     }
 
-
     @Autowired
     public void setWorkflows(List<Workflow> workflows) {
         if (CollectionUtils.isEmpty(workflows)) {
@@ -185,21 +184,21 @@ public class FileAnalyzer {
      * file is processed separately
      */
     public void processFiles(List<InformationResourceFileVersion> filesToProcess, boolean compositeFilesEnabled) throws FileNotFoundException, IOException {
-            if (CollectionUtils.isEmpty(filesToProcess)) {
-                return;
-            }
+        if (CollectionUtils.isEmpty(filesToProcess)) {
+            return;
+        }
 
-            if (compositeFilesEnabled) {
-                processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
-            } else {
-                for (InformationResourceFileVersion version : filesToProcess) {
-                    if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
-                        // If we are re-processing, the transient file might not exist.
-                        version.setTransientFile(CONFIG.getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
-                    }
-                    processFile(version);
+        if (compositeFilesEnabled) {
+            processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
+        } else {
+            for (InformationResourceFileVersion version : filesToProcess) {
+                if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
+                    // If we are re-processing, the transient file might not exist.
+                    version.setTransientFile(CONFIG.getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
                 }
+                processFile(version);
             }
         }
+    }
 
 }

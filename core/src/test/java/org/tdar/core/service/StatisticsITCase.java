@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
@@ -21,9 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
@@ -39,6 +38,7 @@ import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.StatsResultObject;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.processes.daily.DailyStatisticsUpdate;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
@@ -58,7 +58,9 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     @Autowired
     private EntityService entityService;
     @Autowired
-    private StatisticService statisticService;
+    private StatisticsService statisticService;
+    @Autowired
+    private DatasetDao datasetDao;
     @Autowired
     private AggregateStatisticsDao aggregateStatisticsDao;
 
@@ -76,11 +78,11 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     public void testBasicStats() {
         Document document = setupDacumentWithStats();
         // should only catch 1 day(today) beacause the rest aren't in the agg stats table yet
-        Number count = datasetService.getDao().getAccessCount(document);
+        Number count = datasetDao.getAccessCount(document);
         assertEquals(1l, count.longValue());
         dailyTask.execute();
         genericService.synchronize();
-        count = datasetService.getDao().getAccessCount(document);
+        count = datasetDao.getAccessCount(document);
         assertTrue(2L <= count.longValue());
     }
 
@@ -90,7 +92,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     public void testResourceUsageStatsPage() throws IOException {
         Document document = setupDacumentWithStats();
         // should only catch 1 day(today) beacause the rest aren't in the agg stats table yet
-        Number count = datasetService.getDao().getAccessCount(document);
+        Number count = datasetDao.getAccessCount(document);
         assertEquals(1l, count.longValue());
         dailyTask.execute();
         genericService.synchronize();
@@ -145,12 +147,12 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testUsageStatsCollection() {
         Document document = setupDacumentWithStats();
-        SharedCollection col = new SharedCollection();
+        ResourceCollection col = new ResourceCollection();
         col.setName("test");
         col.setDescription("test");
         col.markUpdated(getAdminUser());
-        col.getResources().add(document);
-        document.getSharedCollections().add(col);
+        col.getManagedResources().add(document);
+        document.getManagedResourceCollections().add(col);
         genericService.saveOrUpdate(col);
         genericService.saveOrUpdate(document);
         dailyTask.execute();
@@ -202,7 +204,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
-    public void testStats() throws InstantiationException, IllegalAccessException {
+    public void testStats() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Number docs = resourceService.countActiveResources(ResourceType.DOCUMENT);
         Number datasets = resourceService.countActiveResources(ResourceType.DATASET);
         Number images = resourceService.countActiveResources(ResourceType.IMAGE);
@@ -218,7 +220,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         createAndSaveNewInformationResource(Ontology.class);
         createAndSaveNewInformationResource(Geospatial.class);
         createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewUser());
-        generateDocumentWithFileAndUseDefaultUser();
+        createAndSaveDocumentWithFileAndUseDefaultUser();
         processingTask.execute();
         genericService.synchronize();
 

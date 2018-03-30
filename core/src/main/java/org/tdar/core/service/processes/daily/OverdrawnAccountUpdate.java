@@ -1,9 +1,7 @@
 package org.tdar.core.service.processes.daily;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
@@ -14,6 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
@@ -70,25 +69,23 @@ public class OverdrawnAccountUpdate extends AbstractScheduledBatchProcess<Billin
 
     @Override
     public void execute() {
+    	String adminEmail = getTdarConfiguration().getSystemAdminEmail();
         List<BillingAccount> accounts = genericDao.findAll(getPersistentClass(), getNextBatch());
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("accounts", accounts);
-        Email email = new Email();
-        email.setSubject(SUBJECT);
+        
+        Email email = emailService.createMessage(EmailType.ADMIN_OVERDRAWN_NOTIFICATION, adminEmail);
+        email.addData("accounts", accounts);
         email.setUserGenerated(false);
+
         logger.debug("sending admin email");
-        emailService.queueWithFreemarkerTemplate("overdrawn-admin.ftl", map, email);
-        logger.debug("sending user email(s)");
+        emailService.renderAndQueueMessage(email);
+        
+        logger.debug("sending {} user email(s)", accounts.size());
         for (BillingAccount account : accounts) {
-            Email email_ = new Email();
-            email_.setSubject(SUBJECT);
+        	//These messages should be going to the users, but there was no email address specified previously?
+            Email email_ = emailService.createMessage(EmailType.OVERDRAWN_NOTIFICATION, adminEmail);
             email_.setUserGenerated(false);
-            Map<String, Object> map_ = new HashMap<String, Object>();
-            map_.put("account", account);
-            map_.put("acronym", CONFIG.getSiteAcronym());
-            map_.put("baseUrl", CONFIG.getBaseUrl());
-            emailService.queueWithFreemarkerTemplate("overdrawn-user.ftl", map_, email_);
-            
+            email_.addData("account", account);
+            emailService.renderAndQueueMessage(email_);
         }
     }
 

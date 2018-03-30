@@ -1,16 +1,11 @@
 package org.tdar.struts.action.admin;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -18,19 +13,17 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.service.ActivityManager;
-import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.AsynchronousProcessManager;
+import org.tdar.core.service.AsynchronousStatus;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.utils.Pair;
-import org.tdar.utils.activity.Activity;
+import org.tdar.struts_base.result.HasJsonDocumentResult;
 import org.tdar.utils.activity.IgnoreActivity;
 
 @Component
@@ -38,26 +31,20 @@ import org.tdar.utils.activity.IgnoreActivity;
 @ParentPackage("secured")
 @Namespace("/admin/searchindex")
 @RequiresTdarUserGroup(TdarGroup.TDAR_ADMIN)
-public class BuildSearchIndexController extends AbstractAuthenticatableAction implements AsyncUpdateReceiver {
+public class BuildSearchIndexController extends AbstractAuthenticatableAction implements HasJsonDocumentResult {
 
     private static final long serialVersionUID = -8927970945627420725L;
 
-    private int percentDone = -1;
-    private String phase = "Initializing";
     private String callback;
     private boolean asyncSave = true;
     private boolean forceClear = false;
-    private LinkedList<Throwable> errors = new LinkedList<>();
 
     private List<LookupSource> indexesToRebuild = new ArrayList<>();
 
     @Autowired
     private transient SearchIndexService searchIndexService;
 
-    @Autowired
-    private transient SerializationService serializationService;
-
-    private InputStream jsonInputStream;
+    private AsynchronousStatus asyncActivity = new AsynchronousStatus(AsynchronousStatus.INDEXING_EXTERNAL);
 
     @IgnoreActivity
     @Action(value = "buildIndex", results = {
@@ -72,22 +59,17 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
 
             getLogger().info("to reindex: {}", toReindex);
             TdarUser person = getAuthenticatedUser();
-
+            AsynchronousProcessManager.getInstance().addActivityToQueue(asyncActivity);
             getLogger().info("reindexing");
             if (isAsyncSave()) {
                 getLogger().info("reindexing async");
-                searchIndexService.indexAllAsync(null, toReindex, person);
+                searchIndexService.indexAllAsync(asyncActivity, toReindex, person);
             } else {
                 getLogger().info("reindexing sync");
-                searchIndexService.indexAll(this, toReindex, person);
+                searchIndexService.indexAll(asyncActivity, toReindex, person);
             }
         }
-        getLogger().info("return");
-        Map<String, Object> map = new HashMap<>();
-        map.put("phase", phase);
-        map.put("percentDone", percentDone);
-        getLogger().debug("phase: {} [{}%]", phase, percentDone);
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(map, null, callback).getBytes()));
+        getLogger().info("return: {}", asyncActivity);
         return SUCCESS;
     }
 
@@ -96,17 +78,20 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
     @PostOnly
     @HttpForbiddenErrorResponseOnly
     public String checkStatusAsync() {
-        Activity activity = ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME);
+        AsynchronousStatus activity = AsynchronousProcessManager.getInstance().findActivity(AsynchronousStatus.INDEXING_EXTERNAL);
         if (activity != null) {
-            phase = activity.getMessage();
-            percentDone = activity.getPercentComplete().intValue();
+            asyncActivity = activity;
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("phase", phase);
-        map.put("percentDone", percentDone);
-        // getLogger().debug("phase: {} [{}%]", phase, percentDone);
-        setJsonInputStream(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(map, null, callback).getBytes()));
+
         return SUCCESS;
+    }
+
+    @Override
+    public Object getResultObject() {
+        if (asyncActivity != null && StringUtils.isNotBlank(asyncActivity.getMessage())) {
+            getLogger().debug("getResultObject:{} - {}", asyncActivity.getMessage(), asyncActivity.getPercentComplete());
+        }
+        return asyncActivity;
     }
 
     @Action(value = "build", results = { @Result(name = SUCCESS, location = "build.ftl") })
@@ -122,17 +107,6 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
         return SUCCESS;
     }
 
-    @Override
-    public void setPercentComplete(float pct) {
-        percentDone = pct < 1f ? pct > 0 ? (int) (pct * 100) : 0 : 100; // this is so wrong, but I couldn't resist
-    }
-
-    @Override
-    public void setStatus(String status) {
-        // getLogger().debug("indexing status: {}", status);
-        this.phase = "Current Status: " + status;
-    }
-
     public String getCallback() {
         return callback;
     }
@@ -141,75 +115,12 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
         this.callback = callback;
     }
 
-    @Override
-    public void addError(Throwable t) {
-        setStatus(t.getMessage());
-        errors.addFirst(t);
-        getLogger().error(t.getMessage(), t);
-    }
-
-    @Override
-    public float getPercentComplete() {
-        return percentDone;
-    }
-
-    @Override
-    public String getStatus() {
-        return phase;
-    }
-
-    @Override
-    public void setDetails(List<Pair<Long, String>> details) {
-        // we ignore details for now
-    }
-
-    @Override
-    public void addDetail(Pair<Long, String> detail) {
-        // we ignore details for now
-    }
-
-    @Override
-    public List<Pair<Long, String>> getDetails() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public List<String> getAsyncErrors() {
-        List<String> ers = new ArrayList<>();
-        for (Throwable t : errors) {
-            ers.add(t.getLocalizedMessage());
-        }
-        return ers;
-    }
-
-    @Override
-    public List<String> getHtmlAsyncErrors() {
-        List<String> ers = new ArrayList<>();
-        for (Throwable t : errors) {
-            ers.add("<br />" + t.getLocalizedMessage());
-        }
-        return ers;
-    }
-
-    @Override
-    public void setCompleted() {
-        setStatus("Complete");
-        setPercentComplete(100f);
-
-    }
-
-    @Override
-    public void update(float percent, String status) {
-        setStatus(status);
-        setPercentComplete(percent);
-    }
-
     public List<LookupSource> getAllSources() {
         return Arrays.asList(LookupSource.values());
     }
 
     public boolean isAlreadyRunning() {
-        return ActivityManager.getInstance().findActivity(SearchIndexService.BUILD_LUCENE_INDEX_ACTIVITY_NAME) == null;
+        return AsynchronousProcessManager.getInstance().findActivity(AsynchronousStatus.INDEXING) != null;
     }
 
     public List<LookupSource> getIndexesToRebuild() {
@@ -218,14 +129,6 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
 
     public void setIndexesToRebuild(List<LookupSource> indexesToRebuild) {
         this.indexesToRebuild = indexesToRebuild;
-    }
-    
-    public InputStream getJsonInputStream() {
-        return jsonInputStream;
-    }
-
-    public void setJsonInputStream(InputStream jsonForStream) {
-        this.jsonInputStream = jsonForStream;
     }
 
     public boolean isAsyncSave() {

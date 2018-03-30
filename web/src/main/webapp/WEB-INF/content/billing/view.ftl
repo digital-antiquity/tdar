@@ -158,15 +158,10 @@
 
 <h3>Users who can charge to this account</h3>
 <table class="tableFormat table table-bordered">
-    <tr>
-        <td colspan="2">
-            <a href="<@s.url value="/browse/creators/${account.owner.id?c}"/>">${account.owner.properName}</a> (owner)
-        </td>
-    </tr>
-    <#list account.authorizedMembers as member>
+    <#list account.authorizedUsers as member>
         <tr>
-            <td><a href="<@s.url value="/browse/creators/${member.id?c}"/>">${member.properName}</a></td>
-            <td>${member.email!""}</td>
+            <td><a href="<@s.url value="/browse/creators/${member.user.id?c}"/>">${member.user.properName}</a></td>
+            <td>${member.user.email!""}</td>
         </tr>
     </#list>
 </table>

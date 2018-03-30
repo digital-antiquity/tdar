@@ -7,8 +7,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
@@ -24,10 +23,10 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
     @Test
     @Rollback
     public void testAPIController() throws Exception {
-        SharedCollection rc;
+        ResourceCollection rc;
         String uploadStatus;
         CollectionAPIAction controller = setupParent();
-        rc = genericService.find(SharedCollection.class, controller.getId());
+        rc = genericService.find(ResourceCollection.class, controller.getId());
 //        rc.setOrientation(DisplayOrientation.LIST);
         rc.setName("another name");
         String childXml = serializationService.convertToXML(rc);
@@ -42,18 +41,18 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
         logger.debug("{}", controller.getImportedRecord());
         childXml = serializationService.convertToXML(controller.getImportedRecord());
         logger.info(childXml);
-        assertEquals("another name", ((VisibleCollection) controller.getImportedRecord()).getName());
+        assertEquals("another name", controller.getImportedRecord().getName());
     }
 
     @Test
     @Rollback
     public void testAPIControllerChange() throws Exception {
-        SharedCollection rc;
+        ResourceCollection rc;
         String uploadStatus;
         CollectionAPIAction controller = setupParent();
 
-        rc = new SharedCollection("child", "child description",  getBasicUser());
-        rc.setParent(genericService.find(SharedCollection.class, controller.getId()));
+        rc = new ResourceCollection("child", "child description",  getBasicUser());
+        rc.setParent(genericService.find(ResourceCollection.class, controller.getId()));
 //        rc.setOrientation(DisplayOrientation.GRID);
         String childXml = serializationService.convertToXML(rc);
         rc = null;
@@ -70,7 +69,7 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
     }
 
     private CollectionAPIAction setupParent() throws Exception {
-        SharedCollection rc = new SharedCollection("parent", "parent description", getBasicUser());
+        ResourceCollection rc = new ResourceCollection("parent", "parent description", getBasicUser());
 //        rc.setOrientation(DisplayOrientation.GRID);
         String docXml = serializationService.convertToXML(rc);
         logger.info(docXml);
@@ -93,7 +92,7 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
     @Ignore
     @Rollback
     public void testAPIControllerJSON() throws Exception {
-        SharedCollection rc = new SharedCollection("parent", "parent description",  getBasicUser());
+        ResourceCollection rc = new ResourceCollection("parent", "parent description",  getBasicUser());
 //        rc.setOrientation(DisplayOrientation.GRID);
         String docXml = serializationService.convertToJson(rc);
         logger.info(docXml);
@@ -110,8 +109,8 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
         docXml = serializationService.convertToJson(controller.getImportedRecord());
         logger.info(docXml);
 
-        rc = new SharedCollection("child", "child description",  getBasicUser());
-        rc.setParent(genericService.find(SharedCollection.class, controller.getId()));
+        rc = new ResourceCollection("child", "child description",  getBasicUser());
+        rc.setParent(genericService.find(ResourceCollection.class, controller.getId()));
 //        rc.setOrientation(DisplayOrientation.GRID);
         String childXml = serializationService.convertToJson(rc);
         rc = null;

@@ -23,14 +23,14 @@ public class UserNotificationSeleniumWebITCase extends AbstractEditorSeleniumWeb
         clearPageCache();
         logger.debug(getText());
         // we were getting an alert, likely when the browser moved away from the page, prior to a "success" being returned
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         assertFalse(getText().contains(RELEASE_ANNOUNCE));
         logout();
         loginEditor();
         clearPageCache();
         logger.debug(getText());
         // we were getting an alert, likely when the browser moved away from the page, prior to a "success" being returned
-        Thread.sleep(2000);
+        Thread.sleep(1000);
         assertFalse(getText().contains(RELEASE_ANNOUNCE));
     }
 

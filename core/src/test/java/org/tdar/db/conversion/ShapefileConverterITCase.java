@@ -53,7 +53,7 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         wc.setTargetDatabase(tdarDataImportDatabase);
         String name = "Occ_3l";
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
-        Geospatial doc = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
+        Geospatial doc = generateAndStoreVersion(Geospatial.class, name + ".shp", TestConstants.getFile(string + ".shp"), store);
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
         wc.getOriginalFiles().add(originalFile);
 

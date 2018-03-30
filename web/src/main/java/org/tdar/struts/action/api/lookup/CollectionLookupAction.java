@@ -10,9 +10,9 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
@@ -39,11 +39,11 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
     private transient CollectionSearchService collectionSearchService;
 
     private String term;
-    private GeneralPermissions permission;
-    private CollectionType type;
+    private Permissions permission;
+    private CollectionResourceSection type;
 
     @Action(value = "collection", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
+            @Result(name = SUCCESS, type = JSONRESULT)
     })
     public String lookupResourceCollection() throws SolrServerException, IOException {
         setMinLookupLength(0);
@@ -68,11 +68,11 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
         return SUCCESS;
     }
 
-    public GeneralPermissions getPermission() {
+    public Permissions getPermission() {
         return permission;
     }
 
-    public void setPermission(GeneralPermissions permission) {
+    public void setPermission(Permissions permission) {
         this.permission = permission;
     }
 
@@ -84,11 +84,11 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
         this.term = term;
     }
 
-    public CollectionType getType() {
+    public CollectionResourceSection getType() {
         return type;
     }
 
-    public void setType(CollectionType type) {
+    public void setType(CollectionResourceSection type) {
         this.type = type;
     }
 

@@ -30,15 +30,12 @@ import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.purl.dc.terms.MESH;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -46,7 +43,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -62,8 +59,6 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceAnnotation;
-import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.EntityService;
@@ -83,10 +78,9 @@ import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.search.service.query.CreatorSearchInterface;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.StringPair;
 import org.tdar.utils.range.DateRange;
 
 public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
@@ -94,7 +88,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
 
     @Autowired
-    CreatorSearchInterface<Creator<?>> creatorSearchService;
+    CreatorSearchService<Creator<?>> creatorSearchService;
 
     @Autowired
     ResourceService resourceService;
@@ -800,7 +794,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     public void testSparseObjectLoading() throws SearchException, SearchIndexException, IOException, ParseException {
         String colname = "my fancy collection";
         Project proj = createAndSaveNewResource(Project.class);
-        SharedCollection coll = createAndSaveNewResourceCollection(colname);
+        ResourceCollection coll = createAndSaveNewResourceCollection(colname);
         searchIndexService.index(coll);
         searchIndexService.index(proj);
 
@@ -815,7 +809,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         // skeleton lists should have been loaded w/ sparse records...
         assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
         logger.debug("c's:{}",sp.getCollections());
-        assertEquals(colname, ((VisibleCollection)sp.getShares().get(1)).getName());
+        assertEquals(colname, ((ResourceCollection)sp.getShares().get(1)).getName());
     }
 
     @Test
@@ -823,24 +817,28 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
     public void testSparseObjectNameLoading() throws SearchException, SearchIndexException, IOException, ParseException {
         String colname = "my fancy collection";
+        logger.debug("self assignable to self? {}",ResourceCollection.class.isAssignableFrom(ResourceCollection.class));
         Project proj = createAndSaveNewResource(Project.class);
-        SharedCollection coll = createAndSaveNewResourceCollection(colname);
+        ResourceCollection coll = createAndSaveNewResourceCollection(colname);
         searchIndexService.index(coll);
-        proj.getSharedCollections().add(coll);
+        proj.getManagedResourceCollections().add(coll);
+        coll.getManagedResources().add(proj);
+        genericService.saveOrUpdate(proj);
+        genericService.saveOrUpdate(coll);
         searchIndexService.index(proj);
 
         // simulate searchParamerters that represents a project at [0] and collection at [1]
         // sp.getProjects().add(new Project(null,proj.getName()));
         // sp.getCollections().add(null); // [0]
         SearchParameters sp = new SearchParameters();
-        sp.getShares().add(new SharedCollection(colname,null, null)); // [1]
+        sp.getShares().add(new ResourceCollection(colname,null, null)); // [1]
 
         SearchResult<Resource> result = doSearch(null, null, sp, null);
 
         
         // skeleton lists should have been loaded w/ sparse records...
         // assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
-        assertEquals(colname, ((VisibleCollection)sp.getShares().get(0)).getName());
+        assertEquals(colname, ((ResourceCollection)sp.getShares().get(0)).getName());
         assertTrue(result.getResults().contains(proj));
         // assertEquals(proj.getId(), sp.getProjects().get(0).getId());
         // assertEquals(coll.getId(), sp.getCollections().get(1).getId());
@@ -895,8 +893,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Rollback
     public void testRefineSearchWithSparseCollection() throws ParseException, SearchException, SearchIndexException, IOException {
 
-        ListCollection rc = createAndSaveNewResourceCollection("Mega Collection", ListCollection.class);
-        ListCollection sparseCollection = new ListCollection();
+        ResourceCollection rc = createAndSaveNewResourceCollection("Mega Collection");
+        ResourceCollection sparseCollection = new ResourceCollection();
         evictCache();
         long collectionId = rc.getId();
         assertThat(collectionId, greaterThan(0L));
@@ -905,7 +903,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         sp.getCollections().add(sparseCollection);
         SearchResult<Resource> result = doSearch(null, null, sp, null);
 
-        assertThat(((VisibleCollection)sp.getCollections().get(0)).getTitle(), is("Mega Collection"));
+        assertThat((sp.getCollections().get(0)).getTitle(), is("Mega Collection"));
     }
 
     private void assertOnlyResultAndProject(SearchResult<Resource> result, InformationResource informationResource) {
@@ -998,14 +996,14 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Test
     @Rollback(true)
     public void testSelectedResourceLookup() throws SearchException, SearchIndexException, IOException, ParseException {
-        SharedCollection collection = new SharedCollection("test", "test", getUser());
+        ResourceCollection collection = new ResourceCollection("test", "test", getUser());
         collection.markUpdated(getUser());
         Ontology ont = createAndSaveNewInformationResource(Ontology.class);
         genericService.saveOrUpdate(collection);
-        collection.getResources().add(ont);
+        collection.getManagedResources().add(ont);
         // babysitting bidirectional relationshi[
         genericService.saveOrUpdate(collection);
-        ont.getSharedCollections().add(collection);
+        ont.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(ont);
         searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters params = new ReservedSearchParameters();
@@ -1026,11 +1024,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     public void testModifyEditor() throws SearchException, SearchIndexException, IOException, ParseException {
         ReservedSearchParameters params = new ReservedSearchParameters();
 
-        SearchResult<Resource> result = performSearch("", null, null, null, null, getEditorUser(), params, GeneralPermissions.MODIFY_METADATA, 1000);
+        SearchResult<Resource> result = performSearch("", null, null, null, null, getEditorUser(), params, Permissions.MODIFY_METADATA, 1000);
         logger.debug("results:{}", result.getResults());
         List<Long> ids = PersistableUtils.extractIds(result.getResults());
 
-        result = performSearch("", null, null, null, null, getAdminUser(), params, GeneralPermissions.MODIFY_METADATA, 1000);
+        result = performSearch("", null, null, null, null, getAdminUser(), params, Permissions.MODIFY_METADATA, 1000);
         logger.debug("results:{}", result.getResults());
         List<Long> ids2 = PersistableUtils.extractIds(result.getResults());
         Assert.assertArrayEquals(ids.toArray(), ids2.toArray());

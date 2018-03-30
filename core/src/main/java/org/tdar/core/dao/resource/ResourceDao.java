@@ -27,12 +27,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -153,7 +152,7 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
     public ResourceType findResourceType(Number id) {
         Query<ResourceType> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_RESOURCETYPE);
         query.setParameter("id", id.longValue());
-        return  query.getSingleResult();
+        return query.getSingleResult();
     }
 
     @SuppressWarnings("rawtypes")
@@ -197,7 +196,7 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
                 BigInteger bigint = (BigInteger) objs[3];
                 ResourceType resourceType = ResourceType.valueOf((String) objs[1]);
                 String label = MessageHelper.getInstance().getText(resourceType.getPluralLocaleKey());
-                cache.add(new HomepageGeographicCache(code, resourceType, label ,count, bigint.longValue()));
+                cache.add(new HomepageGeographicCache(code, resourceType, label, count, bigint.longValue()));
                 if (!totals.containsKey(code)) {
                     totals.put(code, 0);
                 }
@@ -262,7 +261,7 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
     public ResourceTypeStatusInfo getResourceCountAndStatusForUser(Person p, List<ResourceType> types) {
         NativeQuery sqlQuery = NamedNativeQueries.generateDashboardGraphQuery(getCurrentSession());
         sqlQuery.setParameter("submitterId", p.getId());
-        sqlQuery.setParameter("effectivePermissions", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
+        sqlQuery.setParameter("effectivePermissions", Permissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         ResourceTypeStatusInfo info = new ResourceTypeStatusInfo();
         for (Object obj_ : sqlQuery.getResultList()) {
             Object[] objs = (Object[]) obj_;
@@ -282,7 +281,7 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
      * (a) find the random resource.id and (b) retrieve the resource
      */
     @SuppressWarnings({ "hiding", "unchecked" })
-    protected <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, List<VisibleCollection> collections,
+    protected <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, List<ResourceCollection> collections,
             Project project, int maxResults) {
         logger.trace("find random resource start");
 
@@ -500,9 +499,7 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
             clearId(ra);
             clearId(ra.getResourceAnnotationKey());
         });
-        
-        
-        
+
     }
 
 }

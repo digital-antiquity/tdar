@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -34,8 +36,11 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.JacksonUtils;
+import org.tdar.core.service.bulk.BulkUpdateReceiver;
 import org.tdar.junit.RunWithTdarConfiguration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebRequest;
@@ -49,8 +54,8 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
 
     @Test
-    public void testBulkUploadDups() {
-        File testImagesDirectory = new File(TestConstants.TEST_BULK_DIR + "/" + "TDAR-2380");
+    public void testBulkUploadDups() throws FileNotFoundException {
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_BULK_DIR , "TDAR-2380");
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
         testBulkUploadController("TDAR-2380/tdar-bulk-upload-template.xls", listFiles, null, false);
         logger.debug("--------------------------------------------------");
@@ -61,7 +66,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     @SuppressWarnings("unused")
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.CREDIT_CARD })
-    public void testValidBulkUpload() throws MalformedURLException {
+    public void testValidBulkUpload() throws MalformedURLException, FileNotFoundException {
         Map<String, String> extra = new HashMap<String, String>();
         String accountId = setupAccount(extra, 200, 20);
         extra.put("investigationTypeIds", "1");
@@ -72,7 +77,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put(PROJECT_ID_FIELDNAME, "3805");
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("resource creator is not"));
@@ -81,11 +86,11 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR })
     @Ignore
-    public void testExtraFile() throws MalformedURLException {
+    public void testExtraFile() throws MalformedURLException, FileNotFoundException {
         Map<String, String> extra = new HashMap<String, String>();
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = new ArrayList<File>(FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true));
-        listFiles.add(new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
+        listFiles.add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
         logger.debug(getPageBodyCode());
         assertTrue(getPageCode().contains(TestConstants.TEST_DOCUMENT_NAME));
@@ -94,7 +99,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     @SuppressWarnings("unused")
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-    public void testValidBulkUploadWithConfidentialSelfSimple() throws MalformedURLException {
+    public void testValidBulkUploadWithConfidentialSelfSimple() throws MalformedURLException, FileNotFoundException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             gotoPage(URLConstants.CART_ADD);
@@ -109,7 +114,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         Map<String, String> extra = new HashMap<String, String>();
         setupTestUserProxy(extra);
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest_simple.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("resource creator is not"));
@@ -127,12 +132,12 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     // @Ignore("dup")
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-    public void testValidBulkUploadWithDataset() throws MalformedURLException {
+    public void testValidBulkUploadWithDataset() throws MalformedURLException, FileNotFoundException {
         Map<String, String> extra = new HashMap<String, String>();
         String accountId = setupAccount(extra, 200, 20);
         setupTestUserProxy(extra);
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-        File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
+        File file = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
         assertTrue(file.exists());
         testBulkUploadController("dataset_manifest.xlsx", Arrays.asList(file), extra, true);
     }
@@ -140,7 +145,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     @SuppressWarnings("unused")
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-    public void testValidBulkUploadWithConfidentialSelf() throws MalformedURLException {
+    public void testValidBulkUploadWithConfidentialSelf() throws MalformedURLException, FileNotFoundException {
         Map<String, String> extra = new HashMap<String, String>();
         String accountId = setupAccount(extra, 200, 20);
 
@@ -154,7 +159,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put(PROJECT_ID_FIELDNAME, "3805");
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("resource creator is not"));
@@ -163,7 +168,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     @Test
     // RunWithTdarConfiguration.TDAR,
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-    public void testValidBulkUploadWithProject() throws MalformedURLException {
+    public void testValidBulkUploadWithProject() throws MalformedURLException, FileNotFoundException {
 
         String accountId = "";
         Map<String, String> extra = new HashMap<String, String>();
@@ -202,7 +207,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].west", "-71.41018867492676");
         extra.put(PROJECT_ID_FIELDNAME, projectId.toString());
         // extra.put("resource.inheritingInvestigationInformation","true");
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
         testBulkUploadController("image_manifest.xlsx", listFiles, extra, true);
         assertFalse(getPageCode().contains("could not save xml record"));
@@ -273,20 +278,28 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         loadStatusPage(statusPage);
         int count = 0;
         // fixme: parse this json and get the actual number,
-        while (!getPageCode().matches("(?s)(.*)percentDone\"(\\s*):(\\s*)100(.*)")) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                fail("InterruptedException during bulk upload.  sorry.");
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
+        try {
+            BulkUpdateReceiver readValue = mapper.readValue(getPageCode(), BulkUpdateReceiver.class);
+            if (readValue == null | readValue.getPercentComplete() < 100f) {
+                try {
+                    Thread.sleep(1000);
+                    loadStatusPage(statusPage);
+                    if (count == 100) {
+                        fail("we went through 1000 iterations of waiting for the upload to be imported... assuming something is wrong");
+                    }
+                    count++;
+                } catch (InterruptedException e) {
+                    fail("InterruptedException during bulk upload.  sorry.");
+                }
+                
             }
-            loadStatusPage(statusPage);
-            if (count == 100) {
-                fail("we went through 1000 iterations of waiting for the upload to be imported... assuming something is wrong");
+            if (expectSuccess && CollectionUtils.isNotEmpty(readValue.getAsyncErrors())) {
+                Assert.fail(getPageBodyCode());
             }
-            count++;
-        }// .contains("errors\":\"\"")
-        if (expectSuccess && !getPageCode().matches("(?s)(.*)errors\"(\\s*):(\\s*)\"\"(.*)")) {
-            Assert.fail(getPageBodyCode());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            fail(e1.getMessage());
         }
     }
 

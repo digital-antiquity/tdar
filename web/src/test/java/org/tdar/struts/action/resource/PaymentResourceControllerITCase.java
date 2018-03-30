@@ -23,13 +23,13 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
@@ -100,10 +100,10 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         genericService.saveOrUpdate(account);
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
-        SharedCollection rCollection = generateResourceCollection("test", "test", true,
-                Arrays.asList(new AuthorizedUser(getAdminUser(), getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
+        ResourceCollection rCollection = generateResourceCollection("test", "test", true,
+                Arrays.asList(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.MODIFY_METADATA)),
                 getAdminUser(), Arrays.asList(dataset), null);
-        dataset.getSharedCollections().add(rCollection);
+        dataset.getManagedResourceCollections().add(rCollection);
         dataset.setSubmitter(getBasicUser());
         genericService.saveOrUpdate(rCollection);
 
@@ -114,7 +114,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         genericService.refresh(ds);
         accountService.updateTransientAccountInfo(ds);
         logger.debug("accnt:{}", ds.getAccount());
-        assertNotEmpty("should have results", ds.getSharedCollections());
+        assertNotEmpty("should have results", ds.getManagedResourceCollections());
         ds = null;
         DatasetController dc = generateNewInitializedController(DatasetController.class, getBasicUser());
         dc.setId(id);
@@ -259,7 +259,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         // Account account = createAccount(getBasicUser());
         // d.setAccount(account);
         genericService.saveOrUpdate(d);
-        d.getAuthorizedUsers().add(new AuthorizedUser(d.getSubmitter(),d.getSubmitter(),GeneralPermissions.MODIFY_RECORD));
+        d.getAuthorizedUsers().add(new AuthorizedUser(d.getSubmitter(),d.getSubmitter(),Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(d);
         logger.info("account: {}", d.getAccount());
         setIgnoreActionErrors(true);
@@ -325,7 +325,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         controller.setId(id);
         controller.prepare();
         controller.edit();
-        File file = new File(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR + TestConstants.TEST_DOCUMENT_NAME);
         Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync = uploadFilesAsync(Arrays.asList(file));
         controller.setTicketId(uploadFilesAsync.getFirst().getId());
         controller.setFileProxies(uploadFilesAsync.getSecond());

@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
@@ -24,6 +23,7 @@ import org.tdar.core.service.ImportService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.api.AbstractApiController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
@@ -41,25 +41,32 @@ import com.opensymphony.xwork2.Preparable;
 @HttpsOnly
 public class CollectionAPIAction extends AbstractApiController implements Preparable {
 
+    private static final String SUCCESS_JSON = "success_json";
+    private static final String ERROR_JSON = "error_json";
+
     @Autowired
     private transient SerializationService serializationService;
 
     @Autowired
     private transient ImportService importService;
 
-    
     private ResourceCollection importedRecord;
     private String type = "xml";
+
     @Override
     public void prepare() throws Exception {
-        
+
     }
-    
+
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" }),
-                    @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
+                    @Result(name = SUCCESS, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR, type = TdarActionSupport.XMLDOCUMENT, params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = SUCCESS_JSON, type = TdarActionSupport.JSONRESULT,
+                            params = { "statusCode", "${status.httpStatusCode}" }),
+                    @Result(name = ERROR_JSON, type = TdarActionSupport.JSONRESULT,
+                            params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
     // @WriteableSession
@@ -76,11 +83,11 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
             if (getRecord().contains("<?xml")) {
                 setImportedRecord((ResourceCollection) serializationService.parseXml(new StringReader(getRecord())));
             } else {
-                setImportedRecord(serializationService.readObjectFromJson(getRecord(), ResourceCollection.class));
                 type = "json";
+                setImportedRecord(serializationService.readObjectFromJson(getRecord(), ResourceCollection.class));
             }
 
-            getXmlResultObject().setRecordId(getImportedRecord().getId());
+            getResultObject().setRecordId(getImportedRecord().getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
 
             ResourceCollection loadedRecord = importService.bringCollectionOntoSession(getImportedRecord(), authenticatedUser, true);
@@ -91,22 +98,26 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 setStatusMessage(StatusCode.CREATED, "created:" + loadedRecord.getId());
-                getXmlResultObject().setRecordId(loadedRecord.getId());
-                getXmlResultObject().setId(loadedRecord.getId());
+                getResultObject().setRecordId(loadedRecord.getId());
+                getResultObject().setId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
 
             String title = "no title";
-            if (loadedRecord instanceof VisibleCollection) {
-                title = ((VisibleCollection) loadedRecord).getTitle();
+            if (loadedRecord instanceof ResourceCollection) {
+                title = ((ResourceCollection) loadedRecord).getTitle();
             }
             logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), title);
 
-            getXmlResultObject().setStatusCode(statuscode);
-            getXmlResultObject().setStatus(getStatus().toString());
-            getXmlResultObject().setMessage(getErrorMessage());
+            getResultObject().setStatusCode(statuscode);
+            getResultObject().setStatus(getStatus().toString());
+            getResultObject().setMessage(getErrorMessage());
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
+            }
+
+            if (!"xml".equals(type)) {
+                return SUCCESS_JSON;
             }
 
             return SUCCESS;
@@ -118,6 +129,9 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
                 errors = new ArrayList<>(events);
 
                 errorResponse(StatusCode.BAD_REQUEST, errors, getErrorMessage(), null);
+                if (!"xml".equals(type)) {
+                    return ERROR_JSON;
+                }
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -136,15 +150,20 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
 
             if (e instanceof APIException) {
                 errorResponse(((APIException) e).getCode(), errors, e.getMessage(), stackTraces);
+                if (!"xml".equals(type)) {
+                    return ERROR_JSON;
+                }
+
                 return ERROR;
             }
         }
         errorResponse(StatusCode.UNKNOWN_ERROR, errors, getErrorMessage(), stackTraces);
+        if (!"xml".equals(type)) {
+            return ERROR_JSON;
+        }
         return ERROR;
 
     }
-
-
 
     public ResourceCollection getImportedRecord() {
         return importedRecord;
@@ -153,5 +172,5 @@ public class CollectionAPIAction extends AbstractApiController implements Prepar
     public void setImportedRecord(ResourceCollection importedRecord) {
         this.importedRecord = importedRecord;
     }
-    
+
 }

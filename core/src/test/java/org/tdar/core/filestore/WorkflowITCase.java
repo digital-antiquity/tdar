@@ -7,6 +7,7 @@
 package org.tdar.core.filestore;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,14 +40,14 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void test() throws InterruptedException {
+    public void test() throws InterruptedException, FileNotFoundException {
         // List<File>;
         final PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         final List<File> versions = new ArrayList<>();
-        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
-        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
-        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/5127663428_42ef7f4463_b.jpg"));
-        versions.add(new File(TestConstants.TEST_IMAGE_DIR, "/handbook_of_archaeology.jpg"));
+        versions.add(TestConstants.getFile(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon.tif"));
+        versions.add(TestConstants.getFile(TestConstants.TEST_IMAGE_DIR, "/sample_image_formats/grandcanyon_mac.tif"));
+        versions.add(TestConstants.getFile(TestConstants.TEST_IMAGE_DIR, "/5127663428_42ef7f4463_b.jpg"));
+        versions.add(TestConstants.getFile(TestConstants.TEST_IMAGE_DIR, "/handbook_of_archaeology.jpg"));
 
         AsynchTester[] testers = new AsynchTester[versions.size()];
         final FileAnalyzer analyzer = fileAnalyzer;

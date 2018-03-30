@@ -27,5 +27,4 @@ public interface SimpleSearchResultHandler {
      */
     int getRecordsPerPage();
 
-    
 }

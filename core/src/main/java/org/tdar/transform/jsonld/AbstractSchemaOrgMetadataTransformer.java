@@ -26,7 +26,8 @@ import org.tdar.core.service.UrlService;
 import org.tdar.utils.PersistableUtils;
 
 /**
- * Convert a persistable to a proper Schema.org / JSON LD String 
+ * Convert a persistable to a proper Schema.org / JSON LD String
+ * 
  * @author abrin
  *
  */
@@ -44,12 +45,10 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
     static final String TYPE = "@type";
     static final String ID = "@id";
     static final String PUBLISHER = "schema:publisher";
-    private List<Map<String,Object>> graph = new ArrayList<>();
+    private List<Map<String, Object>> graph = new ArrayList<>();
 
     final transient Logger logger = LoggerFactory.getLogger(getClass());
     static final long serialVersionUID = -5903659479081408357L;
-
-
 
     /*
      * the context section adds all of the prefixes and URIs for the various schema being processed.
@@ -66,11 +65,11 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
     }
 
     protected void addGraphSectionSpatial(Set<LatitudeLongitudeBox> llbs) {
-        List<Map<String,Object>> all = new ArrayList<>();
+        List<Map<String, Object>> all = new ArrayList<>();
         llbs.forEach(llb -> {
-        Map<String,Object> js = new HashMap<>();
+            Map<String, Object> js = new HashMap<>();
             js.put("tdar:id", llb.getId());
-            if (llb.getObfuscatedNorth() == null ) {
+            if (llb.getObfuscatedNorth() == null) {
                 llb.obfuscateAll();
             }
             js.put("schema:longitude", llb.getObfuscatedCenterLongitude());
@@ -88,17 +87,16 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
 
     private void appendIfNotEmpty(String nodeName, List<Map<String, Object>> all) {
         if (all.size() > 0) {
-            Map<String,Object> obj = new HashMap<>();
+            Map<String, Object> obj = new HashMap<>();
             obj.put(nodeName, all);
             getGraph().add(obj);
         }
     }
 
-    
     protected void addGraphSectionTemporal(Set<CoverageDate> coverages) {
-        List<Map<String,Object>> all = new ArrayList<>();
+        List<Map<String, Object>> all = new ArrayList<>();
         coverages.forEach(coverage -> {
-            Map<String,Object> js = new HashMap<>();
+            Map<String, Object> js = new HashMap<>();
             js.put("tdar:id", coverage.getId());
             js.put("tdar:start", coverage.getStartDate());
             js.put("tdar:end", coverage.getEndDate());
@@ -111,38 +109,38 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
     }
 
     /*
-     * a JSON LD object can have multiple "graphs" each graph with a unique name.  This section is for a set of similar keywords
+     * a JSON LD object can have multiple "graphs" each graph with a unique name. This section is for a set of similar keywords
      */
     @SuppressWarnings("unchecked")
     protected void addGraphSection(Set<? extends Keyword> keywords, String nodeName) {
-        List<Map<String,Object>> all = new ArrayList<>();
+        List<Map<String, Object>> all = new ArrayList<>();
         if (logger.isTraceEnabled()) {
             logger.trace("adding keywords:{}", keywords);
         }
         keywords.forEach(kwd -> {
-            Map<String,Object> js = new HashMap<>();
+            Map<String, Object> js = new HashMap<>();
             js.put("tdar:name", kwd.getLabel());
             js.put("tdar:id", kwd.getId());
             js.put("tdar:url", UrlService.absoluteUrl(kwd));
             kwd.getAssertions().forEach(map -> {
                 js.put(map.getRelationType().getJsonKey(), map.getRelation());
             });
-            
-            for (Keyword syn : (Set<Keyword>)kwd.getSynonyms()) {
+
+            for (Keyword syn : (Set<Keyword>) kwd.getSynonyms()) {
                 js.put(RelationType.HAS_VERSION.getJsonKey(), syn.getDetailUrl());
             }
-            
+
             all.add(js);
         });
         appendIfNotEmpty(nodeName, all);
-        
+
     }
 
     /*
      * Add a graph section for a resource
      */
     protected void addGraphSection(Resource r) {
-        Map<String,Object> jsonLd = new HashMap<>();
+        Map<String, Object> jsonLd = new HashMap<>();
         getGraph().add(jsonLd);
         jsonLd.put(NAME, r.getTitle());
         jsonLd.put(SCHEMA_DESCRIPTION, r.getDescription());
@@ -252,7 +250,7 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
                     }
                 }
             }
-        }        
+        }
     }
 
     /*
@@ -264,11 +262,11 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
         }
     }
 
-    public List<Map<String,Object>> getGraph() {
+    public List<Map<String, Object>> getGraph() {
         return graph;
     }
 
-    public void setGraph(List<Map<String,Object>> graph) {
+    public void setGraph(List<Map<String, Object>> graph) {
         this.graph = graph;
     }
 

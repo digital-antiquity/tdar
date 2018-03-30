@@ -92,7 +92,7 @@
                 <#else>
                 <h3>
                 <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
-                <@link "share" "Collection"/></h3>
+                <@link "collection" "Collection"/></h3>
                 In ${siteAcronym}, a collection is an organizational tool with two purposes. The first is to allow contributors and users to create groups and
                 hierarchies of resources in any way they find useful. A secondary use of collections allows users to easily administer view and edit
                 permissions for large numbers of persons and resources.

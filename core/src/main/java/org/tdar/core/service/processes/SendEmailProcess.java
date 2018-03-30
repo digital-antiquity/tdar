@@ -1,5 +1,10 @@
 package org.tdar.core.service.processes;
 
+import java.io.IOException;
+import java.util.Calendar;
+
+import javax.mail.MessagingException;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +14,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.dao.base.GenericDao;
+import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.external.EmailService;
+
 
 /**
  * $Id$
@@ -30,6 +37,9 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
     private static final long serialVersionUID = 6711790499277412427L;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    
+    @Autowired
+    private AwsEmailSender awsEmailService;
 
     @Autowired
     @Qualifier("genericDao")
@@ -70,9 +80,10 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
                 }
                 break;
             case QUEUED:
-                logger.debug("processing: {}", email);
-                emailService.send(email);
-                break;
+            		email = emailService.dequeue(email);
+            		logger.debug("processing: {}", email);
+    				emailService.send(email);
+            	break;
             default:
                 break;
         }

@@ -60,7 +60,7 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
         try {
             CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
             csqo.setAllFields(Arrays.asList(getQuery()));
-            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), csqo,  this, this);
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), csqo, this, this);
             determineCollectionSearchTitle();
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
@@ -87,7 +87,6 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
 
     public List<SortOption> getSortOptions() {
         sortOptions.remove(SortOption.RESOURCE_TYPE);
-        sortOptions.remove(SortOption.RESOURCE_TYPE_REVERSE);
         return sortOptions;
     }
 
@@ -106,7 +105,7 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
     public String getSearchSubtitle() {
         return getSearchTitle();
     }
-   
+
     @Override
     public boolean isLeftSidebar() {
         return true;

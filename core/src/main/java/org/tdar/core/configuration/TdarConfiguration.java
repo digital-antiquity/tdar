@@ -19,6 +19,8 @@ import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.PairtreeFilestore;
 
+import com.amazonaws.regions.Regions;
+
 /**
  * $Id$
  * 
@@ -52,7 +54,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     private List<String> couponCodes = new ArrayList<>();
 
     private String configurationFile;
-
+    
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
     public static final String PRODUCTION = "production";
     private static final int USE_DEFAULT_EXCEL_ROWS = -1;
@@ -933,19 +935,6 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("transactional.events",true);
     }
 
-//    public List<Long> getSaaCollectionIds() {
-//        String ids = assistant.getStringProperty("saa.conferences", "29442,29441");
-//        List<Long> toReturn = new ArrayList<>();
-//        for (String id_ : ids.split(",")) {
-//            try {
-//             toReturn.add(Long.parseLong(id_));
-//            } catch (Exception e) {
-//                logger.warn("{}",e,e);
-//            }
-//        }
-//        return toReturn;
-//    }
-
     public Long getSAAContactId() {
         return assistant.getLongProperty("saa.contact_id", getAdminUserId());
     }
@@ -1005,8 +994,44 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean isListCollectionsEnabled() {
         return false;
     }
+    
+    public String getAwsAccessKey(){
+    	return assistant.getStringProperty("aws.accesskey.id");
+    }
+    
+    public String getAwsSecretKey(){
+    	return assistant.getStringProperty("aws.accesskey.secret");
+    }
+
+	public String getCharacterSet() {
+		return assistant.getStringProperty("aws.characterset");
+	}
+	
+	public String getAwsQueueName(){
+		return assistant.getStringProperty("aws.queuename");
+	}
+	
+	public Regions getAwsRegion(){
+		try {
+			String key = assistant.getStringProperty("aws.region");
+			return Regions.valueOf(key);
+		}
+		catch(NullPointerException | IllegalArgumentException e){
+			return Regions.US_WEST_2;
+		}
+	}
+	
+	public String getEmailAttachmentsDirectory(){
+		//TODO populate this from tdar.properties.
+        return assistant.getStringProperty("email.attachments.location", "/home/tdar/email-attachments/");
+	}
 
     public String getStaffEmail() {
         return assistant.getStringProperty("app.staff.email", "staff@digitalantiquity.org");
     }
+
+	public String getDeveloperTestEmail() {
+		return assistant.getStringProperty("email.developer.test", "test@tdar.org");
+	}
+	
 }
