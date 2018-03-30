@@ -142,7 +142,18 @@
                 <#else>
 		            <@s.hidden name="quantity" value="1" />
                 </#if>
-		        <@s.textfield name="expires" cssClass="date  input-small datepicker" label="Date Expires" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
+                
+                <div class="control-group ">
+                
+                <label class="control-label">Date Expires</label>
+                 <div class="controls">
+	                <div class="input-append">
+	   		          <input name="expires" class="input-small span2 datepicker" data-date-format="mm/dd/yy" />
+	                  <span class="add-on"><i class="icon-th"></i></span>
+	                </div>
+				</div>
+				</div>
+
             </div>
             <div class="span4">
                 <@s.textfield name="numberOfFiles" cssClass="integer couponFilesOrSpace" label="Number of Files"  value=""/>
