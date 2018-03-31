@@ -241,14 +241,12 @@ $(function() {
                 </tr>
                 </#list>
             <#else>
-                <#if collection_.type == 'SHARED'>
                 <tr>
                     <td>
                         <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
                     </td>
                     <td colspan=5>n/a</td>
                 </tr>                    
-                </#if>
             </#if>
             </#if>
         </#list>
