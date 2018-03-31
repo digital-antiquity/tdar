@@ -100,6 +100,10 @@ public class ScheduledProcessServiceImpl implements SchedulingConfigurer, Applic
     @Override
     @Scheduled(fixedDelay = FIVE_MIN_MS)
     public void cronCheckAuthService() {
+        if (authenticationService == null || authenticationService.getProvider() == null) {
+            return;
+        }
+        
         if (!authenticationService.getProvider().isConfigured()) {
             logger.error("Unconfigured provider: {}", authenticationService.getProvider());
         }

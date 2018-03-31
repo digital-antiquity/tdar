@@ -9,9 +9,8 @@ import javax.servlet.ServletRegistration;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.web.WebApplicationInitializer;
-import org.tdar.core.configuration.SimpleAppConfiguration;
-import org.tdar.web.AbstractServletConfiguration;
 import org.tdar.core.configuration.AbstractAppConfiguration;
+import org.tdar.web.AbstractServletConfiguration;
 
 public class OaiServletConfiguration extends AbstractServletConfiguration implements Serializable, WebApplicationInitializer {
 
@@ -29,9 +28,10 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
 
     @Override
     public Class<? extends AbstractAppConfiguration> getConfigurationClass() {
-        return SimpleAppConfiguration.class;
+        return OaiPmhAppConfiguration.class;
     }
 
+    
     @Override
     public void onStartup(ServletContext container) throws ServletException {
         if (StringUtils.isNotBlank(getFailureMessage())) {
