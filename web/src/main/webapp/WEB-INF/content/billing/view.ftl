@@ -148,7 +148,7 @@
                 <label class="control-label">Date Expires</label>
                  <div class="controls">
 	                <div class="input-append">
-	   		          <input name="expires" class="input-small span2 datepicker" data-date-format="mm/dd/yy" />
+	   		          <input name="expires" class="input-small span2 datepicker" data-date-format="mm/dd/yy" value="${expires?string["MM/dd/yyyy"]}" />
 	                  <span class="add-on"><i class="icon-th"></i></span>
 	                </div>
 				</div>
