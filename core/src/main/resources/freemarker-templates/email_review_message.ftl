@@ -7,7 +7,7 @@ The following ${totalEmails} user-generated emails need to be reviewed before th
 <br />
 <ul>
     <#list emails as email>
-     <li> ${email.date?string.short} ${email.subject} from:${email.from} to: ${email.to}</li>
+     <li> ${email.date?string.short} ${email.subject} from: ${email.from} to: ${email.to}</li>
     </#list>
 </ul>
 </@mail.content>

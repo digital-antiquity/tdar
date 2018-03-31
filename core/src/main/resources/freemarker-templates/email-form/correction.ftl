@@ -8,11 +8,10 @@ Dear ${to.properName},
      <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id?c}) that you have administrative rights 
      to in tDAR.
 </p>
----
-<p>
+<blockquote>
 ${message}
-</p>
----
+</blockquote>
+
 <p>
 You may correspond with ${from.properName} via ${from.email}.  To make 
 edits to your ${siteAcronym} resource, log in to ${siteAcronym} and visit 

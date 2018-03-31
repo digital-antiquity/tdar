@@ -139,8 +139,8 @@ public class PairtreeFilestore extends BaseFilestore {
 
     private void logAction(File outFile, String action) {
         File logFile = new File(baseStoreDirectory, FilestoreObjectType.LOG.getRootDir() + "/write.log");
-
-        String logLine = String.format("%s\t%s\t%s\n", new Date(), outFile.getAbsolutePath(), Charset.defaultCharset(), action);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd--HH-mm-ss");
+        String logLine = String.format("%s\t%s\t%s\n", sdf.format(new Date()), outFile.getAbsolutePath(), action);
         synchronized (logFile) {
             try {
                 FileUtils.writeStringToFile(logFile, logLine, Charset.defaultCharset(), true);

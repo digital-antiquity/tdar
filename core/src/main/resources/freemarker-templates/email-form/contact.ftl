@@ -8,9 +8,9 @@ and is interested in getting in touch with you.  They have sent the following
 message:
 </p>
 
-<p>
+<blockquote>
     ${message}
-</p>
+</blockquote>
 
 <p>
     You may to correspond with ${from.properName} via ${from.email}. 
@@ -18,8 +18,7 @@ message:
 
 <p>
 To view the record in ${siteAcronym} visit: 
-<a href="${baseUrl}${resource.detailUrl}">
-    ${baseUrl}${resource.detailUrl}</a>
+<a href="${baseUrl}${resource.detailUrl}">${baseUrl}${resource.detailUrl}</a>
 </p>
 
 <p>
