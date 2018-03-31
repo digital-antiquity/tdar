@@ -6,10 +6,7 @@ You have successfully signed up to use ${config.siteAcronym}<br />
 <br />
 We are very happy to have you join our community.<br />
 <br/>
-Your user name is: ${user.username}<br/>
-The sites URL is: <a href="${config.baseUrl}">${config.baseUrl}</a><br/>
-
-<br/>
+Your user name is: <b>${user.username}</b><br/>
 <br/>
 You can:
 <ul>

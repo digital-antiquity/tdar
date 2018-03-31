@@ -13,7 +13,7 @@ ${from.properName}'s email address below if you need more information from them.
 </p>
 <p>
 <a href="${baseUrl}/resource/request/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}&type=CUSTOM">
-    Click here to grant access to this resource
+    Grant access to this resource
 </a>
 </p>
 <p>

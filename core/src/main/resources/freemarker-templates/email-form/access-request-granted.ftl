@@ -1,6 +1,6 @@
 <#import "../email-macro.ftl" as mail /> 
 <@mail.content>
-Dear ${requestor.properName},<br />
+Dear ${requestor.properName},<br /><br/>
 Your request for access to <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id?c}) has been granted by ${authorizedUser.properName}<br />
 <br />
 

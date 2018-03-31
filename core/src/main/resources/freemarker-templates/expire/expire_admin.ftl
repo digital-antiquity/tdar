@@ -2,7 +2,7 @@
 
 <@mail.content>
 Dear TDAR Admin,
-
+<br><br>
 The following users' access has expired:
 <ul> 
 <#list notes as note>

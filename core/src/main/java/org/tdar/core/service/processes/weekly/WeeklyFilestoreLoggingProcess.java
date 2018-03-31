@@ -201,6 +201,7 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
             logger.debug(message);
             Email email = new Email();
             email.setSubject(subject.toString());
+//            email.
             email.setMessage(message);
             emailService.queue(email);
             logger.info("ending automated verification of files");
